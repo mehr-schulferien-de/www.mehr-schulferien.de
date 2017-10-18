@@ -22,6 +22,8 @@ defmodule MehrSchulferien.Timetables.Day do
     field :weekday_de, :string
     belongs_to :year, Year
     belongs_to :month, Month
+    has_many :slots, Timetables.Slot
+    has_many :periods, through: [:slots, :period]
 
     timestamps()
   end

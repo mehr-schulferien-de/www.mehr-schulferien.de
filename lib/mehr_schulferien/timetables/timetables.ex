@@ -347,7 +347,7 @@ defmodule MehrSchulferien.Timetables do
   end
 
   @doc """
-  Gets a single category.
+  Gets a single category by id or slug.
 
   Raises `Ecto.NoResultsError` if the Category does not exist.
 
@@ -356,11 +356,23 @@ defmodule MehrSchulferien.Timetables do
       iex> get_category!(123)
       %Category{}
 
+      iex> get_category!("footbar")
+      %Category{}
+
       iex> get_category!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_category!(id), do: Repo.get!(Category, id)
+  def get_category!(id_or_slug) do
+    case is_integer(id_or_slug) or Regex.match?(~r/^[1-9]+[0-9]*$/, id_or_slug) do
+      true ->
+        Repo.get!(Category, id_or_slug)
+      false ->
+        query = from f in Category, where: f.slug == ^id_or_slug
+        Repo.one!(query)
+    end
+  end
+
 
   @doc """
   Creates a category.
@@ -443,7 +455,7 @@ defmodule MehrSchulferien.Timetables do
   end
 
   @doc """
-  Gets a single period.
+  Gets a single period by id or slug.
 
   Raises `Ecto.NoResultsError` if the Period does not exist.
 
@@ -452,11 +464,22 @@ defmodule MehrSchulferien.Timetables do
       iex> get_period!(123)
       %Period{}
 
+      iex> get_period!("2016-10-31-2016-11-04-herbst-bayern")
+      %Period{}
+
       iex> get_period!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_period!(id), do: Repo.get!(Period, id)
+  def get_period!(id_or_slug) do
+    case is_integer(id_or_slug) or Regex.match?(~r/^[1-9][0-9]*$/, id_or_slug) do
+      true ->
+        Repo.get!(Period, id_or_slug)
+      false ->
+        query = from f in Period, where: f.slug == ^id_or_slug
+        Repo.one!(query)
+    end
+  end
 
   @doc """
   Creates a period.
@@ -471,9 +494,21 @@ defmodule MehrSchulferien.Timetables do
 
   """
   def create_period(attrs \\ %{}) do
-    %Period{}
-    |> Period.changeset(attrs)
-    |> Repo.insert()
+    result = %Period{}
+      |> Period.changeset(attrs)
+      |> Repo.insert()
+    case result do
+      {:ok, period} -> # create slots for this period
+        query = from d in Day, where: d.value >= ^period.starts_on,
+                               where: d.value <= ^period.ends_on
+        days = Repo.all(query)
+
+        for day <- days do
+          create_slot(%{day_id: day.id, period_id: period.id})
+        end
+        result
+      {_ , _} -> result
+    end
   end
 
   @doc """
@@ -521,5 +556,101 @@ defmodule MehrSchulferien.Timetables do
   """
   def change_period(%Period{} = period) do
     Period.changeset(period, %{})
+  end
+
+  alias MehrSchulferien.Timetables.Slot
+
+  @doc """
+  Returns the list of slots.
+
+  ## Examples
+
+      iex> list_slots()
+      [%Slot{}, ...]
+
+  """
+  def list_slots do
+    Repo.all(Slot)
+  end
+
+  @doc """
+  Gets a single slot.
+
+  Raises `Ecto.NoResultsError` if the Slot does not exist.
+
+  ## Examples
+
+      iex> get_slot!(123)
+      %Slot{}
+
+      iex> get_slot!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_slot!(id), do: Repo.get!(Slot, id)
+
+  @doc """
+  Creates a slot.
+
+  ## Examples
+
+      iex> create_slot(%{field: value})
+      {:ok, %Slot{}}
+
+      iex> create_slot(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_slot(attrs \\ %{}) do
+    %Slot{}
+    |> Slot.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a slot.
+
+  ## Examples
+
+      iex> update_slot(slot, %{field: new_value})
+      {:ok, %Slot{}}
+
+      iex> update_slot(slot, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_slot(%Slot{} = slot, attrs) do
+    slot
+    |> Slot.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Slot.
+
+  ## Examples
+
+      iex> delete_slot(slot)
+      {:ok, %Slot{}}
+
+      iex> delete_slot(slot)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_slot(%Slot{} = slot) do
+    Repo.delete(slot)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking slot changes.
+
+  ## Examples
+
+      iex> change_slot(slot)
+      %Ecto.Changeset{source: %Slot{}}
+
+  """
+  def change_slot(%Slot{} = slot) do
+    Slot.changeset(slot, %{})
   end
 end

@@ -1,0 +1,5 @@
+<h2>Edit Slot</h2>
+
+<%= render "form.html", Map.put(assigns, :action, slot_path(@conn, :update, @slot)) %>
+
+<span><%= link "Back", to: slot_path(@conn, :index) %></span>

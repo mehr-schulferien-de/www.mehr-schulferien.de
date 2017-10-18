@@ -1,0 +1,8 @@
+<h2>Show Slot</h2>
+
+<ul>
+
+</ul>
+
+<span><%= link "Edit", to: slot_path(@conn, :edit, @slot) %></span>
+<span><%= link "Back", to: slot_path(@conn, :index) %></span>

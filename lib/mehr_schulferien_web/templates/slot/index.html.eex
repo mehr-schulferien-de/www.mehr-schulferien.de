@@ -1,0 +1,28 @@
+<h2>Listing Slots</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>day_id</th>
+      <th>period_id</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for slot <- @slots do %>
+    <tr>
+      <td><%= slot.day_id %></td>
+      <td><%= slot.period_id %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: slot_path(@conn, :show, slot), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: slot_path(@conn, :edit, slot), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: slot_path(@conn, :delete, slot), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Slot", to: slot_path(@conn, :new) %></span>
