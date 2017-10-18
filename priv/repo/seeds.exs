@@ -75,9 +75,9 @@ Enum.each( fn({contents, line_num}) ->
                             federal_state_id: federal_state.id})
 end)
 
-# Years 2016-2025
+# Years 2015-2025
 #
-Enum.each (2016..2025), fn year_number ->
+Enum.each (2015..2025), fn year_number ->
   case Timetables.create_year(%{value: year_number}) do
     {:ok, year} ->
       {:ok, first_day} = Date.from_erl({year_number, 1, 1})
