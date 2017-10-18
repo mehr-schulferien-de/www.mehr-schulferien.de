@@ -98,3 +98,23 @@ Enum.each (2015..2025), fn year_number ->
     end
   end
 end
+
+# Categories
+#
+category_names = [{"Gesetzlicher Feiertag", "Gesetzliche Feiertage"}, {"Wochenende", "Wochenenden"} ]
+for name <- category_names do
+  {singular, plural} = name
+  Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: false, for_students: true, for_anybody: true, is_a_religion: false})
+end
+
+category_names = [{"Schulferien", "Schulferien"}, {"Beweglicher Ferientag", "Bewegliche Feiertage" }]
+for name <- category_names do
+  {singular, plural} = name
+  Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: false, for_students: true, for_anybody: false, is_a_religion: false})
+end
+
+category_names = [{"Islamischer Feiertag", "Islamische Feiertage"}, {"Jüdischer Feiertag", "Jüdische Feiertage"}, {"Griechisch-Orthodoxer Feiertag", "Grieschisch-Orthodoxe Feiertage"}, {"Russisch-Orthodoxer Feiertag", "Russisch-Orthodoxe Feiertage"} ]
+for name <- category_names do
+  {singular, plural} = name
+  Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: true, for_students: true, for_anybody: false, is_a_religion: true})
+end

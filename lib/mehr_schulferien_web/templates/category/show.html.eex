@@ -1,0 +1,33 @@
+<h2>Show Category</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @category.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @category.slug %>
+  </li>
+
+  <li>
+    <strong>Needs exeat:</strong>
+    <%= @category.needs_exeat %>
+  </li>
+
+  <li>
+    <strong>For students:</strong>
+    <%= @category.for_students %>
+  </li>
+
+  <li>
+    <strong>For anybody:</strong>
+    <%= @category.for_anybody %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: category_path(@conn, :edit, @category) %></span>
+<span><%= link "Back", to: category_path(@conn, :index) %></span>

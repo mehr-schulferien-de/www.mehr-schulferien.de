@@ -198,4 +198,72 @@ defmodule MehrSchulferien.TimetablesTest do
       assert %Ecto.Changeset{} = Timetables.change_day(day)
     end
   end
+
+  describe "categories" do
+    alias MehrSchulferien.Timetables.Category
+
+    @valid_attrs %{for_anybody: true, for_students: true, name: "some name", needs_exeat: true, slug: "some slug"}
+    @update_attrs %{for_anybody: false, for_students: false, name: "some updated name", needs_exeat: false, slug: "some updated slug"}
+    @invalid_attrs %{for_anybody: nil, for_students: nil, name: nil, needs_exeat: nil, slug: nil}
+
+    def category_fixture(attrs \\ %{}) do
+      {:ok, category} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Timetables.create_category()
+
+      category
+    end
+
+    test "list_categories/0 returns all categories" do
+      category = category_fixture()
+      assert Timetables.list_categories() == [category]
+    end
+
+    test "get_category!/1 returns the category with given id" do
+      category = category_fixture()
+      assert Timetables.get_category!(category.id) == category
+    end
+
+    test "create_category/1 with valid data creates a category" do
+      assert {:ok, %Category{} = category} = Timetables.create_category(@valid_attrs)
+      assert category.for_anybody == true
+      assert category.for_students == true
+      assert category.name == "some name"
+      assert category.needs_exeat == true
+      assert category.slug == "some slug"
+    end
+
+    test "create_category/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Timetables.create_category(@invalid_attrs)
+    end
+
+    test "update_category/2 with valid data updates the category" do
+      category = category_fixture()
+      assert {:ok, category} = Timetables.update_category(category, @update_attrs)
+      assert %Category{} = category
+      assert category.for_anybody == false
+      assert category.for_students == false
+      assert category.name == "some updated name"
+      assert category.needs_exeat == false
+      assert category.slug == "some updated slug"
+    end
+
+    test "update_category/2 with invalid data returns error changeset" do
+      category = category_fixture()
+      assert {:error, %Ecto.Changeset{}} = Timetables.update_category(category, @invalid_attrs)
+      assert category == Timetables.get_category!(category.id)
+    end
+
+    test "delete_category/1 deletes the category" do
+      category = category_fixture()
+      assert {:ok, %Category{}} = Timetables.delete_category(category)
+      assert_raise Ecto.NoResultsError, fn -> Timetables.get_category!(category.id) end
+    end
+
+    test "change_category/1 returns a category changeset" do
+      category = category_fixture()
+      assert %Ecto.Changeset{} = Timetables.change_category(category)
+    end
+  end
 end
