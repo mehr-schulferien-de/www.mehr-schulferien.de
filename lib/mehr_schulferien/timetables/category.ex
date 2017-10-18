@@ -4,7 +4,7 @@ defmodule MehrSchulferien.Timetables.Category do
   alias MehrSchulferien.Timetables.Category
   alias MehrSchulferien.NameSlug
 
-
+  @derive {Phoenix.Param, key: :slug}
   schema "categories" do
     field :for_anybody, :boolean, default: false
     field :for_students, :boolean, default: false

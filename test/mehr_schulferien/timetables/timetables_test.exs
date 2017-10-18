@@ -266,4 +266,80 @@ defmodule MehrSchulferien.TimetablesTest do
       assert %Ecto.Changeset{} = Timetables.change_category(category)
     end
   end
+
+  describe "periods" do
+    alias MehrSchulferien.Timetables.Period
+
+    @valid_attrs %{ends_on: ~D[2010-04-17], for_anybody: true, for_students: true, is_a_religion: true, name: "some name", needs_exeat: true, slug: "some slug", source: "some source", starts_on: ~D[2010-04-17]}
+    @update_attrs %{ends_on: ~D[2011-05-18], for_anybody: false, for_students: false, is_a_religion: false, name: "some updated name", needs_exeat: false, slug: "some updated slug", source: "some updated source", starts_on: ~D[2011-05-18]}
+    @invalid_attrs %{ends_on: nil, for_anybody: nil, for_students: nil, is_a_religion: nil, name: nil, needs_exeat: nil, slug: nil, source: nil, starts_on: nil}
+
+    def period_fixture(attrs \\ %{}) do
+      {:ok, period} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Timetables.create_period()
+
+      period
+    end
+
+    test "list_periods/0 returns all periods" do
+      period = period_fixture()
+      assert Timetables.list_periods() == [period]
+    end
+
+    test "get_period!/1 returns the period with given id" do
+      period = period_fixture()
+      assert Timetables.get_period!(period.id) == period
+    end
+
+    test "create_period/1 with valid data creates a period" do
+      assert {:ok, %Period{} = period} = Timetables.create_period(@valid_attrs)
+      assert period.ends_on == ~D[2010-04-17]
+      assert period.for_anybody == true
+      assert period.for_students == true
+      assert period.is_a_religion == true
+      assert period.name == "some name"
+      assert period.needs_exeat == true
+      assert period.slug == "some slug"
+      assert period.source == "some source"
+      assert period.starts_on == ~D[2010-04-17]
+    end
+
+    test "create_period/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Timetables.create_period(@invalid_attrs)
+    end
+
+    test "update_period/2 with valid data updates the period" do
+      period = period_fixture()
+      assert {:ok, period} = Timetables.update_period(period, @update_attrs)
+      assert %Period{} = period
+      assert period.ends_on == ~D[2011-05-18]
+      assert period.for_anybody == false
+      assert period.for_students == false
+      assert period.is_a_religion == false
+      assert period.name == "some updated name"
+      assert period.needs_exeat == false
+      assert period.slug == "some updated slug"
+      assert period.source == "some updated source"
+      assert period.starts_on == ~D[2011-05-18]
+    end
+
+    test "update_period/2 with invalid data returns error changeset" do
+      period = period_fixture()
+      assert {:error, %Ecto.Changeset{}} = Timetables.update_period(period, @invalid_attrs)
+      assert period == Timetables.get_period!(period.id)
+    end
+
+    test "delete_period/1 deletes the period" do
+      period = period_fixture()
+      assert {:ok, %Period{}} = Timetables.delete_period(period)
+      assert_raise Ecto.NoResultsError, fn -> Timetables.get_period!(period.id) end
+    end
+
+    test "change_period/1 returns a period changeset" do
+      period = period_fixture()
+      assert %Ecto.Changeset{} = Timetables.change_period(period)
+    end
+  end
 end

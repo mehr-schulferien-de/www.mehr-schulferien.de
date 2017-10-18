@@ -118,3 +118,59 @@ for name <- category_names do
   {singular, plural} = name
   Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: true, for_students: true, for_anybody: false, is_a_religion: true})
 end
+
+# Periods
+#
+File.stream!("priv/repo/period-seeds.json") |>
+Stream.map( &(String.replace(&1, "\n", "")) ) |>
+Stream.with_index |>
+Enum.each( fn({contents, line_num}) ->
+  period = Poison.decode!(contents)
+  case {period["school_slug"], period["city_slug"], period["federal_state_slug"], period["country_slug"]} do
+    {nil, nil, nil, slug} ->
+          country = Locations.get_country!(slug)
+          Timetables.create_period(%{
+            starts_on: period["starts_on"],
+            ends_on: period["ends_on"],
+            country_id: country.id,
+            category: period["category"],
+            source: period["source"],
+            name: period["name"],
+            for_students: true
+          })
+    {nil, nil, slug, nil} ->
+          federal_state = Locations.get_federal_state!(slug)
+          Timetables.create_period(%{
+            starts_on: period["starts_on"],
+            ends_on: period["ends_on"],
+            federal_state_id: federal_state.id,
+            category: period["category"],
+            source: period["source"],
+            name: period["name"],
+            for_students: true
+          })
+    {nil, slug, nil, nil} ->
+          city = Locations.get_city!(slug)
+          Timetables.create_period(%{
+            starts_on: period["starts_on"],
+            ends_on: period["ends_on"],
+            city_id: city.id,
+            category: period["category"],
+            source: period["source"],
+            name: period["name"],
+            for_students: true
+          })
+    {slug, nil, nil, nil} ->
+          school = Locations.get_school!(slug)
+          Timetables.create_period(%{
+            starts_on: period["starts_on"],
+            ends_on: period["ends_on"],
+            school_id: school.id,
+            category: period["category"],
+            source: period["source"],
+            name: period["name"],
+            for_students: true
+          })
+    {_, _, _, _} -> nil
+  end
+end)
