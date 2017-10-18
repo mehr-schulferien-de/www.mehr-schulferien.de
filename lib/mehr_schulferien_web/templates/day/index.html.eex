@@ -1,0 +1,38 @@
+<h2>Listing Days</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Slug</th>
+      <th>Day of month</th>
+      <th>Day of year</th>
+      <th>Calendar week</th>
+      <th>Weekday</th>
+      <th>Weekday de</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for day <- @days do %>
+    <tr>
+      <td><%= day.value %></td>
+      <td><%= day.slug %></td>
+      <td><%= day.day_of_month %></td>
+      <td><%= day.day_of_year %></td>
+      <td><%= day.calendar_week %></td>
+      <td><%= day.weekday %></td>
+      <td><%= day.weekday_de %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: day_path(@conn, :show, day), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: day_path(@conn, :edit, day), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: day_path(@conn, :delete, day), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Day", to: day_path(@conn, :new) %></span>

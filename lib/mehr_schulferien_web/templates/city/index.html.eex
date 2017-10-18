@@ -1,0 +1,30 @@
+<h2>Listing Cities</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+      <th>Zip code</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for city <- @cities do %>
+    <tr>
+      <td><%= city.name %></td>
+      <td><%= city.slug %></td>
+      <td><%= city.zip_code %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: city_path(@conn, :show, city), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: city_path(@conn, :edit, city), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: city_path(@conn, :delete, city), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New City", to: city_path(@conn, :new) %></span>

@@ -12,7 +12,7 @@ config :mehr_schulferien,
 # Configures the endpoint
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "1UAyxrlmQgt15fkUEqQ1gDwcYB+fE/AnA2cXvKmaJHBPJV77r9iPz5rGAsWqkFWo",
+  secret_key_base: "K3kKS2Ifv2DDc6g4VqMGgrhmC5xUT+vWDgyFwGiLJGEPQ9q/l9+Znuthd/bfPcWO",
   render_errors: [view: MehrSchulferienWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: MehrSchulferien.PubSub,
            adapter: Phoenix.PubSub.PG2]

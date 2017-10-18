@@ -1,0 +1,46 @@
+<h2>Listing Schools</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+      <th>Address line1</th>
+      <th>Address line2</th>
+      <th>Address street</th>
+      <th>Address zip code</th>
+      <th>Address city</th>
+      <th>Email address</th>
+      <th>Phone number</th>
+      <th>Fax number</th>
+      <th>Homepage url</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for school <- @schools do %>
+    <tr>
+      <td><%= school.name %></td>
+      <td><%= school.slug %></td>
+      <td><%= school.address_line1 %></td>
+      <td><%= school.address_line2 %></td>
+      <td><%= school.address_street %></td>
+      <td><%= school.address_zip_code %></td>
+      <td><%= school.address_city %></td>
+      <td><%= school.email_address %></td>
+      <td><%= school.phone_number %></td>
+      <td><%= school.fax_number %></td>
+      <td><%= school.homepage_url %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: school_path(@conn, :show, school), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: school_path(@conn, :edit, school), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: school_path(@conn, :delete, school), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New School", to: school_path(@conn, :new) %></span>

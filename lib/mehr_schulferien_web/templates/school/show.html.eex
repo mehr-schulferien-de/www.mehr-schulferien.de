@@ -1,0 +1,63 @@
+<h2>Show School</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @school.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @school.slug %>
+  </li>
+
+  <li>
+    <strong>Address line1:</strong>
+    <%= @school.address_line1 %>
+  </li>
+
+  <li>
+    <strong>Address line2:</strong>
+    <%= @school.address_line2 %>
+  </li>
+
+  <li>
+    <strong>Address street:</strong>
+    <%= @school.address_street %>
+  </li>
+
+  <li>
+    <strong>Address zip code:</strong>
+    <%= @school.address_zip_code %>
+  </li>
+
+  <li>
+    <strong>Address city:</strong>
+    <%= @school.address_city %>
+  </li>
+
+  <li>
+    <strong>Email address:</strong>
+    <%= @school.email_address %>
+  </li>
+
+  <li>
+    <strong>Phone number:</strong>
+    <%= @school.phone_number %>
+  </li>
+
+  <li>
+    <strong>Fax number:</strong>
+    <%= @school.fax_number %>
+  </li>
+
+  <li>
+    <strong>Homepage url:</strong>
+    <%= @school.homepage_url %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: school_path(@conn, :edit, @school) %></span>
+<span><%= link "Back", to: school_path(@conn, :index) %></span>

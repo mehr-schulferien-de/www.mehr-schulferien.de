@@ -1,0 +1,5 @@
+<h2>New City</h2>
+
+<%= render "form.html", Map.put(assigns, :action, city_path(@conn, :create)) %>
+
+<span><%= link "Back", to: city_path(@conn, :index) %></span>

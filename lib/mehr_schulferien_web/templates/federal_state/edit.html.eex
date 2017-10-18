@@ -1,0 +1,5 @@
+<h2>Edit Federal state</h2>
+
+<%= render "form.html", Map.put(assigns, :action, federal_state_path(@conn, :update, @federal_state)) %>
+
+<span><%= link "Back", to: federal_state_path(@conn, :index) %></span>

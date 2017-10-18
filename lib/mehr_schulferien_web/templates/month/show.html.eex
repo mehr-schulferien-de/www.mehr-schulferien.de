@@ -1,0 +1,18 @@
+<h2>Show Month</h2>
+
+<ul>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @month.value %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @month.slug %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: month_path(@conn, :edit, @month) %></span>
+<span><%= link "Back", to: month_path(@conn, :index) %></span>

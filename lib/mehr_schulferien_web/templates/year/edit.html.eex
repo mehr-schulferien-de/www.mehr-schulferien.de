@@ -1,0 +1,5 @@
+<h2>Edit Year</h2>
+
+<%= render "form.html", Map.put(assigns, :action, year_path(@conn, :update, @year)) %>
+
+<span><%= link "Back", to: year_path(@conn, :index) %></span>

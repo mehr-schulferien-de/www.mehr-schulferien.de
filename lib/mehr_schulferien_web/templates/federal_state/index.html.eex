@@ -1,0 +1,30 @@
+<h2>Listing Federal states</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Code</th>
+      <th>Slug</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for federal_state <- @federal_states do %>
+    <tr>
+      <td><%= federal_state.name %></td>
+      <td><%= federal_state.code %></td>
+      <td><%= federal_state.slug %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: federal_state_path(@conn, :show, federal_state), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: federal_state_path(@conn, :edit, federal_state), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: federal_state_path(@conn, :delete, federal_state), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Federal state", to: federal_state_path(@conn, :new) %></span>

@@ -1,0 +1,28 @@
+<h2>Listing Months</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Slug</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for month <- @months do %>
+    <tr>
+      <td><%= month.value %></td>
+      <td><%= month.slug %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: month_path(@conn, :show, month), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: month_path(@conn, :edit, month), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: month_path(@conn, :delete, month), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Month", to: month_path(@conn, :new) %></span>

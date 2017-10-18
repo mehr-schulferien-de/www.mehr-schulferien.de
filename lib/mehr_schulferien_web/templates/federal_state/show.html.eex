@@ -1,0 +1,23 @@
+<h2>Show Federal state</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @federal_state.name %>
+  </li>
+
+  <li>
+    <strong>Code:</strong>
+    <%= @federal_state.code %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @federal_state.slug %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: federal_state_path(@conn, :edit, @federal_state) %></span>
+<span><%= link "Back", to: federal_state_path(@conn, :index) %></span>

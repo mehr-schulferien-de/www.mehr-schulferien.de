@@ -1,0 +1,5 @@
+<h2>Edit Month</h2>
+
+<%= render "form.html", Map.put(assigns, :action, month_path(@conn, :update, @month)) %>
+
+<span><%= link "Back", to: month_path(@conn, :index) %></span>

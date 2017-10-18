@@ -36,7 +36,7 @@ defmodule MehrSchulferienWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_mehr_schulferien_key",
-    signing_salt: "UDryk+Yc"
+    signing_salt: "x6dpsvvE"
 
   plug MehrSchulferienWeb.Router
 

@@ -40,7 +40,9 @@ defmodule MehrSchulferien.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"}
+      {:cowboy, "~> 1.0"},
+      {:ecto_autoslug_field, "~> 0.3"},
+      {:poison, "~> 3.1"}
     ]
   end
 

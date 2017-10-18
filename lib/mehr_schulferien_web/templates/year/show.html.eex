@@ -1,0 +1,18 @@
+<h2>Show Year</h2>
+
+<ul>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @year.value %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @year.slug %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: year_path(@conn, :edit, @year) %></span>
+<span><%= link "Back", to: year_path(@conn, :index) %></span>

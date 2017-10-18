@@ -1,0 +1,23 @@
+<h2>Show City</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @city.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @city.slug %>
+  </li>
+
+  <li>
+    <strong>Zip code:</strong>
+    <%= @city.zip_code %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: city_path(@conn, :edit, @city) %></span>
+<span><%= link "Back", to: city_path(@conn, :index) %></span>
