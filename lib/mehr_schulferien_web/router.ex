@@ -17,6 +17,10 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+  end
+
+  scope "/admin", MehrSchulferienWeb.Admin, as: :admin do
+    pipe_through :browser # Use the default browser stack
 
     # Locations
     #
