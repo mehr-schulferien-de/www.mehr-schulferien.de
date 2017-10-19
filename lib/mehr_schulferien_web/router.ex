@@ -17,6 +17,9 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+
+    get "/federal_states/:federal_state_id/:starts_on/:ends_on", FederalStateController, :show
+    get "/federal_states/:federal_state_id/:year", FederalStateController, :show
   end
 
   scope "/admin", MehrSchulferienWeb.Admin, as: :admin do
