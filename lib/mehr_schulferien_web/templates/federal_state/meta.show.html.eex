@@ -1,0 +1,2 @@
+<meta name="description" content="Ferienterminen und Brückentageübersicht für <%= @federal_state.name %>. Inkl. gesetzlicher Feiertage. Optional mit jüdischen und islamischen Feiertagen.">
+<title>Schulferienkalender <%= @federal_state.name %></title>

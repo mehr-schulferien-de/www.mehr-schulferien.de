@@ -4,32 +4,43 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Stefan Wintermeyer">
+    <%= render_existing(@view_module, "meta." <> @view_template, assigns) ||
+        render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
+    <style>
+      <%= render(MehrSchulferienWeb.LayoutView, "_css.html", assigns) %>
+    </style>
 
-    <title>Hello MehrSchulferien!</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
   <body>
     <div class="container">
-      <header class="header">
-        <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
-          </ul>
-        </nav>
-        <span class="logo"></span>
-      </header>
-
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
 
-    </div> <!-- /container -->
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Alle Angaben ohne Gewähr.</p>
+        <hr />
+      </div>
+    </div>
+    <footer>
+      <div class="row">
+        <div class="col-xs-6">
+          <p>
+            Copyright by Stefan Wintermeyer
+          </p>
+        </div>
+        <div class="col-xs-6">
+          <p class="pull-right">
+            <a href="https://www.wintermeyer-consulting.de">Wintermeyer Consulting</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  </div> <!-- /container -->
+
+    <!-- <script src="<%= static_path(@conn, "/js/app.js") %>"></script> -->
   </body>
 </html>

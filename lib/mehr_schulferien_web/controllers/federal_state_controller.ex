@@ -9,12 +9,22 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   def show(conn, %{"id" => id}) do
     federal_state = Locations.get_federal_state!(id)
-    render(conn, "show.html", federal_state: federal_state)
+    federal_states = Locations.list_federal_states
+    country = Locations.get_country!(federal_state.country_id)
+
+    render(conn, "show.html", federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country)
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id, "starts_on" => starts_on, "ends_on" => ends_on}) do
     federal_state = Locations.get_federal_state!(federal_state_id)
-    render(conn, "show.html", federal_state: federal_state)
+    federal_states = Locations.list_federal_states
+    country = Locations.get_country!(federal_state.country_id)
+
+    render(conn, "show.html", federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country)
   end
 
   # Redirect requests for years to the correct full date.

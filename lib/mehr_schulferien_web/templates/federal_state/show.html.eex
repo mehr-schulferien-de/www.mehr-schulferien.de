@@ -1,23 +1,26 @@
-<h2>Show Federal state</h2>
+<ol class="breadcrumb">
+  <li><a href="/countries/<%= @country.slug %>">Deutschland</a></li>
+  <li class="active"><a href="/federal_states/<%= @federal_state.slug %>"><%= @federal_state.name %></a></li>
+</ol>
 
-<ul>
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        <%= @federal_state.name %>
+      </h1>
+    </div>
+    <div class="col-md-4">
+      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
+    </div>
+  </div>
+</div>
 
-  <li>
-    <strong>Name:</strong>
-    <%= @federal_state.name %>
-  </li>
-
-  <li>
-    <strong>Code:</strong>
-    <%= @federal_state.code %>
-  </li>
-
-  <li>
-    <strong>Slug:</strong>
-    <%= @federal_state.slug %>
-  </li>
-
-</ul>
-
-<span><%= link "Edit", to: admin_federal_state_path(@conn, :edit, @federal_state) %></span>
-<span><%= link "Back", to: admin_federal_state_path(@conn, :index) %></span>
+<div class="row">
+  <div class="col-sm-9">
+    <h1>Content</h1>
+  </div>
+  <div class="col-sm-3">
+    <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_state: @federal_state, federal_states: @federal_states %>
+  </div>
+</div>
