@@ -7,7 +7,8 @@
   <div class="row">
     <div class="col-md-8">
       <h1>
-        <%= @federal_state.name %>
+        <%= @federal_state.name %><br>
+        <small><%= Formatter.starts_to_ends_heading(@starts_on, @ends_on) %></small>
       </h1>
     </div>
     <div class="col-md-4">
@@ -19,6 +20,11 @@
 <div class="row">
   <div class="col-sm-9">
     <h1>Content</h1>
+    <p>
+    <%= for day <- @days do %>
+      <%= day.value %>
+    <% end %>
+    </p>
   </div>
   <div class="col-sm-3">
     <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", assigns %>

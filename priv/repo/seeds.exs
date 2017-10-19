@@ -107,7 +107,8 @@ for name <- category_names do
   Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: false, for_students: true, for_anybody: true, is_a_religion: false})
 end
 
-category_names = [{"Schulferien", "Schulferien"}, {"Beweglicher Ferientag", "Bewegliche Feiertage" }]
+category_names = [{"Schulferien", "Schulferien"}, {"Beweglicher Ferientag", "Bewegliche Feiertage" },
+                  {"Schulfrei", "Schulfreie Tage"}]
 for name <- category_names do
   {singular, plural} = name
   Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: false, for_students: true, for_anybody: false, is_a_religion: false})
@@ -126,6 +127,11 @@ Stream.map( &(String.replace(&1, "\n", "")) ) |>
 Stream.with_index |>
 Enum.each( fn({contents, line_num}) ->
   period = Poison.decode!(contents)
+  IO.puts inspect(period)
+  query = from m in MehrSchulferien.Timetables.Category,
+          where: m.name == ^period["category"]
+  category = MehrSchulferien.Repo.one(query)
+
   case {period["school_slug"], period["city_slug"], period["federal_state_slug"], period["country_slug"]} do
     {nil, nil, nil, slug} ->
           country = Locations.get_country!(slug)
@@ -133,7 +139,7 @@ Enum.each( fn({contents, line_num}) ->
             starts_on: period["starts_on"],
             ends_on: period["ends_on"],
             country_id: country.id,
-            category: period["category"],
+            category_id: category.id,
             source: period["source"],
             name: period["name"],
             for_students: true
@@ -144,7 +150,7 @@ Enum.each( fn({contents, line_num}) ->
             starts_on: period["starts_on"],
             ends_on: period["ends_on"],
             federal_state_id: federal_state.id,
-            category: period["category"],
+            category_id: category.id,
             source: period["source"],
             name: period["name"],
             for_students: true
@@ -155,7 +161,7 @@ Enum.each( fn({contents, line_num}) ->
             starts_on: period["starts_on"],
             ends_on: period["ends_on"],
             city_id: city.id,
-            category: period["category"],
+            category_id: category.id,
             source: period["source"],
             name: period["name"],
             for_students: true
@@ -166,7 +172,7 @@ Enum.each( fn({contents, line_num}) ->
             starts_on: period["starts_on"],
             ends_on: period["ends_on"],
             school_id: school.id,
-            category: period["category"],
+            category_id: category.id,
             source: period["source"],
             name: period["name"],
             for_students: true

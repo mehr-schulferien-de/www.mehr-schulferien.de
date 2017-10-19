@@ -37,7 +37,8 @@ defmodule MehrSchulferien.Timetables.Period do
                                 :school_id])
     |> PeriodSlug.set_slug
     |> validate_required([:starts_on, :ends_on, :name, :slug, :for_anybody,
-                          :for_students, :needs_exeat, :is_a_religion])
+                          :for_students, :needs_exeat, :is_a_religion,
+                          :category_id])
     |> validate_starts_on_is_before_or_equal_ends_on
     |> unique_constraint(:slug)
     |> assoc_constraint(:category)

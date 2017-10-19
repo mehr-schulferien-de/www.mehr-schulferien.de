@@ -16,7 +16,7 @@
           <% current_year = DateTime.utc_now |> Map.fetch!(:year) %>
           <% next_three_years = Enum.to_list(current_year .. current_year + 2) %>
           <%= for year <- next_three_years do %>
-            <%= if assigns[:federal_state] && federal_state == @federal_state && assigns[:starts_on_day] && assigns[:ends_on_day] && @starts_on_day.slug == Integer.to_string(year)<>"-01-01" && @ends_on_day.slug == Integer.to_string(year)<>"-12-31" do %>
+            <%= if assigns[:federal_state] && federal_state == @federal_state && assigns[:starts_on] && assigns[:ends_on] && @starts_on == Integer.to_string(year)<>"-01-01" && @ends_on == Integer.to_string(year)<>"-12-31" do %>
               <%= year %>
             <% else %>
               <a href="/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31"><%= year %></a>
