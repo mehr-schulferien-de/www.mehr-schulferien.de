@@ -22,9 +22,14 @@ defmodule MehrSchulferienWeb.FederalStateController do
     federal_states = Locations.list_federal_states
     country = Locations.get_country!(federal_state.country_id)
 
+    starts_on_day = Timetables.get_day!(starts_on)
+    ends_on_day = Timetables.get_day!(ends_on)
+
     render(conn, "show.html", federal_state: federal_state,
                               federal_states: federal_states,
-                              country: country)
+                              country: country,
+                              starts_on_day: starts_on_day,
+                              ends_on_day: ends_on_day)
   end
 
   # Redirect requests for years to the correct full date.
