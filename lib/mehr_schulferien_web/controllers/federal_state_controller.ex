@@ -5,7 +5,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   alias MehrSchulferien.Locations.FederalState
   alias MehrSchulferien.Timetables
   alias MehrSchulferien.Repo
-  import Ecto.Query
+  import Ecto.Query, only: [from: 2]
 
   def show(conn, %{"id" => id}) do
     federal_state = Locations.get_federal_state!(id)
@@ -17,7 +17,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               country: country)
   end
 
-  def show(conn, %{"federal_state_id" => federal_state_id, "starts_on" => starts_on, "ends_on" => ends_on}) do
+  def show(conn, %{"federal_state_id" => federal_state_id,
+                   "starts_on" => starts_on,
+                   "ends_on" => ends_on}) do
     federal_state = Locations.get_federal_state!(federal_state_id)
     federal_states = Locations.list_federal_states
     country = Locations.get_country!(federal_state.country_id)
@@ -36,7 +38,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
   # Example: /federal_states/bayern/2018 will become
   #          /federal_states/bayern/2018-01-01/2018-12-31
   #
-  def show(conn, %{"federal_state_id" => federal_state_id, "year" => year}) do
+  def show(conn, %{"federal_state_id" => federal_state_id,
+                   "year" => year}) do
     federal_state = Locations.get_federal_state!(federal_state_id)
 
     query = from y in Timetables.Year, where: y.slug == ^year

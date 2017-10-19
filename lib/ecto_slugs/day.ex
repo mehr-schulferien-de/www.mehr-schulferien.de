@@ -5,7 +5,8 @@ defmodule MehrSchulferien.Timetables.DaySlug do
   alias MehrSchulferien.Timetables.Year
   alias MehrSchulferien.Timetables.Month
   alias MehrSchulferien.Repo
-  import Ecto.Query
+  import Ecto.Query, only: [from: 2]
+
 
   # slug: yyyy-mm-dd
   #

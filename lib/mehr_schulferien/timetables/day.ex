@@ -1,7 +1,7 @@
 defmodule MehrSchulferien.Timetables.Day do
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
+  import Ecto.Query, only: [from: 2]
   alias MehrSchulferien.Timetables.Day
   alias MehrSchulferien.Timetables.Month
   alias MehrSchulferien.Timetables.Year

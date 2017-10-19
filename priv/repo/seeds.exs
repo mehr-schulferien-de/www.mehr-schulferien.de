@@ -12,7 +12,7 @@
 
 alias MehrSchulferien.Locations
 alias MehrSchulferien.Timetables
-import Ecto.Query
+import Ecto.Query, only: [from: 2]
 
 # Locations
 #

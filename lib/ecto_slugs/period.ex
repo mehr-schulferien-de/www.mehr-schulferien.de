@@ -4,7 +4,7 @@ defmodule MehrSchulferien.Timetables.PeriodSlug do
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Timetables.Period
   alias MehrSchulferien.Repo
-  import Ecto.Query
+  import Ecto.Query, only: [from: 2]
 
 
   def set_slug(changeset) do
