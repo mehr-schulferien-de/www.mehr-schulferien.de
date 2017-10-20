@@ -1,6 +1,13 @@
-<ol class="breadcrumb">
-  <li><a href="/countries/<%= @country.slug %>">Deutschland</a></li>
-  <li class="active"><a href="/federal_states/<%= @federal_state.slug %>"><%= @federal_state.name %></a></li>
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "Deutschland", to: country_path(@conn, :show, "deutschland") %></li>
+  <li class="active"><%= link @federal_state.name, to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "DE", to: country_path(@conn, :show, "deutschland") %></li>
+  <li class="active"><%= link Formatter.truncate(@federal_state.name, max_length: 20), to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
 </ol>
 
 <div class="page-header">
