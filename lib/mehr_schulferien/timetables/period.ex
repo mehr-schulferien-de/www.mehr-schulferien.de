@@ -18,6 +18,7 @@ defmodule MehrSchulferien.Timetables.Period do
     field :slug, PeriodSlug.Type
     field :source, :string
     field :starts_on, :date
+    field :length, :integer
     belongs_to :category, Timetables.Category
     belongs_to :school, Locations.School
     belongs_to :city, Locations.City
@@ -42,6 +43,7 @@ defmodule MehrSchulferien.Timetables.Period do
     |> validate_starts_on_is_before_or_equal_ends_on
     |> unique_constraint(:slug)
     |> assoc_constraint(:category)
+    |> set_length
   end
 
   defp validate_one_of_present(changeset, fields) do
@@ -82,5 +84,13 @@ defmodule MehrSchulferien.Timetables.Period do
                   _ -> changeset
                 end
     end
+  end
+
+  defp set_length(changeset) do
+    starts_on = get_field(changeset, :starts_on)
+    ends_on = get_field(changeset, :ends_on)
+    length = Date.diff(ends_on, starts_on)
+
+    put_change(changeset, :length, length)
   end
 end

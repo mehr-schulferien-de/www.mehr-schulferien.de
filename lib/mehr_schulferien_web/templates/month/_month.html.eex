@@ -38,6 +38,24 @@
         <% end %>
       </tbody>
     </table>
-
+    <% school_holidays = CalendarHelper.school_holidays(month) %>
+    <%= if length(school_holidays) > 0 do %>
+      <h3>Schulferien</h3>
+      <dl>
+        <%= for {name, starts_on, ends_on, length, federal_state_name, federal_state_slug} <- CalendarHelper.school_holidays(month) do %>
+          <dt><%= name %></dt>
+          <dd>
+            <%= starts_on.day %>.<%= starts_on.month %>.
+            <%= if length == 1 do %>
+              <span class="label label-success">1 Tag</span>
+            <% else %>
+             <%= ends_on.day %>.<%= ends_on.month %>.
+             <span class="label label-success"><%= length %> Tage</span>
+            <% end %>
+          </dd>
+        <% end %>
+      </dl>
+    <% end %>
+  </ul>
   </div>
 </div>

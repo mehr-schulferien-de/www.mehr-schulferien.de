@@ -7,7 +7,7 @@ defmodule MehrSchulferienWeb.CalendarHelper do
       target = :student
     end
 
-    categories = for {_, %MehrSchulferien.Timetables.Category{name: name},
+    categories = for {_period, %MehrSchulferien.Timetables.Category{name: name},
          _country, _federal_state, _city, _school} <- day.periods do
       name
     end
@@ -29,5 +29,18 @@ defmodule MehrSchulferienWeb.CalendarHelper do
       {_, _, _, _, _} -> ""
     end
   end
-  
+
+  def school_holidays(month) do
+    for %MehrSchulferien.Timetables.Day{periods: periods} <- month do
+      for {%MehrSchulferien.Timetables.Period{name: name, starts_on: starts_on,
+           ends_on: ends_on, length: length},
+           %MehrSchulferien.Timetables.Category{name: "Schulferien"},
+           _country,
+           %MehrSchulferien.Locations.FederalState{name: federal_state_name,
+           slug: federal_state_slug}, _city, _school} <- periods do
+         {name, starts_on, ends_on, length, federal_state_name, federal_state_slug}
+      end
+    end |> List.flatten |> Enum.uniq
+  end
+
 end

@@ -8,6 +8,7 @@ defmodule MehrSchulferien.Repo.Migrations.CreatePeriods do
       add :name, :string
       add :slug, :string
       add :source, :string
+      add :length, :integer
       add :for_anybody, :boolean, default: false, null: false
       add :for_students, :boolean, default: false, null: false
       add :needs_exeat, :boolean, default: false, null: false
