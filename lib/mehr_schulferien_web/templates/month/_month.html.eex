@@ -1,0 +1,43 @@
+<% first_day_of_month = List.first(@month) %>
+<div class="row">
+  <div class="col-xs-8">
+    <h3><%= Enum.at(["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"], String.to_integer(Enum.at(String.split(first_day_of_month.slug,"-"),1)) - 1) %></h3>
+  </div>
+  <div class="col-xs-4">
+    <h3 class="text-muted"><%= first_day_of_month.value.year %></h3>
+  </div>
+</div>
+<% month = Formatter.fill_up_month_to_have_complete_weeks(@month) %>
+<div class="row">
+  <div class="col-xs-12">
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>Mo.</th>
+          <th>Di.</th>
+          <th>Mi.</th>
+          <th>Do.</th>
+          <th>Fr.</th>
+          <th class="active">Sa.</th>
+          <th class="active">So.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for week <- Enum.chunk_every(month, 7) do %>
+          <tr>
+            <%= for day <- week do %>
+              <%= if day == nil do %>
+                <td></td>
+              <% else %>
+                <td class="text-right">
+                  <%= day.day_of_month %>.
+                </td>
+              <% end %>
+            <% end %>
+         </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+  </div>
+</div>

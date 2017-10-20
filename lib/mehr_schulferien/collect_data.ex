@@ -70,6 +70,7 @@ defmodule MehrSchulferien.CollectData do
      |> Enum.group_by(fn {date, _, _, _, _, _, _} -> date end, fn {_, period, category, country, federal_state, city, school} -> {period, category, country, federal_state, city, school} end)
      |> Enum.map(fn {date, periods} -> date
        |> Map.put(:periods, Enum.reject(periods, fn(x) -> x == {nil, nil, nil, nil, nil, nil} end)) end)
+     |> Enum.sort_by(fn x -> x.slug end)
   end
 
   def test_foobar do

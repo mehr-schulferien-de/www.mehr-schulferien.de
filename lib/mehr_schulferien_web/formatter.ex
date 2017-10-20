@@ -56,4 +56,36 @@ defmodule MehrSchulferienWeb.Formatter do
                Integer.to_string(ends_on.year)
     end
   end
+
+  def fill_up_month_to_have_complete_weeks(days) do
+    # Fill days with empty elements for the calendar blanks in
+    # the first and last line of it.
+    #
+    head_fill = case List.first(days).weekday do
+      1 -> nil
+      2 -> [nil]
+      3 -> [nil,nil]
+      4 -> [nil,nil,nil]
+      5 -> [nil,nil,nil,nil]
+      6 -> [nil,nil,nil,nil,nil]
+      7 -> [nil,nil,nil,nil,nil,nil]
+    end
+
+    tail_fill = case List.last(days).weekday do
+      7 -> nil
+      6 -> [nil]
+      5 -> [nil,nil]
+      4 -> [nil,nil,nil]
+      3 -> [nil,nil,nil,nil]
+      2 -> [nil,nil,nil,nil,nil]
+      1 -> [nil,nil,nil,nil,nil,nil]
+    end
+
+    days = case {head_fill, tail_fill} do
+      {nil, nil} -> days
+      {nil, _} -> Enum.concat(days, tail_fill)
+      {_, nil} -> Enum.concat(head_fill, days)
+      {_, _} -> Enum.concat(Enum.concat(head_fill, days), tail_fill)
+    end
+  end
 end
