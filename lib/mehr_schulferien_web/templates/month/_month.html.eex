@@ -29,7 +29,7 @@
               <%= if day == nil do %>
                 <td></td>
               <% else %>
-                <td class="text-right">
+                <td class="text-right <%= CalendarHelper.css_class(day, target: :student) %>">
                   <%= day.day_of_month %>.
                 </td>
               <% end %>
