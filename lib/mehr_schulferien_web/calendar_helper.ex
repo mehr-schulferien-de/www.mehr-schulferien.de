@@ -12,9 +12,14 @@ defmodule MehrSchulferienWeb.CalendarHelper do
       name
     end
 
-    css_class = case {
+    css_class_for_categories(categories)
+  end
+
+
+  def css_class_for_categories(categories) do
+    case {
            Enum.member?(categories, "Wochenende"),
-           Enum.member?(categories, "Schulferien"),
+           Enum.member?(categories, "Schulferien") or Enum.member?(categories, "Schulfrei"),
            Enum.member?(categories, "Gesetzlicher Feiertag"),
            Enum.member?(categories, "Beweglicher Ferientag"),
            Enum.member?(categories, "Religiöser Feiertag")
@@ -26,21 +31,27 @@ defmodule MehrSchulferienWeb.CalendarHelper do
       {_, true, _, _, _} -> "success"
       {_, _, _, _, true} -> "danger"
       {_, _, _, true, _} -> "warning"
-      {_, _, _, _, _} -> ""
+      _ -> ""
     end
   end
 
-  def school_holidays(month) do
+  def filtered_periods(month, categories) do
+    for category <- categories do
+      {category, filter_periods(month, category.name)}
+    end |> Enum.reject(fn({_category, x}) -> x == [] end)
+  end
+
+  def filter_periods(month, category_name) do
+    css_class = css_class_for_categories([category_name])
+
     for %MehrSchulferien.Timetables.Day{periods: periods} <- month do
-      for {%MehrSchulferien.Timetables.Period{name: name, starts_on: starts_on,
-           ends_on: ends_on, length: length},
-           %MehrSchulferien.Timetables.Category{name: "Schulferien"},
-           _country,
-           %MehrSchulferien.Locations.FederalState{name: federal_state_name,
-           slug: federal_state_slug}, _city, _school} <- periods do
-         {name, starts_on, ends_on, length, federal_state_name, federal_state_slug}
+      for {%MehrSchulferien.Timetables.Period{name: name, starts_on: starts_on, ends_on: ends_on, length: length},
+           %MehrSchulferien.Timetables.Category{name: ^category_name},
+           country, federal_state, city, school} <- periods do
+
+         location = List.first([country, federal_state, city, school] |> Enum.reject(&is_nil/1))
+         {name, starts_on, ends_on, length, location, css_class}
       end
     end |> List.flatten |> Enum.uniq
   end
-
 end

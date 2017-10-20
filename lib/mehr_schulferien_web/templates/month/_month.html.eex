@@ -38,24 +38,31 @@
         <% end %>
       </tbody>
     </table>
-    <% school_holidays = CalendarHelper.school_holidays(month) %>
-    <%= if length(school_holidays) > 0 do %>
-      <h3>Schulferien</h3>
-      <dl>
-        <%= for {name, starts_on, ends_on, length, federal_state_name, federal_state_slug} <- CalendarHelper.school_holidays(month) do %>
-          <dt><%= name %></dt>
-          <dd>
-            <%= starts_on.day %>.<%= starts_on.month %>.
-            <%= if length == 1 do %>
-              <span class="label label-success">1 Tag</span>
-            <% else %>
-             <%= ends_on.day %>.<%= ends_on.month %>.
-             <span class="label label-success"><%= length %> Tage</span>
-            <% end %>
-          </dd>
+
+    <% filtered_periods = CalendarHelper.filtered_periods(month, @categories) %>
+
+    <%= for columns <- Enum.chunk_every(filtered_periods,2, 2, [nil]) do %>
+      <div class="row">
+        <%= for {category, periods} <- columns do %>
+          <div class="col-xs-<%= round (12 / length(columns |> Enum.reject(fn(x) -> x == nil end))) %>">
+            <h4><%= category.name_plural %></h4>
+            <dl>
+              <%= for {name, starts_on, ends_on, length, location, css_class} <- periods do %>
+                <dt><%= name %></dt>
+                <dd>
+                  <%= starts_on.day %>.<%= starts_on.month %>.
+                  <%= if length == 1 do %>
+                    <span class="label label-<%= css_class %>">1 Tag</span>
+                  <% else %>
+                   - <%= ends_on.day %>.<%= ends_on.month %>.
+                   <span class="label label-<%= css_class %>"><%= length %> Tage</span>
+                  <% end %>
+                </dd>
+              <% end %>
+            </dl>
+          </div>
         <% end %>
-      </dl>
+      </div>
     <% end %>
-  </ul>
   </div>
 </div>

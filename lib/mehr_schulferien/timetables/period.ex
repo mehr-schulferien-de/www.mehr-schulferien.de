@@ -89,7 +89,7 @@ defmodule MehrSchulferien.Timetables.Period do
   defp set_length(changeset) do
     starts_on = get_field(changeset, :starts_on)
     ends_on = get_field(changeset, :ends_on)
-    length = Date.diff(ends_on, starts_on)
+    length = Date.diff(ends_on, starts_on) + 1
 
     put_change(changeset, :length, length)
   end

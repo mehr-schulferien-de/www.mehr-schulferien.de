@@ -18,6 +18,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     {starts_on, ends_on} = CollectData.ramp_up_to_full_months(starts_on, ends_on)
 
+    query = from c in Timetables.Category, where: c.for_students == true and
+                                           c.name != "Wochenende"
+    categories = Repo.all(query)
+
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
 
@@ -26,7 +30,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
-                              days: days)
+                              days: days,
+                              categories: categories)
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id,
@@ -43,6 +48,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     {starts_on, ends_on} = CollectData.ramp_up_to_full_months(starts_on, ends_on)
 
+    query = from c in Timetables.Category, where: c.for_students == true and
+                                           "Wochenende" != c.name
+    categories = Repo.all(query)
+
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
 
@@ -51,7 +60,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
-                              days: days)
+                              days: days,
+                              categories: categories)
   end
 
   # Redirect requests for years to the correct full date.
