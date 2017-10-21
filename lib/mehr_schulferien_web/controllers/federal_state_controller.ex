@@ -26,7 +26,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               ends_on: ends_on,
                               days: days,
                               categories: categories,
-                              religion_categories: religion_categories)
+                              religion_categories: religion_categories,
+                              chosen_religion_categories: [])
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id,
@@ -50,7 +51,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               ends_on: ends_on,
                               days: days,
                               categories: categories,
-                              religion_categories: religion_categories)
+                              religion_categories: religion_categories,
+                              chosen_religion_categories: additional_categories)
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id,
@@ -71,7 +73,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               ends_on: ends_on,
                               days: days,
                               categories: categories,
-                              religion_categories: religion_categories)
+                              religion_categories: religion_categories,
+                              chosen_religion_categories: [])
   end
 
   # Redirect requests for years to the correct full date.
