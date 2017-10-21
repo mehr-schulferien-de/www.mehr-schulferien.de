@@ -114,7 +114,7 @@ for name <- category_names do
   Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: false, for_students: true, for_anybody: false, is_a_religion: false})
 end
 
-category_names = [{"Islamischer Feiertag", "Islamische Feiertage"}, {"Jüdischer Feiertag", "Jüdische Feiertage"}, {"Griechisch-Orthodoxer Feiertag", "Grieschisch-Orthodoxe Feiertage"}, {"Russisch-Orthodoxer Feiertag", "Russisch-Orthodoxe Feiertage"} ]
+category_names = [{"Islamischer Feiertag", "Islamische Feiertage"}, {"Jüdischer Feiertag", "Jüdische Feiertage"}, {"Griechisch-Orthodoxer Feiertag", "Griechisch-Orthodoxe Feiertage"}, {"Russisch-Orthodoxer Feiertag", "Russisch-Orthodoxe Feiertage"} ]
 for name <- category_names do
   {singular, plural} = name
   Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: true, for_students: true, for_anybody: false, is_a_religion: true})
