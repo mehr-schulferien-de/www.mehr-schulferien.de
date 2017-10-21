@@ -40,6 +40,14 @@ defmodule MehrSchulferien.CollectData do
      end
      category_ids = for %MehrSchulferien.Timetables.Category{id: id} <- categories, do: id
 
+     if opts[:additional_categories] do
+       additional_categories = opts[:additional_categories]
+     else
+       additional_categories = []
+     end
+     additional_categories_ids = for %MehrSchulferien.Timetables.Category{id: id} <- additional_categories, do: id
+     category_ids = category_ids ++ additional_categories_ids
+
      query = from(
                days in Day,
                left_join: slots in Slot,

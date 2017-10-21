@@ -22,7 +22,8 @@ defmodule MehrSchulferienWeb.CalendarHelper do
            Enum.member?(categories, "Schulferien") or Enum.member?(categories, "Schulfrei"),
            Enum.member?(categories, "Gesetzlicher Feiertag"),
            Enum.member?(categories, "Beweglicher Ferientag"),
-           Enum.member?(categories, "Religiöser Feiertag")
+           Enum.member?(categories, "Jüdischer Feiertag") or Enum.member?(categories, "Islamischer Feiertag") or
+           Enum.member?(categories, "Griechisch-Orthodoxer Feiertag") or Enum.member?(categories, "Russisch-Orthodoxer Feiertag") 
          } do
       # I just use the default TwitterBootstrap class names. No judgement.
       #

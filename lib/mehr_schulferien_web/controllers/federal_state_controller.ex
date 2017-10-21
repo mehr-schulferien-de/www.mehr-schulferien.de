@@ -14,6 +14,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {federal_state, federal_states, country} = get_locations(id)
     {starts_on, ends_on} = get_dates()
     categories = get_categories()
+    religion_categories = get_religion_categories()
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -24,7 +25,32 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
-                              categories: categories)
+                              categories: categories,
+                              religion_categories: religion_categories)
+  end
+
+  def show(conn, %{"federal_state_id" => federal_state_id,
+                   "starts_on" => starts_on,
+                   "ends_on" => ends_on,
+                   "additional_categories" => additional_categories}) do
+    {federal_state, federal_states, country} = get_locations(federal_state_id)
+    {starts_on, ends_on} = get_dates(starts_on, ends_on)
+    categories = get_categories()
+    religion_categories = get_religion_categories()
+    additional_categories = get_additional_categories(additional_categories)
+
+    days = CollectData.list_days([country, federal_state],
+                                 starts_on: starts_on, ends_on: ends_on,
+                                 additional_categories: additional_categories)
+
+    render(conn, "show.html", federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories,
+                              religion_categories: religion_categories)
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id,
@@ -33,6 +59,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {federal_state, federal_states, country} = get_locations(federal_state_id)
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
     categories = get_categories()
+    religion_categories = get_religion_categories()
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -43,7 +70,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
-                              categories: categories)
+                              categories: categories,
+                              religion_categories: religion_categories)
   end
 
   # Redirect requests for years to the correct full date.
@@ -93,8 +121,24 @@ defmodule MehrSchulferienWeb.FederalStateController do
   end
 
   defp get_categories() do
-    query = from c in Timetables.Category, where: c.for_students == true and
-                                           "Wochenende" != c.name
+    query = from c in Category, where: c.for_students == true and
+                                       "Wochenende" != c.name
+    Repo.all(query)
+  end
+
+  defp get_religion_categories() do
+    query = from c in Category, where: c.for_students == true and
+                                       c.is_a_religion == true
+    Repo.all(query)
+  end
+
+  defp get_additional_categories(additional_categories) do
+    additional_categories = String.split(additional_categories, ",")
+
+    query = from(
+                 categories in Category,
+                 where: categories.slug in ^additional_categories
+                )
     Repo.all(query)
   end
 

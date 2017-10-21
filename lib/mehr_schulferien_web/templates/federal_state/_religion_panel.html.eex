@@ -1,0 +1,16 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Religionen</h3>
+  </div>
+  <div class="panel-body">
+    <p>Feiertage der folgenden Religionen können ebenfalls angezeigt werden:</p>
+    <% list_of_all_religion_slugs = for %MehrSchulferien.Timetables.Category{slug: slug} <- @religion_categories, do: slug %>
+    <ul>
+      <%= for religion_category <- @religion_categories do %>
+        <li><a href="/federal_states/<%= @federal_state.slug %>/<%= @starts_on %>/<%= @ends_on %>?<%= URI.encode_query("additional_categories": religion_category.slug) %>"><%= religion_category.name_plural %></li>
+      <% end %>
+      <li><a href="/federal_states/<%= @federal_state.slug %>/<%= @starts_on %>/<%= @ends_on %>?<%= URI.encode_query("additional_categories": Enum.join(list_of_all_religion_slugs, ",")) %>">Alle</li>
+      <li><a href="/federal_states/<%= @federal_state.slug %>/<%= @starts_on %>/<%= @ends_on %>">Keine</li>
+    </ul>
+  </div>
+</div>
