@@ -3,24 +3,17 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Locations.FederalState
+  alias MehrSchulferien.Locations.Country
   alias MehrSchulferien.Timetables
+  alias MehrSchulferien.Timetables.Category
   alias MehrSchulferien.Repo
   alias MehrSchulferien.CollectData
   import Ecto.Query, only: [from: 2]
 
   def show(conn, %{"id" => id}) do
-    federal_state = Locations.get_federal_state!(id)
-    federal_states = Locations.list_federal_states
-    country = Locations.get_country!(federal_state.country_id)
-
-    {:ok, starts_on} = Date.from_erl({Date.utc_today.year, Date.utc_today.month, 1})
-    ends_on = Date.add(starts_on, 364)
-
-    {starts_on, ends_on} = CollectData.ramp_up_to_full_months(starts_on, ends_on)
-
-    query = from c in Timetables.Category, where: c.for_students == true and
-                                           c.name != "Wochenende"
-    categories = Repo.all(query)
+    {federal_state, federal_states, country} = get_locations(id)
+    {starts_on, ends_on} = get_dates()
+    categories = get_categories()
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -37,20 +30,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
   def show(conn, %{"federal_state_id" => federal_state_id,
                    "starts_on" => starts_on,
                    "ends_on" => ends_on}) do
-    federal_state = Locations.get_federal_state!(federal_state_id)
-    federal_states = Locations.list_federal_states
-    country = Locations.get_country!(federal_state.country_id)
-
-    {:ok, starts_on} = Ecto.Date.cast(starts_on)
-    {:ok, ends_on} = Ecto.Date.cast(ends_on)
-    {:ok, starts_on} = Date.from_erl(Ecto.Date.to_erl(starts_on))
-    {:ok, ends_on} = Date.from_erl(Ecto.Date.to_erl(ends_on))
-
-    {starts_on, ends_on} = CollectData.ramp_up_to_full_months(starts_on, ends_on)
-
-    query = from c in Timetables.Category, where: c.for_students == true and
-                                           "Wochenende" != c.name
-    categories = Repo.all(query)
+    {federal_state, federal_states, country} = get_locations(federal_state_id)
+    {starts_on, ends_on} = get_dates(starts_on, ends_on)
+    categories = get_categories()
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -87,6 +69,33 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               year.slug <>
                               "-12-31"
     end
+  end
+
+  defp get_locations(federal_state_id) do
+    query = from fs in FederalState, where: fs.slug == ^federal_state_id,
+                                     preload: [:country]
+    federal_state = Repo.one(query)
+    federal_states = Locations.list_federal_states
+    {federal_state, federal_states, federal_state.country}
+  end
+
+  defp get_dates(starts_on \\ nil, ends_on \\ nil) do
+    case {starts_on, ends_on} do
+      {nil, nil} -> {:ok, starts_on} = Date.from_erl({Date.utc_today.year, Date.utc_today.month, 1})
+                    ends_on = Date.add(starts_on, 364)
+      {starts_on, ends_on} -> {:ok, starts_on} = Ecto.Date.cast(starts_on)
+                              {:ok, ends_on} = Ecto.Date.cast(ends_on)
+                              {:ok, starts_on} = Date.from_erl(Ecto.Date.to_erl(starts_on))
+                              {:ok, ends_on} = Date.from_erl(Ecto.Date.to_erl(ends_on))
+    end
+
+    CollectData.ramp_up_to_full_months(starts_on, ends_on)
+  end
+
+  defp get_categories() do
+    query = from c in Timetables.Category, where: c.for_students == true and
+                                           "Wochenende" != c.name
+    Repo.all(query)
   end
 
 end
