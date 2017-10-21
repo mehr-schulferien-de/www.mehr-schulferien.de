@@ -23,7 +23,7 @@ defmodule MehrSchulferienWeb.CalendarHelper do
            Enum.member?(categories, "Gesetzlicher Feiertag"),
            Enum.member?(categories, "Beweglicher Ferientag"),
            Enum.member?(categories, "Jüdischer Feiertag") or Enum.member?(categories, "Islamischer Feiertag") or
-           Enum.member?(categories, "Griechisch-Orthodoxer Feiertag") or Enum.member?(categories, "Russisch-Orthodoxer Feiertag") 
+           Enum.member?(categories, "Griechisch-Orthodoxer Feiertag") or Enum.member?(categories, "Russisch-Orthodoxer Feiertag")
          } do
       # I just use the default TwitterBootstrap class names. No judgement.
       #
@@ -55,4 +55,15 @@ defmodule MehrSchulferienWeb.CalendarHelper do
       end
     end |> List.flatten |> Enum.uniq
   end
+
+  def starts_in_current_month?(starts_on) do
+    current_month = Date.utc_today.month
+    current_year = Date.utc_today.year
+
+    case {starts_on.month, starts_on.year} do
+      {^current_month, ^current_year} -> true
+      _ -> false
+    end
+  end
+
 end

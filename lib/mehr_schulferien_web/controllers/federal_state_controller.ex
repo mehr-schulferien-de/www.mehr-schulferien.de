@@ -10,6 +10,29 @@ defmodule MehrSchulferienWeb.FederalStateController do
   alias MehrSchulferien.CollectData
   import Ecto.Query, only: [from: 2]
 
+
+  def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
+    {federal_state, federal_states, country} = get_locations(id)
+    {starts_on, ends_on} = get_dates()
+    categories = get_categories()
+    religion_categories = get_religion_categories()
+    additional_categories = get_additional_categories(additional_categories)
+
+    days = CollectData.list_days([country, federal_state],
+                                 starts_on: starts_on, ends_on: ends_on,
+                                 additional_categories: additional_categories)
+
+    render(conn, "show.html", federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories,
+                              religion_categories: religion_categories,
+                              chosen_religion_categories: additional_categories)
+  end
+
   def show(conn, %{"id" => id}) do
     {federal_state, federal_states, country} = get_locations(id)
     {starts_on, ends_on} = get_dates()

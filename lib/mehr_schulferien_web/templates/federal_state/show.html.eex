@@ -38,7 +38,7 @@
     </div>
   </div>
   <div class="col-sm-3">
-    <%= render MehrSchulferienWeb.FederalStateView, "_religion_panel.html", federal_state: @federal_state, starts_on: @starts_on, ends_on: @ends_on, religion_categories: @religion_categories, chosen_religion_categories: @chosen_religion_categories %>
+    <%= render MehrSchulferienWeb.FederalStateView, "_religion_panel.html", assigns %>
     <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_state: @federal_state, federal_states: @federal_states, starts_on: @starts_on, ends_on: @ends_on %>
   </div>
 </div>
