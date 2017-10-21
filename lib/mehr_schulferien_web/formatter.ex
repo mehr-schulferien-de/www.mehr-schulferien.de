@@ -1,4 +1,8 @@
 defmodule MehrSchulferienWeb.Formatter do
+  alias MehrSchulferien.Repo
+  alias MehrSchulferien.Timetables.Day
+
+  import Ecto.Query
 
   def truncate(text, opts \\ []) do
     max_length  = opts[:max_length] || 10
@@ -16,9 +20,22 @@ defmodule MehrSchulferienWeb.Formatter do
     end
   end
 
-  def starts_to_ends_heading(starts_on, ends_on) do
+  def calendar_sub_heading(starts_on, ends_on) do
+    current_month = Date.utc_today.month
+    current_year = Date.utc_today.year
+
     case {starts_on.month, starts_on.year, ends_on.month, ends_on.year} do
       {1, x, 12, x} -> Integer.to_string(starts_on.year)
+      {current_month, current_year, month, year} ->
+                       query = from(
+                                    days in Day,
+                                    where: days.value >= ^starts_on and
+                                        days.value <= ^ends_on and
+                                        days.day_of_month == 1,
+                                    select: count("*")
+                                   )
+                       number_of_months = Repo.one(query)
+                       "Die nächsten " <> Integer.to_string(number_of_months) <> " Monate."
       _ -> three_letter_month(starts_on) <> Integer.to_string(starts_on.year) <> " - " <>
            three_letter_month(ends_on) <> Integer.to_string(ends_on.year)
     end

@@ -15,7 +15,7 @@
     <div class="col-md-8">
       <h1>
         <%= @federal_state.name %><br>
-        <small><%= Formatter.starts_to_ends_heading(@starts_on, @ends_on) %></small>
+        <small><%= Formatter.calendar_sub_heading(@starts_on, @ends_on) %></small>
       </h1>
     </div>
     <div class="col-md-4">
