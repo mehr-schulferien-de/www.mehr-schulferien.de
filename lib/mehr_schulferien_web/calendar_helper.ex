@@ -2,9 +2,9 @@ defmodule MehrSchulferienWeb.CalendarHelper do
 
   def css_class(day, opts \\ []) do
     if opts[:target] do
-      target = opts[:target]
+      _target = opts[:target]
     else
-      target = :student
+      _target = :student
     end
 
     categories = for {_period, %MehrSchulferien.Timetables.Category{name: name},
@@ -41,7 +41,7 @@ defmodule MehrSchulferienWeb.CalendarHelper do
     end |> Enum.reject(fn({_category, x}) -> x == [] end)
   end
 
-  def filter_periods(month, category_name) do
+  defp filter_periods(month, category_name) do
     css_class = css_class_for_categories([category_name])
 
     for %MehrSchulferien.Timetables.Day{periods: periods} <- month do
