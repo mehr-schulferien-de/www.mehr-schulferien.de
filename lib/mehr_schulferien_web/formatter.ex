@@ -35,7 +35,7 @@ defmodule MehrSchulferienWeb.Formatter do
                                     select: count("*")
                                    )
                        number_of_months = Repo.one(query)
-                       "Die nächsten " <> Integer.to_string(number_of_months) <> " Monate."
+                       "Die nächsten " <> Integer.to_string(number_of_months) <> " Monate"
       _ -> three_letter_month(starts_on) <> Integer.to_string(starts_on.year) <> " - " <>
            three_letter_month(ends_on) <> Integer.to_string(ends_on.year)
     end
@@ -45,8 +45,8 @@ defmodule MehrSchulferienWeb.Formatter do
     end |> Enum.join(", ")
 
     case categories do
-      [] -> heading
-      _ -> heading <> " (inkl. " <> categories_string <> ")"
+      [] -> heading <> "."
+      _ -> heading <> " (inkl. " <> categories_string <> ")."
     end
   end
 
