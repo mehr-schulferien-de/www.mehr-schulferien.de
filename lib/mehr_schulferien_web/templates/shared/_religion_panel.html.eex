@@ -1,3 +1,9 @@
+<% path = "federal_states" %>
+<% location = @federal_state %>
+<% if assigns[:school] do %>
+  <% path = "schools" %>
+  <% location = @school %>
+<% end %>
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Religionen</h3>
@@ -10,14 +16,14 @@
         <%= if assigns[:chosen_religion_categories] && Enum.member?(@chosen_religion_categories, religion_category) do %>
           <li><%= religion_category.name_plural %></li>
         <% else %>
-          <li><a href="/federal_states/<%= @federal_state.slug %><%= unless CalendarHelper.starts_in_current_month?(@starts_on) do %>/<%= @starts_on %>/<%= @ends_on %><% end %>?<%= URI.encode_query("additional_categories": religion_category.slug) %>"><%= religion_category.name_plural %></a></li>
+          <li><a href="/<%= path %>/<%= location.slug %><%= unless CalendarHelper.starts_in_current_month?(@starts_on) do %>/<%= @starts_on %>/<%= @ends_on %><% end %>?<%= URI.encode_query("additional_categories": religion_category.slug) %>"><%= religion_category.name_plural %></a></li>
         <% end %>
       <% end %>
       <%= unless assigns[:chosen_religion_categories] && length(@chosen_religion_categories) == length(@religion_categories) do %>
-      <li><a href="/federal_states/<%= @federal_state.slug %><%= unless CalendarHelper.starts_in_current_month?(@starts_on) do %>/<%= @starts_on %>/<%= @ends_on %><% end %>?<%= URI.encode_query("additional_categories": Enum.join(list_of_all_religion_slugs, ",")) %>">Alle</a></li>
+      <li><a href="/<%= path %>/<%= location.slug %><%= unless CalendarHelper.starts_in_current_month?(@starts_on) do %>/<%= @starts_on %>/<%= @ends_on %><% end %>?<%= URI.encode_query("additional_categories": Enum.join(list_of_all_religion_slugs, ",")) %>">Alle</a></li>
       <% end %>
       <%= if assigns[:chosen_religion_categories] && length(@chosen_religion_categories) > 0 do %>
-        <li><a href="/federal_states/<%= @federal_state.slug %><%= unless CalendarHelper.starts_in_current_month?(@starts_on) do %>/<%= @starts_on %>/<%= @ends_on %><% end %>">Keine</a></li>
+        <li><a href="/<%= path %>/<%= location.slug %><%= unless CalendarHelper.starts_in_current_month?(@starts_on) do %>/<%= @starts_on %>/<%= @ends_on %><% end %>">Keine</a></li>
       <% end %>
     </ul>
   </div>
