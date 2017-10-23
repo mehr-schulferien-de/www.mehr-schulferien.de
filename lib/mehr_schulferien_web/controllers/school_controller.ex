@@ -13,27 +13,29 @@ defmodule MehrSchulferienWeb.SchoolController do
   import Ecto.Query, only: [from: 2]
 
 
-  # def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
-  #   {federal_state, federal_states, country} = get_locations(id)
-  #   {starts_on, ends_on} = get_dates()
-  #   categories = get_categories()
-  #   religion_categories = get_religion_categories()
-  #   additional_categories = get_additional_categories(additional_categories)
-  #
-  #   days = CollectData.list_days([country, federal_state],
-  #                                starts_on: starts_on, ends_on: ends_on,
-  #                                additional_categories: additional_categories)
-  #
-  #   render(conn, "show.html", federal_state: federal_state,
-  #                             federal_states: federal_states,
-  #                             country: country,
-  #                             starts_on: starts_on,
-  #                             ends_on: ends_on,
-  #                             days: days,
-  #                             categories: categories,
-  #                             religion_categories: religion_categories,
-  #                             chosen_religion_categories: additional_categories)
-  # end
+  def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
+    {school, city, federal_state, federal_states, country} = get_locations(id)
+    {starts_on, ends_on} = get_dates()
+    categories = get_categories()
+    religion_categories = get_religion_categories()
+    additional_categories = get_additional_categories(additional_categories)
+
+    days = CollectData.list_days([country, federal_state, city, school],
+                                 starts_on: starts_on, ends_on: ends_on,
+                                 additional_categories: additional_categories)
+
+    render(conn, "show.html", school: school,
+                              city: city,
+                              federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories,
+                              religion_categories: religion_categories,
+                              chosen_religion_categories: additional_categories)
+  end
 
   def show(conn, %{"id" => id}) do
     {school, city, federal_state, federal_states, country} = get_locations(id)
@@ -57,77 +59,81 @@ defmodule MehrSchulferienWeb.SchoolController do
                               chosen_religion_categories: [])
   end
 
-  # def show(conn, %{"federal_state_id" => federal_state_id,
-  #                  "starts_on" => starts_on,
-  #                  "ends_on" => ends_on,
-  #                  "additional_categories" => additional_categories}) do
-  #   {federal_state, federal_states, country} = get_locations(federal_state_id)
-  #   {starts_on, ends_on} = get_dates(starts_on, ends_on)
-  #   categories = get_categories()
-  #   religion_categories = get_religion_categories()
-  #   additional_categories = get_additional_categories(additional_categories)
-  #
-  #   days = CollectData.list_days([country, federal_state],
-  #                                starts_on: starts_on, ends_on: ends_on,
-  #                                additional_categories: additional_categories)
-  #
-  #   render(conn, "show.html", federal_state: federal_state,
-  #                             federal_states: federal_states,
-  #                             country: country,
-  #                             starts_on: starts_on,
-  #                             ends_on: ends_on,
-  #                             days: days,
-  #                             categories: categories,
-  #                             religion_categories: religion_categories,
-  #                             chosen_religion_categories: additional_categories)
-  # end
-  #
-  # def show(conn, %{"federal_state_id" => federal_state_id,
-  #                  "starts_on" => starts_on,
-  #                  "ends_on" => ends_on}) do
-  #   {federal_state, federal_states, country} = get_locations(federal_state_id)
-  #   {starts_on, ends_on} = get_dates(starts_on, ends_on)
-  #   categories = get_categories()
-  #   religion_categories = get_religion_categories()
-  #
-  #   days = CollectData.list_days([country, federal_state],
-  #                                starts_on: starts_on, ends_on: ends_on)
-  #
-  #   render(conn, "show.html", federal_state: federal_state,
-  #                             federal_states: federal_states,
-  #                             country: country,
-  #                             starts_on: starts_on,
-  #                             ends_on: ends_on,
-  #                             days: days,
-  #                             categories: categories,
-  #                             religion_categories: religion_categories,
-  #                             chosen_religion_categories: [])
-  # end
-  #
-  # # Redirect requests for years to the correct full date.
-  # # Example: /federal_states/bayern/2018 will become
-  # #          /federal_states/bayern/2018-01-01/2018-12-31
-  # #
-  # def show(conn, %{"federal_state_id" => federal_state_id,
-  #                  "year" => year}) do
-  #   federal_state = Locations.get_federal_state!(federal_state_id)
-  #
-  #   query = from y in Timetables.Year, where: y.slug == ^year
-  #   year = Repo.one(query)
-  #
-  #   case year do
-  #     nil -> conn
-  #            |> put_status(:not_found)
-  #            |> render(MehrSchulferienWeb.ErrorView, "404.html")
-  #     _ -> redirect conn, to: "/federal_states/" <>
-  #                             federal_state.slug <>
-  #                             "/" <>
-  #                             year.slug <>
-  #                             "-01-01/" <>
-  #                             year.slug <>
-  #                             "-12-31"
-  #   end
-  # end
+  def show(conn, %{"school_id" => school_id,
+                   "starts_on" => starts_on,
+                   "ends_on" => ends_on,
+                   "additional_categories" => additional_categories}) do
+    {school, city, federal_state, federal_states, country} = get_locations(school_id)
+    {starts_on, ends_on} = get_dates(starts_on, ends_on)
+    categories = get_categories()
+    religion_categories = get_religion_categories()
+    additional_categories = get_additional_categories(additional_categories)
+
+    days = CollectData.list_days([country, federal_state, city, school],
+                                 starts_on: starts_on, ends_on: ends_on,
+                                 additional_categories: additional_categories)
+
+    render(conn, "show.html", school: school,
+                              city: city,
+                              federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories,
+                              religion_categories: religion_categories,
+                              chosen_religion_categories: [])
+  end
+
+  def show(conn, %{"school_id" => school_id,
+                   "starts_on" => starts_on,
+                   "ends_on" => ends_on}) do
+    {school, city, federal_state, federal_states, country} = get_locations(school_id)
+    {starts_on, ends_on} = get_dates(starts_on, ends_on)
+    categories = get_categories()
+    religion_categories = get_religion_categories()
+
+    days = CollectData.list_days([country, federal_state, city, school],
+                                 starts_on: starts_on, ends_on: ends_on)
+
+    render(conn, "show.html", school: school,
+                              city: city,
+                              federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories,
+                              religion_categories: religion_categories,
+                              chosen_religion_categories: [])
+  end
+
+  # Redirect requests for years to the correct full date.
+  # Example: /federal_states/bayern/2018 will become
+  #          /federal_states/bayern/2018-01-01/2018-12-31
+
+  def show(conn, %{"school_id" => school_id,
+                   "year" => year}) do
+    school = Locations.get_school!(school_id)
+
+    query = from y in Timetables.Year, where: y.slug == ^year
+    year = Repo.one(query)
+
+    case year do
+      nil -> conn
+             |> put_status(:not_found)
+             |> render(MehrSchulferienWeb.ErrorView, "404.html")
+      _ -> redirect conn, to: "/schools/" <>
+                              school.slug <>
+                              "/" <>
+                              year.slug <>
+                              "-01-01/" <>
+                              year.slug <>
+                              "-12-31"
+    end
+  end
 
   defp get_locations(school_id) do
     query = from schools in School, where: schools.slug == ^school_id,
