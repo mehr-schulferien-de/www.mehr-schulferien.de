@@ -13,6 +13,12 @@ defmodule MehrSchulferienWeb.CityController do
   alias MehrSchulferien.CollectData
   import Ecto.Query, only: [from: 2]
 
+  # List of cities of a FederalState
+  #
+  def index(conn, %{"federal_state_id" => federal_state_id}) do
+    {federal_state, cities} = get_cities(federal_state_id)
+    render(conn, "federal_state_cities_index.html", federal_state: federal_state, cities: cities)
+  end
 
   def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
     {city, federal_state, country} = get_locations(id)
@@ -174,6 +180,15 @@ defmodule MehrSchulferienWeb.CityController do
       nil -> 0
       x -> x.value
     end
+  end
+
+  defp get_cities(federal_state_id) do
+    federal_state = Locations.get_federal_state!(federal_state_id)
+    query = from cities in City,
+            where: cities.federal_state_id == ^federal_state.id,
+            order_by: [cities.name, cities.zip_code]
+    cities = Repo.all(query)
+    {federal_state, cities}
   end
 
 end
