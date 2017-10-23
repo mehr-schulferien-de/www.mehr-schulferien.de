@@ -165,4 +165,13 @@ defmodule MehrSchulferienWeb.CalendarHelper do
     end
   end
 
+  def location_path(location) do
+    case {location} do
+       {%MehrSchulferien.Locations.School{}} -> "schools"
+       {%MehrSchulferien.Locations.City{}} -> "cities"
+       {%MehrSchulferien.Locations.FederalState{}} -> "federal_states"
+        _ -> ""
+    end
+  end
+
 end
