@@ -17,10 +17,7 @@ defmodule MehrSchulferienWeb.SchoolController do
   def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
     {school, city, federal_state, country} = get_locations(id)
     {starts_on, ends_on} = get_dates()
-    categories = get_categories()
-    religion_categories = get_religion_categories()
     additional_categories = get_additional_categories(additional_categories)
-    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on,
@@ -33,20 +30,17 @@ defmodule MehrSchulferienWeb.SchoolController do
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
-                              categories: categories,
-                              religion_categories: religion_categories,
+                              categories: get_categories(),
+                              religion_categories: get_religion_categories(),
                               chosen_religion_categories: additional_categories,
-                              inset_day_quantity: inset_day_quantity,
-                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              inset_day_quantity: get_inset_day_quantity(federal_state, starts_on),
+                              count_inset_day_quantity: CollectData.count_inset_day_quantity(days),
                               nearby_schools: Locations.nearby_schools(school))
   end
 
   def show(conn, %{"id" => id}) do
     {school, city, federal_state, country} = get_locations(id)
     {starts_on, ends_on} = get_dates()
-    categories = get_categories()
-    religion_categories = get_religion_categories()
-    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -58,11 +52,11 @@ defmodule MehrSchulferienWeb.SchoolController do
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
-                              categories: categories,
-                              religion_categories: religion_categories,
+                              categories: get_categories(),
+                              religion_categories: get_religion_categories(),
                               chosen_religion_categories: [],
-                              inset_day_quantity: inset_day_quantity,
-                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              inset_day_quantity: get_inset_day_quantity(federal_state, starts_on),
+                              count_inset_day_quantity: CollectData.count_inset_day_quantity(days),
                               nearby_schools: Locations.nearby_schools(school))
   end
 
@@ -72,10 +66,7 @@ defmodule MehrSchulferienWeb.SchoolController do
                    "additional_categories" => additional_categories}) do
     {school, city, federal_state, country} = get_locations(school_id)
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
-    categories = get_categories()
-    religion_categories = get_religion_categories()
     additional_categories = get_additional_categories(additional_categories)
-    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on,
@@ -88,11 +79,11 @@ defmodule MehrSchulferienWeb.SchoolController do
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
-                              categories: categories,
-                              religion_categories: religion_categories,
+                              categories: get_categories(),
+                              religion_categories: get_religion_categories(),
                               chosen_religion_categories: additional_categories,
-                              inset_day_quantity: inset_day_quantity,
-                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              inset_day_quantity: get_inset_day_quantity(federal_state, starts_on),
+                              count_inset_day_quantity: CollectData.count_inset_day_quantity(days),
                               nearby_schools: Locations.nearby_schools(school))
   end
 
@@ -101,9 +92,6 @@ defmodule MehrSchulferienWeb.SchoolController do
                    "ends_on" => ends_on}) do
     {school, city, federal_state, country} = get_locations(school_id)
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
-    categories = get_categories()
-    religion_categories = get_religion_categories()
-    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -115,11 +103,11 @@ defmodule MehrSchulferienWeb.SchoolController do
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
-                              categories: categories,
-                              religion_categories: religion_categories,
+                              categories: get_categories(),
+                              religion_categories: get_religion_categories(),
                               chosen_religion_categories: [],
-                              inset_day_quantity: inset_day_quantity,
-                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              inset_day_quantity: get_inset_day_quantity(federal_state, starts_on),
+                              count_inset_day_quantity: CollectData.count_inset_day_quantity(days),
                               nearby_schools: Locations.nearby_schools(school))
   end
 
@@ -200,11 +188,4 @@ defmodule MehrSchulferienWeb.SchoolController do
     end
   end
 
-  defp count_inset_day_quantity(days) do
-    length(for day <- days do
-      for {_, %MehrSchulferien.Timetables.Category{name: "Beweglicher Ferientag"}, _, _, _, _} <- day.periods do
-        1
-      end
-    end |> List.flatten)
-  end
 end

@@ -107,4 +107,11 @@ defmodule MehrSchulferien.CollectData do
     {starts_on, ends_on}
   end
 
+  def count_inset_day_quantity(days) do
+    length(for day <- days do
+      for {_, %MehrSchulferien.Timetables.Category{name: "Beweglicher Ferientag"}, _, _, _, _} <- day.periods do
+        1
+      end
+    end |> List.flatten)
+  end
 end
