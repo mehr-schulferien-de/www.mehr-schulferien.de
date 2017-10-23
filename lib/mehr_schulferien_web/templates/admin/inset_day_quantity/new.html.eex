@@ -1,0 +1,5 @@
+<h2>New Inset day quantity</h2>
+
+<%= render "form.html", Map.put(assigns, :action, admin_inset_day_quantity_path(@conn, :create)) %>
+
+<span><%= link "Back", to: admin_inset_day_quantity_path(@conn, :index) %></span>

@@ -653,4 +653,100 @@ defmodule MehrSchulferien.Timetables do
   def change_slot(%Slot{} = slot) do
     Slot.changeset(slot, %{})
   end
+
+  alias MehrSchulferien.Timetables.InsetDayQuantity
+
+  @doc """
+  Returns the list of inset_day_quantities.
+
+  ## Examples
+
+      iex> list_inset_day_quantities()
+      [%InsetDayQuantity{}, ...]
+
+  """
+  def list_inset_day_quantities do
+    Repo.all(InsetDayQuantity)
+  end
+
+  @doc """
+  Gets a single inset_day_quantity.
+
+  Raises `Ecto.NoResultsError` if the Inset day quantity does not exist.
+
+  ## Examples
+
+      iex> get_inset_day_quantity!(123)
+      %InsetDayQuantity{}
+
+      iex> get_inset_day_quantity!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_inset_day_quantity!(id), do: Repo.get!(InsetDayQuantity, id)
+
+  @doc """
+  Creates a inset_day_quantity.
+
+  ## Examples
+
+      iex> create_inset_day_quantity(%{field: value})
+      {:ok, %InsetDayQuantity{}}
+
+      iex> create_inset_day_quantity(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_inset_day_quantity(attrs \\ %{}) do
+    %InsetDayQuantity{}
+    |> InsetDayQuantity.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a inset_day_quantity.
+
+  ## Examples
+
+      iex> update_inset_day_quantity(inset_day_quantity, %{field: new_value})
+      {:ok, %InsetDayQuantity{}}
+
+      iex> update_inset_day_quantity(inset_day_quantity, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_inset_day_quantity(%InsetDayQuantity{} = inset_day_quantity, attrs) do
+    inset_day_quantity
+    |> InsetDayQuantity.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a InsetDayQuantity.
+
+  ## Examples
+
+      iex> delete_inset_day_quantity(inset_day_quantity)
+      {:ok, %InsetDayQuantity{}}
+
+      iex> delete_inset_day_quantity(inset_day_quantity)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_inset_day_quantity(%InsetDayQuantity{} = inset_day_quantity) do
+    Repo.delete(inset_day_quantity)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking inset_day_quantity changes.
+
+  ## Examples
+
+      iex> change_inset_day_quantity(inset_day_quantity)
+      %Ecto.Changeset{source: %InsetDayQuantity{}}
+
+  """
+  def change_inset_day_quantity(%InsetDayQuantity{} = inset_day_quantity) do
+    InsetDayQuantity.changeset(inset_day_quantity, %{})
+  end
 end

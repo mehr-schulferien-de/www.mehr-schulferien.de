@@ -400,4 +400,64 @@ defmodule MehrSchulferien.TimetablesTest do
       assert %Ecto.Changeset{} = Timetables.change_slot(slot)
     end
   end
+
+  describe "inset_day_quantities" do
+    alias MehrSchulferien.Timetables.InsetDayQuantity
+
+    @valid_attrs %{value: 42}
+    @update_attrs %{value: 43}
+    @invalid_attrs %{value: nil}
+
+    def inset_day_quantity_fixture(attrs \\ %{}) do
+      {:ok, inset_day_quantity} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Timetables.create_inset_day_quantity()
+
+      inset_day_quantity
+    end
+
+    test "list_inset_day_quantities/0 returns all inset_day_quantities" do
+      inset_day_quantity = inset_day_quantity_fixture()
+      assert Timetables.list_inset_day_quantities() == [inset_day_quantity]
+    end
+
+    test "get_inset_day_quantity!/1 returns the inset_day_quantity with given id" do
+      inset_day_quantity = inset_day_quantity_fixture()
+      assert Timetables.get_inset_day_quantity!(inset_day_quantity.id) == inset_day_quantity
+    end
+
+    test "create_inset_day_quantity/1 with valid data creates a inset_day_quantity" do
+      assert {:ok, %InsetDayQuantity{} = inset_day_quantity} = Timetables.create_inset_day_quantity(@valid_attrs)
+      assert inset_day_quantity.value == 42
+    end
+
+    test "create_inset_day_quantity/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Timetables.create_inset_day_quantity(@invalid_attrs)
+    end
+
+    test "update_inset_day_quantity/2 with valid data updates the inset_day_quantity" do
+      inset_day_quantity = inset_day_quantity_fixture()
+      assert {:ok, inset_day_quantity} = Timetables.update_inset_day_quantity(inset_day_quantity, @update_attrs)
+      assert %InsetDayQuantity{} = inset_day_quantity
+      assert inset_day_quantity.value == 43
+    end
+
+    test "update_inset_day_quantity/2 with invalid data returns error changeset" do
+      inset_day_quantity = inset_day_quantity_fixture()
+      assert {:error, %Ecto.Changeset{}} = Timetables.update_inset_day_quantity(inset_day_quantity, @invalid_attrs)
+      assert inset_day_quantity == Timetables.get_inset_day_quantity!(inset_day_quantity.id)
+    end
+
+    test "delete_inset_day_quantity/1 deletes the inset_day_quantity" do
+      inset_day_quantity = inset_day_quantity_fixture()
+      assert {:ok, %InsetDayQuantity{}} = Timetables.delete_inset_day_quantity(inset_day_quantity)
+      assert_raise Ecto.NoResultsError, fn -> Timetables.get_inset_day_quantity!(inset_day_quantity.id) end
+    end
+
+    test "change_inset_day_quantity/1 returns a inset_day_quantity changeset" do
+      inset_day_quantity = inset_day_quantity_fixture()
+      assert %Ecto.Changeset{} = Timetables.change_inset_day_quantity(inset_day_quantity)
+    end
+  end
 end

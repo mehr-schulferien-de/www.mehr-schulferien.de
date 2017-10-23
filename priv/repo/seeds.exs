@@ -20,22 +20,22 @@ import Ecto.Query, only: [from: 2]
 
 # Create the federal states of Germany
 #
-{:ok, _badenwuerttemberg} = Locations.create_federal_state(%{name: "Baden-Württemberg", code: "BW", country_id: deutschland.id})
+{:ok, badenwuerttemberg} = Locations.create_federal_state(%{name: "Baden-Württemberg", code: "BW", country_id: deutschland.id})
 {:ok, _bayern} = Locations.create_federal_state(%{name: "Bayern", code: "BY", country_id: deutschland.id})
 {:ok, _berlin} = Locations.create_federal_state(%{name: "Berlin", code: "BE", country_id: deutschland.id})
-{:ok, _brandenburg} = Locations.create_federal_state(%{name: "Brandenburg", code: "BB", country_id: deutschland.id})
-{:ok, _bremen} = Locations.create_federal_state(%{name: "Bremen", code: "HB", country_id: deutschland.id})
+{:ok, brandenburg} = Locations.create_federal_state(%{name: "Brandenburg", code: "BB", country_id: deutschland.id})
+{:ok, bremen} = Locations.create_federal_state(%{name: "Bremen", code: "HB", country_id: deutschland.id})
 {:ok, _hamburg} = Locations.create_federal_state(%{name: "Hamburg", code: "HH", country_id: deutschland.id})
-{:ok, _hessen} = Locations.create_federal_state(%{name: "Hessen", code: "HE", country_id: deutschland.id})
-{:ok, _mecklenburgvorpommern} = Locations.create_federal_state(%{name: "Mecklenburg-Vorpommern", code: "MV", country_id: deutschland.id})
+{:ok, hessen} = Locations.create_federal_state(%{name: "Hessen", code: "HE", country_id: deutschland.id})
+{:ok, mecklenburgvorpommern} = Locations.create_federal_state(%{name: "Mecklenburg-Vorpommern", code: "MV", country_id: deutschland.id})
 {:ok, _niedersachsen} = Locations.create_federal_state(%{name: "Niedersachsen", code: "NI", country_id: deutschland.id})
-{:ok, _nordrheinwestfalen} = Locations.create_federal_state(%{name: "Nordrhein-Westfalen", code: "NW", country_id: deutschland.id})
-{:ok, _rheinlandpfalz} = Locations.create_federal_state(%{name: "Rheinland-Pfalz", code: "RP", country_id: deutschland.id})
-{:ok, _saarland} = Locations.create_federal_state(%{name: "Saarland", code: "SL", country_id: deutschland.id})
-{:ok, _sachsen} = Locations.create_federal_state(%{name: "Sachsen", code: "SN", country_id: deutschland.id})
-{:ok, _sachsenanhalt} = Locations.create_federal_state(%{name: "Sachsen-Anhalt", code: "ST", country_id: deutschland.id})
-{:ok, _schleswigholstein} = Locations.create_federal_state(%{name: "Schleswig-Holstein", code: "SH", country_id: deutschland.id})
-{:ok, _thueringen} = Locations.create_federal_state(%{name: "Thüringen", code: "TH", country_id: deutschland.id})
+{:ok, nordrheinwestfalen} = Locations.create_federal_state(%{name: "Nordrhein-Westfalen", code: "NW", country_id: deutschland.id})
+{:ok, rheinlandpfalz} = Locations.create_federal_state(%{name: "Rheinland-Pfalz", code: "RP", country_id: deutschland.id})
+{:ok, saarland} = Locations.create_federal_state(%{name: "Saarland", code: "SL", country_id: deutschland.id})
+{:ok, sachsen} = Locations.create_federal_state(%{name: "Sachsen", code: "SN", country_id: deutschland.id})
+{:ok, sachsenanhalt} = Locations.create_federal_state(%{name: "Sachsen-Anhalt", code: "ST", country_id: deutschland.id})
+{:ok, schleswigholstein} = Locations.create_federal_state(%{name: "Schleswig-Holstein", code: "SH", country_id: deutschland.id})
+{:ok, thueringen} = Locations.create_federal_state(%{name: "Thüringen", code: "TH", country_id: deutschland.id})
 
 # Import cities
 #
@@ -339,6 +339,29 @@ for holiday <- religious_holidays do
       category_id: category_id,
       source: "http://www.berlin.de/sen/bjf/service/kalender/ferien/artikel.420979.php"
     })
+  end
+end
+
+# Anzahl der beweglichen Ferientage
+#
+years = [
+        {2016, [{badenwuerttemberg, 3}, {brandenburg, 3}, {bremen, 1}, {hessen, 3}, {mecklenburgvorpommern, 3},
+        {nordrheinwestfalen, 3}, {rheinlandpfalz, 4}, {saarland, 2}, {sachsen, 2}, {sachsenanhalt, 1},
+        {schleswigholstein, 3}]},
+        {2017,[{badenwuerttemberg, 4}, {brandenburg, 3}, {hessen, 3}, {mecklenburgvorpommern, 3},
+        {nordrheinwestfalen, 4}, {rheinlandpfalz, 6}, {saarland, 2}, {schleswigholstein, 2},
+        {thueringen, 2}]},
+        {2018, [{badenwuerttemberg, 5}, {brandenburg, 2}, {hessen, 4}, {mecklenburgvorpommern, 3},
+        {nordrheinwestfalen, 4}, {rheinlandpfalz, 6}, {saarland, 3}, {sachsen, 1}, {sachsenanhalt, 1},
+        {schleswigholstein, 1}, {thueringen, 2}]},
+        {2019, [{badenwuerttemberg, 5}, {brandenburg, 2}, {hessen, 4}, {mecklenburgvorpommern, 3},
+        {nordrheinwestfalen, 4}, {rheinlandpfalz, 6}, {saarland, 1}, {sachsen, 1}, {sachsenanhalt, 1},
+        {schleswigholstein, 2}, {thueringen, 2}]},
+        ]
+for {year_slug, bewegliche_ferientage} <- years do
+  year = Timetables.get_year!(year_slug)
+  for {federal_state, value} <- bewegliche_ferientage do
+    Timetables.create_inset_day_quantity(%{federal_state_id: federal_state.id, year_id: year.id, value: value})
   end
 end
 
