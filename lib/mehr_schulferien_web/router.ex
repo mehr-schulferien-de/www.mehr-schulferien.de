@@ -20,20 +20,22 @@ defmodule MehrSchulferienWeb.Router do
 
     # Locations
     #
-    resources "/schools", SchoolController, only: [:show]
-    get "/schools/:school_id/:starts_on/:ends_on", SchoolController, :show
-    get "/schools/:school_id/:year", SchoolController, :show
+    resources "/schools", SchoolController, only: [:show] do
+      get "/:starts_on/:ends_on", SchoolController, :show
+      get "/:year", SchoolController, :show
+    end
 
-    resources "/cities", CityController, only: [:show]
-    get "/cities/:city_id/:starts_on/:ends_on", CityController, :show
-    get "/cities/:city_id/:year", CityController, :show
+    resources "/cities", CityController, only: [:show] do
+      get "/:starts_on/:ends_on", CityController, :show
+      get "/:year", CityController, :show
+    end
 
     resources "/federal_states", FederalStateController, only: [:show] do
       resources "/cities", CityController, only: [:index]
       resources "/schools", SchoolController, only: [:index]
+      get "/:starts_on/:ends_on", FederalStateController, :show
+      get "/:year", FederalStateController, :show
     end
-    get "/federal_states/:federal_state_id/:starts_on/:ends_on", FederalStateController, :show
-    get "/federal_states/:federal_state_id/:year", FederalStateController, :show
 
     resources "/countries", CountryController, only: [:show] do
       resources "/cities", CityController, only: [:index]
