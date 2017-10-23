@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.CalendarHelper do
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Timetables.Day
-  
+
   import Ecto.Query
 
   def css_class(day, opts \\ []) do
@@ -160,8 +160,8 @@ defmodule MehrSchulferienWeb.CalendarHelper do
     end
   end
 
-  def html_title() do
-
+  def html_title(federal_state, starts_on, ends_on, categories \\ []) do
+    "Schulferientermine für " <> federal_state.name <> " :: " <> calendar_sub_heading(starts_on, ends_on, categories)
   end
 
 end
