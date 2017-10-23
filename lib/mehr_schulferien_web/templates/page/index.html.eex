@@ -1,36 +1,43 @@
-<div class="jumbotron">
-  <h2><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h2>
-  <p class="lead">A productive web framework that<br />does not compromise speed and maintainability.</p>
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        mehr-schulferien.de<br>
+        <small>Urlaub besser planen.</small>
+      </h1>
+    </div>
+    <div class="col-md-4">
+      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
+    </div>
+  </div>
 </div>
 
-<div class="row marketing">
-  <div class="col-lg-6">
-    <h4>Resources</h4>
+<div class="row">
+  <div class="col-sm-12">
+    <p>mehr-schulferien.de gibt eine schnelle Übersicht über Ferientermine und
+    das ist gar nicht so unkompliziert wie man es sich am Anfang denkt. Ein paar
+    Beispiele:</p>
     <ul>
-      <li>
-        <a href="http://phoenixframework.org/docs/overview">Guides</a>
-      </li>
-      <li>
-        <a href="https://hexdocs.pm/phoenix">Docs</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
-      </li>
+      <li>Es gibt in einigen Bundesländern bewegliche Ferientage, die von den
+    einzelnen Schulen bestimmt werden.</li>
+      <li>Es gibt <%= for category <- @religion_categories do %><%= category.name_plural %><%= unless category == List.last(@religion_categories) do %>, <% end %><% end %> zu denen Schüler beurlaubt werden können.</li>
+      <li>Es gibt Städte, die einen eigenen Feiertag definieren.</li>
     </ul>
-  </div>
-
-  <div class="col-lg-6">
-    <h4>Help</h4>
-    <ul>
-      <li>
-        <a href="http://groups.google.com/group/phoenix-talk">Mailing list</a>
-      </li>
-      <li>
-        <a href="http://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on freenode IRC</a>
-      </li>
-      <li>
-        <a href="https://twitter.com/elixirphoenix">@elixirphoenix</a>
-      </li>
-    </ul>
+    <h2>Schüler, Lehrer und Eltern</h2>
+    <p>Suchen Sie am besten direkt den Terminkalender der besuchten Schule oder
+      Ihrer Stadt. Auf den Schulseiten bekommen Sie die genauesten Informationen.
+      Am schnellsten geht das über die <a href="/countries/deutschland">Liste der Bundesländer</a>,
+    die <a href="/countries/deutschland/cities">Liste aller Städte</a> oder die
+    <a href="http://localhost:4000/countries/deutschland/schools">Liste aller Schulen</a>.
+    Alternativ können Sie
+    natürlich auch auf das Bundesland klicken.</p>
+    <h2>Alle anderen</h2>
+    <p>Für Sie haben wir einen besonderen Service: Unser Inverse-Kalender,
+    der Ihnen die Zeiten anzeigt, an denen es in keinem Bundesland Schulferien
+    gibt. <strong>Suchen Sie nach Wochen, die farblich nicht hinterlegt sind.</strong> In diesen
+    Wochen können Sie am kostengünstigsten in Urlaub fahren.</p>
+    <p><strong>Legende:</strong> Grün hinterlegte Tage sind in mindestens einem
+    Bundesland Schulferien. Blau hinterlegte Tage sind in mindestens einem
+    Bundesland gesetzliche Feiertage</p>
   </div>
 </div>

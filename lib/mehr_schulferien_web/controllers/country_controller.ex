@@ -14,11 +14,10 @@ defmodule MehrSchulferienWeb.CountryController do
 
   def show(conn, %{"id" => id}) do
     {country, federal_states} = get_locations(id)
-    religion_categories = get_religion_categories()
 
     render(conn, "show.html", federal_states: federal_states,
                               country: country,
-                              religion_categories: religion_categories)
+                              religion_categories: get_religion_categories())
   end
 
   defp get_locations(id) do
