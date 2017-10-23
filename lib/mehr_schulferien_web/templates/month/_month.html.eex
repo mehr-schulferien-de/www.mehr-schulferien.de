@@ -58,6 +58,10 @@
                 </dd>
               <% end %>
             </dl>
+            <%= if category.needs_exeat == true do %>
+              <p><small>Falls an diesen Tagen nicht schulfrei ist, kann eine
+                Beurlaubung bei der Schule beantragt werden.</small></p>
+            <% end %>
           </div>
         <% end %>
       </div>
