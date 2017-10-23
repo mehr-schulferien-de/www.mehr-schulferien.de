@@ -24,9 +24,13 @@ defmodule MehrSchulferienWeb.Formatter do
     current_month = Date.utc_today.month
     current_year = Date.utc_today.year
 
+    categories_string = for category <- categories do
+      category.name_plural
+    end |> Enum.join(", ")
+
     heading = case {starts_on.month, starts_on.year, ends_on.month, ends_on.year} do
-      {1, x, 12, x} -> Integer.to_string(starts_on.year)
-      {current_month, current_year, month, year} ->
+      {1, x, 12, x} -> Integer.to_string(starts_on.year) <> " (inkl. " <> categories_string <>")"
+      {^current_month, ^current_year, month, year} ->
                        query = from(
                                     days in Day,
                                     where: days.value >= ^starts_on and
@@ -35,19 +39,10 @@ defmodule MehrSchulferienWeb.Formatter do
                                     select: count("*")
                                    )
                        number_of_months = Repo.one(query)
-                       "Die nächsten " <> Integer.to_string(number_of_months) <> " Monate"
+                       "Die nächsten " <> Integer.to_string(number_of_months) <> " Monate (inkl. " <> categories_string <>")."
       _ -> three_letter_month(starts_on) <> Integer.to_string(starts_on.year) <> " - " <>
-           three_letter_month(ends_on) <> Integer.to_string(ends_on.year)
-    end
-
-    categories_string = for category <- categories do
-      category.name_plural
-    end |> Enum.join(", ")
-
-    case categories do
-      [] -> heading <> "."
-      _ -> heading <> " (inkl. " <> categories_string <> ")."
-    end
+           three_letter_month(ends_on) <> Integer.to_string(ends_on.year) <> " (inkl. " <> categories_string <>")."
+    end |> String.replace(" (inkl. )", "")
   end
 
   def three_letter_month(date) do
