@@ -12,10 +12,8 @@
       <%= unless @count_inset_day_quantity == @inset_day_quantity do %>
         <%= if @count_inset_day_quantity == 0 do %>
           <p>Zu dieser Schule haben wir in <strong>keine beweglichen Ferientage
-          in der Datenbank gespeichert</strong>. Die angezeigten Termine werden aus
-          Daten anderer Schulen in <%= @federal_state.name %>
-          <strong>interpoliert</strong>.</p>
-          <p>Bitte fragen Sie deshalb bei der Schule nach.</p>
+          in der Datenbank gespeichert</strong>.</p>
+          <p>Bitte fragen Sie bei der Schule nach.</p>
         <% end %>
       <% end %>
     </div>
