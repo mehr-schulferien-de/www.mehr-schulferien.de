@@ -107,7 +107,7 @@ for name <- category_names do
   Timetables.create_category(%{name: singular, name_plural: plural, needs_exeat: false, for_students: true, for_anybody: true, is_a_religion: false})
 end
 
-category_names = [{"Schulferien", "Schulferien"}, {"Beweglicher Ferientag", "Bewegliche Feiertage" },
+category_names = [{"Schulferien", "Schulferien"}, {"Beweglicher Ferientag", "Bewegliche Ferientage" },
                   {"Schulfrei", "Schulfreie Tage"}]
 for name <- category_names do
   {singular, plural} = name
@@ -340,4 +340,16 @@ for holiday <- religious_holidays do
       source: "http://www.berlin.de/sen/bjf/service/kalender/ferien/artikel.420979.php"
     })
   end
+end
+
+# Bewegliche Ferientage
+#
+school = Locations.get_school!("56068-grundschule-schenkendorf-koblenz")
+category = Timetables.get_category!("beweglicher-ferientag")
+
+for {name, date} <- [{"Reformationstag", ~D[2017-10-30]}, {"Fastnacht", ~D[2018-02-09]},
+{"Fastnacht", ~D[2018-02-12]}, {"Fastnacht", ~D[2018-02-13]},
+{"Himmelfahrt", ~D[2018-05-11]}, {"Fronleichnam", ~D[2018-06-01]}] do
+  Timetables.create_period(%{category: "Beweglicher Ferientag",
+  school_id: school.id, starts_on: date, ends_on: date, name: name, category_id: category.id})
 end
