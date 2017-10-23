@@ -21,7 +21,7 @@ defmodule MehrSchulferienWeb.CityController do
   end
 
   def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
-    {city, federal_state, country} = get_locations(id)
+    {city, federal_state, country, schools} = get_locations(id)
     {starts_on, ends_on} = get_dates()
     additional_categories = get_additional_categories(additional_categories)
 
@@ -32,6 +32,7 @@ defmodule MehrSchulferienWeb.CityController do
     render(conn, "show.html", city: city,
                               federal_state: federal_state,
                               country: country,
+                              schools: schools,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
@@ -42,7 +43,7 @@ defmodule MehrSchulferienWeb.CityController do
   end
 
   def show(conn, %{"id" => id}) do
-    {city, federal_state, country} = get_locations(id)
+    {city, federal_state, country, schools} = get_locations(id)
     {starts_on, ends_on} = get_dates()
 
     days = CollectData.list_days([country, federal_state, city],
@@ -51,6 +52,7 @@ defmodule MehrSchulferienWeb.CityController do
     render(conn, "show.html", city: city,
                               federal_state: federal_state,
                               country: country,
+                              schools: schools,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
@@ -64,7 +66,7 @@ defmodule MehrSchulferienWeb.CityController do
                    "starts_on" => starts_on,
                    "ends_on" => ends_on,
                    "additional_categories" => additional_categories}) do
-    {city, federal_state, country} = get_locations(city_id)
+    {city, federal_state, country, schools} = get_locations(city_id)
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
     additional_categories = get_additional_categories(additional_categories)
 
@@ -75,6 +77,7 @@ defmodule MehrSchulferienWeb.CityController do
     render(conn, "show.html", city: city,
                               federal_state: federal_state,
                               country: country,
+                              schools: schools,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
@@ -87,7 +90,7 @@ defmodule MehrSchulferienWeb.CityController do
   def show(conn, %{"city_id" => city_id,
                    "starts_on" => starts_on,
                    "ends_on" => ends_on}) do
-    {city, federal_state, country} = get_locations(city_id)
+    {city, federal_state, country, schools} = get_locations(city_id)
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
 
     days = CollectData.list_days([country, federal_state, city],
@@ -96,6 +99,7 @@ defmodule MehrSchulferienWeb.CityController do
     render(conn, "show.html", city: city,
                               federal_state: federal_state,
                               country: country,
+                              schools: schools,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
@@ -132,9 +136,14 @@ defmodule MehrSchulferienWeb.CityController do
 
   defp get_locations(city_id) do
     query = from cities in City, where: cities.slug == ^city_id,
-                                 preload: [:country, :federal_state]
+                                 preload: [:country, :federal_state, :schools]
     city = Repo.one(query)
-    {city, city.federal_state, city.country}
+
+    # query = from schools in School, where: schools.city_id == ^city.id
+    #
+    # schools = Repo.all(query)
+
+    {city, city.federal_state, city.country, city.schools}
   end
 
   defp get_dates(starts_on \\ nil, ends_on \\ nil) do

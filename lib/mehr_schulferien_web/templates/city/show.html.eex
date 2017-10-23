@@ -42,5 +42,6 @@
   <div class="col-sm-3">
     <%= render MehrSchulferienWeb.SharedView, "_religion_panel.html", assigns %>
     <%= render MehrSchulferienWeb.SharedView, "_zeitraeume_panel.html", location: @city, starts_on: @starts_on, ends_on: @ends_on %>
+    <%= render MehrSchulferienWeb.SchoolView, "_nearby_schools_panel.html", nearby_schools: @schools %>
   </div>
 </div>

@@ -1,0 +1,2 @@
+<meta name="description" content="Schulferientermine für <%= @city.name %> in <%= @federal_state.name %>. Mit beweglichen Feiertagen für <%= Number.Delimit.number_to_delimited(length(@schools)) %> Schulen.">
+<title>Städte in <%= @federal_state.name %></title>

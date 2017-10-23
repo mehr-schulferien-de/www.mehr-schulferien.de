@@ -12,6 +12,7 @@ defmodule MehrSchulferien.Locations.City do
     field :zip_code, :string
     belongs_to :country, MehrSchulferien.Locations.Country
     belongs_to :federal_state, MehrSchulferien.Locations.FederalState
+    has_many :schools, MehrSchulferien.Locations.School
 
     timestamps()
   end
