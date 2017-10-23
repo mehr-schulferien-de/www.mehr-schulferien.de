@@ -1,0 +1,49 @@
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "Deutschland", to: country_path(@conn, :show, "deutschland") %></li>
+  <li><%= link @federal_state.name, to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
+  <li><%= @city.name %></li>
+  <li class="active"><%= @school.name %></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link @federal_state.code, to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
+  <li><%= Formatter.truncate(@city.name, max_length: 10) %></li>
+  <li class="active"><%= Formatter.truncate(@school.name, max_length: 10) %></li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        <% {:ok, regex} = Regex.compile(@school.address_city <> "$") %>
+        <%= String.replace(@school.name, regex, "") %><br>
+        <small><%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %></small>
+      </h1>
+    </div>
+    <div class="col-md-4">
+      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-9">
+    <div class="row hidden-sm">
+      <div class="col-xs-12">
+        <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 3, categories: @categories %>
+      </div>
+    </div>
+    <div class="row visible-sm-* hidden-xs hidden-md hidden-lg">
+      <div class="col-xs-12">
+        <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 2, categories: @categories %>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <%= render MehrSchulferienWeb.FederalStateView, "_religion_panel.html", assigns %>
+    <%= render MehrSchulferienWeb.SchoolView, "_kontaktdaten_panel.html", school: @school %>
+    <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_state: @federal_state, federal_states: @federal_states, starts_on: @starts_on, ends_on: @ends_on %>
+  </div>
+</div>

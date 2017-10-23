@@ -1,0 +1,42 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Kontaktdaten</h3>
+  </div>
+  <div class="panel-body">
+    <address>
+      <% {:ok, regex} = Regex.compile(@school.address_city <> "$") %>
+      <strong><%= String.replace(@school.address_line1, regex, "") %></strong><br>
+      <%= unless @school.address_line2 == nil do %>
+      <%= @school.address_line2 %><br>
+      <% end %>
+      <%= unless @school.address_street == nil do %>
+      <%= @school.address_street %><br>
+      <% end %>
+      <%= @school.address_zip_code %> <%= @school.address_city %>
+    </address>
+
+    <address style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+    <%= unless @school.phone_number == nil do %>
+      <strong>Telefonnummer:</strong><br>
+      <a href="tel:<%= @school.phone_number %>"><%= @school.phone_number %></a><br>
+    <% end %>
+    <%= unless @school.fax_number == nil do %>
+      <strong>Fax:</strong><br>
+      <a href="tel:<%= @school.fax_number %>"><%= @school.fax_number %></a><br>
+    <% end %>
+    <%= unless @school.email_address == nil do %>
+      <strong>E-Mail:</strong><br>
+      <a href="mailto:<%= @school.email_address %>"><%= @school.email_address %></a><br>
+    <% end %>
+    <%= unless @school.homepage_url == nil do %>
+      <strong>Homepage:</strong><br>
+      <a href="<%= @school.homepage_url %>"><%= @school.homepage_url |> String.replace(~r/htt[ps]*:\/\//, "") |> String.replace(~r/^www./, "") %></a>
+    <% end %>
+    </address>
+    <p>
+      <a href="<%= URI.encode("https://maps.google.com/maps?q=" <> @school.address_street <> "," <> @school.address_zip_code <> " " <> @school.address_city) %>">
+        <img src="<%= URI.encode("https://maps.googleapis.com/maps/api/staticmap?center=" <> @school.address_street <> "," <> @school.address_zip_code <> " " <> @school.address_city) <> "&markers=color:blue%7Clabel:S%7C" <> @school.address_street <> "," <> @school.address_zip_code <> " " <> @school.address_city <> "&zoom=12&size=180x180&sensor=false" %>" alt="Google Maps Landkarte mit der Position dieser Schule" class="img-thumbnail" width="180" height="180">
+      </a>
+    </p>
+  </div>
+</div>
