@@ -15,7 +15,7 @@
     <div class="col-md-8">
       <h1>
         <%= @federal_state.name %><br>
-        <small><%= Formatter.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %></small>
+        <small><%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %></small>
       </h1>
     </div>
     <div class="col-md-4">

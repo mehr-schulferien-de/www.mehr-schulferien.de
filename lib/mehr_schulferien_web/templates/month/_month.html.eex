@@ -6,7 +6,7 @@
       <div class="text-muted pull-right"><%= first_day_of_month.value.year %></div>
     </h3>
 
-    <% month = Formatter.fill_up_month_to_have_complete_weeks(@month) %>
+    <% month = CalendarHelper.fill_up_month_to_have_complete_weeks(@month) %>
 
     <table class="table table-condensed">
       <thead>
