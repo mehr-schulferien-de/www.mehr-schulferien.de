@@ -1,0 +1,16 @@
+<%= for {name, starts_on, ends_on, length, location, category_name} <- MehrSchulferienWeb.SchemaHelper.event_schema_periods(@days) do %>
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "Event",
+      "name": "<%= name %> (<%= category_name %>)",
+      "startDate" : "<%= starts_on %>T23:00:00Z",
+      "endDate" : "<%= ends_on %>T23:00:00Z",
+      "location" : {
+        "@type" : "Place",
+        "name" : "<%= location.name %>",
+        "address" : "<%= location.name %>, Deutschland"
+      }
+    }
+  </script>
+<% end %>
