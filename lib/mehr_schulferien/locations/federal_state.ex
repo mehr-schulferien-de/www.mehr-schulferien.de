@@ -11,6 +11,7 @@ defmodule MehrSchulferien.Locations.FederalState do
     field :name, :string
     field :slug, NameSlug.Type
     belongs_to :country, MehrSchulferien.Locations.Country
+    has_many :inset_day_quantities, MehrSchulferien.Timetables.InsetDayQuantity
 
     timestamps()
   end

@@ -8,17 +8,19 @@ defmodule MehrSchulferienWeb.SchoolController do
   alias MehrSchulferien.Locations.School
   alias MehrSchulferien.Timetables
   alias MehrSchulferien.Timetables.Category
+  alias MehrSchulferien.Timetables.InsetDayQuantity
   alias MehrSchulferien.Repo
   alias MehrSchulferien.CollectData
   import Ecto.Query, only: [from: 2]
 
 
   def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
-    {school, city, federal_state, federal_states, country} = get_locations(id)
+    {school, city, federal_state, country} = get_locations(id)
     {starts_on, ends_on} = get_dates()
     categories = get_categories()
     religion_categories = get_religion_categories()
     additional_categories = get_additional_categories(additional_categories)
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on,
@@ -27,21 +29,24 @@ defmodule MehrSchulferienWeb.SchoolController do
     render(conn, "show.html", school: school,
                               city: city,
                               federal_state: federal_state,
-                              federal_states: federal_states,
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: additional_categories)
+                              chosen_religion_categories: additional_categories,
+                              inset_day_quantity: inset_day_quantity,
+                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              nearby_schools: Locations.nearby_schools(school))
   end
 
   def show(conn, %{"id" => id}) do
-    {school, city, federal_state, federal_states, country} = get_locations(id)
+    {school, city, federal_state, country} = get_locations(id)
     {starts_on, ends_on} = get_dates()
     categories = get_categories()
     religion_categories = get_religion_categories()
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -49,25 +54,28 @@ defmodule MehrSchulferienWeb.SchoolController do
     render(conn, "show.html", school: school,
                               city: city,
                               federal_state: federal_state,
-                              federal_states: federal_states,
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: [])
+                              chosen_religion_categories: [],
+                              inset_day_quantity: inset_day_quantity,
+                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              nearby_schools: Locations.nearby_schools(school))
   end
 
   def show(conn, %{"school_id" => school_id,
                    "starts_on" => starts_on,
                    "ends_on" => ends_on,
                    "additional_categories" => additional_categories}) do
-    {school, city, federal_state, federal_states, country} = get_locations(school_id)
+    {school, city, federal_state, country} = get_locations(school_id)
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
     categories = get_categories()
     religion_categories = get_religion_categories()
     additional_categories = get_additional_categories(additional_categories)
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on,
@@ -76,23 +84,26 @@ defmodule MehrSchulferienWeb.SchoolController do
     render(conn, "show.html", school: school,
                               city: city,
                               federal_state: federal_state,
-                              federal_states: federal_states,
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: additional_categories)
+                              chosen_religion_categories: additional_categories,
+                              inset_day_quantity: inset_day_quantity,
+                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              nearby_schools: Locations.nearby_schools(school))
   end
 
   def show(conn, %{"school_id" => school_id,
                    "starts_on" => starts_on,
                    "ends_on" => ends_on}) do
-    {school, city, federal_state, federal_states, country} = get_locations(school_id)
+    {school, city, federal_state, country} = get_locations(school_id)
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
     categories = get_categories()
     religion_categories = get_religion_categories()
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state, city, school],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -100,14 +111,16 @@ defmodule MehrSchulferienWeb.SchoolController do
     render(conn, "show.html", school: school,
                               city: city,
                               federal_state: federal_state,
-                              federal_states: federal_states,
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: [])
+                              chosen_religion_categories: [],
+                              inset_day_quantity: inset_day_quantity,
+                              count_inset_day_quantity: count_inset_day_quantity(days),
+                              nearby_schools: Locations.nearby_schools(school))
   end
 
   # Redirect requests for years to the correct full date.
@@ -139,8 +152,7 @@ defmodule MehrSchulferienWeb.SchoolController do
     query = from schools in School, where: schools.slug == ^school_id,
                                     preload: [:country, :federal_state, :city]
     school = Repo.one(query)
-    federal_states = Locations.list_federal_states
-    {school, school.city, school.federal_state, federal_states, school.country}
+    {school, school.city, school.federal_state, school.country}
   end
 
   defp get_dates(starts_on \\ nil, ends_on \\ nil) do
@@ -178,4 +190,21 @@ defmodule MehrSchulferienWeb.SchoolController do
     Repo.all(query)
   end
 
+  defp get_inset_day_quantity(federal_state, starts_on) do
+    year = Timetables.get_year!(starts_on.year)
+    query = from idq in InsetDayQuantity, where: idq.federal_state_id == ^federal_state.id and
+                                                 idq.year_id == ^year.id
+    case Repo.one(query) do
+      nil -> 0
+      x -> x.value
+    end
+  end
+
+  defp count_inset_day_quantity(days) do
+    length(for day <- days do
+      for {_, %MehrSchulferien.Timetables.Category{name: "Beweglicher Ferientag"}, _, _, _, _} <- day.periods do
+        1
+      end
+    end |> List.flatten)
+  end
 end

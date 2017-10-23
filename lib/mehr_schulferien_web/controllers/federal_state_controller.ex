@@ -5,6 +5,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   alias MehrSchulferien.Locations.FederalState
   alias MehrSchulferien.Locations.Country
   alias MehrSchulferien.Timetables
+  alias MehrSchulferien.Timetables.InsetDayQuantity
   alias MehrSchulferien.Timetables.Category
   alias MehrSchulferien.Repo
   alias MehrSchulferien.CollectData
@@ -17,6 +18,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     categories = get_categories()
     religion_categories = get_religion_categories()
     additional_categories = get_additional_categories(additional_categories)
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on,
@@ -30,7 +32,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: additional_categories)
+                              chosen_religion_categories: additional_categories,
+                              inset_day_quantity: inset_day_quantity)
   end
 
   def show(conn, %{"id" => id}) do
@@ -38,6 +41,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {starts_on, ends_on} = get_dates()
     categories = get_categories()
     religion_categories = get_religion_categories()
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -50,7 +54,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: [])
+                              chosen_religion_categories: [],
+                              inset_day_quantity: inset_day_quantity)
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id,
@@ -62,6 +67,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     categories = get_categories()
     religion_categories = get_religion_categories()
     additional_categories = get_additional_categories(additional_categories)
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on,
@@ -75,7 +81,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: additional_categories)
+                              chosen_religion_categories: additional_categories,
+                              inset_day_quantity: inset_day_quantity)
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id,
@@ -85,6 +92,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {starts_on, ends_on} = get_dates(starts_on, ends_on)
     categories = get_categories()
     religion_categories = get_religion_categories()
+    inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
 
     days = CollectData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
@@ -97,7 +105,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: [])
+                              chosen_religion_categories: [],
+                              inset_day_quantity: inset_day_quantity)
   end
 
   # Redirect requests for years to the correct full date.
@@ -166,6 +175,16 @@ defmodule MehrSchulferienWeb.FederalStateController do
                  where: categories.slug in ^additional_categories
                 )
     Repo.all(query)
+  end
+
+  defp get_inset_day_quantity(federal_state, starts_on) do
+    year = Timetables.get_year!(starts_on.year)
+    query = from idq in InsetDayQuantity, where: idq.federal_state_id == ^federal_state.id and
+                                                 idq.year_id == ^year.id
+    case Repo.one(query) do
+      nil -> 0
+      x -> x.value
+    end
   end
 
 end

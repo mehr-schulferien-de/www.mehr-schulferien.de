@@ -435,4 +435,28 @@ defmodule MehrSchulferien.Locations do
   def change_school(%School{} = school) do
     School.changeset(school, %{})
   end
+
+  def nearby_schools(school, max_number \\ 20) do
+    nearby_min_zip_code = (String.to_integer(String.slice(school.address_zip_code, 0..-2))) * 10
+    nearby_max_zip_code = nearby_min_zip_code + 9
+    possible_zip_codes = Enum.to_list(nearby_min_zip_code..nearby_max_zip_code)
+    possible_zip_codes = Enum.map(possible_zip_codes, fn x -> Integer.to_string(x) end)
+
+    query = from schools in MehrSchulferien.Locations.School,
+            where: schools.address_zip_code in ^possible_zip_codes and
+                   schools.id != ^school.id,
+            order_by: schools.name
+    nearby_schools = Repo.all(query)
+
+    if length(nearby_schools) > max_number do
+      query = from schools in MehrSchulferien.Locations.School,
+              where: schools.address_zip_code == ^school.address_zip_code and
+                     schools.id != ^school.id,
+              order_by: schools.name
+      nearby_schools = Repo.all(query)
+    end
+
+    nearby_schools
+  end
+  
 end

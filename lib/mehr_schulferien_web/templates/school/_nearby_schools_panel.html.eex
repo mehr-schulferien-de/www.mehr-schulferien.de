@@ -1,0 +1,15 @@
+<%= if assigns[:nearby_schools] && length(@nearby_schools) > 0 do %>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Schulen in der Nähe</h3>
+    </div>
+    <div class="panel-body">
+      <ul>
+      <%= for school <- @nearby_schools do %>
+        <% {:ok, regex} = Regex.compile(school.address_city <> "$") %>
+        <li><a href="/schools/<%= school.slug %><%= if assigns[:year] do %>/years/<%= @year.slug %><% end %>"><%= String.replace(school.name, regex, "") %></a><br><small><%= school.address_street %></small></li>
+      <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>
