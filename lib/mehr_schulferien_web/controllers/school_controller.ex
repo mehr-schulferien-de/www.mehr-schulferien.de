@@ -83,7 +83,7 @@ defmodule MehrSchulferienWeb.SchoolController do
                               days: days,
                               categories: categories,
                               religion_categories: religion_categories,
-                              chosen_religion_categories: [])
+                              chosen_religion_categories: additional_categories)
   end
 
   def show(conn, %{"school_id" => school_id,

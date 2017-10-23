@@ -165,8 +165,4 @@ defmodule MehrSchulferienWeb.CalendarHelper do
     end
   end
 
-  def html_title(federal_state, starts_on, ends_on, categories \\ []) do
-    "Schulferientermine für " <> federal_state.name <> " :: " <> calendar_sub_heading(starts_on, ends_on, categories)
-  end
-
 end
