@@ -30,6 +30,7 @@ defmodule MehrSchulferienWeb.Router do
 
     resources "/federal_states", FederalStateController, only: [:show] do
       resources "/cities", CityController, only: [:index]
+      resources "/schools", SchoolController, only: [:index]
     end
     get "/federal_states/:federal_state_id/:starts_on/:ends_on", FederalStateController, :show
     get "/federal_states/:federal_state_id/:year", FederalStateController, :show
