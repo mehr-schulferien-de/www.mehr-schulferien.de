@@ -1,0 +1,45 @@
+<ol class="breadcrumb">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "Deutschland", to: country_path(@conn, :show, "deutschland") %></li>
+  <li class="active">Städte</li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        Städte in <%= @country.name %><br>
+      </h1>
+    </div>
+    <div class="col-md-4">
+      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-9">
+    <div class="row">
+      <div class="col-xs-12">
+        <p>Die folgenden <%= Number.Delimit.number_to_delimited(length @cities) %> Städte haben eine eigene Seite mit weiteren Informationen (u.a. eine Liste der dortigen Schulen).</p>
+        <%= for p1 <- 0..9 do %>
+          <%= for p2 <- 0..9 do %>
+            <% {:ok, regex} = Regex.compile("^" <> Integer.to_string(p1) <> Integer.to_string(p2) <> "[0-9]{3}$") %>
+            <% displayed_cities = Enum.filter(@cities, fn(city) -> Regex.match?(regex, city.zip_code) end) %>
+            <%= if length(displayed_cities) > 0 do %>
+              <h2><%= Integer.to_string(p1) <> Integer.to_string(p2) %>xxx</h2>
+              <p>
+                <%= for city <- displayed_cities do %>
+                  <a href="/cities/<%= city.slug %>"><%= city.name %> (<%= city.zip_code %>)</a><%= unless city == List.last(displayed_cities) do %>,<% end %>
+                <% end %>
+              </p>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_states: @federal_states %>
+  </div>
+</div>
