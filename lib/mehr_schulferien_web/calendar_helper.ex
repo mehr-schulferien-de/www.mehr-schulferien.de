@@ -78,8 +78,13 @@ defmodule MehrSchulferienWeb.CalendarHelper do
       category.name_plural
     end |> Enum.join(", ")
 
+    starts_year = starts_on.year
+    starts_year_plus_1 = starts_year + 1 # to case a Schuljahr
+
     heading = case {starts_on.month, starts_on.year, ends_on.month, ends_on.year} do
       {1, x, 12, x} -> Integer.to_string(starts_on.year) <> " (inkl. " <> categories_string <>")"
+      {8, ^starts_year, 7, ^starts_year_plus_1} ->
+                       "Schuljahr " <> Integer.to_string(starts_year - 2000) <> "/" <> Integer.to_string(starts_year - 1999) <> " (inkl. " <> categories_string <>")"
       {^current_month, ^current_year, month, year} ->
                        query = from(
                                     days in Day,
