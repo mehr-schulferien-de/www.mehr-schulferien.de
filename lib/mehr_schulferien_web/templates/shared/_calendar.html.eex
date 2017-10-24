@@ -23,5 +23,3 @@
     <% end %>
   </div>
 <% end %>
-
-<%= render MehrSchulferienWeb.SharedView, "_event_schema.html", assigns %>

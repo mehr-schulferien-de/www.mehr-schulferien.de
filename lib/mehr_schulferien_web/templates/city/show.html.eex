@@ -45,3 +45,5 @@
     <%= render MehrSchulferienWeb.SchoolView, "_nearby_schools_panel.html", nearby_schools: @schools %>
   </div>
 </div>
+
+<%= render MehrSchulferienWeb.SharedView, "_event_schema.html", days: @days, location: @city, category_whitelist: ["Schulferien"] %>

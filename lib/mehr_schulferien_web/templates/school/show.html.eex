@@ -49,3 +49,5 @@
     <%= render MehrSchulferienWeb.SchoolView, "_bewegliche_ferientage_panel.html", assigns %>
   </div>
 </div>
+
+<%= render MehrSchulferienWeb.SharedView, "_event_schema.html", days: @days, location: @school, category_whitelist: ["Schulferien", "Beweglicher Ferientag"] %>

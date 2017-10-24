@@ -1,15 +1,22 @@
-<%= for {name, starts_on, ends_on, length, location, category_name} <- MehrSchulferienWeb.SchemaHelper.event_schema_periods(@days) do %>
+<%= for {name, starts_on, ends_on, length, _, category_name} <- MehrSchulferienWeb.SchemaOrgHelper.event_schema_periods(@days, @category_whitelist) do %>
   <script type="application/ld+json">
     {
       "@context": "http://schema.org",
       "@type": "Event",
       "name": "<%= name %> (<%= category_name %>)",
-      "startDate" : "<%= starts_on %>T23:00:00Z",
-      "endDate" : "<%= ends_on %>T23:00:00Z",
+      "startDate" : "<%= starts_on %>",
+      "endDate" : "<%= ends_on %>",
       "location" : {
         "@type" : "Place",
-        "name" : "<%= location.name %>",
-        "address" : "<%= location.name %>, Deutschland"
+        "name" : "<%= @location.name %>",
+        "address":{
+          "@type": "PostalAddress",
+          "streetAddress": "<%= MehrSchulferienWeb.SchemaOrgHelper.address(@location)[:streetAddress] %>",
+          "addressLocality": "<%= MehrSchulferienWeb.SchemaOrgHelper.address(@location)[:addressLocality] %>",
+          "postalCode": "<%= MehrSchulferienWeb.SchemaOrgHelper.address(@location)[:postalCode] %>",
+          "addressRegion": "<%= MehrSchulferienWeb.SchemaOrgHelper.address(@location)[:addressRegion] %>",
+          "addressCountry": "<%= MehrSchulferienWeb.SchemaOrgHelper.address(@location)[:addressCountry] %>"
+        }
       }
     }
   </script>
