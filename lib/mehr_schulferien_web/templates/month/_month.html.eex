@@ -37,34 +37,36 @@
       </tbody>
     </table>
 
-    <% filtered_periods = CalendarHelper.filtered_periods(month, @categories) %>
+    <%= if @explanations == true do %>
+      <% filtered_periods = CalendarHelper.filtered_periods(month, @categories) %>
 
-    <%= for columns <- Enum.chunk_every(filtered_periods,2, 2, [nil]) do %>
-      <div class="row">
-        <%= for {category, periods} <- columns do %>
-          <div class="col-xs-<%= round (12 / length(columns |> Enum.reject(fn(x) -> x == nil end))) %>">
-            <h4><%= category.name_plural %></h4>
-            <dl>
-              <%= for {name, starts_on, ends_on, length, location, css_class} <- periods do %>
-                <dt><%= name %></dt>
-                <dd>
-                  <%= starts_on.day %>.<%= starts_on.month %>.
-                  <%= if length == 1 do %>
-                    <span class="label label-<%= css_class %>">1 Tag</span>
-                  <% else %>
-                   - <%= ends_on.day %>.<%= ends_on.month %>.
-                   <span class="label label-<%= css_class %>"><%= length %> Tage</span>
-                  <% end %>
-                </dd>
+      <%= for columns <- Enum.chunk_every(filtered_periods,2, 2, [nil]) do %>
+        <div class="row">
+          <%= for {category, periods} <- columns do %>
+            <div class="col-xs-<%= round (12 / length(columns |> Enum.reject(fn(x) -> x == nil end))) %>">
+              <h4><%= category.name_plural %></h4>
+              <dl>
+                <%= for {name, starts_on, ends_on, length, location, css_class} <- periods do %>
+                  <dt><%= name %></dt>
+                  <dd>
+                    <%= starts_on.day %>.<%= starts_on.month %>.
+                    <%= if length == 1 do %>
+                      <span class="label label-<%= css_class %>">1 Tag</span>
+                    <% else %>
+                     - <%= ends_on.day %>.<%= ends_on.month %>.
+                     <span class="label label-<%= css_class %>"><%= length %> Tage</span>
+                    <% end %>
+                  </dd>
+                <% end %>
+              </dl>
+              <%= if category.needs_exeat == true do %>
+                <p><small>Falls an diesen Tagen nicht schulfrei ist, kann eine
+                  Beurlaubung bei der Schule beantragt werden.</small></p>
               <% end %>
-            </dl>
-            <%= if category.needs_exeat == true do %>
-              <p><small>Falls an diesen Tagen nicht schulfrei ist, kann eine
-                Beurlaubung bei der Schule beantragt werden.</small></p>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>

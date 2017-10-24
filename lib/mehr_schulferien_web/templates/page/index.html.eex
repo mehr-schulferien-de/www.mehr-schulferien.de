@@ -13,7 +13,25 @@
 </div>
 
 <div class="row">
-  <div class="col-sm-12">
+  <div class="col-sm-9">
+    <h2>Schüler, Lehrer und Eltern</h2>
+    <p>Suchen Sie am besten direkt den Terminkalender der besuchten Schule oder
+      Ihrer Stadt. Auf den Schulseiten bekommen Sie die genauesten Informationen.
+      Am schnellsten geht das über
+      <a href="/countries/deutschland">Liste der Bundesländer</a> -> Städte -> Schulen</p>
+    <hr >
+    <h2>Günstig-Urlaub-Planen-Hilfe für Nicht-Eltern</h2>
+    <p>Sie haben keine schulpflichtigen Kinder und suchen eine möglichst
+      günstigen Zeitpunkt für Ihren Urlaub? Dann schauen Sie mal in den folgenden
+    Kalender. Suchen Sie nach farblich nicht hinterlegten Wochen. In diesen Zeiträumen
+    sind Urlaubsangebote normalerweise besonders günstig. </p>
+    <p><strong>Legende:</strong> Grün hinterlegte Tage sind in mindestens einem
+    Bundesland Schulferien. Blau hinterlegte Tage sind in mindestens einem
+    Bundesland gesetzliche Feiertage</p>
+
+    <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 3, categories: @categories, explanations: false %>
+
+    <h2>Allgemeine Infos</h2>
     <p>mehr-schulferien.de gibt eine schnelle Übersicht über Ferientermine und
     das ist gar nicht so unkompliziert wie man es sich am Anfang denkt. Ein paar
     Beispiele:</p>
@@ -23,21 +41,8 @@
       <li>Es gibt <%= for category <- @religion_categories do %><%= category.name_plural %><%= unless category == List.last(@religion_categories) do %>, <% end %><% end %> zu denen Schüler beurlaubt werden können.</li>
       <li>Es gibt Städte, die einen eigenen Feiertag definieren.</li>
     </ul>
-    <h2>Schüler, Lehrer und Eltern</h2>
-    <p>Suchen Sie am besten direkt den Terminkalender der besuchten Schule oder
-      Ihrer Stadt. Auf den Schulseiten bekommen Sie die genauesten Informationen.
-      Am schnellsten geht das über die <a href="/countries/deutschland">Liste der Bundesländer</a>,
-    die <a href="/countries/deutschland/cities">Liste aller Städte</a> oder die
-    <a href="http://localhost:4000/countries/deutschland/schools">Liste aller Schulen</a>.
-    Alternativ können Sie
-    natürlich auch auf das Bundesland klicken.</p>
-    <h2>Alle anderen</h2>
-    <p>Für Sie haben wir einen besonderen Service: Unser Inverse-Kalender,
-    der Ihnen die Zeiten anzeigt, an denen es in keinem Bundesland Schulferien
-    gibt. <strong>Suchen Sie nach Wochen, die farblich nicht hinterlegt sind.</strong> In diesen
-    Wochen können Sie am kostengünstigsten in Urlaub fahren.</p>
-    <p><strong>Legende:</strong> Grün hinterlegte Tage sind in mindestens einem
-    Bundesland Schulferien. Blau hinterlegte Tage sind in mindestens einem
-    Bundesland gesetzliche Feiertage</p>
+  </div>
+  <div class="col-sm-3">
+    <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_states: @federal_states %>
   </div>
 </div>

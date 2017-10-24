@@ -32,12 +32,12 @@
   <div class="col-sm-9">
     <div class="row hidden-sm">
       <div class="col-xs-12">
-        <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 3, categories: @categories %>
+        <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 3, categories: @categories, explanations: true %>
       </div>
     </div>
     <div class="row visible-sm-* hidden-xs hidden-md hidden-lg">
       <div class="col-xs-12">
-        <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 2, categories: @categories %>
+        <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 2, categories: @categories, explanations: true %>
       </div>
     </div>
   </div>

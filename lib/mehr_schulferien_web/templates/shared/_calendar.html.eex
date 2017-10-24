@@ -6,7 +6,7 @@
   <div class="row">
     <%= for month <- three_months do %>
       <div class="col-sm-<%= divider %>">
-        <%= render MehrSchulferienWeb.MonthView, "_month.html", month: month, categories: @categories %>
+        <%= render MehrSchulferienWeb.MonthView, "_month.html", month: month, categories: @categories, explanations: @explanations %>
       </div>
     <% end %>
   </div>
@@ -18,7 +18,7 @@
   <div class="row">
     <%= for month <- three_months do %>
       <div class="col-sm-<%= divider %>">
-        <%= render MehrSchulferienWeb.MonthView, "_month.html", month: month, categories: @categories %>
+        <%= render MehrSchulferienWeb.MonthView, "_month.html", month: month, categories: @categories, explanations: @explanations %>
       </div>
     <% end %>
   </div>
