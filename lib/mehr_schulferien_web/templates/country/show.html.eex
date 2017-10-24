@@ -124,3 +124,18 @@
     <% end %>
   </div>
 <% end %>
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "item": {
+      "@id": "https://www.mehr-schulferien.de/countries/<%= @country.slug %>",
+      "name": "<%= @country.name %>"
+    }
+  }]
+}
+</script>
