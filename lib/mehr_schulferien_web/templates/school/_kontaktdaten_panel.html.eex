@@ -40,3 +40,18 @@
     </p>
   </div>
 </div>
+
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "url": "<%= @school.homepage_url %>",
+  "contactPoint": [
+    { "@type": "ContactPoint",
+      "telephone": "<%= @school.phone_number %>",
+      "contactType": "customer service"
+    }
+  ]
+}
+</script>
