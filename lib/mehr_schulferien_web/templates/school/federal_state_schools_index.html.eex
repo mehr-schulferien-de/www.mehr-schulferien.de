@@ -48,7 +48,7 @@
     </div>
   </div>
   <div class="col-sm-3">
-
+    <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_states: @federal_states %>
   </div>
 </div>
 
@@ -60,8 +60,8 @@
     "@type": "ListItem",
     "position": 1,
     "item": {
-      "@id": "https://www.mehr-schulferien.de/countries/<%= @country.slug %>",
-      "name": "<%= @country.name %>"
+      "@id": "https://www.mehr-schulferien.de/countries/deutschland",
+      "name": "Deutschland"
     }
   },{
     "@type": "ListItem",

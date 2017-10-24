@@ -16,8 +16,8 @@ defmodule MehrSchulferienWeb.CityController do
   # List of cities of a FederalState
   #
   def index(conn, %{"federal_state_id" => federal_state_id}) do
-    {federal_state, cities} = get_cities(federal_state_id)
-    render(conn, "federal_state_cities_index.html", federal_state: federal_state, cities: cities)
+    {federal_state, federal_states, cities} = get_cities(federal_state_id)
+    render(conn, "federal_state_cities_index.html", federal_states: federal_states, federal_state: federal_state, cities: cities)
   end
 
   # List of cities of a Country
@@ -209,7 +209,13 @@ defmodule MehrSchulferienWeb.CityController do
             where: cities.federal_state_id == ^federal_state.id,
             order_by: [cities.name, cities.zip_code]
     cities = Repo.all(query)
-    {federal_state, cities}
+
+    query = from fs in FederalState,
+            where: fs.country_id == ^federal_state.country_id,
+            order_by: [fs.name]
+    federal_states = Repo.all(query)
+
+    {federal_state, federal_states, cities}
   end
 
 end

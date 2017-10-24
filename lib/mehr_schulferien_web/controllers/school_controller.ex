@@ -16,8 +16,8 @@ defmodule MehrSchulferienWeb.SchoolController do
   # List of schools of a FederalState
   #
   def index(conn, %{"federal_state_id" => federal_state_id}) do
-    {federal_state, schools} = get_schools(federal_state_id)
-    render(conn, "federal_state_schools_index.html", federal_state: federal_state, schools: schools)
+    {federal_state, federal_states, schools} = get_schools(federal_state_id)
+    render(conn, "federal_state_schools_index.html", federal_states: federal_states, federal_state: federal_state, schools: schools)
   end
 
   def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
@@ -200,6 +200,11 @@ defmodule MehrSchulferienWeb.SchoolController do
             where: schools.federal_state_id == ^federal_state.id,
             order_by: [schools.name, schools.address_zip_code]
     schools = Repo.all(query)
-    {federal_state, schools}
+
+    query = from fs in FederalState,
+            where: fs.country_id == ^federal_state.country_id,
+            order_by: [fs.name]
+    federal_states = Repo.all(query)
+    {federal_state, federal_states, schools}
   end
 end
