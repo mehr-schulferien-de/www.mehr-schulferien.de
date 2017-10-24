@@ -45,25 +45,45 @@ defmodule MehrSchulferienWeb.SchoolController do
   end
 
   def show(conn, %{"id" => id}) do
-    {school, city, federal_state, country} = get_locations(id)
-    {starts_on, ends_on} = get_dates()
+    # Check if the slug exists
+    #
+    query = from schools in School,
+            where: schools.slug == ^id
+    school = Repo.one(query)
 
-    days = CollectData.list_days([country, federal_state, city, school],
-                                 starts_on: starts_on, ends_on: ends_on)
+    if school == nil do
+      federal_states = Locations.list_federal_states
+      zip_code = String.replace(id,~r/-.*$/, "")
 
-    render(conn, "show.html", school: school,
-                              city: city,
-                              federal_state: federal_state,
-                              country: country,
-                              starts_on: starts_on,
-                              ends_on: ends_on,
-                              days: days,
-                              categories: get_categories(),
-                              religion_categories: get_religion_categories(),
-                              chosen_religion_categories: [],
-                              inset_day_quantity: get_inset_day_quantity(federal_state, starts_on),
-                              count_inset_day_quantity: CollectData.count_inset_day_quantity(days),
-                              nearby_schools: Locations.nearby_schools(school))
+      query = from schools in School,
+              where: schools.address_zip_code == ^zip_code,
+              order_by: [schools.name]
+      schools = Repo.all(query)
+
+      conn
+      |> put_status(:not_found)
+      |> render(MehrSchulferienWeb.ErrorView, "404-school.html", federal_states: federal_states, schools: schools)
+    else
+      {school, city, federal_state, country} = get_locations(id)
+      {starts_on, ends_on} = get_dates()
+
+      days = CollectData.list_days([country, federal_state, city, school],
+                                   starts_on: starts_on, ends_on: ends_on)
+
+      render(conn, "show.html", school: school,
+                                city: city,
+                                federal_state: federal_state,
+                                country: country,
+                                starts_on: starts_on,
+                                ends_on: ends_on,
+                                days: days,
+                                categories: get_categories(),
+                                religion_categories: get_religion_categories(),
+                                chosen_religion_categories: [],
+                                inset_day_quantity: get_inset_day_quantity(federal_state, starts_on),
+                                count_inset_day_quantity: CollectData.count_inset_day_quantity(days),
+                                nearby_schools: Locations.nearby_schools(school))
+    end
   end
 
   def show(conn, %{"school_id" => school_id,
