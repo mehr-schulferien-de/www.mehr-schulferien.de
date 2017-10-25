@@ -44,7 +44,8 @@ defmodule MehrSchulferien.Mixfile do
       {:ecto_autoslug_field, "~> 0.3"},
       {:poison, "~> 3.1"},
       {:uuid, "~> 1.1" },
-      {:number, "~> 0.5.4"}
+      {:number, "~> 0.5.4"},
+      {:distillery, "~> 1.5", runtime: false}
     ]
   end
 
