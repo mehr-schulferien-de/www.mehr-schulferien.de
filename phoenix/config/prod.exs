@@ -15,21 +15,13 @@ use Mix.Config
 # which you typically run after static files are built.
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   load_from_system_env: true,
-  http: [port: 4001],
-  url: [host: "www.mehr-schulferien.de", port: 80],
+  http: [port: 4003],
+  url: [host: "localhost", port: 4003],
+  server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
 config :logger, level: :info
-
-# Configure your database -> HAS TO BE CHANGED IN PROD!
-config :mehr_schulferien, MehrSchulferien.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "mehrschulferien",
-  password: "mehrschulferien",
-  database: "mehr_schulferien_prod",
-  hostname: "localhost",
-  pool_size: 10
 
 # ## SSL Support
 #
@@ -71,4 +63,4 @@ config :mehr_schulferien, MehrSchulferien.Repo,
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
-# import_config "prod.secret.exs"
+import_config "prod.secret.exs"
