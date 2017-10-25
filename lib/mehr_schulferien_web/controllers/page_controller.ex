@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.PageController do
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Locations.FederalState
   alias MehrSchulferien.Locations.Country
+  alias MehrSchulferien.Locations.School
   alias MehrSchulferien.Timetables.Category
   alias MehrSchulferien.Repo
   alias MehrSchulferien.CollectData
@@ -15,6 +16,8 @@ defmodule MehrSchulferienWeb.PageController do
     categories = get_categories()
     religion_categories = get_religion_categories()
 
+    school_counter = Repo.one(from p in School, select: count("*"))
+
     days = CollectData.list_days([country] ++ federal_states,
                                  starts_on: starts_on, ends_on: ends_on)
 
@@ -22,7 +25,8 @@ defmodule MehrSchulferienWeb.PageController do
                                country: country,
                                days: days,
                                categories: categories,
-                               religion_categories: religion_categories)
+                               religion_categories: religion_categories,
+                               school_counter: school_counter)
   end
 
   defp get_locations(id) do

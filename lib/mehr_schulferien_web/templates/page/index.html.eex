@@ -15,10 +15,12 @@
 <div class="row">
   <div class="col-sm-9">
     <h2>Schüler, Lehrer und Eltern</h2>
-    <p>Suchen Sie am besten direkt den Terminkalender der besuchten Schule oder
-      Ihrer Stadt. Auf den Schulseiten bekommen Sie die genauesten Informationen.
+    <p>Wir haben Ferien- und Feiertagstermine für <%= Number.Delimit.number_to_delimited(@school_counter) %> Schulen gespeichert (je nach
+      Bundesland inklusive der beweglichen Ferientage). Suchen Sie am besten
+      direkt den Terminkalender der besuchten Schule oder Ihrer Stadt.
+      Auf den Schulseiten bekommen Sie die genauesten Informationen.</p><p>
       Am schnellsten geht das über
-      <a href="/countries/deutschland">Liste der Bundesländer</a> -> Städte -> Schulen</p>
+      <a href="/countries/deutschland">Liste der Bundesländer</a> -> Schulen</p>
     <hr >
     <h2>Günstig-Urlaub-Planen-Hilfe für Nicht-Eltern</h2>
     <p>Sie haben keine schulpflichtigen Kinder und suchen eine möglichst
