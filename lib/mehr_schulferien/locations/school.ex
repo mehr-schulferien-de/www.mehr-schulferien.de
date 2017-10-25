@@ -18,6 +18,12 @@ defmodule MehrSchulferien.Locations.School do
     field :homepage_url, :string
     field :name, :string
     field :phone_number, :string
+    field :school_type_entity, :string
+    field :school_type, :string
+    field :official_id, :string
+    field :lon, :float
+    field :lat, :float
+    field :old_slug, :string
     field :slug, ZipCodeNameSlug.Type
     belongs_to :city, MehrSchulferien.Locations.City
     belongs_to :federal_state, MehrSchulferien.Locations.FederalState
@@ -29,10 +35,11 @@ defmodule MehrSchulferien.Locations.School do
   @doc false
   def changeset(%School{} = school, attrs) do
     school
-    |> cast(attrs, [:name, :slug, :address_line1, :address_line2, :address_street, :address_zip_code, :address_city, :email_address, :phone_number, :fax_number, :homepage_url, :city_id, :federal_state_id, :country_id])
+    |> cast(attrs, [:name, :slug, :address_line1, :address_line2, :address_street, :address_zip_code, :address_city, :email_address, :phone_number, :fax_number, :homepage_url, :city_id, :federal_state_id, :country_id, :school_type_entity, :school_type, :official_id, :lon, :lat, :old_slug])
     |> ZipCodeNameSlug.set_slug
     |> set_address_zip_code
     |> validate_required([:name, :slug, :address_line1, :address_zip_code, :address_city])
+    |> validate_length(:name, max: 150)
     |> unique_constraint(:slug)
     |> assoc_constraint(:country)
     |> assoc_constraint(:federal_state)

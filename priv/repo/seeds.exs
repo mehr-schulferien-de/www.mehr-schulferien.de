@@ -2,16 +2,11 @@
 #
 #     mix run priv/repo/seeds.exs
 #
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     MehrSchulferien.Repo.insert!(%MehrSchulferien.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
 
 alias MehrSchulferien.Locations
+alias MehrSchulferien.Locations.City
 alias MehrSchulferien.Timetables
+alias MehrSchulferien.Repo
 import Ecto.Query, only: [from: 2]
 
 # Locations
@@ -51,29 +46,57 @@ end)
 
 # Import schools
 #
-File.stream!("priv/repo/school-seeds.json") |>
-Stream.map( &(String.replace(&1, "\n", "")) ) |>
-Stream.with_index |>
-Enum.each( fn({contents, line_num}) ->
-  school = Poison.decode!(contents)
-  city = Locations.get_city!(school["city_slug"])
-  federal_state = Locations.get_federal_state!(school["federal_state_slug"])
-  country = Locations.get_country!(school["country_slug"])
-  Locations.create_school(%{name: school["name"], slug: school["slug"],
-                            address_zip_code: school["address_zip_code"],
-                            address_line1: school["address_line1"],
-                            address_line2: school["address_line2"],
-                            address_street: school["address_street"],
-                            address_zip_code: school["address_zip_code"],
-                            address_city: school["address_city"],
-                            email_address: school["email_address"],
-                            homepage_url: school["homepage_url"],
-                            phone_number: school["phone_number"],
-                            fax_number: school["fax_number"],
-                            city_id: city.id,
-                            country_id: country.id,
-                            federal_state_id: federal_state.id})
-end)
+file_names = [
+  "baden-wuerttemberg.json",
+  "bayern.json",
+  "berlin.json",
+  "brandenburg.json",
+  "bremen.json",
+  "hamburg.json",
+  "hessen.json",
+  "mecklenburg-vorpommern.json",
+  "niedersachsen.json",
+  "nrw.json",
+  "rheinland-pfalz.json",
+  "saarland.json",
+  "sachsen-anhalt.json",
+  "sachsen.json",
+  "schleswig-holstein.json",
+  "thueringen.json"
+]
+
+for file_name <- file_names do
+ {:ok, file_content} = File.read("priv/repo/schools.d/" <> file_name)
+ schools = Poison.decode!(file_content)
+ for school <- schools do
+   if school["zip_code"] != nil do
+     query = from cities in City, where: cities.zip_code == ^school["zip_code"]
+     city = Repo.one(query)
+     if city != nil do
+       Locations.create_school(%{
+         name: school["name"],
+         address_line1: school["name"],
+         address_street: school["street"],
+         address_zip_code: school["zip_code"],
+         address_city: school["city"],
+         lon: school["lon"],
+         lat: school["lat"],
+         homepage_url: school["homepage_url"],
+         phone_number: school["phone_number"],
+         fax_number: school["fax_number"],
+         school_type_entity: school["school_type_entity"],
+         school_type: school["school_type"],
+         city_id: city.id,
+         federal_state_id: city.federal_state_id,
+         country_id: city.country_id,
+         old_slug: school["old_slug"],
+         official_id: school["official_id"],
+         email_address: school["email_address"]
+       })
+     end
+   end
+ end
+end
 
 # Years 2015-2025
 #
@@ -367,7 +390,7 @@ end
 
 # Bewegliche Ferientage
 #
-school = Locations.get_school!("56068-grundschule-schenkendorf-koblenz")
+school = Locations.get_school!("56068-grundschule-schenkendorf")
 category = Timetables.get_category!("beweglicher-ferientag")
 
 for {name, date} <- [{"Reformationstag", ~D[2017-10-30]}, {"Fastnacht", ~D[2018-02-09]},

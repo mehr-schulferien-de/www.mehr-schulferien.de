@@ -14,6 +14,12 @@ defmodule MehrSchulferien.Repo.Migrations.CreateSchools do
       add :phone_number, :string
       add :fax_number, :string
       add :homepage_url, :string
+      add :school_type_entity, :string
+      add :school_type, :string
+      add :official_id, :string
+      add :lon, :float, default: 0.0
+      add :lat, :float, default: 0.0
+      add :old_slug, :string
       add :city_id, references(:cities, on_delete: :nothing)
       add :federal_state_id, references(:federal_states, on_delete: :nothing)
       add :country_id, references(:countries, on_delete: :nothing)
