@@ -23,7 +23,17 @@ defmodule MehrSchulferienWeb.SchoolController do
   # List of schools of a Country
   #
   def index(conn, %{"country_id" => country_id}) do
-    # country = Locations.get_country!(country_id)
+    query = from country in Country, where: country.slug == ^country_id,
+                                     preload: [:federal_states, :schools]
+    country = Repo.one(query)
+
+    render(conn, "country_schools_index.html", country: country, federal_states: country.federal_states, schools: country.schools)
+  end
+
+  # List of schools
+  #
+  def index(conn, %{}) do
+    country_id = "deutschland"
     query = from country in Country, where: country.slug == ^country_id,
                                      preload: [:federal_states, :schools]
     country = Repo.one(query)

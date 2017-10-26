@@ -20,7 +20,7 @@ defmodule MehrSchulferienWeb.Router do
 
     # Locations
     #
-    resources "/schools", SchoolController, only: [:show] do
+    resources "/schools", SchoolController, only: [:show, :index] do
       get "/:starts_on/:ends_on", SchoolController, :show
       get "/:year", SchoolController, :show
     end
