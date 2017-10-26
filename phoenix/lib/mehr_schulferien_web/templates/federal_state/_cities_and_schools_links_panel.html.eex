@@ -6,8 +6,8 @@
     <p>
       Zu jeder Stadt und Schule bieten wir genauere Daten (z.B. bewegliche Ferientage).
       Suchen Sie den entsprechenden Eintrag bitte in der
-      <a href="/federal_states/<%= @federal_state.slug %>/schools">List der Schulen in <%= @federal_state.name %></a>
-      oder in <a href="/federal_states/<%= @federal_state.slug %>/cities">List der Städte in <%= @federal_state.name %></a>.
+      <a href="/federal_states/<%= @federal_state.slug %>/schools">Liste der Schulen in <%= @federal_state.name %></a>
+      oder in <a href="/federal_states/<%= @federal_state.slug %>/cities">Liste der Städte in <%= @federal_state.name %></a>.
     </p>
   </div>
 </div>
