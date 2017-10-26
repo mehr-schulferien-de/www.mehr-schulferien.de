@@ -24,7 +24,21 @@ defmodule MehrSchulferienWeb.CityController do
   #
   def index(conn, %{"country_id" => country_id}) do
     country = Locations.get_country!(country_id)
+    query = from cities in City, where: cities.country_id == ^country.id,
+                                 order_by: [cities.name, cities.zip_code]
+    cities = Repo.all(query)
 
+    query = from federal_states in FederalState, where: federal_states.country_id == ^country.id,
+                                                 order_by: [federal_states.name]
+    federal_states = Repo.all(query)
+
+    render(conn, "country_cities_index.html", country: country, cities: cities, federal_states: federal_states)
+  end
+
+  # List of all cities
+  #
+  def index(conn, %{}) do
+    country = Locations.get_country!("deutschland")
     query = from cities in City, where: cities.country_id == ^country.id,
                                  order_by: [cities.name, cities.zip_code]
     cities = Repo.all(query)
