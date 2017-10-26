@@ -9,6 +9,8 @@ defmodule MehrSchulferien.Locations.Country do
     field :name, :string
     field :slug, NameSlug.Type
     has_many :federal_states, MehrSchulferien.Locations.FederalState
+    has_many :cities, MehrSchulferien.Locations.City
+    has_many :schools, MehrSchulferien.Locations.School
 
     timestamps()
   end
