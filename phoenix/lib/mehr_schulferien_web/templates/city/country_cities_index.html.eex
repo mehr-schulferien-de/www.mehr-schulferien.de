@@ -59,7 +59,7 @@
     "@type": "ListItem",
     "position": 2,
     "item": {
-      "@id": "https://www.mehr-schulferien.de/federal_states/<%= @federal_state.slug %>/cities",
+      "@id": "https://www.mehr-schulferien.de/countries/<%= @country.slug %>/cities",
       "name": "Städte"
     }
   }]
