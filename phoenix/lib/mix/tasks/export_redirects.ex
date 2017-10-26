@@ -37,3 +37,4 @@ defmodule Mix.Tasks.ExportRedirects do
     end
 
   end
+end
