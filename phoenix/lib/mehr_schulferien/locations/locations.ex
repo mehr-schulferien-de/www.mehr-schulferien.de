@@ -458,5 +458,5 @@ defmodule MehrSchulferien.Locations do
 
     nearby_schools
   end
-  
+
 end

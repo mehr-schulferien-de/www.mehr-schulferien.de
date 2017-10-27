@@ -29,6 +29,10 @@ defmodule MehrSchulferienWeb.PageController do
                                school_counter: school_counter)
   end
 
+  def developers(conn, _params) do
+    render(conn, "developers.html")
+  end
+
   defp get_locations(id) do
     country = Locations.get_country!(id)
 

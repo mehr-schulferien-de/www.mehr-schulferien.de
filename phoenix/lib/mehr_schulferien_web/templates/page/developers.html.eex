@@ -1,0 +1,55 @@
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "Deutschland", to: country_path(@conn, :show, "deutschland") %></li>
+  <li class="active">Entwickler</li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "DE", to: country_path(@conn, :show, "deutschland") %></li>
+  <li class="active">Entwickler</li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        Entwickler How-To
+      </h1>
+    </div>
+    <div class="col-md-4">
+      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <h2>Source-Code</h2>
+    <p>mehr-schulferien.de ist ein mit der Programmiersprache Elixir und dem
+      <a href="http://phoenixframework.org">Phoenix Framework</a> geschriebenes Open-Source-Projekt (MIT Lizenz). Der
+      Code wird auf <a href="https://github.com/wintermeyer/www.mehr-schulferien.de">https://github.com/wintermeyer/www.mehr-schulferien.de</a>
+      gehostet.</p>
+    <p>Ich freue mich über Feature-Requests oder Bug-Reports. Idealerweise
+    als <a href="https://github.com/wintermeyer/www.mehr-schulferien.de/issues">Issues auf Github</a>, aber auch gerne per E-Mail an <a href="mailto:sw@wintermeyer-consulting.de">sw@wintermeyer-consulting.de</a></p>
+
+    <h2>JSON-API</h2>
+    <p>Wenn Sie reine Daten von dieser Webseite benötigen, so können Sie diese
+    per JSON-API abrufen. Alle Daten sind unter dem Pfad <code>/api/v1.0/</code> gefolgt von
+    dem Namen der Resource per RESTful API abrufbar. Bitte melden Sie sich, wenn Sie andere
+    Features benötigen.</p>
+    <h3>Resourcen</h3>
+    <ul>
+      <li><code>Country</code><br>Das Land. Aktuell gibt es nur einen Datensatz
+      (Deutschland).<br>Beispiel:<br><code>curl <a href="https://www.mehr-schulferien.de/api/v1.0/countries">https://www.mehr-schulferien.de/api/v1.0/countries</a></code></li>
+      <li><code>FederalState</code><br>Das Bundesland mit einer <code>belongs_to</code>
+        Verknüpfung zu <code>Country</code>.<br>Beispiel:<br><code>curl <a href="https://www.mehr-schulferien.de/api/v1.0/federal_states">https://www.mehr-schulferien.de/api/v1.0/federal_states</a></code></li>
+      <li><code>City</code><br>Eine Stadt bzw. ein Ort mit <code>belongs_to</code>
+          Verknüpfungen zu <code>FederalState</code> und <code>Country</code>.<br>
+          Beispiel:<br><code>curl <a href="https://www.mehr-schulferien.de/api/v1.0/cities">https://www.mehr-schulferien.de/api/v1.0/cities</a></code></li>
+      <li><code>School</code><br>Eine Schule mit <code>belongs_to</code>
+          Verknüpfungen zu <code>FederalState</code>, <code>Country</code> und <code>City</code>.<br>
+          Beispiel:<br><code>curl <a href="https://www.mehr-schulferien.de/api/v1.0/schools">https://www.mehr-schulferien.de/api/v1.0/schools</a></code></li>
+    </ul>
+  </div>
+</div>

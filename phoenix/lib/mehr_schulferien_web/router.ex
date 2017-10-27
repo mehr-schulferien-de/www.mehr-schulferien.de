@@ -17,6 +17,7 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/developers", PageController, :developers
 
     # Locations
     #
@@ -62,6 +63,15 @@ defmodule MehrSchulferienWeb.Router do
     resources "/periods", PeriodController
     resources "/slots", SlotController
     resources "/inset_day_quantities", InsetDayQuantityController
+  end
+
+  scope "/api/v1.0", MehrSchulferienWeb.Api do
+    pipe_through :api
+
+    resources "/countries", CountryController, only: [:index, :show]
+    resources "/federal_states", FederalStateController, only: [:index, :show]
+    resources "/cities", CityController, only: [:index, :show]
+    resources "/schools", SchoolController, only: [:index, :show]
   end
 
   # Other scopes may use custom stacks.
