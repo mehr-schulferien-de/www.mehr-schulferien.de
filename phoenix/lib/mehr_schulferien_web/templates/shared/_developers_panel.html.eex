@@ -1,0 +1,13 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Informationen für Entwickler</h3>
+  </div>
+  <div class="panel-body">
+    <ul>
+      <li>mehr-schulferien.de ist ein Open-Source-Projekt.</li>
+      <li>Wir freuen uns über Ihr Feedback und über Ihre Hilfe!</li>
+      <li>Alle Daten sind per JSON RESTful Interface abrufbar.</li>
+    </ul>
+    <p><a href="/developers">Mehr Informationen</a>.</p>
+  </div>
+</div>

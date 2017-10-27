@@ -41,6 +41,7 @@
   </div>
   <div class="col-sm-3">
     <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_states: @federal_states %>
+    <%= render MehrSchulferienWeb.SharedView, "_developers_panel.html" %>
   </div>
 </div>
 

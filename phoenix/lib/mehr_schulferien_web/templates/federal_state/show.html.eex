@@ -42,6 +42,7 @@
     <%= render MehrSchulferienWeb.SharedView, "_zeitraeume_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on %>
     <%= render MehrSchulferienWeb.FederalStateView, "_cities_and_schools_links_panel.html", federal_state: @federal_state %>
     <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_state: @federal_state, federal_states: @federal_states, starts_on: @starts_on, ends_on: @ends_on %>
+    <%= render MehrSchulferienWeb.SharedView, "_developers_panel.html" %>
   </div>
 </div>
 

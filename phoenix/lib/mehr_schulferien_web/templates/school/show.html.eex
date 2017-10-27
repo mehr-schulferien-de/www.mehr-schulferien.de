@@ -47,6 +47,7 @@
     <%= render MehrSchulferienWeb.SchoolView, "_kontaktdaten_panel.html", school: @school %>
     <%= render MehrSchulferienWeb.SchoolView, "_nearby_schools_panel.html", nearby_schools: @nearby_schools %>
     <%= render MehrSchulferienWeb.SchoolView, "_bewegliche_ferientage_panel.html", assigns %>
+    <%= render MehrSchulferienWeb.SharedView, "_developers_panel.html" %>
   </div>
 </div>
 
