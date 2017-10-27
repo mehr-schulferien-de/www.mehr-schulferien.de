@@ -1,0 +1,2 @@
+<meta name="description" content="Ferientermine (inkl. bewegliche Ferientage) für <%= Number.Delimit.number_to_delimited(@school_counter) %> Schulen in Deutschland. Gesetzliche Feiertage und religiöse Feiertage (jüdisch, islamisch und orthodox). Brückentageübersicht. Kalender- und Schuljahre. Für Entwickler zusätzlich mit RESTful JSON API.">
+<title>Schulferientermine und gesetzliche Feiertage für Deutschland</title>
