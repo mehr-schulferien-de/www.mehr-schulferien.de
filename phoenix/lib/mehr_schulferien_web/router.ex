@@ -72,6 +72,7 @@ defmodule MehrSchulferienWeb.Router do
     resources "/federal_states", FederalStateController, only: [:index, :show]
     resources "/cities", CityController, only: [:index, :show]
     resources "/schools", SchoolController, only: [:index, :show]
+    resources "/periods", PeriodController, only: [:index, :show]
   end
 
   # Other scopes may use custom stacks.

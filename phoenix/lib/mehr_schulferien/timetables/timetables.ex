@@ -749,4 +749,5 @@ defmodule MehrSchulferien.Timetables do
   def change_inset_day_quantity(%InsetDayQuantity{} = inset_day_quantity) do
     InsetDayQuantity.changeset(inset_day_quantity, %{})
   end
+
 end

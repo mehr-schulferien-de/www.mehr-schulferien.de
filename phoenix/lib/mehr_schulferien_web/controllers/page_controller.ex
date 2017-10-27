@@ -5,7 +5,9 @@ defmodule MehrSchulferienWeb.PageController do
   alias MehrSchulferien.Locations.FederalState
   alias MehrSchulferien.Locations.Country
   alias MehrSchulferien.Locations.School
+  alias MehrSchulferien.Locations.City
   alias MehrSchulferien.Timetables.Category
+  alias MehrSchulferien.Timetables.Period
   alias MehrSchulferien.Repo
   alias MehrSchulferien.CollectData
   import Ecto.Query, only: [from: 2]
@@ -30,7 +32,20 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def developers(conn, _params) do
-    render(conn, "developers.html")
+    city_counter = Repo.one(from p in City, select: count("*"))
+    school_counter = Repo.one(from p in School, select: count("*"))
+    period_counter = Repo.one(from p in Period, select: count("*"))
+
+    country = Locations.get_country!("deutschland")
+
+    query = from fs in FederalState, where: fs.country_id == ^country.id,
+                                     order_by: fs.name
+    federal_states = Repo.all(query)
+
+    render(conn, "developers.html", city_counter: city_counter,
+                                    school_counter: school_counter,
+                                    period_counter: period_counter,
+                                    federal_states: federal_states)
   end
 
   defp get_locations(id) do
