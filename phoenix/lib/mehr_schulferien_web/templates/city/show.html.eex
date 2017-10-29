@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col-md-8">
       <h1>
-        <%= @city.name %><br>
+        <%= @city.name %> <small>(PLZ <%= @city.zip_code %>)</small><br>
         <small><%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %></small>
       </h1>
     </div>
