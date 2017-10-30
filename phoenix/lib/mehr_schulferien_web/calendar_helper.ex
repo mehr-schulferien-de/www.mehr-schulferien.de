@@ -6,19 +6,35 @@ defmodule MehrSchulferienWeb.CalendarHelper do
 
   def css_class(day, opts \\ []) do
     if opts[:target] do
-      _target = opts[:target]
+      target = opts[:target]
     else
-      _target = :student
+      target = :student
     end
 
-    categories = for {_period, %MehrSchulferien.Timetables.Category{name: name},
-         _country, _federal_state, _city, _school} <- day.periods do
-      name
+    categories = if target == :student do
+      for {_period, %MehrSchulferien.Timetables.Category{name: name},
+           _country, _federal_state, _city, _school} <- day.periods do
+        name
+      end
+    else
+      for {_period, %MehrSchulferien.Timetables.Category{name: name},
+           _country, _federal_state} <- day.periods do
+        name
+      end
     end
 
     css_class_for_categories(categories)
   end
 
+  def bridge_day_css_class(day) do
+    categories =
+      for {_period, %MehrSchulferien.Timetables.Category{name: name},
+           _country, _federal_state} <- day.periods do
+        name
+      end
+
+    css_class_for_categories(categories)
+  end
 
   def css_class_for_categories(categories) do
     case {
@@ -94,7 +110,7 @@ defmodule MehrSchulferienWeb.CalendarHelper do
                                     select: count("*")
                                    )
                        number_of_months = Repo.one(query)
-                       "Die nächsten " <> Integer.to_string(number_of_months) <> " Monate (inkl. " <> categories_string <>")."
+                       ""
       _ -> three_letter_month(starts_on) <> Integer.to_string(starts_on.year) <> " - " <>
            three_letter_month(ends_on) <> Integer.to_string(ends_on.year) <> " (inkl. " <> categories_string <>")."
     end |> String.replace(" (inkl. )", "")
