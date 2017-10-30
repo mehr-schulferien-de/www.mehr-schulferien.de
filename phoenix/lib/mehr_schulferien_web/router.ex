@@ -51,7 +51,6 @@ defmodule MehrSchulferienWeb.Router do
 
     resources "/federal_states", FederalStateController, only: [:show] do
       get "/:starts_on/:ends_on/:number_of_days_to_invest", FederalStateController, :show
-      get "/:starts_on/:ends_on", FederalStateController, :show
       get "/:year", FederalStateController, :show
     end
   end

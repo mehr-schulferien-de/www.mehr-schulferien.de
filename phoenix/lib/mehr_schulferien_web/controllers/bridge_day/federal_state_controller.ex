@@ -12,77 +12,6 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
   import Ecto.Query, only: [from: 2]
 
 
-  # def show(conn, %{"id" => id, "additional_categories" => additional_categories}) do
-  #   {federal_state, federal_states, country} = get_locations(id)
-  #   {starts_on, ends_on} = get_dates()
-  #   categories = get_categories()
-  #   religion_categories = get_religion_categories()
-  #   additional_categories = get_additional_categories(additional_categories)
-  #   inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
-  #
-  #   days = CollectData.list_days([country, federal_state],
-  #                                starts_on: starts_on, ends_on: ends_on)
-  #
-  #   render(conn, "show.html", federal_state: federal_state,
-  #                             federal_states: federal_states,
-  #                             country: country,
-  #                             starts_on: starts_on,
-  #                             ends_on: ends_on,
-  #                             days: days,
-  #                             categories: categories,
-  #                             religion_categories: religion_categories,
-  #                             chosen_religion_categories: additional_categories,
-  #                             inset_day_quantity: inset_day_quantity)
-  # end
-  #
-  # def show(conn, %{"id" => id}) do
-  #   {federal_state, federal_states, country} = get_locations(id)
-  #   {starts_on, ends_on} = get_dates()
-  #   categories = get_categories()
-  #   religion_categories = get_religion_categories()
-  #   inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
-  #
-  #   days = CollectData.list_days([country, federal_state],
-  #                                starts_on: starts_on, ends_on: ends_on)
-  #
-  #   render(conn, "show.html", federal_state: federal_state,
-  #                             federal_states: federal_states,
-  #                             country: country,
-  #                             starts_on: starts_on,
-  #                             ends_on: ends_on,
-  #                             days: days,
-  #                             categories: categories,
-  #                             religion_categories: religion_categories,
-  #                             chosen_religion_categories: [],
-  #                             inset_day_quantity: inset_day_quantity)
-  # end
-  #
-  # def show(conn, %{"federal_state_id" => federal_state_id,
-  #                  "starts_on" => starts_on,
-  #                  "ends_on" => ends_on,
-  #                  "additional_categories" => additional_categories}) do
-  #   {federal_state, federal_states, country} = get_locations(federal_state_id)
-  #   {starts_on, ends_on} = get_dates(starts_on, ends_on)
-  #   categories = get_categories()
-  #   religion_categories = get_religion_categories()
-  #   additional_categories = get_additional_categories(additional_categories)
-  #   inset_day_quantity = get_inset_day_quantity(federal_state, starts_on)
-  #
-  #   days = CollectData.list_days([country, federal_state],
-  #                                starts_on: starts_on, ends_on: ends_on)
-  #
-  #   render(conn, "show.html", federal_state: federal_state,
-  #                             federal_states: federal_states,
-  #                             country: country,
-  #                             starts_on: starts_on,
-  #                             ends_on: ends_on,
-  #                             days: days,
-  #                             categories: categories,
-  #                             religion_categories: religion_categories,
-  #                             chosen_religion_categories: additional_categories,
-  #                             inset_day_quantity: inset_day_quantity)
-  # end
-
   def show(conn, %{"federal_state_id" => federal_state_id,
                    "starts_on" => starts_on,
                    "ends_on" => ends_on,
@@ -131,7 +60,32 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               year.slug <>
                               "-01-01/" <>
                               year.slug <>
-                              "-12-31"
+                              "-12-31/1"
+    end
+  end
+
+  # Redirect requests for federal_states to the correct full URL.
+  # Example: /federal_states/bayern will become
+  #          /federal_states/bayern/2018-01-01/2018-12-31
+  #
+  def show(conn, %{"id" => id}) do
+    federal_state = Locations.get_federal_state!(id)
+
+    year_slug = Integer.to_string(DateTime.utc_now.year)
+    query = from y in Timetables.Year, where: y.slug == ^year_slug
+    year = Repo.one(query)
+
+    case year do
+      nil -> conn
+             |> put_status(:not_found)
+             |> render(MehrSchulferienWeb.ErrorView, "404.html")
+      _ -> redirect conn, to: "/bridge_days/federal_states/" <>
+                              federal_state.slug <>
+                              "/" <>
+                              year.slug <>
+                              "-01-01/" <>
+                              year.slug <>
+                              "-12-31/1"
     end
   end
 
