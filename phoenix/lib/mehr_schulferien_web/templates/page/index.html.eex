@@ -21,7 +21,19 @@
       Auf den Schulseiten bekommen Sie die genauesten Informationen.</p><p>
       Am schnellsten geht das über
       <a href="/countries/deutschland">Liste der Bundesländer</a> -> Schulen</p>
-    <hr >
+    <hr>
+    <h2>Die besten Brückentage?</h2>
+    <p>
+      Optimieren Sie Ihre Urlaubsplanung (Anzahl der Brückentage in Klammern):<br>
+      <% year = Integer.to_string(DateTime.utc_now.year + 1) %>
+      <% number_of_days_to_invest_range = [1,2,3,4] %>
+      <%= for federal_state <- @federal_states do %>
+        <a href="/bridge_days/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31/1"><%= federal_state.name %></a>
+        (<%= for x <- number_of_days_to_invest_range do %><a href="/bridge_days/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31/<%= x %>"><%= x %></a><%= if x != List.last(number_of_days_to_invest_range) do %>, <% end %><% end %>)
+          ,
+      <% end %>
+    </p>
+    <hr>
     <h2>Günstig-Urlaub-Planen-Hilfe für Nicht-Eltern</h2>
     <p>Sie haben keine schulpflichtigen Kinder und suchen eine möglichst
       günstigen Zeitpunkt für Ihren Urlaub? Dann schauen Sie mal in den folgenden
