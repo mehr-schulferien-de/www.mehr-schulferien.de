@@ -52,7 +52,7 @@
   <div class="col-sm-3">
     <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_different_number_of_days_to_invest_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
     <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_zeitraeume_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
-    <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_states: @federal_states, starts_on: @starts_on, ends_on: @ends_on %>
+    <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_list_federal_states_panel.html", federal_states: @federal_states, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
     <%= render MehrSchulferienWeb.SharedView, "_developers_panel.html" %>
   </div>
 </div>
