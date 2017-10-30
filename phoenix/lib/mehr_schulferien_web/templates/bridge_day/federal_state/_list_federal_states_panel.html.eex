@@ -1,0 +1,50 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Ferienkalender Bundesländer</h3>
+  </div>
+  <div class="panel-body">
+    <ul>
+    <%= for federal_state <- @federal_states do %>
+      <li>
+        <%= if assigns[:federal_state] && federal_state.name == @federal_state.name do %>
+          <strong><%= federal_state.name %></strong>
+        <% else %>
+          <a href="/federal_states/<%= federal_state.slug %>"><%= federal_state.name %></a>
+        <% end %>
+        <br />
+        <small>
+          <% current_year = DateTime.utc_now |> Map.fetch!(:year) %>
+          <% next_three_years = Enum.to_list(current_year .. current_year + 2) %>
+          <p>Kalenderjahr:<br>
+          <%= for year <- next_three_years do %>
+            <%= if assigns[:federal_state] && federal_state.name == @federal_state.name && assigns[:starts_on] && assigns[:ends_on] && {:ok, @starts_on} == Date.from_erl({year, 1, 1}) && {:ok, @ends_on} == Date.from_erl({year, 12, 31}) do %>
+              <%= year %>
+            <% else %>
+              <a href="/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31"><%= year %></a>
+            <% end %>
+            <%= unless year == List.last(next_three_years) do %>
+              -
+            <% end %>
+          <% end %>
+          </p>
+
+          <p>Schuljahr:<br>
+          <%= for year <- next_three_years do %>
+            <%= if assigns[:federal_state] && assigns[:starts_on] && assigns[:ends_on] && {:ok, @starts_on} == Date.from_erl({year, 8, 1}) && {:ok, @ends_on} == Date.from_erl({year + 1, 7, 31}) do %>
+              <%= year - 2000 %>/<%= year - 1999 %>
+            <% else %>
+              <a href="/federal_states/<%= federal_state.slug %>/<%= year %>-08-01/<%= year + 1 %>-07-31"><%= year - 2000 %>/<%= year - 1999 %></a>
+            <% end %>
+            <%= unless year == List.last(next_three_years) do %>
+              -
+            <% end %>
+          <% end %>
+          </p>
+
+
+        </small>
+      </li>
+    <% end %>
+    </ul>
+  </div>
+</div>

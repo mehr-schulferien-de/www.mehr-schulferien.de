@@ -1,0 +1,15 @@
+<div class="panel panel-default" id="number_of_days_to_invest">
+  <div class="panel-heading">
+    <h3 class="panel-title">Anzahl Brückentage</h3>
+  </div>
+  <div class="panel-body">
+    <ul>
+    <%= for x <- Enum.to_list(1..10) do %>
+      <li><a href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= x %>"><%= x %></a></li>
+    <% end %>
+    </ul>
+    <p>
+    <small><strong>Power-User:</strong> Sie können mit der URL beliebige Werte benutzen.</small>
+    </p>
+  </div>
+</div>

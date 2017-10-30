@@ -1,0 +1,80 @@
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "Deutschland", to: country_path(@conn, :show, "deutschland") %></li>
+  <li class="active"><%= link @federal_state.name, to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Home", to: page_path(@conn, :index) %></li>
+  <li><%= link "DE", to: country_path(@conn, :show, "deutschland") %></li>
+  <li class="active"><%= link Formatter.truncate(@federal_state.name, max_length: 20), to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>
+        Brückentage <%= @federal_state.name %><br>
+        <small>Optimierung für <%= @number_of_days_to_invest %> <%= if @number_of_days_to_invest > 1 do %>Tage<% else %>Tag<% end %> (<%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on) %>)</small>
+      </h1>
+    </div>
+    <div class="col-md-4">
+      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <p>
+      <strong>Top-<%= if @number_of_days_to_invest > 1 do %>Brückentage<% else %>Brückentag<% end %> für <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on) %>:</strong><br/>
+      <%= Enum.join(Enum.map(List.first(@compiled_optimal_bridge_days).bridge_days, fn(x) -> Integer.to_string(x.day) <> "." <> Integer.to_string(x.month) <> "." end), ", ") %>
+      <span class="label label-warning">
+        <%= List.first(@compiled_optimal_bridge_days).bridge_day_vacation_length %> Tage Urlaub
+      </span><br/>
+      <small>Die Optimierung erfolgt immer für die <a href="#number_of_days_to_invest">Anzahl der Tage</a>, die Sie am Stück investieren wollen.</small>
+    </p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-9">
+    <div class="row hidden-sm">
+      <div class="col-xs-12">
+        <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_calendar.html", days: @days, month_per_row: 3, categories: @categories, compiled_optimal_bridge_days: @compiled_optimal_bridge_days %>
+      </div>
+    </div>
+    <div class="row visible-sm-* hidden-xs hidden-md hidden-lg">
+      <div class="col-xs-12">
+        <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_calendar.html", days: @days, month_per_row: 2, categories: @categories, compiled_optimal_bridge_days: @compiled_optimal_bridge_days %>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_different_number_of_days_to_invest_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
+    <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_zeitraeume_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
+    <%= render MehrSchulferienWeb.FederalStateView, "_list_federal_states_panel.html", federal_states: @federal_states, starts_on: @starts_on, ends_on: @ends_on %>
+    <%= render MehrSchulferienWeb.SharedView, "_developers_panel.html" %>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "item": {
+      "@id": "https://www.mehr-schulferien.de/countries/<%= @country.slug %>",
+      "name": "<%= @country.name %>"
+    }
+  },{
+    "@type": "ListItem",
+    "position": 2,
+    "item": {
+      "@id": "https://www.mehr-schulferien.de/federal_states/<%= @federal_state.slug %>",
+      "name": "<%= @federal_state.name %>"
+    }
+  }]
+}
+</script>
