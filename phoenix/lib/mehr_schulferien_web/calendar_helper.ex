@@ -76,6 +76,27 @@ defmodule MehrSchulferienWeb.CalendarHelper do
     end |> List.flatten |> Enum.uniq
   end
 
+  def bridge_days_filtered_periods(month, categories) do
+    for category <- categories do
+      {category, bridge_days_filter_periods(month, category.name)}
+    end |> Enum.reject(fn({_category, x}) -> x == [] end)
+  end
+
+  defp bridge_days_filter_periods(month, category_name) do
+    css_class = css_class_for_categories([category_name])
+
+    for %MehrSchulferien.Timetables.Day{periods: periods} <- month do
+      for {%MehrSchulferien.Timetables.Period{name: name, starts_on: starts_on, ends_on: ends_on, length: length},
+           %MehrSchulferien.Timetables.Category{name: ^category_name},
+           country, federal_state} <- periods do
+
+         location = List.first([country, federal_state] |> Enum.reject(&is_nil/1))
+         {name, starts_on, ends_on, length, location, css_class}
+      end
+    end |> List.flatten |> Enum.uniq
+  end
+
+
   def starts_in_current_month?(starts_on) do
     current_month = Date.utc_today.month
     current_year = Date.utc_today.year

@@ -32,15 +32,15 @@
               <%= if day == nil do %>
                 <td></td>
               <% else %>
-                  <%= if Enum.member?(winner_days_of_this_month_values, day.value) do %>
-                      <td class="text-right warning %>">
-                        <%= day.day_of_month %>.
-                      </td>
-                    <% else %>
-                      <td class="text-right <%= CalendarHelper.bridge_day_css_class(day) %>">
-                        <%= day.day_of_month %>.
-                      </td>
-                  <% end %>
+                <%= if Enum.member?(winner_days_of_this_month_values, day.value) do %>
+                  <td class="text-right warning %>">
+                    <%= day.day_of_month %>.
+                  </td>
+                <% else %>
+                  <td class="text-right <%= CalendarHelper.bridge_day_css_class(day) %>">
+                    <%= day.day_of_month %>.
+                  </td>
+                <% end %>
               <% end %>
             <% end %>
          </tr>
@@ -48,32 +48,12 @@
       </tbody>
     </table>
 
-    <%= if length(winner_days_of_this_month) > 0 do %>
+    <% filtered_periods = CalendarHelper.bridge_days_filtered_periods(month, @categories) %>
+
     <div class="row">
-        <div class="col-xs-12">
-          <dl>
-            <%= for package <- compiled_bridge_days_for_this_month do %>
-              <dt>
-                <%= length(package.bridge_days) %> <%= if length(package.bridge_days) > 1 do %>Brückentage<% else %>Brückentag<% end %>
-              </dt>
-              <dd>
-                <%= Enum.join(Enum.map(package.bridge_days, fn(x) -> Integer.to_string(x.day) <> "." <> Integer.to_string(x.month) <> "." end), ", ") %>
-                  <span class="label label-warning">
-                    <%= package.bridge_day_vacation_length %> Tage Urlaub
-                  </span>
-              </dd>
-            <% end %>
-          </dl>
-        </div>
-      </div>
-    <% end %>
-
-    <% filtered_periods = CalendarHelper.filtered_periods(month, @categories) %>
-
-    <%= for columns <- Enum.chunk_every(filtered_periods,2, 2, [nil]) do %>
-      <div class="row">
-        <%= for {category, periods} <- columns do %>
-          <div class="col-xs-<%= round (12 / length(columns |> Enum.reject(fn(x) -> x == nil end))) %>">
+      <%= for {category, periods} <- filtered_periods do %>
+        <%= if category.name != "Wochenende" do %>
+          <div class="col-xs-6 %>">
             <h4><%= category.name_plural %></h4>
             <dl>
               <%= for {name, starts_on, ends_on, length, location, css_class} <- periods do %>
@@ -89,13 +69,32 @@
                 </dd>
               <% end %>
             </dl>
-            <%= if category.needs_exeat == true do %>
-              <p><small>Falls an diesen Tagen nicht schulfrei ist, kann eine
-                Beurlaubung bei der Schule beantragt werden.</small></p>
-            <% end %>
           </div>
         <% end %>
-      </div>
+      <% end %>
+
+
+    <%= if length(winner_days_of_this_month) > 0 do %>
+        <div class="col-xs-6">
+          <h4>Brückentage</h4>
+          <dl>
+            <%= for package <- compiled_bridge_days_for_this_month |> Enum.reverse do %>
+              <dt>
+                <%= length(package.bridge_days) %> <%= if length(package.bridge_days) > 1 do %>Tage<% else %>Tag<% end %>
+              </dt>
+              <dd>
+                <%= Enum.join(Enum.map(package.bridge_days, fn(x) -> Integer.to_string(x.day) <> "." <> Integer.to_string(x.month) <> "." end), ", ") %>
+                  <span class="label label-warning">
+                    <%= package.bridge_day_vacation_length %> Tage Urlaub
+                  </span>
+              </dd>
+            <% end %>
+          </dl>
+        </div>
     <% end %>
+  </div>
+
+
+
   </div>
 </div>
