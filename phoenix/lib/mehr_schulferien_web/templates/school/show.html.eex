@@ -19,7 +19,11 @@
       <h1>
         <% {:ok, regex} = Regex.compile(@school.address_city <> "$") %>
         <%= String.replace(@school.name, regex, "") %><br>
-        <small><%= @city.name %> in <%= @federal_state.name %></small>
+        <small><%= @city.name %> in <%= @federal_state.name %>
+        <%= if CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) != "" do %>
+          <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %>
+        <% end %>
+        </small>
       </h1>
     </div>
     <div class="col-md-4">

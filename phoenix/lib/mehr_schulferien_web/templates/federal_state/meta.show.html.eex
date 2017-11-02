@@ -1,2 +1,2 @@
-<meta name="description" content="Ferientermine und Brückentageübersicht für <%= @federal_state.name %>. Inkl. gesetzlicher Feiertage. Alles auf einer Seite.">
-<title>Schulferien für <%= @federal_state.name %> :: <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %></title>
+<meta name="description" content="Ferientermine und Feiertage für <%= @federal_state.name %>. Inkl. gesetzlicher Feiertage.">
+<title>Schulferien für <%= @federal_state.name %><%= if CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) != "" do %> <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %><% end %></title>

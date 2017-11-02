@@ -131,7 +131,7 @@ defmodule MehrSchulferienWeb.CalendarHelper do
                                     select: count("*")
                                    )
                        number_of_months = Repo.one(query)
-                       ""
+                       " (inkl. " <> categories_string <>")"
       _ -> three_letter_month(starts_on) <> Integer.to_string(starts_on.year) <> " - " <>
            three_letter_month(ends_on) <> Integer.to_string(ends_on.year) <> " (inkl. " <> categories_string <>")."
     end |> String.replace(" (inkl. )", "")
