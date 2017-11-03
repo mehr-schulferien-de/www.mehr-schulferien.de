@@ -11,6 +11,7 @@ defmodule MehrSchulferien.Locations.Country do
     has_many :federal_states, MehrSchulferien.Locations.FederalState
     has_many :cities, MehrSchulferien.Locations.City
     has_many :schools, MehrSchulferien.Locations.School
+    has_many :airports, MehrSchulferien.Locations.Airport
 
     timestamps()
   end

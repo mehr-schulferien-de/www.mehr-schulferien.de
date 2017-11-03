@@ -64,6 +64,7 @@ defmodule MehrSchulferienWeb.Router do
     resources "/federal_states", FederalStateController
     resources "/cities", CityController
     resources "/schools", SchoolController
+    resources "/airports", AirportController
 
     # Timetables
     #

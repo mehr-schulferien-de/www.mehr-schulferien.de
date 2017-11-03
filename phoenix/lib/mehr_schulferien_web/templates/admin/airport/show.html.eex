@@ -1,0 +1,28 @@
+<h2>Show Airport</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @airport.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @airport.slug %>
+  </li>
+
+  <li>
+    <strong>Code:</strong>
+    <%= @airport.code %>
+  </li>
+
+  <li>
+    <strong>Homepage url:</strong>
+    <%= @airport.homepage_url %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: admin_airport_path(@conn, :edit, @airport) %></span>
+<span><%= link "Back", to: admin_airport_path(@conn, :index) %></span>

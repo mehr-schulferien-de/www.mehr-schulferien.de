@@ -488,4 +488,70 @@ defmodule MehrSchulferien.LocationsTest do
       assert %Ecto.Changeset{} = Locations.change_school(school)
     end
   end
+
+  describe "airports" do
+    alias MehrSchulferien.Locations.Airport
+
+    @valid_attrs %{code: "some code", homepage_url: "some homepage_url", name: "some name", slug: "some slug"}
+    @update_attrs %{code: "some updated code", homepage_url: "some updated homepage_url", name: "some updated name", slug: "some updated slug"}
+    @invalid_attrs %{code: nil, homepage_url: nil, name: nil, slug: nil}
+
+    def airport_fixture(attrs \\ %{}) do
+      {:ok, airport} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Locations.create_airport()
+
+      airport
+    end
+
+    test "list_airports/0 returns all airports" do
+      airport = airport_fixture()
+      assert Locations.list_airports() == [airport]
+    end
+
+    test "get_airport!/1 returns the airport with given id" do
+      airport = airport_fixture()
+      assert Locations.get_airport!(airport.id) == airport
+    end
+
+    test "create_airport/1 with valid data creates a airport" do
+      assert {:ok, %Airport{} = airport} = Locations.create_airport(@valid_attrs)
+      assert airport.code == "some code"
+      assert airport.homepage_url == "some homepage_url"
+      assert airport.name == "some name"
+      assert airport.slug == "some slug"
+    end
+
+    test "create_airport/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Locations.create_airport(@invalid_attrs)
+    end
+
+    test "update_airport/2 with valid data updates the airport" do
+      airport = airport_fixture()
+      assert {:ok, airport} = Locations.update_airport(airport, @update_attrs)
+      assert %Airport{} = airport
+      assert airport.code == "some updated code"
+      assert airport.homepage_url == "some updated homepage_url"
+      assert airport.name == "some updated name"
+      assert airport.slug == "some updated slug"
+    end
+
+    test "update_airport/2 with invalid data returns error changeset" do
+      airport = airport_fixture()
+      assert {:error, %Ecto.Changeset{}} = Locations.update_airport(airport, @invalid_attrs)
+      assert airport == Locations.get_airport!(airport.id)
+    end
+
+    test "delete_airport/1 deletes the airport" do
+      airport = airport_fixture()
+      assert {:ok, %Airport{}} = Locations.delete_airport(airport)
+      assert_raise Ecto.NoResultsError, fn -> Locations.get_airport!(airport.id) end
+    end
+
+    test "change_airport/1 returns a airport changeset" do
+      airport = airport_fixture()
+      assert %Ecto.Changeset{} = Locations.change_airport(airport)
+    end
+  end
 end
