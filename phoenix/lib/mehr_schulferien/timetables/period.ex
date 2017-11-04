@@ -24,6 +24,7 @@ defmodule MehrSchulferien.Timetables.Period do
     belongs_to :city, Locations.City
     belongs_to :federal_state, Locations.FederalState
     belongs_to :country, Locations.Country
+    has_many :slots, MehrSchulferien.Timetables.Slot, on_delete: :delete_all
 
     timestamps()
   end
