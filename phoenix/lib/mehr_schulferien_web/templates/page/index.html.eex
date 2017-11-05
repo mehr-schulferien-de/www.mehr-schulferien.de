@@ -15,16 +15,15 @@
 <div class="row">
   <div class="col-sm-9">
     <h2>Schüler, Lehrer und Eltern</h2>
-    <p>Wir haben Ferien- und Feiertagstermine für <%= Number.Delimit.number_to_delimited(@school_counter) %> Schulen gespeichert (je nach
-      Bundesland inklusive der beweglichen Ferientage). Suchen Sie am besten
-      direkt den Terminkalender der besuchten Schule oder Ihrer Stadt.
-      Auf den Schulseiten bekommen Sie die genauesten Informationen.</p><p>
-      Am schnellsten geht das über
+    <p>Ferien- und Feiertagstermine für <%= Number.Delimit.number_to_delimited(@school_counter) %> Schulen (je nach
+      Schule inklusive der beweglichen Ferientage). Suchen Sie am besten
+      direkt den Terminkalender der Schule oder Stadt.</p><p>
+      Am schnellsten geht das über die
       <a href="/countries/deutschland">Liste der Bundesländer</a> -> Schulen</p>
     <hr>
-    <h2>Die besten Brückentage?</h2>
+    <h2>Brückentage</h2>
     <p>
-      Optimieren Sie Ihre Urlaubsplanung (Anzahl der Brückentage in Klammern):<br>
+      Optimieren Sie Ihre Urlaubsplanung:<br>
       <% year = Integer.to_string(DateTime.utc_now.year + 1) %>
       <% number_of_days_to_invest_range = [1,2,3,4] %>
       <%= for federal_state <- @federal_states do %>
@@ -36,7 +35,7 @@
     <hr>
     <h2>Günstig-Urlaub-Planen-Hilfe für Nicht-Eltern</h2>
     <p>Sie haben keine schulpflichtigen Kinder und suchen eine möglichst
-      günstigen Zeitpunkt für Ihren Urlaub? Dann schauen Sie mal in den folgenden
+      günstigen Zeitpunkt für Ihren Urlaub? Dann brauchen Sie in den folgenden
     Kalender. Suchen Sie nach farblich nicht hinterlegten Wochen. In diesen Zeiträumen
     sind Urlaubsangebote normalerweise besonders günstig. </p>
     <p><strong>Legende:</strong> Grün hinterlegte Tage sind in mindestens einem

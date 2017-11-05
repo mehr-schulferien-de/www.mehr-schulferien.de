@@ -8,16 +8,16 @@
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li><%= link "Home", to: page_path(@conn, :index) %></li>
   <li><%= link "DE", to: country_path(@conn, :show, "deutschland") %></li>
-  <li><%= link Formatter.truncate(@federal_state.name, max_length: 20), to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
-  <li class="active"><%= Formatter.truncate(@city.name, max_length: 20) %></li>
+  <li><%= link @federal_state.code, to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
+  <li class="active"><%= Formatter.truncate(@city.name, max_length: 17) %></li>
 </ol>
 
 <div class="page-header">
   <div class="row">
     <div class="col-md-8">
       <h1>
-        <%= @city.name %> <small>(PLZ <%= @city.zip_code %>)</small><br>
-        <small><%= @federal_state.name %> <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %></small>
+        <%= @city.name %><br>
+        <small><%= @city.zip_code %> :: <%= @federal_state.name %> <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %></small>
       </h1>
     </div>
     <div class="col-md-4">

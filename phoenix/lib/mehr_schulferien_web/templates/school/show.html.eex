@@ -9,14 +9,14 @@
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li><%= link "Home", to: page_path(@conn, :index) %></li>
   <li><%= link @federal_state.code, to: federal_state_path(@conn, :show, @federal_state.slug) %></li>
-  <li><%= Formatter.truncate(@city.name, max_length: 10) %></li>
-  <li class="active"><%= Formatter.truncate(@school.name, max_length: 10) %></li>
+  <li><%= @city.zip_code %></li>
+  <li class="active"><%= Formatter.truncate(@school.name, max_length: 12) %></li>
 </ol>
 
 <div class="page-header">
   <div class="row">
     <div class="col-md-8">
-      <h1 class="hidden-xs">
+      <h1>
         <% {:ok, regex} = Regex.compile(@school.address_city <> "$") %>
         <%= String.replace(@school.name, regex, "") %><br>
         <small><%= @city.name %> in <%= @federal_state.name %>
@@ -25,15 +25,6 @@
         <% end %>
         </small>
       </h1>
-      <h3 class="visible-xs-* hidden-sm hidden-md hidden-lg">
-        <% {:ok, regex} = Regex.compile(@school.address_city <> "$") %>
-        <%= String.replace(@school.name, regex, "") %><br>
-        <small><%= @city.name %> in <%= @federal_state.name %>
-        <%= if CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) != "" do %>
-          <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %>
-        <% end %>
-        </small>
-      </h3>      
     </div>
     <div class="col-md-4">
       <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
