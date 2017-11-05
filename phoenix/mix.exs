@@ -45,7 +45,9 @@ defmodule MehrSchulferien.Mixfile do
       {:poison, "~> 3.1"},
       {:uuid, "~> 1.1" },
       {:number, "~> 0.5.4"},
-      {:distillery, "~> 1.5", runtime: false}
+      {:distillery, "~> 1.5", runtime: false},
+      {:csv, "~> 2.0.0"},
+      {:httpoison, "~> 0.13"}
     ]
   end
 
