@@ -48,6 +48,23 @@ defmodule MehrSchulferienWeb.PageController do
                                     federal_states: federal_states)
   end
 
+  def impressum(conn, _params) do
+    city_counter = Repo.one(from p in City, select: count("*"))
+    school_counter = Repo.one(from p in School, select: count("*"))
+    period_counter = Repo.one(from p in Period, select: count("*"))
+
+    country = Locations.get_country!("deutschland")
+
+    query = from fs in FederalState, where: fs.country_id == ^country.id,
+                                     order_by: fs.name
+    federal_states = Repo.all(query)
+
+    render(conn, "impressum.html", city_counter: city_counter,
+                                    school_counter: school_counter,
+                                    period_counter: period_counter,
+                                    federal_states: federal_states)
+  end
+
   defp get_locations(id) do
     country = Locations.get_country!(id)
 

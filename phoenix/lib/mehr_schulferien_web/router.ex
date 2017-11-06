@@ -18,6 +18,7 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/", PageController, :index
     get "/developers", PageController, :developers
+    get "/impressum", PageController, :impressum
 
     # Locations
     #
