@@ -29,6 +29,7 @@ defmodule MehrSchulferien.Locations.Airport do
     |> validate_length(:code, is: 3)
     |> validate_format(:code, ~r/[A-Z]{3}/)
     |> validate_required([:name, :slug, :code])
+    |> unique_constraint(:slug)
   end
 
   def set_federal_state_id(changeset) do

@@ -1,0 +1,53 @@
+<h2>Show Travel offer</h2>
+
+<ul>
+
+  <li>
+    <strong>Tour operator:</strong>
+    <%= @travel_offer.tour_operator %>
+  </li>
+
+  <li>
+    <strong>Destination name:</strong>
+    <%= @travel_offer.destination_name %>
+  </li>
+
+  <li>
+    <strong>Product name:</strong>
+    <%= @travel_offer.product_name %>
+  </li>
+
+  <li>
+    <strong>Product price:</strong>
+    <%= @travel_offer.product_price %>
+  </li>
+
+  <li>
+    <strong>Ad middleman:</strong>
+    <%= @travel_offer.ad_middleman %>
+  </li>
+
+  <li>
+    <strong>Product link:</strong>
+    <%= @travel_offer.product_link %>
+  </li>
+
+  <li>
+    <strong>Image url:</strong>
+    <%= @travel_offer.image_url %>
+  </li>
+
+  <li>
+    <strong>Duration:</strong>
+    <%= @travel_offer.duration %>
+  </li>
+
+  <li>
+    <strong>Expiries on:</strong>
+    <%= @travel_offer.expires_on %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: admin_travel_offer_path(@conn, :edit, @travel_offer) %></span>
+<span><%= link "Back", to: admin_travel_offer_path(@conn, :index) %></span>

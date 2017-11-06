@@ -1,0 +1,32 @@
+<h2>Listing Requests</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>TravelOffer</th>
+      <th>id</th>
+      <th>Referer</th>
+      <th>InsertedAt</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for request <- @requests do %>
+    <tr>
+      <td><%= request.travel_offer.product_name %></td>
+      <td><%= request.travel_offer_id %></td>
+      <td><%= request.referer %></td>
+      <td><%= request.inserted_at %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: admin_request_path(@conn, :show, request), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: admin_request_path(@conn, :edit, request), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: admin_request_path(@conn, :delete, request), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Request", to: admin_request_path(@conn, :new) %></span>

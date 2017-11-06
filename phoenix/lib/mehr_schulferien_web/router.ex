@@ -43,6 +43,10 @@ defmodule MehrSchulferienWeb.Router do
       resources "/cities", CityController, only: [:index]
       resources "/schools", SchoolController, only: [:index]
     end
+
+    # Ads
+    #
+    resources "/travel_offers", TravelOfferController, only: [:show]
   end
 
   # Brückentage
@@ -76,6 +80,11 @@ defmodule MehrSchulferienWeb.Router do
     resources "/periods", PeriodController
     resources "/slots", SlotController
     resources "/inset_day_quantities", InsetDayQuantityController
+
+    # Ads
+    #
+    resources "/travel_offers", TravelOfferController
+    resources "/requests", RequestController
   end
 
   scope "/api/v1.0", MehrSchulferienWeb.Api do

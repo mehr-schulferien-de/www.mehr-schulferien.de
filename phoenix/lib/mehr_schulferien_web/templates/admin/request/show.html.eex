@@ -1,0 +1,13 @@
+<h2>Show Request</h2>
+
+<ul>
+
+  <li>
+    <strong>Referer:</strong>
+    <%= @request.referer %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: admin_request_path(@conn, :edit, @request) %></span>
+<span><%= link "Back", to: admin_request_path(@conn, :index) %></span>

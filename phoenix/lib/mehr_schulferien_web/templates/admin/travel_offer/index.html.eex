@@ -1,0 +1,42 @@
+<h2>Listing Travel offers</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Tour operator</th>
+      <th>Destination name</th>
+      <th>Product name</th>
+      <th>Product price</th>
+      <th>Ad middleman</th>
+      <th>Product link</th>
+      <th>Image url</th>
+      <th>Duration</th>
+      <th>Expiries on</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for travel_offer <- @travel_offers do %>
+    <tr>
+      <td><%= travel_offer.tour_operator %></td>
+      <td><%= travel_offer.destination_name %></td>
+      <td><%= travel_offer.product_name %></td>
+      <td><%= travel_offer.product_price %></td>
+      <td><%= travel_offer.ad_middleman %></td>
+      <td><%= travel_offer.product_link %></td>
+      <td><%= travel_offer.image_url %></td>
+      <td><%= travel_offer.duration %></td>
+      <td><%= travel_offer.expires_on %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: admin_travel_offer_path(@conn, :show, travel_offer), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: admin_travel_offer_path(@conn, :edit, travel_offer), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: admin_travel_offer_path(@conn, :delete, travel_offer), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Travel offer", to: admin_travel_offer_path(@conn, :new) %></span>
