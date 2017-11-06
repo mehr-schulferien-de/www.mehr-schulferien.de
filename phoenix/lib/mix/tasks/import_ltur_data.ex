@@ -10,13 +10,20 @@ defmodule Mix.Tasks.ImportLturData do
   alias MehrSchulferien.Locations.FederalState
   alias MehrSchulferien.Locations.Country
   alias MehrSchulferien.Ads
+  alias MehrSchulferien.Ads.TravelOffer
   alias MehrSchulferien.Repo
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query
 
   @shortdoc "Fetches and imports l'tur affiliate marketing data."
   def run(_args) do
     Mix.Task.run "app.start"
     # Mix.shell.info "# Here is the config for nginx:"
+
+    tour_operator = "l'tur"
+
+    # Delete old entries
+    #
+    from(to in TravelOffer, where: to.tour_operator == ^tour_operator) |> Repo.delete_all
 
     url = "http://productdata.zanox.com/exportservice/v1/rest/43967799C752948137.csv?ticket=891A48AB858AD73FAFE1447C86CEABD1&productIndustryId=2&columnDelimiter=,&textQualifier=DoubleQuote&nullOutputFormat=NullValue&dateFormat=yyyy-MM-dd'T'HH:mm:ss:SSS&decimalSeparator=period&id=&pg=&nb=&na=&pp=&po=&cy=&du=&ds=&dl=&tm=&mc=&c1=&c2=&c3=&ia=&im=&il=&df=&dt=&lk=&ss=&sa=&af=&sp=&sv=&x1=&x2=&x3=&x4=&x5=&x6=&x7=&x8=&x9=&zi=&fd=&to=&dn=&da=&dz=&dc=&dy=&dr=&dp=&do=&tu=&ti=&ta=&tr=&tt=&tp=&p3=&gZipCompress=null"
 
@@ -61,7 +68,7 @@ defmodule Mix.Tasks.ImportLturData do
             image_url: product["ImageLargeURL"],
             duration: duration,
             ad_middleman: "Zanox",
-            tour_operator: "l'tur",
+            tour_operator: tour_operator,
             expires_on: Date.add(Date.utc_today, 30),
             airport_id: airport.id
             })

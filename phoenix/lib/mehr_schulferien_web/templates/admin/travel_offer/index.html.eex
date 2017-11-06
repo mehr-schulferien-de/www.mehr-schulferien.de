@@ -1,8 +1,9 @@
 <h2>Listing Travel offers</h2>
-
+<p>Anzahl: <%= length @travel_offers %></p>
 <table class="table">
   <thead>
     <tr>
+      <th>id</th>
       <th>Tour operator</th>
       <th>Destination name</th>
       <th>Product name</th>
@@ -19,6 +20,7 @@
   <tbody>
 <%= for travel_offer <- @travel_offers do %>
     <tr>
+      <td><%= travel_offer.id %></td>
       <td><%= travel_offer.tour_operator %></td>
       <td><%= travel_offer.destination_name %></td>
       <td><%= travel_offer.product_name %></td>
