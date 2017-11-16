@@ -38,6 +38,7 @@
     </div>
   </div>
   <div class="col-sm-3">
+    <%= render MehrSchulferienWeb.SharedView, "_reiseblog_panel.html" %>
     <%= render MehrSchulferienWeb.SharedView, "_religion_panel.html", assigns %>
     <%= render MehrSchulferienWeb.SharedView, "_zeitraeume_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on %>
     <%= render MehrSchulferienWeb.FederalStateView, "_cities_and_schools_links_panel.html", federal_state: @federal_state %>
