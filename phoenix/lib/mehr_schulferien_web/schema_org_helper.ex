@@ -27,10 +27,11 @@ defmodule MehrSchulferienWeb.SchemaOrgHelper do
         :addressRegion => location.name,
         :addressCountry => "DE"}
       %MehrSchulferien.Locations.City{} ->
+        federal_state = MehrSchulferien.Locations.get_federal_state!(location.federal_state_id)
         %{:streetAddress => "",
         :addressLocality => location.name,
         :postalCode => location.zip_code,
-        :addressRegion => location.name,
+        :addressRegion => federal_state.name,
         :addressCountry => "DE"}
       %MehrSchulferien.Locations.School{} ->
         federal_state = MehrSchulferien.Locations.get_federal_state!(location.federal_state_id)
