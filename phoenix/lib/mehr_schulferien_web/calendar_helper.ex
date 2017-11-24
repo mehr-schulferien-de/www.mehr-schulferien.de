@@ -121,7 +121,7 @@ defmodule MehrSchulferienWeb.CalendarHelper do
     heading = case {starts_on.month, starts_on.year, ends_on.month, ends_on.year} do
       {1, x, 12, x} -> Integer.to_string(starts_on.year) <> " (inkl. " <> categories_string <>")"
       {8, ^starts_year, 7, ^starts_year_plus_1} ->
-                       "Schuljahr " <> Integer.to_string(starts_year - 2000) <> "/" <> Integer.to_string(starts_year - 1999) <> " (inkl. " <> categories_string <>")"
+                       "Schuljahr " <> Integer.to_string(starts_year) <> "/" <> Integer.to_string(starts_year + 1) <> " (inkl. " <> categories_string <>")"
       {^current_month, ^current_year, month, year} ->
                        query = from(
                                     days in Day,
