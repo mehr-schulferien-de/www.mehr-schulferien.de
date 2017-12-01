@@ -35,6 +35,7 @@ defmodule MehrSchulferienWeb.Router do
     resources "/federal_states", FederalStateController, only: [:show] do
       resources "/cities", CityController, only: [:index]
       resources "/schools", SchoolController, only: [:index]
+
       get "/:starts_on/:ends_on", FederalStateController, :show
       get "/:year", FederalStateController, :show
     end
@@ -42,6 +43,10 @@ defmodule MehrSchulferienWeb.Router do
     resources "/countries", CountryController, only: [:show] do
       resources "/cities", CityController, only: [:index]
       resources "/schools", SchoolController, only: [:index]
+
+      # Jahreskalender
+      #
+      get "/kalender/:year", JahreskalenderController, :show
     end
 
     # Ads

@@ -33,6 +33,19 @@
       <% end %>
     </p>
     <hr>
+    <h2>Jahreskalender</h2>
+    <p>
+      Für Deutschland inklusive der gesetzlichen Feiertage, aber ohne Schulferien:<br>
+      <% years = Enum.to_list(DateTime.utc_now.year..(DateTime.utc_now.year + 2))  %>
+      <%= for year <- years do %>
+        <%= if year == List.last(years) do %>
+          <a href="/countries/deutschland/kalender/<%= year %>"><%= year %></a>.
+        <% else %>
+          <a href="/countries/deutschland/kalender/<%= year %>"><%= year %></a>,
+        <% end %>
+      <% end %>
+    </p>
+    <hr>
     <h2>Günstig-Urlaub-Planen-Hilfe für Nicht-Eltern</h2>
     <p>Sie haben keine schulpflichtigen Kinder und suchen eine möglichst
       günstigen Zeitpunkt für Ihren Urlaub? Dann brauchen Sie in den folgenden

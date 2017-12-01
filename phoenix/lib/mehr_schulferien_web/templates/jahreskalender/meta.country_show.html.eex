@@ -1,0 +1,2 @@
+<meta name="description" content="01.01. - 31.12.<%= @starts_on.year %> mit allen gesetzlicher Feiertagen für <%= @country.name %>.">
+<title>Kalender für das Jahr <%= @starts_on.year %></title>
