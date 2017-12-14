@@ -1,27 +1,30 @@
 <div class="page-header">
   <div class="row">
-    <div class="col-md-8">
-      <h1>
-        mehr-schulferien.de<br>
-        <small>Urlaub besser planen.</small>
-      </h1>
-    </div>
-    <div class="col-md-4">
-      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
+    <div class="col-md-12">
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- Responsive Ad -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-9538764634478220"
+           data-ad-slot="9601528282"
+           data-ad-format="auto"></ins>
+      <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
   </div>
 </div>
 
 <div class="row">
   <div class="col-sm-9">
-    <h2>Schüler, Lehrer und Eltern</h2>
+    <h1>Schulferien Kalender</h1>
     <p>Ferien- und Feiertagstermine für <%= Number.Delimit.number_to_delimited(@school_counter) %> Schulen (je nach
       Schule inklusive der beweglichen Ferientage). Suchen Sie am besten
       direkt den Terminkalender der Schule oder Stadt.</p><p>
       Am schnellsten geht das über die
       <a href="/countries/deutschland">Liste der Bundesländer</a> -> Schulen</p>
     <hr>
-    <h2>Brückentage</h2>
+    <h1>Brückentage</h1>
     <p>
       Optimieren Sie Ihre Urlaubsplanung:<br>
       <% year = Integer.to_string(DateTime.utc_now.year + 1) %>
@@ -33,7 +36,7 @@
       <% end %>
     </p>
     <hr>
-    <h2>Jahreskalender</h2>
+    <h1>Jahreskalender</h1>
     <p>
       Für Deutschland inklusive der gesetzlichen Feiertage, aber ohne Schulferien:<br>
       <% years = Enum.to_list(DateTime.utc_now.year..(DateTime.utc_now.year + 2))  %>
@@ -46,7 +49,7 @@
       <% end %>
     </p>
     <hr>
-    <h2>Günstig-Urlaub-Planen-Hilfe für Nicht-Eltern</h2>
+    <h1>Günstig-Urlaub-Planen-Hilfe</h1>
     <p>Sie haben keine schulpflichtigen Kinder und suchen eine möglichst
       günstigen Zeitpunkt für Ihren Urlaub? Dann brauchen Sie in den folgenden
     Kalender. Suchen Sie nach farblich nicht hinterlegten Wochen. In diesen Zeiträumen
@@ -57,7 +60,7 @@
 
     <%= render MehrSchulferienWeb.SharedView, "_calendar.html", days: @days, month_per_row: 3, categories: @categories, explanations: false %>
 
-    <h2>Allgemeine Infos</h2>
+    <h1>Allgemeine Infos</h1>
     <p>mehr-schulferien.de gibt eine schnelle Übersicht über Ferientermine und
     das ist gar nicht so unkompliziert wie man es sich am Anfang denkt. Ein paar
     Beispiele:</p>
