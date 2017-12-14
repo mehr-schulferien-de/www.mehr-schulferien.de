@@ -11,15 +11,7 @@
       <%= render(MehrSchulferienWeb.LayoutView, "_css.html", assigns) %>
     </style>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-774512-9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-774512-9');
-    </script>
+    <%= render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html") %>
   </head>
 
   <body>
