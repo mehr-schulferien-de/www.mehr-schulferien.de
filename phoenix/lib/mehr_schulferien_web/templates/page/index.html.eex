@@ -17,8 +17,8 @@
 
 <div class="row">
   <div class="col-sm-9">
-    <h1>Schulferien Kalender</h1>
-    <p>Ferien- und Feiertagstermine für <%= Number.Delimit.number_to_delimited(@school_counter) %> Schulen (je nach
+    <h1>Ferien, Feiertage und Brückentage</h1>
+    <p>Ferientermine für <%= Number.Delimit.number_to_delimited(@school_counter) %> Schulen (je nach
       Schule inklusive der beweglichen Ferientage). Suchen Sie am besten
       direkt den Terminkalender der Schule oder Stadt.</p><p>
       Am schnellsten geht das über die
