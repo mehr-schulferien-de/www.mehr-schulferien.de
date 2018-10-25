@@ -7,8 +7,6 @@ ruby '2.5.1'
 gem 'rails', '~> 5.2.0'
 # Postgresql
 gem 'pg'
-# nice urls with friendly id
-gem 'friendly_id'
 
 # Use Puma as the app server
 # gem 'puma', '~> 3.11'
