@@ -73,4 +73,11 @@ class CountryTest < ActiveSupport::TestCase
 
     assert_equal 'AU', country.code
   end
+
+  test 'should has_many federal_states' do
+    country = create(:country, federal_states: [create(:federal_state)])
+
+    assert_equal 1, country.federal_states.count
+    assert_equal FederalState, country.federal_states.first.class
+  end
 end

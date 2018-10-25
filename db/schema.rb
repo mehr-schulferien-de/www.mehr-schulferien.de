@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_20_220516) do
+ActiveRecord::Schema.define(version: 2018_10_25_201402) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,8 +21,22 @@ ActiveRecord::Schema.define(version: 2018_10_20_220516) do
     t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_countries_on_code", unique: true
     t.index ["name"], name: "index_countries_on_name", unique: true
     t.index ["slug"], name: "index_countries_on_slug", unique: true
+  end
+
+  create_table "federal_states", force: :cascade do |t|
+    t.string "name"
+    t.string "slug"
+    t.string "code"
+    t.string "country_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_federal_states_on_code", unique: true
+    t.index ["country_code"], name: "index_federal_states_on_country_code"
+    t.index ["name"], name: "index_federal_states_on_name", unique: true
+    t.index ["slug"], name: "index_federal_states_on_slug", unique: true
   end
 
 end

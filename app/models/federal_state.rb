@@ -1,22 +1,15 @@
-# frozen_string_literal: true
-
-class Country < ApplicationRecord
+class FederalState < ApplicationRecord
   before_validation :generate_slug
-  before_validation :upcase_code
-
-  has_many :federal_states, primary_key: :code, foreign_key: :country_code
 
   validates :name, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
   validates :code, presence: true, uniqueness: true, format: { with: /\A[a-zA-Z]+\z/ }, length: { is: 2 }
 
+  belongs_to :country, primary_key: :code, foreign_key: :country_code
+
   private
 
   def generate_slug
     self.slug = SlugGenerator.new(name).slug
-  end
-
-  def upcase_code
-    self.code = code.upcase if code
   end
 end

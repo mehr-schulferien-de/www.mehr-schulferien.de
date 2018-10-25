@@ -1,8 +1,11 @@
 FactoryBot.define do
   factory :country do
-    sequence :name do |n|
-      "Deutschland-#{n}"
+    name { 'Schweiz' }
+    code { 'CH' }
+
+    trait :deutschland do
+      name { 'Deutschland' }
+      code { 'DE' }
     end
-    code { 'DE' }
   end
 end
