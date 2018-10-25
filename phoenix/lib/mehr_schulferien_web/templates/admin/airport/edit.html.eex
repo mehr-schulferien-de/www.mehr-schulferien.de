@@ -1,5 +1,0 @@
-<h2>Edit Airport</h2>
-
-<%= render "form.html", Map.put(assigns, :action, admin_airport_path(@conn, :update, @airport)) %>
-
-<span><%= link "Back", to: admin_airport_path(@conn, :index) %></span>

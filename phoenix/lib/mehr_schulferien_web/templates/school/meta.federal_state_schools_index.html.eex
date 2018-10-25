@@ -1,2 +1,0 @@
-<meta name="description" content="Eine Liste der <%= Number.Delimit.number_to_delimited(length(@schools)) %> Schulen in <%= @federal_state.name %>. Postleitzahlenbereiche <%= String.replace(List.first(@schools).address_zip_code, ~r/[0-9][0-9][0-9]$/, "xxx") %> bis <%= String.replace(List.last(@schools).address_zip_code, ~r/[0-9][0-9][0-9]$/, "xxx") %>.">
-<title>Schulen in <%= @federal_state.name %></title>

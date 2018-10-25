@@ -1,2 +1,0 @@
-<meta name="description" content="Eine Liste der <%= Number.Delimit.number_to_delimited(length(@cities)) %> Städte in <%= @country.name %>.">
-<title>Städte in <%= @country.name %></title>

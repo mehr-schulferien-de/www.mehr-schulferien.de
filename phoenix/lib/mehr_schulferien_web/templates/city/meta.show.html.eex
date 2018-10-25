@@ -1,2 +1,0 @@
-<meta name="description" content="Schulferientermine für <%= @city.name %> (PLZ <%= @city.zip_code %>) in <%= @federal_state.name %>. Mit beweglichen Ferientagen für <%= Number.Delimit.number_to_delimited(length(@schools)) %> Schulen.">
-<title>Schulferientermine für <%= @city.name %> (PLZ <%= @city.zip_code %>)<%= if CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) != "" do %> <%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on, @chosen_religion_categories) %><% end %></title>
