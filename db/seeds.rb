@@ -5,4 +5,25 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-germany = Country.create(name: 'Deutschland')
+germany = Country.create(name: 'Deutschland', code: 'DE')
+
+FederalState.create(
+  [
+    { name: 'Baden-Württemberg', code: 'BW', country: germany },
+    { name: 'Bayern', code: 'BY', country: germany },
+    { name: 'Berlin', code: 'BE', country: germany },
+    { name: 'Brandenburg', code: 'BB', country: germany },
+    { name: 'Bremen', code: 'HB', country: germany },
+    { name: 'Hamburg', code: 'HH', country: germany },
+    { name: 'Hessen', code: 'HE', country: germany },
+    { name: 'Mecklenburg-Vorpommern', code: 'MV', country: germany },
+    { name: 'Niedersachsen', code: 'NI', country: germany },
+    { name: 'Nordrhein-Westfalen', code: 'NW', country: germany },
+    { name: 'Rheinland-Pfalz', code: 'RP', country: germany },
+    { name: 'Saarland', code: 'SL', country: germany },
+    { name: 'Sachsen', code: 'SN', country: germany },
+    { name: 'Sachen-Anhalt', code: 'ST', country: germany },
+    { name: 'Schleswig-Holstein', code: 'SH', country: germany },
+    { name: 'Thüringen', code: 'TH', country: germany }
+  ]
+)
