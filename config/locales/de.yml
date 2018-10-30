@@ -1,2 +1,10 @@
 de:
   hello: 'hallo welt'
+
+  activerecord:
+    errors:
+      models:
+        year:
+          attributes:
+            value:
+              past: Das Jahr darf nicht in der Vergangenheit liegen

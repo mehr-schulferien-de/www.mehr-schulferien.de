@@ -3,10 +3,6 @@
 require 'test_helper'
 
 class FederalStateTest < ActiveSupport::TestCase
-  def setup
-    create(:country)
-  end
-
   test 'validate presence of name' do
     federal_state = build(:federal_state, name: nil)
 

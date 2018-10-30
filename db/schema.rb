@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_25_201402) do
+ActiveRecord::Schema.define(version: 2018_10_30_185650) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,15 @@ ActiveRecord::Schema.define(version: 2018_10_25_201402) do
     t.index ["country_code"], name: "index_federal_states_on_country_code"
     t.index ["name"], name: "index_federal_states_on_name", unique: true
     t.index ["slug"], name: "index_federal_states_on_slug", unique: true
+  end
+
+  create_table "years", force: :cascade do |t|
+    t.integer "value"
+    t.string "slug"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_years_on_slug", unique: true
+    t.index ["value"], name: "index_years_on_value", unique: true
   end
 
 end
