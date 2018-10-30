@@ -27,3 +27,24 @@ FederalState.create(
     { name: 'Thüringen', code: 'TH', country: germany }
   ]
 )
+
+Year.create(
+  [
+    { value: Date.today.year },
+    { value: Date.today.year + 1 },
+    { value: Date.today.year + 2 },
+    { value: Date.today.year + 3 }
+  ]
+)
+
+Category.create(
+  [
+    { value: 'Schulferien' },
+    { value: 'Gesetzlicher Feiertag' },
+    { value: 'Beweglicher Ferientag' },
+    { value: 'Islamischer Feiertag' },
+    { value: 'Jüdischer Feiertag' },
+    { value: 'Griechisch-Orthodoxer Feiertag' },
+    { value: 'Russisch-Orthodoxer Feiertag' }
+  ]
+)
