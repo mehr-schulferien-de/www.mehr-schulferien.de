@@ -1,14 +1,10 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Reisepodcast</h3>
+    <h3 class="panel-title">DSVG</h3>
   </div>
   <div class="panel-body">
-    <ul>
-      <li><a href="https://www.reisepassnummer.de/2018/05/22/wolfenbuettel.html">Wolfenbüttel</a></li>
-      <li><a href="https://www.reisepassnummer.de/2018/05/06/spaziergang-durch-minsk.html">Spaziergang durch Minsk</a></li>
-      <li><a href="https://www.reisepassnummer.de/2018/04/11/neustadt-an-der-weinstrasse.html">Neustadt an der Weinstrasse mit Kindern</a>
-      <li><a href="https://www.reisepassnummer.de/2018/03/23/breslau.html">Breslau</a></li>
-      <li><a href="https://www.reisepassnummer.de/">Reiseblog: Reisepassnummer</a></li>
-    </ul>
+  <p>
+Wir weisen darauf hin, dass diese Seite Google Analytics einsetzt und verweisen hierzu auf die Datenschutzerklärung (<a target="_blank" href="https://policies.google.com/privacy">https://policies.google.com/privacy</a>) sowie Opt-Out-Möglichkeiten für Google-Analytics (<a target="_blank" href="http://tools.google.com/dlpage/gaoptout?hl=de">http://tools.google.com/dlpage/gaoptout?hl=de</a>).
+  </p>
   </div>
 </div>
