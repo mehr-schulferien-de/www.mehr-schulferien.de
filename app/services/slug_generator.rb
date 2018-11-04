@@ -4,17 +4,21 @@
 class SlugGenerator
   attr_reader :slug
 
-  def initialize(param)
-    @param = param
-    return if param.blank? || !param.is_a?(String)
+  def initialize(*params)
+    return if params.any?(&:blank?) || !params.all? { |param| param.is_a?(String) }
 
+    @params = params
     @slug = build
   end
 
   private
 
   def build
-    convert_german_umlauts(@param.squish).parameterize
+    [].tap do |tmp_slug|
+      @params.each do |param|
+        tmp_slug << convert_german_umlauts(param.squish).parameterize
+      end
+    end.join('-')
   end
 
   def convert_german_umlauts(value)
