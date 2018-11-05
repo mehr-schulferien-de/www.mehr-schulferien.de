@@ -32,9 +32,7 @@ ActiveRecord::Schema.define(version: 2018_11_04_201007) do
     t.string "federal_state_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "federal_state_code"], name: "index_cities_on_name_and_federal_state_code", unique: true
     t.index ["slug"], name: "index_cities_on_slug", unique: true
-    t.index ["zip_code", "country_code"], name: "index_cities_on_zip_code_and_country_code", unique: true
   end
 
   create_table "countries", force: :cascade do |t|

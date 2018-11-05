@@ -12,8 +12,6 @@ class CreateCities < ActiveRecord::Migration[5.2]
       t.timestamps
     end
 
-    add_index :cities, %i[zip_code country_code], unique: true
-    add_index :cities, %i[name federal_state_code], unique: true
     add_index :cities, :slug, unique: true
   end
 end

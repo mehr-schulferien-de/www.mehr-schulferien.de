@@ -9,21 +9,21 @@ class CityTest < ActiveSupport::TestCase
   end
 
   test 'validates presence of slug' do
-    city = create(:city, name: 'Rothenburg ob der Tauber')
+    city = create(:city, name: 'Rothenburg ob der Tauber', zip_code: '12345')
 
-    assert_equal 'rothenburg-ob-der-tauber', city.slug
+    assert_equal 'rothenburg-ob-der-tauber-12345', city.slug
+  end
+
+  test 'validate uniqueness of slug' do
+    create(:city, name: 'Rothenburg ob der Tauber', zip_code: '12345')
+    city = build(:city, name: 'Rothenburg ob der Tauber', zip_code: '12345', country: create(:country, :at))
+
+    assert_not city.valid?
+    assert city.errors.key?(:slug)
   end
 
   test 'validate presence of zip_code' do
     city = build(:city, zip_code: nil)
-
-    assert_not city.valid?
-    assert city.errors.key?(:zip_code)
-  end
-
-  test 'validate uniqueness of zip_code -> in scope of slug and name' do
-    create(:city, name: 'Rothenburg ob der Tauber', zip_code: '12345')
-    city = build(:city, name: 'Rothenburg ob der Tauber', zip_code: '12345')
 
     assert_not city.valid?
     assert city.errors.key?(:zip_code)

@@ -9,5 +9,10 @@ FactoryBot.define do
       name { 'Deutschland' }
       code { 'DE' }
     end
+
+    trait :at do
+      name { 'Österreich' }
+      code { 'AT' }
+    end
   end
 end
