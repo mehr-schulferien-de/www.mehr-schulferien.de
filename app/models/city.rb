@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # TODO: Add unique validation for name, zip_code, country and federal_state (if possible ;-))
 class City < ApplicationRecord
   before_validation :generate_slug
