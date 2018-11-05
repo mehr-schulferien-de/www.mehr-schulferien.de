@@ -15,6 +15,6 @@ class City < ApplicationRecord
   private
 
   def generate_slug
-    self.slug = SlugGenerator.new(name, zip_code).slug
+    self.slug = SlugGenerator.new(zip_code, name).slug
   end
 end

@@ -11,7 +11,7 @@ class CityTest < ActiveSupport::TestCase
   test 'validates presence of slug' do
     city = create(:city, name: 'Rothenburg ob der Tauber', zip_code: '12345')
 
-    assert_equal 'rothenburg-ob-der-tauber-12345', city.slug
+    assert_equal '12345-rothenburg-ob-der-tauber', city.slug
   end
 
   test 'validate uniqueness of slug' do
