@@ -1,10 +1,14 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">DSVG</h3>
+    <h3 class="panel-title">DSVG und Cookies</h3>
   </div>
   <div class="panel-body">
-  <p>
+  <p class="small">
 Wir weisen darauf hin, dass diese Seite Google Analytics einsetzt und verweisen hierzu auf die <a  href="https://policies.google.com/privacy">Datenschutzerklärung</a> sowie auf die <a  href="http://tools.google.com/dlpage/gaoptout?hl=de">Opt-Out-Möglichkeiten für Google-Analytics</a>.
+  </p>
+  <p class="small">
+Diese Webseite verwendet Cookies
+Wir verwenden Cookies, um Inhalte und Anzeigen zu personalisieren, Funktionen für soziale Medien anbieten zu können und die Zugriffe auf unsere Website zu analysieren. Außerdem geben wir Informationen zu Ihrer Verwendung unserer Website an unsere Partner für soziale Medien, Werbung und Analysen weiter. Unsere Partner führen diese Informationen möglicherweise mit weiteren Daten zusammen, die Sie ihnen bereitgestellt haben oder die sie im Rahmen Ihrer Nutzung der Dienste gesammelt haben. Sie geben Einwilligung zu unseren Cookies, wenn Sie unsere Webseite weiterhin nutzen.
   </p>
   </div>
 </div>
