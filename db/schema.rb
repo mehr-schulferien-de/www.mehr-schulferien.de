@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_04_201007) do
+ActiveRecord::Schema.define(version: 2018_11_13_205501) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,24 @@ ActiveRecord::Schema.define(version: 2018_11_04_201007) do
     t.index ["country_code"], name: "index_federal_states_on_country_code"
     t.index ["name"], name: "index_federal_states_on_name", unique: true
     t.index ["slug"], name: "index_federal_states_on_slug", unique: true
+  end
+
+  create_table "schools", force: :cascade do |t|
+    t.string "name"
+    t.string "phone_number"
+    t.string "slug"
+    t.string "homepage_url"
+    t.string "federal_state_code"
+    t.string "fax_number"
+    t.string "email_address"
+    t.string "country_code"
+    t.string "city_slug"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_slug"], name: "index_schools_on_city_slug"
+    t.index ["country_code"], name: "index_schools_on_country_code"
+    t.index ["federal_state_code"], name: "index_schools_on_federal_state_code"
+    t.index ["slug"], name: "index_schools_on_slug", unique: true
   end
 
   create_table "years", force: :cascade do |t|
