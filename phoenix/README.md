@@ -1,9 +1,24 @@
 # MehrSchulferien
 
+## Software versions
+
+- Elixir: 1.5.2
+- Erlang: 20.3.8.9
+- node: 8.8.1
+- NPM: 5.4.2
+
+## Postgres
+
+createuser -s postgres
+
+## Setup
+
 To start your Phoenix server:
 
+  * Delete an existing deps directory. `rm -rf deps`
   * Install dependencies with `mix deps.get`
   * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+  * Seed the database with `mix run priv/repo/seeds.exs`
   * Install Node.js dependencies with `cd assets && npm install`
   * Start Phoenix endpoint with `mix phx.server`
 
