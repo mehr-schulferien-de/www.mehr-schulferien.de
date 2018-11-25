@@ -33,11 +33,6 @@
       <a href="<%= @school.homepage_url %>"><%= @school.homepage_url |> String.replace(~r/htt[ps]*:\/\//, "") |> String.replace(~r/^www./, "") %></a>
     <% end %>
     </address>
-    <p>
-      <a href="<%= URI.encode("https://maps.google.com/maps?q=" <> @school.address_street <> "," <> @school.address_zip_code <> " " <> @school.address_city) %>">
-        <img src="<%= URI.encode("https://maps.googleapis.com/maps/api/staticmap?center=" <> @school.address_street <> "," <> @school.address_zip_code <> " " <> @school.address_city) <> "&markers=color:blue%7Clabel:S%7C" <> @school.address_street <> "," <> @school.address_zip_code <> " " <> @school.address_city <> "&zoom=12&size=180x180&sensor=false" %>" alt="Google Maps Landkarte mit der Position dieser Schule" class="img-thumbnail" width="180" height="180">
-      </a>
-    </p>
   </div>
 </div>
 
