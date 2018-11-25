@@ -33,7 +33,7 @@
                 <td></td>
               <% else %>
                 <%= if Enum.member?(winner_days_of_this_month_values, day.value) do %>
-                  <td class="text-right warning %>">
+                  <td class="text-right warning">
                     <%= day.day_of_month %>.
                   </td>
                 <% else %>
