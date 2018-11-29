@@ -16,3 +16,11 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
     margin-top: 0;
   }
 }
+
+.table > tbody > tr > td.success {
+  background: lightgreen;
+}
+
+.table > tbody > tr > td.info {
+  background: lightskyblue;
+}
