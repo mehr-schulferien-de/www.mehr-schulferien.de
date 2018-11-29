@@ -17,17 +17,5 @@
       <% end %>
     <% end %>
     </p>
-    <p><strong>Schuljahr:</strong><br>
-    <%= for year <- next_three_years do %>
-      <%= if assigns[:location] && assigns[:starts_on] && assigns[:ends_on] && {:ok, @starts_on} == Date.from_erl({year, 8, 1}) && {:ok, @ends_on} == Date.from_erl({year + 1, 7, 31}) do %>
-        <%= year - 2000 %>/<%= year - 1999 %>
-      <% else %>
-        <a href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= year %>-08-01/<%= year + 1 %>-07-31/<%= @number_of_days_to_invest %>"><%= year - 2000 %>/<%= year - 1999 %></a>
-      <% end %>
-      <%= unless year == List.last(next_three_years) do %>
-        -
-      <% end %>
-    <% end %>
-    </p>
   </div>
 </div>
