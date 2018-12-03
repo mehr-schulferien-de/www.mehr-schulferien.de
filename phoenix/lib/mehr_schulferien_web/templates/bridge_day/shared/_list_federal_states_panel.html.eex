@@ -28,20 +28,6 @@
           <% end %>
           </p>
 
-          <p>Schuljahr:<br>
-          <%= for year <- next_three_years do %>
-            <%= if assigns[:federal_state] && assigns[:starts_on] && assigns[:ends_on] && {:ok, @starts_on} == Date.from_erl({year, 8, 1}) && {:ok, @ends_on} == Date.from_erl({year + 1, 7, 31}) do %>
-              <%= year - 2000 %>/<%= year - 1999 %>
-            <% else %>
-              <a href="/bridge_days/federal_states/<%= federal_state.slug %>/<%= year %>-08-01/<%= year + 1 %>-07-31/<%= @number_of_days_to_invest %>"><%= year - 2000 %>/<%= year - 1999 %></a>
-            <% end %>
-            <%= unless year == List.last(next_three_years) do %>
-              -
-            <% end %>
-          <% end %>
-          </p>
-
-
         </small>
       </li>
     <% end %>
