@@ -56,7 +56,7 @@
           <div class="col-xs-6 %>">
             <h4><%= category.name_plural %></h4>
             <dl>
-              <%= for {name, starts_on, ends_on, length, location, css_class} <- periods do %>
+              <%= for {name, starts_on, ends_on, length, _location, css_class} <- periods do %>
                 <dt><%= name %></dt>
                 <dd>
                   <%= starts_on.day %>.<%= starts_on.month %>.
