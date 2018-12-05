@@ -12,21 +12,15 @@ defmodule MehrSchulferien.CollectBridgeDayData do
   alias MehrSchulferien.Timetables.Category
   import Ecto.Query
 
+  @doc """
+  Returns all the days (MehrSchulferien.Timetables.Day) in the current calendar year
+  """
   def list_days(locations, opts \\ []) do
      country_ids = for %MehrSchulferien.Locations.Country{id: id} <- locations, do: id
      federal_state_ids = for %MehrSchulferien.Locations.FederalState{id: id} <- locations, do: id
 
-     if opts[:starts_on] do
-       starts_on = opts[:starts_on]
-     else
-       {:ok, starts_on} = Date.from_erl({Date.utc_today.year, 1, 1})
-     end
-
-     if opts[:ends_on] do
-       ends_on = opts[:ends_on]
-     else
-       {:ok, ends_on} = Date.from_erl({starts_on.year, 12, 31})
-     end
+     starts_on = Keyword.get(opts, :starts_on, Date.from_erl({Date.utc_today.year, 1, 1}))
+     ends_on = Keyword.get(opts, :ends_on, Date.from_erl({starts_on.year, 12, 31}))
 
      # Feiertage und Wochenenden
      #
@@ -111,6 +105,9 @@ defmodule MehrSchulferien.CollectBridgeDayData do
     {days, %{start_position: start_position, bridge_days: bridge_days, bridge_day_vacation_length: bridge_day_vacation_length}}
   end
 
+  @doc """
+  Calculate optimal bridge days given a number of days to invest
+  """
   def compiled_optimal_bridge_days(days, number_of_days_to_invest) do
     start_position = optimal_bridge_days_start_position(days, number_of_days_to_invest)
     bridge_days = optimal_bridge_days(days, number_of_days_to_invest)
@@ -163,9 +160,11 @@ defmodule MehrSchulferien.CollectBridgeDayData do
     {days, searchresult} = search_again_for_bridge_days(days, number_of_days_to_invest, searchresult)
     result = result ++ [searchresult]
 
-    vacation_length_list = Enum.map(result, fn(x) -> x.bridge_day_vacation_length end)
-                           |> Enum.sort
-                           |> Enum.uniq
+    vacation_length_list =
+      result
+        |> Enum.map(fn(x) -> x.bridge_day_vacation_length end)
+        |> Enum.sort()
+        |> Enum.uniq()
 
     [greatest|tail] = Enum.reverse(vacation_length_list)
     [second_greatest|tail] = tail
@@ -218,4 +217,20 @@ defmodule MehrSchulferien.CollectBridgeDayData do
     {starts_on, ends_on}
   end
 
+  @doc """
+  Calculate optimal bridge days for each investable day (1...5)
+  the returned value format %{investable_day: [bridge_days], ...}
+  """
+  def compiled_optimal_bridge_days_by_each_investable_day(days) do
+    Enum.reduce(1..5, %{}, fn number_of_day_to_invest, best_bridge_days ->
+      days
+        |> compiled_optimal_bridge_days(number_of_day_to_invest)
+        |> Enum.take(3) # take the top 3 of each list of optimal bridge days
+        |> set_optimal_bridge_days(number_of_day_to_invest, best_bridge_days)
+    end)
+  end
+
+  def set_optimal_bridge_days(optimal_bridge_days, number_of_day_to_invest, best_bridge_days) do
+    Map.put(best_bridge_days, number_of_day_to_invest, optimal_bridge_days)
+  end
 end
