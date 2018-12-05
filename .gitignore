@@ -30,6 +30,4 @@ npm-debug.log
 #
 .DS_Store
 
-# Distillery
-#
-/phoenix/_build
+.idea
