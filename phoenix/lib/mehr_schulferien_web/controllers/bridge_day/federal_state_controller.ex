@@ -26,7 +26,7 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                  where: categories.for_anybody == true)
     categories = Repo.all(query)
 
-    compiled_optimal_bridge_days = MehrSchulferien.CollectBridgeDayData.compiled_optimal_bridge_days(days, String.to_integer(number_of_days_to_invest))
+    compiled_optimal_bridge_days = CollectBridgeDayData.compiled_optimal_bridge_days(days, String.to_integer(number_of_days_to_invest))
 
     render(conn, "show.html", federal_state: federal_state,
                               federal_states: federal_states,
@@ -37,6 +37,49 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               categories: categories,
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
                               number_of_days_to_invest: String.to_integer(number_of_days_to_invest))
+  end
+
+  def index(conn, %{"federal_state_id" => federal_state_id,
+                   "starts_on" => starts_on,
+                   "ends_on" => ends_on}) do
+    {federal_state, federal_states, country} = get_locations(federal_state_id)
+    {starts_on, ends_on} = get_dates(starts_on, ends_on)
+
+    days = CollectBridgeDayData.list_days([country, federal_state],
+                                 starts_on: starts_on, ends_on: ends_on)
+
+    query = from(categories in Category, where: categories.for_anybody == true)
+    categories = Repo.all(query)
+
+    optimal_bridge_days_by_each_investable_day = CollectBridgeDayData.compiled_optimal_bridge_days_by_each_investable_day(days)
+
+    # collect only elixir date representation
+    investable_days_bridge_days =
+      optimal_bridge_days_by_each_investable_day
+        |> Enum.map(fn {_invested_day, bridge_days_list} ->
+          Enum.map(bridge_days_list, & &1.bridge_days)
+        end)
+        |> List.flatten()
+
+    # extract the months that contains all the bridge days
+    # It's useful to implement only the month we are interested in the view
+    month_containing_all_bridge_days =
+      days
+      |> Enum.filter(fn day -> day.value in investable_days_bridge_days end)
+      |> Enum.map(fn %{value: %{month: month}} -> month end)
+
+
+    render(conn, "index.html", federal_state: federal_state,
+      federal_states: federal_states,
+      country: country,
+      starts_on: starts_on,
+      ends_on: ends_on,
+      investable_days_bridge_days: investable_days_bridge_days,
+      days: days,
+      optimal_bridge_days_by_each_investable_day: optimal_bridge_days_by_each_investable_day,
+      month_containing_all_bridge_days: month_containing_all_bridge_days,
+      categories: categories,
+      number_of_days_to_invest: 1)
   end
 
   # Redirect requests for years to the correct full date.
