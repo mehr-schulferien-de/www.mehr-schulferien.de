@@ -59,7 +59,8 @@ defmodule MehrSchulferienWeb.Router do
   scope "/bridge_days", MehrSchulferienWeb.BridgeDay do
     pipe_through :browser # Use the default browser stack
 
-    resources "/federal_states", FederalStateController, only: [:show] do
+    resources "/federal_states", FederalStateController, only: [:show, :index] do
+      get "/:starts_on/:ends_on", FederalStateController, :index
       get "/:starts_on/:ends_on/:number_of_days_to_invest", FederalStateController, :show
       get "/:year", FederalStateController, :show
     end
