@@ -1,0 +1,43 @@
+<%
+months = @days
+ |> Enum.filter(fn %{value: %{month: month}} -> month in @month_containing_all_bridge_days end)
+ |> Enum.chunk_by(fn %{value: %{year: year, month: month}} -> {year, month} end)
+
+ %>
+<% divider = round (12/@month_per_row) %>
+<% [head|tail] = Enum.chunk_every(months,@month_per_row) %>
+
+
+<%= for {day_invested, bridge_days} <- @optimal_bridge_days_by_each_investable_day do %>
+    <h3>
+        <small>Optimierung für <%= day_invested %> <%= if day_invested > 1 do %>Tage<% else %>Tag<% end %> (<%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on) %>)</small>
+    </h3>
+    <%= for three_months <- [head] do %>
+      <div class="row">
+        <%= for month <- three_months do %>
+          <div class="col-sm-<%= divider %>">
+            <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_month.html", month: month, categories: @categories, compiled_optimal_bridge_days: bridge_days %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+<%= render MehrSchulferienWeb.BridgeDay.SharedView, "_event_schema.html", compiled_optimal_bridge_days: bridge_days, number_of_days_to_invest: day_invested, location: @federal_state %>
+<% end %>
+
+<%= render MehrSchulferienWeb.SharedView, "_leaderboard_ad.html" %>
+
+<%= for {day_invested, bridge_days} <- @optimal_bridge_days_by_each_investable_day do %>
+    <%= for three_months <- tail do %>
+      <div class="row">
+        <%= for month <- three_months do %>
+          <div class="col-sm-<%= divider %>">
+            <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_month.html", month: month, categories: @categories, compiled_optimal_bridge_days: bridge_days %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+<%= render MehrSchulferienWeb.BridgeDay.SharedView, "_event_schema.html", compiled_optimal_bridge_days: bridge_days, number_of_days_to_invest: day_invested, location: @federal_state %>
+<% end %>
+
