@@ -47,7 +47,8 @@ defmodule MehrSchulferien.Mixfile do
       {:number, "~> 0.5.4"},
       {:distillery, "~> 1.5", runtime: false},
       {:csv, "~> 2.0.0"},
-      {:httpoison, "~> 0.13"}
+      {:httpoison, "~> 0.13"},
+      {:timex, "~> 3.4.2"}
     ]
   end
 
