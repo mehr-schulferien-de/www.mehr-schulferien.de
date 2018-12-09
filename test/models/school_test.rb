@@ -25,13 +25,6 @@ class SchoolTest < ActiveSupport::TestCase
     assert school.errors.key?(:slug)
   end
 
-  test 'validates presence of phone_number' do
-    school = build(:school, phone_number: nil)
-
-    assert_not school.valid?
-    assert school.errors.key?(:phone_number)
-  end
-
   test 'validates presence of homepage_url' do
     school = build(:school, homepage_url: nil)
 

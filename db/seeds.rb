@@ -52,3 +52,26 @@ Category.create(
     { value: 'Russisch-Orthodoxer Feiertag' }
   ]
 )
+
+City.create(
+  [
+    {
+      zip_code: '98693',
+      name: 'Manebach',
+      federal_state_code: 'TH',
+      country: germany
+    },
+    {
+      zip_code: '22958',
+      name: 'Kuddewörde',
+      federal_state_code: 'SH',
+      country: germany
+    },
+    {
+      zip_code: '27568',
+      name: 'Lehe',
+      federal_state_code: 'HB',
+      country: germany
+    }
+  ]
+)

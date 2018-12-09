@@ -5,13 +5,14 @@ class School < ApplicationRecord
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
-  validates :phone_number, presence: true
   validates :homepage_url, presence: true # TODO: format validation
   validates :federal_state, presence: true
   validates :fax_number, presence: true
   validates :email_address, presence: true # TODO: format validation
   validates :country, presence: true
   validates :city, presence: true
+
+  validate :validate_phone_number
 
   belongs_to :city, primary_key: :slug, foreign_key: :city_slug, touch: true
   belongs_to :country, primary_key: :code, foreign_key: :country_code
@@ -23,5 +24,12 @@ class School < ApplicationRecord
     return if city.nil?
 
     self.slug = SlugGenerator.new(city.zip_code, name).slug
+  end
+
+  # TODO: Validate it correctly
+  def validate_phone_number
+    return if phone_number.nil? || phone_number.present?
+
+    errors.add(:phone_number, 'Please add a valid phone number')
   end
 end
