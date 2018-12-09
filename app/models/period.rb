@@ -1,0 +1,2 @@
+class Period < ApplicationRecord
+end
