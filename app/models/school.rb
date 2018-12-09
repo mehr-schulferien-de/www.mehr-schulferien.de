@@ -26,7 +26,7 @@ class School < ApplicationRecord
     self.slug = SlugGenerator.new(city.zip_code, name).slug
   end
 
-  # TODO: Validate it correctly
+  # TODO: Validate the format etc.
   def validate_phone_number
     return if phone_number.nil? || phone_number.present?
 
