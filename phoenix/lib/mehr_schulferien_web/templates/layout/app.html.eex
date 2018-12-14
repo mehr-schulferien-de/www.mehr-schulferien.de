@@ -14,20 +14,12 @@
     <%= render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html") %>
 
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
+    <script>
      (adsbygoogle = window.adsbygoogle || []).push({
           google_ad_client: "ca-pub-9538764634478220",
           enable_page_level_ads: true
      });
     </script>
- 
-      <%= if assigns[:canonical_federal_state] do %>
-        <%= if assigns[:canonical_starts_on] && assigns[:canonical_ends_on] do %>
-          <link rel="canonical" href="/federal_states/<%= @canonical_federal_state.slug %>/<%= @canonical_starts_on %>/<%= @canonical_ends_on %>" />
-        <% else %>
-          <link rel="canonical" href="/federal_states/<%= @canonical_federal_state.slug %>" />
-        <% end %>
-      <% end %>
   </head>
 
   <body>
