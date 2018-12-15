@@ -24,6 +24,31 @@
     <%= if assigns[:set_noindex] && @set_noindex == true do %>
       <meta name="robots" content="noindex" />
     <% end %>
+
+    <%= if assigns[:canonical_school] do %>				
+      <%= if assigns[:canonical_starts_on] && assigns[:canonical_ends_on] do %>
+        <link rel="canonical" href="/schools/<%= @canonical_school.slug %>/<%= @canonical_starts_on %>/<%= @canonical_ends_on %>" />			
+      <% else %>
+        <link rel="canonical" href="/schools/<%= @canonical_school.slug %>" />
+      <% end %>
+    <% end %>
+
+    <%= if assigns[:canonical_city] do %>
+      <%= if assigns[:canonical_starts_on] && assigns[:canonical_ends_on] do %>
+        <link rel="canonical" href="/cities/<%= @canonical_city.slug %>/<%= @canonical_starts_on %>/<%= @canonical_ends_on %>" />			
+      <% else %>
+        <link rel="canonical" href="/cities/<%= @canonical_city.slug %>" />
+      <% end %>
+    <% end %>
+
+    <%= if assigns[:canonical_federal_state] do %>
+      <%= if assigns[:canonical_starts_on] && assigns[:canonical_ends_on] do %>
+        <link rel="canonical" href="/federal_states/<%= @canonical_federal_state.slug %>/<%= @canonical_starts_on %>/<%= @canonical_ends_on %>" />			
+      <% else %>
+        <link rel="canonical" href="/federal_states/<%= @canonical_federal_state.slug %>" />
+      <% end %>
+    <% end %>
+
   </head>
 
   <body>

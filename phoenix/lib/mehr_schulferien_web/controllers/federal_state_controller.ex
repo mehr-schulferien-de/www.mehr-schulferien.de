@@ -32,6 +32,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               set_noindex: noindex(ends_on),
                               days: days,
                               categories: categories,
+                              canonical_federal_state: federal_state,
                               religion_categories: religion_categories,
                               chosen_religion_categories: additional_categories,
                               inset_day_quantity: inset_day_quantity)
@@ -83,6 +84,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
                               set_noindex: noindex(ends_on),
                               days: days,
                               categories: categories,
+                              canonical_federal_state: federal_state,
+                              canonical_starts_on: starts_on,
+                              canonical_ends_on: ends_on,
                               religion_categories: religion_categories,
                               chosen_religion_categories: additional_categories,
                               inset_day_quantity: inset_day_quantity)

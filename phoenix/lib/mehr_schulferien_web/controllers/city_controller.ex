@@ -68,6 +68,7 @@ defmodule MehrSchulferienWeb.CityController do
                               set_noindex: noindex(ends_on),
                               days: days,
                               categories: get_categories(),
+                              canonical_city: city,
                               religion_categories: get_religion_categories(),
                               chosen_religion_categories: additional_categories,
                               inset_day_quantity: get_inset_day_quantity(federal_state, starts_on))
@@ -82,7 +83,6 @@ defmodule MehrSchulferienWeb.CityController do
 
     render(conn, "show.html", city: city,
                               federal_state: federal_state,
-                              canonical_federal_state: federal_state,
                               country: country,
                               schools: schools,
                               starts_on: starts_on,
@@ -116,6 +116,9 @@ defmodule MehrSchulferienWeb.CityController do
                               set_noindex: noindex(ends_on),
                               days: days,
                               categories: get_categories(),
+                              canonical_city: city,
+                              canonical_starts_on: starts_on,
+                              canonical_ends_on: ends_on,
                               religion_categories: get_religion_categories(),
                               chosen_religion_categories: additional_categories,
                               inset_day_quantity: get_inset_day_quantity(federal_state, starts_on))
@@ -132,9 +135,6 @@ defmodule MehrSchulferienWeb.CityController do
 
     render(conn, "show.html", city: city,
                               federal_state: federal_state,
-                              canonical_federal_state: federal_state,
-                              canonical_starts_on: starts_on,
-                              canonical_ends_on: ends_on,
                               country: country,
                               schools: schools,
                               starts_on: starts_on,
