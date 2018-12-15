@@ -20,6 +20,10 @@
           enable_page_level_ads: true
      });
     </script>
+
+    <%= if assigns[:set_noindex] && @set_noindex == true do %>
+      <meta name="robots" content="noindex" />
+    <% end %>
   </head>
 
   <body>

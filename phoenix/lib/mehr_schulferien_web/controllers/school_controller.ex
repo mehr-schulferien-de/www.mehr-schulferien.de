@@ -56,6 +56,7 @@ defmodule MehrSchulferienWeb.SchoolController do
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
+                              set_noindex: noindex(ends_on),
                               days: days,
                               categories: get_categories(),
                               religion_categories: get_religion_categories(),
@@ -98,6 +99,7 @@ defmodule MehrSchulferienWeb.SchoolController do
                                 country: country,
                                 starts_on: starts_on,
                                 ends_on: ends_on,
+                                set_noindex: noindex(ends_on),
                                 days: days,
                                 categories: get_categories(),
                                 religion_categories: get_religion_categories(),
@@ -126,6 +128,7 @@ defmodule MehrSchulferienWeb.SchoolController do
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
+                              set_noindex: noindex(ends_on),
                               days: days,
                               categories: get_categories(),
                               religion_categories: get_religion_categories(),
@@ -153,6 +156,7 @@ defmodule MehrSchulferienWeb.SchoolController do
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
+                              set_noindex: noindex(ends_on),
                               days: days,
                               categories: get_categories(),
                               religion_categories: get_religion_categories(),
@@ -252,4 +256,13 @@ defmodule MehrSchulferienWeb.SchoolController do
     federal_states = Repo.all(query)
     {federal_state, federal_states, schools}
   end
+
+  defp noindex(ends_on) do
+    if ends_on.year < Date.utc_today.year do
+      true
+    else
+      false
+    end
+  end
+
 end
