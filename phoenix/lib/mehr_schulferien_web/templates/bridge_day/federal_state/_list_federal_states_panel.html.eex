@@ -33,7 +33,7 @@
             <%= if assigns[:federal_state] && assigns[:starts_on] && assigns[:ends_on] && {:ok, @starts_on} == Date.from_erl({year, 8, 1}) && {:ok, @ends_on} == Date.from_erl({year + 1, 7, 31}) do %>
               <%= year - 2000 %>/<%= year - 1999 %>
             <% else %>
-              <a href="/federal_states/<%= federal_state.slug %>/<%= year %>-08-01/<%= year + 1 %>-07-31"><%= year - 2000 %>/<%= year - 1999 %></a>
+              <a href="/federal_states/<%= federal_state.slug %>/<%= year %>-08-01/<%= year + 1 %>-07-31" rel="nofollow"><%= year - 2000 %>/<%= year - 1999 %></a>
             <% end %>
             <%= unless year == List.last(next_two_years) do %>
               -
