@@ -11,6 +11,83 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
   alias MehrSchulferien.CollectBridgeDayData
   import Ecto.Query, only: [from: 2]
 
+  alias MehrSchulferien.Timetables.LandingTime
+
+    #=======================
+
+
+    # Landing to specific federal state.
+    # Example: /federal_states/bayern
+    #
+  def show(conn, %{"id" => id}) do
+    starts_on = LandingTime.landing_start_date
+    ends_on = LandingTime.landing_end_date
+    {federal_state, federal_states, country} = get_locations(id)
+
+    days = CollectBridgeDayData.list_days([country, federal_state],
+                                 starts_on: starts_on, ends_on: ends_on)
+
+    query = from(categories in Category,
+                 where: categories.for_anybody == true)
+                 
+    categories = Repo.all(query)
+
+    compiled_optimal_bridge_days = CollectBridgeDayData.compiled_optimal_bridge_days(days, 1)
+
+    compiled_optimal_bridge_days_by_each_investable_day = CollectBridgeDayData.compiled_optimal_bridge_days_by_each_investable_day(days)
+
+    best_bridge_days =
+     compiled_optimal_bridge_days_by_each_investable_day
+     |> Map.values
+     |> List.flatten
+     |> Enum.sort
+     |> Enum.take(6)
+    
+    IO.inspect(best_bridge_days)
+
+    render(conn, "index.html", federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories,
+                              compiled_optimal_bridge_days: compiled_optimal_bridge_days,
+                              number_of_days_to_invest: 1,
+                              best_bridge_days: best_bridge_days
+                              )
+
+    render(conn, "index.html")
+  end
+
+    #=======================
+
+  def show(conn, %{"federal_state_id" => federal_state_id,
+                   "starts_on" => starts_on,
+                   "ends_on" => ends_on,
+                   "number_of_days_to_invest" => number_of_days_to_invest}) do
+    {federal_state, federal_states, country} = get_locations(federal_state_id)
+    {starts_on, ends_on} = get_dates(starts_on, ends_on)
+
+    days = CollectBridgeDayData.list_days([country, federal_state],
+                                 starts_on: starts_on, ends_on: ends_on)
+
+    query = from(categories in Category,
+                 where: categories.for_anybody == true)
+    categories = Repo.all(query)
+
+    compiled_optimal_bridge_days = MehrSchulferien.CollectBridgeDayData.compiled_optimal_bridge_days(days, String.to_integer(number_of_days_to_invest))
+
+    render(conn, "show.html", federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories,
+                              compiled_optimal_bridge_days: compiled_optimal_bridge_days,
+                              number_of_days_to_invest: String.to_integer(number_of_days_to_invest))
+  end
 
   def show(conn, %{"federal_state_id" => federal_state_id,
                    "starts_on" => starts_on,
@@ -68,26 +145,26 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
   # Example: /federal_states/bayern will become
   #          /federal_states/bayern/2018-01-01/2018-12-31
   #
-  def show(conn, %{"id" => id}) do
-    federal_state = Locations.get_federal_state!(id)
+  # def show(conn, %{"id" => id}) do
+  #   federal_state = Locations.get_federal_state!(id)
 
-    year_slug = Integer.to_string(DateTime.utc_now.year)
-    query = from y in Timetables.Year, where: y.slug == ^year_slug
-    year = Repo.one(query)
+  #   year_slug = Integer.to_string(DateTime.utc_now.year)
+  #   query = from y in Timetables.Year, where: y.slug == ^year_slug
+  #   year = Repo.one(query)
 
-    case year do
-      nil -> conn
-             |> put_status(:not_found)
-             |> render(MehrSchulferienWeb.ErrorView, "404.html")
-      _ -> redirect conn, to: "/bridge_days/federal_states/" <>
-                              federal_state.slug <>
-                              "/" <>
-                              year.slug <>
-                              "-01-01/" <>
-                              year.slug <>
-                              "-12-31/1"
-    end
-  end
+  #   case year do
+  #     nil -> conn
+  #            |> put_status(:not_found)
+  #            |> render(MehrSchulferienWeb.ErrorView, "404.html")
+  #     _ -> redirect conn, to: "/bridge_days/federal_states/" <>
+  #                             federal_state.slug <>
+  #                             "/" <>
+  #                             year.slug <>
+  #                             "-01-01/" <>
+  #                             year.slug <>
+  #                             "-12-31/1"
+  #   end
+  # end
 
   defp get_locations(federal_state_id) do
     query = from fs in FederalState, where: fs.slug == ^federal_state_id,
@@ -117,7 +194,7 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
   end
 
   defp get_religion_categories() do
-    query = from c in Category, where: c.for_students == true and
+    query = from c z Category, where: c.for_students == true and
                                        c.is_a_religion == true
     Repo.all(query)
   end

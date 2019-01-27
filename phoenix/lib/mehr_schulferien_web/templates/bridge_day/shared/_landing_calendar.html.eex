@@ -1,0 +1,204 @@
+<% months = @days |> Enum.chunk_by(fn %{value: %{year: year, month: month}} -> {year, month} end) %>
+<% best_months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]%>
+<% divider = round (6/@month_per_row) %>
+<%# [head|tail] = Enum.chunk_every(best_months,@month_per_row) %>
+
+<%= for best_bridge_day <- @best_bridge_days do %>
+<% bridge_days = Integer.to_string(length(best_bridge_day[:bridge_days])) %>
+<% max_days = Integer.to_string(best_bridge_day[:bridge_day_vacation_length]) %>
+<% best_month_number = Enum.at(best_bridge_day[:bridge_days],0).month %>
+<% bridge_month = best_month_number - 1 %>
+
+    <div class='panel panel-default'>
+        <div class="panel-heading">
+            <h3 class="panel-title"><%= bridge_days %> 
+            <%= if bridge_days == 1 do %>
+            Tag 
+            <%= else %>
+            Tage
+            <% end %>
+            Urlaub = <%= max_days %> Tage frei</h3>
+        </div>
+    </div>
+    <div class="panel-body">
+        <h3><%= Enum.at(best_months, bridge_month) %> <div class="pull-right text-muted"><%= Enum.at(best_bridge_day[:bridge_days],0).year%></div> </h3>
+        <table class="table table-condensed">
+        <thead>
+            <tr>
+            <th>Mo.</th>
+            <th>Di.</th>
+            <th>Mi.</th>
+            <th>Do.</th>
+            <th>Fr.</th>
+            <th class="active">Sa.</th>
+            <th class="active">So.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            </tr>
+        </tbody>
+        </table>
+
+        <div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Eingereichte Urlaubstage<br>
+            <%= for n <- best_bridge_day[:bridge_days] do %>
+                <%= Integer.to_string(n.day) <>"."<>Integer.to_string(n.month) %>
+            <% end %>
+            </div>
+            <div class="col-xs-3 text-right"><%= bridge_days %></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Feiertage</div>
+            <div class="col-xs-3 text-right">+ 5</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Wochenend-Tage</div>
+            <div class="col-xs-3 text-right">+ 2</div>
+        </div>
+        <div class="row-sum">
+            <div class="row">
+            <div class="col-xs-9 text-right">Freie Tage</div>
+            <div class="col-xs-3 text-right"><%= max_days %></div>
+            </div>
+        </div>
+        </div>
+        <a class="btn btn-primary btn-block btn-sm" href="#">als iCalspeichern</a>
+    </div>
+<% end %>
+
+<!--
+<div class='panel panel-default'>
+    <div class="panel-heading">
+        <h3 class="panel-title">1 Tag Urlaub = 6 Tage frei</h3>bridge_day_vacation_length
+    </div>
+    <div class="panel-body">
+        <h3> April <div class="pull-right text-muted">2019</div> </h3>
+        <table class="table table-condensed">
+        <thead>
+            <tr>
+            <th>Mo.</th>
+            <th>Di.</th>
+            <th>Mi.</th>
+            <th>Do.</th>
+            <th>Fr.</th>
+            <th class="active">Sa.</th>
+            <th class="active">So.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td class="inactive">15.</td>
+            <td class="inactive">16.</td>
+            <td class="leaveday">17.</td>
+            <td class="holiday">18.</td>
+            <td class="holiday">19.</td>
+            <td class="weekend">20.</td>
+            <td class="holiday">21.</td>
+            </tr>
+            <tr>
+            <td class="holiday">22.</td>
+            <td class="inactive">23.</td>
+            <td class="inactive">24.</td>
+            <td class="inactive">25.</td>
+            <td class="inactive">26.</td>
+            <td class="weekend inactive">27.</td>
+            <td class="weekend inactive">28.</td>
+            </tr>
+        </tbody>
+        </table>
+
+        <div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Eingereichte Urlaubstage<br>
+            17.4.</div>
+            <div class="col-xs-3 text-right">1</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Feiertage</div>
+            <div class="col-xs-3 text-right">+ 5</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Wochenend-Tage</div>
+            <div class="col-xs-3 text-right">+ 2</div>
+        </div>
+        <div class="row-sum">
+            <div class="row">
+            <div class="col-xs-9 text-right">Freie Tage</div>
+            <div class="col-xs-3 text-right">6</div>
+            </div>
+        </div>
+        </div>
+        <a class="btn btn-primary btn-block btn-sm" href="#">als iCal
+            speichern</a>
+    </div>
+</div>
+
+
+<div class='panel panel-default'>
+    <div class="panel-heading">
+        <h3 class="panel-title">1 Tag Urlaub = 6 Tage frei</h3>
+    </div>
+    <div class="panel-body">
+        <h3> April <div class="pull-right text-muted">2019</div> </h3>
+        <table class="table table-condensed">
+        <thead>
+            <tr>
+            <th>Mo.</th>
+            <th>Di.</th>
+            <th>Mi.</th>
+            <th>Do.</th>
+            <th>Fr.</th>
+            <th class="active">Sa.</th>
+            <th class="active">So.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td class="inactive">15.</td>
+            <td class="inactive">16.</td>
+            <td class="leaveday">17.</td>
+            <td class="holiday">18.</td>
+            <td class="holiday">19.</td>
+            <td class="weekend">20.</td>
+            <td class="holiday">21.</td>
+            </tr>
+            <tr>
+            <td class="holiday">22.</td>
+            <td class="inactive">23.</td>
+            <td class="inactive">24.</td>
+            <td class="inactive">25.</td>
+            <td class="inactive">26.</td>
+            <td class="weekend inactive">27.</td>
+            <td class="weekend inactive">28.</td>
+            </tr>
+        </tbody>
+        </table>
+
+        <div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Eingereichte Urlaubstage<br>
+            17.4.</div>
+            <div class="col-xs-3 text-right">1</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Feiertage</div>
+            <div class="col-xs-3 text-right">+ 5</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-9 text-right">Wochenend-Tage</div>
+            <div class="col-xs-3 text-right">+ 2</div>
+        </div>
+        <div class="row-sum">
+            <div class="row">
+            <div class="col-xs-9 text-right">Freie Tage</div>
+            <div class="col-xs-3 text-right">6</div>
+            </div>
+        </div>
+        </div>
+        <a class="btn btn-primary btn-block btn-sm" href="#">als iCal
+            speichern</a>
+    </div>
+</div>
+-->
