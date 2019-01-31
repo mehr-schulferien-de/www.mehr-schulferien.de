@@ -6,7 +6,11 @@
     <p>Bitte wählen Sie die Anzahl zur Verfügung stehender Urlaubstage:</p>
     <ul class="nav nav-pills nav-stacked">
     <%= for x <- Enum.to_list(1..10) do %>
-      <li><a class="nav-link" href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= x %>"><%= x %> Urlaubstage</a></li>
+      <%= if x == 1 do %>
+        <li class="active"><a class="nav-link" href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= x %>"><%= x %> Urlaubstage</a></li>
+      <%= else %>
+        <li class=""><a class="nav-link" href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= x %>"><%= x %> Urlaubstage</a></li>     
+      <% end %>
     <% end %>
     </ul>
   </div>

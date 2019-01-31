@@ -1,204 +1,117 @@
-<% months = @days |> Enum.chunk_by(fn %{value: %{year: year, month: month}} -> {year, month} end) %>
 <% best_months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]%>
-<% divider = round (6/@month_per_row) %>
-<%# [head|tail] = Enum.chunk_every(best_months,@month_per_row) %>
+<% best_months_mini = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]%>
 
-<%= for best_bridge_day <- @best_bridge_days do %>
+<% best_bridge_days = @best_bridge_days |> Enum.with_index %>
+
+<%= for {best_bridge_day, i} <- best_bridge_days do %>
 <% bridge_days = Integer.to_string(length(best_bridge_day[:bridge_days])) %>
 <% max_days = Integer.to_string(best_bridge_day[:bridge_day_vacation_length]) %>
-<% best_month_number = Enum.at(best_bridge_day[:bridge_days],0).month %>
-<% bridge_month = best_month_number - 1 %>
 
-    <div class='panel panel-default'>
-        <div class="panel-heading">
-            <h3 class="panel-title"><%= bridge_days %> 
-            <%= if bridge_days == 1 do %>
-            Tag 
-            <%= else %>
-            Tage
-            <% end %>
-            Urlaub = <%= max_days %> Tage frei</h3>
-        </div>
-    </div>
-    <div class="panel-body">
-        <h3><%= Enum.at(best_months, bridge_month) %> <div class="pull-right text-muted"><%= Enum.at(best_bridge_day[:bridge_days],0).year%></div> </h3>
-        <table class="table table-condensed">
-        <thead>
-            <tr>
-            <th>Mo.</th>
-            <th>Di.</th>
-            <th>Mi.</th>
-            <th>Do.</th>
-            <th>Fr.</th>
-            <th class="active">Sa.</th>
-            <th class="active">So.</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            </tr>
-        </tbody>
-        </table>
+<% best_month_number1 = List.first(best_bridge_day[:bridge_days]).month %>
+<% best_month_number2 = Date.add(List.last(best_bridge_day[:bridge_days]), String.to_integer(max_days)).month %>
 
-        <div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Eingereichte Urlaubstage<br>
-            <%= for n <- best_bridge_day[:bridge_days] do %>
-                <%= Integer.to_string(n.day) <>"."<>Integer.to_string(n.month) %>
-            <% end %>
-            </div>
-            <div class="col-xs-3 text-right"><%= bridge_days %></div>
-        </div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Feiertage</div>
-            <div class="col-xs-3 text-right">+ 5</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Wochenend-Tage</div>
-            <div class="col-xs-3 text-right">+ 2</div>
-        </div>
-        <div class="row-sum">
-            <div class="row">
-            <div class="col-xs-9 text-right">Freie Tage</div>
-            <div class="col-xs-3 text-right"><%= max_days %></div>
-            </div>
-        </div>
-        </div>
-        <a class="btn btn-primary btn-block btn-sm" href="#">als iCalspeichern</a>
-    </div>
+<!--check if the bridge days are within a month or not -->
+<% if best_month_number1 == best_month_number2 do %>  
+  <% bridge_month = best_month_number1 - 1 %>
+  <% month_label = Enum.at(best_months, bridge_month) %>
+<% else %>
+    <% bridge_month1 = best_month_number1 - 1 %>
+    <% bridge_month2 = best_month_number2 - 1 %>
+    <% month_label = Enum.at(best_months_mini, bridge_month1) <>"-"<> Enum.at(best_months_mini, bridge_month2) %>
 <% end %>
 
-<!--
-<div class='panel panel-default'>
-    <div class="panel-heading">
-        <h3 class="panel-title">1 Tag Urlaub = 6 Tage frei</h3>bridge_day_vacation_length
-    </div>
-    <div class="panel-body">
-        <h3> April <div class="pull-right text-muted">2019</div> </h3>
-        <table class="table table-condensed">
-        <thead>
-            <tr>
-            <th>Mo.</th>
-            <th>Di.</th>
-            <th>Mi.</th>
-            <th>Do.</th>
-            <th>Fr.</th>
-            <th class="active">Sa.</th>
-            <th class="active">So.</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            <td class="inactive">15.</td>
-            <td class="inactive">16.</td>
-            <td class="leaveday">17.</td>
-            <td class="holiday">18.</td>
-            <td class="holiday">19.</td>
-            <td class="weekend">20.</td>
-            <td class="holiday">21.</td>
-            </tr>
-            <tr>
-            <td class="holiday">22.</td>
-            <td class="inactive">23.</td>
-            <td class="inactive">24.</td>
-            <td class="inactive">25.</td>
-            <td class="inactive">26.</td>
-            <td class="weekend inactive">27.</td>
-            <td class="weekend inactive">28.</td>
-            </tr>
-        </tbody>
-        </table>
+<% best_year1 = List.first(best_bridge_day[:bridge_days]).year %>
+<% best_year2 = Date.add(List.last(best_bridge_day[:bridge_days]), String.to_integer(max_days)).year %>
 
-        <div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Eingereichte Urlaubstage<br>
-            17.4.</div>
-            <div class="col-xs-3 text-right">1</div>
+<!--check if the bridge days are within the same year or not -->
+<% if best_year1 == best_year2 do %>  
+  <% year_label = Integer.to_string(best_year1) %>
+<% else %>
+  <% year_label = Integer.to_string(best_year1) <>"/"<> Integer.to_string(best_year2) %>
+<% end %>
+
+<div class="col-sm-4">
+    <div class='panel panel-default'>
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <%= if bridge_days == 1 do %>
+                    Tag 
+                <%= else %>
+                    Tage
+                <% end %>
+                Urlaub = <%= max_days %> Tage frei
+            </h3>
         </div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Feiertage</div>
-            <div class="col-xs-3 text-right">+ 5</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Wochenend-Tage</div>
-            <div class="col-xs-3 text-right">+ 2</div>
-        </div>
-        <div class="row-sum">
-            <div class="row">
-            <div class="col-xs-9 text-right">Freie Tage</div>
-            <div class="col-xs-3 text-right">6</div>
+        <div class="panel-body">
+            <h3> 
+                <%= month_label %> <div class="pull-right text-muted"> <%= year_label %></div> 
+            </h3>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                    <th>Mo.</th>
+                    <th>Di.</th>
+                    <th>Mi.</th>
+                    <th>Do.</th>
+                    <th>Fr.</th>
+                    <th class="active">Sa.</th>
+                    <th class="active">So.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% dayz = Enum.filter(@days, fn day -> day.calendar_week in  Enum.at(@list_of_best_weeks, i)  end)%>
+                    <%= for week <- Enum.chunk_every(dayz, 7) do %>
+                    <tr>
+                        <%= for day <- week do %>
+                        <%= if day == nil do %>
+                            <td></td>
+                        <% else %>
+                            <%= if Enum.member?(best_bridge_day[:bridge_days], day.value) do %>
+                            <td class="text-right warning">
+                                <%= day.day_of_month %>.
+                            </td>
+                            <% else %>
+                            <td class="text-right <%= CalendarHelper.bridge_day_css_class(day) %>">
+                                <%= day.day_of_month %>.
+                            </td>
+                            <% end %>
+                        <% end %>
+                        <% end %>
+                    </tr>
+                    <% end %>
+                </tbody>
+            </table>
+
+            <div>
+                <div class="row">
+                    <div class="col-xs-9 text-right"> Eingereichte Urlaubstage<br>                    
+                        <%= for n <- best_bridge_day[:bridge_days] do %>
+                            <%= Integer.to_string(n.day) <>"."<>Integer.to_string(n.month) %>
+                        <% end %>
+                    </div>
+                    <div class="col-xs-3 text-right">
+                        <%= bridge_days %>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-9 text-right">Feiertage</div>
+                    <div class="col-xs-3 text-right">+ 5</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-9 text-right">Wochenend-Tage</div>
+                    <div class="col-xs-3 text-right">+ 2</div>
+                </div>
+                <div class="row-sum">
+                    <div class="row">
+                        <div class="col-xs-9 text-right">Freie Tage</div>
+                        <div class="col-xs-3 text-right">
+                            <%= max_days %>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <a class="btn btn-primary btn-block btn-sm" href="#">als iCal speichern</a>
         </div>
-        </div>
-        <a class="btn btn-primary btn-block btn-sm" href="#">als iCal
-            speichern</a>
     </div>
 </div>
-
-
-<div class='panel panel-default'>
-    <div class="panel-heading">
-        <h3 class="panel-title">1 Tag Urlaub = 6 Tage frei</h3>
-    </div>
-    <div class="panel-body">
-        <h3> April <div class="pull-right text-muted">2019</div> </h3>
-        <table class="table table-condensed">
-        <thead>
-            <tr>
-            <th>Mo.</th>
-            <th>Di.</th>
-            <th>Mi.</th>
-            <th>Do.</th>
-            <th>Fr.</th>
-            <th class="active">Sa.</th>
-            <th class="active">So.</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            <td class="inactive">15.</td>
-            <td class="inactive">16.</td>
-            <td class="leaveday">17.</td>
-            <td class="holiday">18.</td>
-            <td class="holiday">19.</td>
-            <td class="weekend">20.</td>
-            <td class="holiday">21.</td>
-            </tr>
-            <tr>
-            <td class="holiday">22.</td>
-            <td class="inactive">23.</td>
-            <td class="inactive">24.</td>
-            <td class="inactive">25.</td>
-            <td class="inactive">26.</td>
-            <td class="weekend inactive">27.</td>
-            <td class="weekend inactive">28.</td>
-            </tr>
-        </tbody>
-        </table>
-
-        <div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Eingereichte Urlaubstage<br>
-            17.4.</div>
-            <div class="col-xs-3 text-right">1</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Feiertage</div>
-            <div class="col-xs-3 text-right">+ 5</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-9 text-right">Wochenend-Tage</div>
-            <div class="col-xs-3 text-right">+ 2</div>
-        </div>
-        <div class="row-sum">
-            <div class="row">
-            <div class="col-xs-9 text-right">Freie Tage</div>
-            <div class="col-xs-3 text-right">6</div>
-            </div>
-        </div>
-        </div>
-        <a class="btn btn-primary btn-block btn-sm" href="#">als iCal
-            speichern</a>
-    </div>
-</div>
--->
+<% end %>

@@ -32,21 +32,14 @@
         </p>
       </div>
     </div>
-	<h2>Die Top 6 für die nächsten 12 Monate</h2>
-      <div class="col-sm-4">
-        <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_calendar.html", 
-           days: @days, month_per_row: 3, 
-           categories: @categories, 
-           best_bridge_days: @best_bridge_days 
-           %>
-    </div>
-    <div class="row visible-sm-* hidden-xs hidden-md hidden-lg">
-      <div class="col-xs-12">
-        <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_calendar.html", 
-        days: @days, month_per_row: 2, categories: @categories, 
-        best_bridge_days: @best_bridge_days 
-        %>
-      </div>
+  	<h2>Die Top 6 für die nächsten 12 Monate</h2>
+    <div class="row">
+      <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_calendar.html", 
+      days: @days, month_per_row: 3, 
+      categories: @categories, 
+      best_bridge_days: @best_bridge_days,
+      list_of_best_weeks: @list_of_best_weeks 
+      %>
     </div>
   <!-- new -->
     <div class="row hidden-sm">
