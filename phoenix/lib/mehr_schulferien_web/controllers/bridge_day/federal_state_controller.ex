@@ -43,10 +43,6 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
      |> Enum.sort
      |> Enum.take(6)    
 
-     just = Enum.filter(days, fn x -> x.value in Enum.to_list(Date.range(~D[2019-04-17], ~D[2019-04-22])) end)
-     IO.puts("###")
-     IO.inspect(just)
-     IO.puts("###")
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
                               country: country,

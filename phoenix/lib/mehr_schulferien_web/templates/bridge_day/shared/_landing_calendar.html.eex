@@ -9,16 +9,32 @@
 <% list_holidays = Enum.to_list(Date.range(start_holidays, end_holidays)) %>
 
 <% cond do 
-  Date.day_of_week(start_holidays) == 2 -> list_on_calendar = List.insert_at(list_holidays, 0, Date.add(start_holidays, -1)) 
-  Date.day_of_week(start_holidays) == 3 -> list_on_calendar = List.insert_at(list_holidays, 0, [Date.add(start_holidays, -2), Date.add(start_holidays, -1)]) |> List.flatten 
-  Date.day_of_week(start_holidays) == 4 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -3), Date.add(start_holidays, -1)))) |> List.flatten 
-  Date.day_of_week(start_holidays) == 5 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -4), Date.add(start_holidays, -1)))) |> List.flatten
-  Date.day_of_week(start_holidays) == 6 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -5), Date.add(start_holidays, -1)))) |> List.flatten   
-  Date.day_of_week(start_holidays) == 7 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -6), Date.add(start_holidays, -1)))) |> List.flatten
-  Date.day_of_week(start_holidays) == 5 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -4), Date.add(start_holidays, -1)))) |> List.flatten
-  true -> list_on_calendar = list_holidays
+  Date.day_of_week(start_holidays) == 2 -> head_on_calendar = List.insert_at(list_holidays, 0, Date.add(start_holidays, -1)) 
+  Date.day_of_week(start_holidays) == 3 -> head_on_calendar = List.insert_at(list_holidays, 0, [Date.add(start_holidays, -2), Date.add(start_holidays, -1)]) |> List.flatten 
+  Date.day_of_week(start_holidays) == 4 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -3), Date.add(start_holidays, -1)))) |> List.flatten 
+  Date.day_of_week(start_holidays) == 5 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -4), Date.add(start_holidays, -1)))) |> List.flatten
+  Date.day_of_week(start_holidays) == 6 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -5), Date.add(start_holidays, -1)))) |> List.flatten   
+  Date.day_of_week(start_holidays) == 7 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -6), Date.add(start_holidays, -1)))) |> List.flatten
+  Date.day_of_week(start_holidays) == 1 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -7), Date.add(start_holidays, -1)))) |> List.flatten
+  true -> head_on_calendar = list_holidays
 end %>
 
+<% cond do 
+  Date.day_of_week(end_holidays) == 6 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Date.add(end_holidays, 1)) 
+  Date.day_of_week(end_holidays) == 5 -> list_on_calendar = List.insert_at(head_on_calendar, 0, [Date.add(end_holidays, 1), Date.add(end_holidays, 2)]) |> List.flatten 
+  Date.day_of_week(end_holidays) == 4 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 3)))) |> List.flatten 
+  Date.day_of_week(end_holidays) == 3 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 4)))) |> List.flatten
+  Date.day_of_week(end_holidays) == 2 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 5)))) |> List.flatten   
+  Date.day_of_week(end_holidays) == 1 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 6)))) |> List.flatten
+  true -> list_on_calendar = head_on_calendar
+end %>
+
+<% list_inactive_days = list_on_calendar -- list_holidays %> 
+<% list_inactive_weekend =
+    list_inactive_days 
+    |> Enum.filter(fn x -> Date.day_of_week(x) == 6 or Date.day_of_week(x) == 7 end)%>
+
+<!-- check number of weekend days and free holidays -->
 <% weekend_number = 
    Enum.filter(@days, fn x -> x.value in list_holidays end) 
    |> Enum.filter(fn x -> x.weekday == 6 or x.weekday == 7 end) 
@@ -28,10 +44,22 @@ end %>
    |> Enum.filter(fn x -> x.periods != [] end) 
    |> length %>
 
+<!--check if the bridge days are within the same year or not -->
+
+<% best_year1 = start_holidays.year %>
+<% best_year2 = end_holidays.year %>
+
+<% if best_year1 == best_year2 do %>  
+  <% year_label = Integer.to_string(best_year1) %>
+<% else %>
+  <% year_label = Integer.to_string(best_year1) <>"/"<> Integer.to_string(best_year2) %>
+<% end %>
+
+<!--check if the bridge days are within a month or not -->
+
 <% best_month_number1 = start_holidays.month %>
 <% best_month_number2 = end_holidays.month %>
 
-<!--check if the bridge days are within a month or not -->
 <% if best_month_number1 == best_month_number2 do %>  
   <% bridge_month = best_month_number1 - 1 %>
   <% month_label = Enum.at(best_months, bridge_month) %>
@@ -41,20 +69,11 @@ end %>
     <% month_label = Enum.at(best_months_mini, bridge_month1) <>"-"<> Enum.at(best_months_mini, bridge_month2) %>
 <% end %>
 
-<% best_year1 = start_holidays.year %>
-<% best_year2 = end_holidays.year %>
-
-<!--check if the bridge days are within the same year or not -->
-<% if best_year1 == best_year2 do %>  
-  <% year_label = Integer.to_string(best_year1) %>
-<% else %>
-  <% year_label = Integer.to_string(best_year1) <>"/"<> Integer.to_string(best_year2) %>
-<% end %>
-
 <div class="col-sm-4">
     <div class='panel panel-default'>
         <div class="panel-heading">
             <h3 class="panel-title">
+                <%= bridge_days_number %>
                 <%= if bridge_days_number == 1 do %>
                     Tag 
                 <%= else %>
@@ -81,6 +100,7 @@ end %>
                 </thead>
                 <tbody>
                     <% dayz = Enum.filter(@days, fn day -> day.value in list_on_calendar end)%>
+
                     <%= for week <- Enum.chunk_every(dayz, 7) do %>
                     <tr>
                         <%= for day <- week do %>
@@ -92,9 +112,15 @@ end %>
                                         <%= day.day_of_month %>.
                                     </td>
                                 <% else %>
-                                    <td class="text-right <%= MehrSchulferienWeb.CalendarHelperLanding.bridge_day_css_class(day) %>">
-                                        <%= day.day_of_month %>.
-                                    </td>
+                                    <%= if Enum.member?(list_inactive_weekend, day.value) do %>
+                                        <td class="text-right weekend inactive">
+                                            <%= day.day_of_month%>
+                                        </td>
+                                    <%= else %>
+                                       <td class="text-right <%= MehrSchulferienWeb.CalendarHelperLanding.bridge_day_css_class(day) %>">
+                                            <%= day.day_of_month %>.
+                                        </td>
+                                    <% end %>
                                 <% end %>
                             <% end %>
                         <% end %>
