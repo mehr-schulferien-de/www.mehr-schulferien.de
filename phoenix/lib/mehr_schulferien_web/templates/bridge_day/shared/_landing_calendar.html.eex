@@ -6,11 +6,46 @@
 <% max_days = Integer.to_string(best_bridge_day[:bridge_day_vacation_length]) %>
 <% start_holidays = Date.add(@starts_on, best_bridge_day[:start_position]) %>
 <% end_holidays = Date.add(start_holidays, best_bridge_day[:bridge_day_vacation_length])%>
-<% list_holidays = Enum.to_list(Date.range(start_holidays, end_holidays)) %>
+<% list_vacation = Enum.to_list(Date.range(start_holidays, end_holidays)) %>
+
+<!-- checking integrity if :start_position and actual holidays -->
+<%
+
+if Enum.member?(list_vacation, List.first(best_bridge_day[:bridge_days])) and Enum.member?(list_vacation, List.last(best_bridge_day[:bridge_days])) do
+  list_holidays = list_vacation
+else
+    end_holday_temp = 
+        List.last(best_bridge_day[:bridge_days])
+        |> Date.add(best_bridge_day[:bridge_day_vacation_length])
+    tail_holday_temp = 
+        List.last(best_bridge_day[:bridge_days])
+        |> Date.range(end_holday_temp)
+        |> Enum.to_list
+    non_tails = 
+        Enum.filter(@days, fn x -> x.value in tail_holday_temp  end)
+        |> Enum.filter(fn x -> x.periods == [] end)
+
+    non_tail_list = for y <- non_tails do
+        y.value
+    end
+
+    false_tail_sorted = Enum.sort(non_tail_list)
+    true_end_holidays = 
+        false_tail_sorted
+        |> List.first
+        |> Date.add(-1)
+
+    step_back = 1 - best_bridge_day[:bridge_day_vacation_length]
+    true_start_holidays = Date.add(true_end_holidays, step_back) 
+    list_holidays = Enum.to_list(Date.range(true_start_holidays, true_end_holidays))
+    start_holidays = true_start_holidays
+    end_holidays = true_end_holidays
+end
+%>
 
 <% cond do 
   Date.day_of_week(start_holidays) == 2 -> head_on_calendar = List.insert_at(list_holidays, 0, Date.add(start_holidays, -1)) 
-  Date.day_of_week(start_holidays) == 3 -> head_on_calendar = List.insert_at(list_holidays, 0, [Date.add(start_holidays, -2), Date.add(start_holidays, -1)]) |> List.flatten 
+  Date.day_of_week(start_holidays) == 3 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -2), Date.add(start_holidays, -1)))) |> List.flatten 
   Date.day_of_week(start_holidays) == 4 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -3), Date.add(start_holidays, -1)))) |> List.flatten 
   Date.day_of_week(start_holidays) == 5 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -4), Date.add(start_holidays, -1)))) |> List.flatten
   Date.day_of_week(start_holidays) == 6 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -5), Date.add(start_holidays, -1)))) |> List.flatten   
@@ -20,12 +55,12 @@
 end %>
 
 <% cond do 
-  Date.day_of_week(end_holidays) == 6 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Date.add(end_holidays, 1)) 
-  Date.day_of_week(end_holidays) == 5 -> list_on_calendar = List.insert_at(head_on_calendar, 0, [Date.add(end_holidays, 1), Date.add(end_holidays, 2)]) |> List.flatten 
-  Date.day_of_week(end_holidays) == 4 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 3)))) |> List.flatten 
-  Date.day_of_week(end_holidays) == 3 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 4)))) |> List.flatten
-  Date.day_of_week(end_holidays) == 2 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 5)))) |> List.flatten   
-  Date.day_of_week(end_holidays) == 1 -> list_on_calendar = List.insert_at(head_on_calendar, 0, Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 6)))) |> List.flatten
+  Date.day_of_week(end_holidays) == 6 -> list_on_calendar = head_on_calendar ++ Date.add(end_holidays, 1)
+  Date.day_of_week(end_holidays) == 5 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 2))) |> List.flatten 
+  Date.day_of_week(end_holidays) == 4 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 3))) |> List.flatten 
+  Date.day_of_week(end_holidays) == 3 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 4))) |> List.flatten
+  Date.day_of_week(end_holidays) == 2 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 5))) |> List.flatten   
+  Date.day_of_week(end_holidays) == 1 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 6))) |> List.flatten
   true -> list_on_calendar = head_on_calendar
 end %>
 
@@ -46,8 +81,8 @@ end %>
 
 <!--check if the bridge days are within the same year or not -->
 
-<% best_year1 = start_holidays.year %>
-<% best_year2 = end_holidays.year %>
+<% best_year1 = List.first(list_holidays).year %>
+<% best_year2 = List.last(list_holidays).year %>
 
 <% if best_year1 == best_year2 do %>  
   <% year_label = Integer.to_string(best_year1) %>
@@ -57,8 +92,8 @@ end %>
 
 <!--check if the bridge days are within a month or not -->
 
-<% best_month_number1 = start_holidays.month %>
-<% best_month_number2 = end_holidays.month %>
+<% best_month_number1 = List.first(list_holidays).month %>
+<% best_month_number2 = List.last(list_holidays).month %>
 
 <% if best_month_number1 == best_month_number2 do %>  
   <% bridge_month = best_month_number1 - 1 %>

@@ -43,6 +43,10 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
      |> Enum.sort
      |> Enum.take(6)    
 
+    IO.puts("#####")
+    IO.inspect(best_bridge_days)
+    IO.puts("#####")
+
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
                               country: country,

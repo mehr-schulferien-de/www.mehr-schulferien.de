@@ -1,3 +1,5 @@
+<link rel="canonical" href="https://www.mehrschulferien.de/bridge_days/<%= @federal_state.slug %>/"/>
+ 
 <ol class="breadcrumb hidden-xs">
   <li><%= link "Home", to: page_path(@conn, :index) %></li>
   <li><%= link "Deutschland", to: country_path(@conn, :show, "deutschland") %></li>

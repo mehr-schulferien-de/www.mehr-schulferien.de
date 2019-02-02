@@ -7,7 +7,7 @@
     <ul class="nav nav-pills nav-stacked">
     <%= for x <- Enum.to_list(1..10) do %>
       <%= if x == 1 do %>
-        <li class="active"><a class="nav-link" href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= x %>"><%= x %> Urlaubstage</a></li>
+        <li class="active"><a class="nav-link" href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= x %>"><%= x %> Urlaubstag</a></li>
       <%= else %>
         <li class=""><a class="nav-link" href="/bridge_days/<%= CalendarHelper.location_path(@location) %>/<%= @location.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= x %>"><%= x %> Urlaubstage</a></li>     
       <% end %>
