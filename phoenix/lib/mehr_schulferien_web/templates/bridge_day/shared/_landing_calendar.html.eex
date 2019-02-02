@@ -1,14 +1,35 @@
 <% best_months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]%>
 <% best_months_mini = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]%>
 
-<% best_bridge_days = @best_bridge_days |> Enum.with_index %>
-
-<%= for {best_bridge_day, i} <- best_bridge_days do %>
-<% bridge_days = Integer.to_string(length(best_bridge_day[:bridge_days])) %>
+<%= for best_bridge_day <- @best_bridge_days do %>
+<% bridge_days_number = Integer.to_string(length(best_bridge_day[:bridge_days])) %>
 <% max_days = Integer.to_string(best_bridge_day[:bridge_day_vacation_length]) %>
+<% start_holidays = Date.add(@starts_on, best_bridge_day[:start_position]) %>
+<% end_holidays = Date.add(start_holidays, best_bridge_day[:bridge_day_vacation_length])%>
+<% list_holidays = Enum.to_list(Date.range(start_holidays, end_holidays)) %>
 
-<% best_month_number1 = List.first(best_bridge_day[:bridge_days]).month %>
-<% best_month_number2 = Date.add(List.last(best_bridge_day[:bridge_days]), String.to_integer(max_days)).month %>
+<% cond do 
+  Date.day_of_week(start_holidays) == 2 -> list_on_calendar = List.insert_at(list_holidays, 0, Date.add(start_holidays, -1)) 
+  Date.day_of_week(start_holidays) == 3 -> list_on_calendar = List.insert_at(list_holidays, 0, [Date.add(start_holidays, -2), Date.add(start_holidays, -1)]) |> List.flatten 
+  Date.day_of_week(start_holidays) == 4 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -3), Date.add(start_holidays, -1)))) |> List.flatten 
+  Date.day_of_week(start_holidays) == 5 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -4), Date.add(start_holidays, -1)))) |> List.flatten
+  Date.day_of_week(start_holidays) == 6 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -5), Date.add(start_holidays, -1)))) |> List.flatten   
+  Date.day_of_week(start_holidays) == 7 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -6), Date.add(start_holidays, -1)))) |> List.flatten
+  Date.day_of_week(start_holidays) == 5 -> list_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -4), Date.add(start_holidays, -1)))) |> List.flatten
+  true -> list_on_calendar = list_holidays
+end %>
+
+<% weekend_number = 
+   Enum.filter(@days, fn x -> x.value in list_holidays end) 
+   |> Enum.filter(fn x -> x.weekday == 6 or x.weekday == 7 end) 
+   |> length %>
+<% feier_number = 
+   Enum.filter(@days, fn x -> x.value in list_holidays end) 
+   |> Enum.filter(fn x -> x.periods != [] end) 
+   |> length %>
+
+<% best_month_number1 = start_holidays.month %>
+<% best_month_number2 = end_holidays.month %>
 
 <!--check if the bridge days are within a month or not -->
 <% if best_month_number1 == best_month_number2 do %>  
@@ -20,8 +41,8 @@
     <% month_label = Enum.at(best_months_mini, bridge_month1) <>"-"<> Enum.at(best_months_mini, bridge_month2) %>
 <% end %>
 
-<% best_year1 = List.first(best_bridge_day[:bridge_days]).year %>
-<% best_year2 = Date.add(List.last(best_bridge_day[:bridge_days]), String.to_integer(max_days)).year %>
+<% best_year1 = start_holidays.year %>
+<% best_year2 = end_holidays.year %>
 
 <!--check if the bridge days are within the same year or not -->
 <% if best_year1 == best_year2 do %>  
@@ -34,7 +55,7 @@
     <div class='panel panel-default'>
         <div class="panel-heading">
             <h3 class="panel-title">
-                <%= if bridge_days == 1 do %>
+                <%= if bridge_days_number == 1 do %>
                     Tag 
                 <%= else %>
                     Tage
@@ -59,23 +80,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% dayz = Enum.filter(@days, fn day -> day.calendar_week in  Enum.at(@list_of_best_weeks, i)  end)%>
+                    <% dayz = Enum.filter(@days, fn day -> day.value in list_on_calendar end)%>
                     <%= for week <- Enum.chunk_every(dayz, 7) do %>
                     <tr>
                         <%= for day <- week do %>
-                        <%= if day == nil do %>
-                            <td></td>
-                        <% else %>
-                            <%= if Enum.member?(best_bridge_day[:bridge_days], day.value) do %>
-                            <td class="text-right warning">
-                                <%= day.day_of_month %>.
-                            </td>
+                            <%= if day == nil do %>
+                                <td></td>
                             <% else %>
-                            <td class="text-right <%= CalendarHelper.bridge_day_css_class(day) %>">
-                                <%= day.day_of_month %>.
-                            </td>
+                                <%= if Enum.member?(best_bridge_day[:bridge_days], day.value) do %>
+                                    <td class="text-right leaveday">
+                                        <%= day.day_of_month %>.
+                                    </td>
+                                <% else %>
+                                    <td class="text-right <%= MehrSchulferienWeb.CalendarHelperLanding.bridge_day_css_class(day) %>">
+                                        <%= day.day_of_month %>.
+                                    </td>
+                                <% end %>
                             <% end %>
-                        <% end %>
                         <% end %>
                     </tr>
                     <% end %>
@@ -90,16 +111,16 @@
                         <% end %>
                     </div>
                     <div class="col-xs-3 text-right">
-                        <%= bridge_days %>
+                        <%= bridge_days_number %>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-9 text-right">Feiertage</div>
-                    <div class="col-xs-3 text-right">+ 5</div>
+                    <div class="col-xs-3 text-right">+ <%= feier_number%></div>
                 </div>
                 <div class="row">
                     <div class="col-xs-9 text-right">Wochenend-Tage</div>
-                    <div class="col-xs-3 text-right">+ 2</div>
+                    <div class="col-xs-3 text-right">+ <%= weekend_number%></div>
                 </div>
                 <div class="row-sum">
                     <div class="row">

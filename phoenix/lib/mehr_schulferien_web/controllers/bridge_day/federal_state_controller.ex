@@ -41,21 +41,12 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
      |> Map.values
      |> List.flatten
      |> Enum.sort
-     |> Enum.take(6)
-    
-    list_of_best_weeks = LandingTime.best_bridge_week_list(best_bridge_days)
+     |> Enum.take(6)    
 
-    list_of_best_days = 
-      Enum.filter(days, fn day -> day.calendar_week in List.first(list_of_best_weeks) end)
-
-    IO.puts("##########o")
-    #IO.inspect(best_bridge_days)
-    IO.puts("##########1")
-    IO.inspect(list_of_best_days)
-    IO.puts("##########2")
-    IO.inspect(list_of_best_weeks)
-    IO.puts("##########3")
-
+     just = Enum.filter(days, fn x -> x.value in Enum.to_list(Date.range(~D[2019-04-17], ~D[2019-04-22])) end)
+     IO.puts("###")
+     IO.inspect(just)
+     IO.puts("###")
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
                               country: country,
@@ -66,7 +57,7 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
                               number_of_days_to_invest: 1,
                               best_bridge_days: best_bridge_days,
-                              list_of_best_weeks: list_of_best_weeks
+                              #list_of_best_weeks: list_of_best_weeks
                               )
 
     render(conn, "index.html")
