@@ -167,8 +167,16 @@ end %>
             <div>
                 <div class="row">
                     <div class="col-xs-9 text-right"> Eingereichte Urlaubstage<br>                    
-                        <%= for n <- best_bridge_day[:bridge_days] do %>
-                            <%= Integer.to_string(n.day) <>"."<>Integer.to_string(n.month) %>
+                        <%= for {n, i} <- Enum.with_index(best_bridge_day[:bridge_days]) do %>
+                            <%= if i < length(best_bridge_day[:bridge_days])-2 do %>
+                              <%= Integer.to_string(n.day) <>"."<>Integer.to_string(n.month)  <>".," %>
+                            <%= else %>
+                              <%= if i < length(best_bridge_day[:bridge_days])-1 do %>
+                                  <%= Integer.to_string(n.day) <>"."<>Integer.to_string(n.month)  <>". und" %>
+                              <%= else %>
+                                  <%= Integer.to_string(n.day) <>"."<> Integer.to_string(n.month) <>"." %>
+                              <% end %>
+                            <% end %>
                         <% end %>
                     </div>
                     <div class="col-xs-3 text-right">

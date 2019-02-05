@@ -53,7 +53,6 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
                               number_of_days_to_invest: 1,
                               best_bridge_days: best_bridge_days,
-                              #list_of_best_weeks: list_of_best_weeks
                               )
 
     render(conn, "index.html")
