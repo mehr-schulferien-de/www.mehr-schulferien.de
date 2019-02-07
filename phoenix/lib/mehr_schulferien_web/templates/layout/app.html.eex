@@ -49,13 +49,13 @@
       <% end %>
     <% end %>
 
-    <!--<%= if assigns[:canonical_federal_state] do %>
-      <%= if assigns[:canonical_starts_on] && assigns[:canonical_ends_on] do %>
-        <link rel="canonical" href="/bridge_days/federal_states/<%= @canonical_federal_state.slug %>/<%= @canonical_starts_on %>/<%= @canonical_ends_on %>" />			
+    <%= if assigns[:compiled_optimal_bridge_days] do %>
+      <%= if assigns[:best_bridge_days] do %>
+        <link rel="canonical" href="https://www.mehrschulferien.de/bridge_days/federal_states/<%= @federal_state.slug %>" />
       <% else %>
-        <link rel="canonical" href="/bridge_days/federal_states/<%= @canonical_federal_state.slug %>" />
+        <link rel="canonical" href="https://www.mehrschulferien.de/bridge_days/federal_states/<%= @federal_state.slug %>/<%= @starts_on %>/<%= @ends_on %>/<%= @number_of_days_to_invest %>" />			
       <% end %>
-    <% end %> -->
+    <% end %>
 
   </head>
 
