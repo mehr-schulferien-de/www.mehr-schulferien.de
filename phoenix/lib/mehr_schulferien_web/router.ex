@@ -60,6 +60,7 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     resources "/federal_states", FederalStateController, only: [:show] do
+      get "/:name_of_federal_state", FederalStateController, :index
       get "/:starts_on/:ends_on/:number_of_days_to_invest", FederalStateController, :show
       get "/:year", FederalStateController, :show
     end

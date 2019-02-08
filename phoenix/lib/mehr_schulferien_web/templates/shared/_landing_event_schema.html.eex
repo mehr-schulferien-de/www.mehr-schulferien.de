@@ -1,11 +1,11 @@
-<%= for %{start_position: start_position, bridge_days: bridge_days, bridge_day_vacation_length: bridge_day_vacation_length} <- @compiled_optimal_bridge_days do %>
+<%= for {name, starts_on, ends_on, length, _, category_name} <- MehrSchulferienWeb.SchemaOrgHelper.event_schema_periods(@days, @category_whitelist) do %>
   <script type="application/ld+json">
     {
       "@context": "http://schema.org",
       "@type": "Event",
-      "name": "<%= bridge_day_vacation_length %> Tage Urlaub für <%= length(bridge_days) %> Brückentage",
-      "startDate" : "<%= List.first(bridge_days) %>",
-      "endDate" : "<%= List.last(bridge_days) %>",
+      "name": "<%= name %> (<%= category_name %>)",
+      "startDate" : "<%= starts_on %>",
+      "endDate" : "<%= ends_on %>",
       "location" : {
         "@type" : "Place",
         "name" : "<%= @location.name %>",
