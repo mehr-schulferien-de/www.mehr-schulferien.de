@@ -200,7 +200,6 @@ end %>
                     </div>
                 </div>
             </div>
-            <a class="btn btn-primary btn-block btn-sm" href="#">als iCal speichern</a>
         </div>
     </div>
 </div>

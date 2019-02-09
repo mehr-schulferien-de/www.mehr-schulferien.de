@@ -1,0 +1,2 @@
+<meta name="description" content="Sagen Sie uns wie viele Urlaubstage Sie nehmen können und wir sagen Ihnen an welchem Datum Sie damit maximal viel freie Tage am Stück bekommen.">
+<title>Top <%= length(@best_bridge_days) %> Brückentage für <%= @federal_state.name %> für die nächsten 12 Monate</title>

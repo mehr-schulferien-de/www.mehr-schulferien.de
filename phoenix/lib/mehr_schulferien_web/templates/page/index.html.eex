@@ -1,7 +1,8 @@
 <div class="page-header">
   <div class="row">
     <div class="col-md-12">
-      <h1>Ferien, Feiertage und Brückentage</h1>
+      <h1>Schulferien, Feier- und Brückentage</h1>
+      <p>Wir helfen Ihnen bei der optimalen Urlaubsplanung.</p>
     </div>
   </div>
 </div>
@@ -41,6 +42,10 @@
             <td><%= link Number.Delimit.number_to_delimited(length(federal_state.schools)), to: federal_state_school_path(@conn, :index, federal_state.slug) %></td>
           </tr>
 
+          <tr>
+            <td>Planungstools:</td>
+            <td><a href="/bridge_days/federal_states/<%= federal_state.slug %>/">Brückentage optimieren</a></td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -111,12 +116,8 @@
       Haben Sie noch zwei Urlaubstage übrig? Dann optimieren Sie Ihre Urlaubsplanung mit unserem Brückentage-Optimierungs-Tool (klicken Sie auf die 2 beim entsprechenden Bundesland).
     </p>
     <p>
-      <% year = Integer.to_string(DateTime.utc_now.year + 1) %>
-      <% number_of_days_to_invest_range = [1,2,3,4] %>
       <%= for federal_state <- @federal_states do %>
-        <a href="/bridge_days/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31/1">Brückentage <%= federal_state.name %></a>
-        (<%= for x <- number_of_days_to_invest_range do %><a href="/bridge_days/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31/<%= x %>"><%= x %></a><%= if x != List.last(number_of_days_to_invest_range) do %>, <% end %><% end %>)
-          ,
+        <a href="/bridge_days/federal_states/<%= federal_state.slug %>/">Brückentage <%= federal_state.name %></a>,
       <% end %>
     </p>
     <hr>

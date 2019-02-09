@@ -15,25 +15,23 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Brückentage und Urlaubsoptimierung <%= @federal_state.name %><br>
+        Top <%= length(@best_bridge_days) %> Brückentage für <%= @federal_state.name %><br>
+        <small>Für die nächsten 12 Monate</small>
       </h1>
     </div>
   </div>
 </div>
 
-
 <div class="row">
   <div class="col-sm-9">
-  <!-- new -->
     <div class="row">
       <div class="col-sm-12">
         <p class="lead">
           Mit einer cleveren Kombination von Brückentagen, Feiertagen und
-          Wochenenden können Sie Ihren Urlaub am Stück einfach maximieren.
+          Wochenenden können Sie mit einem minimalen Einsatz von Urlaubstagen maximal viel freie Tage am Stück bekommen.
         </p>
       </div>
     </div>
-  	<h2>Die Top 6 für die nächsten 12 Monate</h2>
     <div class="row">
       <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_calendar.html", 
       days: @days, month_per_row: 3, starts_on: @starts_on,
@@ -41,20 +39,8 @@
       best_bridge_days: @best_bridge_days
       %>
     </div>
-  <!-- new -->
-    <div class="row hidden-sm">
-      <div class="col-xs-12">
-        <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_calendar.html", days: @days, month_per_row: 3, categories: @categories, compiled_optimal_bridge_days: @compiled_optimal_bridge_days %>
-      </div>
-    </div>
-    <div class="row visible-sm-* hidden-xs hidden-md hidden-lg">
-      <div class="col-xs-12">
-        <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_calendar.html", days: @days, month_per_row: 2, categories: @categories, compiled_optimal_bridge_days: @compiled_optimal_bridge_days %>
-      </div>
-    </div>
   </div>
   <div class="col-sm-3">
-    
     <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_anzahl_urlaubstage_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
     <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_zeitraeume_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
     <%= render MehrSchulferienWeb.SharedView, "_dsgvo_panel.html" %>
@@ -85,6 +71,5 @@
       "name": "<%= @federal_state.name %>"
     }
   }]
-},
-
+}
 </script>
