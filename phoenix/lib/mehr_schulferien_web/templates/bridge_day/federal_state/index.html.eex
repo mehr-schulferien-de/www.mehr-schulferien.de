@@ -16,7 +16,7 @@
     <div class="col-md-12">
       <h1>
         Top <%= length(@best_bridge_days) %> Brückentage für <%= @federal_state.name %><br>
-        <small>Für die nächsten 12 Monate</small>
+        <small>In den nächsten 12 Monate</small>
       </h1>
     </div>
   </div>
