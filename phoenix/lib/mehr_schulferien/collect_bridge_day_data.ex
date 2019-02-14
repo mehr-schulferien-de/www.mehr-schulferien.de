@@ -218,38 +218,12 @@ defmodule MehrSchulferien.CollectBridgeDayData do
     {starts_on, ends_on}
   end
 
-  @doc """
-  Calculate optimal bridge days for each investable day (1...5)
-  the returned value format is a map, as follow 
-  iex> compiled_optimal_bridge_days_by_each_investable_day(days)
-  %{1 => [%{bridge_day_vacation_length: 6, bridge_days: [~D[2019-04-17]],
-     start_position: 106}],
-  2 => [%{bridge_day_vacation_length: 7,
-     bridge_days: [~D[2019-04-16], ~D[2019-04-17]], start_position: 105}],
-  3 => [%{bridge_day_vacation_length: 10,
-     bridge_days: [~D[2019-04-15], ~D[2019-04-16], ~D[2019-04-17]],
-     start_position: 102}],
-  4 => [%{bridge_day_vacation_length: 11,
-     bridge_days: [~D[2019-04-12], ~D[2019-04-15], ~D[2019-04-16],
-      ~D[2019-04-17]], start_position: 101}],
-  5 => [%{bridge_day_vacation_length: 12,
-     bridge_days: [~D[2019-04-11], ~D[2019-04-12], ~D[2019-04-15],
-      ~D[2019-04-16], ~D[2019-04-17]], start_position: 100}],
-  6 => [%{bridge_day_vacation_length: 14,
-     bridge_days: [~D[2019-04-23], ~D[2019-04-24], ~D[2019-04-25],
-      ~D[2019-04-26], ~D[2019-04-29], ~D[2019-04-30]], start_position: 107}]} 
-  """
-  def compiled_optimal_bridge_days_by_each_investable_day(days) do
-    Enum.reduce(1..6, %{}, fn number_of_day_to_invest, best_bridge_days ->
+  def compiled_best_bridge_day_configurable(enum_configuration, days) do
+    for {k, v} <- enum_configuration do
       days
-        |> compiled_optimal_bridge_days(number_of_day_to_invest)
-        |> Enum.take(1) # take the top 1 of each list of optimal bridge days
-        |> set_optimal_bridge_days(number_of_day_to_invest, best_bridge_days)
-    end)
-  end
-
-  defp set_optimal_bridge_days(optimal_bridge_days, number_of_day_to_invest, best_bridge_days) do
-    Map.put(best_bridge_days, number_of_day_to_invest, optimal_bridge_days)
+        |> compiled_optimal_bridge_days(k)
+        |> Enum.take(Enum.count(v))
+    end
   end
 
 end

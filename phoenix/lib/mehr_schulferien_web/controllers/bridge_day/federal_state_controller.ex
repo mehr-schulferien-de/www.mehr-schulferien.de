@@ -34,14 +34,11 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
 
     compiled_optimal_bridge_days = CollectBridgeDayData.compiled_optimal_bridge_days(days, 1)
 
-    compiled_optimal_bridge_days_by_each_investable_day = CollectBridgeDayData.compiled_optimal_bridge_days_by_each_investable_day(days)
-
-    best_bridge_days =
-     compiled_optimal_bridge_days_by_each_investable_day
-     |> Map.values
-     |> List.flatten
-     |> Enum.sort
-     |> Enum.take(6)    
+    config_investable_day_list = [1,1,2,2,3,4,5,6]
+    enum_configuration = config_investable_day_list |> Enum.group_by(&(&1))
+    best_bridge_days = 
+      CollectBridgeDayData.compiled_best_bridge_day_configurable(enum_configuration, days)
+      |> List.flatten
 
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
