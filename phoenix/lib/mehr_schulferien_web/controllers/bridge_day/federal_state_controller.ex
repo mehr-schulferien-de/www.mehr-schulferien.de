@@ -39,6 +39,10 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
     best_bridge_days = 
       CollectBridgeDayData.compiled_best_bridge_day_configurable(enum_configuration, days)
       |> List.flatten
+    
+    IO.puts("#==============")
+    IO.inspect(best_bridge_days)
+    IO.puts("#==============")
 
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
