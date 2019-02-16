@@ -35,6 +35,7 @@
     <div class="row">
       <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_calendar.html", 
       days: @days, starts_on: @starts_on,
+      days_on_calendar: @days_on_calendar,
       categories: @categories, 
       best_bridge_days: @best_bridge_days
       %>

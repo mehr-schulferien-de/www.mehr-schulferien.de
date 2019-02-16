@@ -27,6 +27,13 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
     days = CollectBridgeDayData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
 
+    starts_on_calendar = Date.add(starts_on,-31)
+    ends_on_calendar = Date.add(ends_on,31) 
+
+    #anticipate day(s) of date that are shown on calendar from previous or next month
+    days_on_calendar = CollectBridgeDayData.list_days([country, federal_state],
+                                  starts_on: starts_on_calendar, ends_on: ends_on_calendar)
+
     query = from(categories in Category,
                  where: categories.for_anybody == true)
                  
@@ -40,16 +47,13 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
       CollectBridgeDayData.compiled_best_bridge_day_configurable(enum_configuration, days)
       |> List.flatten
     
-    IO.puts("#==============")
-    IO.inspect(best_bridge_days)
-    IO.puts("#==============")
-
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
                               country: country,
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
+                              days_on_calendar: days_on_calendar,
                               categories: categories,
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
                               number_of_days_to_invest: 1,
@@ -71,6 +75,13 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
     days = CollectBridgeDayData.list_days([country, federal_state],
                                  starts_on: starts_on, ends_on: ends_on)
 
+    starts_on_calendar = Date.add(starts_on,-31)
+    ends_on_calendar = Date.add(ends_on,31) 
+    
+    #anticipate day(s) of date that are shown on calendar from previous or next month
+    days_on_calendar = CollectBridgeDayData.list_days([country, federal_state],
+                                  starts_on: starts_on_calendar, ends_on: ends_on_calendar)
+
     query = from(categories in Category,
                  where: categories.for_anybody == true)
     categories = Repo.all(query)
@@ -83,6 +94,7 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               starts_on: starts_on,
                               ends_on: ends_on,
                               days: days,
+                              days_on_calendar: days_on_calendar,
                               categories: categories,
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
                               number_of_days_to_invest: String.to_integer(number_of_days_to_invest))
@@ -139,6 +151,31 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               "-12-31/1"
     end
   end
+
+  #=========== page details
+
+  def show(conn, %{"federal_state_id" => federal_state_id,
+                   "starts_on" => starts_on,
+                   "ends_on" => ends_on}) do
+    {federal_state, federal_states, country} = get_locations(federal_state_id)
+    {starts_on, ends_on} = get_dates(starts_on, ends_on)
+
+    days = CollectBridgeDayData.list_days([country, federal_state],
+                                 starts_on: starts_on, ends_on: ends_on)
+ 
+    query = from(categories in Category,
+                 where: categories.for_anybody == true)
+    categories = Repo.all(query)
+
+    render(conn, "detail.html", federal_state: federal_state,
+                              federal_states: federal_states,
+                              country: country,
+                              starts_on: starts_on,
+                              ends_on: ends_on,
+                              days: days,
+                              categories: categories)
+  end
+  #============
 
   # Redirect requests for federal_states to the correct full URL.
   # Example: /federal_states/bayern will become

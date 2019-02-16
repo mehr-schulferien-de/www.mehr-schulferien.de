@@ -8,6 +8,7 @@
 <% end_holidays = Date.add(start_holidays, best_bridge_day[:bridge_day_vacation_length])%>
 <% list_vacation = Enum.to_list(Date.range(start_holidays, end_holidays)) %>
 
+
 <!-- checking integrity if :start_position and actual holidays -->
 <%
 
@@ -15,7 +16,6 @@ if Enum.member?(list_vacation, List.first(best_bridge_day[:bridge_days])) and En
   list_holidays = list_vacation
   start_holidays_checked = start_holidays
   end_holidays_checked = end_holidays
-  status = "true"
 else
     end_holday_temp = 
         List.last(best_bridge_day[:bridge_days])
@@ -25,18 +25,19 @@ else
         |> Date.range(end_holday_temp)
         |> Enum.to_list
         |> Enum.sort
-    non_tails = 
-        Enum.filter(@days, fn x -> x.value in (tail_holday_temp -- [List.last(best_bridge_day[:bridge_days])]) end)
-        |> Enum.filter(fn x -> x.periods == [] end)
 
+    non_tails =
+        @days 
+        |> Enum.filter(fn x -> x.value in (tail_holday_temp -- best_bridge_day[:bridge_days]) end)
+        |> Enum.filter(fn x -> x.periods == [] end)
 
     non_tail_list = for y <- non_tails do
         y.value
     end
 
-    false_tail_sorted = Enum.sort(non_tail_list)
     true_end_holidays = 
-        false_tail_sorted
+        non_tail_list
+        |> Enum.sort
         |> List.first
         |> Date.add(-1)
 
@@ -83,6 +84,10 @@ end %>
    Enum.filter(@days, fn x -> x.value in list_holidays end) 
    |> Enum.filter(fn x -> x.periods != [] end) 
    |> length %>
+
+<% feier_number_calculated =
+    feier_number - weekend_number
+%>
 
 <!--check if the bridge days are within the same year or not -->
 
@@ -139,7 +144,7 @@ end %>
                     </tr>
                 </thead>
                 <tbody>
-                    <% dayz = Enum.filter(@days, fn day -> day.value in list_on_calendar end)%>
+                    <% dayz = Enum.filter(@days_on_calendar, fn day -> day.value in list_on_calendar end)%>
 
                     <%= for week <- Enum.chunk_every(dayz, 7) do %>
                     <tr>
@@ -190,7 +195,7 @@ end %>
                 </div>
                 <div class="row">
                     <div class="col-xs-9 text-right">Feiertage</div>
-                    <div class="col-xs-3 text-right">+ <%= feier_number%></div>
+                    <div class="col-xs-3 text-right">+ <%= feier_number_calculated%></div>
                 </div>
                 <div class="row">
                     <div class="col-xs-9 text-right">Wochenend-Tage</div>
@@ -200,7 +205,7 @@ end %>
                     <div class="row">
                         <div class="col-xs-9 text-right">Freie Tage</div>
                         <div class="col-xs-3 text-right">
-                            <%= max_days %> 
+                            <%= max_days %>                             
                         </div>
                     </div>
                 </div>
