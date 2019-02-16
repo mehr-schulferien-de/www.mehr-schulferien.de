@@ -24,27 +24,23 @@
           <% next_two_years = Enum.to_list(current_year .. current_year + 1) %>
 
           <tr>
-            <td colspan="2">
+            <td>Jahr</td>
+            <td>
               <ul>
                 <%= for year <- next_two_years do %>
-                  <li><a href="/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31">Schulferien <%= federal_state.name %> <%= year %></a></li>
+                  <li><a href="/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31"><%= year %></a></li>
                 <% end %>
               </ul>
             </td>
           </tr>
 
           <tr>
-            <td>Städte:</td>
-            <td><%= link Number.Delimit.number_to_delimited(length(federal_state.cities)), to: federal_state_city_path(@conn, :index, federal_state.slug) %></td>
+            <td>Urlaubsplanung</td>
+            <td><a href="/bridge_days/federal_states/<%= federal_state.slug %>/">Die besten Brückentage.</a></td>
           </tr>
           <tr>
-            <td>Schulen:</td>
-            <td><%= link Number.Delimit.number_to_delimited(length(federal_state.schools)), to: federal_state_school_path(@conn, :index, federal_state.slug) %></td>
-          </tr>
-
-          <tr>
-            <td>Planungstools:</td>
-            <td><a href="/bridge_days/federal_states/<%= federal_state.slug %>/">Brückentage optimieren</a></td>
+            <td>Sonstiges</td>
+            <td><%= link "Städte", to: federal_state_city_path(@conn, :index, federal_state.slug) %> (<%= Number.Delimit.number_to_delimited(length(federal_state.cities)) %>), <%= link "Schulen", to: federal_state_school_path(@conn, :index, federal_state.slug) %> (<%= Number.Delimit.number_to_delimited(length(federal_state.schools)) %>)</td>
           </tr>
         </tbody>
       </table>
