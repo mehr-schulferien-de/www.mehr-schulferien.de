@@ -8,11 +8,14 @@
 <% end_holidays = Date.add(start_holidays, best_bridge_day[:bridge_day_vacation_length])%>
 <% list_vacation = Enum.to_list(Date.range(start_holidays, end_holidays)) %>
 
+
 <!-- checking integrity if :start_position and actual holidays -->
 <%
 
 if Enum.member?(list_vacation, List.first(best_bridge_day[:bridge_days])) and Enum.member?(list_vacation, List.last(best_bridge_day[:bridge_days])) do
   list_holidays = list_vacation
+  start_holidays_checked = start_holidays
+  end_holidays_checked = end_holidays
 else
     end_holday_temp = 
         List.last(best_bridge_day[:bridge_days])
@@ -21,46 +24,49 @@ else
         List.last(best_bridge_day[:bridge_days])
         |> Date.range(end_holday_temp)
         |> Enum.to_list
-    non_tails = 
-        Enum.filter(@days, fn x -> x.value in tail_holday_temp  end)
+        |> Enum.sort
+
+    non_tails =
+        @days 
+        |> Enum.filter(fn x -> x.value in (tail_holday_temp -- best_bridge_day[:bridge_days]) end)
         |> Enum.filter(fn x -> x.periods == [] end)
 
     non_tail_list = for y <- non_tails do
         y.value
     end
 
-    false_tail_sorted = Enum.sort(non_tail_list)
     true_end_holidays = 
-        false_tail_sorted
+        non_tail_list
+        |> Enum.sort
         |> List.first
         |> Date.add(-1)
 
     step_back = 1 - best_bridge_day[:bridge_day_vacation_length]
     true_start_holidays = Date.add(true_end_holidays, step_back) 
     list_holidays = Enum.to_list(Date.range(true_start_holidays, true_end_holidays))
-    start_holidays = true_start_holidays
-    end_holidays = true_end_holidays
+    start_holidays_checked = true_start_holidays
+    end_holidays_checked = true_end_holidays
 end
 %>
 
 <% cond do 
-  Date.day_of_week(start_holidays) == 2 -> head_on_calendar = List.insert_at(list_holidays, 0, Date.add(start_holidays, -1)) 
-  Date.day_of_week(start_holidays) == 3 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -2), Date.add(start_holidays, -1)))) |> List.flatten 
-  Date.day_of_week(start_holidays) == 4 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -3), Date.add(start_holidays, -1)))) |> List.flatten 
-  Date.day_of_week(start_holidays) == 5 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -4), Date.add(start_holidays, -1)))) |> List.flatten
-  Date.day_of_week(start_holidays) == 6 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -5), Date.add(start_holidays, -1)))) |> List.flatten   
-  Date.day_of_week(start_holidays) == 7 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -6), Date.add(start_holidays, -1)))) |> List.flatten
-  Date.day_of_week(start_holidays) == 1 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays, -7), Date.add(start_holidays, -1)))) |> List.flatten
+  Date.day_of_week(start_holidays_checked) == 2 -> head_on_calendar = List.insert_at(list_holidays, 0, Date.add(start_holidays_checked, -1)) 
+  Date.day_of_week(start_holidays_checked) == 3 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays_checked, -2), Date.add(start_holidays_checked, -1)))) |> List.flatten 
+  Date.day_of_week(start_holidays_checked) == 4 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays_checked, -3), Date.add(start_holidays_checked, -1)))) |> List.flatten 
+  Date.day_of_week(start_holidays_checked) == 5 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays_checked, -4), Date.add(start_holidays_checked, -1)))) |> List.flatten
+  Date.day_of_week(start_holidays_checked) == 6 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays_checked, -5), Date.add(start_holidays_checked, -1)))) |> List.flatten   
+  Date.day_of_week(start_holidays_checked) == 7 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays_checked, -6), Date.add(start_holidays_checked, -1)))) |> List.flatten
+  Date.day_of_week(start_holidays_checked) == 1 -> head_on_calendar = List.insert_at(list_holidays, 0, Enum.to_list(Date.range(Date.add(start_holidays_checked, -7), Date.add(start_holidays_checked, -1)))) |> List.flatten
   true -> head_on_calendar = list_holidays
 end %>
 
 <% cond do 
-  Date.day_of_week(end_holidays) == 6 -> list_on_calendar = head_on_calendar ++ Date.add(end_holidays, 1)
-  Date.day_of_week(end_holidays) == 5 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 2))) |> List.flatten 
-  Date.day_of_week(end_holidays) == 4 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 3))) |> List.flatten 
-  Date.day_of_week(end_holidays) == 3 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 4))) |> List.flatten
-  Date.day_of_week(end_holidays) == 2 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 5))) |> List.flatten   
-  Date.day_of_week(end_holidays) == 1 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays, 1), Date.add(end_holidays, 6))) |> List.flatten
+  Date.day_of_week(end_holidays_checked) == 6 -> list_on_calendar = head_on_calendar ++ Date.add(end_holidays_checked, 1)
+  Date.day_of_week(end_holidays_checked) == 5 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays_checked, 1), Date.add(end_holidays_checked, 2))) |> List.flatten 
+  Date.day_of_week(end_holidays_checked) == 4 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays_checked, 1), Date.add(end_holidays_checked, 3))) |> List.flatten 
+  Date.day_of_week(end_holidays_checked) == 3 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays_checked, 1), Date.add(end_holidays_checked, 4))) |> List.flatten
+  Date.day_of_week(end_holidays_checked) == 2 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays_checked, 1), Date.add(end_holidays_checked, 5))) |> List.flatten   
+  Date.day_of_week(end_holidays_checked) == 1 -> list_on_calendar = head_on_calendar ++ Enum.to_list(Date.range(Date.add(end_holidays_checked, 1), Date.add(end_holidays_checked, 6))) |> List.flatten
   true -> list_on_calendar = head_on_calendar
 end %>
 
@@ -78,6 +84,10 @@ end %>
    Enum.filter(@days, fn x -> x.value in list_holidays end) 
    |> Enum.filter(fn x -> x.periods != [] end) 
    |> length %>
+
+<% feier_number_calculated =
+    feier_number - weekend_number
+%>
 
 <!--check if the bridge days are within the same year or not -->
 
@@ -109,7 +119,7 @@ end %>
         <div class="panel-heading">
             <h3 class="panel-title">
                 <%= bridge_days_number %>
-                <%= if bridge_days_number == 1 do %>
+                <%= if bridge_days_number == 1 or bridge_days_number == "1" do %>
                     Tag 
                 <%= else %>
                     Tage
@@ -134,7 +144,7 @@ end %>
                     </tr>
                 </thead>
                 <tbody>
-                    <% dayz = Enum.filter(@days, fn day -> day.value in list_on_calendar end)%>
+                    <% dayz = Enum.filter(@days_on_calendar, fn day -> day.value in list_on_calendar end)%>
 
                     <%= for week <- Enum.chunk_every(dayz, 7) do %>
                     <tr>
@@ -185,7 +195,7 @@ end %>
                 </div>
                 <div class="row">
                     <div class="col-xs-9 text-right">Feiertage</div>
-                    <div class="col-xs-3 text-right">+ <%= feier_number%></div>
+                    <div class="col-xs-3 text-right">+ <%= feier_number_calculated%></div>
                 </div>
                 <div class="row">
                     <div class="col-xs-9 text-right">Wochenend-Tage</div>
@@ -195,7 +205,7 @@ end %>
                     <div class="row">
                         <div class="col-xs-9 text-right">Freie Tage</div>
                         <div class="col-xs-3 text-right">
-                            <%= max_days %>
+                            <%= max_days %>                             
                         </div>
                     </div>
                 </div>
