@@ -41,7 +41,7 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
 
     compiled_optimal_bridge_days = CollectBridgeDayData.compiled_optimal_bridge_days(days, 1)
 
-    config_investable_day_list = [1,1,1,2,2,3,4,5,6]
+    config_investable_day_list = [1,1,1,2,2,2,3,3,3,4,5,6]
     enum_configuration = config_investable_day_list |> Enum.group_by(&(&1))
     best_bridge_days = 
       CollectBridgeDayData.compiled_best_bridge_day_configurable(enum_configuration, days)

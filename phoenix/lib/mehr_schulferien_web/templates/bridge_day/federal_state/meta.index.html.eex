@@ -1,2 +1,2 @@
-<meta name="description" content="Sagen Sie uns wie viele Urlaubstage Sie nehmen können und wir sagen Ihnen an welchem Datum Sie damit maximal viel freie Tage am Stück bekommen.">
-<title>Top <%= length(@best_bridge_days) %> Brückentage für <%= @federal_state.name %> in den nächsten 12 Monate</title>
+<meta name="description" content="Mit einer cleveren Kombination von Brückentagen, Feiertagen und Wochenenden können Sie mit einem minimalen Einsatz von Urlaubstagen maximal viel freie Tage am Stück bekommen.">
+<title>Die besten <%= length(@best_bridge_days) %> Brückentage für <%= @federal_state.name %> (nächste 12 Monate)</title>
