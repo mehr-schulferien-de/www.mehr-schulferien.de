@@ -2,8 +2,10 @@
 <div class="row">
   <div class="col-xs-12">
     <h3>
-      <%= Enum.at(["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"], String.to_integer(Enum.at(String.split(first_day_of_month.slug,"-"),1)) - 1) %>
-      <div class="text-muted pull-right"><%= first_day_of_month.value.year %></div>
+      <a id="<%= first_day_of_month.value.month %>">
+        <%= Enum.at(["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"], String.to_integer(Enum.at(String.split(first_day_of_month.slug,"-"),1)) - 1) %>
+        <div class="text-muted pull-right"><%= first_day_of_month.value.year %></div>
+      </a>
     </h3>
 
     <% month = CalendarHelper.fill_up_month_to_have_complete_weeks(@month) %>
