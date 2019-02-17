@@ -1,2 +1,2 @@
-<meta name="description" content="Mit einer cleveren Kombination von Brückentagen, Feiertagen und Wochenenden können Sie mit einem minimalen Einsatz von Urlaubstagen maximal viel freie Tage am Stück bekommen.">
+<meta name="description" content="Eine optimale Kombination von Brückentagen, Feiertagen und Wochenenden ergibt mit einem minimalen Einsatz von Urlaubstagen maximal viel freie Tage.">
 <title>Die besten <%= length(@best_bridge_days) %> Brückentage für <%= @federal_state.name %> (nächste 12 Monate)</title>
