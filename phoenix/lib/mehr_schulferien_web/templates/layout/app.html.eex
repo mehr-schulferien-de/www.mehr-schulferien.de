@@ -49,12 +49,11 @@
       <% end %>
     <% end %>
 
-    <%= if assigns[:rel_prev] && assigns[:rel_prev] != nil do %>
-      <link rel="prev" href="<%= assigns[:rel_prev] %>">
+    <%= if assigns[:rel_prev] && @rel_prev != nil do %>
+      <link rel="prev" href="<%= @rel_prev %>">
     <% end %>
-
-    <%= if assigns[:rel_next] && assigns[:rel_next] != nil do %>
-      <link rel="next" href="<%= assigns[:rel_next] %>">
+    <%= if assigns[:rel_next] && @rel_next != nil do %>
+      <link rel="next" href="<%= @rel_next %>">
     <% end %>
 
   </head>
