@@ -88,6 +88,20 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
 
     compiled_optimal_bridge_days = MehrSchulferien.CollectBridgeDayData.compiled_optimal_bridge_days(days, String.to_integer(number_of_days_to_invest))
 
+    rel_prev = nil
+    rel_next = nil
+    number_of_days_int = String.to_integer(number_of_days_to_invest)
+    if number_of_days_int > 0 && number_of_days_int < 9 do
+      if number_of_days_int > 1 do
+        prev_number_of_days = number_of_days_int - 1
+        rel_prev = "/bridge_days/federal_states/#{federal_state.slug}/#{starts_on.year}-01-01/#{starts_on.year}-12-31/#{prev_number_of_days}"
+      end
+      if number_of_days_int < 8 do
+        next_number_of_days = number_of_days_int + 1
+        rel_next = "/bridge_days/federal_states/#{federal_state.slug}/#{starts_on.year}-01-01/#{starts_on.year}-12-31/#{next_number_of_days}"
+      end
+    end
+
     render(conn, "show.html", federal_state: federal_state,
                               federal_states: federal_states,
                               country: country,
@@ -97,7 +111,10 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               days_on_calendar: days_on_calendar,
                               categories: categories,
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
-                              number_of_days_to_invest: String.to_integer(number_of_days_to_invest))
+                              number_of_days_to_invest: String.to_integer(number_of_days_to_invest),
+                              rel_prev: rel_prev,
+                              rel_next: rel_next
+                              )
   end
 
   def show(conn, %{"federal_state_id" => federal_state_id,

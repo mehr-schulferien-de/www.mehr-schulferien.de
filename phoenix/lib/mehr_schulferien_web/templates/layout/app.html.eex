@@ -49,8 +49,12 @@
       <% end %>
     <% end %>
 
-    <%= if assigns[:compiled_optimal_bridge_days] do %>
-      <link rel="canonical" href="https://www.mehr-schulferien.de/bridge_days/federal_states/<%= @federal_state.slug %>" />
+    <%= if assigns[:rel_prev] && assigns[:rel_prev] != nil do %>
+      <link rel="prev" href="<%= assigns[:rel_prev] %>">
+    <% end %>
+
+    <%= if assigns[:rel_next] && assigns[:rel_next] != nil do %>
+      <link rel="next" href="<%= assigns[:rel_next] %>">
     <% end %>
 
   </head>

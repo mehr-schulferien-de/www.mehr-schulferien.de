@@ -12,14 +12,10 @@
 
 <div class="page-header">
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-12">
       <h1>
-        Brückentage <%= @federal_state.name %><br>
-        <small>Optimierung für <%= @number_of_days_to_invest %> <%= if @number_of_days_to_invest > 1 do %>Tage<% else %>Tag<% end %> (<%= CalendarHelper.calendar_sub_heading(@starts_on, @ends_on) %>)</small>
+        Die <%= length(@compiled_optimal_bridge_days) %> besten <%= if @number_of_days_to_invest > 1 do %><%= @number_of_days_to_invest %>er <% end %>Brückentage <%= @federal_state.name %> <%= @starts_on.year %><br>
       </h1>
-    </div>
-    <div class="col-md-4">
-      <%= render MehrSchulferienWeb.SharedView, "_large_mobile_banner_ad.html" %>
     </div>
   </div>
 </div>
@@ -29,8 +25,45 @@
     <div class="row">
       <div class="col-sm-12">
         <p class="lead">
-          Eine optimale Kombination von Brückentagen, Feiertagen und Wochenenden ergibt mit einem minimalen Einsatz von Urlaubstagen maximal viel freie Tage.
+          Eine optimale Kombination von Brücken-, Feiertagen und Wochenenden ergibt mit einem minimalen Einsatz von Urlaubstagen maximal viel freie Tage. 
         </p>
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <p>Klicken Sie auf die Ihnen zur Verfügung stehende Anzahl von Urlaubstagen:</p>
+            <%= if @number_of_days_to_invest == 1 do %>
+              <li class="disabled">
+                <span aria-hidden="true">&laquo;</span>
+              </li>
+            <% else %>
+              <li>
+                <a href="/bridge_days/federal_states/<%= @federal_state.slug %>/<%= @starts_on.year %>-01-01/<%= @starts_on.year %>-12-31/<%= (@number_of_days_to_invest-1) %>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            <% end %>
+
+            <%= for x <- Enum.to_list(1..8) do %>
+              <%= if x == @number_of_days_to_invest do %>
+                <li class="active"><a class="nav-link" href="/bridge_days/federal_states/<%= @federal_state.slug %>/<%= @starts_on.year %>-01-01/<%= @starts_on.year %>-12-31/<%= x %>"><%= x %></a></li>
+              <%= else %>
+                <li class=""><a class="nav-link" href="/bridge_days/federal_states/<%= @federal_state.slug %>/<%= @starts_on.year %>-01-01/<%= @starts_on.year %>-12-31/<%= x %>"><%= x %></a></li>
+              <% end %>
+            <% end %>
+
+            <%= if @number_of_days_to_invest == 8 do %>
+              <li class="disabled">
+                <span aria-hidden="true">&raquo;</span>
+              </li>
+            <% else %>
+              <li>
+                <a href="/bridge_days/federal_states/<%= @federal_state.slug %>/<%= @starts_on.year %>-01-01/<%= @starts_on.year %>-12-31/<%= (@number_of_days_to_invest+1) %>" aria-label="Previous">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            <% end %>
+
+          </ul>
+        </nav>
       </div>
     </div>
     <div class="row">
@@ -41,14 +74,7 @@
       best_bridge_days: @compiled_optimal_bridge_days
       %>
     </div>
-    <div class="row">
-      <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_calendar.html", 
-      days: @days, starts_on: @starts_on,
-      days_on_calendar: @days_on_calendar,
-      categories: @categories, 
-      best_bridge_days: @compiled_optimal_bridge_days
-      %>
-    </div>
+
     <h2>Kalenderansicht</h2></h2>
     <div class="row hidden-sm">
       <div class="col-xs-12">
@@ -71,7 +97,6 @@
 
   </div>
   <div class="col-sm-3">
-    <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_anzahl_urlaubstage_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
     <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_zeitraeume_panel.html", location: @federal_state, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
     <%= render MehrSchulferienWeb.SharedView, "_dsgvo_panel.html" %>
     <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_list_federal_states_panel.html", federal_states: @federal_states, starts_on: @starts_on, ends_on: @ends_on, number_of_days_to_invest: @number_of_days_to_invest %>
