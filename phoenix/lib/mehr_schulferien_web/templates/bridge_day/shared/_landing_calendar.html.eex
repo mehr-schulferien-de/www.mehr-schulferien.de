@@ -5,7 +5,7 @@
 <% bridge_days_number = Integer.to_string(length(best_bridge_day[:bridge_days])) %>
 <% max_days = Integer.to_string(best_bridge_day[:bridge_day_vacation_length]) %>
 <% start_holidays = Date.add(@starts_on, best_bridge_day[:start_position]) %>
-<% end_holidays = Date.add(start_holidays, best_bridge_day[:bridge_day_vacation_length])%>
+<% end_holidays = Date.add(start_holidays, best_bridge_day[:bridge_day_vacation_length] -1)%>
 <% list_vacation = Enum.to_list(Date.range(start_holidays, end_holidays)) %>
 
 
@@ -17,35 +17,80 @@ if Enum.member?(list_vacation, List.first(best_bridge_day[:bridge_days])) and En
   start_holidays_checked = start_holidays
   end_holidays_checked = end_holidays
 else
-    end_holday_temp = 
+    end_holiday_temp = 
         List.last(best_bridge_day[:bridge_days])
-        |> Date.add(best_bridge_day[:bridge_day_vacation_length])
-    tail_holday_temp = 
+        |> Date.add(best_bridge_day[:bridge_day_vacation_length] - 1)
+    tail_holiday_temp = 
         List.last(best_bridge_day[:bridge_days])
-        |> Date.range(end_holday_temp)
+        |> Date.range(end_holiday_temp)
         |> Enum.to_list
         |> Enum.sort
 
     non_tails =
         @days 
-        |> Enum.filter(fn x -> x.value in (tail_holday_temp -- best_bridge_day[:bridge_days]) end)
+        |> Enum.filter(fn x -> x.value in (tail_holiday_temp -- best_bridge_day[:bridge_days]) end)
         |> Enum.filter(fn x -> x.periods == [] end)
 
     non_tail_list = for y <- non_tails do
         y.value
     end
 
-    true_end_holidays = 
-        non_tail_list
-        |> Enum.sort
-        |> List.first
-        |> Date.add(-1)
+
+    new_end_holidays = 
+        if length(non_tail_list) > 0 do 
+            non_tail_list
+                |> Enum.sort
+                |> List.first
+                |> Date.add(-1)
+        else
+            end_holiday_temp
+        end
 
     step_back = 1 - best_bridge_day[:bridge_day_vacation_length]
-    true_start_holidays = Date.add(true_end_holidays, step_back) 
-    list_holidays = Enum.to_list(Date.range(true_start_holidays, true_end_holidays))
-    start_holidays_checked = true_start_holidays
-    end_holidays_checked = true_end_holidays
+    new_start_holidays = Date.add(new_end_holidays, step_back) 
+
+    new_start_holidays_2 =
+        if Date.diff(new_start_holidays, List.first(best_bridge_day[:bridge_days])) >= 1 do
+            List.first(best_bridge_day[:bridge_days])
+        else
+            new_start_holidays
+        end
+
+    holiday_diff = best_bridge_day[:bridge_day_vacation_length] - 1
+
+    new_start_holidays_3 =
+        cond do
+           Date.day_of_week(new_start_holidays_2) == 1 -> Date.add(new_start_holidays_2,-2)
+           true -> new_start_holidays_2 
+        end
+
+    new_end_holidays_3 = Date.add(new_start_holidays_3, holiday_diff)
+    list_holidays_3 = Enum.to_list(Date.range(new_start_holidays_3, new_end_holidays_3))
+    
+    non_tails_2 =
+        @days 
+        |> Enum.filter(fn x -> x.value in (list_holidays_3 -- best_bridge_day[:bridge_days]) end)
+        |> Enum.filter(fn x -> x.periods == [] end)
+
+    non_tail_list_2 = for y <- non_tails_2 do
+        y.value
+    end
+
+    new_end_holidays_4 = 
+        if length(non_tail_list_2) > 0 do 
+            non_tail_list_2
+                |> Enum.sort
+                |> List.first
+                |> Date.add(-1)
+        else
+            new_end_holidays_3
+        end
+
+    new_start_holidays_4 = Date.add(new_end_holidays_4, step_back)
+    start_holidays_checked = new_start_holidays_4
+    end_holidays_checked = new_end_holidays_4
+    list_holidays = Enum.to_list(Date.range(start_holidays_checked, end_holidays_checked))
+
 end
 %>
 
@@ -212,7 +257,7 @@ end %>
                     <div class="row">
                         <div class="col-xs-9 text-right">Freie Tage</div>
                         <div class="col-xs-3 text-right">
-                            <%= max_days %>                             
+                            <%= max_days %>
                         </div>
                     </div>
                 </div>
