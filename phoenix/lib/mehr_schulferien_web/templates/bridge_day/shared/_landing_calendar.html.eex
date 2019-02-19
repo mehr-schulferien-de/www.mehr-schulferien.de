@@ -258,8 +258,6 @@ end %>
                         <div class="col-xs-9 text-right">Freie Tage</div>
                         <div class="col-xs-3 text-right">
                             <%= max_days %>
-                            #<%= new_end_holidays %>
-                            #<%= end_holidays_checked %>
                         </div>
                     </div>
                 </div>
