@@ -58,13 +58,37 @@ else
 
     holiday_diff = best_bridge_day[:bridge_day_vacation_length] - 1
 
-    start_holidays_checked =
+    new_start_holidays_3 =
         cond do
            Date.day_of_week(new_start_holidays_2) == 1 -> Date.add(new_start_holidays_2,-2)
            true -> new_start_holidays_2 
         end
 
-    end_holidays_checked = Date.add(start_holidays_checked, holiday_diff)
+    new_end_holidays_3 = Date.add(new_start_holidays_3, holiday_diff)
+    list_holidays_3 = Enum.to_list(Date.range(new_start_holidays_3, new_end_holidays_3))
+    
+    non_tails_2 =
+        @days 
+        |> Enum.filter(fn x -> x.value in (list_holidays_3 -- best_bridge_day[:bridge_days]) end)
+        |> Enum.filter(fn x -> x.periods == [] end)
+
+    non_tail_list_2 = for y <- non_tails_2 do
+        y.value
+    end
+
+    new_end_holidays_4 = 
+        if length(non_tail_list_2) > 0 do 
+            non_tail_list_2
+                |> Enum.sort
+                |> List.first
+                |> Date.add(-1)
+        else
+            new_end_holidays_3
+        end
+
+    new_start_holidays_4 = Date.add(new_end_holidays_4, step_back)
+    start_holidays_checked = new_start_holidays_4
+    end_holidays_checked = new_end_holidays_4
     list_holidays = Enum.to_list(Date.range(start_holidays_checked, end_holidays_checked))
 
 end
@@ -234,6 +258,8 @@ end %>
                         <div class="col-xs-9 text-right">Freie Tage</div>
                         <div class="col-xs-3 text-right">
                             <%= max_days %>
+                            #<%= new_end_holidays %>
+                            #<%= end_holidays_checked %>
                         </div>
                     </div>
                 </div>
