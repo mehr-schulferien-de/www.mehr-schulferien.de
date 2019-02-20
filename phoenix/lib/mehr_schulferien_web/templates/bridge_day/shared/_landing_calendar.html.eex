@@ -1,5 +1,6 @@
 <% best_months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]%>
 <% best_months_mini = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]%>
+<% divider = round (12/@month_per_row) %>
 
 <%= for best_bridge_day <- @best_bridge_days do %>
 <% bridge_days_number = Integer.to_string(length(best_bridge_day[:bridge_days])) %>
@@ -159,7 +160,7 @@ end %>
     <% month_label = Enum.at(best_months_mini, bridge_month1) <>"-"<> Enum.at(best_months_mini, bridge_month2) %>
 <% end %>
 
-<div class="col-sm-4">
+<div class="col-sm-<%= divider %>">
     <div class='panel panel-default'>
         <div class="panel-heading">
             <h3 class="panel-title">
