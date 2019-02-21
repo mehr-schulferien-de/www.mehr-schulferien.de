@@ -1,2 +1,2 @@
-<meta name="description" content="Mit möglichst wenigen Urlaubstagen bekommen Sie maximal viele freie Tage. Wir analysieren automatisch Brücken-, Feiertage und Wochenenden und zeigen Ihnen die besten Termine.">
+<meta name="description" content="Auf der Arbeit möglichst wenig Urlaubstage nehmen, aber durch die optimale Nutzung von Brücken-, Feiertage und Wochenende maximal viele freie Tage am Stück bekommen. 🏖">
 <title>Die <%= length(@best_bridge_days) %> besten Brückentage für <%= @federal_state.name %></title>

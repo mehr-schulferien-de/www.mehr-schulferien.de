@@ -38,7 +38,7 @@
             <td>Brückentage</td>
             <td>
               <ul>
-                <li><a href="/bridge_days/federal_states/<%= federal_state.slug %>">Die besten Brückentage für die nächste 12 Monate.</a></li>
+                <li><a href="/bridge_days/federal_states/<%= federal_state.slug %>">Die besten Brückentage. 🎉</a></li>
                 <%= for year <- next_two_years do %>
                   <li><a href="/bridge_days/federal_states/<%= federal_state.slug %>/<%= year %>-01-01/<%= year %>-12-31/1"><%= year %></a></li>
                 <% end %>
