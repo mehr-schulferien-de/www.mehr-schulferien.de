@@ -1,4 +1,4 @@
-<%= for %{start_position: start_position, bridge_days: bridge_days, bridge_day_vacation_length: bridge_day_vacation_length} <- @best_bridge_days do %>
+<%= for %{start_position: start_position, bridge_days: bridge_days, bridge_day_vacation_length: bridge_day_vacation_length} <- @best_bridge_dates do %>
   <script type="application/ld+json">
     {
       "@context": "http://schema.org",

@@ -47,6 +47,20 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
       CollectBridgeDayData.compiled_best_bridge_day_configurable(enum_configuration, days)
       |> List.flatten
 
+    # best bridge_days in one month
+    best_bridge_datex = 
+      best_bridge_days
+      |> Enum.group_by(fn x -> List.first(x[:bridge_days]).month end)
+
+    # the best ratio
+    best_bridge_datex2 = for {k, v} <- best_bridge_datex do
+        v
+        |> Enum.sort_by(fn x -> {length(x[:bridge_days])/x[:bridge_day_vacation_length]} end) 
+        |> Enum.take(1) 
+    end
+
+    best_bridge_dates = best_bridge_datex2 |> List.flatten
+
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
                               country: country,
@@ -58,6 +72,7 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
                               number_of_days_to_invest: 1,
                               best_bridge_days: best_bridge_days,
+                              best_bridge_dates: best_bridge_dates
                               )
 
     render(conn, "index.html")
