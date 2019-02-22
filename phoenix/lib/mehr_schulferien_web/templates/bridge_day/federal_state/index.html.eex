@@ -95,8 +95,9 @@
 </div>
 
 
-<%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_event_schema.html", best_bridge_days: @best_bridge_days, location: @federal_state %>
-<!--<%= render MehrSchulferienWeb.BridgeDay.SharedView, "_event_schema.html", compiled_optimal_bridge_days: @compiled_optimal_bridge_days, number_of_days_to_invest: @number_of_days_to_invest, location: @federal_state %>-->
+<%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_event_schema.html", best_bridge_dates: @best_bridge_dates, location: @federal_state %>
+
+
 
 <script type="application/ld+json">
 {
