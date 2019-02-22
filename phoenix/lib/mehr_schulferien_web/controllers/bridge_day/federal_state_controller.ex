@@ -61,13 +61,6 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
 
     best_bridge_dates = best_bridge_datex2 |> List.flatten
 
-    IO.inspect(best_bridge_days)
-    IO.puts("---------------------")
-    IO.inspect(best_bridge_datex)
-    IO.puts("---------------------")
-    IO.inspect(best_bridge_dates)
-    IO.puts("---------------------")
-
     render(conn, "index.html", federal_state: federal_state,
                               federal_states: federal_states,
                               country: country,

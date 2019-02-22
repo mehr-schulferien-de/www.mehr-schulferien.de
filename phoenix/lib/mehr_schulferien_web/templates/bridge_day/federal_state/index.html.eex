@@ -94,10 +94,7 @@
   </div>
 </div>
 
-
 <%= render MehrSchulferienWeb.BridgeDay.SharedView, "_landing_event_schema.html", best_bridge_dates: @best_bridge_dates, location: @federal_state %>
-
-
 
 <script type="application/ld+json">
 {
