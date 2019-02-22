@@ -3,7 +3,7 @@
     {
       "@context": "http://schema.org",
       "@type": "Event",
-      "name": "<%= bridge_day_vacation_length %> Tage Urlaub für <%= length(bridge_days) %> Brückentage",
+      "name": "<%= bridge_day_vacation_length %> Tage frei für <%= length(bridge_days) %> <%= if length(bridge_days) == 1 do %>Brückentag<% else %>Brückentage<% end %>",
       "startDate" : "<%= List.first(bridge_days) %>",
       "endDate" : "<%= List.last(bridge_days) %>",
       "location" : {
