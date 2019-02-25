@@ -49,6 +49,10 @@
       <% end %>
     <% end %>
 
+    <%= if assigns[:canonical_bridge_days_for_year] do %>
+        <link rel="canonical" href="/bridge_days/federal_states/<%= @federal_state.slug %>/<%= @canonical_bridge_days_for_year %>-01-01/<%= @canonical_bridge_days_for_year %>-12-31/1" />			
+    <% end %>
+
     <%= if assigns[:rel_prev] && @rel_prev != nil do %>
       <link rel="prev" href="<%= @rel_prev %>">
     <% end %>

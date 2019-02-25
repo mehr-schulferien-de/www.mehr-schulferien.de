@@ -71,6 +71,7 @@ defmodule MehrSchulferienWeb.BridgeDay.FederalStateController do
                               categories: categories,
                               compiled_optimal_bridge_days: compiled_optimal_bridge_days,
                               number_of_days_to_invest: 1,
+                              canonical_bridge_days_for_year: starts_on.year,
                               best_bridge_days: best_bridge_days,
                               best_bridge_dates: best_bridge_dates
                               )
