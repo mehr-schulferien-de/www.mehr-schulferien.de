@@ -1,2 +1,0 @@
-<meta name="description" content="Eine optimale Kombination von Brücken-, Feiertagen und Wochenenden ergibt mit einem minimalen Einsatz von Urlaubstagen maximal viel freie Tage. 🎉">
-<title>Die <%= length(@best_bridge_days) %> besten Brückentage für <%= @federal_state.name %></title>

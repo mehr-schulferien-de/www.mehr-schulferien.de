@@ -1,3 +1,0 @@
-<% current_year = DateTime.utc_now |> Map.fetch!(:year) %>
-<meta name="description" content="Bundesländer mit Anzahl der Städte und Schulen. <%= for federal_state <- @federal_states do %><%= federal_state.name %> (<%= Number.Delimit.number_to_delimited(length(federal_state.cities)) %>, <%= Number.Delimit.number_to_delimited(length(federal_state.schools)) %>), <% end %>">
-<title>Liste aller Bundesländer :: Schulferien <%= current_year %> bis <%= current_year + 2 %></title>

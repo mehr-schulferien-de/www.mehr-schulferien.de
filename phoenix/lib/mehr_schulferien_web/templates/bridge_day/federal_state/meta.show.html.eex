@@ -1,2 +1,0 @@
-<meta name="description" content="Nehmen Sie an diesen <%= length(@compiled_optimal_bridge_days) %> Terminen nur <%= if @number_of_days_to_invest > 1 do %><%= @number_of_days_to_invest %> Tage<% else %>einen Tag<% end %> Urlaub, um mit Feiertagen und Wochenenden mehr freie Tage am Stück zu bekommen. 🎉">
-<title>Die <%= length(@compiled_optimal_bridge_days) %> besten <%= if @number_of_days_to_invest > 1 do %><%= @number_of_days_to_invest %>er <% end %>Brückentage <%= @federal_state.name %> <%= @starts_on.year %></title>

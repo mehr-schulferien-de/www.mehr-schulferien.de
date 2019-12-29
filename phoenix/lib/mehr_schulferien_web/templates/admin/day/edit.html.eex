@@ -1,5 +1,0 @@
-<h2>Edit Day</h2>
-
-<%= render "form.html", Map.put(assigns, :action, admin_day_path(@conn, :update, @day)) %>
-
-<span><%= link "Back", to: admin_day_path(@conn, :index) %></span>

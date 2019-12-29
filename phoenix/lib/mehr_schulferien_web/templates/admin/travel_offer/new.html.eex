@@ -1,5 +1,0 @@
-<h2>New Travel offer</h2>
-
-<%= render "form.html", Map.put(assigns, :action, admin_travel_offer_path(@conn, :create)) %>
-
-<span><%= link "Back", to: admin_travel_offer_path(@conn, :index) %></span>

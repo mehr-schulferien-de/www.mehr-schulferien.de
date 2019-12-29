@@ -1,8 +1,0 @@
-<h2>Show Slot</h2>
-
-<ul>
-
-</ul>
-
-<span><%= link "Edit", to: admin_slot_path(@conn, :edit, @slot) %></span>
-<span><%= link "Back", to: admin_slot_path(@conn, :index) %></span>
