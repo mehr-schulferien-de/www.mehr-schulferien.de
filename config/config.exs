@@ -7,15 +7,15 @@
 # General application configuration
 use Mix.Config
 
-config :mehrschulferien,
-  ecto_repos: [Mehrschulferien.Repo]
+config :mehr_schulferien,
+  ecto_repos: [MehrSchulferien.Repo]
 
 # Configures the endpoint
-config :mehrschulferien, MehrschulferienWeb.Endpoint,
+config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "uVdlLkt7i9mlSsSzNbCgJpg+/GqttUFhI/DVVTBNyDE4BOp5aAzjwQ2J2GeKVWPX",
-  render_errors: [view: MehrschulferienWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Mehrschulferien.PubSub, adapter: Phoenix.PubSub.PG2]
+  secret_key_base: "Xm/Q5xl5E3iTe30ADXAmwuORHvfQJ/ttak+kxRqlFl7WLrTkZFdeIRFOI/i1zvtK",
+  render_errors: [view: MehrSchulferienWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: MehrSchulferien.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,

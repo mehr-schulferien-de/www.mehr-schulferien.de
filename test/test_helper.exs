@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(Mehrschulferien.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(MehrSchulferien.Repo, :manual)

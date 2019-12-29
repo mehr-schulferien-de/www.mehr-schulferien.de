@@ -1,4 +1,4 @@
-defmodule Mehrschulferien.DataCase do
+defmodule MehrSchulferien.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -10,7 +10,7 @@ defmodule Mehrschulferien.DataCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use MehrschulferienWeb.DataCase, async: true`, although
+  by setting `use MehrSchulferienWeb.DataCase, async: true`, although
   this option is not recommendded for other databases.
   """
 
@@ -18,20 +18,20 @@ defmodule Mehrschulferien.DataCase do
 
   using do
     quote do
-      alias Mehrschulferien.Repo
+      alias MehrSchulferien.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Mehrschulferien.DataCase
+      import MehrSchulferien.DataCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Mehrschulferien.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MehrSchulferien.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Mehrschulferien.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(MehrSchulferien.Repo, {:shared, self()})
     end
 
     :ok

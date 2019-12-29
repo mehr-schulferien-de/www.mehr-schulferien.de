@@ -1,12 +1,12 @@
-defmodule MehrschulferienWeb do
+defmodule MehrSchulferienWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use MehrschulferienWeb, :controller
-      use MehrschulferienWeb, :view
+      use MehrSchulferienWeb, :controller
+      use MehrSchulferienWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,19 +19,19 @@ defmodule MehrschulferienWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: MehrschulferienWeb
+      use Phoenix.Controller, namespace: MehrSchulferienWeb
 
       import Plug.Conn
-      import MehrschulferienWeb.Gettext
-      alias MehrschulferienWeb.Router.Helpers, as: Routes
+      import MehrSchulferienWeb.Gettext
+      alias MehrSchulferienWeb.Router.Helpers, as: Routes
     end
   end
 
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/mehrschulferien_web/templates",
-        namespace: MehrschulferienWeb
+        root: "lib/mehr_schulferien_web/templates",
+        namespace: MehrSchulferienWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1]
@@ -39,9 +39,9 @@ defmodule MehrschulferienWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import MehrschulferienWeb.ErrorHelpers
-      import MehrschulferienWeb.Gettext
-      alias MehrschulferienWeb.Router.Helpers, as: Routes
+      import MehrSchulferienWeb.ErrorHelpers
+      import MehrSchulferienWeb.Gettext
+      alias MehrSchulferienWeb.Router.Helpers, as: Routes
     end
   end
 
@@ -56,7 +56,7 @@ defmodule MehrschulferienWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import MehrschulferienWeb.Gettext
+      import MehrSchulferienWeb.Gettext
     end
   end
 

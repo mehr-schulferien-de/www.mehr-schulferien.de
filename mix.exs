@@ -1,9 +1,9 @@
-defmodule Mehrschulferien.MixProject do
+defmodule MehrSchulferien.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :mehrschulferien,
+      app: :mehr_schulferien,
       version: "0.1.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -19,7 +19,7 @@ defmodule Mehrschulferien.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Mehrschulferien.Application, []},
+      mod: {MehrSchulferien.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

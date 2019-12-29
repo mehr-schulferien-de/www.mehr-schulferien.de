@@ -1,5 +1,5 @@
-defmodule MehrschulferienWeb.PageControllerTest do
-  use MehrschulferienWeb.ConnCase
+defmodule MehrSchulferienWeb.PageControllerTest do
+  use MehrSchulferienWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")

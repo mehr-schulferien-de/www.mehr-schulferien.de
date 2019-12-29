@@ -1,10 +1,10 @@
 use Mix.Config
 
 # Configure your database
-config :mehrschulferien, Mehrschulferien.Repo,
+config :mehr_schulferien, MehrSchulferien.Repo,
   username: "postgres",
   password: "postgres",
-  database: "mehrschulferien_dev",
+  database: "mehr_schulferien_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -15,7 +15,7 @@ config :mehrschulferien, Mehrschulferien.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :mehrschulferien, MehrschulferienWeb.Endpoint,
+config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -55,13 +55,13 @@ config :mehrschulferien, MehrschulferienWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :mehrschulferien, MehrschulferienWeb.Endpoint,
+config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/mehrschulferien_web/{live,views}/.*(ex)$",
-      ~r"lib/mehrschulferien_web/templates/.*(eex)$"
+      ~r"lib/mehr_schulferien_web/{live,views}/.*(ex)$",
+      ~r"lib/mehr_schulferien_web/templates/.*(eex)$"
     ]
   ]
 

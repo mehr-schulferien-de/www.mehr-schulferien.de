@@ -1,4 +1,4 @@
-defmodule MehrschulferienWeb.ChannelCase do
+defmodule MehrSchulferienWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,15 +21,15 @@ defmodule MehrschulferienWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint MehrschulferienWeb.Endpoint
+      @endpoint MehrSchulferienWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Mehrschulferien.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MehrSchulferien.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Mehrschulferien.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(MehrSchulferien.Repo, {:shared, self()})
     end
 
     :ok

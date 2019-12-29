@@ -11,7 +11,7 @@ database_url =
     For example: ecto://USER:PASS@HOST/DATABASE
     """
 
-config :mehrschulferien, Mehrschulferien.Repo,
+config :mehr_schulferien, MehrSchulferien.Repo,
   # ssl: true,
   url: database_url,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
@@ -23,7 +23,7 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
-config :mehrschulferien, MehrschulferienWeb.Endpoint,
+config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
   secret_key_base: secret_key_base
 
@@ -32,7 +32,7 @@ config :mehrschulferien, MehrschulferienWeb.Endpoint,
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start each relevant endpoint:
 #
-#     config :mehrschulferien, MehrschulferienWeb.Endpoint, server: true
+#     config :mehr_schulferien, MehrSchulferienWeb.Endpoint, server: true
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.

@@ -1,5 +1,5 @@
-defmodule MehrschulferienWeb.ErrorView do
-  use MehrschulferienWeb, :view
+defmodule MehrSchulferienWeb.ErrorView do
+  use MehrSchulferienWeb, :view
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.

@@ -1,4 +1,4 @@
-defmodule MehrschulferienWeb.ConnCase do
+defmodule MehrSchulferienWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule MehrschulferienWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use MehrschulferienWeb.ConnCase, async: true`, although
+  by setting `use MehrSchulferienWeb.ConnCase, async: true`, although
   this option is not recommendded for other databases.
   """
 
@@ -21,18 +21,18 @@ defmodule MehrschulferienWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      alias MehrschulferienWeb.Router.Helpers, as: Routes
+      alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint MehrschulferienWeb.Endpoint
+      @endpoint MehrSchulferienWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Mehrschulferien.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MehrSchulferien.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Mehrschulferien.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(MehrSchulferien.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

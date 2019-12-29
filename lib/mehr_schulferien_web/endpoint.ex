@@ -1,7 +1,7 @@
-defmodule MehrschulferienWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :mehrschulferien
+defmodule MehrSchulferienWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :mehr_schulferien
 
-  socket "/socket", MehrschulferienWeb.UserSocket,
+  socket "/socket", MehrSchulferienWeb.UserSocket,
     websocket: true,
     longpoll: false
 
@@ -11,7 +11,7 @@ defmodule MehrschulferienWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :mehrschulferien,
+    from: :mehr_schulferien,
     gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
@@ -39,8 +39,8 @@ defmodule MehrschulferienWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session,
     store: :cookie,
-    key: "_mehrschulferien_key",
-    signing_salt: "exxVJlCS"
+    key: "_mehr_schulferien_key",
+    signing_salt: "Vd2GrdAO"
 
-  plug MehrschulferienWeb.Router
+  plug MehrSchulferienWeb.Router
 end

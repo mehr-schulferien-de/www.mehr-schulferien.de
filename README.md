@@ -1,4 +1,4 @@
-# Mehrschulferien
+# MehrSchulferien
 
 To start your Phoenix server:
 

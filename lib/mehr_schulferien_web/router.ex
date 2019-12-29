@@ -1,5 +1,5 @@
-defmodule MehrschulferienWeb.Router do
-  use MehrschulferienWeb, :router
+defmodule MehrSchulferienWeb.Router do
+  use MehrSchulferienWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,14 +13,14 @@ defmodule MehrschulferienWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", MehrschulferienWeb do
+  scope "/", MehrSchulferienWeb do
     pipe_through :browser
 
     get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", MehrschulferienWeb do
+  # scope "/api", MehrSchulferienWeb do
   #   pipe_through :api
   # end
 end
