@@ -63,4 +63,67 @@ defmodule MehrSchulferien.LocationsTest do
       assert %Ecto.Changeset{} = Locations.change_country(country)
     end
   end
+
+  describe "federal_states" do
+    alias MehrSchulferien.Locations.FederalState
+
+    @valid_attrs %{code: "some code", name: "some name", slug: "some slug"}
+    @update_attrs %{code: "some updated code", name: "some updated name", slug: "some updated slug"}
+    @invalid_attrs %{code: nil, name: nil, slug: nil}
+
+    def federal_state_fixture(attrs \\ %{}) do
+      {:ok, federal_state} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Locations.create_federal_state()
+
+      federal_state
+    end
+
+    test "list_federal_states/0 returns all federal_states" do
+      federal_state = federal_state_fixture()
+      assert Locations.list_federal_states() == [federal_state]
+    end
+
+    test "get_federal_state!/1 returns the federal_state with given id" do
+      federal_state = federal_state_fixture()
+      assert Locations.get_federal_state!(federal_state.id) == federal_state
+    end
+
+    test "create_federal_state/1 with valid data creates a federal_state" do
+      assert {:ok, %FederalState{} = federal_state} = Locations.create_federal_state(@valid_attrs)
+      assert federal_state.code == "some code"
+      assert federal_state.name == "some name"
+      assert federal_state.slug == "some slug"
+    end
+
+    test "create_federal_state/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Locations.create_federal_state(@invalid_attrs)
+    end
+
+    test "update_federal_state/2 with valid data updates the federal_state" do
+      federal_state = federal_state_fixture()
+      assert {:ok, %FederalState{} = federal_state} = Locations.update_federal_state(federal_state, @update_attrs)
+      assert federal_state.code == "some updated code"
+      assert federal_state.name == "some updated name"
+      assert federal_state.slug == "some updated slug"
+    end
+
+    test "update_federal_state/2 with invalid data returns error changeset" do
+      federal_state = federal_state_fixture()
+      assert {:error, %Ecto.Changeset{}} = Locations.update_federal_state(federal_state, @invalid_attrs)
+      assert federal_state == Locations.get_federal_state!(federal_state.id)
+    end
+
+    test "delete_federal_state/1 deletes the federal_state" do
+      federal_state = federal_state_fixture()
+      assert {:ok, %FederalState{}} = Locations.delete_federal_state(federal_state)
+      assert_raise Ecto.NoResultsError, fn -> Locations.get_federal_state!(federal_state.id) end
+    end
+
+    test "change_federal_state/1 returns a federal_state changeset" do
+      federal_state = federal_state_fixture()
+      assert %Ecto.Changeset{} = Locations.change_federal_state(federal_state)
+    end
+  end
 end
