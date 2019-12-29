@@ -1,0 +1,28 @@
+<h1>Listing Countries</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for country <- @countries do %>
+    <tr>
+      <td><%= country.name %></td>
+      <td><%= country.slug %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.country_path(@conn, :show, country) %></span>
+        <span><%= link "Edit", to: Routes.country_path(@conn, :edit, country) %></span>
+        <span><%= link "Delete", to: Routes.country_path(@conn, :delete, country), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Country", to: Routes.country_path(@conn, :new) %></span>
