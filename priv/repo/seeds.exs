@@ -9,3 +9,9 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+alias MehrSchulferien.Locations
+
+# Countries
+#
+{:ok, _deutschland} = Locations.create_country(%{name: "Deutschland"})

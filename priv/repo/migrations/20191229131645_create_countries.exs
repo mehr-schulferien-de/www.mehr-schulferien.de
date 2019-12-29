@@ -9,5 +9,6 @@ defmodule MehrSchulferien.Repo.Migrations.CreateCountries do
       timestamps()
     end
 
+    create unique_index(:countries, [:slug])
   end
 end
