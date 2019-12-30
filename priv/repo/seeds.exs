@@ -10,7 +10,11 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+import Ecto.Query
 alias MehrSchulferien.Locations
+alias MehrSchulferien.Locations.City
+alias MehrSchulferien.Locations.ZipCode
+alias MehrSchulferien.Repo
 
 # Countries
 #
@@ -34,3 +38,28 @@ alias MehrSchulferien.Locations
 {:ok, _sachsenanhalt} = Locations.create_federal_state(%{name: "Sachsen-Anhalt", code: "ST", country_id: deutschland.id})
 {:ok, _schleswigholstein} = Locations.create_federal_state(%{name: "Schleswig-Holstein", code: "SH", country_id: deutschland.id})
 {:ok, _thueringen} = Locations.create_federal_state(%{name: "Thüringen", code: "TH", country_id: deutschland.id})
+
+# Create cities
+#
+File.stream!("priv/repo/city-seeds.json") |>
+Stream.map( &(String.replace(&1, "\n", "")) ) |>
+Stream.with_index |>
+Enum.each( fn({contents, _line_num}) ->
+  city_json = Poison.decode!(contents)
+  city_name = city_json["name"]
+  zip_code_value = city_json["zip_code"]
+  zip_code_like_query = String.slice(zip_code_value, 0, 2) <> "%"
+  federal_state = Locations.get_federal_state!(city_json["federal_state_slug"])
+  country = Locations.get_country!(city_json["country_slug"])
+
+  query = from c in City, join: z in ZipCode, on: c.id == z.city_id, where: c.name == ^city_name, where: (like(z.value, ^zip_code_like_query)), limit: 1
+  city = Repo.one(query) |> Repo.preload([:zip_codes])
+
+  case city do
+    nil ->
+      {:ok, new_city} = Locations.create_city(%{name: city_name, country_id: country.id, federal_state_id: federal_state.id})
+      Locations.create_zip_code(%{value: zip_code_value, country_id: country.id, city_id: new_city.id})
+    _ ->
+      Locations.create_zip_code(%{value: zip_code_value, country_id: country.id, city_id: city.id})
+  end
+end)

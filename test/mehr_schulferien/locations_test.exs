@@ -126,4 +126,126 @@ defmodule MehrSchulferien.LocationsTest do
       assert %Ecto.Changeset{} = Locations.change_federal_state(federal_state)
     end
   end
+
+  describe "cities" do
+    alias MehrSchulferien.Locations.City
+
+    @valid_attrs %{name: "some name", slug: "some slug", zip_code: "some zip_code"}
+    @update_attrs %{name: "some updated name", slug: "some updated slug", zip_code: "some updated zip_code"}
+    @invalid_attrs %{name: nil, slug: nil, zip_code: nil}
+
+    def city_fixture(attrs \\ %{}) do
+      {:ok, city} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Locations.create_city()
+
+      city
+    end
+
+    test "list_cities/0 returns all cities" do
+      city = city_fixture()
+      assert Locations.list_cities() == [city]
+    end
+
+    test "get_city!/1 returns the city with given id" do
+      city = city_fixture()
+      assert Locations.get_city!(city.id) == city
+    end
+
+    test "create_city/1 with valid data creates a city" do
+      assert {:ok, %City{} = city} = Locations.create_city(@valid_attrs)
+      assert city.name == "some name"
+      assert city.slug == "some slug"
+      assert city.zip_code == "some zip_code"
+    end
+
+    test "create_city/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Locations.create_city(@invalid_attrs)
+    end
+
+    test "update_city/2 with valid data updates the city" do
+      city = city_fixture()
+      assert {:ok, %City{} = city} = Locations.update_city(city, @update_attrs)
+      assert city.name == "some updated name"
+      assert city.slug == "some updated slug"
+      assert city.zip_code == "some updated zip_code"
+    end
+
+    test "update_city/2 with invalid data returns error changeset" do
+      city = city_fixture()
+      assert {:error, %Ecto.Changeset{}} = Locations.update_city(city, @invalid_attrs)
+      assert city == Locations.get_city!(city.id)
+    end
+
+    test "delete_city/1 deletes the city" do
+      city = city_fixture()
+      assert {:ok, %City{}} = Locations.delete_city(city)
+      assert_raise Ecto.NoResultsError, fn -> Locations.get_city!(city.id) end
+    end
+
+    test "change_city/1 returns a city changeset" do
+      city = city_fixture()
+      assert %Ecto.Changeset{} = Locations.change_city(city)
+    end
+  end
+
+  describe "zip_codes" do
+    alias MehrSchulferien.Locations.ZipCode
+
+    @valid_attrs %{value: "some value"}
+    @update_attrs %{value: "some updated value"}
+    @invalid_attrs %{value: nil}
+
+    def zip_code_fixture(attrs \\ %{}) do
+      {:ok, zip_code} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Locations.create_zip_code()
+
+      zip_code
+    end
+
+    test "list_zip_codes/0 returns all zip_codes" do
+      zip_code = zip_code_fixture()
+      assert Locations.list_zip_codes() == [zip_code]
+    end
+
+    test "get_zip_code!/1 returns the zip_code with given id" do
+      zip_code = zip_code_fixture()
+      assert Locations.get_zip_code!(zip_code.id) == zip_code
+    end
+
+    test "create_zip_code/1 with valid data creates a zip_code" do
+      assert {:ok, %ZipCode{} = zip_code} = Locations.create_zip_code(@valid_attrs)
+      assert zip_code.value == "some value"
+    end
+
+    test "create_zip_code/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Locations.create_zip_code(@invalid_attrs)
+    end
+
+    test "update_zip_code/2 with valid data updates the zip_code" do
+      zip_code = zip_code_fixture()
+      assert {:ok, %ZipCode{} = zip_code} = Locations.update_zip_code(zip_code, @update_attrs)
+      assert zip_code.value == "some updated value"
+    end
+
+    test "update_zip_code/2 with invalid data returns error changeset" do
+      zip_code = zip_code_fixture()
+      assert {:error, %Ecto.Changeset{}} = Locations.update_zip_code(zip_code, @invalid_attrs)
+      assert zip_code == Locations.get_zip_code!(zip_code.id)
+    end
+
+    test "delete_zip_code/1 deletes the zip_code" do
+      zip_code = zip_code_fixture()
+      assert {:ok, %ZipCode{}} = Locations.delete_zip_code(zip_code)
+      assert_raise Ecto.NoResultsError, fn -> Locations.get_zip_code!(zip_code.id) end
+    end
+
+    test "change_zip_code/1 returns a zip_code changeset" do
+      zip_code = zip_code_fixture()
+      assert %Ecto.Changeset{} = Locations.change_zip_code(zip_code)
+    end
+  end
 end

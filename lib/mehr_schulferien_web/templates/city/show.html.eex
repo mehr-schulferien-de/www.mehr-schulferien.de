@@ -1,0 +1,32 @@
+<h1>Show City</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @city.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @city.slug %>
+  </li>
+
+  <li>
+    <strong>Zip Codes:</strong>
+    <%= if length(@city.zip_codes) == 1 do %>
+      <% [head] = @city.zip_codes %>
+      <%= head.value %>
+    <% else %>
+      <ul>
+      <%= for zip_code <- @city.zip_codes do %>
+        <li><%= zip_code.value %></li>
+      <% end %>
+      </ul>
+    <% end %>
+  </li>  
+
+</ul>
+
+<span><%= link "Edit", to: Routes.city_path(@conn, :edit, @city) %></span>
+<span><%= link "Back", to: Routes.city_path(@conn, :index) %></span>

@@ -22,7 +22,7 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
-  Gets a single country.
+  Gets a single country by id or slug.
 
   Raises `Ecto.NoResultsError` if the Country does not exist.
 
@@ -31,11 +31,22 @@ defmodule MehrSchulferien.Locations do
       iex> get_country!(123)
       %Country{}
 
+      iex> get_country!("germany")
+      %Country{}
+
       iex> get_country!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_country!(id), do: Repo.get!(Country, id)
+  def get_country!(id_or_slug) do
+    case is_integer(id_or_slug) or Regex.match?(~r/^[1-9][0-9]*$/, id_or_slug) do
+      true ->
+        Repo.get!(Country, id_or_slug)
+      false ->
+        query = from f in Country, where: f.slug == ^id_or_slug
+        Repo.one!(query)
+    end
+  end
 
   @doc """
   Creates a country.
@@ -118,7 +129,7 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
-  Gets a single federal_state.
+  Gets a single federal_state by id or slug.
 
   Raises `Ecto.NoResultsError` if the Federal state does not exist.
 
@@ -127,11 +138,22 @@ defmodule MehrSchulferien.Locations do
       iex> get_federal_state!(123)
       %FederalState{}
 
+      iex> get_federal_state!("Hessen")
+      %FederalState{}
+
       iex> get_federal_state!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_federal_state!(id), do: Repo.get!(FederalState, id)
+  def get_federal_state!(id_or_slug) do
+    case is_integer(id_or_slug) or Regex.match?(~r/^[1-9][0-9]*$/, id_or_slug) do
+      true ->
+        Repo.get!(FederalState, id_or_slug)
+      false ->
+        query = from f in FederalState, where: f.slug == ^id_or_slug
+        Repo.one!(query)
+    end
+  end
 
   @doc """
   Creates a federal_state.
@@ -196,5 +218,211 @@ defmodule MehrSchulferien.Locations do
   """
   def change_federal_state(%FederalState{} = federal_state) do
     FederalState.changeset(federal_state, %{})
+  end
+
+  alias MehrSchulferien.Locations.City
+
+  @doc """
+  Returns the list of cities.
+
+  ## Examples
+
+      iex> list_cities()
+      [%City{}, ...]
+
+  """
+  def list_cities do
+    Repo.all(City)
+    |> Repo.preload([:zip_codes])
+  end
+
+  @doc """
+  Gets a single city by id or slug.
+
+  Raises `Ecto.NoResultsError` if the City does not exist.
+
+  ## Examples
+
+      iex> get_city!(123)
+      %City{}
+
+      iex> get_city!("12345_beispiel")
+      %City{}
+
+      iex> get_city!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_city!(id_or_slug) do
+    case is_integer(id_or_slug) or Regex.match?(~r/^[1-9][0-9]*$/, id_or_slug) do
+      true ->
+        Repo.get!(City, id_or_slug)
+        |> Repo.preload([:zip_codes])
+      false ->
+        query = from f in City, where: f.slug == ^id_or_slug
+        Repo.one!(query)
+        |> Repo.preload([:zip_codes])
+    end
+  end
+
+  @doc """
+  Creates a city.
+
+  ## Examples
+
+      iex> create_city(%{field: value})
+      {:ok, %City{}}
+
+      iex> create_city(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_city(attrs \\ %{}) do
+    %City{}
+    |> City.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a city.
+
+  ## Examples
+
+      iex> update_city(city, %{field: new_value})
+      {:ok, %City{}}
+
+      iex> update_city(city, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_city(%City{} = city, attrs) do
+    city
+    |> City.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a City.
+
+  ## Examples
+
+      iex> delete_city(city)
+      {:ok, %City{}}
+
+      iex> delete_city(city)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_city(%City{} = city) do
+    Repo.delete(city)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking city changes.
+
+  ## Examples
+
+      iex> change_city(city)
+      %Ecto.Changeset{source: %City{}}
+
+  """
+  def change_city(%City{} = city) do
+    City.changeset(city, %{})
+  end
+
+  alias MehrSchulferien.Locations.ZipCode
+
+  @doc """
+  Returns the list of zip_codes.
+
+  ## Examples
+
+      iex> list_zip_codes()
+      [%ZipCode{}, ...]
+
+  """
+  def list_zip_codes do
+    Repo.all(ZipCode)
+  end
+
+  @doc """
+  Gets a single zip_code.
+
+  Raises `Ecto.NoResultsError` if the Zip code does not exist.
+
+  ## Examples
+
+      iex> get_zip_code!(123)
+      %ZipCode{}
+
+      iex> get_zip_code!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_zip_code!(id), do: Repo.get!(ZipCode, id)
+
+  @doc """
+  Creates a zip_code.
+
+  ## Examples
+
+      iex> create_zip_code(%{field: value})
+      {:ok, %ZipCode{}}
+
+      iex> create_zip_code(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_zip_code(attrs \\ %{}) do
+    %ZipCode{}
+    |> ZipCode.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a zip_code.
+
+  ## Examples
+
+      iex> update_zip_code(zip_code, %{field: new_value})
+      {:ok, %ZipCode{}}
+
+      iex> update_zip_code(zip_code, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_zip_code(%ZipCode{} = zip_code, attrs) do
+    zip_code
+    |> ZipCode.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a ZipCode.
+
+  ## Examples
+
+      iex> delete_zip_code(zip_code)
+      {:ok, %ZipCode{}}
+
+      iex> delete_zip_code(zip_code)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_zip_code(%ZipCode{} = zip_code) do
+    Repo.delete(zip_code)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking zip_code changes.
+
+  ## Examples
+
+      iex> change_zip_code(zip_code)
+      %Ecto.Changeset{source: %ZipCode{}}
+
+  """
+  def change_zip_code(%ZipCode{} = zip_code) do
+    ZipCode.changeset(zip_code, %{})
   end
 end

@@ -1,0 +1,40 @@
+<h1>Listing Cities</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+      <th>Zip Codes</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for city <- @cities do %>
+    <tr>
+      <td><%= city.name %></td>
+      <td><%= city.slug %></td>
+      <td>
+          <%= if length(city.zip_codes) == 1 do %>
+            <% [head] = city.zip_codes %>
+            <%= head.value %>
+          <% else %>
+            <ul>
+            <%= for zip_code <- city.zip_codes do %>
+              <li><%= zip_code.value %></li>
+            <% end %>
+            </ul>
+          <% end %>
+      </td>
+      <td>
+        <span><%= link "Show", to: Routes.city_path(@conn, :show, city) %></span>
+        <span><%= link "Edit", to: Routes.city_path(@conn, :edit, city) %></span>
+        <span><%= link "Delete", to: Routes.city_path(@conn, :delete, city), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New City", to: Routes.city_path(@conn, :new) %></span>

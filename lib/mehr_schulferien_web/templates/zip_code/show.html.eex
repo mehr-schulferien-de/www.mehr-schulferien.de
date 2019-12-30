@@ -1,0 +1,13 @@
+<h1>Show Zip code</h1>
+
+<ul>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @zip_code.value %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.zip_code_path(@conn, :edit, @zip_code) %></span>
+<span><%= link "Back", to: Routes.zip_code_path(@conn, :index) %></span>
