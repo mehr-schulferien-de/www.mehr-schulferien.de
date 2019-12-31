@@ -57,8 +57,7 @@ Enum.each( fn({contents, _line_num}) ->
 
   case city do
     nil ->
-      {:ok, new_city} = Locations.create_city(%{name: city_name, country_id: country.id, federal_state_id: federal_state.id})
-      Locations.create_zip_code(%{value: zip_code_value, country_id: country.id, city_id: new_city.id})
+      Locations.create_city(%{name: city_name, country_id: country.id, federal_state_id: federal_state.id, zip_codes: [%ZipCode{value: zip_code_value, country_id: country.id}]})
     _ ->
       Locations.create_zip_code(%{value: zip_code_value, country_id: country.id, city_id: city.id})
   end

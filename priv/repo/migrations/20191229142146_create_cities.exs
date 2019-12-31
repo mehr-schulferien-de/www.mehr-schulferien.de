@@ -14,6 +14,6 @@ defmodule MehrSchulferien.Repo.Migrations.CreateCities do
 
     create index(:cities, [:country_id])
     create index(:cities, [:federal_state_id])
-    create index(:cities, [:slug])
+    create unique_index(:cities, [:slug])
   end
 end
