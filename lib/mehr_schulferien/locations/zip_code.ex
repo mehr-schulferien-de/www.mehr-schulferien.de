@@ -1,6 +1,7 @@
 defmodule MehrSchulferien.Locations.ZipCode do
   use Ecto.Schema
   import Ecto.Changeset
+  alias MehrSchulferien.Locations
 
   schema "zip_codes" do
     field :value, :string
