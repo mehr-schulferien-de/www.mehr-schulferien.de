@@ -48,7 +48,7 @@ Enum.each( fn({contents, _line_num}) ->
   city_json = Poison.decode!(contents)
   city_name = city_json["name"]
   zip_code_value = city_json["zip_code"]
-  zip_code_like_query = String.slice(zip_code_value, 0, 2) <> "%"
+  zip_code_like_query = String.slice(zip_code_value, 0, 1) <> "%"
   federal_state = Locations.get_federal_state!(city_json["federal_state_slug"])
   country = Locations.get_country!(city_json["country_slug"])
 
