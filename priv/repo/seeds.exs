@@ -92,7 +92,7 @@ alias MehrSchulferien.Repo
 
 # Create cities
 #
-File.stream!("priv/repo/city-seeds.json")
+File.stream!("priv/repo/seeds/cities.json")
 |> Stream.map(&String.replace(&1, "\n", ""))
 |> Stream.with_index()
 |> Enum.each(fn {contents, _line_num} ->
