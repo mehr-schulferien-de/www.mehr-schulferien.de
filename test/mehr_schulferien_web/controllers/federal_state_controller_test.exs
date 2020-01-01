@@ -46,7 +46,10 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
   describe "edit federal_state" do
     setup [:create_federal_state]
 
-    test "renders form for editing chosen federal_state", %{conn: conn, federal_state: federal_state} do
+    test "renders form for editing chosen federal_state", %{
+      conn: conn,
+      federal_state: federal_state
+    } do
       conn = get(conn, Routes.federal_state_path(conn, :edit, federal_state))
       assert html_response(conn, 200) =~ "Edit Federal state"
     end
@@ -56,7 +59,11 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     setup [:create_federal_state]
 
     test "redirects when data is valid", %{conn: conn, federal_state: federal_state} do
-      conn = put(conn, Routes.federal_state_path(conn, :update, federal_state), federal_state: @update_attrs)
+      conn =
+        put(conn, Routes.federal_state_path(conn, :update, federal_state),
+          federal_state: @update_attrs
+        )
+
       assert redirected_to(conn) == Routes.federal_state_path(conn, :show, federal_state)
 
       conn = get(conn, Routes.federal_state_path(conn, :show, federal_state))
@@ -64,7 +71,11 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, federal_state: federal_state} do
-      conn = put(conn, Routes.federal_state_path(conn, :update, federal_state), federal_state: @invalid_attrs)
+      conn =
+        put(conn, Routes.federal_state_path(conn, :update, federal_state),
+          federal_state: @invalid_attrs
+        )
+
       assert html_response(conn, 200) =~ "Edit Federal state"
     end
   end
@@ -75,6 +86,7 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     test "deletes chosen federal_state", %{conn: conn, federal_state: federal_state} do
       conn = delete(conn, Routes.federal_state_path(conn, :delete, federal_state))
       assert redirected_to(conn) == Routes.federal_state_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.federal_state_path(conn, :show, federal_state))
       end

@@ -23,8 +23,7 @@ defmodule MehrSchulferien.Locations.City do
     |> assoc_constraint(:country)
     |> assoc_constraint(:federal_state)
     |> validate_length(:zip_codes, min: 1)
-    |> CitySlug.maybe_generate_slug
-    |> CitySlug.unique_constraint
+    |> CitySlug.maybe_generate_slug()
+    |> CitySlug.unique_constraint()
   end
-
 end

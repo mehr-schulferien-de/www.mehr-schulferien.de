@@ -30,5 +30,4 @@ defmodule MehrSchulferien.CitySlug do
       base_slug
     end
   end
-  
 end

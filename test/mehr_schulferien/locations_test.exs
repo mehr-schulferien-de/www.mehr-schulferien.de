@@ -68,7 +68,11 @@ defmodule MehrSchulferien.LocationsTest do
     alias MehrSchulferien.Locations.FederalState
 
     @valid_attrs %{code: "some code", name: "some name", slug: "some slug"}
-    @update_attrs %{code: "some updated code", name: "some updated name", slug: "some updated slug"}
+    @update_attrs %{
+      code: "some updated code",
+      name: "some updated name",
+      slug: "some updated slug"
+    }
     @invalid_attrs %{code: nil, name: nil, slug: nil}
 
     def federal_state_fixture(attrs \\ %{}) do
@@ -103,7 +107,10 @@ defmodule MehrSchulferien.LocationsTest do
 
     test "update_federal_state/2 with valid data updates the federal_state" do
       federal_state = federal_state_fixture()
-      assert {:ok, %FederalState{} = federal_state} = Locations.update_federal_state(federal_state, @update_attrs)
+
+      assert {:ok, %FederalState{} = federal_state} =
+               Locations.update_federal_state(federal_state, @update_attrs)
+
       assert federal_state.code == "some updated code"
       assert federal_state.name == "some updated name"
       assert federal_state.slug == "some updated slug"
@@ -111,7 +118,10 @@ defmodule MehrSchulferien.LocationsTest do
 
     test "update_federal_state/2 with invalid data returns error changeset" do
       federal_state = federal_state_fixture()
-      assert {:error, %Ecto.Changeset{}} = Locations.update_federal_state(federal_state, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Locations.update_federal_state(federal_state, @invalid_attrs)
+
       assert federal_state == Locations.get_federal_state!(federal_state.id)
     end
 
@@ -131,7 +141,11 @@ defmodule MehrSchulferien.LocationsTest do
     alias MehrSchulferien.Locations.City
 
     @valid_attrs %{name: "some name", slug: "some slug", zip_code: "some zip_code"}
-    @update_attrs %{name: "some updated name", slug: "some updated slug", zip_code: "some updated zip_code"}
+    @update_attrs %{
+      name: "some updated name",
+      slug: "some updated slug",
+      zip_code: "some updated zip_code"
+    }
     @invalid_attrs %{name: nil, slug: nil, zip_code: nil}
 
     def city_fixture(attrs \\ %{}) do

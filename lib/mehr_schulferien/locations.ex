@@ -42,6 +42,7 @@ defmodule MehrSchulferien.Locations do
     case is_integer(id_or_slug) or Regex.match?(~r/^[1-9][0-9]*$/, id_or_slug) do
       true ->
         Repo.get!(Country, id_or_slug)
+
       false ->
         query = from f in Country, where: f.slug == ^id_or_slug
         Repo.one!(query)
@@ -149,6 +150,7 @@ defmodule MehrSchulferien.Locations do
     case is_integer(id_or_slug) or Regex.match?(~r/^[1-9][0-9]*$/, id_or_slug) do
       true ->
         Repo.get!(FederalState, id_or_slug)
+
       false ->
         query = from f in FederalState, where: f.slug == ^id_or_slug
         Repo.one!(query)
@@ -258,8 +260,10 @@ defmodule MehrSchulferien.Locations do
       true ->
         Repo.get!(City, id_or_slug)
         |> Repo.preload([:zip_codes])
+
       false ->
         query = from f in City, where: f.slug == ^id_or_slug
+
         Repo.one!(query)
         |> Repo.preload([:zip_codes])
     end

@@ -4,7 +4,11 @@ defmodule MehrSchulferienWeb.CityControllerTest do
   alias MehrSchulferien.Locations
 
   @create_attrs %{name: "some name", slug: "some slug", zip_code: "some zip_code"}
-  @update_attrs %{name: "some updated name", slug: "some updated slug", zip_code: "some updated zip_code"}
+  @update_attrs %{
+    name: "some updated name",
+    slug: "some updated slug",
+    zip_code: "some updated zip_code"
+  }
   @invalid_attrs %{name: nil, slug: nil, zip_code: nil}
 
   def fixture(:city) do
@@ -75,6 +79,7 @@ defmodule MehrSchulferienWeb.CityControllerTest do
     test "deletes chosen city", %{conn: conn, city: city} do
       conn = delete(conn, Routes.city_path(conn, :delete, city))
       assert redirected_to(conn) == Routes.city_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.city_path(conn, :show, city))
       end

@@ -18,7 +18,7 @@ defmodule MehrSchulferien.Locations.FederalState do
     |> cast(attrs, [:name, :code, :country_id])
     |> validate_required([:name, :code, :country_id])
     |> assoc_constraint(:country)
-    |> NameSlug.maybe_generate_slug
-    |> NameSlug.unique_constraint
+    |> NameSlug.maybe_generate_slug()
+    |> NameSlug.unique_constraint()
   end
 end

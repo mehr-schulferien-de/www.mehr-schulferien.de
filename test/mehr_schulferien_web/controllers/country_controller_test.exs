@@ -75,6 +75,7 @@ defmodule MehrSchulferienWeb.CountryControllerTest do
     test "deletes chosen country", %{conn: conn, country: country} do
       conn = delete(conn, Routes.country_path(conn, :delete, country))
       assert redirected_to(conn) == Routes.country_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.country_path(conn, :show, country))
       end

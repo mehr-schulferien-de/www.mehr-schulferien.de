@@ -15,7 +15,7 @@ defmodule MehrSchulferien.Locations.Country do
     country
     |> cast(attrs, [:name])
     |> validate_required([:name])
-    |> NameSlug.maybe_generate_slug
-    |> NameSlug.unique_constraint
+    |> NameSlug.maybe_generate_slug()
+    |> NameSlug.unique_constraint()
   end
 end
