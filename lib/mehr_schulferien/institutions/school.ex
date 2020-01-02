@@ -1,6 +1,9 @@
 defmodule MehrSchulferien.Institutions.School do
   use Ecto.Schema
   import Ecto.Changeset
+  alias MehrSchulferien.NameSlug
+  alias MehrSchulferien.Locations
+  alias MehrSchulferien.Institutions
 
   schema "schools" do
     field :email_address, :string
@@ -14,13 +17,13 @@ defmodule MehrSchulferien.Institutions.School do
     field :name, :string
     field :number_of_students, :integer
     field :phone_number, :string
-    field :slug, :string
+    field :slug, NameSlug.Type
     field :street, :string
     field :zip_code, :string
-    field :city_id, :id
-    field :federal_state_id, :id
-    field :country_id, :id
-    field :school_type_id, :id
+    belongs_to :school_type, Institutions.SchoolType
+    belongs_to :city, Locations.City
+    belongs_to :country, Locations.Country
+    belongs_to :federal_state, Locations.FederalState
 
     timestamps()
   end
@@ -28,7 +31,7 @@ defmodule MehrSchulferien.Institutions.School do
   @doc false
   def changeset(school, attrs) do
     school
-    |> cast(attrs, [:name, :line1, :line2, :street, :zip_code, :email_address, :fax_number, :phone_number, :homepage_url, :lat, :lon, :slug, :number_of_students, :memo])
-    |> validate_required([:name, :line1, :line2, :street, :zip_code, :email_address, :fax_number, :phone_number, :homepage_url, :lat, :lon, :slug, :number_of_students, :memo])
+    |> cast(attrs, [:name, :line1, :line2, :street, :zip_code, :email_address, :fax_number, :phone_number, :homepage_url, :lat, :lon, :number_of_students, :memo])
+    |> validate_required([:name, :zip_code])
   end
 end
