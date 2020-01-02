@@ -22,6 +22,7 @@ defmodule MehrSchulferienWeb.Router do
     resources "/cities", CityController
     resources "/zip_codes", ZipCodeController
     resources "/school_types", SchoolTypeController
+    resources "/schools", SchoolController
   end
 
   # Other scopes may use custom stacks.

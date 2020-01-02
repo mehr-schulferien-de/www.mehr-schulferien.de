@@ -1,0 +1,52 @@
+<h1>Listing Schools</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Line1</th>
+      <th>Line2</th>
+      <th>Street</th>
+      <th>Zip code</th>
+      <th>Email address</th>
+      <th>Fax number</th>
+      <th>Phone number</th>
+      <th>Homepage url</th>
+      <th>Lat</th>
+      <th>Lon</th>
+      <th>Slug</th>
+      <th>Number of students</th>
+      <th>Memo</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for school <- @schools do %>
+    <tr>
+      <td><%= school.name %></td>
+      <td><%= school.line1 %></td>
+      <td><%= school.line2 %></td>
+      <td><%= school.street %></td>
+      <td><%= school.zip_code %></td>
+      <td><%= school.email_address %></td>
+      <td><%= school.fax_number %></td>
+      <td><%= school.phone_number %></td>
+      <td><%= school.homepage_url %></td>
+      <td><%= school.lat %></td>
+      <td><%= school.lon %></td>
+      <td><%= school.slug %></td>
+      <td><%= school.number_of_students %></td>
+      <td><%= school.memo %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.school_path(@conn, :show, school) %></span>
+        <span><%= link "Edit", to: Routes.school_path(@conn, :edit, school) %></span>
+        <span><%= link "Delete", to: Routes.school_path(@conn, :delete, school), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New School", to: Routes.school_path(@conn, :new) %></span>

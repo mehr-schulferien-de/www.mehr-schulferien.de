@@ -1,0 +1,67 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <%= label f, :name %>
+  <%= text_input f, :name %>
+  <%= error_tag f, :name %>
+
+  <%= label f, :line1 %>
+  <%= text_input f, :line1 %>
+  <%= error_tag f, :line1 %>
+
+  <%= label f, :line2 %>
+  <%= text_input f, :line2 %>
+  <%= error_tag f, :line2 %>
+
+  <%= label f, :street %>
+  <%= text_input f, :street %>
+  <%= error_tag f, :street %>
+
+  <%= label f, :zip_code %>
+  <%= text_input f, :zip_code %>
+  <%= error_tag f, :zip_code %>
+
+  <%= label f, :email_address %>
+  <%= text_input f, :email_address %>
+  <%= error_tag f, :email_address %>
+
+  <%= label f, :fax_number %>
+  <%= text_input f, :fax_number %>
+  <%= error_tag f, :fax_number %>
+
+  <%= label f, :phone_number %>
+  <%= text_input f, :phone_number %>
+  <%= error_tag f, :phone_number %>
+
+  <%= label f, :homepage_url %>
+  <%= text_input f, :homepage_url %>
+  <%= error_tag f, :homepage_url %>
+
+  <%= label f, :lat %>
+  <%= number_input f, :lat, step: "any" %>
+  <%= error_tag f, :lat %>
+
+  <%= label f, :lon %>
+  <%= number_input f, :lon, step: "any" %>
+  <%= error_tag f, :lon %>
+
+  <%= label f, :slug %>
+  <%= text_input f, :slug %>
+  <%= error_tag f, :slug %>
+
+  <%= label f, :number_of_students %>
+  <%= number_input f, :number_of_students %>
+  <%= error_tag f, :number_of_students %>
+
+  <%= label f, :memo %>
+  <%= text_input f, :memo %>
+  <%= error_tag f, :memo %>
+
+  <div>
+    <%= submit "Save" %>
+  </div>
+<% end %>
