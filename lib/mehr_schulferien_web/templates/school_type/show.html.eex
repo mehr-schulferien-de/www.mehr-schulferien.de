@@ -1,0 +1,18 @@
+<h1>Show School type</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @school_type.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @school_type.slug %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.school_type_path(@conn, :edit, @school_type) %></span>
+<span><%= link "Back", to: Routes.school_type_path(@conn, :index) %></span>

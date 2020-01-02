@@ -1,0 +1,28 @@
+<h1>Listing School types</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for school_type <- @school_types do %>
+    <tr>
+      <td><%= school_type.name %></td>
+      <td><%= school_type.slug %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.school_type_path(@conn, :show, school_type) %></span>
+        <span><%= link "Edit", to: Routes.school_type_path(@conn, :edit, school_type) %></span>
+        <span><%= link "Delete", to: Routes.school_type_path(@conn, :delete, school_type), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New School type", to: Routes.school_type_path(@conn, :new) %></span>
