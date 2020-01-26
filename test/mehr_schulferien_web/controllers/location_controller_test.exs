@@ -3,9 +3,33 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
 
   alias MehrSchulferien.Maps
 
-  @create_attrs %{is_city: true, is_country: true, is_county: true, is_federal_state: true, is_school: true, name: "some name", slug: "some slug"}
-  @update_attrs %{is_city: false, is_country: false, is_county: false, is_federal_state: false, is_school: false, name: "some updated name", slug: "some updated slug"}
-  @invalid_attrs %{is_city: nil, is_country: nil, is_county: nil, is_federal_state: nil, is_school: nil, name: nil, slug: nil}
+  @create_attrs %{
+    is_city: true,
+    is_country: true,
+    is_county: true,
+    is_federal_state: true,
+    is_school: true,
+    name: "some name",
+    slug: "some slug"
+  }
+  @update_attrs %{
+    is_city: false,
+    is_country: false,
+    is_county: false,
+    is_federal_state: false,
+    is_school: false,
+    name: "some updated name",
+    slug: "some updated slug"
+  }
+  @invalid_attrs %{
+    is_city: nil,
+    is_country: nil,
+    is_county: nil,
+    is_federal_state: nil,
+    is_school: nil,
+    name: nil,
+    slug: nil
+  }
 
   def fixture(:location) do
     {:ok, location} = Maps.create_location(@create_attrs)
@@ -75,6 +99,7 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
     test "deletes chosen location", %{conn: conn, location: location} do
       conn = delete(conn, Routes.location_path(conn, :delete, location))
       assert redirected_to(conn) == Routes.location_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.location_path(conn, :show, location))
       end

@@ -17,6 +17,13 @@ defmodule MehrSchulferien.Repo.Migrations.CreateLocations do
       timestamps()
     end
 
-    create unique_index(:locations, [:slug, :is_country, :is_federal_state, :is_county, :is_city, :is_school])
+    create unique_index(:locations, [
+             :slug,
+             :is_country,
+             :is_federal_state,
+             :is_county,
+             :is_city,
+             :is_school
+           ])
   end
 end

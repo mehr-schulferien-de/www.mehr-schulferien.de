@@ -28,7 +28,8 @@ defmodule MehrSchulferienWeb.ZipCodeMappingControllerTest do
 
   describe "create zip_code_mapping" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.zip_code_mapping_path(conn, :create), zip_code_mapping: @create_attrs)
+      conn =
+        post(conn, Routes.zip_code_mapping_path(conn, :create), zip_code_mapping: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.zip_code_mapping_path(conn, :show, id)
@@ -38,7 +39,9 @@ defmodule MehrSchulferienWeb.ZipCodeMappingControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.zip_code_mapping_path(conn, :create), zip_code_mapping: @invalid_attrs)
+      conn =
+        post(conn, Routes.zip_code_mapping_path(conn, :create), zip_code_mapping: @invalid_attrs)
+
       assert html_response(conn, 200) =~ "New Zip code mapping"
     end
   end
@@ -46,7 +49,10 @@ defmodule MehrSchulferienWeb.ZipCodeMappingControllerTest do
   describe "edit zip_code_mapping" do
     setup [:create_zip_code_mapping]
 
-    test "renders form for editing chosen zip_code_mapping", %{conn: conn, zip_code_mapping: zip_code_mapping} do
+    test "renders form for editing chosen zip_code_mapping", %{
+      conn: conn,
+      zip_code_mapping: zip_code_mapping
+    } do
       conn = get(conn, Routes.zip_code_mapping_path(conn, :edit, zip_code_mapping))
       assert html_response(conn, 200) =~ "Edit Zip code mapping"
     end
@@ -56,7 +62,11 @@ defmodule MehrSchulferienWeb.ZipCodeMappingControllerTest do
     setup [:create_zip_code_mapping]
 
     test "redirects when data is valid", %{conn: conn, zip_code_mapping: zip_code_mapping} do
-      conn = put(conn, Routes.zip_code_mapping_path(conn, :update, zip_code_mapping), zip_code_mapping: @update_attrs)
+      conn =
+        put(conn, Routes.zip_code_mapping_path(conn, :update, zip_code_mapping),
+          zip_code_mapping: @update_attrs
+        )
+
       assert redirected_to(conn) == Routes.zip_code_mapping_path(conn, :show, zip_code_mapping)
 
       conn = get(conn, Routes.zip_code_mapping_path(conn, :show, zip_code_mapping))
@@ -64,7 +74,11 @@ defmodule MehrSchulferienWeb.ZipCodeMappingControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, zip_code_mapping: zip_code_mapping} do
-      conn = put(conn, Routes.zip_code_mapping_path(conn, :update, zip_code_mapping), zip_code_mapping: @invalid_attrs)
+      conn =
+        put(conn, Routes.zip_code_mapping_path(conn, :update, zip_code_mapping),
+          zip_code_mapping: @invalid_attrs
+        )
+
       assert html_response(conn, 200) =~ "Edit Zip code mapping"
     end
   end
@@ -75,6 +89,7 @@ defmodule MehrSchulferienWeb.ZipCodeMappingControllerTest do
     test "deletes chosen zip_code_mapping", %{conn: conn, zip_code_mapping: zip_code_mapping} do
       conn = delete(conn, Routes.zip_code_mapping_path(conn, :delete, zip_code_mapping))
       assert redirected_to(conn) == Routes.zip_code_mapping_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.zip_code_mapping_path(conn, :show, zip_code_mapping))
       end

@@ -9,15 +9,17 @@ defmodule MehrSchulferien.LocationNameSlug do
   # Use the given :slug when possible.
   #
   def build_slug(sources, changeset) do
-    slug = case get_field(changeset, :slug) do
-      nil -> 
-        sources
-        |> super(sources)
-      slug ->
-        slug
-    end
+    slug =
+      case get_field(changeset, :slug) do
+        nil ->
+          sources
+          |> super(sources)
 
-    new_slug(slug, nil, nil, changeset)    
+        slug ->
+          slug
+      end
+
+    new_slug(slug, nil, nil, changeset)
   end
 
   # Make a) sure a slug is unique and b) that a slug makes most sense.
@@ -30,14 +32,19 @@ defmodule MehrSchulferien.LocationNameSlug do
     is_school = get_field(changeset, :is_school)
     parent_location_id = get_field(changeset, :parent_location_id)
 
-    potential_new_slug = case [federal_state_code, counter] do
-      [nil, nil] ->
-        slug
-      [federal_state_code, nil] ->
-        slug <> "-" <> Slugger.slugify_downcase(federal_state_code)
-      _ ->
-        slug <> "-" <> Slugger.slugify_downcase(federal_state_code) <> "-" <> Integer.to_string(counter)
-    end
+    potential_new_slug =
+      case [federal_state_code, counter] do
+        [nil, nil] ->
+          slug
+
+        [federal_state_code, nil] ->
+          slug <> "-" <> Slugger.slugify_downcase(federal_state_code)
+
+        _ ->
+          slug <>
+            "-" <>
+            Slugger.slugify_downcase(federal_state_code) <> "-" <> Integer.to_string(counter)
+      end
 
     # Check if slug is already take.
     #
@@ -49,11 +56,12 @@ defmodule MehrSchulferien.LocationNameSlug do
         where: l.is_county == ^is_county,
         where: l.is_city == ^is_city,
         where: l.is_school == ^is_school,
-        limit: 1    
+        limit: 1
 
     case Repo.one(query) do
-      nil -> 
+      nil ->
         potential_new_slug
+
       _ ->
         case [federal_state_code, counter] do
           [nil, counter] ->
@@ -61,6 +69,7 @@ defmodule MehrSchulferien.LocationNameSlug do
               from l in Location,
                 where: l.id == ^parent_location_id,
                 limit: 1
+
             county = Repo.one(query)
             county_parent_location_id = county.parent_location_id
 
@@ -68,20 +77,23 @@ defmodule MehrSchulferien.LocationNameSlug do
               from l in Location,
                 where: l.id == ^county_parent_location_id,
                 limit: 1
+
             federal_state = Repo.one(query)
 
             new_slug(slug, federal_state.code, counter, changeset)
-          [federal_state_code, counter] -> 
+
+          [federal_state_code, counter] ->
             case counter do
               counter when is_integer(counter) ->
                 new_slug(slug, federal_state_code, counter + 1, changeset)
-              _ -> 
+
+              _ ->
                 new_slug(slug, federal_state_code, 2, changeset)
             end
-          _ -> 
+
+          _ ->
             new_slug(slug, "unkown", 1, changeset)
-        end    
+        end
     end
   end
-  
 end

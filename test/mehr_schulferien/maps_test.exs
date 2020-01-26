@@ -6,9 +6,33 @@ defmodule MehrSchulferien.MapsTest do
   describe "locations" do
     alias MehrSchulferien.Maps.Location
 
-    @valid_attrs %{is_city: true, is_country: true, is_county: true, is_federal_state: true, is_school: true, name: "some name", slug: "some slug"}
-    @update_attrs %{is_city: false, is_country: false, is_county: false, is_federal_state: false, is_school: false, name: "some updated name", slug: "some updated slug"}
-    @invalid_attrs %{is_city: nil, is_country: nil, is_county: nil, is_federal_state: nil, is_school: nil, name: nil, slug: nil}
+    @valid_attrs %{
+      is_city: true,
+      is_country: true,
+      is_county: true,
+      is_federal_state: true,
+      is_school: true,
+      name: "some name",
+      slug: "some slug"
+    }
+    @update_attrs %{
+      is_city: false,
+      is_country: false,
+      is_county: false,
+      is_federal_state: false,
+      is_school: false,
+      name: "some updated name",
+      slug: "some updated slug"
+    }
+    @invalid_attrs %{
+      is_city: nil,
+      is_country: nil,
+      is_county: nil,
+      is_federal_state: nil,
+      is_school: nil,
+      name: nil,
+      slug: nil
+    }
 
     def location_fixture(attrs \\ %{}) do
       {:ok, location} =
@@ -162,7 +186,9 @@ defmodule MehrSchulferien.MapsTest do
     end
 
     test "create_zip_code_mapping/1 with valid data creates a zip_code_mapping" do
-      assert {:ok, %ZipCodeMapping{} = zip_code_mapping} = Maps.create_zip_code_mapping(@valid_attrs)
+      assert {:ok, %ZipCodeMapping{} = zip_code_mapping} =
+               Maps.create_zip_code_mapping(@valid_attrs)
+
       assert zip_code_mapping.lat == "some lat"
       assert zip_code_mapping.lon == "some lon"
     end
@@ -173,14 +199,20 @@ defmodule MehrSchulferien.MapsTest do
 
     test "update_zip_code_mapping/2 with valid data updates the zip_code_mapping" do
       zip_code_mapping = zip_code_mapping_fixture()
-      assert {:ok, %ZipCodeMapping{} = zip_code_mapping} = Maps.update_zip_code_mapping(zip_code_mapping, @update_attrs)
+
+      assert {:ok, %ZipCodeMapping{} = zip_code_mapping} =
+               Maps.update_zip_code_mapping(zip_code_mapping, @update_attrs)
+
       assert zip_code_mapping.lat == "some updated lat"
       assert zip_code_mapping.lon == "some updated lon"
     end
 
     test "update_zip_code_mapping/2 with invalid data returns error changeset" do
       zip_code_mapping = zip_code_mapping_fixture()
-      assert {:error, %Ecto.Changeset{}} = Maps.update_zip_code_mapping(zip_code_mapping, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Maps.update_zip_code_mapping(zip_code_mapping, @invalid_attrs)
+
       assert zip_code_mapping == Maps.get_zip_code_mapping!(zip_code_mapping.id)
     end
 

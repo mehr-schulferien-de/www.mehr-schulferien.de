@@ -75,6 +75,7 @@ defmodule MehrSchulferienWeb.ZipCodeControllerTest do
     test "deletes chosen zip_code", %{conn: conn, zip_code: zip_code} do
       conn = delete(conn, Routes.zip_code_path(conn, :delete, zip_code))
       assert redirected_to(conn) == Routes.zip_code_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.zip_code_path(conn, :show, zip_code))
       end
