@@ -1,9 +1,10 @@
 defmodule MehrSchulferien.Maps.ZipCode do
   use Ecto.Schema
   import Ecto.Changeset
+  alias MehrSchulferien.ZipCodeValueSlug
 
   schema "zip_codes" do
-    field :slug, :string
+    field :slug, ZipCodeValueSlug.Type
     field :value, :string
     belongs_to :country_location, MehrSchulferien.Maps.Location
 
@@ -17,5 +18,7 @@ defmodule MehrSchulferien.Maps.ZipCode do
     |> validate_required([:value, :country_location_id])
     |> validate_length(:value, min: 4)
     |> assoc_constraint(:country_location)
+    |> ZipCodeValueSlug.maybe_generate_slug()
+    |> ZipCodeValueSlug.unique_constraint()
   end
 end
