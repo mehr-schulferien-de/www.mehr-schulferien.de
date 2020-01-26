@@ -20,6 +20,8 @@ defmodule MehrSchulferien.LocationNameSlug do
     new_slug(slug, nil, nil, changeset)    
   end
 
+  # Make a) sure a slug is unique and b) that a slug makes most sense.
+  #
   def new_slug(slug, federal_state_code, counter, changeset) do
     is_country = get_field(changeset, :is_country)
     is_federal_state = get_field(changeset, :is_federal_state)
