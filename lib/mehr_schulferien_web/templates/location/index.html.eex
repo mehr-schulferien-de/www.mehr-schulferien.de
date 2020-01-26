@@ -3,6 +3,7 @@
 <table>
   <thead>
     <tr>
+      <th>ID</th>
       <th>Name</th>
       <th>Code</th>
       <th>Slug</th>
@@ -19,6 +20,7 @@
   <tbody>
 <%= for location <- @locations do %>
     <tr>
+      <td><%= location.id %></td>
       <td><%= location.name %></td>
       <td><%= location.code %></td>
       <td><%= location.slug %></td>
