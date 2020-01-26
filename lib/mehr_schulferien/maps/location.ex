@@ -10,6 +10,7 @@ defmodule MehrSchulferien.Maps.Location do
     field(:is_federal_state, :boolean, default: false)
     field(:is_school, :boolean, default: false)
     field(:name, :string)
+    field(:code, :string)
     field :slug, NameSlug.Type
     belongs_to :parent_location, MehrSchulferien.Maps.Location
     belongs_to :cachable_calendar_location, MehrSchulferien.Maps.Location

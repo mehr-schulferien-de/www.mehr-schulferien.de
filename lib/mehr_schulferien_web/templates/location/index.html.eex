@@ -4,12 +4,14 @@
   <thead>
     <tr>
       <th>Name</th>
+      <th>Code</th>
       <th>Slug</th>
       <th>Is country</th>
       <th>Is federal state</th>
       <th>Is county</th>
       <th>Is city</th>
       <th>Is school</th>
+      <th>parent_location_id</th>
 
       <th></th>
     </tr>
@@ -18,12 +20,14 @@
 <%= for location <- @locations do %>
     <tr>
       <td><%= location.name %></td>
+      <td><%= location.code %></td>
       <td><%= location.slug %></td>
       <td><%= location.is_country %></td>
       <td><%= location.is_federal_state %></td>
       <td><%= location.is_county %></td>
       <td><%= location.is_city %></td>
       <td><%= location.is_school %></td>
+      <td><%= location.parent_location_id %></td>
 
       <td>
         <span><%= link "Show", to: Routes.location_path(@conn, :show, location) %></span>
