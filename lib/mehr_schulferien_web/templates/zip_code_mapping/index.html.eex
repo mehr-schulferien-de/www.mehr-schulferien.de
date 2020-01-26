@@ -3,6 +3,8 @@
 <table>
   <thead>
     <tr>
+      <th>LocationID</th>
+      <th>ZipCodeID</th>
       <th>Lat</th>
       <th>Lon</th>
 
@@ -12,6 +14,8 @@
   <tbody>
 <%= for zip_code_mapping <- @zip_code_mappings do %>
     <tr>
+      <td><%= zip_code_mapping.location_id %></td>
+      <td><%= zip_code_mapping.zip_code_id %></td>
       <td><%= zip_code_mapping.lat %></td>
       <td><%= zip_code_mapping.lon %></td>
 

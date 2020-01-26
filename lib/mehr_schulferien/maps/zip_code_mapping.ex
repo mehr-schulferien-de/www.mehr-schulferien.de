@@ -3,10 +3,10 @@ defmodule MehrSchulferien.Maps.ZipCodeMapping do
   import Ecto.Changeset
 
   schema "zip_code_mappings" do
-    field :lat, :string
-    field :lon, :string
-    field :location_id, :id
-    field :zip_code_id, :id
+    field :lat, :float
+    field :lon, :float
+    belongs_to :location, MehrSchulferien.Maps.Location
+    belongs_to :zip_code, MehrSchulferien.Maps.ZipCode
 
     timestamps()
   end
@@ -14,7 +14,9 @@ defmodule MehrSchulferien.Maps.ZipCodeMapping do
   @doc false
   def changeset(zip_code_mapping, attrs) do
     zip_code_mapping
-    |> cast(attrs, [:lat, :lon])
-    |> validate_required([:lat, :lon])
+    |> cast(attrs, [:location_id, :zip_code_id, :lat, :lon])
+    |> validate_required([:location_id, :zip_code_id])
+    |> assoc_constraint(:location)
+    |> assoc_constraint(:zip_code)
   end
 end

@@ -3,8 +3,8 @@ defmodule MehrSchulferien.Repo.Migrations.CreateZipCodeMappings do
 
   def change do
     create table(:zip_code_mappings) do
-      add :lat, :string
-      add :lon, :string
+      add :lat, :float
+      add :lon, :float
       add :location_id, references(:locations, on_delete: :nothing)
       add :zip_code_id, references(:zip_codes, on_delete: :nothing)
 
