@@ -81,32 +81,32 @@ else
         zip_code
     end
 
-    # # Create City
-    # # 
-    # json_city = city["city"]
-    # json_latitude = city["latitude"]
-    # json_longitude = city["longitude"]
+    # Create City
+    # 
+    json_city = city["city"]
+    json_latitude = city["latitude"]
+    json_longitude = city["longitude"]
 
-    # query =
-    #   from l in Location,
-    #     where: l.name == ^json_city,
-    #     where: l.is_city == true,
-    #     where: l.parent_location_id == ^county.id,
-    #     limit: 1
+    query =
+      from l in Location,
+        where: l.name == ^json_city,
+        where: l.is_city == true,
+        where: l.parent_location_id == ^county.id,
+        limit: 1
 
-    # city = case Repo.one(query) do
-    #   nil ->
-    #     {:ok, city} =
-    #       Maps.create_location(%{
-    #         name: json_city,
-    #         is_city: true,
-    #         cachable_calendar_location_id: federal_state.id,
-    #         parent_location_id: county.id
-    #       })
-    #     city
-    #   city ->
-    #     city
-    # end
+    city = case Repo.one(query) do
+      nil ->
+        {:ok, city} =
+          Maps.create_location(%{
+            name: json_city,
+            is_city: true,
+            cachable_calendar_location_id: federal_state.id,
+            parent_location_id: county.id
+          })
+        city
+      city ->
+        city
+    end
 
     # # TODO: Use lat and lon to narrow down similar cities
     # query =
