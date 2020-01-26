@@ -1,7 +1,7 @@
 defmodule MehrSchulferien.Maps.Location do
   use Ecto.Schema
   import Ecto.Changeset
-  alias MehrSchulferien.NameSlug
+  alias MehrSchulferien.LocationNameSlug
 
   schema "locations" do
     field(:is_city, :boolean, default: false)
@@ -11,7 +11,7 @@ defmodule MehrSchulferien.Maps.Location do
     field(:is_school, :boolean, default: false)
     field(:name, :string)
     field(:code, :string)
-    field :slug, NameSlug.Type
+    field :slug, LocationNameSlug.Type
     belongs_to :parent_location, MehrSchulferien.Maps.Location
     belongs_to :cachable_calendar_location, MehrSchulferien.Maps.Location
 
@@ -38,8 +38,8 @@ defmodule MehrSchulferien.Maps.Location do
       |> validate_length(:code, max: 3)
       |> validate_presence_of_parent()
       |> validate_cachable_calendar_location()
-      |> NameSlug.maybe_generate_slug()
-      |> NameSlug.unique_constraint()
+      |> LocationNameSlug.maybe_generate_slug()
+      |> LocationNameSlug.unique_constraint()
     end
 
     def validate_presence_of_parent(changeset) do

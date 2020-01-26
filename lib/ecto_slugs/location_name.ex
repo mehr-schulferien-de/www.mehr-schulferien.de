@@ -1,4 +1,4 @@
-defmodule MehrSchulferien.NameSlug do
+defmodule MehrSchulferien.LocationNameSlug do
   use EctoAutoslugField.Slug, from: :name, to: :slug
 
   import Ecto.Changeset
