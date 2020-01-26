@@ -1,0 +1,43 @@
+<h1>Show Location</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @location.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @location.slug %>
+  </li>
+
+  <li>
+    <strong>Is country:</strong>
+    <%= @location.is_country %>
+  </li>
+
+  <li>
+    <strong>Is federal state:</strong>
+    <%= @location.is_federal_state %>
+  </li>
+
+  <li>
+    <strong>Is county:</strong>
+    <%= @location.is_county %>
+  </li>
+
+  <li>
+    <strong>Is city:</strong>
+    <%= @location.is_city %>
+  </li>
+
+  <li>
+    <strong>Is school:</strong>
+    <%= @location.is_school %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.location_path(@conn, :edit, @location) %></span>
+<span><%= link "Back", to: Routes.location_path(@conn, :index) %></span>

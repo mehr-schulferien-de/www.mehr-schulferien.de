@@ -13,6 +13,12 @@ defmodule MehrSchulferienWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/admin", MehrSchulferienWeb do
+    pipe_through :browser
+
+    resources "/locations", LocationController
+  end
+
   scope "/", MehrSchulferienWeb do
     pipe_through :browser
 
