@@ -1,0 +1,18 @@
+<h1>Show Zip code mapping</h1>
+
+<ul>
+
+  <li>
+    <strong>Lat:</strong>
+    <%= @zip_code_mapping.lat %>
+  </li>
+
+  <li>
+    <strong>Lon:</strong>
+    <%= @zip_code_mapping.lon %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.zip_code_mapping_path(@conn, :edit, @zip_code_mapping) %></span>
+<span><%= link "Back", to: Routes.zip_code_mapping_path(@conn, :index) %></span>

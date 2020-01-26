@@ -17,6 +17,8 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser
 
     resources "/locations", LocationController
+    resources "/zip_codes", ZipCodeController
+    resources "/zip_code_mappings", ZipCodeMappingController
   end
 
   scope "/", MehrSchulferienWeb do

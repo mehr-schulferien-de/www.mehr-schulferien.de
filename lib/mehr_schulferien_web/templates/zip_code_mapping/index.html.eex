@@ -1,0 +1,28 @@
+<h1>Listing Zip code mappings</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Lat</th>
+      <th>Lon</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for zip_code_mapping <- @zip_code_mappings do %>
+    <tr>
+      <td><%= zip_code_mapping.lat %></td>
+      <td><%= zip_code_mapping.lon %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.zip_code_mapping_path(@conn, :show, zip_code_mapping) %></span>
+        <span><%= link "Edit", to: Routes.zip_code_mapping_path(@conn, :edit, zip_code_mapping) %></span>
+        <span><%= link "Delete", to: Routes.zip_code_mapping_path(@conn, :delete, zip_code_mapping), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Zip code mapping", to: Routes.zip_code_mapping_path(@conn, :new) %></span>

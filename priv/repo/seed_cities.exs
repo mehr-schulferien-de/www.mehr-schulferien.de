@@ -6,6 +6,7 @@ import Ecto.Query
 alias MehrSchulferien.Repo
 alias MehrSchulferien.Maps
 alias MehrSchulferien.Maps.Location
+alias MehrSchulferien.Maps.ZipCode
 
 # Only seed an empty city table.
 #
@@ -58,29 +59,27 @@ else
         county
     end
 
-    # # Find or create ZipCode
-    # #
-    # json_zip_code = city["zipcode"]
+    # Find or create ZipCode
+    #
+    json_zip_code = city["zipcode"]
 
-    # query =
-    # from z in ZipCode,
-    #   where: z.value == ^json_zip_code,
-    #   where: z.country_id == ^federal_state.country_id,
-    #   limit: 1
+    query =
+    from z in ZipCode,
+      where: z.value == ^json_zip_code,
+      where: z.country_location_id == ^federal_state.parent_location_id,
+      limit: 1
 
-    # case Repo.one(query) do
-    #   nil ->
-    #     {:ok, _zip_code} =
-    #       Locations.create_zip_code(%{
-    #         value: json_zip_code,
-    #         country_id: federal_state.country_id
-    #       })
-
-    #   _ ->
-    #     nil
-    # end
-
-    # zip_code = Repo.one(query)
+    case Repo.one(query) do
+      nil ->
+        {:ok, zip_code} =
+          Maps.create_zip_code(%{
+            value: json_zip_code,
+            country_location_id: federal_state.parent_location_id
+          })
+        zip_code
+      zip_code ->
+        zip_code
+    end
 
     # # Create City
     # # 
