@@ -23,6 +23,7 @@ defmodule MehrSchulferien.Maps.Location do
       |> cast(attrs, [
         :name,
         :slug,
+        :code,
         :is_country,
         :is_federal_state,
         :is_county,
@@ -33,6 +34,7 @@ defmodule MehrSchulferien.Maps.Location do
       ])
       |> validate_required([:name])
       |> validate_one_is_present([:is_country, :is_federal_state, :is_county, :is_city, :is_school])
+      |> validate_length(:code, max: 3)
       |> validate_presence_of_parent()
       |> validate_cachable_calendar_location()
       |> NameSlug.maybe_generate_slug()

@@ -5,6 +5,7 @@ defmodule MehrSchulferien.Repo.Migrations.CreateLocations do
     create table(:locations) do
       add :name, :string
       add :slug, :string
+      add :code, :string
       add :is_country, :boolean, default: false, null: false
       add :is_federal_state, :boolean, default: false, null: false
       add :is_county, :boolean, default: false, null: false
