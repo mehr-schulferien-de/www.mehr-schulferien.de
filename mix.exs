@@ -44,7 +44,8 @@ defmodule MehrSchulferien.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:ecto_autoslug_field, "~> 2.0"},
-      {:poison, "~> 4.0"}
+      {:poison, "~> 4.0"},
+      {:csv, "~> 2.3"}
     ]
   end
 
