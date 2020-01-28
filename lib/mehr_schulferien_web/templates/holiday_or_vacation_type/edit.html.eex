@@ -1,0 +1,5 @@
+<h1>Edit Holiday or vacation type</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.holiday_or_vacation_type_path(@conn, :update, @holiday_or_vacation_type)) %>
+
+<span><%= link "Back", to: Routes.holiday_or_vacation_type_path(@conn, :index) %></span>

@@ -1,0 +1,48 @@
+<h1>Listing Holiday or vacation types</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Colloquial</th>
+      <th>Slug</th>
+      <th>Html class</th>
+      <th>Listed below month</th>
+      <th>School vacation</th>
+      <th>Public holiday</th>
+      <th>Valid for everybody</th>
+      <th>Valid for students</th>
+      <th>Needs approval</th>
+      <th>Wikipedia url</th>
+      <th>Display priority</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for holiday_or_vacation_type <- @holiday_or_vacation_types do %>
+    <tr>
+      <td><%= holiday_or_vacation_type.name %></td>
+      <td><%= holiday_or_vacation_type.colloquial %></td>
+      <td><%= holiday_or_vacation_type.slug %></td>
+      <td><%= holiday_or_vacation_type.html_class %></td>
+      <td><%= holiday_or_vacation_type.listed_below_month %></td>
+      <td><%= holiday_or_vacation_type.school_vacation %></td>
+      <td><%= holiday_or_vacation_type.public_holiday %></td>
+      <td><%= holiday_or_vacation_type.valid_for_everybody %></td>
+      <td><%= holiday_or_vacation_type.valid_for_students %></td>
+      <td><%= holiday_or_vacation_type.needs_approval %></td>
+      <td><%= holiday_or_vacation_type.wikipedia_url %></td>
+      <td><%= holiday_or_vacation_type.display_priority %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.holiday_or_vacation_type_path(@conn, :show, holiday_or_vacation_type) %></span>
+        <span><%= link "Edit", to: Routes.holiday_or_vacation_type_path(@conn, :edit, holiday_or_vacation_type) %></span>
+        <span><%= link "Delete", to: Routes.holiday_or_vacation_type_path(@conn, :delete, holiday_or_vacation_type), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Holiday or vacation type", to: Routes.holiday_or_vacation_type_path(@conn, :new) %></span>

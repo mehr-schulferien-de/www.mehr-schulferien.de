@@ -1,0 +1,68 @@
+<h1>Show Holiday or vacation type</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @holiday_or_vacation_type.name %>
+  </li>
+
+  <li>
+    <strong>Colloquial:</strong>
+    <%= @holiday_or_vacation_type.colloquial %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @holiday_or_vacation_type.slug %>
+  </li>
+
+  <li>
+    <strong>Html class:</strong>
+    <%= @holiday_or_vacation_type.html_class %>
+  </li>
+
+  <li>
+    <strong>Listed below month:</strong>
+    <%= @holiday_or_vacation_type.listed_below_month %>
+  </li>
+
+  <li>
+    <strong>School vacation:</strong>
+    <%= @holiday_or_vacation_type.school_vacation %>
+  </li>
+
+  <li>
+    <strong>Public holiday:</strong>
+    <%= @holiday_or_vacation_type.public_holiday %>
+  </li>
+
+  <li>
+    <strong>Valid for everybody:</strong>
+    <%= @holiday_or_vacation_type.valid_for_everybody %>
+  </li>
+
+  <li>
+    <strong>Valid for students:</strong>
+    <%= @holiday_or_vacation_type.valid_for_students %>
+  </li>
+
+  <li>
+    <strong>Needs approval:</strong>
+    <%= @holiday_or_vacation_type.needs_approval %>
+  </li>
+
+  <li>
+    <strong>Wikipedia url:</strong>
+    <%= @holiday_or_vacation_type.wikipedia_url %>
+  </li>
+
+  <li>
+    <strong>Display priority:</strong>
+    <%= @holiday_or_vacation_type.display_priority %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.holiday_or_vacation_type_path(@conn, :edit, @holiday_or_vacation_type) %></span>
+<span><%= link "Back", to: Routes.holiday_or_vacation_type_path(@conn, :index) %></span>
