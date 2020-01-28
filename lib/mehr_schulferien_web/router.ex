@@ -16,9 +16,13 @@ defmodule MehrSchulferienWeb.Router do
   scope "/admin", MehrSchulferienWeb do
     pipe_through :browser
 
+    # Maps
     resources "/locations", LocationController
     resources "/zip_codes", ZipCodeController
     resources "/zip_code_mappings", ZipCodeMappingController
+
+    # Calendars
+    resources "/religions", ReligionController
   end
 
   scope "/", MehrSchulferienWeb do

@@ -1,0 +1,23 @@
+<h1>Show Religion</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @religion.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @religion.slug %>
+  </li>
+
+  <li>
+    <strong>Wikipedia url:</strong>
+    <%= @religion.wikipedia_url %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.religion_path(@conn, :edit, @religion) %></span>
+<span><%= link "Back", to: Routes.religion_path(@conn, :index) %></span>

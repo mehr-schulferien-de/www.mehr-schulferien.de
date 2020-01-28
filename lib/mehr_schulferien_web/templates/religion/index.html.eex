@@ -1,0 +1,30 @@
+<h1>Listing Religions</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+      <th>Wikipedia url</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for religion <- @religions do %>
+    <tr>
+      <td><%= religion.name %></td>
+      <td><%= religion.slug %></td>
+      <td><%= religion.wikipedia_url %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.religion_path(@conn, :show, religion) %></span>
+        <span><%= link "Edit", to: Routes.religion_path(@conn, :edit, religion) %></span>
+        <span><%= link "Delete", to: Routes.religion_path(@conn, :delete, religion), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Religion", to: Routes.religion_path(@conn, :new) %></span>

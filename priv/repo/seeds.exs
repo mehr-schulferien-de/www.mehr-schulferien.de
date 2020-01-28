@@ -3,6 +3,7 @@
 #     mix run priv/repo/seeds.exs
 
 alias MehrSchulferien.Maps
+alias MehrSchulferien.Calendars
 
 # Countries
 #
@@ -137,3 +138,20 @@ alias MehrSchulferien.Maps
     is_federal_state: true,
     parent_location_id: deutschland.id
   })
+
+# Seeds religions
+#
+{:ok, _christentum} =
+  Calendars.create_religion(%{
+    name: "Christentum",
+    wikipedia_url: "https://de.wikipedia.org/wiki/Christentum"
+  })
+
+{:ok, _judentum} =
+  Calendars.create_religion(%{
+    name: "Judentum",
+    wikipedia_url: "https://de.wikipedia.org/wiki/Judentum"
+  })
+
+{:ok, _islam} =
+  Calendars.create_religion(%{name: "Islam", wikipedia_url: "https://de.wikipedia.org/wiki/Islam"})
