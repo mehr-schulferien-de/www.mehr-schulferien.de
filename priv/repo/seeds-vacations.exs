@@ -2,8 +2,11 @@
 #
 #     mix run priv/repo/seeds-vacations.exs
 
-
 defmodule M do
+  import Ecto.Query
+  alias MehrSchulferien.Repo
+  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Calendars.HolidayOrVacationType
 
   def parse_the_csv do
     year = 2020
@@ -50,7 +53,7 @@ defmodule M do
     end)
   end
 
-  def create_vacation_date(_federal_state_name, vacation_type, vacation_date, year) do
+  def create_vacation_date(federal_state_name, vacation_type, vacation_date, year) do
     [starts_at, ends_at] =
       case String.split(vacation_date, "-") do
         [starts_at, ends_at] ->
@@ -60,11 +63,35 @@ defmodule M do
           adds_year_to_date(starts_at, starts_at, vacation_type, year)
       end
 
-      starts_at = german_string_to_date(starts_at)
-      ends_at = german_string_to_date(ends_at)
+    starts_at = german_string_to_date(starts_at)
+    ends_at = german_string_to_date(ends_at)
+
+    # Find FederalState
+    #
+    query =
+      from(l in Location,
+        where: l.name == ^federal_state_name,
+        where: l.is_federal_state == true,
+        limit: 1
+      )
+
+    federal_state = Repo.one(query)
+
+    # Find holiday_or_vacation_type
+    #
+    query =
+      from(l in HolidayOrVacationType,
+        where: l.name == ^vacation_type,
+        where: l.country_location_id == ^federal_state.parent_location_id,
+        limit: 1
+      )
+
+    holiday_or_vacation_type = Repo.one(query)
 
     IO.puts(
-      vacation_type <>
+      federal_state.name <>
+        " => " <>
+        holiday_or_vacation_type.name <>
         ": " <>
         Date.to_string(starts_at) <>
         " - " <> Date.to_string(ends_at)
@@ -86,7 +113,10 @@ defmodule M do
 
   def german_string_to_date(german_string) do
     [day, month, year] = String.split(german_string, ".")
-    {:ok, new_date} = Date.from_erl({String.to_integer(year), String.to_integer(month), String.to_integer(day)})
+
+    {:ok, new_date} =
+      Date.from_erl({String.to_integer(year), String.to_integer(month), String.to_integer(day)})
+
     new_date
   end
 end
