@@ -7,6 +7,7 @@ defmodule M do
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Maps.Location
   alias MehrSchulferien.Calendars.HolidayOrVacationType
+  alias MehrSchulferien.Calendars
 
   def parse_the_csv do
     year = 2020
@@ -96,6 +97,14 @@ defmodule M do
         Date.to_string(starts_at) <>
         " - " <> Date.to_string(ends_at)
     )
+    
+    Calendars.create_period(%{
+      author_email_address: "sw@wintermeyer-consulting.de",
+      starts_on: starts_at,
+      ends_on: ends_at,
+      location_id: federal_state.id,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id
+    })
   end
 
   def adds_year_to_date(starts_at, ends_at, vacation_type, year) do

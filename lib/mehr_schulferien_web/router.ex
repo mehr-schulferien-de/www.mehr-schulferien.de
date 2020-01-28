@@ -24,6 +24,7 @@ defmodule MehrSchulferienWeb.Router do
     # Calendars
     resources "/religions", ReligionController
     resources "/holiday_or_vacation_types", HolidayOrVacationTypeController
+    resources "/periods", PeriodController
   end
 
   scope "/", MehrSchulferienWeb do

@@ -1,0 +1,23 @@
+<h1>Show Period</h1>
+
+<ul>
+
+  <li>
+    <strong>Starts on:</strong>
+    <%= @period.starts_on %>
+  </li>
+
+  <li>
+    <strong>Ends on:</strong>
+    <%= @period.ends_on %>
+  </li>
+
+  <li>
+    <strong>Author email address:</strong>
+    <%= @period.author_email_address %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.period_path(@conn, :edit, @period) %></span>
+<span><%= link "Back", to: Routes.period_path(@conn, :index) %></span>

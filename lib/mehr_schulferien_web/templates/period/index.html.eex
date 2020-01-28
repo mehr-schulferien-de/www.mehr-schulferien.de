@@ -1,0 +1,34 @@
+<h1>Listing Periods</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Starts on</th>
+      <th>Ends on</th>
+      <th>Location ID</th>
+      <th>Holiday or Vacation Type ID</th>
+      <th>Author email address</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for period <- @periods do %>
+    <tr>
+      <td><%= period.starts_on %></td>
+      <td><%= period.ends_on %></td>
+      <td><%= period.location_id %></td>
+      <td><%= period.holiday_or_vacation_type_id %></td>
+      <td><%= period.author_email_address %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.period_path(@conn, :show, period) %></span>
+        <span><%= link "Edit", to: Routes.period_path(@conn, :edit, period) %></span>
+        <span><%= link "Delete", to: Routes.period_path(@conn, :delete, period), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Period", to: Routes.period_path(@conn, :new) %></span>
