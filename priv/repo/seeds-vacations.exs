@@ -4,7 +4,8 @@
 
 defmodule M do
   def parse_the_csv do
-    CSV.decode(File.stream!("priv/repo/seeds.d/2022-2023.csv"), headers: true)
+    year = 2020
+    CSV.decode(File.stream!("priv/repo/seeds.d/" <> Integer.to_string(year) <> "-" <> Integer.to_string(year + 1) <> ".csv"), headers: true)
     |> Enum.each(fn x ->
       {:ok, line} = x
 
