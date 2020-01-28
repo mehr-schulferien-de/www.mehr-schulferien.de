@@ -193,7 +193,8 @@ alias MehrSchulferien.Calendars
     school_vacation: true,
     valid_for_students: true,
     display_priority: 4,
-    wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Winter-/Sport-/Zeugnis-/Semester-/Faschingsferien",
+    wikipedia_url:
+      "https://de.m.wikipedia.org/wiki/Schulferien#Winter-/Sport-/Zeugnis-/Semester-/Faschingsferien",
     country_location_id: deutschland.id
   })
 
@@ -206,7 +207,8 @@ alias MehrSchulferien.Calendars
     school_vacation: true,
     valid_for_students: true,
     display_priority: 4,
-    wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Oster-/Frühjahrs-/Frühlingsferien",
+    wikipedia_url:
+      "https://de.m.wikipedia.org/wiki/Schulferien#Oster-/Frühjahrs-/Frühlingsferien",
     country_location_id: deutschland.id
   })
 

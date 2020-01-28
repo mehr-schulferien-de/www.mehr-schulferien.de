@@ -20,7 +20,6 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
     field :wikipedia_url, :string
     belongs_to :religion, Calendars.Religion
     belongs_to :country_location, Maps.Location
-    
 
     timestamps()
   end
@@ -28,7 +27,21 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
   @doc false
   def changeset(holiday_or_vacation_type, attrs) do
     holiday_or_vacation_type
-    |> cast(attrs, [:name, :colloquial, :slug, :html_class, :listed_below_month, :school_vacation, :public_holiday, :valid_for_everybody, :valid_for_students, :needs_approval, :wikipedia_url, :display_priority, :country_location_id])
+    |> cast(attrs, [
+      :name,
+      :colloquial,
+      :slug,
+      :html_class,
+      :listed_below_month,
+      :school_vacation,
+      :public_holiday,
+      :valid_for_everybody,
+      :valid_for_students,
+      :needs_approval,
+      :wikipedia_url,
+      :display_priority,
+      :country_location_id
+    ])
     |> validate_required([:name, :country_location_id])
     |> assoc_constraint(:country_location)
     |> NameSlug.maybe_generate_slug()

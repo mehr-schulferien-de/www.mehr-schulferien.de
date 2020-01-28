@@ -4,7 +4,11 @@ defmodule MehrSchulferienWeb.ReligionControllerTest do
   alias MehrSchulferien.Calendars
 
   @create_attrs %{name: "some name", slug: "some slug", wikipedia_url: "some wikipedia_url"}
-  @update_attrs %{name: "some updated name", slug: "some updated slug", wikipedia_url: "some updated wikipedia_url"}
+  @update_attrs %{
+    name: "some updated name",
+    slug: "some updated slug",
+    wikipedia_url: "some updated wikipedia_url"
+  }
   @invalid_attrs %{name: nil, slug: nil, wikipedia_url: nil}
 
   def fixture(:religion) do
@@ -75,6 +79,7 @@ defmodule MehrSchulferienWeb.ReligionControllerTest do
     test "deletes chosen religion", %{conn: conn, religion: religion} do
       conn = delete(conn, Routes.religion_path(conn, :delete, religion))
       assert redirected_to(conn) == Routes.religion_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.religion_path(conn, :show, religion))
       end
