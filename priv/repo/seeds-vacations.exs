@@ -9,9 +9,7 @@ defmodule M do
   alias MehrSchulferien.Calendars.HolidayOrVacationType
   alias MehrSchulferien.Calendars
 
-  def parse_the_csv do
-    year = 2020
-
+  def parse_the_csv(year) do
     CSV.decode(
       File.stream!(
         "priv/repo/seeds.d/" <>
@@ -130,4 +128,6 @@ defmodule M do
   end
 end
 
-M.parse_the_csv()
+Enum.each [2020,2021,2022], fn year ->
+  M.parse_the_csv(year)
+end 

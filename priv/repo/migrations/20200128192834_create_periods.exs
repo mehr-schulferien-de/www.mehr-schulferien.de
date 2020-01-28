@@ -7,7 +7,9 @@ defmodule MehrSchulferien.Repo.Migrations.CreatePeriods do
       add :ends_on, :date
       add :author_email_address, :string
       add :location_id, references(:locations, on_delete: :nothing)
-      add :holiday_or_vacation_type_id, references(:holiday_or_vacation_types, on_delete: :nothing)
+
+      add :holiday_or_vacation_type_id,
+          references(:holiday_or_vacation_types, on_delete: :nothing)
 
       timestamps()
     end

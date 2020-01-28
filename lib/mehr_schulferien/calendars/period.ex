@@ -17,8 +17,20 @@ defmodule MehrSchulferien.Calendars.Period do
   @doc false
   def changeset(period, attrs) do
     period
-    |> cast(attrs, [:starts_on, :ends_on, :author_email_address, :location_id, :holiday_or_vacation_type_id])
-    |> validate_required([:starts_on, :ends_on, :author_email_address, :location_id, :holiday_or_vacation_type_id])
+    |> cast(attrs, [
+      :starts_on,
+      :ends_on,
+      :author_email_address,
+      :location_id,
+      :holiday_or_vacation_type_id
+    ])
+    |> validate_required([
+      :starts_on,
+      :ends_on,
+      :author_email_address,
+      :location_id,
+      :holiday_or_vacation_type_id
+    ])
     |> assoc_constraint(:location)
     |> assoc_constraint(:holiday_or_vacation_type)
   end

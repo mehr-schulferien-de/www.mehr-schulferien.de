@@ -212,8 +212,16 @@ defmodule MehrSchulferien.CalendarsTest do
   describe "periods" do
     alias MehrSchulferien.Calendars.Period
 
-    @valid_attrs %{author_email_address: "some author_email_address", ends_on: ~D[2010-04-17], starts_on: ~D[2010-04-17]}
-    @update_attrs %{author_email_address: "some updated author_email_address", ends_on: ~D[2011-05-18], starts_on: ~D[2011-05-18]}
+    @valid_attrs %{
+      author_email_address: "some author_email_address",
+      ends_on: ~D[2010-04-17],
+      starts_on: ~D[2010-04-17]
+    }
+    @update_attrs %{
+      author_email_address: "some updated author_email_address",
+      ends_on: ~D[2011-05-18],
+      starts_on: ~D[2011-05-18]
+    }
     @invalid_attrs %{author_email_address: nil, ends_on: nil, starts_on: nil}
 
     def period_fixture(attrs \\ %{}) do

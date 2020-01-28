@@ -3,8 +3,16 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
 
   alias MehrSchulferien.Calendars
 
-  @create_attrs %{author_email_address: "some author_email_address", ends_on: ~D[2010-04-17], starts_on: ~D[2010-04-17]}
-  @update_attrs %{author_email_address: "some updated author_email_address", ends_on: ~D[2011-05-18], starts_on: ~D[2011-05-18]}
+  @create_attrs %{
+    author_email_address: "some author_email_address",
+    ends_on: ~D[2010-04-17],
+    starts_on: ~D[2010-04-17]
+  }
+  @update_attrs %{
+    author_email_address: "some updated author_email_address",
+    ends_on: ~D[2011-05-18],
+    starts_on: ~D[2011-05-18]
+  }
   @invalid_attrs %{author_email_address: nil, ends_on: nil, starts_on: nil}
 
   def fixture(:period) do
@@ -75,6 +83,7 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
     test "deletes chosen period", %{conn: conn, period: period} do
       conn = delete(conn, Routes.period_path(conn, :delete, period))
       assert redirected_to(conn) == Routes.period_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.period_path(conn, :show, period))
       end
