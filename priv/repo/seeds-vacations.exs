@@ -126,8 +126,48 @@ defmodule M do
 
     new_date
   end
+
+  def generate_weekend_periods(year) do
+    # Find Germany
+    #
+    query =
+      from(l in Location,
+        where: l.name == "Deutschland",
+        where: l.is_country == true,
+        limit: 1
+      )
+
+    country = Repo.one(query)
+
+    # Find holiday_or_vacation_type
+    #
+    query =
+      from(l in HolidayOrVacationType,
+        where: l.name == "Wochenende",
+        where: l.country_location_id == ^country.id,
+        limit: 1
+      )
+
+    holiday_or_vacation_type = Repo.one(query)
+
+    {:ok, starts_on} = Date.from_erl({year,1,1})
+    {:ok, ends_on} = Date.from_erl({year,12,31})
+    range = Date.range(starts_on,ends_on)
+    Enum.each range, fn day -> 
+      if Date.day_of_week(day) == 6 do
+        Calendars.create_period(%{
+          author_email_address: "sw@wintermeyer-consulting.de",
+          starts_on: day,
+          ends_on: Date.add(day,1),
+          location_id: country.id,
+          holiday_or_vacation_type_id: holiday_or_vacation_type.id
+        })
+      end
+    end
+  end
 end
 
 Enum.each [2020,2021,2022], fn year ->
   M.parse_the_csv(year)
+  M.generate_weekend_periods(year)
 end 
