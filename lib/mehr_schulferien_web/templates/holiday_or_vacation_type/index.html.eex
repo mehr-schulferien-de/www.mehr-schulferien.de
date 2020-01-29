@@ -6,15 +6,14 @@
       <th>Name</th>
       <th>Colloquial</th>
       <th>Slug</th>
-      <th>Html class</th>
-      <th>Listed below month</th>
-      <th>School vacation</th>
-      <th>Public holiday</th>
-      <th>Valid for everybody</th>
-      <th>Valid for students</th>
-      <th>Needs approval</th>
+      <th>Default html class</th>
+      <th>Default is listed below month</th>
+      <th>Default is public holiday</th>
+      <th>Default is school vacation</th>
+      <th>Default is valid for everybody</th>
+      <th>Default is valid for students</th>
+      <th>Country Location ID</th>
       <th>Wikipedia url</th>
-      <th>Display priority</th>
 
       <th></th>
     </tr>
@@ -25,15 +24,14 @@
       <td><%= holiday_or_vacation_type.name %></td>
       <td><%= holiday_or_vacation_type.colloquial %></td>
       <td><%= holiday_or_vacation_type.slug %></td>
-      <td><%= holiday_or_vacation_type.html_class %></td>
-      <td><%= holiday_or_vacation_type.listed_below_month %></td>
-      <td><%= holiday_or_vacation_type.school_vacation %></td>
-      <td><%= holiday_or_vacation_type.public_holiday %></td>
-      <td><%= holiday_or_vacation_type.valid_for_everybody %></td>
-      <td><%= holiday_or_vacation_type.valid_for_students %></td>
-      <td><%= holiday_or_vacation_type.needs_approval %></td>
+      <td><%= holiday_or_vacation_type.default_html_class %></td>
+      <td><%= holiday_or_vacation_type.default_is_listed_below_month %></td>
+      <td><%= holiday_or_vacation_type.default_is_public_holiday %></td>
+      <td><%= holiday_or_vacation_type.default_is_school_vacation %></td>
+      <td><%= holiday_or_vacation_type.default_is_valid_for_everybody %></td>
+      <td><%= holiday_or_vacation_type.default_is_valid_for_students %></td>
+      <td><%= holiday_or_vacation_type.country_location_id %></td>
       <td><%= holiday_or_vacation_type.wikipedia_url %></td>
-      <td><%= holiday_or_vacation_type.display_priority %></td>
 
       <td>
         <span><%= link "Show", to: Routes.holiday_or_vacation_type_path(@conn, :show, holiday_or_vacation_type) %></span>

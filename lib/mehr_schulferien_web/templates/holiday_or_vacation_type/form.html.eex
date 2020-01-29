@@ -17,41 +17,33 @@
   <%= text_input f, :slug %>
   <%= error_tag f, :slug %>
 
-  <%= label f, :html_class %>
-  <%= text_input f, :html_class %>
-  <%= error_tag f, :html_class %>
+  <%= label f, :default_html_class %>
+  <%= text_input f, :default_html_class %>
+  <%= error_tag f, :default_html_class %>
 
-  <%= label f, :listed_below_month %>
-  <%= checkbox f, :listed_below_month %>
-  <%= error_tag f, :listed_below_month %>
+  <%= label f, :default_is_listed_below_month %>
+  <%= checkbox f, :default_is_listed_below_month %>
+  <%= error_tag f, :default_is_listed_below_month %>
 
-  <%= label f, :school_vacation %>
-  <%= checkbox f, :school_vacation %>
-  <%= error_tag f, :school_vacation %>
+  <%= label f, :default_is_public_holiday %>
+  <%= checkbox f, :default_is_public_holiday %>
+  <%= error_tag f, :default_is_public_holiday %>
 
-  <%= label f, :public_holiday %>
-  <%= checkbox f, :public_holiday %>
-  <%= error_tag f, :public_holiday %>
+  <%= label f, :default_is_school_vacation %>
+  <%= checkbox f, :default_is_school_vacation %>
+  <%= error_tag f, :default_is_school_vacation %>
 
-  <%= label f, :valid_for_everybody %>
-  <%= checkbox f, :valid_for_everybody %>
-  <%= error_tag f, :valid_for_everybody %>
+  <%= label f, :default_is_valid_for_everybody %>
+  <%= checkbox f, :default_is_valid_for_everybody %>
+  <%= error_tag f, :default_is_valid_for_everybody %>
 
-  <%= label f, :valid_for_students %>
-  <%= checkbox f, :valid_for_students %>
-  <%= error_tag f, :valid_for_students %>
-
-  <%= label f, :needs_approval %>
-  <%= checkbox f, :needs_approval %>
-  <%= error_tag f, :needs_approval %>
+  <%= label f, :default_is_valid_for_students %>
+  <%= checkbox f, :default_is_valid_for_students %>
+  <%= error_tag f, :default_is_valid_for_students %>
 
   <%= label f, :wikipedia_url %>
   <%= text_input f, :wikipedia_url %>
   <%= error_tag f, :wikipedia_url %>
-
-  <%= label f, :display_priority %>
-  <%= number_input f, :display_priority %>
-  <%= error_tag f, :display_priority %>
 
   <div>
     <%= submit "Save" %>

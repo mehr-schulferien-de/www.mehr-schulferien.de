@@ -18,48 +18,38 @@
   </li>
 
   <li>
-    <strong>Html class:</strong>
-    <%= @holiday_or_vacation_type.html_class %>
+    <strong>Default html class:</strong>
+    <%= @holiday_or_vacation_type.default_html_class %>
   </li>
 
   <li>
-    <strong>Listed below month:</strong>
-    <%= @holiday_or_vacation_type.listed_below_month %>
+    <strong>Default is listed below month:</strong>
+    <%= @holiday_or_vacation_type.default_is_listed_below_month %>
   </li>
 
   <li>
-    <strong>School vacation:</strong>
-    <%= @holiday_or_vacation_type.school_vacation %>
+    <strong>Default is public holiday:</strong>
+    <%= @holiday_or_vacation_type.default_is_public_holiday %>
   </li>
 
   <li>
-    <strong>Public holiday:</strong>
-    <%= @holiday_or_vacation_type.public_holiday %>
+    <strong>Default is school vacation:</strong>
+    <%= @holiday_or_vacation_type.default_is_school_vacation %>
   </li>
 
   <li>
-    <strong>Valid for everybody:</strong>
-    <%= @holiday_or_vacation_type.valid_for_everybody %>
+    <strong>Default is valid for everybody:</strong>
+    <%= @holiday_or_vacation_type.default_is_valid_for_everybody %>
   </li>
 
   <li>
-    <strong>Valid for students:</strong>
-    <%= @holiday_or_vacation_type.valid_for_students %>
-  </li>
-
-  <li>
-    <strong>Needs approval:</strong>
-    <%= @holiday_or_vacation_type.needs_approval %>
+    <strong>Default is valid for students:</strong>
+    <%= @holiday_or_vacation_type.default_is_valid_for_students %>
   </li>
 
   <li>
     <strong>Wikipedia url:</strong>
     <%= @holiday_or_vacation_type.wikipedia_url %>
-  </li>
-
-  <li>
-    <strong>Display priority:</strong>
-    <%= @holiday_or_vacation_type.display_priority %>
   </li>
 
 </ul>

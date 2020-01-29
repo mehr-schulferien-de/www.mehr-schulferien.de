@@ -156,17 +156,17 @@ alias MehrSchulferien.Calendars
 {:ok, _islam} =
   Calendars.create_religion(%{name: "Islam", wikipedia_url: "https://de.wikipedia.org/wiki/Islam"})
 
-# Seed school_vacation_types
+# Seed holiday or vacation types
 #
 {:ok, herbst} =
   Calendars.create_holiday_or_vacation_type(%{
     name: "Herbst",
     colloquial: "Herbstferien",
-    html_class: "green",
-    listed_below_month: true,
-    school_vacation: true,
-    valid_for_students: true,
-    display_priority: 4,
+    default_html_class: "green",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_students: true,
+    default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Herbstferien",
     country_location_id: deutschland.id
   })
@@ -175,11 +175,11 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Weihnachten",
     colloquial: "Weihnachtsferien",
-    html_class: "green",
-    listed_below_month: true,
-    school_vacation: true,
-    valid_for_students: true,
-    display_priority: 4,
+    default_html_class: "green",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_students: true,
+    default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Weihnachtsferien",
     country_location_id: deutschland.id
   })
@@ -188,11 +188,11 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Winter",
     colloquial: "Winterferien",
-    html_class: "green",
-    listed_below_month: true,
-    school_vacation: true,
-    valid_for_students: true,
-    display_priority: 4,
+    default_html_class: "green",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_students: true,
+    default_display_priority: 4,
     wikipedia_url:
       "https://de.m.wikipedia.org/wiki/Schulferien#Winter-/Sport-/Zeugnis-/Semester-/Faschingsferien",
     country_location_id: deutschland.id
@@ -202,11 +202,11 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Ostern/Frühjahr",
     colloquial: "Osterferien",
-    html_class: "green",
-    listed_below_month: true,
-    school_vacation: true,
-    valid_for_students: true,
-    display_priority: 4,
+    default_html_class: "green",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_students: true,
+    default_display_priority: 4,
     wikipedia_url:
       "https://de.m.wikipedia.org/wiki/Schulferien#Oster-/Frühjahrs-/Frühlingsferien",
     country_location_id: deutschland.id
@@ -216,11 +216,11 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Himmelfahrt/Pfingsten",
     colloquial: "Pfingstferien",
-    html_class: "green",
-    listed_below_month: true,
-    school_vacation: true,
-    valid_for_students: true,
-    display_priority: 4,
+    default_html_class: "green",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_students: true,
+    default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Pfingstferien",
     country_location_id: deutschland.id
   })
@@ -229,11 +229,11 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Sommer",
     colloquial: "Sommerferien",
-    html_class: "green",
-    listed_below_month: true,
-    school_vacation: true,
-    valid_for_students: true,
-    display_priority: 4,
+    default_html_class: "green",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_students: true,
+    default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Sommerferien",
     country_location_id: deutschland.id
   })
@@ -241,11 +241,11 @@ alias MehrSchulferien.Calendars
 {:ok, beweglicher_ferientag} =
   Calendars.create_holiday_or_vacation_type(%{
     name: "Beweglicher Ferientag",
-    html_class: "green",
-    listed_below_month: true,
-    school_vacation: true,
-    valid_for_students: true,
-    display_priority: 3,
+    default_html_class: "green",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_students: true,
+    default_display_priority: 3,
     wikipedia_url: "https://de.wikipedia.org/wiki/Bewegliche_Ferientage",
     country_location_id: deutschland.id
   })
@@ -253,11 +253,11 @@ alias MehrSchulferien.Calendars
 {:ok, wochenende} =
   Calendars.create_holiday_or_vacation_type(%{
     name: "Wochenende",
-    html_class: "gray",
-    listed_below_month: false,
-    school_vacation: false,
-    valid_for_everybody: true,
-    display_priority: 2,
+    default_html_class: "gray",
+    default_is_listed_below_month: false,
+    default_is_school_vacation: false,
+    default_is_valid_for_everybody: true,
+    default_display_priority: 2,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Sommerferien",
     country_location_id: deutschland.id
   })
