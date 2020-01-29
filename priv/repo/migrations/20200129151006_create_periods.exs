@@ -12,7 +12,10 @@ defmodule MehrSchulferien.Repo.Migrations.CreatePeriods do
       add :is_school_vacation, :boolean, default: false, null: false
       add :is_valid_for_everybody, :boolean, default: false, null: false
       add :is_valid_for_students, :boolean, default: false, null: false
-      add :holiday_or_vacation_type_id, references(:holiday_or_vacation_types, on_delete: :nothing)
+
+      add :holiday_or_vacation_type_id,
+          references(:holiday_or_vacation_types, on_delete: :nothing)
+
       add :location_id, references(:locations, on_delete: :nothing)
       add :religion_id, references(:religions, on_delete: :nothing)
 
@@ -22,6 +25,12 @@ defmodule MehrSchulferien.Repo.Migrations.CreatePeriods do
     create index(:periods, [:holiday_or_vacation_type_id])
     create index(:periods, [:location_id])
     create index(:periods, [:religion_id])
-    create unique_index(:periods, [:starts_on, :ends_on, :location_id, :holiday_or_vacation_type_id])
+
+    create unique_index(:periods, [
+             :starts_on,
+             :ends_on,
+             :location_id,
+             :holiday_or_vacation_type_id
+           ])
   end
 end

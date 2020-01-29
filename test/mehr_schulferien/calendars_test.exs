@@ -283,9 +283,42 @@ defmodule MehrSchulferien.CalendarsTest do
   describe "holiday_or_vacation_types" do
     alias MehrSchulferien.Calendars.HolidayOrVacationType
 
-    @valid_attrs %{colloquial: "some colloquial", default_html_class: "some default_html_class", default_is_listed_below_month: true, default_is_public_holiday: true, default_is_school_vacation: true, default_is_valid_for_everybody: true, default_is_valid_for_students: true, name: "some name", slug: "some slug", wikipedia_url: "some wikipedia_url"}
-    @update_attrs %{colloquial: "some updated colloquial", default_html_class: "some updated default_html_class", default_is_listed_below_month: false, default_is_public_holiday: false, default_is_school_vacation: false, default_is_valid_for_everybody: false, default_is_valid_for_students: false, name: "some updated name", slug: "some updated slug", wikipedia_url: "some updated wikipedia_url"}
-    @invalid_attrs %{colloquial: nil, default_html_class: nil, default_is_listed_below_month: nil, default_is_public_holiday: nil, default_is_school_vacation: nil, default_is_valid_for_everybody: nil, default_is_valid_for_students: nil, name: nil, slug: nil, wikipedia_url: nil}
+    @valid_attrs %{
+      colloquial: "some colloquial",
+      default_html_class: "some default_html_class",
+      default_is_listed_below_month: true,
+      default_is_public_holiday: true,
+      default_is_school_vacation: true,
+      default_is_valid_for_everybody: true,
+      default_is_valid_for_students: true,
+      name: "some name",
+      slug: "some slug",
+      wikipedia_url: "some wikipedia_url"
+    }
+    @update_attrs %{
+      colloquial: "some updated colloquial",
+      default_html_class: "some updated default_html_class",
+      default_is_listed_below_month: false,
+      default_is_public_holiday: false,
+      default_is_school_vacation: false,
+      default_is_valid_for_everybody: false,
+      default_is_valid_for_students: false,
+      name: "some updated name",
+      slug: "some updated slug",
+      wikipedia_url: "some updated wikipedia_url"
+    }
+    @invalid_attrs %{
+      colloquial: nil,
+      default_html_class: nil,
+      default_is_listed_below_month: nil,
+      default_is_public_holiday: nil,
+      default_is_school_vacation: nil,
+      default_is_valid_for_everybody: nil,
+      default_is_valid_for_students: nil,
+      name: nil,
+      slug: nil,
+      wikipedia_url: nil
+    }
 
     def holiday_or_vacation_type_fixture(attrs \\ %{}) do
       {:ok, holiday_or_vacation_type} =
@@ -303,11 +336,15 @@ defmodule MehrSchulferien.CalendarsTest do
 
     test "get_holiday_or_vacation_type!/1 returns the holiday_or_vacation_type with given id" do
       holiday_or_vacation_type = holiday_or_vacation_type_fixture()
-      assert Calendars.get_holiday_or_vacation_type!(holiday_or_vacation_type.id) == holiday_or_vacation_type
+
+      assert Calendars.get_holiday_or_vacation_type!(holiday_or_vacation_type.id) ==
+               holiday_or_vacation_type
     end
 
     test "create_holiday_or_vacation_type/1 with valid data creates a holiday_or_vacation_type" do
-      assert {:ok, %HolidayOrVacationType{} = holiday_or_vacation_type} = Calendars.create_holiday_or_vacation_type(@valid_attrs)
+      assert {:ok, %HolidayOrVacationType{} = holiday_or_vacation_type} =
+               Calendars.create_holiday_or_vacation_type(@valid_attrs)
+
       assert holiday_or_vacation_type.colloquial == "some colloquial"
       assert holiday_or_vacation_type.default_html_class == "some default_html_class"
       assert holiday_or_vacation_type.default_is_listed_below_month == true
@@ -321,12 +358,16 @@ defmodule MehrSchulferien.CalendarsTest do
     end
 
     test "create_holiday_or_vacation_type/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Calendars.create_holiday_or_vacation_type(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} =
+               Calendars.create_holiday_or_vacation_type(@invalid_attrs)
     end
 
     test "update_holiday_or_vacation_type/2 with valid data updates the holiday_or_vacation_type" do
       holiday_or_vacation_type = holiday_or_vacation_type_fixture()
-      assert {:ok, %HolidayOrVacationType{} = holiday_or_vacation_type} = Calendars.update_holiday_or_vacation_type(holiday_or_vacation_type, @update_attrs)
+
+      assert {:ok, %HolidayOrVacationType{} = holiday_or_vacation_type} =
+               Calendars.update_holiday_or_vacation_type(holiday_or_vacation_type, @update_attrs)
+
       assert holiday_or_vacation_type.colloquial == "some updated colloquial"
       assert holiday_or_vacation_type.default_html_class == "some updated default_html_class"
       assert holiday_or_vacation_type.default_is_listed_below_month == false
@@ -341,28 +382,69 @@ defmodule MehrSchulferien.CalendarsTest do
 
     test "update_holiday_or_vacation_type/2 with invalid data returns error changeset" do
       holiday_or_vacation_type = holiday_or_vacation_type_fixture()
-      assert {:error, %Ecto.Changeset{}} = Calendars.update_holiday_or_vacation_type(holiday_or_vacation_type, @invalid_attrs)
-      assert holiday_or_vacation_type == Calendars.get_holiday_or_vacation_type!(holiday_or_vacation_type.id)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Calendars.update_holiday_or_vacation_type(holiday_or_vacation_type, @invalid_attrs)
+
+      assert holiday_or_vacation_type ==
+               Calendars.get_holiday_or_vacation_type!(holiday_or_vacation_type.id)
     end
 
     test "delete_holiday_or_vacation_type/1 deletes the holiday_or_vacation_type" do
       holiday_or_vacation_type = holiday_or_vacation_type_fixture()
-      assert {:ok, %HolidayOrVacationType{}} = Calendars.delete_holiday_or_vacation_type(holiday_or_vacation_type)
-      assert_raise Ecto.NoResultsError, fn -> Calendars.get_holiday_or_vacation_type!(holiday_or_vacation_type.id) end
+
+      assert {:ok, %HolidayOrVacationType{}} =
+               Calendars.delete_holiday_or_vacation_type(holiday_or_vacation_type)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Calendars.get_holiday_or_vacation_type!(holiday_or_vacation_type.id)
+      end
     end
 
     test "change_holiday_or_vacation_type/1 returns a holiday_or_vacation_type changeset" do
       holiday_or_vacation_type = holiday_or_vacation_type_fixture()
-      assert %Ecto.Changeset{} = Calendars.change_holiday_or_vacation_type(holiday_or_vacation_type)
+
+      assert %Ecto.Changeset{} =
+               Calendars.change_holiday_or_vacation_type(holiday_or_vacation_type)
     end
   end
 
   describe "periods" do
     alias MehrSchulferien.Calendars.Period
 
-    @valid_attrs %{created_by_email_address: "some created_by_email_address", ends_on: ~D[2010-04-17], html_class: "some html_class", is_listed_below_month: true, is_public_holiday: true, is_school_vacation: true, is_valid_for_everybody: true, is_valid_for_students: true, starts_on: ~D[2010-04-17]}
-    @update_attrs %{created_by_email_address: "some updated created_by_email_address", ends_on: ~D[2011-05-18], html_class: "some updated html_class", is_listed_below_month: false, is_public_holiday: false, is_school_vacation: false, is_valid_for_everybody: false, is_valid_for_students: false, starts_on: ~D[2011-05-18]}
-    @invalid_attrs %{created_by_email_address: nil, ends_on: nil, html_class: nil, is_listed_below_month: nil, is_public_holiday: nil, is_school_vacation: nil, is_valid_for_everybody: nil, is_valid_for_students: nil, starts_on: nil}
+    @valid_attrs %{
+      created_by_email_address: "some created_by_email_address",
+      ends_on: ~D[2010-04-17],
+      html_class: "some html_class",
+      is_listed_below_month: true,
+      is_public_holiday: true,
+      is_school_vacation: true,
+      is_valid_for_everybody: true,
+      is_valid_for_students: true,
+      starts_on: ~D[2010-04-17]
+    }
+    @update_attrs %{
+      created_by_email_address: "some updated created_by_email_address",
+      ends_on: ~D[2011-05-18],
+      html_class: "some updated html_class",
+      is_listed_below_month: false,
+      is_public_holiday: false,
+      is_school_vacation: false,
+      is_valid_for_everybody: false,
+      is_valid_for_students: false,
+      starts_on: ~D[2011-05-18]
+    }
+    @invalid_attrs %{
+      created_by_email_address: nil,
+      ends_on: nil,
+      html_class: nil,
+      is_listed_below_month: nil,
+      is_public_holiday: nil,
+      is_school_vacation: nil,
+      is_valid_for_everybody: nil,
+      is_valid_for_students: nil,
+      starts_on: nil
+    }
 
     def period_fixture(attrs \\ %{}) do
       {:ok, period} =

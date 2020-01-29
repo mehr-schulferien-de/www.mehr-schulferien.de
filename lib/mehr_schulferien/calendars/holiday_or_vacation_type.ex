@@ -25,7 +25,19 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
   @doc false
   def changeset(holiday_or_vacation_type, attrs) do
     holiday_or_vacation_type
-    |> cast(attrs, [:name, :colloquial, :default_html_class, :default_is_listed_below_month, :default_is_public_holiday, :default_is_school_vacation, :default_is_valid_for_everybody, :default_is_valid_for_students, :wikipedia_url, :country_location_id, :default_religion_id])
+    |> cast(attrs, [
+      :name,
+      :colloquial,
+      :default_html_class,
+      :default_is_listed_below_month,
+      :default_is_public_holiday,
+      :default_is_school_vacation,
+      :default_is_valid_for_everybody,
+      :default_is_valid_for_students,
+      :wikipedia_url,
+      :country_location_id,
+      :default_religion_id
+    ])
     |> validate_required([:name, :country_location_id])
     |> assoc_constraint(:country_location)
     |> NameSlug.maybe_generate_slug()
