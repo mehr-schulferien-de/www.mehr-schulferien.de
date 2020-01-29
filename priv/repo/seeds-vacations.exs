@@ -97,7 +97,7 @@ defmodule M do
     )
     
     Calendars.create_period(%{
-      author_email_address: "sw@wintermeyer-consulting.de",
+      created_by_email_address: "sw@wintermeyer-consulting.de",
       starts_on: starts_at,
       ends_on: ends_at,
       location_id: federal_state.id,
@@ -156,7 +156,7 @@ defmodule M do
     Enum.each range, fn day -> 
       if Date.day_of_week(day) == 6 do
         Calendars.create_period(%{
-          author_email_address: "sw@wintermeyer-consulting.de",
+          created_by_email_address: "sw@wintermeyer-consulting.de",
           starts_on: day,
           ends_on: Date.add(day,1),
           location_id: country.id,

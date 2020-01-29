@@ -3,17 +3,9 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
 
   alias MehrSchulferien.Calendars
 
-  @create_attrs %{
-    author_email_address: "some author_email_address",
-    ends_on: ~D[2010-04-17],
-    starts_on: ~D[2010-04-17]
-  }
-  @update_attrs %{
-    author_email_address: "some updated author_email_address",
-    ends_on: ~D[2011-05-18],
-    starts_on: ~D[2011-05-18]
-  }
-  @invalid_attrs %{author_email_address: nil, ends_on: nil, starts_on: nil}
+  @create_attrs %{created_by_email_address: "some created_by_email_address", ends_on: ~D[2010-04-17], html_class: "some html_class", is_listed_below_month: true, is_public_holiday: true, is_school_vacation: true, is_valid_for_everybody: true, is_valid_for_students: true, starts_on: ~D[2010-04-17]}
+  @update_attrs %{created_by_email_address: "some updated created_by_email_address", ends_on: ~D[2011-05-18], html_class: "some updated html_class", is_listed_below_month: false, is_public_holiday: false, is_school_vacation: false, is_valid_for_everybody: false, is_valid_for_students: false, starts_on: ~D[2011-05-18]}
+  @invalid_attrs %{created_by_email_address: nil, ends_on: nil, html_class: nil, is_listed_below_month: nil, is_public_holiday: nil, is_school_vacation: nil, is_valid_for_everybody: nil, is_valid_for_students: nil, starts_on: nil}
 
   def fixture(:period) do
     {:ok, period} = Calendars.create_period(@create_attrs)
@@ -68,7 +60,7 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
       assert redirected_to(conn) == Routes.period_path(conn, :show, period)
 
       conn = get(conn, Routes.period_path(conn, :show, period))
-      assert html_response(conn, 200) =~ "some updated author_email_address"
+      assert html_response(conn, 200) =~ "some updated created_by_email_address"
     end
 
     test "renders errors when data is invalid", %{conn: conn, period: period} do
@@ -83,7 +75,6 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
     test "deletes chosen period", %{conn: conn, period: period} do
       conn = delete(conn, Routes.period_path(conn, :delete, period))
       assert redirected_to(conn) == Routes.period_path(conn, :index)
-
       assert_error_sent 404, fn ->
         get(conn, Routes.period_path(conn, :show, period))
       end

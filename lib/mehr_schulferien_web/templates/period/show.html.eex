@@ -13,8 +13,38 @@
   </li>
 
   <li>
-    <strong>Author email address:</strong>
-    <%= @period.author_email_address %>
+    <strong>Created by email address:</strong>
+    <%= @period.created_by_email_address %>
+  </li>
+
+  <li>
+    <strong>Html class:</strong>
+    <%= @period.html_class %>
+  </li>
+
+  <li>
+    <strong>Is listed below month:</strong>
+    <%= @period.is_listed_below_month %>
+  </li>
+
+  <li>
+    <strong>Is public holiday:</strong>
+    <%= @period.is_public_holiday %>
+  </li>
+
+  <li>
+    <strong>Is school vacation:</strong>
+    <%= @period.is_school_vacation %>
+  </li>
+
+  <li>
+    <strong>Is valid for everybody:</strong>
+    <%= @period.is_valid_for_everybody %>
+  </li>
+
+  <li>
+    <strong>Is valid for students:</strong>
+    <%= @period.is_valid_for_students %>
   </li>
 
 </ul>

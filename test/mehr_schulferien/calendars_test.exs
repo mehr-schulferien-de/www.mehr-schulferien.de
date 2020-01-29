@@ -356,4 +356,79 @@ defmodule MehrSchulferien.CalendarsTest do
       assert %Ecto.Changeset{} = Calendars.change_holiday_or_vacation_type(holiday_or_vacation_type)
     end
   end
+
+  describe "periods" do
+    alias MehrSchulferien.Calendars.Period
+
+    @valid_attrs %{created_by_email_address: "some created_by_email_address", ends_on: ~D[2010-04-17], html_class: "some html_class", is_listed_below_month: true, is_public_holiday: true, is_school_vacation: true, is_valid_for_everybody: true, is_valid_for_students: true, starts_on: ~D[2010-04-17]}
+    @update_attrs %{created_by_email_address: "some updated created_by_email_address", ends_on: ~D[2011-05-18], html_class: "some updated html_class", is_listed_below_month: false, is_public_holiday: false, is_school_vacation: false, is_valid_for_everybody: false, is_valid_for_students: false, starts_on: ~D[2011-05-18]}
+    @invalid_attrs %{created_by_email_address: nil, ends_on: nil, html_class: nil, is_listed_below_month: nil, is_public_holiday: nil, is_school_vacation: nil, is_valid_for_everybody: nil, is_valid_for_students: nil, starts_on: nil}
+
+    def period_fixture(attrs \\ %{}) do
+      {:ok, period} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Calendars.create_period()
+
+      period
+    end
+
+    test "list_periods/0 returns all periods" do
+      period = period_fixture()
+      assert Calendars.list_periods() == [period]
+    end
+
+    test "get_period!/1 returns the period with given id" do
+      period = period_fixture()
+      assert Calendars.get_period!(period.id) == period
+    end
+
+    test "create_period/1 with valid data creates a period" do
+      assert {:ok, %Period{} = period} = Calendars.create_period(@valid_attrs)
+      assert period.created_by_email_address == "some created_by_email_address"
+      assert period.ends_on == ~D[2010-04-17]
+      assert period.html_class == "some html_class"
+      assert period.is_listed_below_month == true
+      assert period.is_public_holiday == true
+      assert period.is_school_vacation == true
+      assert period.is_valid_for_everybody == true
+      assert period.is_valid_for_students == true
+      assert period.starts_on == ~D[2010-04-17]
+    end
+
+    test "create_period/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Calendars.create_period(@invalid_attrs)
+    end
+
+    test "update_period/2 with valid data updates the period" do
+      period = period_fixture()
+      assert {:ok, %Period{} = period} = Calendars.update_period(period, @update_attrs)
+      assert period.created_by_email_address == "some updated created_by_email_address"
+      assert period.ends_on == ~D[2011-05-18]
+      assert period.html_class == "some updated html_class"
+      assert period.is_listed_below_month == false
+      assert period.is_public_holiday == false
+      assert period.is_school_vacation == false
+      assert period.is_valid_for_everybody == false
+      assert period.is_valid_for_students == false
+      assert period.starts_on == ~D[2011-05-18]
+    end
+
+    test "update_period/2 with invalid data returns error changeset" do
+      period = period_fixture()
+      assert {:error, %Ecto.Changeset{}} = Calendars.update_period(period, @invalid_attrs)
+      assert period == Calendars.get_period!(period.id)
+    end
+
+    test "delete_period/1 deletes the period" do
+      period = period_fixture()
+      assert {:ok, %Period{}} = Calendars.delete_period(period)
+      assert_raise Ecto.NoResultsError, fn -> Calendars.get_period!(period.id) end
+    end
+
+    test "change_period/1 returns a period changeset" do
+      period = period_fixture()
+      assert %Ecto.Changeset{} = Calendars.change_period(period)
+    end
+  end
 end

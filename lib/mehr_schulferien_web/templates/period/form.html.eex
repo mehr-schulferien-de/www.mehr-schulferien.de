@@ -13,9 +13,33 @@
   <%= date_select f, :ends_on %>
   <%= error_tag f, :ends_on %>
 
-  <%= label f, :author_email_address %>
-  <%= text_input f, :author_email_address %>
-  <%= error_tag f, :author_email_address %>
+  <%= label f, :created_by_email_address %>
+  <%= text_input f, :created_by_email_address %>
+  <%= error_tag f, :created_by_email_address %>
+
+  <%= label f, :html_class %>
+  <%= text_input f, :html_class %>
+  <%= error_tag f, :html_class %>
+
+  <%= label f, :is_listed_below_month %>
+  <%= checkbox f, :is_listed_below_month %>
+  <%= error_tag f, :is_listed_below_month %>
+
+  <%= label f, :is_public_holiday %>
+  <%= checkbox f, :is_public_holiday %>
+  <%= error_tag f, :is_public_holiday %>
+
+  <%= label f, :is_school_vacation %>
+  <%= checkbox f, :is_school_vacation %>
+  <%= error_tag f, :is_school_vacation %>
+
+  <%= label f, :is_valid_for_everybody %>
+  <%= checkbox f, :is_valid_for_everybody %>
+  <%= error_tag f, :is_valid_for_everybody %>
+
+  <%= label f, :is_valid_for_students %>
+  <%= checkbox f, :is_valid_for_students %>
+  <%= error_tag f, :is_valid_for_students %>
 
   <div>
     <%= submit "Save" %>
