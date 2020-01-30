@@ -2,11 +2,18 @@ defmodule MehrSchulferien.Maps.ZipCode do
   use Ecto.Schema
   import Ecto.Changeset
   alias MehrSchulferien.ZipCodeValueSlug
+  alias MehrSchulferien.Maps.Location
 
   schema "zip_codes" do
     field :slug, ZipCodeValueSlug.Type
     field :value, :string
     belongs_to :country_location, MehrSchulferien.Maps.Location
+
+    many_to_many(
+      :locations,
+      Location,
+      join_through: "zip_code_mappings"
+    )
 
     timestamps()
   end
