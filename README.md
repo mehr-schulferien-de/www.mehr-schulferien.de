@@ -3,6 +3,16 @@
 This project is the 2020 version of https://www.mehr-schulferien.de
 It is a webpage which displays school vacation and public holidays in Germany.
 
+## Seeds
+
+The seedings process is not finalized yet. Until then you have to do the following steps:
+
+- mix run priv/repo/seeds.exs
+- mix run priv/repo/seeds-vacations.exs
+- mix run priv/repo/seed_cities.exs
+
+The list will get longer while other enties get ready for seeding. The README will be updated regulary.
+
 # Phoenix
 
 To start your Phoenix server:
