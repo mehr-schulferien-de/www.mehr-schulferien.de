@@ -15,6 +15,7 @@ defmodule MehrSchulferien.Calendars.Period do
     field :is_valid_for_everybody, :boolean, default: false
     field :is_valid_for_students, :boolean, default: false
     field :starts_on, :date
+    field :memo, :string
     belongs_to :location, Location
     belongs_to :holiday_or_vacation_type, HolidayOrVacationType
     belongs_to :religion, Religion
@@ -37,7 +38,8 @@ defmodule MehrSchulferien.Calendars.Period do
       :is_valid_for_students,
       :location_id,
       :religion_id,
-      :holiday_or_vacation_type_id
+      :holiday_or_vacation_type_id,
+      :memo
     ])
     |> validate_required([
       :starts_on,

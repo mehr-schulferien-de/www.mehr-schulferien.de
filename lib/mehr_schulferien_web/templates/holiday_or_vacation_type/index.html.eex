@@ -3,6 +3,7 @@
 <table>
   <thead>
     <tr>
+      <th>ID</th>
       <th>Name</th>
       <th>Colloquial</th>
       <th>Slug</th>
@@ -21,6 +22,7 @@
   <tbody>
 <%= for holiday_or_vacation_type <- @holiday_or_vacation_types do %>
     <tr>
+      <td><%= holiday_or_vacation_type.id %></td>
       <td><%= holiday_or_vacation_type.name %></td>
       <td><%= holiday_or_vacation_type.colloquial %></td>
       <td><%= holiday_or_vacation_type.slug %></td>

@@ -11,7 +11,7 @@
         "Gründonnerstag": {
             "datum": "2022-04-14",
             "school_vacation": true,
-            "hinweis": "Gemäß § 4 Abs. 3 des Feiertagsgesetzes von Baden-Württemberg[10] haben Schüler am Gründonnerstag und am Reformationstag schulfrei. In der Regel legt das Kultusministerium die Ferientermine so fest, dass diese beiden Tage in die Osterferien bzw. in die Herbstferien fallen."
+            "hinweis": "Gemäß § 4 Abs. 3 des Feiertagsgesetzes von Baden-Württemberg haben Schüler am Gründonnerstag und am Reformationstag schulfrei. In der Regel legt das Kultusministerium die Ferientermine so fest, dass diese beiden Tage in die Osterferien bzw. in die Herbstferien fallen."
         },
         "Karfreitag": {
             "datum": "2022-04-15",
@@ -44,7 +44,7 @@
         "Reformationstag": {
             "datum": "2022-10-31",
             "school_vacation": true,
-            "hinweis": "Gemäß § 4 Abs. 3 des Feiertagsgesetzes von Baden-Württemberg[10] haben Schüler am Gründonnerstag und am Reformationstag schulfrei. In der Regel legt das Kultusministerium die Ferientermine so fest, dass diese beiden Tage in die Osterferien bzw. in die Herbstferien fallen."
+            "hinweis": "Gemäß § 4 Abs. 3 des Feiertagsgesetzes von Baden-Württemberg haben Schüler am Gründonnerstag und am Reformationstag schulfrei. In der Regel legt das Kultusministerium die Ferientermine so fest, dass diese beiden Tage in die Osterferien bzw. in die Herbstferien fallen."
         },
         "Allerheiligen": {
             "datum": "2022-11-01",
@@ -95,13 +95,13 @@
         "Augsburger Friedensfest": {
             "datum": "2022-08-08",
             "itscomplicated": true,
-            "hinweis": "Das Augsburger Friedensfest ist nur im Stadtgebiet Augsburg (nicht jedoch im angrenzenden Umland) gesetzlicher Feiertag (Art. 1 Abs. 2 Bayerisches Feiertagsgesetz[7])."
+            "hinweis": "Das Augsburger Friedensfest ist nur im Stadtgebiet Augsburg (nicht jedoch im angrenzenden Umland) gesetzlicher Feiertag (Art. 1 Abs. 2 Bayerisches Feiertagsgesetz)."
         },
         "Mariä Himmelfahrt": {
             "datum": "2022-08-15",
             "itscomplicated": true,
             "school_vacation": true,
-            "hinweis": "Mariä Himmelfahrt ist in Bayern in von den derzeit 1704[8] (Zensus 2011, bis 2013: 1700) Gemeinden mit überwiegend katholischer Bevölkerung gesetzlicher Feiertag, in den restlichen 352 (Zensus 2011, bis 2013: 356) Gemeinden nicht. Gemäß Art. 1 Abs. 3 des Bayerischen Feiertagsgesetzes[7] ist es Aufgabe des Bayerischen Landesamtes für Statistik und Datenverarbeitung, festzustellen, in welchen Gemeinden Mariä Himmelfahrt gesetzlicher Feiertag ist. Die aktuelle Festlegung beruht auf dem Ergebnis der letzten in der Bundesrepublik Deutschland durchgeführten Volkszählung vom 25. Mai 1987. Gemäß Art 4. Abs. 3 des Bayerischen Feiertagsgesetzes entfällt im gesamten Bundesland zu Mariä Himmelfahrt an Schulen aller Gattungen der Unterricht. Diese Festlegung gilt ausdrücklich auch in den Teilen Bayerns, in denen dieser Tag kein gesetzlicher Feiertag ist. Eine Übersichtskarte aller Gemeinden, in denen Mariä Himmelfahrt ein Feiertag ist, kann beim Bayerischen Landesamt für Statistik und Datenverarbeitung heruntergeladen werden (Link siehe unter \"Weitere Weblinks\")."
+            "hinweis": "Mariä Himmelfahrt ist in Bayern in von den derzeit 1704 (Zensus 2011, bis 2013: 1700) Gemeinden mit überwiegend katholischer Bevölkerung gesetzlicher Feiertag, in den restlichen 352 (Zensus 2011, bis 2013: 356) Gemeinden nicht. Gemäß Art. 1 Abs. 3 des Bayerischen Feiertagsgesetzes ist es Aufgabe des Bayerischen Landesamtes für Statistik und Datenverarbeitung, festzustellen, in welchen Gemeinden Mariä Himmelfahrt gesetzlicher Feiertag ist. Die aktuelle Festlegung beruht auf dem Ergebnis der letzten in der Bundesrepublik Deutschland durchgeführten Volkszählung vom 25. Mai 1987. Gemäß Art 4. Abs. 3 des Bayerischen Feiertagsgesetzes entfällt im gesamten Bundesland zu Mariä Himmelfahrt an Schulen aller Gattungen der Unterricht. Diese Festlegung gilt ausdrücklich auch in den Teilen Bayerns, in denen dieser Tag kein gesetzlicher Feiertag ist. Eine Übersichtskarte aller Gemeinden, in denen Mariä Himmelfahrt ein Feiertag ist, kann beim Bayerischen Landesamt für Statistik und Datenverarbeitung heruntergeladen werden."
         },
         "Tag der Deutschen Einheit": {
             "datum": "2022-10-03",
@@ -114,7 +114,7 @@
         "Buß- und Bettag": {
             "datum": "2022-11-16",
             "school_vacation": true,
-            "hinweis": "Gemäß Art. 4 Nr. 3 des Bayerischen Feiertagsgesetzes[7] entfällt im gesamten Bundesland am Buß- und Bettag an allen Schulen der Unterricht."
+            "hinweis": "Gemäß Art. 4 Nr. 3 des Bayerischen Feiertagsgesetzes entfällt im gesamten Bundesland am Buß- und Bettag an allen Schulen der Unterricht."
         },
         "1. Weihnachtstag": {
             "datum": "2022-12-25",
@@ -597,7 +597,7 @@
         "Fronleichnam": {
             "datum": "2022-06-16",
             "itscomplicated": true,
-            "hinweis": "Fronleichnam ist kein gesetzlicher Feiertag außer in folgenden katholisch geprägten Gemeinden des sorbischen Siedlungsgebietes im Landkreis Bautzen:\n\t\t\t\tBautzen (nur in den Ortsteilen Bolbritz und Salzenforst), Crostwitz, Göda (nur im Ortsteil Prischwitz), Großdubrau (nur im Ortsteil Sdier), Hoyerswerda (nur im Ortsteil Dörgenhausen), Königswartha (nicht im Ortsteil Wartha), Nebelschütz, Neschwitz (nur in den Ortsteilen Neschwitz und Saritsch), Panschwitz-Kuckau, Puschwitz, Räckelwitz, Radibor, Ralbitz-Rosenthal und Wittichenau. Entscheidend ist dabei der Arbeitsort, nicht der Wohnort eines Arbeitnehmers.\n\t\t\t\tDie gesetzliche Grundlage für diese durch die Fronleichnamsverordnung festgelegte Regelung ergibt sich aus § 1 Abs. 1 des Sächsischen Feiertagsgesetzes.[5]"
+            "hinweis": "Fronleichnam ist kein gesetzlicher Feiertag außer in folgenden katholisch geprägten Gemeinden des sorbischen Siedlungsgebietes im Landkreis Bautzen:\n\t\t\t\tBautzen (nur in den Ortsteilen Bolbritz und Salzenforst), Crostwitz, Göda (nur im Ortsteil Prischwitz), Großdubrau (nur im Ortsteil Sdier), Hoyerswerda (nur im Ortsteil Dörgenhausen), Königswartha (nicht im Ortsteil Wartha), Nebelschütz, Neschwitz (nur in den Ortsteilen Neschwitz und Saritsch), Panschwitz-Kuckau, Puschwitz, Räckelwitz, Radibor, Ralbitz-Rosenthal und Wittichenau. Entscheidend ist dabei der Arbeitsort, nicht der Wohnort eines Arbeitnehmers.\n\t\t\t\tDie gesetzliche Grundlage für diese durch die Fronleichnamsverordnung festgelegte Regelung ergibt sich aus § 1 Abs. 1 des Sächsischen Feiertagsgesetzes."
         },
         "Tag der Deutschen Einheit": {
             "datum": "2022-10-03",
@@ -736,7 +736,7 @@
         "Fronleichnam": {
             "datum": "2022-06-16",
             "itscomplicated": true,
-            "hinweis": "Fronleichnam ist kein gesetzlicher Feiertag außer im gesamten Landkreis Eichsfeld (79 Gemeinden am 31. Dezember 2013, Auflistung siehe dort) sowie in folgenden Gemeinden des Unstrut-Hainich-Kreises und des Wartburgkreises:\n\t\t\t\tAnrode (nur in den Ortsteilen Bickenriede und Zella), Brunnhartshausen (nur in den Ortsteilen Föhlritz und Steinberg), Buttlar, Dünwald (nur in den Ortsteilen Beberstedt und Hüpstedt), Geisa, Rodeberg (nur im Ortsteil Struth), Schleid, Südeichsfeld und Zella/Rhön.\n\t\t\t\tDie gesetzliche Grundlage für diese Regelung ergibt sich aus § 2 Abs. 2 und § 10 Abs. 1 des Thüringer Feiertagsgesetzes.[6]"
+            "hinweis": "Fronleichnam ist kein gesetzlicher Feiertag außer im gesamten Landkreis Eichsfeld (79 Gemeinden am 31. Dezember 2013, Auflistung siehe dort) sowie in folgenden Gemeinden des Unstrut-Hainich-Kreises und des Wartburgkreises:\n\t\t\t\tAnrode (nur in den Ortsteilen Bickenriede und Zella), Brunnhartshausen (nur in den Ortsteilen Föhlritz und Steinberg), Buttlar, Dünwald (nur in den Ortsteilen Beberstedt und Hüpstedt), Geisa, Rodeberg (nur im Ortsteil Struth), Schleid, Südeichsfeld und Zella/Rhön.\n\t\t\t\tDie gesetzliche Grundlage für diese Regelung ergibt sich aus § 2 Abs. 2 und § 10 Abs. 1 des Thüringer Feiertagsgesetzes."
         },
         "Weltkindertag": {
             "datum": "2022-09-20",

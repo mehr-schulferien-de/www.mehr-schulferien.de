@@ -33,42 +33,75 @@ defmodule M do
           json_public_holidays[federal_state.code][json_public_holiday_name]["hinweis"]
 
         unless json_hinweis == "" do
-          IO.puts(federal_state.name)
+          school_vacation =
+            json_public_holidays[federal_state.code][json_public_holiday_name]["school_vacation"]
 
-          IO.puts(json_public_holiday_name)
-          IO.puts(json_date)
-          IO.puts(json_hinweis)
-          IO.puts("")
+          if school_vacation == true do
+            public_holiday_type = first_or_create(json_public_holiday_name)
+
+            Calendars.create_period(%{
+              location_id: federal_state.id,
+              created_by_email_address: "sw@wintermeyer-consulting.de",
+              starts_on: json_date,
+              ends_on: json_date,
+              holiday_or_vacation_type_id: public_holiday_type.id,
+              html_class: "red",
+              is_public_holiday: true,
+              is_valid_for_everybody: false,
+              is_valid_for_students: true,
+              memo: json_hinweis
+            })
+          end
+        else
+          itscomplicated =
+            json_public_holidays[federal_state.code][json_public_holiday_name]["itscomplicated"]
+
+          unless itscomplicated == true do
+            public_holiday_type = first_or_create(json_public_holiday_name)
+
+            Calendars.create_period(%{
+              location_id: federal_state.id,
+              created_by_email_address: "sw@wintermeyer-consulting.de",
+              starts_on: json_date,
+              ends_on: json_date,
+              holiday_or_vacation_type_id: public_holiday_type.id,
+              html_class: "red",
+              is_public_holiday: true,
+              is_valid_for_everybody: true,
+              is_valid_for_students: true
+            })
+          end
         end
       end)
     end)
+  end
 
-    # def first_or_create(public_holiday_type) do
-    #   query =
-    #     from(l in HolidayOrVacationType,
-    #       where: l.name == ^public_holiday_type,
-    #       where: l.country_location_id == 1,
-    #       limit: 1
-    #     )
-    #
-    # holiday_or_vacation_type =
-    #   case Repo.one(query) do
-    #     nil ->
-    #       {:ok, holiday_or_vacation_type} =
-    #         Calendars.create_holiday_or_vacation_type(%
-    #           name: public_holiday_type,
-    #           country_location_id: 1
-    #         )
+  def first_or_create(public_holiday_type) do
+    query =
+      from(l in HolidayOrVacationType,
+        where: l.name == ^public_holiday_type,
+        where: l.country_location_id == 1,
+        limit: 1
+      )
 
-    #       holiday_or_vacation_type
+    holiday_or_vacation_type =
+      case Repo.one(query) do
+        nil ->
+          {:ok, holiday_or_vacation_type} =
+            Calendars.create_holiday_or_vacation_type(%{
+              name: public_holiday_type,
+              country_location_id: 1,
+              html_class: "red"
+            })
 
-    #     holiday_or_vacation_type ->
-    #       holiday_or_vacation_type
-    #   end
-    # end
+          holiday_or_vacation_type
+
+        holiday_or_vacation_type ->
+          holiday_or_vacation_type
+      end
   end
 end
 
-Enum.each([2023], fn year ->
+Enum.each([2020, 2021, 2022], fn year ->
   M.import_json(year)
 end)

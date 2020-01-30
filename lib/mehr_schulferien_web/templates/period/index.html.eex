@@ -3,6 +3,7 @@
 <table>
   <thead>
     <tr>
+      <th>ID</th>
       <th>Starts on</th>
       <th>Ends on</th>
       <th>Created by email address</th>
@@ -13,6 +14,7 @@
       <th>Is valid for everybody</th>
       <th>Is valid for students</th>
       <th>Location ID</th>
+      <th>Memo</th>
 
       <th></th>
     </tr>
@@ -20,6 +22,7 @@
   <tbody>
 <%= for period <- @periods do %>
     <tr>
+      <td><%= period.id %></td>
       <td><%= period.starts_on %></td>
       <td><%= period.ends_on %></td>
       <td><%= period.created_by_email_address %></td>
@@ -30,7 +33,8 @@
       <td><%= period.is_valid_for_everybody %></td>
       <td><%= period.is_valid_for_students %></td>
       <td><%= period.location_id %></td>
-
+      <td><%= period.memo %></td>
+      
       <td>
         <span><%= link "Show", to: Routes.period_path(@conn, :show, period) %></span>
         <span><%= link "Edit", to: Routes.period_path(@conn, :edit, period) %></span>
