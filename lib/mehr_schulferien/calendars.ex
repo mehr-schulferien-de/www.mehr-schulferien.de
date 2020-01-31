@@ -7,6 +7,28 @@ defmodule MehrSchulferien.Calendars do
 
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period, Religion}
   alias MehrSchulferien.Repo
+  alias MehrSchulferien.Maps
+
+  @doc """
+  Checks if the given day is a school day at that location.
+  """
+  def is_school_free?(location, day) do
+    false
+  end
+
+  @doc """
+  Returns a list of ids of the location and all it's ancestors.
+  """
+  def recursive_location_ids(location) do
+    case location.parent_location_id do
+      id when is_integer(id) ->
+        [location.id, recursive_location_ids(Maps.get_location!(location.parent_location_id))]
+
+      _ ->
+        [location.id]
+    end
+    |> List.flatten()
+  end
 
   @doc """
   Returns the list of religions.
