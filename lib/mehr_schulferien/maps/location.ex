@@ -1,18 +1,21 @@
 defmodule MehrSchulferien.Maps.Location do
   use Ecto.Schema
+
   import Ecto.Changeset
+
   alias MehrSchulferien.LocationNameSlug
   alias MehrSchulferien.Maps.ZipCode
 
   schema "locations" do
-    field(:is_city, :boolean, default: false)
-    field(:is_country, :boolean, default: false)
-    field(:is_county, :boolean, default: false)
-    field(:is_federal_state, :boolean, default: false)
-    field(:is_school, :boolean, default: false)
-    field(:name, :string)
-    field(:code, :string)
+    field :is_city, :boolean, default: false
+    field :is_country, :boolean, default: false
+    field :is_county, :boolean, default: false
+    field :is_federal_state, :boolean, default: false
+    field :is_school, :boolean, default: false
+    field :name, :string
+    field :code, :string
     field :slug, LocationNameSlug.Type
+
     belongs_to :parent_location, MehrSchulferien.Maps.Location
     belongs_to :cachable_calendar_location, MehrSchulferien.Maps.Location
 

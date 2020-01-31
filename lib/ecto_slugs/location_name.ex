@@ -46,7 +46,7 @@ defmodule MehrSchulferien.LocationNameSlug do
             Slugger.slugify_downcase(federal_state_code) <> "-" <> Integer.to_string(counter)
       end
 
-    # Check if slug is already take.
+    # Check if slug is already taken.
     #
     query =
       from l in Location,
@@ -91,8 +91,8 @@ defmodule MehrSchulferien.LocationNameSlug do
                 new_slug(slug, federal_state_code, 2, changeset)
             end
 
-          _ ->
-            new_slug(slug, "unkown", 1, changeset)
+            #          _ ->
+            #            new_slug(slug, "unkown", 1, changeset)
         end
     end
   end

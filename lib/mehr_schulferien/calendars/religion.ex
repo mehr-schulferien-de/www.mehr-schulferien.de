@@ -1,6 +1,8 @@
 defmodule MehrSchulferien.Calendars.Religion do
   use Ecto.Schema
+
   import Ecto.Changeset
+
   alias MehrSchulferien.NameSlug
 
   schema "religions" do
