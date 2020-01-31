@@ -22,18 +22,20 @@ defmodule M do
       city_name = school["city"]["name"]
       city_zip_code = school["city"]["zip_code"]
 
-      IO.puts(city_zip_code <> " " <> city_name <> " #1")
-
       city =
         case find_city(city_name, city_zip_code) do
           nil ->
-            find_city_by_zip_code(city_zip_code)
+            case find_city_by_zip_code(city_zip_code) do
+              nil ->
+                fuzzy_find_city(city_name, city_zip_code)
+
+              city ->
+                city
+            end
 
           city ->
             city
         end
-
-      IO.puts(Integer.to_string(city.id) <> " " <> city.name <> " #2")
 
       Maps.create_location(%{
         name: name,
@@ -70,6 +72,25 @@ defmodule M do
           zip_code_mapping.location_id == location.id and
             zip_code_mapping.zip_code_id == zip_code.id,
         where: zip_code.value == ^zip_code and location.is_city == true,
+        limit: 1
+      )
+
+    Repo.one(query)
+  end
+
+  def fuzzy_find_city(name, zip_code) do
+    zip_code_beginning = String.slice(zip_code, 0..3)
+
+    query =
+      from(location in Location,
+        join: zip_code in ZipCode,
+        join: zip_code_mapping in ZipCodeMapping,
+        on:
+          zip_code_mapping.location_id == location.id and
+            zip_code_mapping.zip_code_id == zip_code.id,
+        where:
+          like(zip_code.value, ^"%#{zip_code_beginning}%") and
+            location.name == ^name and location.is_city == true,
         limit: 1
       )
 
