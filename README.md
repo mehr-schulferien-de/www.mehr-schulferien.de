@@ -35,10 +35,7 @@ This document will be updated regulary.
 
 The seedings process is not finalized yet. Until then you have to do the following steps:
 
-- mix run priv/repo/seeds.exs
-- mix run priv/repo/seeds-vacations.exs
-- mix run priv/repo/seed_cities.exs
-- mix run priv/repo/seeds-public-holidays.exs
+- `priv/repo/reset-db.sh`
 
 The list will get longer while other enties get ready for seeding. The README will be updated regulary.
 

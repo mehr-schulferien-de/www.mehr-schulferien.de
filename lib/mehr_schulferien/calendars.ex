@@ -13,7 +13,24 @@ defmodule MehrSchulferien.Calendars do
   Checks if the given day is a school day at that location.
   """
   def is_school_free?(location, day) do
-    false
+    location_ids = recursive_location_ids(location)
+
+    query =
+      from(p in Period,
+        where:
+          p.location_id in ^location_ids and
+            p.is_valid_for_students == true and
+            p.starts_on <= ^day and p.ends_on >= ^day,
+        limit: 1
+      )
+
+    case Repo.one(query) do
+      nil ->
+        false
+
+      _ ->
+        true
+    end
   end
 
   @doc """
