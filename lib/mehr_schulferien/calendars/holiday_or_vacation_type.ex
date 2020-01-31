@@ -1,9 +1,9 @@
 defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
   use Ecto.Schema
+
   import Ecto.Changeset
-  alias MehrSchulferien.NameSlug
-  alias MehrSchulferien.Maps
-  alias MehrSchulferien.Calendars
+
+  alias MehrSchulferien.{Calendars, Maps, NameSlug}
 
   schema "holiday_or_vacation_types" do
     field :colloquial, :string
@@ -16,6 +16,7 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
     field :name, :string
     field :slug, NameSlug.Type
     field :wikipedia_url, :string
+
     belongs_to :country_location, Maps.Location
     belongs_to :default_religion, Calendars.Religion
 

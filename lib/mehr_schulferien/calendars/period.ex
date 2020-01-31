@@ -1,9 +1,10 @@
 defmodule MehrSchulferien.Calendars.Period do
   use Ecto.Schema
+
   import Ecto.Changeset
+
   alias MehrSchulferien.Maps.Location
-  alias MehrSchulferien.Calendars.HolidayOrVacationType
-  alias MehrSchulferien.Calendars.Religion
+  alias MehrSchulferien.Calendars.{HolidayOrVacationType, Religion}
 
   schema "periods" do
     field :created_by_email_address, :string
@@ -16,6 +17,7 @@ defmodule MehrSchulferien.Calendars.Period do
     field :is_valid_for_students, :boolean, default: false
     field :starts_on, :date
     field :memo, :string
+
     belongs_to :location, Location
     belongs_to :holiday_or_vacation_type, HolidayOrVacationType
     belongs_to :religion, Religion
