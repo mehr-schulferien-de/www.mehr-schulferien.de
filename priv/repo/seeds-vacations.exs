@@ -96,12 +96,11 @@ defmodule M do
         " - " <> Date.to_string(ends_at)
     )
     
-    Calendars.create_period(%{
+    Calendars.create_period(holiday_or_vacation_type, %{
       created_by_email_address: "sw@wintermeyer-consulting.de",
       starts_on: starts_at,
       ends_on: ends_at,
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_or_vacation_type.id
+      location_id: federal_state.id
     })
   end
 
@@ -155,12 +154,11 @@ defmodule M do
     range = Date.range(starts_on,ends_on)
     Enum.each range, fn day -> 
       if Date.day_of_week(day) == 6 do
-        Calendars.create_period(%{
+        Calendars.create_period(holiday_or_vacation_type, %{
           created_by_email_address: "sw@wintermeyer-consulting.de",
           starts_on: day,
           ends_on: Date.add(day,1),
-          location_id: country.id,
-          holiday_or_vacation_type_id: holiday_or_vacation_type.id
+          location_id: country.id
         })
       end
     end
