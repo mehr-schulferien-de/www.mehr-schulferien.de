@@ -168,7 +168,7 @@ defmodule M do
   end
 end
 
-Enum.each([2020, 2021, 2022], fn year ->
+Enum.each([2019, 2021, 2022], fn year ->
   M.parse_the_csv(year)
   M.generate_weekend_periods(year)
 end)
