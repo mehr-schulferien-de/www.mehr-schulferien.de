@@ -16,6 +16,7 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
     field :name, :string
     field :slug, NameSlug.Type
     field :wikipedia_url, :string
+    field :default_display_priority, :integer
 
     belongs_to :country_location, Maps.Location
     belongs_to :default_religion, Calendars.Religion
@@ -37,9 +38,10 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
       :default_is_valid_for_students,
       :wikipedia_url,
       :country_location_id,
-      :default_religion_id
+      :default_religion_id,
+      :default_display_priority
     ])
-    |> validate_required([:name, :country_location_id])
+    |> validate_required([:name, :country_location_id, :default_display_priority])
     |> assoc_constraint(:country_location)
     |> NameSlug.maybe_generate_slug()
     |> NameSlug.unique_constraint()

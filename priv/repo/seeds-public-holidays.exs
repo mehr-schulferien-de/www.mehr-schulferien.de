@@ -48,7 +48,8 @@ defmodule M do
               is_public_holiday: true,
               is_valid_for_everybody: false,
               is_valid_for_students: true,
-              memo: json_hinweis
+              memo: json_hinweis,
+              display_priority: 10
             })
           end
         else
@@ -66,7 +67,8 @@ defmodule M do
               html_class: "red",
               is_public_holiday: true,
               is_valid_for_everybody: true,
-              is_valid_for_students: true
+              is_valid_for_students: true,
+              display_priority: 11
             })
           end
         end
@@ -89,7 +91,8 @@ defmodule M do
             Calendars.create_holiday_or_vacation_type(%{
               name: public_holiday_type,
               country_location_id: 1,
-              html_class: "red"
+              html_class: "red",
+              default_display_priority: 10
             })
 
           holiday_or_vacation_type

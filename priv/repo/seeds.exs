@@ -168,7 +168,8 @@ alias MehrSchulferien.Calendars
     default_is_valid_for_students: true,
     default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Herbstferien",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 5
   })
 
 {:ok, weihnachten} =
@@ -181,7 +182,8 @@ alias MehrSchulferien.Calendars
     default_is_valid_for_students: true,
     default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Weihnachtsferien",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 5
   })
 
 {:ok, winter} =
@@ -195,7 +197,8 @@ alias MehrSchulferien.Calendars
     default_display_priority: 4,
     wikipedia_url:
       "https://de.m.wikipedia.org/wiki/Schulferien#Winter-/Sport-/Zeugnis-/Semester-/Faschingsferien",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 5
   })
 
 {:ok, ostern} =
@@ -209,7 +212,8 @@ alias MehrSchulferien.Calendars
     default_display_priority: 4,
     wikipedia_url:
       "https://de.m.wikipedia.org/wiki/Schulferien#Oster-/Frühjahrs-/Frühlingsferien",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 5
   })
 
 {:ok, pfingsten} =
@@ -222,7 +226,8 @@ alias MehrSchulferien.Calendars
     default_is_valid_for_students: true,
     default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Pfingstferien",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 5
   })
 
 {:ok, sommer} =
@@ -235,7 +240,8 @@ alias MehrSchulferien.Calendars
     default_is_valid_for_students: true,
     default_display_priority: 4,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Sommerferien",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 5
   })
 
 {:ok, beweglicher_ferientag} =
@@ -247,7 +253,8 @@ alias MehrSchulferien.Calendars
     default_is_valid_for_students: true,
     default_display_priority: 3,
     wikipedia_url: "https://de.wikipedia.org/wiki/Bewegliche_Ferientage",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 7
   })
 
 {:ok, wochenende} =
@@ -259,5 +266,6 @@ alias MehrSchulferien.Calendars
     default_is_valid_for_everybody: true,
     default_display_priority: 2,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Sommerferien",
-    country_location_id: deutschland.id
+    country_location_id: deutschland.id,
+    default_display_priority: 8
   })

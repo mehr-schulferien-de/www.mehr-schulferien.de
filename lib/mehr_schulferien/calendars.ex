@@ -176,7 +176,8 @@ defmodule MehrSchulferien.Calendars do
       default_is_school_vacation: is_school_vacation,
       default_is_valid_for_everybody: is_valid_for_everybody,
       default_is_valid_for_students: is_valid_for_students,
-      default_religion_id: religion_id
+      default_religion_id: religion_id,
+      default_display_priority: display_priority
     } = holiday_or_vacation_type
 
     attrs =
@@ -189,7 +190,8 @@ defmodule MehrSchulferien.Calendars do
           is_school_vacation: is_school_vacation,
           is_valid_for_everybody: is_valid_for_everybody,
           is_valid_for_students: is_valid_for_students,
-          religion_id: religion_id
+          religion_id: religion_id,
+          display_priority: display_priority
         },
         attrs
       )
