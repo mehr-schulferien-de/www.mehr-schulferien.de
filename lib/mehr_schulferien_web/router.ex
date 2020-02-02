@@ -31,6 +31,10 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    resources "/D/", FederalStateController, only: [:show] do
+      get "/:year", FederalStateController, :show
+    end
   end
 
   # Other scopes may use custom stacks.
