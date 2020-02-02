@@ -156,15 +156,15 @@ defmodule MehrSchulferien.CalendarsTest do
 
   describe "periods" do
     @valid_attrs %{
-      created_by_email_address: "george@example.com",
-      ends_on: ~D[2010-04-20],
-      starts_on: ~D[2010-04-17]
+      "created_by_email_address" => "george@example.com",
+      "ends_on" => ~D[2010-04-20],
+      "starts_on" => ~D[2010-04-17]
     }
     @update_attrs %{
-      html_class: "white",
-      is_public_holiday: true
+      "html_class" => "white",
+      "is_public_holiday" => true
     }
-    @invalid_attrs %{created_by_email_address: nil}
+    @invalid_attrs %{"holiday_or_vacation_type_id" => nil}
 
     test "list_periods/0 returns all periods" do
       period = insert(:period)
@@ -178,13 +178,17 @@ defmodule MehrSchulferien.CalendarsTest do
       assert period.id == period_1.id
     end
 
-    test "create_period/2 with valid data creates a period" do
+    test "create_period/1 with valid data creates a period" do
       location = insert(:location)
-      valid_attrs = Map.put(@valid_attrs, :location_id, location.id)
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
 
-      assert {:ok, %Period{} = period} =
-               Calendars.create_period(holiday_or_vacation_type, valid_attrs)
+      valid_attrs =
+        Map.merge(@valid_attrs, %{
+          "holiday_or_vacation_type_id" => holiday_or_vacation_type.id,
+          "location_id" => location.id
+        })
+
+      assert {:ok, %Period{} = period} = Calendars.create_period(valid_attrs)
 
       assert period.created_by_email_address == "george@example.com"
       assert period.ends_on == ~D[2010-04-20]
@@ -194,23 +198,24 @@ defmodule MehrSchulferien.CalendarsTest do
       assert period.religion_id == holiday_or_vacation_type.default_religion_id
     end
 
-    test "create_period/2 with attrs overriding holiday_or_vacation_type defaults" do
+    test "create_period/1 with attrs overriding holiday_or_vacation_type defaults" do
       location = insert(:location)
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
-      valid_attrs = Map.merge(@valid_attrs, %{location_id: location.id, is_public_holiday: !holiday_or_vacation_type.default_is_public_holiday})
 
-      assert {:ok, %Period{} = period} =
-               Calendars.create_period(holiday_or_vacation_type, valid_attrs)
+      valid_attrs =
+        Map.merge(@valid_attrs, %{
+          "location_id" => location.id,
+          "holiday_or_vacation_type_id" => holiday_or_vacation_type.id,
+          "is_public_holiday" => !holiday_or_vacation_type.default_is_public_holiday
+        })
 
+      assert {:ok, %Period{} = period} = Calendars.create_period(valid_attrs)
       assert period.created_by_email_address == "george@example.com"
       assert period.is_public_holiday != holiday_or_vacation_type.default_is_public_holiday
     end
 
-    test "create_period/2 with invalid data returns error changeset" do
-      holiday_or_vacation_type = insert(:holiday_or_vacation_type)
-
-      assert {:error, %Ecto.Changeset{}} =
-               Calendars.create_period(holiday_or_vacation_type, @invalid_attrs)
+    test "create_period/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Calendars.create_period(@invalid_attrs)
     end
 
     test "update_period/2 with valid data updates the period" do

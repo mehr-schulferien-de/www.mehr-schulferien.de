@@ -4,66 +4,64 @@ defmodule MehrSchulferienWeb.HolidayOrVacationTypeControllerTest do
   alias MehrSchulferien.Calendars
 
   @create_attrs %{
-    colloquial: "some colloquial",
-    default_html_class: "some default_html_class",
+    colloquial: "Weihnachtsferien",
+    default_html_class: "green",
     default_is_listed_below_month: true,
-    default_is_public_holiday: true,
     default_is_school_vacation: true,
-    default_is_valid_for_everybody: true,
     default_is_valid_for_students: true,
-    name: "some name",
-    slug: "some slug",
-    wikipedia_url: "some wikipedia_url"
+    name: "Weihnachten",
+    wikipedia_url: "https://de.wikipedia.org/wiki/Schulferien#Weihnachtsferien"
   }
   @update_attrs %{
-    colloquial: "some updated colloquial",
-    default_html_class: "some updated default_html_class",
+    default_html_class: "blue",
     default_is_listed_below_month: false,
-    default_is_public_holiday: false,
-    default_is_school_vacation: false,
-    default_is_valid_for_everybody: false,
-    default_is_valid_for_students: false,
-    name: "some updated name",
-    slug: "some updated slug",
-    wikipedia_url: "some updated wikipedia_url"
+    default_is_school_vacation: false
   }
-  @invalid_attrs %{
-    colloquial: nil,
-    default_html_class: nil,
-    default_is_listed_below_month: nil,
-    default_is_public_holiday: nil,
-    default_is_school_vacation: nil,
-    default_is_valid_for_everybody: nil,
-    default_is_valid_for_students: nil,
-    name: nil,
-    slug: nil,
-    wikipedia_url: nil
-  }
+  @invalid_attrs %{name: nil}
 
-  def fixture(:holiday_or_vacation_type) do
-    {:ok, holiday_or_vacation_type} = Calendars.create_holiday_or_vacation_type(@create_attrs)
-    holiday_or_vacation_type
-  end
+  describe "read holiday_or_vacation_type data" do
+    setup [:create_holiday_or_vacation_type]
 
-  describe "index" do
     test "lists all holiday_or_vacation_types", %{conn: conn} do
       conn = get(conn, Routes.holiday_or_vacation_type_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Holiday or vacation types"
     end
+
+    test "shows certain holiday_or_vacation_type", %{
+      conn: conn,
+      holiday_or_vacation_type: holiday_or_vacation_type
+    } do
+      conn =
+        get(conn, Routes.holiday_or_vacation_type_path(conn, :show, holiday_or_vacation_type))
+
+      assert html_response(conn, 200) =~ "Show Holiday or vacation type"
+    end
   end
 
-  describe "new holiday_or_vacation_type" do
-    test "renders form", %{conn: conn} do
+  describe "renders forms" do
+    test "shows form for new holiday_or_vacation_type", %{conn: conn} do
       conn = get(conn, Routes.holiday_or_vacation_type_path(conn, :new))
       assert html_response(conn, 200) =~ "New Holiday or vacation type"
+    end
+
+    test "shows form for editing chosen holiday_or_vacation_type", %{conn: conn} do
+      holiday_or_vacation_type = insert(:holiday_or_vacation_type)
+
+      conn =
+        get(conn, Routes.holiday_or_vacation_type_path(conn, :edit, holiday_or_vacation_type))
+
+      assert html_response(conn, 200) =~ "Edit Holiday or vacation type"
     end
   end
 
   describe "create holiday_or_vacation_type" do
     test "redirects to show when data is valid", %{conn: conn} do
+      country = insert(:country)
+      create_attrs = Map.put(@create_attrs, :country_location_id, country.id)
+
       conn =
         post(conn, Routes.holiday_or_vacation_type_path(conn, :create),
-          holiday_or_vacation_type: @create_attrs
+          holiday_or_vacation_type: create_attrs
         )
 
       assert %{id: id} = redirected_params(conn)
@@ -71,6 +69,7 @@ defmodule MehrSchulferienWeb.HolidayOrVacationTypeControllerTest do
 
       conn = get(conn, Routes.holiday_or_vacation_type_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Show Holiday or vacation type"
+      assert Calendars.get_holiday_or_vacation_type!(id)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -80,20 +79,6 @@ defmodule MehrSchulferienWeb.HolidayOrVacationTypeControllerTest do
         )
 
       assert html_response(conn, 200) =~ "New Holiday or vacation type"
-    end
-  end
-
-  describe "edit holiday_or_vacation_type" do
-    setup [:create_holiday_or_vacation_type]
-
-    test "renders form for editing chosen holiday_or_vacation_type", %{
-      conn: conn,
-      holiday_or_vacation_type: holiday_or_vacation_type
-    } do
-      conn =
-        get(conn, Routes.holiday_or_vacation_type_path(conn, :edit, holiday_or_vacation_type))
-
-      assert html_response(conn, 200) =~ "Edit Holiday or vacation type"
     end
   end
 
@@ -115,7 +100,13 @@ defmodule MehrSchulferienWeb.HolidayOrVacationTypeControllerTest do
       conn =
         get(conn, Routes.holiday_or_vacation_type_path(conn, :show, holiday_or_vacation_type))
 
-      assert html_response(conn, 200) =~ "some updated colloquial"
+      assert html_response(conn, 200) =~ "blue"
+
+      holiday_or_vacation_type =
+        Calendars.get_holiday_or_vacation_type!(holiday_or_vacation_type.id)
+
+      assert holiday_or_vacation_type.default_is_listed_below_month == false
+      assert holiday_or_vacation_type.default_is_school_vacation == false
     end
 
     test "renders errors when data is invalid", %{
@@ -153,7 +144,7 @@ defmodule MehrSchulferienWeb.HolidayOrVacationTypeControllerTest do
   end
 
   defp create_holiday_or_vacation_type(_) do
-    holiday_or_vacation_type = fixture(:holiday_or_vacation_type)
+    holiday_or_vacation_type = insert(:holiday_or_vacation_type)
     {:ok, holiday_or_vacation_type: holiday_or_vacation_type}
   end
 end

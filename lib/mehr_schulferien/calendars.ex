@@ -153,21 +153,11 @@ defmodule MehrSchulferien.Calendars do
   """
   def get_period!(id), do: Repo.get!(Period, id)
 
-  # FIXME: riverrun (2020-01-31)
-  # Remove this function when possible - it is still being used by the controller.
   @doc """
   Creates a period.
   """
-  def create_period(attrs) do
-    %Period{}
-    |> Period.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Creates a period.
-  """
-  def create_period(holiday_or_vacation_type, attrs) do
+  def create_period(%{"holiday_or_vacation_type_id" => holiday_or_vacation_type_id} = attrs)
+      when not is_nil(holiday_or_vacation_type_id) do
     %HolidayOrVacationType{
       id: id,
       default_html_class: html_class,
@@ -178,24 +168,36 @@ defmodule MehrSchulferien.Calendars do
       default_is_valid_for_students: is_valid_for_students,
       default_religion_id: religion_id,
       default_display_priority: display_priority
-    } = holiday_or_vacation_type
+    } = get_holiday_or_vacation_type!(holiday_or_vacation_type_id)
 
     attrs =
       Map.merge(
         %{
-          holiday_or_vacation_type_id: id,
-          html_class: html_class,
-          is_listed_below_month: is_listed_below_month,
-          is_public_holiday: is_public_holiday,
-          is_school_vacation: is_school_vacation,
-          is_valid_for_everybody: is_valid_for_everybody,
-          is_valid_for_students: is_valid_for_students,
-          religion_id: religion_id,
-          display_priority: display_priority
+          "holiday_or_vacation_type_id" => id,
+          "html_class" => html_class,
+          "is_listed_below_month" => is_listed_below_month,
+          "is_public_holiday" => is_public_holiday,
+          "is_school_vacation" => is_school_vacation,
+          "is_valid_for_everybody" => is_valid_for_everybody,
+          "is_valid_for_students" => is_valid_for_students,
+          "religion_id" => religion_id,
+          "display_priority" => display_priority
         },
         attrs
       )
 
+    %Period{}
+    |> Period.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_period(%{holiday_or_vacation_type_id: holiday_or_vacation_type_id} = attrs)
+      when not is_nil(holiday_or_vacation_type_id) do
+    attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
+    create_period(attrs)
+  end
+
+  def create_period(attrs) do
     %Period{}
     |> Period.changeset(attrs)
     |> Repo.insert()
