@@ -3,30 +3,37 @@ defmodule MehrSchulferienWeb.ReligionControllerTest do
 
   alias MehrSchulferien.Calendars
 
-  @create_attrs %{name: "some name", slug: "some slug", wikipedia_url: "some wikipedia_url"}
-  @update_attrs %{
-    name: "some updated name",
-    slug: "some updated slug",
-    wikipedia_url: "some updated wikipedia_url"
+  @create_attrs %{
+    name: "Christentum",
+    wikipedia_url: "https://de.wikipedia.org/wiki/Christentum"
   }
-  @invalid_attrs %{name: nil, slug: nil, wikipedia_url: nil}
+  @update_attrs %{wikipedia_url: "https://de.m.wikipedia.org/wiki/Christentum"}
+  @invalid_attrs %{name: nil}
 
-  def fixture(:religion) do
-    {:ok, religion} = Calendars.create_religion(@create_attrs)
-    religion
-  end
+  describe "read religion data" do
+    setup [:create_religion]
 
-  describe "index" do
     test "lists all religions", %{conn: conn} do
       conn = get(conn, Routes.religion_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Religions"
     end
+
+    test "shows certain religion", %{conn: conn, religion: religion} do
+      conn = get(conn, Routes.religion_path(conn, :show, religion))
+      assert html_response(conn, 200) =~ "Show Religion"
+    end
   end
 
-  describe "new religion" do
-    test "renders form", %{conn: conn} do
+  describe "renders forms" do
+    test "shows form for new religion", %{conn: conn} do
       conn = get(conn, Routes.religion_path(conn, :new))
       assert html_response(conn, 200) =~ "New Religion"
+    end
+
+    test "shows form for editing religion", %{conn: conn} do
+      religion = insert(:religion)
+      conn = get(conn, Routes.religion_path(conn, :edit, religion))
+      assert html_response(conn, 200) =~ "Edit Religion"
     end
   end
 
@@ -39,20 +46,12 @@ defmodule MehrSchulferienWeb.ReligionControllerTest do
 
       conn = get(conn, Routes.religion_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Show Religion"
+      assert Calendars.get_religion!(id)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.religion_path(conn, :create), religion: @invalid_attrs)
       assert html_response(conn, 200) =~ "New Religion"
-    end
-  end
-
-  describe "edit religion" do
-    setup [:create_religion]
-
-    test "renders form for editing chosen religion", %{conn: conn, religion: religion} do
-      conn = get(conn, Routes.religion_path(conn, :edit, religion))
-      assert html_response(conn, 200) =~ "Edit Religion"
     end
   end
 
@@ -64,7 +63,9 @@ defmodule MehrSchulferienWeb.ReligionControllerTest do
       assert redirected_to(conn) == Routes.religion_path(conn, :show, religion)
 
       conn = get(conn, Routes.religion_path(conn, :show, religion))
-      assert html_response(conn, 200) =~ "some updated name"
+      assert html_response(conn, 200) =~ "https://de.m.wikipedia.org/wiki/Christentum"
+      religion = Calendars.get_religion!(religion.id)
+      assert religion.wikipedia_url == "https://de.m.wikipedia.org/wiki/Christentum"
     end
 
     test "renders errors when data is invalid", %{conn: conn, religion: religion} do
@@ -87,7 +88,7 @@ defmodule MehrSchulferienWeb.ReligionControllerTest do
   end
 
   defp create_religion(_) do
-    religion = fixture(:religion)
+    religion = insert(:religion)
     {:ok, religion: religion}
   end
 end

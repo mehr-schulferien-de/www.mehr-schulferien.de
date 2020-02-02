@@ -39,11 +39,12 @@ defmodule M do
           if school_vacation == true do
             public_holiday_type = first_or_create(json_public_holiday_name)
 
-            Calendars.create_period(public_holiday_type, %{
+            Calendars.create_period(%{
               location_id: federal_state.id,
               created_by_email_address: "sw@wintermeyer-consulting.de",
               starts_on: json_date,
               ends_on: json_date,
+              holiday_or_vacation_type_id: public_holiday_type.id,
               html_class: "red",
               is_public_holiday: true,
               is_valid_for_everybody: false,
@@ -59,11 +60,12 @@ defmodule M do
           unless itscomplicated == true do
             public_holiday_type = first_or_create(json_public_holiday_name)
 
-            Calendars.create_period(public_holiday_type, %{
+            Calendars.create_period(%{
               location_id: federal_state.id,
               created_by_email_address: "sw@wintermeyer-consulting.de",
               starts_on: json_date,
               ends_on: json_date,
+              holiday_or_vacation_type_id: public_holiday_type.id,
               html_class: "red",
               is_public_holiday: true,
               is_valid_for_everybody: true,
