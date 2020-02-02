@@ -21,6 +21,7 @@ defmodule MehrSchulferienWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
+      import MehrSchulferien.Factory
       alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing

@@ -63,8 +63,8 @@ defmodule MehrSchulferien.MapsTest do
   end
 
   describe "zip_codes" do
-    @valid_attrs %{value: "173890"}
-    @update_attrs %{value: "173891"}
+    @valid_attrs %{value: "17890"}
+    @update_attrs %{value: "17891"}
     @invalid_attrs %{value: nil}
 
     test "list_zip_codes/0 returns all zip_codes" do
@@ -81,8 +81,8 @@ defmodule MehrSchulferien.MapsTest do
       country = insert(:country)
       valid_attrs = Map.put(@valid_attrs, :country_location_id, country.id)
       assert {:ok, %ZipCode{} = zip_code} = Maps.create_zip_code(valid_attrs)
-      assert zip_code.slug == "173890"
-      assert zip_code.value == "173890"
+      assert zip_code.slug == "17890"
+      assert zip_code.value == "17890"
     end
 
     test "create_zip_code/1 with invalid data returns error changeset" do
@@ -92,7 +92,7 @@ defmodule MehrSchulferien.MapsTest do
     test "update_zip_code/2 with valid data updates the zip_code" do
       zip_code = insert(:zip_code)
       assert {:ok, %ZipCode{} = zip_code} = Maps.update_zip_code(zip_code, @update_attrs)
-      assert zip_code.value == "173891"
+      assert zip_code.value == "17891"
     end
 
     test "update_zip_code/2 with invalid data returns error changeset" do
@@ -116,6 +116,7 @@ defmodule MehrSchulferien.MapsTest do
   describe "zip_code_mappings" do
     @valid_attrs %{lat: 5.2, lon: 10.5}
     @update_attrs %{lon: 10.4}
+    @invalid_attrs %{location_id: nil}
 
     test "list_zip_code_mappings/0 returns all zip_code_mappings" do
       zip_code_mapping = insert(:zip_code_mapping)

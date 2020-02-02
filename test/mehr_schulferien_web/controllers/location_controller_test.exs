@@ -4,49 +4,37 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
   alias MehrSchulferien.Maps
 
   @create_attrs %{
-    is_city: true,
     is_country: true,
-    is_county: true,
-    is_federal_state: true,
-    is_school: true,
-    name: "some name",
-    slug: "some slug"
+    name: "Deutschland",
+    code: "D"
   }
-  @update_attrs %{
-    is_city: false,
-    is_country: false,
-    is_county: false,
-    is_federal_state: false,
-    is_school: false,
-    name: "some updated name",
-    slug: "some updated slug"
-  }
-  @invalid_attrs %{
-    is_city: nil,
-    is_country: nil,
-    is_county: nil,
-    is_federal_state: nil,
-    is_school: nil,
-    name: nil,
-    slug: nil
-  }
+  @update_attrs %{code: "DE"}
+  @invalid_attrs %{name: nil}
 
-  def fixture(:location) do
-    {:ok, location} = Maps.create_location(@create_attrs)
-    location
-  end
+  describe "read location data" do
+    setup [:create_location]
 
-  describe "index" do
     test "lists all locations", %{conn: conn} do
       conn = get(conn, Routes.location_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Locations"
     end
+
+    test "shows certain location", %{conn: conn, location: location} do
+      conn = get(conn, Routes.location_path(conn, :show, location))
+      assert html_response(conn, 200) =~ "Show Location"
+    end
   end
 
-  describe "new location" do
-    test "renders form", %{conn: conn} do
+  describe "renders forms" do
+    test "shows form for new location", %{conn: conn} do
       conn = get(conn, Routes.location_path(conn, :new))
       assert html_response(conn, 200) =~ "New Location"
+    end
+
+    test "renders form for editing chosen location", %{conn: conn} do
+      location = insert(:location)
+      conn = get(conn, Routes.location_path(conn, :edit, location))
+      assert html_response(conn, 200) =~ "Edit Location"
     end
   end
 
@@ -59,20 +47,12 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
 
       conn = get(conn, Routes.location_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Show Location"
+      assert Maps.get_location!(id)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.location_path(conn, :create), location: @invalid_attrs)
       assert html_response(conn, 200) =~ "New Location"
-    end
-  end
-
-  describe "edit location" do
-    setup [:create_location]
-
-    test "renders form for editing chosen location", %{conn: conn, location: location} do
-      conn = get(conn, Routes.location_path(conn, :edit, location))
-      assert html_response(conn, 200) =~ "Edit Location"
     end
   end
 
@@ -84,7 +64,9 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
       assert redirected_to(conn) == Routes.location_path(conn, :show, location)
 
       conn = get(conn, Routes.location_path(conn, :show, location))
-      assert html_response(conn, 200) =~ "some updated name"
+      assert html_response(conn, 200) =~ "Show Location"
+      location = Maps.get_location!(location.id)
+      assert location.code == "DE"
     end
 
     test "renders errors when data is invalid", %{conn: conn, location: location} do
@@ -107,7 +89,7 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
   end
 
   defp create_location(_) do
-    location = fixture(:location)
+    location = insert(:location)
     {:ok, location: location}
   end
 end

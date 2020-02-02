@@ -13,6 +13,7 @@ defmodule MehrSchulferien.Factory do
     %HolidayOrVacationType{
       name: name,
       colloquial: "#{name}ferien",
+      default_display_priority: 3,
       default_html_class: "green",
       default_is_listed_below_month: true,
       default_is_school_vacation: true,
@@ -43,6 +44,7 @@ defmodule MehrSchulferien.Factory do
     %Period{
       holiday_or_vacation_type: build(:holiday_or_vacation_type),
       created_by_email_address: "sw@wintermeyer-consulting.de",
+      display_priority: 3,
       starts_on: Faker.Date.between(~D[2010-12-01], ~D[2015-12-01]),
       ends_on: Faker.Date.between(~D[2016-12-01], ~D[2019-12-01]),
       location_id: federal_state.id
