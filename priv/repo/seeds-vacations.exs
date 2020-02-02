@@ -95,7 +95,7 @@ defmodule M do
         Date.to_string(starts_at) <>
         " - " <> Date.to_string(ends_at)
     )
-    
+
     Calendars.create_period(%{
       created_by_email_address: "sw@wintermeyer-consulting.de",
       holiday_or_vacation_type_id: holiday_or_vacation_type.id,
@@ -170,7 +170,7 @@ defmodule M do
   end
 end
 
-Enum.each([2019, 2021, 2022], fn year ->
+Enum.each([2019, 2020, 2021, 2022], fn year ->
   M.parse_the_csv(year)
   M.generate_weekend_periods(year)
 end)
