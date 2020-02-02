@@ -3,9 +3,10 @@ defmodule MehrSchulferienWeb.PeriodController do
 
   alias MehrSchulferien.Calendars
   alias MehrSchulferien.Calendars.Period
+  alias MehrSchulferien.Repo
 
   def index(conn, _params) do
-    periods = Calendars.list_periods()
+    periods = Calendars.list_periods() |> Repo.preload([:location, :holiday_or_vacation_type])
     render(conn, "index.html", periods: periods)
   end
 

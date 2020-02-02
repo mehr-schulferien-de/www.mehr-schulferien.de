@@ -6,15 +6,16 @@
       <th>ID</th>
       <th>Starts on</th>
       <th>Ends on</th>
-      <th>Created by email address</th>
-      <th>Html class</th>
+      <th>holiday_or_vacation_type (ID)</th>
+      <th>Location (ID)</th>
       <th>Is listed below month</th>
       <th>Is public holiday</th>
       <th>Is school vacation</th>
       <th>Is valid for everybody</th>
       <th>Is valid for students</th>
-      <th>Location ID</th>
       <th>Memo</th>
+      <th>Created by email address</th>
+      <th>Html class</th>
 
       <th></th>
     </tr>
@@ -25,15 +26,16 @@
       <td><%= period.id %></td>
       <td><%= period.starts_on %></td>
       <td><%= period.ends_on %></td>
-      <td><%= period.created_by_email_address %></td>
-      <td><%= period.html_class %></td>
+      <td><%= period.holiday_or_vacation_type.name %> (<%= period.holiday_or_vacation_type_id %>)</td>
+      <td><%= period.location.name %> (<%= period.location_id %>)</td>
       <td><%= period.is_listed_below_month %></td>
       <td><%= period.is_public_holiday %></td>
       <td><%= period.is_school_vacation %></td>
       <td><%= period.is_valid_for_everybody %></td>
       <td><%= period.is_valid_for_students %></td>
-      <td><%= period.location_id %></td>
       <td><%= period.memo %></td>
+      <td><%= period.created_by_email_address %></td>
+      <td><%= period.html_class %></td>
       
       <td>
         <span><%= link "Show", to: Routes.period_path(@conn, :show, period) %></span>

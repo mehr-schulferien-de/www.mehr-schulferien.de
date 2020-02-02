@@ -25,6 +25,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
     location = Repo.one(query)
 
     current_year = DateTime.utc_now().year
+    current_month = DateTime.utc_now().month
+    current_day = DateTime.utc_now().day
+
     last_year = current_year - 1
     next_year = current_year + 1
 
@@ -43,6 +46,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     {:ok, starts_on} = Date.from_erl({start_year, 8, 1})
     {:ok, ends_on} = Date.from_erl({end_year, 7, 31})
+    {:ok, today} = Date.from_erl({current_year, current_month, current_day})
+    {:ok, today_next_year} = Date.from_erl({current_year + 2, current_month, current_day})
 
     location_ids = Calendars.recursive_location_ids(location)
 
@@ -52,17 +57,17 @@ defmodule MehrSchulferienWeb.FederalStateController do
           p.location_id in ^location_ids and
             p.is_valid_for_students == true and
             p.is_school_vacation == true and
-            p.starts_on >= ^starts_on and p.starts_on <= ^ends_on,
+            p.starts_on >= ^today and p.starts_on <= ^today_next_year,
         order_by: p.starts_on
       )
 
-    periods = Repo.all(query) |> Repo.preload(:holiday_or_vacation_type)
+    next_12_months_periods = Repo.all(query) |> Repo.preload(:holiday_or_vacation_type)
 
     render(conn, "show.html",
       location: location,
       current_year: current_year,
       current_school_year_string: current_school_year_string,
-      periods: periods
+      next_12_months_periods: next_12_months_periods
     )
   end
 end
