@@ -62,6 +62,7 @@ defmodule MehrSchulferien.CalendarsTest do
   describe "holiday_or_vacation_types" do
     @valid_attrs %{
       colloquial: "Weihnachtsferien",
+      default_display_priority: 4,
       default_html_class: "green",
       default_is_listed_below_month: true,
       default_is_school_vacation: true,
