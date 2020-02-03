@@ -47,27 +47,38 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {:ok, starts_on} = Date.from_erl({start_year, 8, 1})
     {:ok, ends_on} = Date.from_erl({end_year, 7, 31})
     {:ok, today} = Date.from_erl({current_year, current_month, current_day})
-    {:ok, today_next_year} = Date.from_erl({current_year + 2, current_month, current_day})
+    {:ok, today_next_year} = Date.from_erl({current_year + 1, current_month, current_day})
+    {:ok, first_day_this_year} = Date.from_erl({current_year, 1, 1})
+    {:ok, last_day_in_three_years} = Date.from_erl({current_year, 12, 31})
+    next_three_years = [current_year, current_year + 1, current_year + 2] |> Enum.join(", ")
 
     location_ids = Calendars.recursive_location_ids(location)
 
-    query =
-      from(p in Period,
-        where:
-          p.location_id in ^location_ids and
-            p.is_valid_for_students == true and
-            p.is_school_vacation == true and
-            p.starts_on >= ^today and p.starts_on <= ^today_next_year,
-        order_by: p.starts_on
-      )
+    next_12_months_periods =
+      Repo.all(query_periods(location_ids, today, today_next_year))
+      |> Repo.preload(:holiday_or_vacation_type)
 
-    next_12_months_periods = Repo.all(query) |> Repo.preload(:holiday_or_vacation_type)
+    next_3_years_periods =
+      Repo.all(query_periods(location_ids, first_day_this_year, last_day_in_three_years))
+      |> Repo.preload(:holiday_or_vacation_type)
 
     render(conn, "show.html",
       location: location,
-      current_year: current_year,
       current_school_year_string: current_school_year_string,
-      next_12_months_periods: next_12_months_periods
+      next_12_months_periods: next_12_months_periods,
+      next_3_years_periods: next_3_years_periods,
+      next_three_years: next_three_years
+    )
+  end
+
+  def query_periods(location_ids, starts_on, ends_on) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.is_valid_for_students == true and
+          p.is_school_vacation == true and
+          p.starts_on >= ^starts_on and p.starts_on <= ^ends_on,
+      order_by: p.starts_on
     )
   end
 end
