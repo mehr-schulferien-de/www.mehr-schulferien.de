@@ -23,6 +23,21 @@ defmodule MehrSchulferien.Maps do
   def get_location!(id), do: Repo.get!(Location, id)
 
   @doc """
+  Returns a list of ids of the location and all it's ancestors.
+  """
+  def recursive_location_ids(location) do
+    build_ids_list([], location)
+  end
+
+  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: nil}) do
+    [id | ids_list]
+  end
+
+  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: parent_location_id}) do
+    build_ids_list([id | ids_list], Repo.get(Location, parent_location_id))
+  end
+
+  @doc """
   Creates a location.
   """
   def create_location(attrs \\ %{}) do

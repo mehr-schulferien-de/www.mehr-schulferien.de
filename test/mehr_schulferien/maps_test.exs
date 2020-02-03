@@ -27,6 +27,27 @@ defmodule MehrSchulferien.MapsTest do
       assert Maps.get_location!(location.id) == location
     end
 
+    test "recursive_location_ids/1 returns location's id and ancestor ids" do
+      other_location = insert(:location)
+      location = insert(:location)
+      country = Maps.get_location!(location.parent_location_id)
+
+      county =
+        insert(:location, %{
+          is_federal_state: false,
+          is_county: true,
+          parent_location_id: location.id
+        })
+
+      location_ids = Maps.recursive_location_ids(country)
+      assert location_ids == [country.id]
+      location_ids = Maps.recursive_location_ids(location)
+      assert location_ids == [country.id, location.id]
+      location_ids = Maps.recursive_location_ids(county)
+      assert location_ids == [country.id, location.id, county.id]
+      assert other_location.id not in location_ids
+    end
+
     test "create_location/1 with valid data creates a location" do
       assert {:ok, %Location{} = location} = Maps.create_location(@valid_attrs)
       assert location.is_country == true
