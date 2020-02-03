@@ -3,54 +3,57 @@ defmodule MehrSchulferien.LocationNameSlug do
 
   import Ecto.Changeset
   import Ecto.Query
-  alias MehrSchulferien.Repo
-  alias MehrSchulferien.Maps.Location
 
-  # Use the given :slug when possible.
-  #
+  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Repo
+
   def build_slug(sources, changeset) do
     slug =
       case get_field(changeset, :slug) do
-        nil ->
-          sources
-          |> super(sources)
-
-        slug ->
-          slug
+        nil -> super(sources, changeset)
+        slug -> slug
       end
 
-    new_slug(slug, nil, nil, changeset)
+    new_slug(slug, changeset)
   end
 
-  # Make a) sure a slug is unique and b) that a slug makes most sense.
-  #
-  def new_slug(slug, federal_state_code, counter, changeset) do
+  defp new_slug(slug, changeset) do
+    case already_taken?(slug, changeset) do
+      nil ->
+        slug
+
+      location ->
+        slug = get_slug_base(slug, get_federal_state_code(location))
+        alternative_slug(slug, changeset, 0)
+    end
+  end
+
+  defp alternative_slug(base_slug, changeset, counter) do
+    slug = format_slug(base_slug, counter)
+
+    case already_taken?(slug, changeset) do
+      nil -> slug
+      _ -> alternative_slug(base_slug, changeset, counter + 1)
+    end
+  end
+
+  defp get_slug_base(slug, federal_state_code) do
+    slug <> "-" <> Slugger.slugify_downcase(federal_state_code)
+  end
+
+  defp format_slug(slug, 0), do: slug
+  defp format_slug(slug, counter), do: slug <> "-" <> Integer.to_string(counter)
+
+  defp already_taken?(slug, changeset) do
     is_country = get_field(changeset, :is_country)
     is_federal_state = get_field(changeset, :is_federal_state)
     is_county = get_field(changeset, :is_county)
     is_city = get_field(changeset, :is_city)
     is_school = get_field(changeset, :is_school)
-    parent_location_id = get_field(changeset, :parent_location_id)
 
-    potential_new_slug =
-      case [federal_state_code, counter] do
-        [nil, nil] ->
-          slug
-
-        [federal_state_code, nil] ->
-          slug <> "-" <> Slugger.slugify_downcase(federal_state_code)
-
-        _ ->
-          slug <>
-            "-" <>
-            Slugger.slugify_downcase(federal_state_code) <> "-" <> Integer.to_string(counter)
-      end
-
-    # Check if slug is already taken.
-    #
     query =
       from l in Location,
-        where: l.slug == ^potential_new_slug,
+        where: l.slug == ^slug,
         where: l.is_country == ^is_country,
         where: l.is_federal_state == ^is_federal_state,
         where: l.is_county == ^is_county,
@@ -58,42 +61,28 @@ defmodule MehrSchulferien.LocationNameSlug do
         where: l.is_school == ^is_school,
         limit: 1
 
-    case Repo.one(query) do
-      nil ->
-        potential_new_slug
+    Repo.one(query)
+  end
 
-      _ ->
-        case [federal_state_code, counter] do
-          [nil, counter] ->
-            query =
-              from l in Location,
-                where: l.id == ^parent_location_id,
-                limit: 1
+  defp get_federal_state_code(%Location{parent_location_id: nil}), do: "unknown"
 
-            county = Repo.one(query)
-            county_parent_location_id = county.parent_location_id
+  defp get_federal_state_code(%Location{is_federal_state: true, code: code}) do
+    code
+  end
 
-            query =
-              from l in Location,
-                where: l.id == ^county_parent_location_id,
-                limit: 1
-
-            federal_state = Repo.one(query)
-
-            new_slug(slug, federal_state.code, counter, changeset)
-
-          [federal_state_code, counter] ->
-            case counter do
-              counter when is_integer(counter) ->
-                new_slug(slug, federal_state_code, counter + 1, changeset)
-
-              _ ->
-                new_slug(slug, federal_state_code, 2, changeset)
-            end
-
-            #          _ ->
-            #            new_slug(slug, "unkown", 1, changeset)
-        end
+  defp get_federal_state_code(%Location{parent_location_id: parent_location_id}) do
+    case get_parent(parent_location_id) do
+      nil -> "unknown"
+      location -> get_federal_state_code(location)
     end
+  end
+
+  defp get_parent(parent_location_id) do
+    query =
+      from l in Location,
+        where: l.id == ^parent_location_id,
+        limit: 1
+
+    Repo.one(query)
   end
 end

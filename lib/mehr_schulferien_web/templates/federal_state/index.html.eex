@@ -13,12 +13,8 @@
 
       <td>
         <span><%= link "Show", to: Routes.federal_state_path(@conn, :show, federal_state) %></span>
-        <span><%= link "Edit", to: Routes.federal_state_path(@conn, :edit, federal_state) %></span>
-        <span><%= link "Delete", to: Routes.federal_state_path(@conn, :delete, federal_state), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
 <% end %>
   </tbody>
 </table>
-
-<span><%= link "New Federal state", to: Routes.federal_state_path(@conn, :new) %></span>

@@ -2,8 +2,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
   use MehrSchulferienWeb, :controller
 
   import Ecto.Query
-  alias MehrSchulferien.Display
-  alias MehrSchulferien.Display.FederalState
+  # alias MehrSchulferien.Display
+  # alias MehrSchulferien.Display.FederalState
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Maps.Location
   alias MehrSchulferien.Calendars.Period
@@ -44,8 +44,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     [start_year, end_year] = current_school_year
 
-    {:ok, starts_on} = Date.from_erl({start_year, 8, 1})
-    {:ok, ends_on} = Date.from_erl({end_year, 7, 31})
+    {:ok, _starts_on} = Date.from_erl({start_year, 8, 1})
+    {:ok, _ends_on} = Date.from_erl({end_year, 7, 31})
     {:ok, today} = Date.from_erl({current_year, current_month, current_day})
     {:ok, today_next_year} = Date.from_erl({current_year + 1, current_month, current_day})
     {:ok, first_day_this_year} = Date.from_erl({current_year, 1, 1})

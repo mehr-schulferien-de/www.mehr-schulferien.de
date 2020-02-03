@@ -3,7 +3,6 @@ defmodule MehrSchulferien.Display.FederalState do
   import Ecto.Changeset
 
   schema "federal_states" do
-
     timestamps()
   end
 
