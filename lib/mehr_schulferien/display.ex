@@ -4,101 +4,60 @@ defmodule MehrSchulferien.Display do
   """
 
   import Ecto.Query, warn: false
-  alias MehrSchulferien.Repo
 
-  alias MehrSchulferien.Display.FederalState
+  alias MehrSchulferien.Calendars.Period
+  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Repo
 
   @doc """
   Returns the list of federal_states.
-
-  ## Examples
-
-      iex> list_federal_states()
-      [%FederalState{}, ...]
-
   """
   def list_federal_states do
-    Repo.all(FederalState)
+    Location |> where(is_federal_state: true) |> Repo.all()
   end
 
   @doc """
   Gets a single federal_state.
 
-  Raises `Ecto.NoResultsError` if the Federal state does not exist.
-
-  ## Examples
-
-      iex> get_federal_state!(123)
-      %FederalState{}
-
-      iex> get_federal_state!(456)
-      ** (Ecto.NoResultsError)
-
+  Raises `Ecto.NoResultsError` if the federal state does not exist.
   """
-  def get_federal_state!(id), do: Repo.get!(FederalState, id)
-
-  @doc """
-  Creates a federal_state.
-
-  ## Examples
-
-      iex> create_federal_state(%{field: value})
-      {:ok, %FederalState{}}
-
-      iex> create_federal_state(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_federal_state(attrs \\ %{}) do
-    %FederalState{}
-    |> FederalState.changeset(attrs)
-    |> Repo.insert()
+  def get_federal_state!(id) do
+    Repo.get_by!(Location, id: id, is_federal_state: true)
   end
 
   @doc """
-  Updates a federal_state.
-
-  ## Examples
-
-      iex> update_federal_state(federal_state, %{field: new_value})
-      {:ok, %FederalState{}}
-
-      iex> update_federal_state(federal_state, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
+  Returns the current school year - written as two years separated by a hyphen.
   """
-  def update_federal_state(%FederalState{} = federal_state, attrs) do
-    federal_state
-    |> FederalState.changeset(attrs)
-    |> Repo.update()
+  def get_current_school_year(today) do
+    current_year = today.year
+
+    case today.month do
+      x when x < 8 ->
+        Enum.join([current_year - 1, current_year], "-")
+
+      _ ->
+        Enum.join([current_year, current_year + 1], "-")
+    end
   end
 
   @doc """
-  Deletes a federal_state.
-
-  ## Examples
-
-      iex> delete_federal_state(federal_state)
-      {:ok, %FederalState{}}
-
-      iex> delete_federal_state(federal_state)
-      {:error, %Ecto.Changeset{}}
-
+  Returns a list of periods for a certain time frame.
   """
-  def delete_federal_state(%FederalState{} = federal_state) do
-    Repo.delete(federal_state)
+  def get_periods_by_time(location_ids, starts_on, ends_on) do
+    location_ids
+    |> query_periods(starts_on, ends_on)
+    |> Repo.all()
+    |> Repo.preload(:holiday_or_vacation_type)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking federal_state changes.
-
-  ## Examples
-
-      iex> change_federal_state(federal_state)
-      %Ecto.Changeset{source: %FederalState{}}
-
-  """
-  def change_federal_state(%FederalState{} = federal_state) do
-    FederalState.changeset(federal_state, %{})
+  defp query_periods(location_ids, starts_on, ends_on) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.is_valid_for_students == true and
+          p.is_school_vacation == true and
+          p.starts_on >= ^starts_on and p.starts_on <= ^ends_on,
+      order_by: p.starts_on
+    )
   end
 end
