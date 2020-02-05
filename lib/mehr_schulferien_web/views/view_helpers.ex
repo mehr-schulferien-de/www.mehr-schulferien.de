@@ -4,6 +4,8 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   """
 
   def format_date(date) do
-    "#{date.day}.#{date.month}.#{date.year}"
+    "#{Integer.to_string(date.day) |> String.pad_leading(2, "0")}.#{
+      Integer.to_string(date.month) |> String.pad_leading(2, "0")
+    }.#{Integer.to_string(date.year) |> String.slice(2, 2)}"
   end
 end
