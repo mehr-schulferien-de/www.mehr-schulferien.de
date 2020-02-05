@@ -1,143 +1,41 @@
 <h1>Schulferien <%= @location.name %></h1>
 
+<h2>Ferien <%= @location.name %> <%= @current_school_year %></h2>
+
 <table>
-<%= for period <- @next_12_months_periods do %>
- <tr>
-  <td><%= period.holiday_or_vacation_type.colloquial %></td>
-  <td><%= period.starts_on %> - <%= period.ends_on %></td>
- </tr>
-<% end %>
+  <%= for period <- @next_12_months_periods do %>
+    <tr>
+      <td><%= period.holiday_or_vacation_type.colloquial %></td>
+      <td><%= period.starts_on %> - <%= period.ends_on %></td>
+    </tr>
+  <% end %>
 </table>
 
 <h2>Ferien <%= @location.name %> <%= @next_three_years %></h2>
 
 <table>
-     <thead>
+    <thead>
       <tr>
-       <th></th>
-               <th>
-         <a>
-          Winterferien         </a>
-        </th>
-               <th>
-         <a>
-          Osterferien         </a>
-        </th>
-               <th>
-         <a>
-          Pfingstferien         </a>
-        </th>
-               <th>
-         <a>
-          Sommerferien         </a>
-        </th>
-               <th>
-         <a>
-          Herbstferien         </a>
-        </th>
-               <th>
-         <a>
-          Weihnachtsferien         </a>
-        </th>
-             </tr>
-     </thead>
-     <tbody>
-           <tr>
-       <td>
-        <a>
-                   
-                  <span>2020</span>
-        </a>
-       </td>
-               <td>
-         <div>
-          -           
-                   </div>
+        <th></th>
+        <% first_year = Enum.at(@next_3_years_periods, 0) %>
+        <%= for period <- first_year do %>
+          <th>
+            <%= link period.holiday_or_vacation_type.colloquial, to: period.holiday_or_vacation_type.wikipedia_url %>
+          </th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+    <%= for period_list <- @next_3_years_periods do %>
+      <tr>
+        <td>
+          <% first_period = Enum.at(period_list, 0) %>
+          <span><%= first_period.starts_on.year %></span>
         </td>
-               <td>
-         <div>
-          <span>06.04. - 18.04.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>02.06. - 13.06.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>30.07. - 12.09.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>31.10.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>23.12. - 09.01.</span>         </div>
-        </td>
-             </tr>
-           <tr>
-       <td>
-        <a>
-                  <span>2021</span>
-        </a>
-       </td>
-               <td>
-         <div>
-          -           
-                   </div>
-        </td>
-               <td>
-         <div>
-          <span>06.04. - 10.04.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>25.05. - 05.06.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>29.07. - 11.09.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>02.11. - 06.11.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>23.12. - 08.01.</span>         </div>
-        </td>
-             </tr>
-           <tr>
-       <td>
-        <a>
-                  <span>2022</span>
-        </a>
-       </td>
-               <td>
-         <div>
-          -           
-                   </div>
-        </td>
-               <td>
-         <div>
-          <span>19.04. - 23.04.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>07.06. - 18.06.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>28.07. - 10.09.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>02.11. - 04.11.</span>         </div>
-        </td>
-               <td>
-         <div>
-          <span>21.12. - 07.01.</span>         </div>
-        </td>
-             </tr>
-          </tbody>
-    </table>
+        <%= for period <- period_list do %>
+          <td><%= period.starts_on %> - <%= period.ends_on %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

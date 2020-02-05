@@ -28,6 +28,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     next_3_years_periods =
       Display.get_periods_by_time(location_ids, first_day_this_year, last_day_in_three_years)
 
+    next_3_years_periods = Enum.chunk_by(next_3_years_periods, & &1.starts_on.year)
     next_three_years = Enum.join([current_year, current_year + 1, current_year + 2], ", ")
 
     render(conn, "show.html",
