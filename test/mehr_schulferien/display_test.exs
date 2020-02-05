@@ -7,7 +7,7 @@ defmodule MehrSchulferien.DisplayTest do
   alias MehrSchulferien.Maps
 
   describe "federal states" do
-    setup [:add_locations]
+    setup [:add_federal_state]
 
     test "list_federal_states/1 returns all federal states", %{federal_state: federal_state} do
       assert length(Maps.list_locations()) == 2
@@ -22,7 +22,7 @@ defmodule MehrSchulferien.DisplayTest do
   end
 
   describe "periods for certain time frame" do
-    setup [:add_locations, :add_periods]
+    setup [:add_federal_state, :add_periods]
 
     test "get_periods_by_time/3 returns all periods within a time frame", %{
       federal_state: federal_state,
@@ -53,7 +53,7 @@ defmodule MehrSchulferien.DisplayTest do
     assert Display.get_current_school_year(today) == "2020-2021"
   end
 
-  defp add_locations(_) do
+  defp add_federal_state(_) do
     federal_state = insert(:location)
     {:ok, %{federal_state: federal_state}}
   end
