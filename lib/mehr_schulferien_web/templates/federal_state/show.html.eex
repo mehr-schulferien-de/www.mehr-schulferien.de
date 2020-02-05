@@ -32,7 +32,7 @@
         <% first_year = Enum.at(@next_3_years_periods, 0) %>
         <%= for period <- first_year do %>
           <th>
-            <%= link period.holiday_or_vacation_type.colloquial, to: period.holiday_or_vacation_type.wikipedia_url %>
+            <%= link period.holiday_or_vacation_type.name |> String.split("/") |> List.first, to: period.holiday_or_vacation_type.wikipedia_url %>
           </th>
         <% end %>
       </tr>
