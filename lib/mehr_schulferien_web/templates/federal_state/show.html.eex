@@ -6,8 +6,7 @@
   <thead>
     <tr>
       <th></th>
-      <th>von</th>
-      <th>bis</th>
+      <th>von - bis</th>
       <th>Dauer in Tage</th>
     </tr>
   </thead>
@@ -15,8 +14,7 @@
   <%= for period <- @next_12_months_periods do %>
     <tr>
       <td><%= period.holiday_or_vacation_type.colloquial %></td>
-      <td><%= ViewHelpers.format_date(period.starts_on) %></td>
-      <td><%= ViewHelpers.format_date(period.ends_on) %></td>
+      <td><%= ViewHelpers.format_date(period.starts_on) %> - <%= ViewHelpers.format_date(period.ends_on) %></td>
       <td><%= Date.diff(period.ends_on, period.starts_on) + 1 %></td>
     </tr>
   <% end %>
