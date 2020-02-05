@@ -8,4 +8,10 @@ defmodule MehrSchulferienWeb.ViewHelpers do
       Integer.to_string(date.month) |> String.pad_leading(2, "0")
     }.#{Integer.to_string(date.year) |> String.slice(2, 2)}"
   end
+
+  def format_date(date, :short) do
+    "#{Integer.to_string(date.day) |> String.pad_leading(2, "0")}.#{
+      Integer.to_string(date.month) |> String.pad_leading(2, "0")
+    }."
+  end
 end
