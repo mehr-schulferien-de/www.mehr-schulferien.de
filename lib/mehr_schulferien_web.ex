@@ -42,6 +42,7 @@ defmodule MehrSchulferienWeb do
       import MehrSchulferienWeb.ErrorHelpers
       import MehrSchulferienWeb.Gettext
       alias MehrSchulferienWeb.Router.Helpers, as: Routes
+      alias MehrSchulferienWeb.ViewHelpers
     end
   end
 

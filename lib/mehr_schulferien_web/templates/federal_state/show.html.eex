@@ -6,7 +6,7 @@
   <%= for period <- @next_12_months_periods do %>
     <tr>
       <td><%= period.holiday_or_vacation_type.colloquial %></td>
-      <td><%= period.starts_on %> - <%= period.ends_on %></td>
+      <td><%= ViewHelpers.format_date(period.starts_on) %> - <%= ViewHelpers.format_date(period.ends_on) %></td>
     </tr>
   <% end %>
 </table>
@@ -33,7 +33,7 @@
           <span><%= first_period.starts_on.year %></span>
         </td>
         <%= for period <- period_list do %>
-          <td><%= period.starts_on %> - <%= period.ends_on %></td>
+          <td><%= ViewHelpers.format_date(period.starts_on) %> - <%= ViewHelpers.format_date(period.ends_on) %></td>
         <% end %>
       </tr>
     <% end %>
