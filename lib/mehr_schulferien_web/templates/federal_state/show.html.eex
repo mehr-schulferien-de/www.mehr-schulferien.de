@@ -1,6 +1,6 @@
 <h1>Schulferien <%= @location.name %></h1>
 
-<h2>Ferien <%= @location.name %> <%= @current_school_year %></h2>
+<h2>Ferien <%= @location.name %> <%= @current_year_header %></h2>
 
 <table>
   <thead>

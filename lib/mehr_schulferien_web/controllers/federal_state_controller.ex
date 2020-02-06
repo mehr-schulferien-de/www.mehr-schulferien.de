@@ -15,7 +15,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     current_year = today.year
     current_month = today.month
     current_day = today.day
-    current_school_year = Display.get_current_school_year(today)
+    current_year_header = "#{current_year}/#{current_year + 1}"
 
     {:ok, today} = Date.from_erl({current_year, current_month, current_day})
     {:ok, today_next_year} = Date.from_erl({current_year + 1, current_month, current_day})
@@ -23,17 +23,24 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {:ok, last_day_in_three_years} = Date.from_erl({current_year + 2, 12, 31})
 
     location_ids = Calendars.recursive_location_ids(location)
-    next_12_months_periods = Display.get_periods_by_time(location_ids, today, today_next_year)
+
+    next_12_months_periods =
+      Display.get_periods_by_time(location_ids, today, today_next_year, true)
 
     next_3_years_periods =
-      Display.get_periods_by_time(location_ids, first_day_this_year, last_day_in_three_years)
+      Display.get_periods_by_time(
+        location_ids,
+        first_day_this_year,
+        last_day_in_three_years,
+        false
+      )
 
     next_3_years_periods = Enum.chunk_by(next_3_years_periods, & &1.starts_on.year)
     next_three_years = Enum.join([current_year, current_year + 1, current_year + 2], ", ")
 
     render(conn, "show.html",
       location: location,
-      current_school_year: current_school_year,
+      current_year_header: current_year_header,
       next_12_months_periods: next_12_months_periods,
       next_3_years_periods: next_3_years_periods,
       next_three_years: next_three_years

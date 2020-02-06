@@ -53,9 +53,21 @@ defmodule MehrSchulferien.Calendars.Period do
       :holiday_or_vacation_type_id,
       :display_priority
     ])
+    |> validate_dates()
     |> assoc_constraint(:location)
     |> assoc_constraint(:holiday_or_vacation_type)
   end
 
-  # TODO: Validation that starts_on <= ends_on
+  defp validate_dates(%Ecto.Changeset{valid?: true} = changeset) do
+    starts_on = get_field(changeset, :starts_on)
+    ends_on = get_field(changeset, :ends_on)
+
+    if Date.compare(starts_on, ends_on) == :gt do
+      add_error(changeset, :starts_on, "starts_on should be less than or equal to ends_on")
+    else
+      changeset
+    end
+  end
+
+  defp validate_dates(changeset), do: changeset
 end

@@ -165,7 +165,11 @@ defmodule MehrSchulferien.CalendarsTest do
       "html_class" => "white",
       "is_public_holiday" => true
     }
-    @invalid_attrs %{"holiday_or_vacation_type_id" => nil}
+    @invalid_attrs %{
+      "created_by_email_address" => "george@example.com",
+      "ends_on" => ~D[2010-04-20],
+      "starts_on" => ~D[2010-04-27]
+    }
 
     test "list_periods/0 returns all periods" do
       period = insert(:period)
@@ -216,7 +220,23 @@ defmodule MehrSchulferien.CalendarsTest do
     end
 
     test "create_period/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Calendars.create_period(@invalid_attrs)
+      location = insert(:location)
+      holiday_or_vacation_type = insert(:holiday_or_vacation_type)
+
+      invalid_attrs =
+        Map.merge(@invalid_attrs, %{
+          "holiday_or_vacation_type_id" => holiday_or_vacation_type.id,
+          "location_id" => location.id
+        })
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Calendars.create_period(invalid_attrs)
+
+      assert %{starts_on: ["starts_on should be less than or equal to ends_on"]} =
+               errors_on(changeset)
+
+      invalid_attrs = Map.put(invalid_attrs, "ends_on", nil)
+      assert {:error, %Ecto.Changeset{} = changeset} = Calendars.create_period(invalid_attrs)
+      assert %{ends_on: ["can't be blank"]} = errors_on(changeset)
     end
 
     test "update_period/2 with valid data updates the period" do

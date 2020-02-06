@@ -24,7 +24,7 @@ defmodule MehrSchulferien.DisplayTest do
   describe "periods for certain time frame" do
     setup [:add_federal_state, :add_periods]
 
-    test "get_periods_by_time/3 returns all periods within a time frame", %{
+    test "get_periods_by_time/4 returns all periods within a time frame", %{
       federal_state: federal_state,
       periods: periods,
       other_period: other_period
@@ -33,24 +33,25 @@ defmodule MehrSchulferien.DisplayTest do
       period_ids = Enum.map(periods, & &1.id)
 
       assert short_time_periods =
-               Display.get_periods_by_time(location_ids, ~D[2020-01-01], ~D[2020-12-31])
+               Display.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31], true)
+
+      assert length(short_time_periods) == 3
+
+      # results include already a holiday that has already started, but not ended yet
+      assert short_time_periods =
+               Display.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31], true)
+
+      assert length(short_time_periods) == 3
 
       assert Enum.all?(short_time_periods, &(&1.id in period_ids))
 
       assert long_time_periods =
-               Display.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31])
+               Display.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31], false)
 
       assert Enum.all?(long_time_periods, &(&1.id in period_ids))
       assert other_period not in short_time_periods
       assert other_period not in long_time_periods
     end
-  end
-
-  test "get_current_school_year/1 returns the current school year" do
-    today = ~D[2020-01-01]
-    assert Display.get_current_school_year(today) == "2019-2020"
-    today = ~D[2020-08-01]
-    assert Display.get_current_school_year(today) == "2020-2021"
   end
 
   defp add_federal_state(_) do

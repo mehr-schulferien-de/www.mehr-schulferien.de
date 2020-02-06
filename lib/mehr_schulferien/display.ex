@@ -25,6 +25,8 @@ defmodule MehrSchulferien.Display do
     Repo.get_by!(Location, id: id, is_federal_state: true)
   end
 
+  # NOTE: riverrun (06 Feb 2020)
+  # This function might no longer be needed.
   @doc """
   Returns the current school year - written as two years separated by a hyphen.
   """
@@ -43,20 +45,33 @@ defmodule MehrSchulferien.Display do
   @doc """
   Returns a list of periods for a certain time frame.
   """
-  def get_periods_by_time(location_ids, starts_on, ends_on) do
+  def get_periods_by_time(location_ids, starts_on, ends_on, inclusive) do
     location_ids
-    |> query_periods(starts_on, ends_on)
+    |> query_periods(starts_on, ends_on, inclusive)
     |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
-  defp query_periods(location_ids, starts_on, ends_on) do
+  defp query_periods(location_ids, starts_on, ends_on, true) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
           p.is_valid_for_students == true and
           p.is_school_vacation == true and
-          p.starts_on >= ^starts_on and p.starts_on <= ^ends_on,
+          p.ends_on >= ^starts_on and
+          p.starts_on <= ^ends_on,
+      order_by: p.starts_on
+    )
+  end
+
+  defp query_periods(location_ids, starts_on, ends_on, _) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.is_valid_for_students == true and
+          p.is_school_vacation == true and
+          p.starts_on >= ^starts_on and
+          p.starts_on <= ^ends_on,
       order_by: p.starts_on
     )
   end
