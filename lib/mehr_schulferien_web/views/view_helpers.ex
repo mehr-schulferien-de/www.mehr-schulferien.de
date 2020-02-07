@@ -3,35 +3,25 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Helper functions for use with views.
   """
 
-  def format_date(date) do
-    "#{Integer.to_string(date.day) |> String.pad_leading(2, "0")}.#{
-      Integer.to_string(date.month) |> String.pad_leading(2, "0")
-    }.#{Integer.to_string(date.year) |> String.slice(2, 2)}"
+  def format_date(date, nil) do
+    format_date(date, :short) <> "#{date.year |> Integer.to_string() |> String.slice(2, 2)}"
   end
 
   def format_date(date, :short) do
-    "#{Integer.to_string(date.day) |> String.pad_leading(2, "0")}.#{
-      Integer.to_string(date.month) |> String.pad_leading(2, "0")
-    }."
+    "#{add_padding(date.day)}.#{add_padding(date.month)}."
   end
 
-  def format_date_range(from_date, till_date) do
-    case {from_date, till_date} do
-      {x, x} ->
-        format_date(x)
+  def format_date_range(from_date, till_date, short \\ nil)
 
-      {x, y} ->
-        format_date(x) <> " - " <> format_date(y)
-    end
+  def format_date_range(same_date, same_date, short) do
+    format_date(same_date, short)
   end
 
-  def format_date_range(from_date, till_date, :short) do
-    case {from_date, till_date} do
-      {x, x} ->
-        format_date(x, :short)
+  def format_date_range(from_date, till_date, short) do
+    format_date(from_date, short) <> " - " <> format_date(till_date, short)
+  end
 
-      {x, y} ->
-        format_date(x, :short) <> " - " <> format_date(y, :short)
-    end
+  defp add_padding(entry) do
+    entry |> Integer.to_string() |> String.pad_leading(2, "0")
   end
 end
