@@ -1,6 +1,6 @@
 <h1>Schulferien <%= @location.name %></h1>
 
-<h2>Ferien <%= @location.name %> <%= @current_year_header %></h2>
+<h2>Ferien <%= @location.name %> <%= "#{@current_year}/#{@current_year + 1}" %></h2>
 
 <table>
   <thead>
@@ -11,11 +11,16 @@
     </tr>
   </thead>
   <tbody>
-  <%= for period <- @next_12_months_periods do %>
+  <%= for periods <- @next_12_months_periods do %>
     <tr>
+      <% period = Enum.at(periods, 0) %>
       <td><%= period.holiday_or_vacation_type.colloquial %></td>
-      <td><%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %></td>
-      <td><%= Date.diff(period.ends_on, period.starts_on) + 1 %></td>
+      <td>
+        <%= for period <- periods do %>
+          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
+        <% end %>
+      </td>
+      <td><%= ViewHelpers.number_days(periods) %></td>
     </tr>
   <% end %>
   </tbody>
