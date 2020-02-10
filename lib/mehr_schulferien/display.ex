@@ -25,23 +25,6 @@ defmodule MehrSchulferien.Display do
     Repo.get_by!(Location, id: id, is_federal_state: true)
   end
 
-  # NOTE: riverrun (06 Feb 2020)
-  # This function might no longer be needed.
-  @doc """
-  Returns the current school year - written as two years separated by a hyphen.
-  """
-  def get_current_school_year(today) do
-    current_year = today.year
-
-    case today.month do
-      x when x < 8 ->
-        Enum.join([current_year - 1, current_year], "-")
-
-      _ ->
-        Enum.join([current_year, current_year + 1], "-")
-    end
-  end
-
   @doc """
   Returns a list of periods for a certain time frame.
   """

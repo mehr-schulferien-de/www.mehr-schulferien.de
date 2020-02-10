@@ -32,8 +32,7 @@
     <thead>
       <tr>
         <th></th>
-        <% first_year = Enum.at(@next_3_years_periods, 0) %>
-        <%= for period <- first_year do %>
+        <%= for period <- @next_3_years_headers do %>
           <th>
             <%= link period.holiday_or_vacation_type.name |> String.split("/") |> List.first, to: period.holiday_or_vacation_type.wikipedia_url %>
           </th>
@@ -44,11 +43,15 @@
     <%= for period_list <- @next_3_years_periods do %>
       <tr>
         <td>
-          <% first_period = Enum.at(period_list, 0) %>
+          <% first_period = Enum.at(hd(period_list), 0) %>
           <span><%= first_period.starts_on.year %></span>
         </td>
-        <%= for period <- period_list do %>
-          <td><%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %></td>
+        <%= for periods <- period_list do %>
+          <td>
+            <%= for period <- periods do %>
+              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
+            <% end %>
+          </td>
         <% end %>
       </tr>
     <% end %>

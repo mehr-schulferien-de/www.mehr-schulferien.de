@@ -32,21 +32,20 @@ defmodule MehrSchulferien.DisplayTest do
       location_ids = Maps.recursive_location_ids(federal_state)
       period_ids = Enum.map(periods, & &1.id)
 
-      assert short_time_periods =
-               Display.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31], true)
+      short_time_periods =
+        Display.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31], true)
 
-      assert length(short_time_periods) == 3
+      assert length(short_time_periods) == 4
 
-      # results include already a holiday that has already started, but not ended yet
-      assert short_time_periods =
-               Display.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31], true)
+      # results include a holiday that has already started, but not ended yet
+      short_time_periods =
+        Display.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31], true)
 
-      assert length(short_time_periods) == 3
-
+      assert length(short_time_periods) == 4
       assert Enum.all?(short_time_periods, &(&1.id in period_ids))
 
-      assert long_time_periods =
-               Display.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31], false)
+      long_time_periods =
+        Display.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31], false)
 
       assert Enum.all?(long_time_periods, &(&1.id in period_ids))
       assert other_period not in short_time_periods
@@ -60,24 +59,29 @@ defmodule MehrSchulferien.DisplayTest do
   end
 
   defp add_periods(%{federal_state: federal_state}) do
-    dates = [
-      {~D[2019-04-06], ~D[2019-04-18]},
-      {~D[2019-10-31], ~D[2019-10-31]},
-      {~D[2019-12-23], ~D[2020-01-04]},
-      {~D[2020-04-06], ~D[2020-04-18]},
-      {~D[2020-10-31], ~D[2020-10-31]},
-      {~D[2020-12-23], ~D[2021-01-04]},
-      {~D[2021-04-06], ~D[2021-04-18]},
-      {~D[2021-10-31], ~D[2021-10-31]},
-      {~D[2021-12-23], ~D[2022-01-04]}
+    oster = insert(:holiday_or_vacation_type, %{name: "Oster"})
+    herbst = insert(:holiday_or_vacation_type, %{name: "Herbst"})
+    weihnachts = insert(:holiday_or_vacation_type, %{name: "Weihnachts"})
+
+    data = [
+      {oster, ~D[2019-04-06], ~D[2019-04-18]},
+      {herbst, ~D[2019-10-31], ~D[2019-10-31]},
+      {weihnachts, ~D[2019-12-23], ~D[2020-01-04]},
+      {oster, ~D[2020-04-06], ~D[2020-04-18]},
+      {herbst, ~D[2020-10-24], ~D[2020-10-27]},
+      {herbst, ~D[2020-10-31], ~D[2020-10-31]},
+      {weihnachts, ~D[2020-12-23], ~D[2021-01-04]},
+      {oster, ~D[2021-04-06], ~D[2021-04-18]},
+      {herbst, ~D[2021-10-31], ~D[2021-10-31]},
+      {weihnachts, ~D[2021-12-23], ~D[2022-01-04]}
     ]
 
     periods =
-      for {starts_on, ends_on} <- dates do
-        insert(:period, %{
-          is_school_vacation: true,
-          is_valid_for_students: true,
+      for {vacation_type, starts_on, ends_on} <- data do
+        create_period(%{
+          created_by_email_address: "froderick@example.com",
           location_id: federal_state.id,
+          holiday_or_vacation_type_id: vacation_type.id,
           starts_on: starts_on,
           ends_on: ends_on
         })
@@ -92,5 +96,10 @@ defmodule MehrSchulferien.DisplayTest do
       })
 
     {:ok, %{federal_state: federal_state, periods: periods, other_period: other_period}}
+  end
+
+  defp create_period(attrs) do
+    {:ok, period} = MehrSchulferien.Calendars.create_period(attrs)
+    period
   end
 end
