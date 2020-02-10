@@ -2,58 +2,8 @@
 
 <h2>Ferien <%= @location.name %> <%= "#{@current_year}/#{@current_year + 1}" %></h2>
 
-<table>
-  <thead>
-    <tr>
-      <th></th>
-      <th>von - bis</th>
-      <th>Dauer in Tage</th>
-    </tr>
-  </thead>
-  <tbody>
-  <%= for periods <- @next_12_months_periods do %>
-    <tr>
-      <% period = Enum.at(periods, 0) %>
-      <td><%= period.holiday_or_vacation_type.colloquial %></td>
-      <td>
-        <%= for period <- periods do %>
-          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
-        <% end %>
-      </td>
-      <td><%= ViewHelpers.number_days(periods) %></td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+<%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods %>
 
 <h2>Ferien <%= @location.name %> <%= @next_three_years %></h2>
 
-<table>
-    <thead>
-      <tr>
-        <th></th>
-        <%= for period <- @next_3_years_headers do %>
-          <th>
-            <%= link period.holiday_or_vacation_type.name |> String.split("/") |> List.first, to: period.holiday_or_vacation_type.wikipedia_url %>
-          </th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-    <%= for period_list <- @next_3_years_periods do %>
-      <tr>
-        <td>
-          <% first_period = Enum.at(hd(period_list), 0) %>
-          <span><%= first_period.starts_on.year %></span>
-        </td>
-        <%= for periods <- period_list do %>
-          <td>
-            <%= for period <- periods do %>
-              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
-            <% end %>
-          </td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_headers: @next_3_years_headers, next_3_years_periods: @next_3_years_periods %>
