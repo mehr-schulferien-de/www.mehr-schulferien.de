@@ -1,0 +1,3592 @@
+<!-- This is just dummy data. It has to be replaced with @periods -->
+
+<div class="row">
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          Januar      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="text-right info">
+                1.
+              </td>
+              <td class="text-right success">
+                2.
+              </td>
+              <td class="text-right success">
+                3.
+              </td>
+              <td class="text-right active">
+                4.
+              </td>
+              <td class="text-right active">
+                5.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                6.
+              </td>
+              <td class="text-right ">
+                7.
+              </td>
+              <td class="text-right ">
+                8.
+              </td>
+              <td class="text-right ">
+                9.
+              </td>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right active">
+                11.
+              </td>
+              <td class="text-right active">
+                12.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                13.
+              </td>
+              <td class="text-right ">
+                14.
+              </td>
+              <td class="text-right ">
+                15.
+              </td>
+              <td class="text-right ">
+                16.
+              </td>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right active">
+                18.
+              </td>
+              <td class="text-right active">
+                19.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right ">
+                21.
+              </td>
+              <td class="text-right ">
+                22.
+              </td>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right active">
+                25.
+              </td>
+              <td class="text-right active">
+                26.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right ">
+                29.
+              </td>
+              <td class="text-right ">
+                30.
+              </td>
+              <td class="text-right ">
+                31.
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-6">
+            <h4>Gesetzliche Feiertage</h4>
+            <dl>
+              <dt>Neujahr</dt>
+              <dd>
+                1.1.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+            </dl>
+          </div>
+          <div class="col-xs-6">
+            <h4>Schulferien</h4>
+            <dl>
+              <dt>Weihnachten</dt>
+              <dd>
+                23.12. - 4.1.
+                <span class="label label-success">13 Tage</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          Februar      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-right active">
+                1.
+              </td>
+              <td class="text-right active">
+                2.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                3.
+              </td>
+              <td class="text-right success">
+                4.
+              </td>
+              <td class="text-right success">
+                5.
+              </td>
+              <td class="text-right success">
+                6.
+              </td>
+              <td class="text-right success">
+                7.
+              </td>
+              <td class="text-right active">
+                8.
+              </td>
+              <td class="text-right active">
+                9.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right ">
+                11.
+              </td>
+              <td class="text-right ">
+                12.
+              </td>
+              <td class="text-right ">
+                13.
+              </td>
+              <td class="text-right ">
+                14.
+              </td>
+              <td class="text-right active">
+                15.
+              </td>
+              <td class="text-right active">
+                16.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right ">
+                19.
+              </td>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right ">
+                21.
+              </td>
+              <td class="text-right active">
+                22.
+              </td>
+              <td class="text-right active">
+                23.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right ">
+                25.
+              </td>
+              <td class="text-right ">
+                26.
+              </td>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right active">
+                29.
+              </td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-12">
+            <h4>Schulferien</h4>
+            <dl>
+              <dt>Winter</dt>
+              <dd>
+                3.2. - 8.2.
+                <span class="label label-success">6 Tage</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          März      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-right active">
+                1.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                2.
+              </td>
+              <td class="text-right ">
+                3.
+              </td>
+              <td class="text-right ">
+                4.
+              </td>
+              <td class="text-right ">
+                5.
+              </td>
+              <td class="text-right ">
+                6.
+              </td>
+              <td class="text-right active">
+                7.
+              </td>
+              <td class="text-right active">
+                8.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                9.
+              </td>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right ">
+                11.
+              </td>
+              <td class="text-right ">
+                12.
+              </td>
+              <td class="text-right ">
+                13.
+              </td>
+              <td class="text-right active">
+                14.
+              </td>
+              <td class="text-right active">
+                15.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                16.
+              </td>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right ">
+                19.
+              </td>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right active">
+                21.
+              </td>
+              <td class="text-right active">
+                22.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right ">
+                25.
+              </td>
+              <td class="text-right ">
+                26.
+              </td>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right active">
+                28.
+              </td>
+              <td class="text-right active">
+                29.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                30.
+              </td>
+              <td class="text-right ">
+                31.
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          April      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="text-right ">
+                1.
+              </td>
+              <td class="text-right ">
+                2.
+              </td>
+              <td class="text-right ">
+                3.
+              </td>
+              <td class="text-right active">
+                4.
+              </td>
+              <td class="text-right active">
+                5.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                6.
+              </td>
+              <td class="text-right success">
+                7.
+              </td>
+              <td class="text-right success">
+                8.
+              </td>
+              <td class="text-right info">
+                9.
+              </td>
+              <td class="text-right info">
+                10.
+              </td>
+              <td class="text-right active">
+                11.
+              </td>
+              <td class="text-right info">
+                12.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right info">
+                13.
+              </td>
+              <td class="text-right success">
+                14.
+              </td>
+              <td class="text-right success">
+                15.
+              </td>
+              <td class="text-right success">
+                16.
+              </td>
+              <td class="text-right success">
+                17.
+              </td>
+              <td class="text-right active">
+                18.
+              </td>
+              <td class="text-right active">
+                19.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right ">
+                21.
+              </td>
+              <td class="text-right ">
+                22.
+              </td>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right active">
+                25.
+              </td>
+              <td class="text-right active">
+                26.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right ">
+                29.
+              </td>
+              <td class="text-right ">
+                30.
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-6">
+            <h4>Gesetzliche Feiertage</h4>
+            <dl>
+              <dt>Gründonnerstag</dt>
+              <dd>
+                9.4.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+              <dt>Karfreitag</dt>
+              <dd>
+                10.4.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+              <dt>Ostersonntag</dt>
+              <dd>
+                12.4.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+              <dt>Ostermontag</dt>
+              <dd>
+                13.4.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+            </dl>
+          </div>
+          <div class="col-xs-6">
+            <h4>Schulferien</h4>
+            <dl>
+              <dt>Ostern</dt>
+              <dd>
+                6.4. - 17.4.
+                <span class="label label-success">12 Tage</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          Mai      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-right info">
+                1.
+              </td>
+              <td class="text-right active">
+                2.
+              </td>
+              <td class="text-right active">
+                3.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                4.
+              </td>
+              <td class="text-right ">
+                5.
+              </td>
+              <td class="text-right ">
+                6.
+              </td>
+              <td class="text-right ">
+                7.
+              </td>
+              <td class="text-right ">
+                8.
+              </td>
+              <td class="text-right active">
+                9.
+              </td>
+              <td class="text-right active">
+                10.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                11.
+              </td>
+              <td class="text-right ">
+                12.
+              </td>
+              <td class="text-right ">
+                13.
+              </td>
+              <td class="text-right ">
+                14.
+              </td>
+              <td class="text-right ">
+                15.
+              </td>
+              <td class="text-right active">
+                16.
+              </td>
+              <td class="text-right active">
+                17.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right ">
+                19.
+              </td>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right info">
+                21.
+              </td>
+              <td class="text-right success">
+                22.
+              </td>
+              <td class="text-right active">
+                23.
+              </td>
+              <td class="text-right active">
+                24.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                25.
+              </td>
+              <td class="text-right ">
+                26.
+              </td>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right ">
+                29.
+              </td>
+              <td class="text-right active">
+                30.
+              </td>
+              <td class="text-right info">
+                31.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-6">
+            <h4>Gesetzliche Feiertage</h4>
+            <dl>
+              <dt>1. Mai</dt>
+              <dd>
+                1.5.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+              <dt>Christi Himmelfahrt</dt>
+              <dd>
+                21.5.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+              <dt>Pfingstsonntag</dt>
+              <dd>
+                31.5.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+            </dl>
+          </div>
+          <div class="col-xs-6">
+            <h4>Schulferien</h4>
+            <dl>
+              <dt>Himmelfahrt</dt>
+              <dd>
+                22.5.
+                <span class="label label-success">1 Tag</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          Juni      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-right info">
+                1.
+              </td>
+              <td class="text-right ">
+                2.
+              </td>
+              <td class="text-right ">
+                3.
+              </td>
+              <td class="text-right ">
+                4.
+              </td>
+              <td class="text-right ">
+                5.
+              </td>
+              <td class="text-right active">
+                6.
+              </td>
+              <td class="text-right active">
+                7.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                8.
+              </td>
+              <td class="text-right ">
+                9.
+              </td>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right info">
+                11.
+              </td>
+              <td class="text-right ">
+                12.
+              </td>
+              <td class="text-right active">
+                13.
+              </td>
+              <td class="text-right active">
+                14.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                15.
+              </td>
+              <td class="text-right ">
+                16.
+              </td>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right ">
+                19.
+              </td>
+              <td class="text-right active">
+                20.
+              </td>
+              <td class="text-right active">
+                21.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                22.
+              </td>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right success">
+                25.
+              </td>
+              <td class="text-right success">
+                26.
+              </td>
+              <td class="text-right active">
+                27.
+              </td>
+              <td class="text-right active">
+                28.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                29.
+              </td>
+              <td class="text-right success">
+                30.
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-6">
+            <h4>Gesetzliche Feiertage</h4>
+            <dl>
+              <dt>Pfingstmontag</dt>
+              <dd>
+                1.6.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+              <dt>Fronleichnam</dt>
+              <dd>
+                11.6.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+            </dl>
+          </div>
+          <div class="col-xs-6">
+            <h4>Schulferien</h4>
+            <dl>
+              <dt>Sommer</dt>
+              <dd>
+                25.6. - 7.8.
+                <span class="label label-success">44 Tage</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          Juli      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="text-right success">
+                1.
+              </td>
+              <td class="text-right success">
+                2.
+              </td>
+              <td class="text-right success">
+                3.
+              </td>
+              <td class="text-right active">
+                4.
+              </td>
+              <td class="text-right active">
+                5.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                6.
+              </td>
+              <td class="text-right success">
+                7.
+              </td>
+              <td class="text-right success">
+                8.
+              </td>
+              <td class="text-right success">
+                9.
+              </td>
+              <td class="text-right success">
+                10.
+              </td>
+              <td class="text-right active">
+                11.
+              </td>
+              <td class="text-right active">
+                12.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                13.
+              </td>
+              <td class="text-right success">
+                14.
+              </td>
+              <td class="text-right success">
+                15.
+              </td>
+              <td class="text-right success">
+                16.
+              </td>
+              <td class="text-right success">
+                17.
+              </td>
+              <td class="text-right active">
+                18.
+              </td>
+              <td class="text-right active">
+                19.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                20.
+              </td>
+              <td class="text-right success">
+                21.
+              </td>
+              <td class="text-right success">
+                22.
+              </td>
+              <td class="text-right success">
+                23.
+              </td>
+              <td class="text-right success">
+                24.
+              </td>
+              <td class="text-right active">
+                25.
+              </td>
+              <td class="text-right active">
+                26.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                27.
+              </td>
+              <td class="text-right success">
+                28.
+              </td>
+              <td class="text-right success">
+                29.
+              </td>
+              <td class="text-right success">
+                30.
+              </td>
+              <td class="text-right success">
+                31.
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-12">
+            <h4>Schulferien</h4>
+            <dl>
+              <dt>Sommer</dt>
+              <dd>
+                25.6. - 7.8.
+                <span class="label label-success">44 Tage</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          August      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-right active">
+                1.
+              </td>
+              <td class="text-right active">
+                2.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right success">
+                3.
+              </td>
+              <td class="text-right success">
+                4.
+              </td>
+              <td class="text-right success">
+                5.
+              </td>
+              <td class="text-right success">
+                6.
+              </td>
+              <td class="text-right success">
+                7.
+              </td>
+              <td class="text-right active">
+                8.
+              </td>
+              <td class="text-right active">
+                9.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right ">
+                11.
+              </td>
+              <td class="text-right ">
+                12.
+              </td>
+              <td class="text-right ">
+                13.
+              </td>
+              <td class="text-right ">
+                14.
+              </td>
+              <td class="text-right active">
+                15.
+              </td>
+              <td class="text-right active">
+                16.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right ">
+                19.
+              </td>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right ">
+                21.
+              </td>
+              <td class="text-right active">
+                22.
+              </td>
+              <td class="text-right active">
+                23.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right ">
+                25.
+              </td>
+              <td class="text-right ">
+                26.
+              </td>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right active">
+                29.
+              </td>
+              <td class="text-right active">
+                30.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                31.
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-12">
+            <h4>Schulferien</h4>
+            <dl>
+              <dt>Sommer</dt>
+              <dd>
+                25.6. - 7.8.
+                <span class="label label-success">44 Tage</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          September      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td class="text-right ">
+                1.
+              </td>
+              <td class="text-right ">
+                2.
+              </td>
+              <td class="text-right ">
+                3.
+              </td>
+              <td class="text-right ">
+                4.
+              </td>
+              <td class="text-right active">
+                5.
+              </td>
+              <td class="text-right active">
+                6.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                7.
+              </td>
+              <td class="text-right ">
+                8.
+              </td>
+              <td class="text-right ">
+                9.
+              </td>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right ">
+                11.
+              </td>
+              <td class="text-right active">
+                12.
+              </td>
+              <td class="text-right active">
+                13.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                14.
+              </td>
+              <td class="text-right ">
+                15.
+              </td>
+              <td class="text-right ">
+                16.
+              </td>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right active">
+                19.
+              </td>
+              <td class="text-right active">
+                20.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                21.
+              </td>
+              <td class="text-right ">
+                22.
+              </td>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right ">
+                25.
+              </td>
+              <td class="text-right active">
+                26.
+              </td>
+              <td class="text-right active">
+                27.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right ">
+                29.
+              </td>
+              <td class="text-right ">
+                30.
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          Oktober      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-right ">
+                1.
+              </td>
+              <td class="text-right ">
+                2.
+              </td>
+              <td class="text-right info">
+                3.
+              </td>
+              <td class="text-right active">
+                4.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                5.
+              </td>
+              <td class="text-right ">
+                6.
+              </td>
+              <td class="text-right ">
+                7.
+              </td>
+              <td class="text-right ">
+                8.
+              </td>
+              <td class="text-right ">
+                9.
+              </td>
+              <td class="text-right active">
+                10.
+              </td>
+              <td class="text-right active">
+                11.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                12.
+              </td>
+              <td class="text-right ">
+                13.
+              </td>
+              <td class="text-right ">
+                14.
+              </td>
+              <td class="text-right ">
+                15.
+              </td>
+              <td class="text-right ">
+                16.
+              </td>
+              <td class="text-right active">
+                17.
+              </td>
+              <td class="text-right active">
+                18.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                19.
+              </td>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right ">
+                21.
+              </td>
+              <td class="text-right ">
+                22.
+              </td>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right active">
+                24.
+              </td>
+              <td class="text-right active">
+                25.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                26.
+              </td>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right ">
+                29.
+              </td>
+              <td class="text-right ">
+                30.
+              </td>
+              <td class="text-right active">
+                31.
+              </td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-12">
+            <h4>Gesetzliche Feiertage</h4>
+            <dl>
+              <dt>Tag der Deutschen Einheit</dt>
+              <dd>
+                3.10.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          November      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-right active">
+                1.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                2.
+              </td>
+              <td class="text-right ">
+                3.
+              </td>
+              <td class="text-right ">
+                4.
+              </td>
+              <td class="text-right ">
+                5.
+              </td>
+              <td class="text-right ">
+                6.
+              </td>
+              <td class="text-right active">
+                7.
+              </td>
+              <td class="text-right active">
+                8.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                9.
+              </td>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right ">
+                11.
+              </td>
+              <td class="text-right ">
+                12.
+              </td>
+              <td class="text-right ">
+                13.
+              </td>
+              <td class="text-right active">
+                14.
+              </td>
+              <td class="text-right active">
+                15.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                16.
+              </td>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right ">
+                19.
+              </td>
+              <td class="text-right ">
+                20.
+              </td>
+              <td class="text-right active">
+                21.
+              </td>
+              <td class="text-right active">
+                22.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right ">
+                25.
+              </td>
+              <td class="text-right ">
+                26.
+              </td>
+              <td class="text-right ">
+                27.
+              </td>
+              <td class="text-right active">
+                28.
+              </td>
+              <td class="text-right active">
+                29.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                30.
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>
+          Dezember      
+          <div class="text-muted pull-right">2020</div>
+        </h3>
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo.</th>
+              <th>Di.</th>
+              <th>Mi.</th>
+              <th>Do.</th>
+              <th>Fr.</th>
+              <th class="active">Sa.</th>
+              <th class="active">So.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td class="text-right ">
+                1.
+              </td>
+              <td class="text-right ">
+                2.
+              </td>
+              <td class="text-right ">
+                3.
+              </td>
+              <td class="text-right ">
+                4.
+              </td>
+              <td class="text-right active">
+                5.
+              </td>
+              <td class="text-right active">
+                6.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                7.
+              </td>
+              <td class="text-right ">
+                8.
+              </td>
+              <td class="text-right ">
+                9.
+              </td>
+              <td class="text-right ">
+                10.
+              </td>
+              <td class="text-right ">
+                11.
+              </td>
+              <td class="text-right active">
+                12.
+              </td>
+              <td class="text-right active">
+                13.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                14.
+              </td>
+              <td class="text-right ">
+                15.
+              </td>
+              <td class="text-right ">
+                16.
+              </td>
+              <td class="text-right ">
+                17.
+              </td>
+              <td class="text-right ">
+                18.
+              </td>
+              <td class="text-right active">
+                19.
+              </td>
+              <td class="text-right active">
+                20.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                21.
+              </td>
+              <td class="text-right ">
+                22.
+              </td>
+              <td class="text-right ">
+                23.
+              </td>
+              <td class="text-right ">
+                24.
+              </td>
+              <td class="text-right info">
+                25.
+              </td>
+              <td class="text-right info">
+                26.
+              </td>
+              <td class="text-right active">
+                27.
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right ">
+                28.
+              </td>
+              <td class="text-right ">
+                29.
+              </td>
+              <td class="text-right ">
+                30.
+              </td>
+              <td class="text-right ">
+                31.
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row">
+          <div class="col-xs-12">
+            <h4>Gesetzliche Feiertage</h4>
+            <dl>
+              <dt>1. Weihnachtstag</dt>
+              <dd>
+                25.12.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+              <dt>2. Weihnachtstag</dt>
+              <dd>
+                26.12.
+                <span class="label label-info">1 Tag</span>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="row visible-sm-* hidden-xs hidden-md hidden-lg">
+  <div class="col-xs-12">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              Januar      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right info">
+                    1.
+                  </td>
+                  <td class="text-right success">
+                    2.
+                  </td>
+                  <td class="text-right success">
+                    3.
+                  </td>
+                  <td class="text-right active">
+                    4.
+                  </td>
+                  <td class="text-right active">
+                    5.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    6.
+                  </td>
+                  <td class="text-right ">
+                    7.
+                  </td>
+                  <td class="text-right ">
+                    8.
+                  </td>
+                  <td class="text-right ">
+                    9.
+                  </td>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right active">
+                    11.
+                  </td>
+                  <td class="text-right active">
+                    12.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    13.
+                  </td>
+                  <td class="text-right ">
+                    14.
+                  </td>
+                  <td class="text-right ">
+                    15.
+                  </td>
+                  <td class="text-right ">
+                    16.
+                  </td>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right active">
+                    18.
+                  </td>
+                  <td class="text-right active">
+                    19.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right ">
+                    21.
+                  </td>
+                  <td class="text-right ">
+                    22.
+                  </td>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right active">
+                    25.
+                  </td>
+                  <td class="text-right active">
+                    26.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right ">
+                    29.
+                  </td>
+                  <td class="text-right ">
+                    30.
+                  </td>
+                  <td class="text-right ">
+                    31.
+                  </td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-6">
+                <h4>Gesetzliche Feiertage</h4>
+                <dl>
+                  <dt>Neujahr</dt>
+                  <dd>
+                    1.1.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-xs-6">
+                <h4>Schulferien</h4>
+                <dl>
+                  <dt>Weihnachten</dt>
+                  <dd>
+                    23.12. - 4.1.
+                    <span class="label label-success">13 Tage</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              Februar      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right active">
+                    1.
+                  </td>
+                  <td class="text-right active">
+                    2.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    3.
+                  </td>
+                  <td class="text-right success">
+                    4.
+                  </td>
+                  <td class="text-right success">
+                    5.
+                  </td>
+                  <td class="text-right success">
+                    6.
+                  </td>
+                  <td class="text-right success">
+                    7.
+                  </td>
+                  <td class="text-right active">
+                    8.
+                  </td>
+                  <td class="text-right active">
+                    9.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right ">
+                    11.
+                  </td>
+                  <td class="text-right ">
+                    12.
+                  </td>
+                  <td class="text-right ">
+                    13.
+                  </td>
+                  <td class="text-right ">
+                    14.
+                  </td>
+                  <td class="text-right active">
+                    15.
+                  </td>
+                  <td class="text-right active">
+                    16.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right ">
+                    19.
+                  </td>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right ">
+                    21.
+                  </td>
+                  <td class="text-right active">
+                    22.
+                  </td>
+                  <td class="text-right active">
+                    23.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right ">
+                    25.
+                  </td>
+                  <td class="text-right ">
+                    26.
+                  </td>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right active">
+                    29.
+                  </td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-12">
+                <h4>Schulferien</h4>
+                <dl>
+                  <dt>Winter</dt>
+                  <dd>
+                    3.2. - 8.2.
+                    <span class="label label-success">6 Tage</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              März      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right active">
+                    1.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    2.
+                  </td>
+                  <td class="text-right ">
+                    3.
+                  </td>
+                  <td class="text-right ">
+                    4.
+                  </td>
+                  <td class="text-right ">
+                    5.
+                  </td>
+                  <td class="text-right ">
+                    6.
+                  </td>
+                  <td class="text-right active">
+                    7.
+                  </td>
+                  <td class="text-right active">
+                    8.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    9.
+                  </td>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right ">
+                    11.
+                  </td>
+                  <td class="text-right ">
+                    12.
+                  </td>
+                  <td class="text-right ">
+                    13.
+                  </td>
+                  <td class="text-right active">
+                    14.
+                  </td>
+                  <td class="text-right active">
+                    15.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    16.
+                  </td>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right ">
+                    19.
+                  </td>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right active">
+                    21.
+                  </td>
+                  <td class="text-right active">
+                    22.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right ">
+                    25.
+                  </td>
+                  <td class="text-right ">
+                    26.
+                  </td>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right active">
+                    28.
+                  </td>
+                  <td class="text-right active">
+                    29.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    30.
+                  </td>
+                  <td class="text-right ">
+                    31.
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              April      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right ">
+                    1.
+                  </td>
+                  <td class="text-right ">
+                    2.
+                  </td>
+                  <td class="text-right ">
+                    3.
+                  </td>
+                  <td class="text-right active">
+                    4.
+                  </td>
+                  <td class="text-right active">
+                    5.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    6.
+                  </td>
+                  <td class="text-right success">
+                    7.
+                  </td>
+                  <td class="text-right success">
+                    8.
+                  </td>
+                  <td class="text-right info">
+                    9.
+                  </td>
+                  <td class="text-right info">
+                    10.
+                  </td>
+                  <td class="text-right active">
+                    11.
+                  </td>
+                  <td class="text-right info">
+                    12.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right info">
+                    13.
+                  </td>
+                  <td class="text-right success">
+                    14.
+                  </td>
+                  <td class="text-right success">
+                    15.
+                  </td>
+                  <td class="text-right success">
+                    16.
+                  </td>
+                  <td class="text-right success">
+                    17.
+                  </td>
+                  <td class="text-right active">
+                    18.
+                  </td>
+                  <td class="text-right active">
+                    19.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right ">
+                    21.
+                  </td>
+                  <td class="text-right ">
+                    22.
+                  </td>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right active">
+                    25.
+                  </td>
+                  <td class="text-right active">
+                    26.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right ">
+                    29.
+                  </td>
+                  <td class="text-right ">
+                    30.
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-6">
+                <h4>Gesetzliche Feiertage</h4>
+                <dl>
+                  <dt>Gründonnerstag</dt>
+                  <dd>
+                    9.4.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                  <dt>Karfreitag</dt>
+                  <dd>
+                    10.4.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                  <dt>Ostersonntag</dt>
+                  <dd>
+                    12.4.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                  <dt>Ostermontag</dt>
+                  <dd>
+                    13.4.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-xs-6">
+                <h4>Schulferien</h4>
+                <dl>
+                  <dt>Ostern</dt>
+                  <dd>
+                    6.4. - 17.4.
+                    <span class="label label-success">12 Tage</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              Mai      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right info">
+                    1.
+                  </td>
+                  <td class="text-right active">
+                    2.
+                  </td>
+                  <td class="text-right active">
+                    3.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    4.
+                  </td>
+                  <td class="text-right ">
+                    5.
+                  </td>
+                  <td class="text-right ">
+                    6.
+                  </td>
+                  <td class="text-right ">
+                    7.
+                  </td>
+                  <td class="text-right ">
+                    8.
+                  </td>
+                  <td class="text-right active">
+                    9.
+                  </td>
+                  <td class="text-right active">
+                    10.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    11.
+                  </td>
+                  <td class="text-right ">
+                    12.
+                  </td>
+                  <td class="text-right ">
+                    13.
+                  </td>
+                  <td class="text-right ">
+                    14.
+                  </td>
+                  <td class="text-right ">
+                    15.
+                  </td>
+                  <td class="text-right active">
+                    16.
+                  </td>
+                  <td class="text-right active">
+                    17.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right ">
+                    19.
+                  </td>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right info">
+                    21.
+                  </td>
+                  <td class="text-right success">
+                    22.
+                  </td>
+                  <td class="text-right active">
+                    23.
+                  </td>
+                  <td class="text-right active">
+                    24.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    25.
+                  </td>
+                  <td class="text-right ">
+                    26.
+                  </td>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right ">
+                    29.
+                  </td>
+                  <td class="text-right active">
+                    30.
+                  </td>
+                  <td class="text-right info">
+                    31.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-6">
+                <h4>Gesetzliche Feiertage</h4>
+                <dl>
+                  <dt>1. Mai</dt>
+                  <dd>
+                    1.5.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                  <dt>Christi Himmelfahrt</dt>
+                  <dd>
+                    21.5.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                  <dt>Pfingstsonntag</dt>
+                  <dd>
+                    31.5.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-xs-6">
+                <h4>Schulferien</h4>
+                <dl>
+                  <dt>Himmelfahrt</dt>
+                  <dd>
+                    22.5.
+                    <span class="label label-success">1 Tag</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              Juni      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-right info">
+                    1.
+                  </td>
+                  <td class="text-right ">
+                    2.
+                  </td>
+                  <td class="text-right ">
+                    3.
+                  </td>
+                  <td class="text-right ">
+                    4.
+                  </td>
+                  <td class="text-right ">
+                    5.
+                  </td>
+                  <td class="text-right active">
+                    6.
+                  </td>
+                  <td class="text-right active">
+                    7.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    8.
+                  </td>
+                  <td class="text-right ">
+                    9.
+                  </td>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right info">
+                    11.
+                  </td>
+                  <td class="text-right ">
+                    12.
+                  </td>
+                  <td class="text-right active">
+                    13.
+                  </td>
+                  <td class="text-right active">
+                    14.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    15.
+                  </td>
+                  <td class="text-right ">
+                    16.
+                  </td>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right ">
+                    19.
+                  </td>
+                  <td class="text-right active">
+                    20.
+                  </td>
+                  <td class="text-right active">
+                    21.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    22.
+                  </td>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right success">
+                    25.
+                  </td>
+                  <td class="text-right success">
+                    26.
+                  </td>
+                  <td class="text-right active">
+                    27.
+                  </td>
+                  <td class="text-right active">
+                    28.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    29.
+                  </td>
+                  <td class="text-right success">
+                    30.
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-6">
+                <h4>Gesetzliche Feiertage</h4>
+                <dl>
+                  <dt>Pfingstmontag</dt>
+                  <dd>
+                    1.6.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                  <dt>Fronleichnam</dt>
+                  <dd>
+                    11.6.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                </dl>
+              </div>
+              <div class="col-xs-6">
+                <h4>Schulferien</h4>
+                <dl>
+                  <dt>Sommer</dt>
+                  <dd>
+                    25.6. - 7.8.
+                    <span class="label label-success">44 Tage</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              Juli      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right success">
+                    1.
+                  </td>
+                  <td class="text-right success">
+                    2.
+                  </td>
+                  <td class="text-right success">
+                    3.
+                  </td>
+                  <td class="text-right active">
+                    4.
+                  </td>
+                  <td class="text-right active">
+                    5.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    6.
+                  </td>
+                  <td class="text-right success">
+                    7.
+                  </td>
+                  <td class="text-right success">
+                    8.
+                  </td>
+                  <td class="text-right success">
+                    9.
+                  </td>
+                  <td class="text-right success">
+                    10.
+                  </td>
+                  <td class="text-right active">
+                    11.
+                  </td>
+                  <td class="text-right active">
+                    12.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    13.
+                  </td>
+                  <td class="text-right success">
+                    14.
+                  </td>
+                  <td class="text-right success">
+                    15.
+                  </td>
+                  <td class="text-right success">
+                    16.
+                  </td>
+                  <td class="text-right success">
+                    17.
+                  </td>
+                  <td class="text-right active">
+                    18.
+                  </td>
+                  <td class="text-right active">
+                    19.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    20.
+                  </td>
+                  <td class="text-right success">
+                    21.
+                  </td>
+                  <td class="text-right success">
+                    22.
+                  </td>
+                  <td class="text-right success">
+                    23.
+                  </td>
+                  <td class="text-right success">
+                    24.
+                  </td>
+                  <td class="text-right active">
+                    25.
+                  </td>
+                  <td class="text-right active">
+                    26.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    27.
+                  </td>
+                  <td class="text-right success">
+                    28.
+                  </td>
+                  <td class="text-right success">
+                    29.
+                  </td>
+                  <td class="text-right success">
+                    30.
+                  </td>
+                  <td class="text-right success">
+                    31.
+                  </td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-12">
+                <h4>Schulferien</h4>
+                <dl>
+                  <dt>Sommer</dt>
+                  <dd>
+                    25.6. - 7.8.
+                    <span class="label label-success">44 Tage</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              August      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right active">
+                    1.
+                  </td>
+                  <td class="text-right active">
+                    2.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right success">
+                    3.
+                  </td>
+                  <td class="text-right success">
+                    4.
+                  </td>
+                  <td class="text-right success">
+                    5.
+                  </td>
+                  <td class="text-right success">
+                    6.
+                  </td>
+                  <td class="text-right success">
+                    7.
+                  </td>
+                  <td class="text-right active">
+                    8.
+                  </td>
+                  <td class="text-right active">
+                    9.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right ">
+                    11.
+                  </td>
+                  <td class="text-right ">
+                    12.
+                  </td>
+                  <td class="text-right ">
+                    13.
+                  </td>
+                  <td class="text-right ">
+                    14.
+                  </td>
+                  <td class="text-right active">
+                    15.
+                  </td>
+                  <td class="text-right active">
+                    16.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right ">
+                    19.
+                  </td>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right ">
+                    21.
+                  </td>
+                  <td class="text-right active">
+                    22.
+                  </td>
+                  <td class="text-right active">
+                    23.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right ">
+                    25.
+                  </td>
+                  <td class="text-right ">
+                    26.
+                  </td>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right active">
+                    29.
+                  </td>
+                  <td class="text-right active">
+                    30.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    31.
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-12">
+                <h4>Schulferien</h4>
+                <dl>
+                  <dt>Sommer</dt>
+                  <dd>
+                    25.6. - 7.8.
+                    <span class="label label-success">44 Tage</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              September      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td class="text-right ">
+                    1.
+                  </td>
+                  <td class="text-right ">
+                    2.
+                  </td>
+                  <td class="text-right ">
+                    3.
+                  </td>
+                  <td class="text-right ">
+                    4.
+                  </td>
+                  <td class="text-right active">
+                    5.
+                  </td>
+                  <td class="text-right active">
+                    6.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    7.
+                  </td>
+                  <td class="text-right ">
+                    8.
+                  </td>
+                  <td class="text-right ">
+                    9.
+                  </td>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right ">
+                    11.
+                  </td>
+                  <td class="text-right active">
+                    12.
+                  </td>
+                  <td class="text-right active">
+                    13.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    14.
+                  </td>
+                  <td class="text-right ">
+                    15.
+                  </td>
+                  <td class="text-right ">
+                    16.
+                  </td>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right active">
+                    19.
+                  </td>
+                  <td class="text-right active">
+                    20.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    21.
+                  </td>
+                  <td class="text-right ">
+                    22.
+                  </td>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right ">
+                    25.
+                  </td>
+                  <td class="text-right active">
+                    26.
+                  </td>
+                  <td class="text-right active">
+                    27.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right ">
+                    29.
+                  </td>
+                  <td class="text-right ">
+                    30.
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              Oktober      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right ">
+                    1.
+                  </td>
+                  <td class="text-right ">
+                    2.
+                  </td>
+                  <td class="text-right info">
+                    3.
+                  </td>
+                  <td class="text-right active">
+                    4.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    5.
+                  </td>
+                  <td class="text-right ">
+                    6.
+                  </td>
+                  <td class="text-right ">
+                    7.
+                  </td>
+                  <td class="text-right ">
+                    8.
+                  </td>
+                  <td class="text-right ">
+                    9.
+                  </td>
+                  <td class="text-right active">
+                    10.
+                  </td>
+                  <td class="text-right active">
+                    11.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    12.
+                  </td>
+                  <td class="text-right ">
+                    13.
+                  </td>
+                  <td class="text-right ">
+                    14.
+                  </td>
+                  <td class="text-right ">
+                    15.
+                  </td>
+                  <td class="text-right ">
+                    16.
+                  </td>
+                  <td class="text-right active">
+                    17.
+                  </td>
+                  <td class="text-right active">
+                    18.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    19.
+                  </td>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right ">
+                    21.
+                  </td>
+                  <td class="text-right ">
+                    22.
+                  </td>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right active">
+                    24.
+                  </td>
+                  <td class="text-right active">
+                    25.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    26.
+                  </td>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right ">
+                    29.
+                  </td>
+                  <td class="text-right ">
+                    30.
+                  </td>
+                  <td class="text-right active">
+                    31.
+                  </td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-12">
+                <h4>Gesetzliche Feiertage</h4>
+                <dl>
+                  <dt>Tag der Deutschen Einheit</dt>
+                  <dd>
+                    3.10.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              November      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right active">
+                    1.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    2.
+                  </td>
+                  <td class="text-right ">
+                    3.
+                  </td>
+                  <td class="text-right ">
+                    4.
+                  </td>
+                  <td class="text-right ">
+                    5.
+                  </td>
+                  <td class="text-right ">
+                    6.
+                  </td>
+                  <td class="text-right active">
+                    7.
+                  </td>
+                  <td class="text-right active">
+                    8.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    9.
+                  </td>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right ">
+                    11.
+                  </td>
+                  <td class="text-right ">
+                    12.
+                  </td>
+                  <td class="text-right ">
+                    13.
+                  </td>
+                  <td class="text-right active">
+                    14.
+                  </td>
+                  <td class="text-right active">
+                    15.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    16.
+                  </td>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right ">
+                    19.
+                  </td>
+                  <td class="text-right ">
+                    20.
+                  </td>
+                  <td class="text-right active">
+                    21.
+                  </td>
+                  <td class="text-right active">
+                    22.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right ">
+                    25.
+                  </td>
+                  <td class="text-right ">
+                    26.
+                  </td>
+                  <td class="text-right ">
+                    27.
+                  </td>
+                  <td class="text-right active">
+                    28.
+                  </td>
+                  <td class="text-right active">
+                    29.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    30.
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>
+              Dezember      
+              <div class="text-muted pull-right">2020</div>
+            </h3>
+            <table class="table table-condensed">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>Di.</th>
+                  <th>Mi.</th>
+                  <th>Do.</th>
+                  <th>Fr.</th>
+                  <th class="active">Sa.</th>
+                  <th class="active">So.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td class="text-right ">
+                    1.
+                  </td>
+                  <td class="text-right ">
+                    2.
+                  </td>
+                  <td class="text-right ">
+                    3.
+                  </td>
+                  <td class="text-right ">
+                    4.
+                  </td>
+                  <td class="text-right active">
+                    5.
+                  </td>
+                  <td class="text-right active">
+                    6.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    7.
+                  </td>
+                  <td class="text-right ">
+                    8.
+                  </td>
+                  <td class="text-right ">
+                    9.
+                  </td>
+                  <td class="text-right ">
+                    10.
+                  </td>
+                  <td class="text-right ">
+                    11.
+                  </td>
+                  <td class="text-right active">
+                    12.
+                  </td>
+                  <td class="text-right active">
+                    13.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    14.
+                  </td>
+                  <td class="text-right ">
+                    15.
+                  </td>
+                  <td class="text-right ">
+                    16.
+                  </td>
+                  <td class="text-right ">
+                    17.
+                  </td>
+                  <td class="text-right ">
+                    18.
+                  </td>
+                  <td class="text-right active">
+                    19.
+                  </td>
+                  <td class="text-right active">
+                    20.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    21.
+                  </td>
+                  <td class="text-right ">
+                    22.
+                  </td>
+                  <td class="text-right ">
+                    23.
+                  </td>
+                  <td class="text-right ">
+                    24.
+                  </td>
+                  <td class="text-right info">
+                    25.
+                  </td>
+                  <td class="text-right info">
+                    26.
+                  </td>
+                  <td class="text-right active">
+                    27.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-right ">
+                    28.
+                  </td>
+                  <td class="text-right ">
+                    29.
+                  </td>
+                  <td class="text-right ">
+                    30.
+                  </td>
+                  <td class="text-right ">
+                    31.
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row">
+              <div class="col-xs-12">
+                <h4>Gesetzliche Feiertage</h4>
+                <dl>
+                  <dt>1. Weihnachtstag</dt>
+                  <dd>
+                    25.12.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                  <dt>2. Weihnachtstag</dt>
+                  <dd>
+                    26.12.
+                    <span class="label label-info">1 Tag</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
