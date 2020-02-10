@@ -1,0 +1,23 @@
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>von - bis</th>
+      <th>Dauer in Tage</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for periods <- @next_12_months_periods do %>
+    <tr>
+      <% period = Enum.at(periods, 0) %>
+      <td><%= period.holiday_or_vacation_type.colloquial %></td>
+      <td>
+        <%= for period <- periods do %>
+          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
+        <% end %>
+      </td>
+      <td><%= ViewHelpers.number_days(periods) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
