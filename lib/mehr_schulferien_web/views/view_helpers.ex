@@ -43,4 +43,10 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   defp add_padding(entry) do
     entry |> Integer.to_string() |> String.pad_leading(2, "0")
   end
+
+  @doc """
+  Returns the year based on the `starts_on` value in the first non-empty period.
+  """
+  def display_year([[] | rest]), do: display_year(rest)
+  def display_year([[period | _] | _]), do: period.starts_on.year
 end

@@ -26,6 +26,50 @@ defmodule MehrSchulferien.Display do
   end
 
   @doc """
+  Gets the holiday periods over 12 months.
+  """
+  def get_12_months_periods(location_ids, today) do
+    current_year = today.year
+    current_month = today.month
+    current_day = today.day
+    {:ok, today_next_year} = Date.new(current_year + 1, current_month, current_day)
+
+    location_ids
+    |> get_periods_by_time(today, today_next_year, true)
+    |> Enum.chunk_by(& &1.holiday_or_vacation_type.colloquial)
+  end
+
+  @doc """
+  Gets the holiday periods over 3 years.
+  """
+  def get_3_years_periods(location_ids, current_year) do
+    {:ok, first_day} = Date.new(current_year, 1, 1)
+    {:ok, last_day} = Date.new(current_year + 2, 12, 31)
+    periods = get_periods_by_time(location_ids, first_day, last_day, false)
+
+    headers =
+      periods
+      |> Enum.uniq_by(& &1.holiday_or_vacation_type.colloquial)
+      |> Enum.sort(&(Date.day_of_year(&1.starts_on) <= Date.day_of_year(&2.starts_on)))
+
+    periods =
+      for period_list <- Enum.chunk_by(periods, & &1.starts_on.year) do
+        create_year_periods(period_list, headers)
+      end
+
+    {headers, periods}
+  end
+
+  defp create_year_periods(periods, headers) do
+    for title <- headers do
+      Enum.filter(
+        periods,
+        &(&1.holiday_or_vacation_type.colloquial == title.holiday_or_vacation_type.colloquial)
+      )
+    end
+  end
+
+  @doc """
   Returns a list of periods for a certain time frame.
   """
   def get_periods_by_time(location_ids, starts_on, ends_on, inclusive) do

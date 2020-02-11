@@ -35,7 +35,7 @@ defmodule MehrSchulferien.DisplayTest do
       short_time_periods =
         Display.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31], true)
 
-      assert length(short_time_periods) == 4
+      assert length(short_time_periods) == 5
 
       # results include a holiday that has already started, but not ended yet
       short_time_periods =
@@ -51,6 +51,45 @@ defmodule MehrSchulferien.DisplayTest do
       assert other_period not in short_time_periods
       assert other_period not in long_time_periods
     end
+
+    test "get_12_months_periods/2 returns the periods for a year", %{
+      federal_state: federal_state,
+      periods: periods
+    } do
+      location_ids = Maps.recursive_location_ids(federal_state)
+      period_ids = Enum.map(periods, & &1.id)
+      today = ~D[2020-02-26]
+      next_12_months_periods = Display.get_12_months_periods(location_ids, today)
+      assert length(next_12_months_periods) == 4
+      assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
+      today = ~D[2020-03-02]
+      next_12_months_periods = Display.get_12_months_periods(location_ids, today)
+      assert length(next_12_months_periods) == 3
+      assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
+    end
+
+    test "get_3_years_periods/2 returns the periods for 3 years", %{federal_state: federal_state} do
+      location_ids = Maps.recursive_location_ids(federal_state)
+      current_year = 2019
+
+      {next_3_years_headers, next_3_years_periods} =
+        Display.get_3_years_periods(location_ids, current_year)
+
+      assert [winter, oster, herbst, weihnachts] = next_3_years_headers
+      assert winter.holiday_or_vacation_type.name == "Winter"
+      assert oster.holiday_or_vacation_type.name == "Oster"
+      assert herbst.holiday_or_vacation_type.name == "Herbst"
+      assert weihnachts.holiday_or_vacation_type.name == "Weihnachts"
+      assert length(next_3_years_headers) == 4
+      assert length(next_3_years_periods) == 3
+      assert [year_1_periods, year_2_periods, _] = next_3_years_periods
+      assert [[] | _] = year_1_periods
+      assert [[winter], [oster], [herbst, _], [weihnachts]] = year_2_periods
+      assert winter.holiday_or_vacation_type.name == "Winter"
+      assert oster.holiday_or_vacation_type.name == "Oster"
+      assert herbst.holiday_or_vacation_type.name == "Herbst"
+      assert weihnachts.holiday_or_vacation_type.name == "Weihnachts"
+    end
   end
 
   defp add_federal_state(_) do
@@ -62,11 +101,13 @@ defmodule MehrSchulferien.DisplayTest do
     oster = insert(:holiday_or_vacation_type, %{name: "Oster"})
     herbst = insert(:holiday_or_vacation_type, %{name: "Herbst"})
     weihnachts = insert(:holiday_or_vacation_type, %{name: "Weihnachts"})
+    winter = insert(:holiday_or_vacation_type, %{name: "Winter"})
 
     data = [
       {oster, ~D[2019-04-06], ~D[2019-04-18]},
       {herbst, ~D[2019-10-31], ~D[2019-10-31]},
       {weihnachts, ~D[2019-12-23], ~D[2020-01-04]},
+      {winter, ~D[2020-02-24], ~D[2020-02-28]},
       {oster, ~D[2020-04-06], ~D[2020-04-18]},
       {herbst, ~D[2020-10-24], ~D[2020-10-27]},
       {herbst, ~D[2020-10-31], ~D[2020-10-31]},
