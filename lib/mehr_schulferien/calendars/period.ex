@@ -18,6 +18,8 @@ defmodule MehrSchulferien.Calendars.Period do
     field :starts_on, :date
     field :memo, :string
     field :display_priority, :integer
+    field :adjoining_duration, :integer
+    field :array_agg, {:array, :integer}
 
     belongs_to :location, Location
     belongs_to :holiday_or_vacation_type, HolidayOrVacationType

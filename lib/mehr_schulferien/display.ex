@@ -97,4 +97,88 @@ defmodule MehrSchulferien.Display do
       order_by: p.starts_on
     )
   end
+
+  @doc """
+  Returns the result of an SQL query.
+
+  Example:
+  execute_and_load("SELECT * FROM periods LIMIT 2", [], MehrSchulferien.Calendars.Period)
+  """
+  def execute_and_load(sql, params, model) do
+    result = Ecto.Adapters.SQL.query!(Repo, sql, params)
+    Enum.map(result.rows, &Repo.load(model, {result.columns, &1}))
+  end
+
+  @doc """
+  Returns periods with adjoining_duration and array_agg.
+
+  Example:
+  periods_with_adjoining_durations([1,2], ~D[2020-01-01], ~D[2021-01-01])
+  """
+  def periods_with_adjoining_durations(location_ids, starts_on, ends_on) do
+    sql = "SELECT
+    p.*,
+    p.adjoining_duration,
+    p.array_agg 
+ FROM
+    (
+       SELECT
+          p.*,
+          holiday_or_vacation_types.name,
+          (
+             Max(ends_on) OVER (PARTITION BY grp) - Min(starts_on) OVER (PARTITION BY grp) 
+          )
+          + 1 AS adjoining_duration,
+          array_agg(p.id) OVER (PARTITION BY grp) 
+       FROM
+          (
+             SELECT
+                p.*,
+                Count(*) FILTER (
+             WHERE
+                prev_eo < starts_on - INTERVAL '1 day') OVER ( 
+             ORDER BY
+                starts_on ) AS grp 
+             FROM
+                (
+                   SELECT
+                      p.*,
+                      MAX(ends_on) OVER (
+                   ORDER BY
+                      starts_on ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_eo 
+                   FROM
+                      (
+                         SELECT
+                            p.* 
+                         FROM
+                            periods p 
+                         WHERE
+                            location_id IN 
+                            (
+                               " <> Enum.join(location_ids, ", ")  <> "
+                            )
+                            AND starts_on > '" <> Date.to_string(starts_on) <> "' 
+                            AND starts_on < '" <> Date.to_string(ends_on) <> "' 
+                            AND 
+                            (
+                               is_valid_for_students = TRUE 
+                               OR is_valid_for_everybody = TRUE
+                            )
+                      )
+                      p 
+                )
+                p 
+          )
+          p 
+          LEFT JOIN
+             holiday_or_vacation_types 
+             ON p.holiday_or_vacation_type_id = holiday_or_vacation_types.id 
+    )
+    p 
+ WHERE
+    p.is_school_vacation = TRUE;"
+
+    execute_and_load(sql, [], MehrSchulferien.Calendars.Period)
+
+  end
 end
