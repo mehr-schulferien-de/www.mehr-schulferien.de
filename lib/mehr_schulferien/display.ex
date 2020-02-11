@@ -29,13 +29,8 @@ defmodule MehrSchulferien.Display do
   Gets the holiday periods over 12 months.
   """
   def get_12_months_periods(location_ids, today) do
-    current_year = today.year
-    current_month = today.month
-    current_day = today.day
-    {:ok, today_next_year} = Date.new(current_year + 1, current_month, current_day)
-
     location_ids
-    |> get_periods_by_time(today, today_next_year, true)
+    |> get_periods_by_time(today, Date.add(today, 365), true)
     |> Enum.chunk_by(& &1.holiday_or_vacation_type.colloquial)
   end
 
