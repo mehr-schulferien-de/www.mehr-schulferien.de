@@ -11,10 +11,10 @@
     </thead>
     <tbody>
     <%= for period_list <- @next_3_years_periods do %>
+      <!-- Need to allow for empty lists for any entry, including the first -->
       <tr>
         <td>
-          <% first_period = Enum.at(hd(period_list), 0) %>
-          <span><%= first_period.starts_on.year %></span>
+          <span><%= ViewHelpers.display_year(period_list) %></span>
         </td>
         <%= for periods <- period_list do %>
           <td>

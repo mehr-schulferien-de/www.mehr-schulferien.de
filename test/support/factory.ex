@@ -6,11 +6,11 @@ defmodule MehrSchulferien.Factory do
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period, Religion}
   alias MehrSchulferien.Maps.{Location, ZipCode, ZipCodeMapping}
 
-  def holiday_or_vacation_type_factory do
-    name = Enum.random(["Herbst", "Sommer", "Weihnachts"])
+  def holiday_or_vacation_type_factory(attrs) do
+    name = attrs[:name] || Enum.random(["Herbst", "Sommer", "Weihnachts"])
     country = insert(:country)
 
-    %HolidayOrVacationType{
+    holiday_or_vacation_type = %HolidayOrVacationType{
       name: name,
       colloquial: "#{name}ferien",
       default_display_priority: 3,
@@ -21,6 +21,8 @@ defmodule MehrSchulferien.Factory do
       wikipedia_url: "https://de.wikipedia.org/wiki/Schulferien##{name}ferien",
       country_location_id: country.id
     }
+
+    merge_attributes(holiday_or_vacation_type, attrs)
   end
 
   def country_factory do
