@@ -31,7 +31,7 @@ defmodule MehrSchulferien.Display do
   def get_12_months_periods(location_ids, today) do
     location_ids
     |> get_periods_by_time(today, Date.add(today, 365), true)
-    |> Enum.chunk_by(& &1.holiday_or_vacation_type.colloquial)
+    |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
   end
 
   @doc """
@@ -44,7 +44,7 @@ defmodule MehrSchulferien.Display do
 
     headers =
       periods
-      |> Enum.uniq_by(& &1.holiday_or_vacation_type.colloquial)
+      |> Enum.uniq_by(& &1.holiday_or_vacation_type.name)
       |> Enum.sort(&(Date.day_of_year(&1.starts_on) <= Date.day_of_year(&2.starts_on)))
 
     periods =
@@ -59,7 +59,7 @@ defmodule MehrSchulferien.Display do
     for title <- headers do
       Enum.filter(
         periods,
-        &(&1.holiday_or_vacation_type.colloquial == title.holiday_or_vacation_type.colloquial)
+        &(&1.holiday_or_vacation_type.name == title.holiday_or_vacation_type.name)
       )
     end
   end
@@ -155,7 +155,7 @@ defmodule MehrSchulferien.Display do
                          WHERE
                             location_id IN 
                             (
-                               " <> Enum.join(location_ids, ", ")  <> "
+                               " <> Enum.join(location_ids, ", ") <> "
                             )
                             AND starts_on > '" <> Date.to_string(starts_on) <> "' 
                             AND starts_on < '" <> Date.to_string(ends_on) <> "' 
@@ -179,6 +179,5 @@ defmodule MehrSchulferien.Display do
     p.is_school_vacation = TRUE;"
 
     execute_and_load(sql, [], MehrSchulferien.Calendars.Period)
-
   end
 end
