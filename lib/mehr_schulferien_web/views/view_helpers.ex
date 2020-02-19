@@ -49,4 +49,14 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   """
   def display_year([[] | rest]), do: display_year(rest)
   def display_year([[period | _] | _]), do: period.starts_on.year
+
+  @doc """
+  Returns the html class based on whether the date is a holiday.
+  """
+  def get_html_class(day, periods) do
+    case MehrSchulferien.Calendars.find_holiday_period(day.date, periods) do
+      nil -> day.html_class
+      period -> period.html_class
+    end
+  end
 end

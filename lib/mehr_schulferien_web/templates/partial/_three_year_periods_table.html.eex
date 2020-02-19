@@ -4,14 +4,13 @@
         <th></th>
         <%= for period <- @next_3_years_headers do %>
           <th>
-            <%= link period.holiday_or_vacation_type.name |> String.split("/") |> List.first, to: period.holiday_or_vacation_type.wikipedia_url %>
+            <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: period.holiday_or_vacation_type.wikipedia_url %>
           </th>
         <% end %>
       </tr>
     </thead>
     <tbody>
     <%= for period_list <- @next_3_years_periods do %>
-      <!-- Need to allow for empty lists for any entry, including the first -->
       <tr>
         <td>
           <span><%= ViewHelpers.display_year(period_list) %></span>
