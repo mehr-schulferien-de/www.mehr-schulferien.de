@@ -140,6 +140,27 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
+  Checks if the date is a holiday - using an ordered list of periods
+  for reference.
+  """
+  def find_holiday_period(_, []), do: nil
+
+  def find_holiday_period(date, [first | rest]) do
+    case Date.compare(date, first.starts_on) do
+      :lt -> nil
+      :eq -> first
+      :gt -> check_ends_on(date, first) || find_holiday_period(date, rest)
+    end
+  end
+
+  defp check_ends_on(date, first) do
+    case Date.compare(date, first.ends_on) do
+      :gt -> nil
+      _ -> first
+    end
+  end
+
+  @doc """
   Returns the list of periods.
   """
   def list_periods do

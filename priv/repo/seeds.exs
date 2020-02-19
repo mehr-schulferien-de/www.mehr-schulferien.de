@@ -162,7 +162,7 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Herbst",
     colloquial: "Herbstferien",
-    default_html_class: "green",
+    default_html_class: "success",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
     default_is_valid_for_students: true,
@@ -176,7 +176,7 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Weihnachten",
     colloquial: "Weihnachtsferien",
-    default_html_class: "green",
+    default_html_class: "success",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
     default_is_valid_for_students: true,
@@ -190,7 +190,7 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Winter",
     colloquial: "Winterferien",
-    default_html_class: "green",
+    default_html_class: "success",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
     default_is_valid_for_students: true,
@@ -205,7 +205,7 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Ostern/Frühjahr",
     colloquial: "Osterferien",
-    default_html_class: "green",
+    default_html_class: "success",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
     default_is_valid_for_students: true,
@@ -220,7 +220,7 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Himmelfahrt/Pfingsten",
     colloquial: "Pfingstferien",
-    default_html_class: "green",
+    default_html_class: "success",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
     default_is_valid_for_students: true,
@@ -234,7 +234,7 @@ alias MehrSchulferien.Calendars
   Calendars.create_holiday_or_vacation_type(%{
     name: "Sommer",
     colloquial: "Sommerferien",
-    default_html_class: "green",
+    default_html_class: "success",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
     default_is_valid_for_students: true,
@@ -247,7 +247,7 @@ alias MehrSchulferien.Calendars
 {:ok, beweglicher_ferientag} =
   Calendars.create_holiday_or_vacation_type(%{
     name: "Beweglicher Ferientag",
-    default_html_class: "green",
+    default_html_class: "success",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
     default_is_valid_for_students: true,
@@ -260,7 +260,7 @@ alias MehrSchulferien.Calendars
 {:ok, wochenende} =
   Calendars.create_holiday_or_vacation_type(%{
     name: "Wochenende",
-    default_html_class: "gray",
+    default_html_class: "active",
     default_is_listed_below_month: false,
     default_is_school_vacation: false,
     default_is_valid_for_everybody: true,

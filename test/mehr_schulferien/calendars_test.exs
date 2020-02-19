@@ -153,6 +153,22 @@ defmodule MehrSchulferien.CalendarsTest do
       assert %Ecto.Changeset{} =
                Calendars.change_holiday_or_vacation_type(holiday_or_vacation_type)
     end
+
+    test "find_holiday_period/2 returns true if the date is a holiday - otherwise false" do
+      period_1 = insert(:period, %{starts_on: ~D[2020-02-04], ends_on: ~D[2020-02-07]})
+      period_2 = insert(:period, %{starts_on: ~D[2020-04-04], ends_on: ~D[2020-04-07]})
+      periods = Calendars.list_periods()
+      refute Calendars.find_holiday_period(~D[2020-02-03], periods)
+      assert %Period{id: id} = Calendars.find_holiday_period(~D[2020-02-04], periods)
+      assert id == period_1.id
+      assert Calendars.find_holiday_period(~D[2020-02-06], periods)
+      assert Calendars.find_holiday_period(~D[2020-02-07], periods)
+      assert %Period{id: id} = Calendars.find_holiday_period(~D[2020-04-04], periods)
+      assert id == period_2.id
+      assert Calendars.find_holiday_period(~D[2020-04-06], periods)
+      assert Calendars.find_holiday_period(~D[2020-04-07], periods)
+      refute Calendars.find_holiday_period(~D[2020-04-08], periods)
+    end
   end
 
   describe "periods" do

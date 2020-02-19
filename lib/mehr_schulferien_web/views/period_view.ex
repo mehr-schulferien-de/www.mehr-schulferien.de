@@ -7,7 +7,7 @@ defmodule MehrSchulferienWeb.PeriodView do
   Returns an abbreviated form of the period name.
   """
   def vacation_type_name(%Period{holiday_or_vacation_type: %HolidayOrVacationType{name: name}}) do
-    name |> String.split("/") |> List.first
+    name |> String.split("/") |> List.first()
   end
 
   def vacation_type_name(_), do: ""

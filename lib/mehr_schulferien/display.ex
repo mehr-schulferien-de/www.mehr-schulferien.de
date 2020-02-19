@@ -101,8 +101,9 @@ defmodule MehrSchulferien.Display do
   @doc """
   Returns the result of an SQL query.
 
-  Example:
-  execute_and_load("SELECT * FROM periods LIMIT 2", [], MehrSchulferien.Calendars.Period)
+  ## Example
+
+      execute_and_load("SELECT * FROM periods LIMIT 2", [], MehrSchulferien.Calendars.Period)
   """
   def execute_and_load(sql, params, model) do
     result = Ecto.Adapters.SQL.query!(Repo, sql, params)
@@ -112,8 +113,9 @@ defmodule MehrSchulferien.Display do
   @doc """
   Returns periods with adjoining_duration and array_agg.
 
-  Example:
-  periods_with_adjoining_durations([1,2], ~D[2020-01-01], ~D[2021-01-01])
+  ## Example
+
+      periods_with_adjoining_durations([1,2], ~D[2020-01-01], ~D[2021-01-01])
   """
   def periods_with_adjoining_durations(location_ids, starts_on, ends_on) do
     sql = "SELECT
