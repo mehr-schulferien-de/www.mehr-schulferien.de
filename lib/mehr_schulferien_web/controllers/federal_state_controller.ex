@@ -19,7 +19,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {next_3_years_headers, next_3_years_periods} =
       Display.get_3_years_periods(location_ids, current_year)
 
-    days = DateHelpers.create_year(current_year)
+    days = DateHelpers.create_3_years(current_year)
     months = DateHelpers.get_months_map()
     next_three_years = Enum.join([current_year, current_year + 1, current_year + 2], ", ")
 

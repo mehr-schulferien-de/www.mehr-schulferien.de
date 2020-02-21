@@ -3,6 +3,8 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Helper functions for use with views.
   """
 
+  alias MehrSchulferien.Calendars
+
   @doc """
   Returns the number of days a holiday period lasts for.
   """
@@ -53,10 +55,22 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   @doc """
   Returns the html class based on whether the date is a holiday.
   """
-  def get_html_class(day, periods) do
-    case MehrSchulferien.Calendars.find_holiday_period(day.date, periods) do
-      nil -> day.html_class
+  def get_html_class(date, day_of_week, periods) do
+    case Calendars.find_period(date, periods) do
+      nil -> get_html_class(day_of_week)
       period -> period.html_class
     end
+  end
+
+  defp get_html_class(day_of_week) when day_of_week > 5, do: "active"
+  defp get_html_class(_), do: ""
+
+  @doc """
+  Returns the holiday periods for a month.
+  """
+  def get_month_holidays(month, periods) do
+    month
+    |> Calendars.find_periods_by_month(periods)
+    |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
   end
 end

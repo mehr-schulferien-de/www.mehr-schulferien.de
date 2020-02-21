@@ -33,19 +33,19 @@ defmodule MehrSchulferien.DisplayTest do
       period_ids = Enum.map(periods, & &1.id)
 
       short_time_periods =
-        Display.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31], true)
+        Display.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31])
 
       assert length(short_time_periods) == 5
 
       # results include a holiday that has already started, but not ended yet
       short_time_periods =
-        Display.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31], true)
+        Display.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31])
 
       assert length(short_time_periods) == 4
       assert Enum.all?(short_time_periods, &(&1.id in period_ids))
 
       long_time_periods =
-        Display.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31], false)
+        Display.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31])
 
       assert Enum.all?(long_time_periods, &(&1.id in period_ids))
       assert other_period not in short_time_periods

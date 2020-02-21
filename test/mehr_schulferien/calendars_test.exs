@@ -153,22 +153,6 @@ defmodule MehrSchulferien.CalendarsTest do
       assert %Ecto.Changeset{} =
                Calendars.change_holiday_or_vacation_type(holiday_or_vacation_type)
     end
-
-    test "find_holiday_period/2 returns true if the date is a holiday - otherwise false" do
-      period_1 = insert(:period, %{starts_on: ~D[2020-02-04], ends_on: ~D[2020-02-07]})
-      period_2 = insert(:period, %{starts_on: ~D[2020-04-04], ends_on: ~D[2020-04-07]})
-      periods = Calendars.list_periods()
-      refute Calendars.find_holiday_period(~D[2020-02-03], periods)
-      assert %Period{id: id} = Calendars.find_holiday_period(~D[2020-02-04], periods)
-      assert id == period_1.id
-      assert Calendars.find_holiday_period(~D[2020-02-06], periods)
-      assert Calendars.find_holiday_period(~D[2020-02-07], periods)
-      assert %Period{id: id} = Calendars.find_holiday_period(~D[2020-04-04], periods)
-      assert id == period_2.id
-      assert Calendars.find_holiday_period(~D[2020-04-06], periods)
-      assert Calendars.find_holiday_period(~D[2020-04-07], periods)
-      refute Calendars.find_holiday_period(~D[2020-04-08], periods)
-    end
   end
 
   describe "periods" do
@@ -276,6 +260,36 @@ defmodule MehrSchulferien.CalendarsTest do
     test "change_period/1 returns a period changeset" do
       period = insert(:period)
       assert %Ecto.Changeset{} = Calendars.change_period(period)
+    end
+
+    test "find_period/2 returns period if the date is a holiday" do
+      period_1 = insert(:period, %{starts_on: ~D[2020-02-04], ends_on: ~D[2020-02-07]})
+      period_2 = insert(:period, %{starts_on: ~D[2020-04-04], ends_on: ~D[2020-04-07]})
+      periods = Calendars.list_periods()
+      refute Calendars.find_period(~D[2020-02-03], periods)
+      assert %Period{id: id} = Calendars.find_period(~D[2020-02-04], periods)
+      assert id == period_1.id
+      assert Calendars.find_period(~D[2020-02-06], periods)
+      assert Calendars.find_period(~D[2020-02-07], periods)
+      assert %Period{id: id} = Calendars.find_period(~D[2020-04-04], periods)
+      assert id == period_2.id
+      assert Calendars.find_period(~D[2020-04-06], periods)
+      assert Calendars.find_period(~D[2020-04-07], periods)
+      refute Calendars.find_period(~D[2020-04-08], periods)
+    end
+
+    test "find_periods_by_month/2 returns periods if the month has a holiday" do
+      _period_1 = insert(:period, %{starts_on: ~D[2020-02-04], ends_on: ~D[2020-02-07]})
+      _period_2 = insert(:period, %{starts_on: ~D[2020-02-24], ends_on: ~D[2020-02-27]})
+      period_3 = insert(:period, %{starts_on: ~D[2020-04-04], ends_on: ~D[2020-06-07]})
+      periods = Calendars.list_periods()
+      assert Calendars.find_periods_by_month(~D[2020-01-01], periods) == []
+      assert length(Calendars.find_periods_by_month(~D[2020-02-01], periods)) == 2
+      assert [%Period{id: id}] = Calendars.find_periods_by_month(~D[2020-04-01], periods)
+      assert id == period_3.id
+      assert [%Period{id: ^id}] = Calendars.find_periods_by_month(~D[2020-05-01], periods)
+      assert [%Period{id: ^id}] = Calendars.find_periods_by_month(~D[2020-06-01], periods)
+      assert Calendars.find_periods_by_month(~D[2020-08-01], periods) == []
     end
   end
 end
