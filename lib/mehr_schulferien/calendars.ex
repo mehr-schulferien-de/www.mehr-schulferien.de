@@ -5,7 +5,7 @@ defmodule MehrSchulferien.Calendars do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period, Religion}
+  alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType, Period, Religion}
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Maps
 
@@ -140,27 +140,6 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
-  Checks if the date is a holiday - using an ordered list of periods
-  for reference.
-  """
-  def find_holiday_period(_, []), do: nil
-
-  def find_holiday_period(date, [first | rest]) do
-    case Date.compare(date, first.starts_on) do
-      :lt -> nil
-      :eq -> first
-      :gt -> check_ends_on(date, first) || find_holiday_period(date, rest)
-    end
-  end
-
-  defp check_ends_on(date, first) do
-    case Date.compare(date, first.ends_on) do
-      :gt -> nil
-      _ -> first
-    end
-  end
-
-  @doc """
   Returns the list of periods.
   """
   def list_periods do
@@ -245,5 +224,43 @@ defmodule MehrSchulferien.Calendars do
   """
   def change_period(%Period{} = period) do
     Period.changeset(period, %{})
+  end
+
+  @doc """
+  Checks if the date is a holiday period - using an ordered list of periods
+  for reference.
+  """
+  def find_period(_, []), do: nil
+
+  def find_period(date, [first | rest]) do
+    case Date.compare(date, first.starts_on) do
+      :lt -> nil
+      :eq -> first
+      :gt -> check_ends_on(date, first) || find_period(date, rest)
+    end
+  end
+
+  defp check_ends_on(date, first) do
+    case Date.compare(date, first.ends_on) do
+      :gt -> nil
+      _ -> first
+    end
+  end
+
+  @doc """
+  Returns the holiday periods for a certain date's month.
+  """
+  def find_periods_by_month(_date, []), do: []
+
+  def find_periods_by_month(date, [first | rest]) do
+    if DateHelpers.compare_by_month(date, first.starts_on) == :lt do
+      []
+    else
+      if DateHelpers.compare_by_month(date, first.ends_on) == :gt do
+        find_periods_by_month(date, rest)
+      else
+        [first | find_periods_by_month(date, rest)]
+      end
+    end
   end
 end

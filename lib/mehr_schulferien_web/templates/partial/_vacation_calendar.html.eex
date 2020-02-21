@@ -1,5 +1,5 @@
-<%= for day_list <- @days do %>
-<% first_day = Enum.at(day_list, 0) %>
+<%= for month_days <- @days do %>
+<% first_day = Enum.at(month_days, 0) %>
 <%= if rem(first_day.month, 3) == 0 do %>
 <div class="row">
 <% end %>
@@ -8,7 +8,7 @@
       <div class="col-xs-12">
         <h3>
           <%= @months[first_day.month] %>
-          <div class="text-muted pull-right"><%= @current_year %></div>
+          <div class="text-muted pull-right"><%= first_day.year %></div>
         </h3>
         <table class="table table-condensed">
           <thead>
@@ -24,22 +24,44 @@
           </thead>
           <tbody>
             <tr>
-              <% first_day_of_week = first_day.day_of_week %>
+              <% first_day_of_week = Date.day_of_week(first_day) %>
               <%= unless first_day_of_week == 1 do %>
                 <%= for _ <- 2..first_day_of_week do %>
                   <td></td>
                 <% end %>
               <% end %>
-              <%= for day <- day_list do %>
-                  <%= if day.day_of_week == 1 do %>
-                    </tr>
-                    <tr>
-                  <% end %>
-                <td class="text-right <%= ViewHelpers.get_html_class(day, @periods) %>"><%= day.display %></td>
+              <%= for day <- month_days do %>
+                <% day_of_week = Date.day_of_week(day) %>
+                <%= if day_of_week == 1 do %>
+                  </tr>
+                  <tr>
+                <% end %>
+                <td class="text-right <%= ViewHelpers.get_html_class(day, day_of_week, @periods) %>"><%= day.day %>.</td>
               <% end %>
             </tr>
           </tbody>
         </table>
+        <!-- We will need to update this section to include public holidays, which are not in @periods -->
+        <% school_hols = ViewHelpers.get_month_holidays(first_day, @periods) %>
+        <%= unless Enum.empty?(school_hols) do %>
+          <div class="row">
+            <div class="col-xs-6">
+              <h4>Schulferien</h4>
+              <%= for periods <- school_hols do %>
+                <% period = Enum.at(periods, 0) %>
+                <dl>
+                  <dt><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></dt>
+                  <dd>
+                    <%= for period <- periods do %>
+                      <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
+                    <% end %>
+                    <span class="label label-success"><%= ViewHelpers.number_days(periods) %></span>
+                  </dd>
+                </dl>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

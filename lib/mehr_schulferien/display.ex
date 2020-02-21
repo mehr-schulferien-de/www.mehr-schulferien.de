@@ -30,7 +30,7 @@ defmodule MehrSchulferien.Display do
   """
   def get_12_months_periods(location_ids, today) do
     location_ids
-    |> get_periods_by_time(today, Date.add(today, 365), true)
+    |> get_periods_by_time(today, Date.add(today, 365))
     |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
   end
 
@@ -40,7 +40,7 @@ defmodule MehrSchulferien.Display do
   def get_3_years_periods(location_ids, current_year) do
     {:ok, first_day} = Date.new(current_year, 1, 1)
     {:ok, last_day} = Date.new(current_year + 2, 12, 31)
-    periods = get_periods_by_time(location_ids, first_day, last_day, false)
+    periods = get_periods_by_time(location_ids, first_day, last_day)
 
     headers =
       periods
@@ -67,32 +67,20 @@ defmodule MehrSchulferien.Display do
   @doc """
   Returns a list of periods for a certain time frame.
   """
-  def get_periods_by_time(location_ids, starts_on, ends_on, inclusive) do
+  def get_periods_by_time(location_ids, starts_on, ends_on) do
     location_ids
-    |> query_periods(starts_on, ends_on, inclusive)
+    |> query_periods(starts_on, ends_on)
     |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
-  defp query_periods(location_ids, starts_on, ends_on, true) do
+  defp query_periods(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
           p.is_valid_for_students == true and
           p.is_school_vacation == true and
           p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: p.starts_on
-    )
-  end
-
-  defp query_periods(location_ids, starts_on, ends_on, _) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_valid_for_students == true and
-          p.is_school_vacation == true and
-          p.starts_on >= ^starts_on and
           p.starts_on <= ^ends_on,
       order_by: p.starts_on
     )
