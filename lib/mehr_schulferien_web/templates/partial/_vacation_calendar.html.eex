@@ -36,7 +36,7 @@
                   </tr>
                   <tr>
                 <% end %>
-                <td class="text-right <%= ViewHelpers.get_html_class(day, day_of_week, @periods) %>"><%= day.day %>.</td>
+                <td class="text-right <%= ViewHelpers.get_html_class(day, day_of_week, @public_periods, @periods) %>"><%= day.day %>.</td>
               <% end %>
             </tr>
           </tbody>

@@ -70,5 +70,26 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
       assert ViewHelpers.get_html_class(~D[2020-03-08], 7, [period]) == "active"
       assert ViewHelpers.get_html_class(~D[2020-03-12], 4, [period]) == ""
     end
+
+    test "get_html_class/4 shows period with highest display_priority" do
+      period_1 =
+        insert(:period, %{
+          display_priority: 8,
+          html_class: "info",
+          starts_on: ~D[2020-03-01],
+          ends_on: ~D[2020-03-01]
+        })
+
+      period_2 =
+        insert(:period, %{
+          display_priority: 5,
+          html_class: "success",
+          starts_on: ~D[2020-03-01],
+          ends_on: ~D[2020-03-04]
+        })
+
+      assert ViewHelpers.get_html_class(~D[2020-03-01], 7, [period_1, period_2]) == "info"
+      assert ViewHelpers.get_html_class(~D[2020-03-02], 1, [period_1, period_2]) == "success"
+    end
   end
 end
