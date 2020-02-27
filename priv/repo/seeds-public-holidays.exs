@@ -45,7 +45,7 @@ defmodule M do
               starts_on: json_date,
               ends_on: json_date,
               holiday_or_vacation_type_id: public_holiday_type.id,
-              html_class: "red",
+              html_class: "info",
               is_public_holiday: true,
               is_valid_for_everybody: false,
               is_valid_for_students: true,
@@ -66,7 +66,7 @@ defmodule M do
               starts_on: json_date,
               ends_on: json_date,
               holiday_or_vacation_type_id: public_holiday_type.id,
-              html_class: "red",
+              html_class: "info",
               is_public_holiday: true,
               is_valid_for_everybody: true,
               is_valid_for_students: true,
@@ -93,7 +93,7 @@ defmodule M do
             Calendars.create_holiday_or_vacation_type(%{
               name: public_holiday_type,
               country_location_id: 1,
-              html_class: "red",
+              html_class: "info",
               default_display_priority: 10
             })
 

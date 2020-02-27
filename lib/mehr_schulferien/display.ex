@@ -87,6 +87,30 @@ defmodule MehrSchulferien.Display do
   end
 
   @doc """
+  Returns a list of public holiday periods for a certain time frame.
+  """
+  def get_3_years_public_periods(location_ids, current_year) do
+    {:ok, first_day} = Date.new(current_year, 1, 1)
+    {:ok, last_day} = Date.new(current_year + 2, 12, 31)
+
+    location_ids
+    |> public_query_periods(first_day, last_day)
+    |> Repo.all()
+    |> Repo.preload(:holiday_or_vacation_type)
+  end
+
+  defp public_query_periods(location_ids, starts_on, ends_on) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.is_valid_for_everybody == true and
+          p.ends_on >= ^starts_on and
+          p.starts_on <= ^ends_on,
+      order_by: p.starts_on
+    )
+  end
+
+  @doc """
   Returns the result of an SQL query.
 
   ## Example
@@ -105,6 +129,9 @@ defmodule MehrSchulferien.Display do
 
       periods_with_adjoining_durations([1,2], ~D[2020-01-01], ~D[2021-01-01])
   """
+  # NOTE: riverrun (2020-02-21)
+  # Raises the following error:
+  # ** (Postgrex.Error) ERROR 42702 (ambiguous_column) column reference "adjoining_duration" is ambiguous
   def periods_with_adjoining_durations(location_ids, starts_on, ends_on) do
     sql = "SELECT
     p.*,
