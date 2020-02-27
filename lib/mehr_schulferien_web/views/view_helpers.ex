@@ -53,7 +53,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   def display_year([[period | _] | _]), do: period.starts_on.year
 
   @doc """
-  Returns the html class based on whether the date is a holiday.
+  Returns the html class based on whether the date is a holiday or weekend.
   """
   def get_html_class(date, day_of_week, periods) do
     case Calendars.find_period(date, periods) do
@@ -68,9 +68,12 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   @doc """
   Returns the holiday periods for a month.
   """
-  def get_month_holidays(month, periods) do
-    month
-    |> Calendars.find_periods_by_month(periods)
-    |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
+  def get_month_holidays(month, public_periods, school_periods) do
+    {month
+     |> Calendars.find_periods_by_month(public_periods)
+     |> Enum.chunk_by(& &1.holiday_or_vacation_type.name),
+     month
+     |> Calendars.find_periods_by_month(school_periods)
+     |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)}
   end
 end
