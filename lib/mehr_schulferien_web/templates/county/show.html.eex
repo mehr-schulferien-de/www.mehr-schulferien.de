@@ -1,0 +1,36 @@
+<ol class="breadcrumb hidden-xs">
+  <li><a href="/">Home</a></li>
+  <li><a href="/countries/deutschland">Deutschland</a></li>
+  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><a href="/">Home</a></li>
+  <li><a href="/countries/deutschland">DE</a></li>
+  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        Schulferien <%= @location.name %>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+
+    <h2>Ferien <%= @location.name %> <%= "#{@current_year}/#{@current_year + 1}" %></h2>
+    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods %>
+
+    <h2>Ferien <%= @location.name %> <%= @next_three_years %></h2>
+    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_headers: @next_3_years_headers, next_3_years_periods: @next_3_years_periods %>
+
+    <h2>Kalenderansicht</h2>
+    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
+
+  </div>
+</div>
