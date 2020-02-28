@@ -8,7 +8,11 @@ defmodule MehrSchulferienWeb.CountyController do
   #   render(conn, "index.html", federal_states: federal_states)
   # end
 
-  def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug, "county_slug" => county_slug}) do
+  def show(conn, %{
+        "country_slug" => country_slug,
+        "federal_state_slug" => federal_state_slug,
+        "county_slug" => county_slug
+      }) do
     location = Display.get_county_by_slug!(county_slug, federal_state_slug, country_slug)
     today = Date.utc_today()
     current_year = today.year
