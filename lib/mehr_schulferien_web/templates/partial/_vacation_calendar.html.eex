@@ -47,7 +47,6 @@
           <div class="row">
           <%= unless Enum.empty?(public_hols) do %>
               <div class="col-xs-6">
-                <h4>Gesetzliche Feiertage</h4>
                 <%= for periods <- public_hols do %>
                   <% period = Enum.at(periods, 0) %>
                   <dl>
@@ -66,7 +65,6 @@
             <%= unless Enum.empty?(school_hols) do %>
               <div class="row">
                 <div class="col-xs-6">
-                  <h4>Schulferien</h4>
                   <%= for periods <- school_hols do %>
                     <% period = Enum.at(periods, 0) %>
                     <dl>
