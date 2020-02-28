@@ -32,5 +32,7 @@
     <h2>Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
+    <h2>Städte im Kreis <%= @location.name %></h2>
+    <p>a (12345, 13412), b (23456), c (34561), d (01243, 01244, 01245), e (21142) und f (11134).</p>
   </div>
 </div>
