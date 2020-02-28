@@ -107,14 +107,20 @@ defmodule M do
   end
 
   def adds_year_to_date(starts_at, ends_at, vacation_type, year) do
-    case vacation_type do
-      "Herbst" ->
+    ends_at_elements = String.split(ends_at, ".")
+    ends_at_month = Enum.at(ends_at_elements,1) |> String.to_integer
+
+    case [vacation_type, ends_at_month] do
+      ["Herbst", _] ->
         [starts_at <> Integer.to_string(year), ends_at <> Integer.to_string(year)]
 
-      "Weihnachten" ->
-        [starts_at <> Integer.to_string(year), ends_at <> Integer.to_string(year + 1)]
+      ["Weihnachten", 12] ->
+        [starts_at <> Integer.to_string(year), ends_at <> Integer.to_string(year)]
 
-      _ ->
+      ["Weihnachten", _] ->
+        [starts_at <> Integer.to_string(year), ends_at <> Integer.to_string(year + 1)]
+  
+      [_, _] ->
         [starts_at <> Integer.to_string(year + 1), ends_at <> Integer.to_string(year + 1)]
     end
   end
