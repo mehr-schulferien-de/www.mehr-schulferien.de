@@ -34,6 +34,7 @@ defmodule MehrSchulferienWeb.Router do
 
     resources "/D/", FederalStateController, only: [:show]
 
+    get "/:country_slug/staedte/:city_slug", CityController, :show
     get "/:country_slug/:federal_state_slug/:county_slug", CountyController, :show
   end
 

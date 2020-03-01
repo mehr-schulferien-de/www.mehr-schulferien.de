@@ -44,6 +44,15 @@ defmodule MehrSchulferien.Display do
   end
 
   @doc """
+  Gets a single city.
+
+  Raises `Ecto.NoResultsError` if the county does not exist.
+  """
+  def get_city_by_slug!(city_slug, _country_slug) do
+    Repo.get_by!(Location, slug: city_slug, is_city: true)
+  end
+
+  @doc """
   Gets the holiday periods over 12 months.
   """
   def get_12_months_periods(location_ids, today) do
