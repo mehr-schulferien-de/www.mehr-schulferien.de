@@ -9,38 +9,35 @@
   </head>
   <body>
     <div class="container">
-      <main role="main">
-
-    <main role="main" class="container">
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-      <%= render @view_module, @view_template, assigns %>
-    </main>
-    <!--
-    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
-    -->
-
-    <div class="row">
-      <div class="col-xs-12">
-        <p>Alle Angaben ohne Gewähr.</p>
-        <hr />
-      </div>
-    </div>
-    <footer>
+      <main role="main" class="container">
+        <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+        <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+        <%= render @view_module, @view_template, assigns %>
+      </main>
+      <!--
+      <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+      -->
       <div class="row">
-        <div class="col-xs-6">
-          <p>
-            Copyright by Stefan Wintermeyer - <a href="/impressum">Impressum und Datenschutzerklärung</a>
-          </p>
-        </div>
-        <div class="col-xs-6">
-          <p class="pull-right">
-            <a href="https://www.wintermeyer-consulting.de">Wintermeyer Consulting</a>
-          </p>
+        <div class="col-xs-12">
+          <p>Alle Angaben ohne Gewähr.</p>
+          <hr />
         </div>
       </div>
-    </footer>
-  </div>
+      <footer>
+        <div class="row">
+          <div class="col-xs-6">
+            <p>
+              Copyright by Stefan Wintermeyer - <a href="/impressum">Impressum und Datenschutzerklärung</a>
+            </p>
+          </div>
+          <div class="col-xs-6">
+            <p class="pull-right">
+              <a href="https://www.wintermeyer-consulting.de">Wintermeyer Consulting</a>
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
 
   </body>
 </html>
