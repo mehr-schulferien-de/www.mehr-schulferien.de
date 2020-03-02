@@ -6,7 +6,10 @@
   <div class="col-sm-4">
     <div class="row">
       <div class="col-xs-12">
-        <h3>
+        <% periods = ViewHelpers.get_month_holidays(first_day, @periods) %>
+        <% period = periods |> List.flatten() |> Enum.at(0) %>
+        <% period_id = if period, do: "#{period.holiday_or_vacation_type.slug}#{period.starts_on.year}", else: "" %>
+        <h3 id="<%= period_id %>">
           <%= @months[first_day.month] %>
           <div class="text-muted pull-right"><%= first_day.year %></div>
         </h3>
@@ -45,40 +48,12 @@
         <%= unless Enum.empty?(public_hols) and Enum.empty?(school_hols) do %>
 
           <div class="row">
-          <%= unless Enum.empty?(public_hols) do %>
-              <div class="col-xs-6">
-                <%= for periods <- public_hols do %>
-                  <% period = Enum.at(periods, 0) %>
-                  <dl>
-                    <dt><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></dt>
-                    <dd>
-                      <%= for period <- periods do %>
-                        <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
-                      <% end %>
-                      <span class="label label-info"><%= ViewHelpers.number_days(periods) %></span>
-                    </dd>
-                  </dl>
-                <% end %>
-              </div>
+            <%= unless Enum.empty?(public_hols) do %>
+              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_hols, number_days_html_class: "info" %>
             <% end %>
 
             <%= unless Enum.empty?(school_hols) do %>
-              <div class="row">
-                <div class="col-xs-6">
-                  <%= for periods <- school_hols do %>
-                    <% period = Enum.at(periods, 0) %>
-                    <dl>
-                      <dt><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></dt>
-                      <dd>
-                        <%= for period <- periods do %>
-                          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
-                        <% end %>
-                        <span class="label label-success"><%= ViewHelpers.number_days(periods) %></span>
-                      </dd>
-                    </dl>
-                  <% end %>
-                </div>
-              </div>
+              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_hols, number_days_html_class: "success" %>
             <% end %>
           </div>
 
