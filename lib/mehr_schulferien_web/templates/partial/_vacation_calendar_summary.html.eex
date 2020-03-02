@@ -1,0 +1,14 @@
+<div class="col-xs-6">
+  <%= for periods <- @holiday_periods do %>
+    <% period = Enum.at(periods, 0) %>
+    <dl>
+      <dt><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></dt>
+      <dd>
+        <%= for period <- periods do %>
+          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
+        <% end %>
+        <span class="label label-<%= @number_days_html_class %>"><%= ViewHelpers.number_days(periods) %></span>
+      </dd>
+    </dl>
+  <% end %>
+</div>

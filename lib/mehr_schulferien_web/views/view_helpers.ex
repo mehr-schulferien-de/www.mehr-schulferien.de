@@ -92,15 +92,15 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   @doc """
   Returns the public holiday periods and school holiday periods for a month.
   """
-  def get_month_holidays(month, public_periods, school_periods) do
-    {get_month_holidays(month, public_periods), get_month_holidays(month, school_periods)}
+  def get_month_holidays(date, public_periods, school_periods) do
+    {get_month_holidays(date, public_periods), get_month_holidays(date, school_periods)}
   end
 
   @doc """
   Returns the holiday periods for a month.
   """
-  def get_month_holidays(month, periods) do
-    month
+  def get_month_holidays(date, periods) do
+    date
     |> Calendars.find_periods_by_month(periods)
     |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
   end

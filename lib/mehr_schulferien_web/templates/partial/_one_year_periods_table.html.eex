@@ -12,11 +12,13 @@
       <% period = Enum.at(periods, 0) %>
       <td><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></td>
       <td>
-        <a href="#<%= period.holiday_or_vacation_type.slug %><%= period.starts_on.year %>">
-        <%= for period <- periods do %>
-          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
-        <% end %>
-        </a>
+        <span>
+          <%= link to: "##{period.holiday_or_vacation_type.slug}#{period.starts_on.year}" do %>
+            <%= for period <- periods do %>
+              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
+            <% end %>
+          <% end %>
+        </span>
       </td>
       <td><%= ViewHelpers.number_days(periods) %></td>
     </tr>

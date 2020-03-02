@@ -11,16 +11,25 @@
     </thead>
     <tbody>
     <%= for period_list <- @next_3_years_periods do %>
-      <tr>
+      <% year = ViewHelpers.display_year(period_list) %>
+      <tr class="<%= if year == @current_year, do: "active", else: "" %>">
         <td>
-          <span><%= ViewHelpers.display_year(period_list) %></span>
+          <span><%= year %></span>
         </td>
         <%= for periods <- period_list do %>
-          <td>
-            <%= for period <- periods do %>
-              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
-            <% end %>
-          </td>
+          <%= if period = Enum.at(periods, 0) do %>
+            <td>
+              <span>
+                <%= link to: "##{period.holiday_or_vacation_type.slug}#{period.starts_on.year}" do %>
+                  <%= for period <- periods do %>
+                    <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
+                  <% end %>
+                <% end %>
+              </span>
+            </td>
+          <% else %>
+            <td></td>
+          <% end %>
         <% end %>
       </tr>
     <% end %>
