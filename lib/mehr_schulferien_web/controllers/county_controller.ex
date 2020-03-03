@@ -1,22 +1,18 @@
 defmodule MehrSchulferienWeb.CountyController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Display}
-
-  # def index(conn, _params) do
-  #   federal_states = Display.list_federal_states()
-  #   render(conn, "index.html", federal_states: federal_states)
-  # end
+  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Display, Maps}
 
   def show(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug,
         "county_slug" => county_slug
       }) do
-    location = Display.get_county_by_slug!(county_slug, federal_state_slug, country_slug)
+    county = Display.get_county_by_slug!(county_slug, federal_state_slug, country_slug)
+    cities = Maps.list_cities(county)
     today = Date.utc_today()
     current_year = today.year
-    location_ids = Calendars.recursive_location_ids(location)
+    location_ids = Calendars.recursive_location_ids(county)
 
     next_12_months_periods = Display.get_12_months_periods(location_ids, today)
 
@@ -33,9 +29,10 @@ defmodule MehrSchulferienWeb.CountyController do
     next_three_years = Enum.join([current_year, current_year + 1, current_year + 2], ", ")
 
     render(conn, "show.html",
+      cities: cities,
+      county: county,
       current_year: current_year,
       days: days,
-      location: location,
       months: months,
       next_12_months_periods: next_12_months_periods,
       next_3_years_headers: next_3_years_headers,

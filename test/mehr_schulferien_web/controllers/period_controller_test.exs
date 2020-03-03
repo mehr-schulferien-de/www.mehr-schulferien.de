@@ -43,7 +43,7 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
 
   describe "create period" do
     test "redirects to show when data is valid", %{conn: conn} do
-      location = insert(:location)
+      location = insert(:federal_state)
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
 
       create_attrs =

@@ -16,29 +16,32 @@ defmodule MehrSchulferien.MapsTest do
     @invalid_attrs %{name: nil}
 
     test "list_locations/0 returns all locations" do
-      location = insert(:location)
+      location = insert(:federal_state)
       assert locations = Maps.list_locations()
       assert location_1 = Enum.find(locations, &(&1.id == location.id))
       assert location.name == location_1.name
     end
 
+    test "list_cities/1 returns a certain county's cities" do
+      county = insert(:county)
+      cities = insert_list(3, :city, %{parent_location_id: county.id})
+      cities_ids = cities |> Enum.sort(&(&1.name >= &2.name)) |> Enum.map(& &1.id)
+      _other_city = insert(:city)
+      cities_1 = Maps.list_cities(county)
+      cities_1_ids = Enum.map(cities_1, & &1.id)
+      assert cities_1_ids == cities_ids
+    end
+
     test "get_location!/1 returns the location with given id" do
-      location = insert(:location)
+      location = insert(:federal_state)
       assert Maps.get_location!(location.id) == location
     end
 
     test "recursive_location_ids/1 returns location's id and ancestor ids" do
-      other_location = insert(:location)
-      location = insert(:location)
+      other_location = insert(:federal_state)
+      location = insert(:federal_state)
       country = Maps.get_location!(location.parent_location_id)
-
-      county =
-        insert(:location, %{
-          is_federal_state: false,
-          is_county: true,
-          parent_location_id: location.id
-        })
-
+      county = insert(:county, %{parent_location_id: location.id})
       location_ids = Maps.recursive_location_ids(country)
       assert location_ids == [country.id]
       location_ids = Maps.recursive_location_ids(location)
@@ -150,7 +153,7 @@ defmodule MehrSchulferien.MapsTest do
     end
 
     test "create_zip_code_mapping/1 with valid data creates a zip_code_mapping" do
-      location = insert(:location)
+      location = insert(:city)
       zip_code = insert(:zip_code)
       valid_attrs = Map.merge(@valid_attrs, %{location_id: location.id, zip_code_id: zip_code.id})
 

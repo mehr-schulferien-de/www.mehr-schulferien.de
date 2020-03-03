@@ -11,7 +11,7 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
   end
 
   defp add_federal_state(_) do
-    federal_state = insert(:location)
+    federal_state = insert(:federal_state)
     {:ok, %{federal_state: federal_state}}
   end
 
