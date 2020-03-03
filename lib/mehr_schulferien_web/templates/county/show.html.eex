@@ -14,7 +14,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Schulferien <%= @county.name %>
+        Schulferien im Kreis <%= @county.name %>
       </h1>
     </div>
   </div>
