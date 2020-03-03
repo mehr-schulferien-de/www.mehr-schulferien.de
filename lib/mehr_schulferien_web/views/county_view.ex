@@ -18,6 +18,6 @@ defmodule MehrSchulferienWeb.CountyView do
   end
 
   defp city_to_string(city) do
-    "#{city.name} (#{Enum.map_join(city.zip_codes, ", ", & &1.value)})"
+    "#{city.name} (#{Enum.map(city.zip_codes, & &1.value) |> Enum.sort |> Enum.join(", ")})"
   end
 end
