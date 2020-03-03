@@ -25,11 +25,17 @@ defmodule MehrSchulferien.Factory do
     merge_attributes(holiday_or_vacation_type, attrs)
   end
 
+  def location_factory do
+    [:country, :federal_state, :county, :city]
+    |> Enum.random()
+    |> build()
+  end
+
   def country_factory do
     %Location{name: "Deutschland", code: "D", is_country: true}
   end
 
-  def location_factory do
+  def federal_state_factory do
     country = insert(:country)
 
     %Location{
@@ -40,8 +46,30 @@ defmodule MehrSchulferien.Factory do
     }
   end
 
+  def county_factory do
+    federal_state = insert(:federal_state)
+
+    %Location{
+      name: "Berlin",
+      code: "BE",
+      is_county: true,
+      parent_location_id: federal_state.id
+    }
+  end
+
+  def city_factory do
+    county = insert(:county)
+
+    %Location{
+      name: Enum.random(["Berlin", "Dresden", "Frankfurt", "Hamburg"]),
+      code: "BE",
+      is_city: true,
+      parent_location_id: county.id
+    }
+  end
+
   def period_factory do
-    federal_state = insert(:location, %{is_federal_state: true})
+    federal_state = insert(:federal_state)
 
     %Period{
       holiday_or_vacation_type: build(:holiday_or_vacation_type),
@@ -72,7 +100,7 @@ defmodule MehrSchulferien.Factory do
   end
 
   def zip_code_mapping_factory do
-    location = insert(:location, %{is_city: true})
+    location = insert(:city)
     zip_code = insert(:zip_code)
 
     %ZipCodeMapping{

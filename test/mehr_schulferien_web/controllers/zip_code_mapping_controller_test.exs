@@ -36,7 +36,7 @@ defmodule MehrSchulferienWeb.ZipCodeMappingControllerTest do
 
   describe "create zip_code_mapping" do
     test "redirects to show when data is valid", %{conn: conn} do
-      location = insert(:location)
+      location = insert(:city)
       zip_code = insert(:zip_code)
 
       create_attrs =

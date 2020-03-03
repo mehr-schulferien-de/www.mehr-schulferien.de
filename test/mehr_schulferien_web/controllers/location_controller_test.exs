@@ -32,7 +32,7 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
     end
 
     test "renders form for editing chosen location", %{conn: conn} do
-      location = insert(:location)
+      location = insert(:federal_state)
       conn = get(conn, Routes.location_path(conn, :edit, location))
       assert html_response(conn, 200) =~ "Edit Location"
     end
@@ -89,7 +89,7 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
   end
 
   defp create_location(_) do
-    location = insert(:location)
+    location = insert(:federal_state)
     {:ok, location: location}
   end
 end

@@ -14,7 +14,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Schulferien <%= @location.name %>
+        Schulferien <%= @county.name %>
       </h1>
     </div>
   </div>
@@ -25,13 +25,13 @@
 
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods %>
 
-    <h2>Ferien <%= @location.name %> <%= @next_three_years %></h2>
+    <h2>Ferien <%= @county.name %> <%= @next_three_years %></h2>
     <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_headers: @next_3_years_headers, next_3_years_periods: @next_3_years_periods %>
 
     <h2>Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
-    <h2>Städte im Kreis <%= @location.name %></h2>
-    <p>a (12345, 13412), b (23456), c (34561), d (01243, 01244, 01245), e (21142) und f (11134).</p>
+    <h2>Städte im Kreis <%= @county.name %></h2>
+    <p><%= MehrSchulferienWeb.CountyView.format_city_list(@cities) %></p>
   </div>
 </div>
