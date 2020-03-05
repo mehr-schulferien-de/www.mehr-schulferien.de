@@ -20,7 +20,8 @@
           <%= if period = Enum.at(periods, 0) do %>
             <td>
               <span>
-                <%= link to: "##{period.holiday_or_vacation_type.slug}#{period.starts_on.year}" do %>
+                <% month = @months[period.starts_on.month] %>
+                <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
                   <%= for period <- periods do %>
                     <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
                   <% end %>
