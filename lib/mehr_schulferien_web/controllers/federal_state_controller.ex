@@ -5,14 +5,17 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-  def show(conn, %{"federal_state_slug" => <<first::binary-size(1)>> <> _ = id})
+  def show(conn, %{
+        "country_slug" => country_slug,
+        "federal_state_slug" => <<first::binary-size(1)>> <> _ = id
+      })
       when first in @digits do
     location = Display.get_federal_state!(id)
-    redirect(conn, to: Routes.federal_state_path(conn, :show, location.slug))
+    redirect(conn, to: Routes.federal_state_path(conn, :show, country_slug, location.slug))
   end
 
-  def show(conn, %{"federal_state_slug" => slug}) do
-    location = Display.get_federal_state_by_slug!(slug)
+  def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
+    location = Display.get_federal_state_by_slug!(country_slug, federal_state_slug)
     today = Date.utc_today()
     current_year = today.year
     location_ids = Calendars.recursive_location_ids(location)

@@ -33,7 +33,7 @@
 
     <h2>Städte im Kreis <%= @county.name %></h2>
     <%= for city <- @cities do %>
-      <%= link city.name, to: Routes.city_path(@conn, :show, "deutschland", city.slug) %>
+      <%= link city.name, to: Routes.city_path(@conn, :show, @country_slug, city.slug) %>
       <p>Postleitzahlen: <%= MehrSchulferienWeb.CountyView.format_zip_codes(city) %></p>
     <% end %>
   </div>
