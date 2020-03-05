@@ -35,37 +35,43 @@ defmodule MehrSchulferien.Factory do
     %Location{name: "Deutschland", code: "D", is_country: true}
   end
 
-  def federal_state_factory do
-    country = insert(:country)
+  def federal_state_factory(attrs) do
+    country = attrs[:country] || insert(:country)
 
-    %Location{
+    federal_state = %Location{
       name: "Berlin",
       code: "BE",
       is_federal_state: true,
       parent_location_id: country.id
     }
+
+    merge_attributes(federal_state, attrs)
   end
 
-  def county_factory do
-    federal_state = insert(:federal_state)
+  def county_factory(attrs) do
+    federal_state = attrs[:federal_state] || insert(:federal_state)
 
-    %Location{
+    county = %Location{
       name: "Koblenz",
       code: "KO",
       is_county: true,
       parent_location_id: federal_state.id
     }
+
+    merge_attributes(county, attrs)
   end
 
-  def city_factory do
-    county = insert(:county)
+  def city_factory(attrs) do
+    county = attrs[:county] || insert(:county)
 
-    %Location{
+    city = %Location{
       name: "Dresden",
       code: "DR",
       is_city: true,
       parent_location_id: county.id
     }
+
+    merge_attributes(city, attrs)
   end
 
   def period_factory do

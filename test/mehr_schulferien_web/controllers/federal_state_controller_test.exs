@@ -1,18 +1,23 @@
 defmodule MehrSchulferienWeb.FederalStateControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  describe "read federal state display data" do
+  describe "read federal state data" do
     setup [:add_federal_state, :add_periods]
 
-    test "shows a federal state display", %{conn: conn, federal_state: federal_state} do
-      conn = get(conn, Routes.federal_state_path(conn, :show, federal_state.slug))
+    test "shows info for a specific federal state", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn = get(conn, Routes.federal_state_path(conn, :show, country.slug, federal_state.slug))
       assert html_response(conn, 200) =~ federal_state.name
     end
   end
 
   defp add_federal_state(_) do
-    federal_state = insert(:federal_state, %{slug: "berlin"})
-    {:ok, %{federal_state: federal_state}}
+    country = insert(:country, %{slug: "d"})
+    federal_state = insert(:federal_state, %{parent_location_id: country.id, slug: "berlin"})
+    {:ok, %{country: country, federal_state: federal_state}}
   end
 
   defp add_periods(%{federal_state: federal_state}) do

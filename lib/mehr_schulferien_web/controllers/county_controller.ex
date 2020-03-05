@@ -31,6 +31,7 @@ defmodule MehrSchulferienWeb.CountyController do
     render(conn, "show.html",
       cities: cities,
       county: county,
+      country_slug: country_slug,
       current_year: current_year,
       days: days,
       months: months,
