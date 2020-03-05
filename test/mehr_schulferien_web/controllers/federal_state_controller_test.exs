@@ -5,13 +5,13 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     setup [:add_federal_state, :add_periods]
 
     test "shows a federal state display", %{conn: conn, federal_state: federal_state} do
-      conn = get(conn, Routes.federal_state_path(conn, :show, federal_state))
+      conn = get(conn, Routes.federal_state_path(conn, :show, federal_state.slug))
       assert html_response(conn, 200) =~ federal_state.name
     end
   end
 
   defp add_federal_state(_) do
-    federal_state = insert(:federal_state)
+    federal_state = insert(:federal_state, %{slug: "berlin"})
     {:ok, %{federal_state: federal_state}}
   end
 

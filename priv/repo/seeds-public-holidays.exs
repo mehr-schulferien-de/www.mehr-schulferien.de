@@ -13,7 +13,7 @@ defmodule M do
     json_public_holidays =
       ("priv/repo/seeds.d/" <> Integer.to_string(year) <> ".json")
       |> File.read!()
-      |> Poison.decode!()
+      |> Jason.decode!()
 
     query =
       from(l in Location,

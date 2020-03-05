@@ -6,11 +6,9 @@
   <div class="col-sm-4">
     <div class="row">
       <div class="col-xs-12">
-        <% periods = ViewHelpers.get_month_holidays(first_day, @periods) %>
-        <% period = periods |> List.flatten() |> Enum.at(0) %>
-        <% period_id = if period, do: "#{period.holiday_or_vacation_type.slug}#{period.starts_on.year}", else: "" %>
-        <h3 id="<%= period_id %>">
-          <%= @months[first_day.month] %>
+        <% month = @months[first_day.month] %>
+        <h3 id="<%= String.downcase(month) %><%= first_day.year %>">
+          <%= month %>
           <div class="text-muted pull-right"><%= first_day.year %></div>
         </h3>
         <table class="table table-condensed">

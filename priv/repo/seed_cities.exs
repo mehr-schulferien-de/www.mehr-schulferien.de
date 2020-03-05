@@ -15,7 +15,7 @@ city_count = Repo.one(from(l in Location, where: l.is_city == true, select: coun
 if city_count != 0 do
   IO.puts("There are already elements in the cities table.")
 else
-  json_zip_codes = "priv/repo/seeds.d/zip_codes.json" |> File.read!() |> Poison.decode!()
+  json_zip_codes = "priv/repo/seeds.d/zip_codes.json" |> File.read!() |> Jason.decode!()
 
   json_zip_codes
   |> Enum.each(fn json_city_data ->

@@ -3,13 +3,16 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Display}
 
-  # def index(conn, _params) do
-  #   federal_states = Display.list_federal_states()
-  #   render(conn, "index.html", federal_states: federal_states)
-  # end
+  @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"federal_state_slug" => <<first::binary-size(1)>> <> _ = id})
+      when first in @digits do
     location = Display.get_federal_state!(id)
+    redirect(conn, to: Routes.federal_state_path(conn, :show, location.slug))
+  end
+
+  def show(conn, %{"federal_state_slug" => slug}) do
+    location = Display.get_federal_state_by_slug!(slug)
     today = Date.utc_today()
     current_year = today.year
     location_ids = Calendars.recursive_location_ids(location)

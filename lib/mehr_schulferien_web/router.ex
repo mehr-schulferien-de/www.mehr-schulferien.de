@@ -32,14 +32,8 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/", PageController, :index
 
-    resources "/D/", FederalStateController, only: [:show]
-
     get "/:country_slug/staedte/:city_slug", CityController, :show
     get "/:country_slug/:federal_state_slug/:county_slug", CountyController, :show
+    get "/d/:federal_state_slug", FederalStateController, :show
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", MehrSchulferienWeb do
-  #   pipe_through :api
-  # end
 end
