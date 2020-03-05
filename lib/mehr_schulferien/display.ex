@@ -154,6 +154,44 @@ defmodule MehrSchulferien.Display do
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
+  @doc """
+  Returns a list of public holiday periods for a given date and location_ids.
+  """
+  def list_public_holiday_periods(location_ids, date) do
+    query =
+      from(p in Period,
+        where:
+          p.location_id in ^location_ids and
+            p.is_public_holiday == true and
+            p.ends_on >= ^date and
+            p.starts_on <= ^date,
+        order_by: p.display_priority
+      )
+
+    Repo.all(query)
+    |> Repo.preload(:holiday_or_vacation_type)
+  end
+
+  @doc """
+  Returns a list of periods which indicate that this day is school
+  free for students for a given date and location_ids.
+  """
+  def list_school_free_periods(location_ids, date) do
+    query =
+      from(p in Period,
+        where:
+          p.location_id in ^location_ids and
+            (p.is_valid_for_students == true or
+               p.is_valid_for_everybody == true) and
+            p.ends_on >= ^date and
+            p.starts_on <= ^date,
+        order_by: p.display_priority
+      )
+
+    Repo.all(query)
+    |> Repo.preload(:holiday_or_vacation_type)
+  end
+
   defp public_query_periods(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:

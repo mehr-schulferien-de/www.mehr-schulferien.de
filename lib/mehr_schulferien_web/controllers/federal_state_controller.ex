@@ -46,4 +46,36 @@ defmodule MehrSchulferienWeb.FederalStateController do
       public_periods: public_periods
     )
   end
+
+  def faq(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
+    location = Display.get_federal_state_by_slug!(country_slug, federal_state_slug)
+    location_ids = Calendars.recursive_location_ids(location)
+    today = Date.utc_today()
+    todays_public_holiday_periods = Display.list_public_holiday_periods(location_ids, today)
+
+    tomorrows_public_holiday_periods =
+      Display.list_public_holiday_periods(location_ids, Date.add(today, 1))
+
+    day_after_tomorrows_public_holiday_periods =
+      Display.list_public_holiday_periods(location_ids, Date.add(today, 2))
+
+    todays_school_free_periods = Display.list_school_free_periods(location_ids, today)
+
+    tomorrows_school_free_periods =
+      Display.list_school_free_periods(location_ids, Date.add(today, 1))
+
+    day_after_tomorrows_school_free_periods =
+      Display.list_school_free_periods(location_ids, Date.add(today, 2))
+
+    render(conn, "faq.html",
+      location: location,
+      today: today,
+      todays_public_holiday_periods: todays_public_holiday_periods,
+      tomorrows_public_holiday_periods: tomorrows_public_holiday_periods,
+      day_after_tomorrows_public_holiday_periods: day_after_tomorrows_public_holiday_periods,
+      todays_school_free_periods: todays_school_free_periods,
+      tomorrows_school_free_periods: tomorrows_school_free_periods,
+      day_after_tomorrows_school_free_periods: day_after_tomorrows_school_free_periods
+    )
+  end
 end

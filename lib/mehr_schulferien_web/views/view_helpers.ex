@@ -34,12 +34,28 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     format_date(from_date, short) <> " - " <> format_date(till_date, short)
   end
 
-  defp format_date(date, nil) do
+  def format_date(date) do
+    format_date(date, nil)
+  end
+
+  def format_date(date, nil) do
     format_date(date, :short) <> "#{date.year |> Integer.to_string() |> String.slice(2, 2)}"
   end
 
-  defp format_date(date, :short) do
+  def format_date(date, :short) do
     "#{add_padding(date.day)}.#{add_padding(date.month)}."
+  end
+
+  def weekday(date) do
+    case Date.day_of_week(date) do
+      1 -> "Montag"
+      2 -> "Dienstag"
+      3 -> "Mittwoch"
+      4 -> "Donnerstag"
+      5 -> "Freitag"
+      6 -> "Samstag"
+      _ -> "Sonntag"
+    end
   end
 
   defp add_padding(entry) do
