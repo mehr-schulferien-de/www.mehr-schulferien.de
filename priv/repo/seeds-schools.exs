@@ -13,7 +13,7 @@ defmodule M do
   def import_json do
     "priv/repo/seeds.d/schools.json"
     |> File.read!()
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Enum.each(fn school ->
       federal_state = find_federal_state(school["federal_state"]["name"])
       slug = school["slug"]

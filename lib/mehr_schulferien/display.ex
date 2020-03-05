@@ -26,6 +26,15 @@ defmodule MehrSchulferien.Display do
   end
 
   @doc """
+  Gets a single federal_state by querying for the slug.
+
+  Raises `Ecto.NoResultsError` if the federal state does not exist.
+  """
+  def get_federal_state_by_slug!(slug) do
+    Repo.get_by!(Location, slug: slug, is_federal_state: true)
+  end
+
+  @doc """
   Gets a single county.
 
   Raises `Ecto.NoResultsError` if the county does not exist.
@@ -35,7 +44,7 @@ defmodule MehrSchulferien.Display do
   end
 
   @doc """
-  Gets a single county.
+  Gets a single county by querying for the slug.
 
   Raises `Ecto.NoResultsError` if the county does not exist.
   """
@@ -44,7 +53,7 @@ defmodule MehrSchulferien.Display do
   end
 
   @doc """
-  Gets a single city.
+  Gets a single city by querying for the slug.
 
   Raises `Ecto.NoResultsError` if the county does not exist.
   """
