@@ -32,6 +32,9 @@
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
     <h2>Städte im Kreis <%= @county.name %></h2>
-    <p><%= MehrSchulferienWeb.CountyView.format_city_list(@cities) %></p>
+    <%= for city <- @cities do %>
+      <%= link city.name, to: Routes.city_path(@conn, :show, "deutschland", city.slug) %>
+      <p>Postleitzahlen: <%= MehrSchulferienWeb.CountyView.format_zip_codes(city) %></p>
+    <% end %>
   </div>
 </div>
