@@ -50,8 +50,8 @@ defmodule MehrSchulferien.Factory do
     federal_state = insert(:federal_state)
 
     %Location{
-      name: "Berlin",
-      code: "BE",
+      name: "Koblenz",
+      code: "KO",
       is_county: true,
       parent_location_id: federal_state.id
     }
@@ -61,8 +61,8 @@ defmodule MehrSchulferien.Factory do
     county = insert(:county)
 
     %Location{
-      name: Enum.random(["Berlin", "Dresden", "Frankfurt", "Hamburg"]),
-      code: "BE",
+      name: "Dresden",
+      code: "DR",
       is_city: true,
       parent_location_id: county.id
     }

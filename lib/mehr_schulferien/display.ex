@@ -48,8 +48,21 @@ defmodule MehrSchulferien.Display do
 
   Raises `Ecto.NoResultsError` if the county does not exist.
   """
-  def get_county_by_slug!(county_slug, _federal_state_slug, _country_slug) do
-    Repo.get_by!(Location, slug: county_slug, is_county: true)
+  def get_county_by_slug!(county_slug, federal_state_slug, country_slug) do
+    country = Repo.get_by!(Location, slug: country_slug, is_country: true)
+
+    federal_state =
+      Repo.get_by!(Location,
+        slug: federal_state_slug,
+        is_federal_state: true,
+        parent_location_id: country.id
+      )
+
+    Repo.get_by!(Location,
+      slug: county_slug,
+      is_county: true,
+      parent_location_id: federal_state.id
+    )
   end
 
   @doc """

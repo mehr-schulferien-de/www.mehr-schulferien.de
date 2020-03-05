@@ -21,6 +21,29 @@ defmodule MehrSchulferien.DisplayTest do
     end
   end
 
+  describe "counties" do
+    test "get_county_by_slug!/3 gets certain county" do
+      {country, federal_state, county} = add_locations()
+      county = Display.get_county_by_slug!(county.slug, federal_state.slug, country.slug)
+      assert county.name == "Landkreis-havelland"
+      assert county.parent_location_id == federal_state.id
+      assert federal_state.parent_location_id == country.id
+    end
+
+    test "get_county_by_slug!/3 returns errors if county does not belong to certain federal_state / country" do
+      {country, federal_state, county} = add_locations()
+      {other_federal_state, other_county} = add_other_locations(country)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Display.get_county_by_slug!(county.slug, other_federal_state.slug, country.slug)
+      end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Display.get_county_by_slug!(other_county.slug, federal_state.slug, country.slug)
+      end
+    end
+  end
+
   describe "periods for certain time frame" do
     setup [:add_federal_state, :add_periods]
 
@@ -142,5 +165,50 @@ defmodule MehrSchulferien.DisplayTest do
   defp create_period(attrs) do
     {:ok, period} = MehrSchulferien.Calendars.create_period(attrs)
     period
+  end
+
+  defp add_locations() do
+    attrs = %{is_country: true, name: "Deutschland", code: "D", slug: "deutschland"}
+    {:ok, country} = Maps.create_location(attrs)
+
+    attrs = %{
+      is_federal_state: true,
+      name: "Berlin",
+      slug: "berlin",
+      parent_location_id: country.id
+    }
+
+    {:ok, federal_state} = Maps.create_location(attrs)
+
+    attrs = %{
+      is_county: true,
+      name: "Landkreis-havelland",
+      slug: "landkreis-havelland",
+      parent_location_id: federal_state.id
+    }
+
+    {:ok, county} = Maps.create_location(attrs)
+    {country, federal_state, county}
+  end
+
+  defp add_other_locations(country) do
+    attrs = %{
+      is_federal_state: true,
+      name: "Sachsen",
+      slug: "sachsen",
+      parent_location_id: country.id
+    }
+
+    {:ok, federal_state} = Maps.create_location(attrs)
+
+    attrs = %{
+      is_county: true,
+      name: "Koblenz",
+      slug: "koblenz",
+      parent_location_id: federal_state.id
+    }
+
+    {:ok, county} = Maps.create_location(attrs)
+    {federal_state, county}
   end
 end
