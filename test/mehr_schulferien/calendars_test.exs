@@ -184,7 +184,7 @@ defmodule MehrSchulferien.CalendarsTest do
     end
 
     test "create_period/1 with valid data creates a period" do
-      location = insert(:location)
+      location = insert(:federal_state)
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
 
       valid_attrs =
@@ -204,7 +204,7 @@ defmodule MehrSchulferien.CalendarsTest do
     end
 
     test "create_period/1 with attrs overriding holiday_or_vacation_type defaults" do
-      location = insert(:location)
+      location = insert(:federal_state)
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
 
       valid_attrs =
@@ -220,7 +220,7 @@ defmodule MehrSchulferien.CalendarsTest do
     end
 
     test "create_period/1 with invalid data returns error changeset" do
-      location = insert(:location)
+      location = insert(:federal_state)
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
 
       invalid_attrs =
