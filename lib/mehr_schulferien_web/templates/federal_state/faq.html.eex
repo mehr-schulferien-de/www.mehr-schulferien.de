@@ -1,20 +1,22 @@
 <ol class="breadcrumb hidden-xs">
   <li><a href="/">Home</a></li>
   <li><a href="/countries/deutschland">Deutschland</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><a href="/federal_states/berlin">Berlin</a></li>
+  <li class="active"><a href="/faq/federal_states/berlin">FAQ</a></li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li><a href="/">Home</a></li>
   <li><a href="/countries/deutschland">DE</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><a href="/federal_states/berlin">Berlin</a></li>
+  <li class="active"><a href="/faq/federal_states/berlin">FAQ</a></li>
 </ol>
 
 <div class="page-header">
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Antworten zu häufigen Fragen<br /><small><%= @location.name %> FAQ</small>
+        <%= @location.name %> Ferien-FAQ<br />
       </h1>
     </div>
   </div>
@@ -25,6 +27,8 @@
 
 <div class="row">
   <div class="col-xs-12">
+  <p>Antworten zu häufigen Fragen zum Thema Schulferien und Feiertagen in <%= @location.name %>.</p>
+
   <h2>Schulferien</h2>
   <dl class="row">
     <dt class="col-sm-5">War gestern schulfrei in <%= @location.name %>?</dt>
@@ -55,34 +59,29 @@
 
   <h2>Feiertage</h2>
   <dl class="row">
+    <dt class="col-sm-5">War gestern ein Feiertag in <%= @location.name %>?</dt>
+    <dd class="col-sm-7">
+      <%= FaqViewHelpers.is_public_holiday_answer(@yesterdays_public_holiday_periods, yesterday, @location) %>   
+    </dd>
+
     <dt class="col-sm-5">Ist heute ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-    <%= if Enum.count(@todays_public_holiday_periods) == 0 do %>
-      Nein, heute (<%= ViewHelpers.weekday(@today) %>, der <%= ViewHelpers.format_date(@today) %>) ist kein Feiertag in <%= @location.name %>.
-    <% else %>
-      Ja, heute (<%= ViewHelpers.weekday(@today) %>, der <%= ViewHelpers.format_date(@today) %>) ist ein Feiertag in <%= @location.name %>. 
-      Der Grund: <%= Enum.at(@todays_public_holiday_periods, -1).holiday_or_vacation_type.name %>.
-    <% end %>
+      <%= FaqViewHelpers.is_public_holiday_answer(@todays_public_holiday_periods, @today, @location) %>   
     </dd>
 
     <dt class="col-sm-5">Ist morgen ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-    <%= if Enum.count(@tomorrows_public_holiday_periods) == 0 do %>
-      Nein, morgen (<%= ViewHelpers.weekday(tomorrow) %>, der <%= ViewHelpers.format_date(tomorrow) %>) ist kein Feiertag in <%= @location.name %>.
-    <% else %>
-      Ja, morgen (<%= ViewHelpers.weekday(tomorrow) %>, der <%= ViewHelpers.format_date(tomorrow) %>) ist ein Feiertag in <%= @location.name %>. 
-      Der Grund: <%= Enum.at(@tomorrows_public_holiday_periods, -1).holiday_or_vacation_type.name %>.
-    <% end %>    
+      <%= FaqViewHelpers.is_public_holiday_answer(@tomorrows_public_holiday_periods, tomorrow, @location) %>   
     </dd>
 
     <dt class="col-sm-5">Ist übermorgen ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-    <%= if Enum.count(@day_after_tomorrows_public_holiday_periods) == 0 do %>
-      Nein, übermorgen (<%= ViewHelpers.weekday(day_after_tomorrow) %>, der <%= ViewHelpers.format_date(day_after_tomorrow) %>) ist kein Feiertag in <%= @location.name %>.
-    <% else %>
-      Ja, übermorgen (<%= ViewHelpers.weekday(day_after_tomorrow) %>, der <%= ViewHelpers.format_date(day_after_tomorrow) %>) ist ein Feiertag in <%= @location.name %>. 
-      Der Grund: <%= Enum.at(@day_after_tomorrows_public_holiday_periods, -1).holiday_or_vacation_type.name %>.
-    <% end %>    
+      <%= FaqViewHelpers.is_public_holiday_answer(@day_after_tomorrows_public_holiday_periods, day_after_tomorrow, @location) %>   
+    </dd>
+
+    <dt class="col-sm-5">Wann ist der nächste Feiertag in <%= @location.name %>?</dt>
+    <dd class="col-sm-7">
+      <%= FaqViewHelpers.next_public_holiday_answer(@location) %>   
     </dd>
   </dl>
   </div>
@@ -130,6 +129,46 @@
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "<%= FaqViewHelpers.next_school_vacation_answer(@location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "War gestern ein Feiertag in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@yesterdays_public_holiday_periods, yesterday, @location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Ist heute ein Feiertag in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@todays_public_holiday_periods, @today, @location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Ist morgen ein Feiertag in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@tomorrows_public_holiday_periods, tomorrow, @location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Ist übermorgen ein Feiertag in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@day_after_tomorrows_public_holiday_periods, day_after_tomorrow, @location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Wann ist der nächste Feiertag in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.next_public_holiday_answer(@location) %>"
         }
     }]
   } 

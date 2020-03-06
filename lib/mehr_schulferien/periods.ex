@@ -145,6 +145,29 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
+  Returns the next public holiday > today.
+  """
+  def next_public_holiday_period(location_ids) do
+    next_public_holiday_period(location_ids, Date.utc_today)
+  end 
+
+  @doc """
+  Returns the next public holiday > date.
+  """
+  def next_public_holiday_period(location_ids, date) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.is_public_holiday == true and
+          p.starts_on > ^date,
+      order_by: p.starts_on,
+      limit: 1
+    )
+    |> Repo.one()
+    |> Repo.preload(:holiday_or_vacation_type)
+  end
+
+  @doc """
   Returns the next public holiday period >= today.
   """
   def next_public_holiday_period(location_ids) do

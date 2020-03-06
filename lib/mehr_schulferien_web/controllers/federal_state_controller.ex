@@ -54,6 +54,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
     today = Date.utc_today()
     todays_public_holiday_periods = Periods.list_public_holiday_periods(location_ids, today)
 
+    yesterdays_public_holiday_periods =
+      Periods.list_public_holiday_periods(location_ids, Date.add(today, -1))
+
     tomorrows_public_holiday_periods =
       Periods.list_public_holiday_periods(location_ids, Date.add(today, 1))
 
@@ -71,6 +74,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     render(conn, "faq.html",
       location: federal_state,
       today: today,
+      yesterdays_public_holiday_periods: yesterdays_public_holiday_periods,
       todays_public_holiday_periods: todays_public_holiday_periods,
       tomorrows_public_holiday_periods: tomorrows_public_holiday_periods,
       day_after_tomorrows_public_holiday_periods: day_after_tomorrows_public_holiday_periods,

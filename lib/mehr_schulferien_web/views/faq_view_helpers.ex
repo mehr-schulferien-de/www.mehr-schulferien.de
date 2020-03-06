@@ -16,16 +16,28 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
       0 ->
         "Nein, #{humanized_date(date)} #{ist_in_time(date)} nicht schulfrei in #{location.name}."
 
-      1 ->
-        "Ja, #{humanized_date(date)} #{ist_in_time(date)} schulfrei in #{location.name}. " <>
-          "Begründung: #{reasons}."
-
       _ ->
-        "Ja, #{humanized_date(date)} #{ist_in_time(date)} schulfrei in #{location.name}. Begründung: #{
-          reasons
-        }."
+        "Ja, #{humanized_date(date)} #{ist_in_time(date)} schulfrei in #{location.name} (#{ reasons })."
     end
   end
+
+  @doc """
+  An humanized answer if the given day is off school.
+  """
+  def is_public_holiday_answer(periods, date, location) do
+    reasons =
+      Enum.map(periods, fn period -> period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) end)
+      |> ViewHelpers.comma_join_with_a_final_und
+
+    case Enum.count(periods) do
+      0 ->
+        "Nein, #{humanized_date(date)} #{ist_in_time(date)} kein gesetzlicher Feiertag in #{location.name}."
+
+      _ ->
+        "Ja, #{humanized_date(date)} #{ist_in_time(date)} ein gesetzlicher Feiertag in #{location.name} (#{
+          reasons })."
+    end
+  end  
 
   @doc """
   An humanized answer for the next school vacations.
@@ -39,6 +51,19 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
     #{ ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) }"
       n -> "In #{ n } Tagen starten die #{ period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) } in #{location.name}:  
     #{ ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) }"
+    end  
+  end
+
+  @doc """
+  An humanized answer for the next public holiday date.
+  """
+  def next_public_holiday_answer(location) do
+    location_ids = MehrSchulferien.Calendars.recursive_location_ids(location)
+    period = MehrSchulferien.Periods.next_public_holiday_period(location_ids)
+
+    case Date.diff(period.starts_on, Date.utc_today) do
+      1 -> "Morgen ist #{ period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) } in #{location.name}."
+      n -> "In #{ n } Tagen ist #{ period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) } in #{location.name}."
     end  
   end
 
