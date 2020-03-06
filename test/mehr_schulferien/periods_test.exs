@@ -9,7 +9,7 @@ defmodule MehrSchulferien.PeriodsTest do
   describe "periods for certain time frame" do
     setup [:add_federal_state, :add_periods]
 
-    test "get_periods_by_time/4 returns all periods within a time frame", %{
+    test "list_school_periods/4 returns all periods within a time frame", %{
       federal_state: federal_state,
       periods: periods,
       other_period: other_period
@@ -18,47 +18,49 @@ defmodule MehrSchulferien.PeriodsTest do
       period_ids = Enum.map(periods, & &1.id)
 
       short_time_periods =
-        Periods.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31])
+        Periods.list_school_periods(location_ids, ~D[2020-02-01], ~D[2021-01-31])
 
       assert length(short_time_periods) == 5
 
       # results include a holiday that has already started, but not ended yet
       short_time_periods =
-        Periods.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31])
+        Periods.list_school_periods(location_ids, ~D[2020-04-11], ~D[2020-12-31])
 
       assert length(short_time_periods) == 4
       assert Enum.all?(short_time_periods, &(&1.id in period_ids))
 
       long_time_periods =
-        Periods.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31])
+        Periods.list_school_periods(location_ids, ~D[2019-01-01], ~D[2021-12-31])
 
       assert Enum.all?(long_time_periods, &(&1.id in period_ids))
       assert other_period not in short_time_periods
       assert other_period not in long_time_periods
     end
 
-    test "get_12_months_periods/2 returns the periods for a year", %{
+    test "chunk_one_year_school_periods/2 returns the periods for a year", %{
       federal_state: federal_state,
       periods: periods
     } do
       location_ids = Maps.recursive_location_ids(federal_state)
       period_ids = Enum.map(periods, & &1.id)
       today = ~D[2020-02-26]
-      next_12_months_periods = Periods.get_12_months_periods(location_ids, today)
+      next_12_months_periods = Periods.chunk_one_year_school_periods(location_ids, today)
       assert length(next_12_months_periods) == 4
       assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
       today = ~D[2020-03-02]
-      next_12_months_periods = Periods.get_12_months_periods(location_ids, today)
+      next_12_months_periods = Periods.chunk_one_year_school_periods(location_ids, today)
       assert length(next_12_months_periods) == 3
       assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
     end
 
-    test "get_3_years_periods/2 returns the periods for 3 years", %{federal_state: federal_state} do
+    test "chunk_multi_year_school_periods/2 returns the periods for 3 years", %{
+      federal_state: federal_state
+    } do
       location_ids = Maps.recursive_location_ids(federal_state)
       current_year = 2019
 
       {next_3_years_headers, next_3_years_periods} =
-        Periods.get_3_years_periods(location_ids, current_year)
+        Periods.chunk_multi_year_school_periods(location_ids, current_year, 3)
 
       assert [winter, oster, herbst, weihnachts] = next_3_years_headers
       assert winter.holiday_or_vacation_type.name == "Winter"

@@ -11,12 +11,12 @@ defmodule MehrSchulferienWeb.CityController do
     today = Date.utc_today()
     current_year = today.year
     location_ids = Calendars.recursive_location_ids(location)
-    next_12_months_periods = Periods.get_12_months_periods(location_ids, today)
+    next_12_months_periods = Periods.chunk_one_year_school_periods(location_ids, today)
 
     {next_3_years_headers, next_3_years_periods} =
-      Periods.get_3_years_periods(location_ids, current_year)
+      Periods.chunk_multi_year_school_periods(location_ids, current_year, 3)
 
-    public_periods = Periods.get_3_years_public_periods(location_ids, current_year)
+    public_periods = Periods.list_multi_year_all_public_periods(location_ids, current_year, 3)
 
     public_periods =
       Enum.filter(public_periods, &(&1.holiday_or_vacation_type.name != "Wochenende"))

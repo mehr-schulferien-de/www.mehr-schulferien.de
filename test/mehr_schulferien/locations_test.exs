@@ -5,6 +5,16 @@ defmodule MehrSchulferien.LocationsTest do
 
   alias MehrSchulferien.Locations
 
+  describe "federal state data" do
+    test "list_federal_states/1 returns a certain country's federal states" do
+      country = insert(:country)
+      federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
+      locations = Locations.list_federal_states(country)
+      assert Enum.map(federal_states, & &1.id) == Enum.map(locations, & &1.id)
+      assert Enum.filter(locations, &(&1.parent_location_id == country.id))
+    end
+  end
+
   describe "city data" do
     test "list_cities/1 returns a certain county's cities" do
       county = insert(:county)

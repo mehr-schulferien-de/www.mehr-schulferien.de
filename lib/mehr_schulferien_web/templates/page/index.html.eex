@@ -7,6 +7,6 @@
   <div class="col-xs-12">
     <h2>Aktuelle Ferien und Feiertage</h2>
 
-    <p>Here will be a table of the next 3-6 weeks.</p>  
+    <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", days: @days, months: @months, periods: @periods, public_periods: @public_periods %>
   </div>
 </div>
