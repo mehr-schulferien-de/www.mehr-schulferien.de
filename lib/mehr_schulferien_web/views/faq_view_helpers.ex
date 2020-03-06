@@ -2,7 +2,6 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   @moduledoc """
   Helper functions for use with views.
   """
-  alias MehrSchulferien.Calendars
   alias MehrSchulferienWeb.ViewHelpers
 
   @doc """
