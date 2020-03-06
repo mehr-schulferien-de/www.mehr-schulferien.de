@@ -9,10 +9,18 @@ defmodule MehrSchulferien.Locations do
   alias MehrSchulferien.Repo
 
   @doc """
+  Returns the list of federal states in a country.
+  """
+  def list_federal_states(country) do
+    from(l in Location, where: l.is_federal_state == true and l.parent_location_id == ^country.id)
+    |> Repo.all()
+  end
+
+  @doc """
   Returns the list of cities for a certain county.
   """
   def list_cities(county) do
-    from(l in Location, where: l.is_city == true, where: l.parent_location_id == ^county.id)
+    from(l in Location, where: l.is_city == true and l.parent_location_id == ^county.id)
     |> Repo.all()
     |> Repo.preload([:zip_codes])
     |> Enum.sort(&(&1.name >= &2.name))
@@ -65,7 +73,7 @@ defmodule MehrSchulferien.Locations do
   @doc """
   Gets a single city by querying for the slug.
 
-  Raises `Ecto.NoResultsError` if the county does not exist.
+  Raises `Ecto.NoResultsError` if the city does not exist.
   """
   def get_city_by_slug!(city_slug, _country_slug) do
     Repo.get_by!(Location, slug: city_slug, is_city: true)

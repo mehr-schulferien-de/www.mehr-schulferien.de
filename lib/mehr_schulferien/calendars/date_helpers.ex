@@ -59,6 +59,16 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   end
 
   @doc """
+  Returns a list containing a certain number of dates.
+  """
+  def create_days(date, number_days) do
+    [date] ++
+      for i <- 1..number_days do
+        Date.add(date, i)
+      end
+  end
+
+  @doc """
   Returns a map containing the month numbers as keys and the month German
   names as values.
   """

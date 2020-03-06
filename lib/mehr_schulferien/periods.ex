@@ -9,21 +9,21 @@ defmodule MehrSchulferien.Periods do
   alias MehrSchulferien.Repo
 
   @doc """
-  Gets the holiday periods over 12 months.
+  Gets the holiday periods for a single year.
   """
-  def get_12_months_periods(location_ids, today) do
+  def chunk_one_year_school_periods(location_ids, today) do
     location_ids
-    |> get_periods_by_time(today, Date.add(today, 365))
+    |> list_school_periods(today, Date.add(today, 365))
     |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
   end
 
   @doc """
-  Gets the holiday periods over 3 years.
+  Gets the holiday periods for a certain amount of years.
   """
-  def get_3_years_periods(location_ids, current_year) do
+  def chunk_multi_year_school_periods(location_ids, current_year, number_years) do
     {:ok, first_day} = Date.new(current_year, 1, 1)
-    {:ok, last_day} = Date.new(current_year + 2, 12, 31)
-    periods = get_periods_by_time(location_ids, first_day, last_day)
+    {:ok, last_day} = Date.new(current_year + number_years - 1, 12, 31)
+    periods = list_school_periods(location_ids, first_day, last_day)
 
     headers =
       periods
@@ -50,14 +50,7 @@ defmodule MehrSchulferien.Periods do
   @doc """
   Returns a list of periods for a certain time frame.
   """
-  def get_periods_by_time(location_ids, starts_on, ends_on) do
-    location_ids
-    |> query_periods(starts_on, ends_on)
-    |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
-  end
-
-  defp query_periods(location_ids, starts_on, ends_on) do
+  def list_school_periods(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
@@ -67,14 +60,26 @@ defmodule MehrSchulferien.Periods do
           p.starts_on <= ^ends_on,
       order_by: p.starts_on
     )
+    |> Repo.all()
+    |> Repo.preload(:holiday_or_vacation_type)
   end
 
   @doc """
-  Returns a list of public holiday periods for a certain time frame.
+  Lists public holiday periods, including weekends, for a certain time frame.
   """
-  def get_3_years_public_periods(location_ids, current_year) do
+  def list_all_public_periods(location_ids, starts_on, ends_on) do
+    location_ids
+    |> public_query_periods(starts_on, ends_on)
+    |> Repo.all()
+    |> Repo.preload(:holiday_or_vacation_type)
+  end
+
+  @doc """
+  Lists public holiday periods, including weekends, for a certain number of years.
+  """
+  def list_multi_year_all_public_periods(location_ids, current_year, number_years) do
     {:ok, first_day} = Date.new(current_year, 1, 1)
-    {:ok, last_day} = Date.new(current_year + 2, 12, 31)
+    {:ok, last_day} = Date.new(current_year + number_years - 1, 12, 31)
 
     location_ids
     |> public_query_periods(first_day, last_day)
@@ -153,62 +158,62 @@ defmodule MehrSchulferien.Periods do
     sql = "SELECT
     p.*,
     p.adjoining_duration,
-    p.array_agg 
+    p.array_agg
  FROM
     (
        SELECT
           p.*,
           holiday_or_vacation_types.name,
           (
-             Max(ends_on) OVER (PARTITION BY grp) - Min(starts_on) OVER (PARTITION BY grp) 
+             Max(ends_on) OVER (PARTITION BY grp) - Min(starts_on) OVER (PARTITION BY grp)
           )
           + 1 AS adjoining_duration,
-          array_agg(p.id) OVER (PARTITION BY grp) 
+          array_agg(p.id) OVER (PARTITION BY grp)
        FROM
           (
              SELECT
                 p.*,
                 Count(*) FILTER (
              WHERE
-                prev_eo < starts_on - INTERVAL '1 day') OVER ( 
+                prev_eo < starts_on - INTERVAL '1 day') OVER (
              ORDER BY
-                starts_on ) AS grp 
+                starts_on ) AS grp
              FROM
                 (
                    SELECT
                       p.*,
                       MAX(ends_on) OVER (
                    ORDER BY
-                      starts_on ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_eo 
+                      starts_on ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_eo
                    FROM
                       (
                          SELECT
-                            p.* 
+                            p.*
                          FROM
-                            periods p 
+                            periods p
                          WHERE
-                            location_id IN 
+                            location_id IN
                             (
                                " <> Enum.join(location_ids, ", ") <> "
                             )
-                            AND starts_on > '" <> Date.to_string(starts_on) <> "' 
-                            AND starts_on < '" <> Date.to_string(ends_on) <> "' 
-                            AND 
+                            AND starts_on > '" <> Date.to_string(starts_on) <> "'
+                            AND starts_on < '" <> Date.to_string(ends_on) <> "'
+                            AND
                             (
-                               is_valid_for_students = TRUE 
+                               is_valid_for_students = TRUE
                                OR is_valid_for_everybody = TRUE
                             )
                       )
-                      p 
+                      p
                 )
-                p 
+                p
           )
-          p 
+          p
           LEFT JOIN
-             holiday_or_vacation_types 
-             ON p.holiday_or_vacation_type_id = holiday_or_vacation_types.id 
+             holiday_or_vacation_types
+             ON p.holiday_or_vacation_type_id = holiday_or_vacation_types.id
     )
-    p 
+    p
  WHERE
     p.is_school_vacation = TRUE;"
 

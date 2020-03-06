@@ -53,25 +53,25 @@ defmodule MehrSchulferien.MapsTest do
     end
 
     test "update_location/2 with valid data updates the location" do
-      location = insert(:location)
+      location = insert(:federal_state)
       assert {:ok, %Location{} = location} = Maps.update_location(location, @update_attrs)
       assert location.code == "DE"
     end
 
     test "update_location/2 with invalid data returns error changeset" do
-      location = insert(:location)
+      location = insert(:federal_state)
       assert {:error, %Ecto.Changeset{}} = Maps.update_location(location, @invalid_attrs)
       assert location == Maps.get_location!(location.id)
     end
 
     test "delete_location/1 deletes the location" do
-      location = insert(:location)
+      location = insert(:federal_state)
       assert {:ok, %Location{}} = Maps.delete_location(location)
       assert_raise Ecto.NoResultsError, fn -> Maps.get_location!(location.id) end
     end
 
     test "change_location/1 returns a location changeset" do
-      location = insert(:location)
+      location = insert(:federal_state)
       assert %Ecto.Changeset{} = Maps.change_location(location)
     end
   end

@@ -25,50 +25,44 @@ defmodule MehrSchulferien.Factory do
     merge_attributes(holiday_or_vacation_type, attrs)
   end
 
-  def location_factory do
-    [:country, :federal_state, :county, :city]
-    |> Enum.random()
-    |> build()
-  end
-
   def country_factory do
     %Location{name: "Deutschland", code: "D", is_country: true}
   end
 
   def federal_state_factory(attrs) do
-    country = attrs[:country] || insert(:country)
+    country_id = attrs[:parent_location_id] || insert(:country).id
 
     federal_state = %Location{
-      name: "Berlin",
+      name: sequence("Berlin"),
       code: "BE",
       is_federal_state: true,
-      parent_location_id: country.id
+      parent_location_id: country_id
     }
 
     merge_attributes(federal_state, attrs)
   end
 
   def county_factory(attrs) do
-    federal_state = attrs[:federal_state] || insert(:federal_state)
+    federal_state_id = attrs[:parent_location_id] || insert(:federal_state).id
 
     county = %Location{
-      name: "Koblenz",
+      name: sequence("Koblenz"),
       code: "KO",
       is_county: true,
-      parent_location_id: federal_state.id
+      parent_location_id: federal_state_id
     }
 
     merge_attributes(county, attrs)
   end
 
   def city_factory(attrs) do
-    county = attrs[:county] || insert(:county)
+    county_id = attrs[:parent_location_id] || insert(:county).id
 
     city = %Location{
-      name: "Dresden",
+      name: sequence("Dresden"),
       code: "DR",
       is_city: true,
-      parent_location_id: county.id
+      parent_location_id: county_id
     }
 
     merge_attributes(city, attrs)
