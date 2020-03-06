@@ -19,6 +19,7 @@
     </div>
   </div>
 </div>
+<% yesterday = Date.add(@today, -1) %>
 <% tomorrow = Date.add(@today, 1) %>
 <% day_after_tomorrow = Date.add(@today, 2) %>
 
@@ -26,34 +27,24 @@
   <div class="col-xs-12">
   <h2>Schulferien</h2>
   <dl class="row">
+    <dt class="col-sm-5">War gestern schulfrei in <%= @location.name %>?</dt>
+    <dd class="col-sm-7">
+      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, yesterday, @location) %>   
+    </dd>
+
     <dt class="col-sm-5">Ist heute schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-    <%= if Enum.count(@todays_school_free_periods) == 0 do %>
-      Nein, heute (<%= ViewHelpers.weekday(@today) %>, der <%= ViewHelpers.format_date(@today) %>) ist nicht schulfrei in <%= @location.name %>.
-    <% else %>
-      Ja, heute (<%= ViewHelpers.weekday(@today) %>, der <%= ViewHelpers.format_date(@today) %>) ist schulfrei in <%= @location.name %>. 
-      Der Grund: <%= Enum.at(@todays_school_free_periods, -1).holiday_or_vacation_type.name %>.
-    <% end %>    
+      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @location) %>   
     </dd>
 
     <dt class="col-sm-5">Ist morgen schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-    <%= if Enum.count(@tomorrows_school_free_periods) == 0 do %>
-      Nein, morgen (<%= ViewHelpers.weekday(tomorrow) %>, der <%= ViewHelpers.format_date(tomorrow) %>) ist nicht schulfrei in <%= @location.name %>.
-    <% else %>
-      Ja, morgen (<%= ViewHelpers.weekday(tomorrow) %>, der <%= ViewHelpers.format_date(tomorrow) %>) ist schulfrei in <%= @location.name %>. 
-      Der Grund: <%= Enum.at(@tomorrows_school_free_periods, -1).holiday_or_vacation_type.name %>.
-    <% end %>     
+      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, tomorrow, @location) %>    
     </dd>
 
     <dt class="col-sm-5">Ist übermorgen schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-    <%= if Enum.count(@day_after_tomorrows_school_free_periods) == 0 do %>
-      Nein, morgen (<%= ViewHelpers.weekday(day_after_tomorrow) %>, der <%= ViewHelpers.format_date(day_after_tomorrow) %>) ist nicht schulfrei in <%= @location.name %>.
-    <% else %>
-      Ja, morgen (<%= ViewHelpers.weekday(day_after_tomorrow) %>, der <%= ViewHelpers.format_date(day_after_tomorrow) %>) ist schulfrei in <%= @location.name %>. 
-      Der Grund: <%= Enum.at(@day_after_tomorrows_school_free_periods, -1).holiday_or_vacation_type.name %>.
-    <% end %>      
+      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, day_after_tomorrow, @location) %>    
     </dd>
   </dl>
 

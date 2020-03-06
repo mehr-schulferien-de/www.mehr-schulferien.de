@@ -120,4 +120,24 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     |> Calendars.find_periods_by_month(periods)
     |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
   end
+
+  @doc """
+  Returns a comma seperated list of list elements. 
+  The last comma is replaced with an "und" ("and").
+  """
+  def comma_join_with_a_final_und(list) do
+    case Enum.count(list) do
+      0 ->
+        ""
+
+      1 ->
+        Enum.at(list, 0)
+
+      _ ->
+        {first_elements, last_elements} = Enum.split(list, -1)
+        [last_element] = last_elements
+
+        Enum.join(first_elements, ", ") <> " und " <> last_element
+    end
+  end  
 end

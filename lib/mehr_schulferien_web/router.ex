@@ -33,8 +33,8 @@ defmodule MehrSchulferienWeb.Router do
     get "/", PageController, :index
 
     get "/:country_slug/staedte/:city_slug", CityController, :show
+    get "/:country_slug/:federal_state_slug/faq", FederalStateController, :faq
     get "/:country_slug/:federal_state_slug/:county_slug", CountyController, :show
     get "/:country_slug/:federal_state_slug", FederalStateController, :show
-    get "/:country_slug/:federal_state_slug/faq", FederalStateController, :faq
   end
 end
