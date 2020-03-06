@@ -14,7 +14,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Antworten zu häufigen Fragen<br /><small><%= @location.name %></small>
+        Antworten zu häufigen Fragen<br /><small><%= @location.name %> FAQ</small>
       </h1>
     </div>
   </div>
@@ -29,22 +29,27 @@
   <dl class="row">
     <dt class="col-sm-5">War gestern schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, yesterday, @location) %>   
+      <%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, yesterday, @location) %>   
     </dd>
 
     <dt class="col-sm-5">Ist heute schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @location) %>   
+      <%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @location) %>   
     </dd>
 
     <dt class="col-sm-5">Ist morgen schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, tomorrow, @location) %>    
+      <%= FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, tomorrow, @location) %>    
     </dd>
 
     <dt class="col-sm-5">Ist übermorgen schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= MehrSchulferienWeb.FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, day_after_tomorrow, @location) %>    
+      <%= FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, day_after_tomorrow, @location) %>    
+    </dd>
+
+    <dt class="col-sm-5">Wann sind die nächsten Schulferien in <%= @location.name %>?</dt>
+    <dd class="col-sm-7">
+      <%= FaqViewHelpers.next_school_vacation_answer(@location) %> 
     </dd>
   </dl>
 
@@ -89,50 +94,43 @@
     "@type": "FAQPage",
     "mainEntity": [{
       "@type": "Question",
-      "name": "Ist heute schulfrei in <%= @location.name %>?",
+      "name": "War gestern schulfrei in <%= @location.name %>?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "TODO ..."
-    }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist morgen schulfrei in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "TODO ..."
-    }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist übermorgen schulfrei in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "TODO ..."
+        "text": "<%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, yesterday, @location) %> "
+      }
+    },
+    {
+        "@type": "Question",
+        "name": "Ist heute schulfrei in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Ist morgen schulfrei in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, tomorrow, @location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Ist übermorgen schulfrei in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, day_after_tomorrow, @location) %>"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Wann sind die nächsten Schulferien in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= FaqViewHelpers.next_school_vacation_answer(@location) %>"
+        }
     }]
-  },
-  {
-      "@type": "Question",
-      "name": "Ist heute ein Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "TODO ..."
-    }]
-  },
-  {
-      "@type": "Question",
-      "name": "Ist morgen ein Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "TODO ..."
-    }]
-  },
-  {
-      "@type": "Question",
-      "name": "Ist übermorgen ein Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "TODO ..."
-    }]
-  }  
+  } 
   </script>
