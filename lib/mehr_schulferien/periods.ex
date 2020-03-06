@@ -1,84 +1,12 @@
-defmodule MehrSchulferien.Display do
+defmodule MehrSchulferien.Periods do
   @moduledoc """
-  The Display context.
+  The Periods context.
   """
 
   import Ecto.Query, warn: false
 
   alias MehrSchulferien.Calendars.Period
-  alias MehrSchulferien.Maps.Location
   alias MehrSchulferien.Repo
-
-  @doc """
-  Returns the list of federal_states.
-  """
-  def list_federal_states do
-    Location |> where(is_federal_state: true) |> Repo.all()
-  end
-
-  @doc """
-  Gets a single federal_state.
-
-  Raises `Ecto.NoResultsError` if the federal state does not exist.
-  """
-  def get_federal_state!(id) do
-    Repo.get_by!(Location, id: id, is_federal_state: true)
-  end
-
-  @doc """
-  Gets a single federal_state by querying for the slug.
-
-  Raises `Ecto.NoResultsError` if the federal state does not exist.
-  """
-  def get_federal_state_by_slug!(country_slug, federal_state_slug) do
-    country = Repo.get_by!(Location, slug: country_slug, is_country: true)
-
-    Repo.get_by!(Location,
-      slug: federal_state_slug,
-      is_federal_state: true,
-      parent_location_id: country.id
-    )
-  end
-
-  @doc """
-  Gets a single county.
-
-  Raises `Ecto.NoResultsError` if the county does not exist.
-  """
-  def get_county!(id) do
-    Repo.get_by!(Location, id: id, is_county: true)
-  end
-
-  @doc """
-  Gets a single county by querying for the slug.
-
-  Raises `Ecto.NoResultsError` if the county does not exist.
-  """
-  def get_county_by_slug!(county_slug, federal_state_slug, country_slug) do
-    country = Repo.get_by!(Location, slug: country_slug, is_country: true)
-
-    federal_state =
-      Repo.get_by!(Location,
-        slug: federal_state_slug,
-        is_federal_state: true,
-        parent_location_id: country.id
-      )
-
-    Repo.get_by!(Location,
-      slug: county_slug,
-      is_county: true,
-      parent_location_id: federal_state.id
-    )
-  end
-
-  @doc """
-  Gets a single city by querying for the slug.
-
-  Raises `Ecto.NoResultsError` if the county does not exist.
-  """
-  def get_city_by_slug!(city_slug, _country_slug) do
-    Repo.get_by!(Location, slug: city_slug, is_city: true)
-  end
 
   @doc """
   Gets the holiday periods over 12 months.
@@ -158,17 +86,15 @@ defmodule MehrSchulferien.Display do
   Returns a list of public holiday periods for a given date and location_ids.
   """
   def list_public_holiday_periods(location_ids, date) do
-    query =
-      from(p in Period,
-        where:
-          p.location_id in ^location_ids and
-            p.is_public_holiday == true and
-            p.ends_on >= ^date and
-            p.starts_on <= ^date,
-        order_by: p.display_priority
-      )
-
-    Repo.all(query)
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.is_public_holiday == true and
+          p.ends_on >= ^date and
+          p.starts_on <= ^date,
+      order_by: p.display_priority
+    )
+    |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
@@ -177,18 +103,16 @@ defmodule MehrSchulferien.Display do
   free for students for a given date and location_ids.
   """
   def list_school_free_periods(location_ids, date) do
-    query =
-      from(p in Period,
-        where:
-          p.location_id in ^location_ids and
-            (p.is_valid_for_students == true or
-               p.is_valid_for_everybody == true) and
-            p.ends_on >= ^date and
-            p.starts_on <= ^date,
-        order_by: p.display_priority
-      )
-
-    Repo.all(query)
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          (p.is_valid_for_students == true or
+             p.is_valid_for_everybody == true) and
+          p.ends_on >= ^date and
+          p.starts_on <= ^date,
+      order_by: p.display_priority
+    )
+    |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
 

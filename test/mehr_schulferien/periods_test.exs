@@ -1,48 +1,10 @@
-defmodule MehrSchulferien.DisplayTest do
+defmodule MehrSchulferien.PeriodsTest do
   use MehrSchulferien.DataCase
 
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.Display
+  alias MehrSchulferien.Periods
   alias MehrSchulferien.Maps
-
-  describe "federal states" do
-    setup [:add_federal_state]
-
-    test "list_federal_states/1 returns all federal states", %{federal_state: federal_state} do
-      assert length(Maps.list_locations()) == 2
-      assert [federal_state_1] = Display.list_federal_states()
-      assert federal_state_1.id == federal_state.id
-    end
-
-    test "get_federal_state!/1 gets certain federal state", %{federal_state: federal_state} do
-      assert federal_state_1 = Display.get_federal_state!(federal_state.id)
-      assert federal_state_1.is_federal_state
-    end
-  end
-
-  describe "counties" do
-    test "get_county_by_slug!/3 gets certain county" do
-      {country, federal_state, county} = add_locations()
-      county = Display.get_county_by_slug!(county.slug, federal_state.slug, country.slug)
-      assert county.name == "Landkreis-havelland"
-      assert county.parent_location_id == federal_state.id
-      assert federal_state.parent_location_id == country.id
-    end
-
-    test "get_county_by_slug!/3 returns errors if county does not belong to certain federal_state / country" do
-      {country, federal_state, county} = add_locations()
-      {other_federal_state, other_county} = add_other_locations(country)
-
-      assert_raise Ecto.NoResultsError, fn ->
-        Display.get_county_by_slug!(county.slug, other_federal_state.slug, country.slug)
-      end
-
-      assert_raise Ecto.NoResultsError, fn ->
-        Display.get_county_by_slug!(other_county.slug, federal_state.slug, country.slug)
-      end
-    end
-  end
 
   describe "periods for certain time frame" do
     setup [:add_federal_state, :add_periods]
@@ -56,19 +18,19 @@ defmodule MehrSchulferien.DisplayTest do
       period_ids = Enum.map(periods, & &1.id)
 
       short_time_periods =
-        Display.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31])
+        Periods.get_periods_by_time(location_ids, ~D[2020-02-01], ~D[2021-01-31])
 
       assert length(short_time_periods) == 5
 
       # results include a holiday that has already started, but not ended yet
       short_time_periods =
-        Display.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31])
+        Periods.get_periods_by_time(location_ids, ~D[2020-04-11], ~D[2020-12-31])
 
       assert length(short_time_periods) == 4
       assert Enum.all?(short_time_periods, &(&1.id in period_ids))
 
       long_time_periods =
-        Display.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31])
+        Periods.get_periods_by_time(location_ids, ~D[2019-01-01], ~D[2021-12-31])
 
       assert Enum.all?(long_time_periods, &(&1.id in period_ids))
       assert other_period not in short_time_periods
@@ -82,11 +44,11 @@ defmodule MehrSchulferien.DisplayTest do
       location_ids = Maps.recursive_location_ids(federal_state)
       period_ids = Enum.map(periods, & &1.id)
       today = ~D[2020-02-26]
-      next_12_months_periods = Display.get_12_months_periods(location_ids, today)
+      next_12_months_periods = Periods.get_12_months_periods(location_ids, today)
       assert length(next_12_months_periods) == 4
       assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
       today = ~D[2020-03-02]
-      next_12_months_periods = Display.get_12_months_periods(location_ids, today)
+      next_12_months_periods = Periods.get_12_months_periods(location_ids, today)
       assert length(next_12_months_periods) == 3
       assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
     end
@@ -96,7 +58,7 @@ defmodule MehrSchulferien.DisplayTest do
       current_year = 2019
 
       {next_3_years_headers, next_3_years_periods} =
-        Display.get_3_years_periods(location_ids, current_year)
+        Periods.get_3_years_periods(location_ids, current_year)
 
       assert [winter, oster, herbst, weihnachts] = next_3_years_headers
       assert winter.holiday_or_vacation_type.name == "Winter"
@@ -165,50 +127,5 @@ defmodule MehrSchulferien.DisplayTest do
   defp create_period(attrs) do
     {:ok, period} = MehrSchulferien.Calendars.create_period(attrs)
     period
-  end
-
-  defp add_locations() do
-    attrs = %{is_country: true, name: "Deutschland", code: "D", slug: "deutschland"}
-    {:ok, country} = Maps.create_location(attrs)
-
-    attrs = %{
-      is_federal_state: true,
-      name: "Berlin",
-      slug: "berlin",
-      parent_location_id: country.id
-    }
-
-    {:ok, federal_state} = Maps.create_location(attrs)
-
-    attrs = %{
-      is_county: true,
-      name: "Landkreis-havelland",
-      slug: "landkreis-havelland",
-      parent_location_id: federal_state.id
-    }
-
-    {:ok, county} = Maps.create_location(attrs)
-    {country, federal_state, county}
-  end
-
-  defp add_other_locations(country) do
-    attrs = %{
-      is_federal_state: true,
-      name: "Sachsen",
-      slug: "sachsen",
-      parent_location_id: country.id
-    }
-
-    {:ok, federal_state} = Maps.create_location(attrs)
-
-    attrs = %{
-      is_county: true,
-      name: "Koblenz",
-      slug: "koblenz",
-      parent_location_id: federal_state.id
-    }
-
-    {:ok, county} = Maps.create_location(attrs)
-    {federal_state, county}
   end
 end

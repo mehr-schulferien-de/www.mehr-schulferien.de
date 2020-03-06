@@ -16,16 +16,6 @@ defmodule MehrSchulferien.Maps do
   end
 
   @doc """
-  Returns the list of cities for a certain county.
-  """
-  def list_cities(county) do
-    from(l in Location, where: l.is_city == true, where: l.parent_location_id == ^county.id)
-    |> Repo.all()
-    |> Repo.preload([:zip_codes])
-    |> Enum.sort(&(&1.name >= &2.name))
-  end
-
-  @doc """
   Gets a single location.
 
   Raises `Ecto.NoResultsError` if the Location does not exist.
