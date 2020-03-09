@@ -17,20 +17,20 @@
     <tr>
       <%= for day <- @days do %>
         <% day_of_week = Date.day_of_week(day) %>
-        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= @day_names[day_of_week] %></small><% end %></td>
+        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= @day_names[day_of_week] %><span class="hidden-xs hidden-sm hidden-md">.</span></small><% end %></td>
       <% end %>
     </tr>
     <tr>
       <%= for day <- @days do %>
         <% day_of_week = Date.day_of_week(day) %>
-        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= day.day %></small><% end %></td>
+        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= day.day %><span class="hidden-xs hidden-sm hidden-md">.</span></small><% end %></td>
       <% end %>
     </tr>
   </thead>
   <tbody>
     <%= for {federal_state, periods} <- @periods do %>
       <tr>
-        <td><%= federal_state.name %></td>
+        <td><span class="hidden-xs hidden-sm hidden-md"><%= federal_state.name %></span><span class="hidden-lg"><%= federal_state.name |> String.slice(0, 8) %><%= if String.length(federal_state.name) > 8 do %>.<% end %></span></td>
         <%= for day <- @days do %>
           <td class="text-right <%= ViewHelpers.get_html_class(day, periods) %>"></td>
         <% end %>
