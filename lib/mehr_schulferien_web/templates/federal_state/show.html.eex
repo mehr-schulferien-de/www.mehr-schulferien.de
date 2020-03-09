@@ -32,6 +32,9 @@
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
     <h2>FAQ</h2>
-    <p>This is the place where the https://github.com/wintermeyer/www.mehr-schulferien.de/issues/96 should be displayed.</p>
+    <p>This is the place where https://github.com/wintermeyer/www.mehr-schulferien.de/issues/96 should be displayed.</p>
+
+    <h2>Landkreise und Städte</h2>
+    <p>This is the place where https://github.com/wintermeyer/www.mehr-schulferien.de/issues/99 should be displayed.</p>
   </div>
 </div>
