@@ -32,7 +32,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     days = DateHelpers.create_3_years(current_year)
     months = DateHelpers.get_months_map()
-    next_three_years = Enum.join([current_year, current_year + 1, current_year + 2], ", ")
+    next_three_years = MehrSchulferienWeb.ViewHelpers.comma_join_with_a_final_und(["#{current_year}", "#{current_year + 1}", "#{current_year + 2}"])
 
     render(conn, "show.html",
       current_year: current_year,
