@@ -122,11 +122,29 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
+  Returns a list of periods for which this date range is a holiday
+  period for students.
+  """
+  def list_school_free_periods(location_ids, starts_on, ends_on) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          (p.is_valid_for_students == true or
+             p.is_valid_for_everybody == true) and
+          p.ends_on >= ^starts_on and
+          p.starts_on <= ^ends_on,
+      order_by: p.display_priority
+    )
+    |> Repo.all()
+    |> Repo.preload(:holiday_or_vacation_type)
+  end
+
+  @doc """
   Returns the next school vacation period > today.
   """
   def next_school_vacation_period(location_ids) do
-    next_school_vacation_period(location_ids, Date.utc_today)
-  end 
+    next_school_vacation_period(location_ids, Date.utc_today())
+  end
 
   @doc """
   Returns the next school vacation period > date.
@@ -148,8 +166,8 @@ defmodule MehrSchulferien.Periods do
   Returns the next public holiday > today.
   """
   def next_public_holiday_period(location_ids) do
-    next_public_holiday_period(location_ids, Date.utc_today)
-  end 
+    next_public_holiday_period(location_ids, Date.utc_today())
+  end
 
   @doc """
   Returns the next public holiday > date.
@@ -166,29 +184,6 @@ defmodule MehrSchulferien.Periods do
     |> Repo.one()
     |> Repo.preload(:holiday_or_vacation_type)
   end
-
-  @doc """
-  Returns the next public holiday period >= today.
-  """
-  def next_public_holiday_period(location_ids) do
-    next_public_holiday_period(location_ids, Date.utc_today)
-  end 
-
-  @doc """
-  Returns the next public holiday period >= date.
-  """
-  def next_public_holiday_period(location_ids, date) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_public_holiday == true and
-          p.starts_on >= ^date,
-      order_by: p.starts_on,
-      limit: 1
-    )
-    |> Repo.one()
-    |> Repo.preload(:holiday_or_vacation_type)
-  end   
 
   defp public_query_periods(location_ids, starts_on, ends_on) do
     from(p in Period,

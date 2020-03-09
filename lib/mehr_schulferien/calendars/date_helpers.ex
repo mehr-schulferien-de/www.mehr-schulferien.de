@@ -63,9 +63,16 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   """
   def create_days(date, number_days) do
     [date] ++
-      for i <- 1..number_days do
+      for i <- 1..(number_days - 1) do
         Date.add(date, i)
       end
+  end
+
+  @doc """
+  Returns a map of abbreviated day names, with day numbers (1-7) as keys.
+  """
+  def short_days_map do
+    %{1 => "Mo.", 2 => "Di.", 3 => "Mi.", 4 => "Do.", 5 => "Fr.", 6 => "Sa.", 7 => "So."}
   end
 
   @doc """

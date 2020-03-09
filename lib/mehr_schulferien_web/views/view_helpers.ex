@@ -94,6 +94,23 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     end
   end
 
+  @doc """
+  Returns the html class for a date. This is based on whether the date
+  is a holiday period.
+  """
+  def get_html_class(date, periods) do
+    case Calendars.find_all_periods(date, periods) do
+      [] -> ""
+      [period] -> period.html_class
+      periods -> select_html_class(periods)
+    end
+  end
+
+  defp select_html_class(periods) do
+    period = periods |> Enum.sort(&(&1.display_priority >= &2.display_priority)) |> hd
+    period.html_class
+  end
+
   defp get_html_class(day_of_week) when day_of_week > 5, do: "active"
   defp get_html_class(_), do: ""
 
@@ -139,5 +156,5 @@ defmodule MehrSchulferienWeb.ViewHelpers do
 
         Enum.join(first_elements, ", ") <> " und " <> last_element
     end
-  end  
+  end
 end

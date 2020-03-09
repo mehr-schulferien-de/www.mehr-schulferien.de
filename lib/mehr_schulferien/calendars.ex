@@ -248,6 +248,21 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
+  Finds all the holiday periods for a certain date.
+  """
+  def find_all_periods(date, periods) do
+    Enum.filter(periods, &is_holiday?(&1, date))
+  end
+
+  defp is_holiday?(period, date) do
+    case Date.compare(date, period.starts_on) do
+      :lt -> false
+      :eq -> true
+      :gt -> check_ends_on(date, period)
+    end
+  end
+
+  @doc """
   Returns the holiday periods for a certain date's month.
   """
   def find_periods_by_month(_date, []), do: []
