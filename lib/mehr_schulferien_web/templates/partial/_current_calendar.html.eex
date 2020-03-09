@@ -1,29 +1,29 @@
-<table class="table table-condensed">
+<% breakpoint_days = Enum.filter(@days, fn(x) -> x == Enum.at(@days, 0) or x.day == 1 or x == Enum.at(@days, -1) end) %>
+
+<table class="table table-bordered table-condensed">
   <thead>
     <tr>
-      <th></th>
-      <% first_day = Enum.at(@days, 0) %>
-      <th class="text-nowrap"><%= @months[first_day.month] %> <%= first_day.year%></th>
-      <%= for day <- @days do %>
-        <%= if day.day == 1 do %>
-          <th class="text-nowrap"><%= @months[day.month] %> <%= day.year%></th>
-        <% else %>
-          <th></th>
+      <th rowspan="3"></th>
+      <%= for {day, counter} <- Enum.with_index(breakpoint_days) do %>
+        <%= if day != Enum.at(breakpoint_days, -1) do %>
+          <%= if day == Enum.at(breakpoint_days, -2) do %>
+            <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1 }" %>"><%= @months[day.month] %> <%= day.year%></th>
+          <% else %>
+            <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) }" %>"><%= @months[day.month] %> <%= day.year%></th>
+          <% end %>
         <% end %>
       <% end %>
     </tr>
     <tr>
-      <td></td>
       <%= for day <- @days do %>
         <% day_of_week = Date.day_of_week(day) %>
-        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= @day_names[day_of_week] %></td>
+        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= @day_names[day_of_week] %></small><% end %></td>
       <% end %>
     </tr>
     <tr>
-      <td></td>
       <%= for day <- @days do %>
         <% day_of_week = Date.day_of_week(day) %>
-        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= day.day %></td>
+        <td class="<%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= day.day %></small><% end %></td>
       <% end %>
     </tr>
   </thead>
