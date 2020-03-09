@@ -7,6 +7,6 @@
   <div class="col-xs-12">
     <h2>Aktuelle Ferien und Feiertage</h2>
 
-    <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", days: @days, months: @months, periods: @periods, public_periods: @public_periods %>
+    <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", days: @days, day_names: @day_names, federal_states: @federal_states, months: @months, periods: @periods %>
   </div>
 </div>
