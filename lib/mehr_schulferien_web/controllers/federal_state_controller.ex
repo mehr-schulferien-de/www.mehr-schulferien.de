@@ -39,7 +39,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
     render(conn, "show.html", assigns)
   end
 
-  def county_show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
+  def county_show(conn, %{
+        "country_slug" => country_slug,
+        "federal_state_slug" => federal_state_slug
+      }) do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
     counties = Locations.list_counties(federal_state)
@@ -61,5 +64,5 @@ defmodule MehrSchulferienWeb.FederalStateController do
         CH.show_period_data(location_ids, today) ++ CH.faq_data(location_ids, today)
 
     render(conn, "county_show.html", assigns)
-  end  
+  end
 end
