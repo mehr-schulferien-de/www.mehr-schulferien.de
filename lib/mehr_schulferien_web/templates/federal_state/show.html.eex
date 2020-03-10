@@ -34,15 +34,9 @@
     <h2>FAQ</h2>
     <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", location: @location, today: @today, todays_public_holiday_periods: @todays_public_holiday_periods, yesterdays_public_holiday_periods: @yesterdays_public_holiday_periods, tomorrows_public_holiday_periods: @tomorrows_public_holiday_periods, day_after_tomorrows_public_holiday_periods: @day_after_tomorrows_public_holiday_periods, todays_school_free_periods: @todays_school_free_periods, tomorrows_school_free_periods: @tomorrows_school_free_periods, day_after_tomorrows_school_free_periods: @day_after_tomorrows_school_free_periods %>
 
-    <h2>Landkreise und Städte</h2>
+    <h2>Sonstiges</h2>
     <ul>
-    <%= for {county, cities} <- @counties_with_cities do %>
-    <li><%= county.name %><br/>
-    <%= for city <- cities do %>
-      <%= link city.name, to: Routes.city_path(@conn, :show, @country_slug, city.slug) %>
-      <p>Postleitzahlen: <%= MehrSchulferienWeb.CountyView.format_zip_codes(city) %></p>
-    <% end %></li>
-    <% end %>
+      <li><a href="/landkreise-und-staedte/d/<%= @location.slug %>">Liste mit allen Landkreien und Städten von <%= @location.name %></a></li>
     </ul>
   </div>
 </div>
