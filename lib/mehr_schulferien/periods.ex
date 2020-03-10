@@ -140,14 +140,14 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
-  Returns the next school vacation period > today.
+  Returns the next school vacation period that is greater than today.
   """
   def next_school_vacation_period(location_ids) do
     next_school_vacation_period(location_ids, Date.utc_today())
   end
 
   @doc """
-  Returns the next school vacation period > date.
+  Returns the next school vacation period that is greater than date.
   """
   def next_school_vacation_period(location_ids, date) do
     from(p in Period,
@@ -163,14 +163,14 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
-  Returns the next public holiday > today.
+  Returns the next public holiday that is greater than today.
   """
   def next_public_holiday_period(location_ids) do
     next_public_holiday_period(location_ids, Date.utc_today())
   end
 
   @doc """
-  Returns the next public holiday > date.
+  Returns the next public holiday that is greater than date.
   """
   def next_public_holiday_period(location_ids, date) do
     from(p in Period,
