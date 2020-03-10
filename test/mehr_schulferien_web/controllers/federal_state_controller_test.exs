@@ -52,6 +52,22 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
         ends_on: ~D[2020-10-31]
       })
 
-    {:ok, %{federal_state: federal_state, periods: periods, other_period: other_period}}
+    today = Date.utc_today()
+
+    public_period =
+      insert(:period, %{
+        is_public_holiday: true,
+        location_id: federal_state.id,
+        starts_on: Date.add(today, 1),
+        ends_on: Date.add(today, 1)
+      })
+
+    {:ok,
+     %{
+       federal_state: federal_state,
+       periods: periods,
+       other_period: other_period,
+       public_period: public_period
+     }}
   end
 end

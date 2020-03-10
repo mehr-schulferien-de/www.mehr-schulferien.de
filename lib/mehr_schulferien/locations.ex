@@ -17,6 +17,14 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns the list of counties for a certain federal_state.
+  """
+  def list_counties(federal_state) do
+    from(l in Location, where: l.is_county == true and l.parent_location_id == ^federal_state.id)
+    |> Repo.all()
+  end
+
+  @doc """
   Returns the list of cities for a certain county.
   """
   def list_cities(county) do
