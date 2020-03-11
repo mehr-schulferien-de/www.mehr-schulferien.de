@@ -1,7 +1,9 @@
-# MehrSchulferien
+# mehr-schulferien.de
 
 This project is the 2020 version of https://www.mehr-schulferien.de
-It is a webpage which displays school vacation and public holidays in Germany.
+
+The webpage provides information about school vacations and public holidays 
+in Germany.
 
 ## Data structure
 
@@ -9,14 +11,16 @@ The situation: We have countries, federal_states, counties, cities and schools.
 They all have different possiblities to set vacation dates or public holidays. 
 
 We aim to be able to render all pages on the fly. So our main problem is to make 
-it possible that we can read the needed data fast. That is the idea behind the 
-data model. 
+it possible that we can read and process the needed data fast. 
+That is the idea behind the data model. 
 
 ### Maps
 
 Locations is the table which stores countries, federal_states, counties, cities 
 and schools. They are all linked to the parent_location. By that we can walk up 
-the tree.
+the tree:
+
+    school -> city -> county -> federal_state -> country
 
 A city can have multiple zip_codes and one zip_code can belong to multiple cities. 
 Therefore we have a zip_code_mapping table which connects them to the location 
@@ -49,11 +53,3 @@ To start your Phoenix server:
   * Start Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
