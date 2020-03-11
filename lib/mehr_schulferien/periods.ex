@@ -69,7 +69,7 @@ defmodule MehrSchulferien.Periods do
   """
   def list_all_public_periods(location_ids, starts_on, ends_on) do
     location_ids
-    |> public_query_periods(starts_on, ends_on)
+    |> public_periods_query(starts_on, ends_on)
     |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
@@ -82,7 +82,7 @@ defmodule MehrSchulferien.Periods do
     {:ok, last_day} = Date.new(current_year + number_years - 1, 12, 31)
 
     location_ids
-    |> public_query_periods(first_day, last_day)
+    |> public_periods_query(first_day, last_day)
     |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
@@ -185,7 +185,7 @@ defmodule MehrSchulferien.Periods do
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
-  defp public_query_periods(location_ids, starts_on, ends_on) do
+  defp public_periods_query(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
