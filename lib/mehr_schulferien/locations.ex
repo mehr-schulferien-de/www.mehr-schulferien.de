@@ -35,6 +35,14 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns the list of schools for a certain city.
+  """
+  def list_schools(city) do
+    from(l in Location, where: l.is_school == true and l.parent_location_id == ^city.id)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single federal_state.
 
   Raises `Ecto.NoResultsError` if the federal state does not exist.
@@ -83,7 +91,16 @@ defmodule MehrSchulferien.Locations do
 
   Raises `Ecto.NoResultsError` if the city does not exist.
   """
-  def get_city_by_slug!(city_slug, _country_slug) do
+  def get_city_by_slug!(city_slug) do
     Repo.get_by!(Location, slug: city_slug, is_city: true)
+  end
+
+  @doc """
+  Gets a single school by querying for the slug.
+
+  Raises `Ecto.NoResultsError` if the school does not exist.
+  """
+  def get_school_by_slug!(school_slug) do
+    Repo.get_by!(Location, slug: school_slug, is_school: true)
   end
 end

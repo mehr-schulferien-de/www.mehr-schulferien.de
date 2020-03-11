@@ -18,21 +18,13 @@ defmodule MehrSchulferienWeb.FederalStateController do
   def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    counties = Locations.list_counties(federal_state)
-
-    counties_with_cities =
-      Enum.reduce(counties, [], fn county, acc ->
-        acc ++ [{county, Locations.list_cities(county)}]
-      end)
-
     location_ids = [country.id, federal_state.id]
     today = Date.utc_today()
 
     assigns =
       [
-        counties_with_cities: counties_with_cities,
-        country_slug: country_slug,
-        location: federal_state
+        country: country,
+        federal_state: federal_state
       ] ++
         CH.show_period_data(location_ids, today) ++ CH.faq_data(location_ids, today)
 
@@ -58,8 +50,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
     assigns =
       [
         counties_with_cities: counties_with_cities,
-        country_slug: country_slug,
-        location: federal_state
+        country: country,
+        federal_state: federal_state
       ] ++
         CH.show_period_data(location_ids, today) ++ CH.faq_data(location_ids, today)
 

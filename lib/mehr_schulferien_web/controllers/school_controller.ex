@@ -1,15 +1,13 @@
-defmodule MehrSchulferienWeb.CityController do
+defmodule MehrSchulferienWeb.SchoolController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars, Locations, Maps}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
-  def show(conn, %{
-        "country_slug" => country_slug,
-        "city_slug" => city_slug
-      }) do
+  def show(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do
     country = Locations.get_country_by_slug!(country_slug)
-    city = Locations.get_city_by_slug!(city_slug)
+    school = Locations.get_school_by_slug!(school_slug)
+    city = Maps.get_location!(school.parent_location_id)
     county = Maps.get_location!(city.parent_location_id)
     federal_state = Maps.get_location!(county.parent_location_id)
 
@@ -18,10 +16,10 @@ defmodule MehrSchulferienWeb.CityController do
     end
 
     today = Date.utc_today()
-    location_ids = Calendars.recursive_location_ids(city)
+    location_ids = Calendars.recursive_location_ids(school)
 
     assigns =
-      [city: city, country: country, federal_state: federal_state] ++
+      [city: city, country: country, federal_state: federal_state, school: school] ++
         CH.show_period_data(location_ids, today)
 
     render(conn, "show.html", assigns)

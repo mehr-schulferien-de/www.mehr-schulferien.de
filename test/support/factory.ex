@@ -68,6 +68,18 @@ defmodule MehrSchulferien.Factory do
     merge_attributes(city, attrs)
   end
 
+  def school_factory(attrs) do
+    city_id = attrs[:parent_location_id] || insert(:city).id
+
+    school = %Location{
+      name: "Kopernikus-Gymnasium",
+      is_school: true,
+      parent_location_id: city_id
+    }
+
+    merge_attributes(school, attrs)
+  end
+
   def period_factory do
     federal_state = insert(:federal_state)
 

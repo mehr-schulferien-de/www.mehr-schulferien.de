@@ -1,20 +1,20 @@
 <ol class="breadcrumb hidden-xs">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">Deutschland</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
 </ol>
 
-<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">DE</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
 </ol>
 
 <div class="page-header">
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Landkreise und Städte in <%= @location.name %>
+        Landkreise und Städte in <%= @federal_state.name %>
       </h1>
     </div>
   </div>
@@ -26,8 +26,8 @@
     <%= for {county, cities} <- @counties_with_cities do %>
     <li><%= county.name %><br/>
     <%= for city <- cities do %>
-      <%= link city.name, to: Routes.city_path(@conn, :show, @country_slug, city.slug) %>
-      <p>Postleitzahlen: <%= MehrSchulferienWeb.CountyView.format_zip_codes(city) %></p>
+      <%= link city.name, to: Routes.city_path(@conn, :show, @country.slug, city.slug) %>
+      <p>Postleitzahlen: <%= MehrSchulferienWeb.FederalStateView.format_zip_codes(city) %></p>
     <% end %></li>
     <% end %>
     </ul>

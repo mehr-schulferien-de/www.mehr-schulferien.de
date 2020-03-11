@@ -1,0 +1,31 @@
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug), class: "active" %></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug), class: "active" %></li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        Schulferien <%= @country.name %>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <ul>
+    <%= for federal_state <- @federal_states do %>
+      <li>
+        <%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) %>
+      </li>
+    <% end %>
+    </ul>
+  </div>
+</div>
