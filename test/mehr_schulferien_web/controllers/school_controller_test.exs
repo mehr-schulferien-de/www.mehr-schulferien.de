@@ -12,6 +12,12 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
       conn = get(conn, Routes.school_path(conn, :show, country.slug, school.slug))
       assert html_response(conn, 200) =~ school.name
     end
+
+    test "returns 404 if country is not the root parent of the school", %{conn: conn, school: school} do
+      assert_error_sent 404, fn ->
+        get(conn, Routes.school_path(conn, :show, "ch", school.slug))
+      end
+    end
   end
 
   defp add_school(_) do
