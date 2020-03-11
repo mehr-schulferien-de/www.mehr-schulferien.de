@@ -30,7 +30,7 @@
   <tbody>
     <%= for {federal_state, periods} <- @periods do %>
       <tr>
-        <td><a href="/ferien/<%= "d/#{federal_state.slug}" %>"><span class="hidden-xs hidden-sm hidden-md"><%= federal_state.name %></span><span class="hidden-lg"><%= federal_state.name |> String.slice(0, 8) %><%= if String.length(federal_state.name) > 8 do %>.<% end %></span></a></td>
+        <td><a href="/ferien/<%= "d/bundesland/#{federal_state.slug}" %>"><%= federal_state.name %></a></td>
         <%= for day <- @days do %>
           <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
           <td class="text-center <%= td_html_class %>">
