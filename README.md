@@ -1,7 +1,9 @@
-# MehrSchulferien
+# mehr-schulferien.de
 
 This project is the 2020 version of https://www.mehr-schulferien.de
-It is a webpage which displays school vacation and public holidays in Germany.
+
+The webpage provides information about school vacations and public holidays 
+in Germany.
 
 ## Data structure
 
@@ -46,11 +48,3 @@ To start your Phoenix server:
   * Start Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
