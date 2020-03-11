@@ -8,19 +8,40 @@
 const { ConcatSource } = require("webpack-sources");
 const Template = require("./Template");
 
+/** @typedef {import("./Compilation")} Compilation */
+
+/**
+ * @typedef {Object} AmdMainTemplatePluginOptions
+ * @param {string=} name the library name
+ * @property {boolean=} requireAsWrapper
+ */
+
 class AmdMainTemplatePlugin {
-	constructor(name) {
-		this.name = name;
+	/**
+	 * @param {AmdMainTemplatePluginOptions} options the plugin options
+	 */
+	constructor(options) {
+		if (!options || typeof options === "string") {
+			this.name = options;
+			this.requireAsWrapper = false;
+		} else {
+			this.name = options.name;
+			this.requireAsWrapper = options.requireAsWrapper;
+		}
 	}
 
+	/**
+	 * @param {Compilation} compilation the compilation instance
+	 * @returns {void}
+	 */
 	apply(compilation) {
 		const { mainTemplate, chunkTemplate } = compilation;
 
 		const onRenderWithEntry = (source, chunk, hash) => {
 			const externals = chunk.getModules().filter(m => m.external);
 			const externalsDepsArray = JSON.stringify(
-				externals.map(
-					m => (typeof m.request === "object" ? m.request.amd : m.request)
+				externals.map(m =>
+					typeof m.request === "object" ? m.request.amd : m.request
 				)
 			);
 			const externalsArguments = externals
@@ -29,7 +50,13 @@ class AmdMainTemplatePlugin {
 				)
 				.join(", ");
 
-			if (this.name) {
+			if (this.requireAsWrapper) {
+				return new ConcatSource(
+					`require(${externalsDepsArray}, function(${externalsArguments}) { return `,
+					source,
+					"});"
+				);
+			} else if (this.name) {
 				const name = mainTemplate.getAssetPath(this.name, {
 					hash,
 					chunk
@@ -61,13 +88,17 @@ class AmdMainTemplatePlugin {
 		}
 
 		mainTemplate.hooks.globalHashPaths.tap("AmdMainTemplatePlugin", paths => {
-			if (this.name) paths.push(this.name);
+			if (this.name) {
+				paths.push(this.name);
+			}
 			return paths;
 		});
 
 		mainTemplate.hooks.hash.tap("AmdMainTemplatePlugin", hash => {
 			hash.update("exports amd");
-			hash.update(this.name);
+			if (this.name) {
+				hash.update(this.name);
+			}
 		});
 	}
 }

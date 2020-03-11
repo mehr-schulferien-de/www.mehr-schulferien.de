@@ -27,7 +27,7 @@
     <li><%= county.name %><br/>
     <%= for city <- cities do %>
       <%= link city.name, to: Routes.city_path(@conn, :show, @country_slug, city.slug) %>
-      <p>Postleitzahlen: <%= MehrSchulferienWeb.CountyView.format_zip_codes(city) %></p>
+      <p>Postleitzahlen: <%= MehrSchulferienWeb.FederalStateView.format_zip_codes(city) %></p>
     <% end %></li>
     <% end %>
     </ul>

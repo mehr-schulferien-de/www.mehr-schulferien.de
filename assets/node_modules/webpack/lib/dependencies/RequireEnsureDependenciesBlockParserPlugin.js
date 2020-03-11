@@ -74,10 +74,7 @@ module.exports = class RequireEnsureDependenciesBlockParserPlugin {
 							parser.inScope([], () => {
 								for (const ee of dependenciesItems) {
 									if (ee.isString()) {
-										const edep = new RequireEnsureItemDependency(
-											ee.string,
-											ee.range
-										);
+										const edep = new RequireEnsureItemDependency(ee.string);
 										edep.loc = dep.loc;
 										dep.addDependency(edep);
 									} else {
@@ -89,9 +86,11 @@ module.exports = class RequireEnsureDependenciesBlockParserPlugin {
 								return;
 							}
 							if (successExpression) {
-								if (successExpression.fn.body.type === "BlockStatement")
+								if (successExpression.fn.body.type === "BlockStatement") {
 									parser.walkStatement(successExpression.fn.body);
-								else parser.walkExpression(successExpression.fn.body);
+								} else {
+									parser.walkExpression(successExpression.fn.body);
+								}
 							}
 							old.addBlock(dep);
 						} finally {
@@ -101,9 +100,11 @@ module.exports = class RequireEnsureDependenciesBlockParserPlugin {
 							parser.walkExpression(successExpressionArg);
 						}
 						if (errorExpression) {
-							if (errorExpression.fn.body.type === "BlockStatement")
+							if (errorExpression.fn.body.type === "BlockStatement") {
 								parser.walkStatement(errorExpression.fn.body);
-							else parser.walkExpression(errorExpression.fn.body);
+							} else {
+								parser.walkExpression(errorExpression.fn.body);
+							}
 						} else if (errorExpressionArg) {
 							parser.walkExpression(errorExpressionArg);
 						}

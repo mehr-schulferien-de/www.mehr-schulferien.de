@@ -8,10 +8,18 @@ const createHash = require("./util/createHash");
 const validateOptions = require("schema-utils");
 const schema = require("../schemas/plugins/HashedModuleIdsPlugin.json");
 
-class HashedModuleIdsPlugin {
-	constructor(options) {
-		validateOptions(schema, options || {}, "Hashed Module Ids Plugin");
+/** @typedef {import("../declarations/plugins/HashedModuleIdsPlugin").HashedModuleIdsPluginOptions} HashedModuleIdsPluginOptions */
 
+class HashedModuleIdsPlugin {
+	/**
+	 * @param {HashedModuleIdsPluginOptions=} options options object
+	 */
+	constructor(options) {
+		if (!options) options = {};
+
+		validateOptions(schema, options, "Hashed Module Ids Plugin");
+
+		/** @type {HashedModuleIdsPluginOptions} */
 		this.options = Object.assign(
 			{
 				context: null,
@@ -37,7 +45,9 @@ class HashedModuleIdsPlugin {
 							});
 							const hash = createHash(options.hashFunction);
 							hash.update(id);
-							const hashId = hash.digest(options.hashDigest);
+							const hashId = /** @type {string} */ (hash.digest(
+								options.hashDigest
+							));
 							let len = options.hashDigestLength;
 							while (usedIds.has(hashId.substr(0, len))) len++;
 							module.id = hashId.substr(0, len);

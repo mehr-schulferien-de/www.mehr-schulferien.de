@@ -41,36 +41,40 @@ class FunctionModuleTemplatePlugin {
 					const req = module.readableIdentifier(
 						moduleTemplate.runtimeTemplate.requestShortener
 					);
-					source.add("/*!****" + req.replace(/./g, "*") + "****!*\\\n");
-					source.add("  !*** " + req.replace(/\*\//g, "*_/") + " ***!\n");
-					source.add("  \\****" + req.replace(/./g, "*") + "****/\n");
+					const reqStr = req.replace(/\*\//g, "*_/");
+					const reqStrStar = "*".repeat(reqStr.length);
+					source.add("/*!****" + reqStrStar + "****!*\\\n");
+					source.add("  !*** " + reqStr + " ***!\n");
+					source.add("  \\****" + reqStrStar + "****/\n");
 					if (
 						Array.isArray(module.buildMeta.providedExports) &&
 						module.buildMeta.providedExports.length === 0
-					)
+					) {
 						source.add(Template.toComment("no exports provided") + "\n");
-					else if (Array.isArray(module.buildMeta.providedExports))
+					} else if (Array.isArray(module.buildMeta.providedExports)) {
 						source.add(
 							Template.toComment(
 								"exports provided: " +
 									module.buildMeta.providedExports.join(", ")
 							) + "\n"
 						);
-					else if (module.buildMeta.providedExports)
+					} else if (module.buildMeta.providedExports) {
 						source.add(Template.toComment("no static exports found") + "\n");
+					}
 					if (
 						Array.isArray(module.usedExports) &&
 						module.usedExports.length === 0
-					)
+					) {
 						source.add(Template.toComment("no exports used") + "\n");
-					else if (Array.isArray(module.usedExports))
+					} else if (Array.isArray(module.usedExports)) {
 						source.add(
 							Template.toComment(
 								"exports used: " + module.usedExports.join(", ")
 							) + "\n"
 						);
-					else if (module.usedExports)
+					} else if (module.usedExports) {
 						source.add(Template.toComment("all exports used") + "\n");
+					}
 					if (module.optimizationBailout) {
 						for (const text of module.optimizationBailout) {
 							let code;

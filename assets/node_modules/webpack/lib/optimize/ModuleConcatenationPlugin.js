@@ -61,7 +61,7 @@ class ModuleConcatenationPlugin {
 
 				compilation.hooks.optimizeChunkModules.tap(
 					"ModuleConcatenationPlugin",
-					(chunks, modules) => {
+					(allChunks, modules) => {
 						const relevantModules = [];
 						const possibleInners = new Set();
 						for (const module of modules) {
@@ -148,15 +148,17 @@ class ModuleConcatenationPlugin {
 									nonHarmonyReasons.map(r => r.explanation).filter(Boolean)
 								);
 								const importingModuleTypes = new Map(
-									Array.from(importingModules).map(m => [
-										m,
-										new Set(
-											nonHarmonyReasons
-												.filter(r => r.module === m)
-												.map(r => r.dependency.type)
-												.sort()
-										)
-									])
+									Array.from(importingModules).map(
+										m => /** @type {[string, Set]} */ ([
+											m,
+											new Set(
+												nonHarmonyReasons
+													.filter(r => r.module === m)
+													.map(r => r.dependency.type)
+													.sort()
+											)
+										])
+									)
 								);
 								setBailoutReason(module, requestShortener => {
 									const names = Array.from(importingModules)
@@ -170,19 +172,21 @@ class ModuleConcatenationPlugin {
 										)
 										.sort();
 									const explanations = Array.from(importingExplanations).sort();
-									if (names.length > 0 && explanations.length === 0)
+									if (names.length > 0 && explanations.length === 0) {
 										return `Module is referenced from these modules with unsupported syntax: ${names.join(
 											", "
 										)}`;
-									else if (names.length === 0 && explanations.length > 0)
+									} else if (names.length === 0 && explanations.length > 0) {
 										return `Module is referenced by: ${explanations.join(
 											", "
 										)}`;
-									else if (names.length > 0 && explanations.length > 0)
+									} else if (names.length > 0 && explanations.length > 0) {
 										return `Module is referenced from these modules with unsupported syntax: ${names.join(
 											", "
 										)} and by: ${explanations.join(", ")}`;
-									else return "Module is referenced in a unsupported way";
+									} else {
+										return "Module is referenced in a unsupported way";
+									}
 								});
 								continue;
 							}
@@ -209,8 +213,9 @@ class ModuleConcatenationPlugin {
 							const failureCache = new Map();
 
 							// try to add all imports
-							for (const imp of this.getImports(currentRoot)) {
-								const problem = this.tryToAdd(
+							for (const imp of this._getImports(compilation, currentRoot)) {
+								const problem = this._tryToAdd(
+									compilation,
 									currentConfiguration,
 									imp,
 									possibleInners,
@@ -224,8 +229,9 @@ class ModuleConcatenationPlugin {
 							if (!currentConfiguration.isEmpty()) {
 								concatConfigurations.push(currentConfiguration);
 								for (const module of currentConfiguration.getModules()) {
-									if (module !== currentConfiguration.rootModule)
+									if (module !== currentConfiguration.rootModule) {
 										usedAsInner.add(module);
+									}
 								}
 							}
 						}
@@ -240,21 +246,27 @@ class ModuleConcatenationPlugin {
 						for (const concatConfiguration of concatConfigurations) {
 							if (usedModules.has(concatConfiguration.rootModule)) continue;
 							const modules = concatConfiguration.getModules();
+							const rootModule = concatConfiguration.rootModule;
 							const newModule = new ConcatenatedModule(
-								concatConfiguration.rootModule,
-								modules
+								rootModule,
+								Array.from(modules),
+								ConcatenatedModule.createConcatenationList(
+									rootModule,
+									modules,
+									compilation
+								)
 							);
 							for (const warning of concatConfiguration.getWarningsSorted()) {
 								newModule.optimizationBailout.push(requestShortener => {
 									const reason = getBailoutReason(warning[0], requestShortener);
 									const reasonWithPrefix = reason ? ` (<- ${reason})` : "";
-									if (warning[0] === warning[1])
+									if (warning[0] === warning[1]) {
 										return formatBailoutReason(
 											`Cannot concat with ${warning[0].readableIdentifier(
 												requestShortener
 											)}${reasonWithPrefix}`
 										);
-									else
+									} else {
 										return formatBailoutReason(
 											`Cannot concat with ${warning[0].readableIdentifier(
 												requestShortener
@@ -262,6 +274,7 @@ class ModuleConcatenationPlugin {
 												requestShortener
 											)}${reasonWithPrefix}`
 										);
+									}
 								});
 							}
 							const chunks = concatConfiguration.rootModule.getChunks();
@@ -274,12 +287,21 @@ class ModuleConcatenationPlugin {
 							for (const chunk of chunks) {
 								chunk.addModule(newModule);
 								newModule.addChunk(chunk);
-								if (chunk.entryModule === concatConfiguration.rootModule)
+							}
+							for (const chunk of allChunks) {
+								if (chunk.entryModule === concatConfiguration.rootModule) {
 									chunk.entryModule = newModule;
+								}
 							}
 							compilation.modules.push(newModule);
 							for (const reason of newModule.reasons) {
-								reason.dependency.module = newModule;
+								if (reason.dependency.module === concatConfiguration.rootModule)
+									reason.dependency.module = newModule;
+								if (
+									reason.dependency.redirectedModule ===
+									concatConfiguration.rootModule
+								)
+									reason.dependency.redirectedModule = newModule;
 							}
 							// TODO: remove when LTS node version contains fixed v8 version
 							// @see https://github.com/webpack/webpack/pull/6613
@@ -291,7 +313,9 @@ class ModuleConcatenationPlugin {
 									let reasons = dep.module.reasons;
 									for (let j = 0; j < reasons.length; j++) {
 										let reason = reasons[j];
-										if (reason.dependency === dep) reason.module = newModule;
+										if (reason.dependency === dep) {
+											reason.module = newModule;
+										}
 									}
 								}
 							}
@@ -305,34 +329,33 @@ class ModuleConcatenationPlugin {
 		);
 	}
 
-	getImports(module) {
-		return Array.from(
-			new Set(
-				module.dependencies
+	_getImports(compilation, module) {
+		return new Set(
+			module.dependencies
 
-					// Only harmony Dependencies
-					.filter(dep => dep instanceof HarmonyImportDependency && dep.module)
+				// Get reference info only for harmony Dependencies
+				.map(dep => {
+					if (!(dep instanceof HarmonyImportDependency)) return null;
+					if (!compilation) return dep.getReference();
+					return compilation.getDependencyReference(module, dep);
+				})
 
-					// Get reference info for this dependency
-					.map(dep => dep.getReference())
+				// Reference is valid and has a module
+				// Dependencies are simple enough to concat them
+				.filter(
+					ref =>
+						ref &&
+						ref.module &&
+						(Array.isArray(ref.importedNames) ||
+							Array.isArray(ref.module.buildMeta.providedExports))
+				)
 
-					// Reference is valid and has a module
-					.filter(ref => ref && ref.module)
-
-					// Dependencies are simple enough to concat them
-					.filter(
-						ref =>
-							Array.isArray(ref.importedNames) ||
-							Array.isArray(ref.module.buildMeta.providedExports)
-					)
-
-					// Take the imported module
-					.map(ref => ref.module)
-			)
+				// Take the imported module
+				.map(ref => ref.module)
 		);
 	}
 
-	tryToAdd(config, module, possibleModules, failureCache) {
+	_tryToAdd(compilation, config, module, possibleModules, failureCache) {
 		const cacheEntry = failureCache.get(module);
 		if (cacheEntry) {
 			return cacheEntry;
@@ -370,7 +393,8 @@ class ModuleConcatenationPlugin {
 			)
 				continue;
 
-			const problem = this.tryToAdd(
+			const problem = this._tryToAdd(
+				compilation,
 				testConfig,
 				reason.module,
 				possibleModules,
@@ -386,8 +410,14 @@ class ModuleConcatenationPlugin {
 		config.set(testConfig);
 
 		// Eagerly try to add imports too if possible
-		for (const imp of this.getImports(module)) {
-			const problem = this.tryToAdd(config, imp, possibleModules, failureCache);
+		for (const imp of this._getImports(compilation, module)) {
+			const problem = this._tryToAdd(
+				compilation,
+				config,
+				imp,
+				possibleModules,
+				failureCache
+			);
 			if (problem) {
 				config.addWarning(imp, problem);
 			}
@@ -438,7 +468,7 @@ class ConcatConfiguration {
 	}
 
 	getModules() {
-		return this.modules.asArray();
+		return this.modules.asSet();
 	}
 
 	clone() {

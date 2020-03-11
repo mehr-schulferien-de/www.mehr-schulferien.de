@@ -20,7 +20,9 @@ module.exports = class AMDRequireDependenciesBlock extends AsyncDependenciesBloc
 		this.expr = expr;
 		this.outerRange = expr.range;
 		this.arrayRange = arrayRange;
+		this.functionBindThis = false;
 		this.functionRange = functionRange;
+		this.errorCallbackBindThis = false;
 		this.errorCallbackRange = errorCallbackRange;
 		this.bindThis = true;
 		if (arrayRange && functionRange && errorCallbackRange) {
@@ -34,8 +36,12 @@ module.exports = class AMDRequireDependenciesBlock extends AsyncDependenciesBloc
 		} else {
 			this.range = expr.range;
 		}
-		const dep = new AMDRequireDependency(this);
+		const dep = this.newRequireDependency();
 		dep.loc = loc;
 		this.addDependency(dep);
+	}
+
+	newRequireDependency() {
+		return new AMDRequireDependency(this);
 	}
 };

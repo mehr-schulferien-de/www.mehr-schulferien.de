@@ -31,11 +31,12 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/land/:country_slug", CountryController, :show
 
     # School vacations
-    get "/ferien/:country_slug/staedte/:city_slug", CityController, :show
-    get "/ferien/:country_slug/:federal_state_slug/:county_slug", CountyController, :show
-    get "/ferien/:country_slug/:federal_state_slug", FederalStateController, :show
+    get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
+    get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show
+    get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
 
     # Misc
     get "/landkreise-und-staedte/:country_slug/:federal_state_slug",
