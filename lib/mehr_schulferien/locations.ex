@@ -5,7 +5,6 @@ defmodule MehrSchulferien.Locations do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Maps
   alias MehrSchulferien.Maps.Location
   alias MehrSchulferien.Repo
 
@@ -92,27 +91,16 @@ defmodule MehrSchulferien.Locations do
 
   Raises `Ecto.NoResultsError` if the city does not exist.
   """
-  def get_city_by_slug!(city_slug, country_slug) do
-    city = Repo.get_by!(Location, slug: city_slug, is_city: true)
-    county = Maps.get_location!(city.parent_location_id)
-    federal_state = Maps.get_location!(county.parent_location_id)
-    country = Maps.get_location!(federal_state.parent_location_id)
-    country.slug == country_slug || raise MehrSchulferien.CountryNotParentError
-    city
+  def get_city_by_slug!(city_slug) do
+    Repo.get_by!(Location, slug: city_slug, is_city: true)
   end
 
   @doc """
   Gets a single school by querying for the slug.
 
-  Raises `Ecto.NoResultsError` if the city does not exist.
+  Raises `Ecto.NoResultsError` if the school does not exist.
   """
-  def get_school_by_slug!(school_slug, country_slug) do
-    school = Repo.get_by!(Location, slug: school_slug, is_school: true)
-    city = Maps.get_location!(school.parent_location_id)
-    county = Maps.get_location!(city.parent_location_id)
-    federal_state = Maps.get_location!(county.parent_location_id)
-    country = Maps.get_location!(federal_state.parent_location_id)
-    country.slug == country_slug || raise MehrSchulferien.CountryNotParentError
-    school
+  def get_school_by_slug!(school_slug) do
+    Repo.get_by!(Location, slug: school_slug, is_school: true)
   end
 end

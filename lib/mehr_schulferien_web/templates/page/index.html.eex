@@ -1,5 +1,5 @@
 <ol class="breadcrumb">
-  <li class="active"><a href="/">Home</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
 </ol>
 
 <div class="row">

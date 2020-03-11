@@ -1,20 +1,22 @@
 <ol class="breadcrumb hidden-xs">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">Deutschland</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link @city.name, to: Routes.city_path(@conn, :show, @country.slug, @city.slug), class: "active" %></li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">DE</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link @city.name, to: Routes.city_path(@conn, :show, @country.slug, @city.slug), class: "active" %></li>
 </ol>
 
 <div class="page-header">
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Schulferien der Stadt <%= @location.name %>
+        Schulferien der Stadt <%= @city.name %>
       </h1>
     </div>
   </div>
@@ -25,13 +27,11 @@
 
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods, months: @months %>
 
-    <h2>Ferien <%= @location.name %> <%= @next_three_years %></h2>
+    <h2>Ferien <%= @city.name %> <%= @next_three_years %></h2>
     <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_headers: @next_3_years_headers, next_3_years_periods: @next_3_years_periods, current_year: @current_year, months: @months %>
 
     <h2>Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
-    <h2>Städte im Kreis <%= @location.name %></h2>
-    <p>a (12345, 13412), b (23456), c (34561), d (01243, 01244, 01245), e (21142) und f (11134).</p>
   </div>
 </div>

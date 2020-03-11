@@ -1,13 +1,11 @@
 <ol class="breadcrumb hidden-xs">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">Deutschland</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug), class: "active" %></li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">DE</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug), class: "active" %></li>
 </ol>
 
 <div class="page-header">
@@ -25,8 +23,7 @@
     <ul>
     <%= for federal_state <- @federal_states do %>
       <li>
-        <%= federal_state.name %><br/>
-        <%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, @country_slug, federal_state.slug) %>
+        <%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) %>
       </li>
     <% end %>
     </ul>

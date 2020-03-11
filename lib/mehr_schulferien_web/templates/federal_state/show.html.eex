@@ -1,20 +1,20 @@
 <ol class="breadcrumb hidden-xs">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">Deutschland</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><a href="/">Home</a></li>
-  <li><a href="/countries/deutschland">DE</a></li>
-  <li class="active"><a href="/federal_states/berlin">Berlin</a></li>
+  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
 </ol>
 
 <div class="page-header">
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Schulferien <%= @location.name %>
+        Schulferien <%= @federal_state.name %>
       </h1>
     </div>
   </div>
@@ -25,18 +25,18 @@
 
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods, months: @months %>
 
-    <h2>Ferien <%= @location.name %> <%= @next_three_years %></h2>
+    <h2>Ferien <%= @federal_state.name %> <%= @next_three_years %></h2>
     <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_headers: @next_3_years_headers, next_3_years_periods: @next_3_years_periods, current_year: @current_year, months: @months %>
 
     <h2>Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
     <h2>FAQ</h2>
-    <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", location: @location, today: @today, todays_public_holiday_periods: @todays_public_holiday_periods, yesterdays_public_holiday_periods: @yesterdays_public_holiday_periods, tomorrows_public_holiday_periods: @tomorrows_public_holiday_periods, day_after_tomorrows_public_holiday_periods: @day_after_tomorrows_public_holiday_periods, todays_school_free_periods: @todays_school_free_periods, tomorrows_school_free_periods: @tomorrows_school_free_periods, day_after_tomorrows_school_free_periods: @day_after_tomorrows_school_free_periods %>
+    <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", location: @federal_state, today: @today, todays_public_holiday_periods: @todays_public_holiday_periods, yesterdays_public_holiday_periods: @yesterdays_public_holiday_periods, tomorrows_public_holiday_periods: @tomorrows_public_holiday_periods, day_after_tomorrows_public_holiday_periods: @day_after_tomorrows_public_holiday_periods, todays_school_free_periods: @todays_school_free_periods, tomorrows_school_free_periods: @tomorrows_school_free_periods, day_after_tomorrows_school_free_periods: @day_after_tomorrows_school_free_periods %>
 
     <h2>Sonstiges</h2>
     <ul>
-      <li><a href="/landkreise-und-staedte/d/<%= @location.slug %>">Liste mit allen Landkreien und Städten von <%= @location.name %></a></li>
+      <li><a href="/landkreise-und-staedte/d/<%= @federal_state.slug %>">Liste mit allen Landkreien und Städten von <%= @federal_state.name %></a></li>
     </ul>
   </div>
 </div>
