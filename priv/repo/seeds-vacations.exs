@@ -169,7 +169,7 @@ defmodule M do
           starts_on: day,
           ends_on: Date.add(day, 1),
           location_id: country.id,
-          display_priority: 8
+          display_priority: 4
         })
       end
     end)

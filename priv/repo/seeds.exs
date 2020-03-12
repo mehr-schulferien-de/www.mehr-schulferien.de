@@ -268,5 +268,5 @@ alias MehrSchulferien.Calendars
     default_display_priority: 2,
     wikipedia_url: "https://de.m.wikipedia.org/wiki/Schulferien#Sommerferien",
     country_location_id: deutschland.id,
-    default_display_priority: 8
+    default_display_priority: 4
   })
