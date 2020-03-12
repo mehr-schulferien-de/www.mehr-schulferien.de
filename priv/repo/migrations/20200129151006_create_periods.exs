@@ -14,10 +14,10 @@ defmodule MehrSchulferien.Repo.Migrations.CreatePeriods do
       add :is_valid_for_students, :boolean, default: false, null: false
 
       add :holiday_or_vacation_type_id,
-          references(:holiday_or_vacation_types, on_delete: :nothing)
+          references(:holiday_or_vacation_types, on_delete: :delete_all)
 
-      add :location_id, references(:locations, on_delete: :nothing)
-      add :religion_id, references(:religions, on_delete: :nothing)
+      add :location_id, references(:locations, on_delete: :delete_all)
+      add :religion_id, references(:religions, on_delete: :delete_all)
 
       timestamps()
     end

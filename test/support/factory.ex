@@ -4,7 +4,20 @@ defmodule MehrSchulferien.Factory do
   use ExMachina.Ecto, repo: MehrSchulferien.Repo
 
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period, Religion}
-  alias MehrSchulferien.Maps.{Location, ZipCode, ZipCodeMapping}
+  alias MehrSchulferien.Maps.{Address, Location, ZipCode, ZipCodeMapping}
+
+  def address_factory(attrs) do
+    school_id = attrs[:parent_location_id] || insert(:school).id
+
+    address = %Address{
+      line1: "Schubart-Gymnasium Partnerschule für Europa",
+      street: "Rombacher Straße 30",
+      school_type: "Gymnasium",
+      school_location_id: school_id
+    }
+
+    merge_attributes(address, attrs)
+  end
 
   def holiday_or_vacation_type_factory(attrs) do
     name = attrs[:name] || Enum.random(["Herbst", "Sommer", "Weihnachts"])
