@@ -1,5 +1,6 @@
 <%= for month_days <- @days do %>
 <% first_day = Enum.at(month_days, 0) %>
+<% {public_periods, school_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
 <%= if rem(first_day.month, 3) == 0 do %>
 <div class="row">
 <% end %>
@@ -37,21 +38,21 @@
                   </tr>
                   <tr>
                 <% end %>
-                <td class="text-right <%= ViewHelpers.get_html_class(day, day_of_week, @public_periods, @periods) %>"><%= day.day %>.</td>
+                <td class="text-right <%= ViewHelpers.get_html_class(day, public_periods ++ school_periods) %>"><%= day.day %>.</td>
               <% end %>
             </tr>
           </tbody>
         </table>
-        <% {public_hols, school_hols} = ViewHelpers.get_month_holidays(first_day, @public_periods, @periods) %>
-        <%= unless Enum.empty?(public_hols) and Enum.empty?(school_hols) do %>
+        <% public_periods = Enum.filter(public_periods, &(&1.holiday_or_vacation_type.name != "Wochenende")) %>
+        <%= unless Enum.empty?(public_periods) and Enum.empty?(school_periods) do %>
 
           <div class="row">
-            <%= unless Enum.empty?(public_hols) do %>
-              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_hols, number_days_html_class: "info" %>
+            <%= unless Enum.empty?(public_periods) do %>
+              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_periods, number_days_html_class: "info" %>
             <% end %>
 
-            <%= unless Enum.empty?(school_hols) do %>
-              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_hols, number_days_html_class: "success" %>
+            <%= unless Enum.empty?(school_periods) do %>
+              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_periods, number_days_html_class: "success" %>
             <% end %>
           </div>
 

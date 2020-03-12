@@ -55,23 +55,11 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
           ends_on: ~D[2020-03-04]
         })
 
-      assert ViewHelpers.get_html_class(~D[2020-03-02], 1, [period]) == "success"
-      assert ViewHelpers.get_html_class(~D[2020-03-05], 4, [period]) == ""
+      assert ViewHelpers.get_html_class(~D[2020-03-02], [period]) == "success"
+      assert ViewHelpers.get_html_class(~D[2020-03-05], [period]) == ""
     end
 
-    test "shows active if date is a weekend" do
-      period =
-        insert(:period, %{
-          html_class: "success",
-          starts_on: ~D[2020-03-01],
-          ends_on: ~D[2020-03-04]
-        })
-
-      assert ViewHelpers.get_html_class(~D[2020-03-08], 7, [period]) == "active"
-      assert ViewHelpers.get_html_class(~D[2020-03-12], 4, [period]) == ""
-    end
-
-    test "get_html_class/4 shows period with highest display_priority" do
+    test "get_html_class/2 shows period with highest display_priority" do
       period_1 =
         insert(:period, %{
           display_priority: 8,
@@ -88,8 +76,8 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
           ends_on: ~D[2020-03-04]
         })
 
-      assert ViewHelpers.get_html_class(~D[2020-03-01], 7, [period_1, period_2]) == "info"
-      assert ViewHelpers.get_html_class(~D[2020-03-02], 1, [period_1, period_2]) == "success"
+      assert ViewHelpers.get_html_class(~D[2020-03-01], [period_1, period_2]) == "info"
+      assert ViewHelpers.get_html_class(~D[2020-03-02], [period_1, period_2]) == "success"
     end
   end
 end

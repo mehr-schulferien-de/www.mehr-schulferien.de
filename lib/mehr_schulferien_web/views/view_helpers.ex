@@ -69,32 +69,6 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   def display_year([[period | _] | _]), do: period.starts_on.year
 
   @doc """
-  Returns the html class based on whether the date is a public holiday,
-  a school holiday or a weekend.
-  """
-  def get_html_class(date, day_of_week, public_periods, school_periods) do
-    public = Calendars.find_period(date, public_periods)
-    school = Calendars.find_period(date, school_periods)
-
-    case {public, school} do
-      {nil, nil} -> get_html_class(day_of_week)
-      {nil, period} -> period.html_class
-      {period, nil} -> period.html_class
-      {public_period, school_period} -> select_html_class(public_period, school_period)
-    end
-  end
-
-  @doc """
-  Returns the html class based on whether the date is a holiday or weekend.
-  """
-  def get_html_class(date, day_of_week, periods) do
-    case Calendars.find_period(date, periods) do
-      nil -> get_html_class(day_of_week)
-      period -> period.html_class
-    end
-  end
-
-  @doc """
   Returns the html class for a date. This is based on whether the date
   is a holiday period.
   """
@@ -111,35 +85,16 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     period.html_class
   end
 
-  defp get_html_class(day_of_week) when day_of_week > 5, do: "active"
-  defp get_html_class(_), do: ""
-
-  defp select_html_class(period_1, period_2) do
-    if period_1.display_priority >= period_2.display_priority do
-      period_1.html_class
-    else
-      period_2.html_class
-    end
-  end
-
   @doc """
   Returns the public holiday periods and school holiday periods for a month.
   """
-  def get_month_holidays(date, public_periods, school_periods) do
-    {get_month_holidays(date, public_periods), get_month_holidays(date, school_periods)}
+  def list_month_holidays(date, public_periods, school_periods) do
+    {Calendars.find_periods_by_month(date, public_periods),
+     Calendars.find_periods_by_month(date, school_periods)}
   end
 
   @doc """
-  Returns the holiday periods for a month.
-  """
-  def get_month_holidays(date, periods) do
-    date
-    |> Calendars.find_periods_by_month(periods)
-    |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
-  end
-
-  @doc """
-  Returns a comma seperated list of list elements. 
+  Returns a comma seperated list of list elements.
   The last comma is replaced with an "und" ("and").
   """
   def comma_join_with_a_final_und(list) do

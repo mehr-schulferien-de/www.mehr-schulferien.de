@@ -1,5 +1,6 @@
 <div class="col-xs-6">
-  <%= for periods <- @holiday_periods do %>
+  <% holiday_periods = Enum.chunk_by(@holiday_periods, & &1.holiday_or_vacation_type.name) %>
+  <%= for periods <- holiday_periods do %>
     <% period = Enum.at(periods, 0) %>
     <dl>
       <dt><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></dt>
