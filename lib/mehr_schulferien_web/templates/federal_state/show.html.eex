@@ -36,7 +36,7 @@
 
     <h2>Sonstiges</h2>
     <ul>
-      <li><a href="/landkreise-und-staedte/d/<%= @federal_state.slug %>">Liste mit allen Landkreien und Städten von <%= @federal_state.name %></a></li>
+      <li><%= link "Liste mit allen Landkreien und Städten von", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %></li>
     </ul>
   </div>
 </div>
