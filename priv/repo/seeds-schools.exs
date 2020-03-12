@@ -37,7 +37,7 @@ defmodule M do
             city
         end
 
-      Maps.create_location(%{
+      Locations.create_location(%{
         name: name,
         slug: slug,
         parent_location_id: city.id,

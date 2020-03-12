@@ -2,18 +2,18 @@
 #
 #     mix run priv/repo/seeds.exs
 
-alias MehrSchulferien.Maps
+alias MehrSchulferien.Locations
 alias MehrSchulferien.Calendars
 
 # Countries
 #
 {:ok, deutschland} =
-  Maps.create_location(%{name: "Deutschland", code: "D", is_country: true, slug: "d"})
+  Locations.create_location(%{name: "Deutschland", code: "D", is_country: true, slug: "d"})
 
 # Create the federal_states of Deutschland
 #
 {:ok, _badenwuerttemberg} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Baden-Württemberg",
     code: "BW",
     is_federal_state: true,
@@ -21,7 +21,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _bayern} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Bayern",
     code: "BY",
     is_federal_state: true,
@@ -29,7 +29,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _berlin} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Berlin",
     code: "BE",
     is_federal_state: true,
@@ -37,7 +37,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _brandenburg} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Brandenburg",
     code: "BB",
     is_federal_state: true,
@@ -45,7 +45,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _bremen} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Bremen",
     code: "HB",
     is_federal_state: true,
@@ -53,7 +53,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _hamburg} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Hamburg",
     code: "HH",
     is_federal_state: true,
@@ -61,7 +61,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _hessen} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Hessen",
     code: "HE",
     is_federal_state: true,
@@ -69,7 +69,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _mecklenburgvorpommern} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Mecklenburg-Vorpommern",
     code: "MV",
     is_federal_state: true,
@@ -77,7 +77,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _niedersachsen} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Niedersachsen",
     code: "NI",
     is_federal_state: true,
@@ -85,7 +85,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _nordrheinwestfalen} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Nordrhein-Westfalen",
     code: "NW",
     is_federal_state: true,
@@ -93,7 +93,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _rheinlandpfalz} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Rheinland-Pfalz",
     code: "RP",
     is_federal_state: true,
@@ -101,7 +101,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _saarland} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Saarland",
     code: "SL",
     is_federal_state: true,
@@ -109,7 +109,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _sachsen} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Sachsen",
     code: "SN",
     is_federal_state: true,
@@ -117,7 +117,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _sachsenanhalt} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Sachsen-Anhalt",
     code: "ST",
     is_federal_state: true,
@@ -125,7 +125,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _schleswigholstein} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Schleswig-Holstein",
     code: "SH",
     is_federal_state: true,
@@ -133,7 +133,7 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _thueringen} =
-  Maps.create_location(%{
+  Locations.create_location(%{
     name: "Thüringen",
     code: "TH",
     is_federal_state: true,
