@@ -1,11 +1,11 @@
 defmodule MehrSchulferien.LocationSlugsTest do
   use MehrSchulferien.DataCase
 
-  alias MehrSchulferien.Maps
+  alias MehrSchulferien.Locations
 
   setup do
     country_attrs = %{name: "Deutschland", code: "D", is_country: true}
-    {:ok, country} = Maps.create_location(country_attrs)
+    {:ok, country} = Locations.create_location(country_attrs)
     {:ok, %{country: country}}
   end
 
@@ -24,7 +24,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: country.id
       }
 
-      {:ok, federal_state} = Maps.create_location(attrs)
+      {:ok, federal_state} = Locations.create_location(attrs)
       assert federal_state.slug == "berlin"
 
       attrs = %{
@@ -35,7 +35,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: country.id
       }
 
-      {:ok, federal_state} = Maps.create_location(attrs)
+      {:ok, federal_state} = Locations.create_location(attrs)
       assert federal_state.slug == "berlin-be"
 
       attrs = %{
@@ -46,7 +46,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: federal_state.id
       }
 
-      {:ok, county} = Maps.create_location(attrs)
+      {:ok, county} = Locations.create_location(attrs)
       assert county.slug == "berlin"
 
       attrs = %{
@@ -57,7 +57,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: federal_state.id
       }
 
-      {:ok, county} = Maps.create_location(attrs)
+      {:ok, county} = Locations.create_location(attrs)
       assert county.slug == "berlin-be"
 
       attrs = %{
@@ -68,7 +68,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: county.id
       }
 
-      {:ok, city} = Maps.create_location(attrs)
+      {:ok, city} = Locations.create_location(attrs)
       assert city.slug == "berlin"
 
       attrs = %{
@@ -80,7 +80,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: city.id
       }
 
-      {:ok, city} = Maps.create_location(attrs)
+      {:ok, city} = Locations.create_location(attrs)
       assert city.slug == "berlin-be"
 
       attrs = %{
@@ -92,7 +92,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: city.id
       }
 
-      {:ok, city} = Maps.create_location(attrs)
+      {:ok, city} = Locations.create_location(attrs)
       assert city.slug == "berlin-be-1"
 
       attrs = %{
@@ -104,7 +104,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: city.id
       }
 
-      {:ok, city} = Maps.create_location(attrs)
+      {:ok, city} = Locations.create_location(attrs)
       assert city.slug == "berlin-be-2"
 
       attrs = %{
@@ -116,7 +116,7 @@ defmodule MehrSchulferien.LocationSlugsTest do
         parent_location_id: city.id
       }
 
-      {:ok, city} = Maps.create_location(attrs)
+      {:ok, city} = Locations.create_location(attrs)
       assert city.slug == "berlin-be-3"
     end
   end

@@ -4,75 +4,67 @@ defmodule MehrSchulferien.MapsTest do
   import MehrSchulferien.Factory
 
   alias MehrSchulferien.Maps
-  alias MehrSchulferien.Maps.{Location, ZipCode, ZipCodeMapping}
+  alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
 
-  describe "locations" do
+  describe "addresses" do
     @valid_attrs %{
-      is_country: true,
-      name: "Deutschland",
-      code: "D"
+      "address_line1" => "Schubart-Gymnasium Partnerschule für Europa",
+      "address_street" => "Rombacher Straße 30",
+      "address_zip_code" => "73430",
+      "address_city" => "Aalen",
+      "email_address" => nil,
+      "phone_number" => "+49 7361 9561",
+      "fax_number" => "+49 7361 9561",
+      "homepage_url" => nil,
+      "school_type_entity" => "Gymnasium",
+      "school_type" => "Gymnasium",
+      "official_id" => "75774",
+      "lon" => 10.08184,
+      "lat" => 48.838598
     }
-    @update_attrs %{code: "DE"}
-    @invalid_attrs %{name: nil}
+    @update_attrs %{"homepage_url" => "www.example.com"}
+    @invalid_attrs %{"school_location_id" => nil}
 
-    test "list_locations/0 returns all locations" do
-      location = insert(:federal_state)
-      assert locations = Maps.list_locations()
-      assert location_1 = Enum.find(locations, &(&1.id == location.id))
-      assert location.name == location_1.name
+    test "list_addresses/0 returns all addresses" do
+      address = insert(:address)
+      assert Maps.list_addresses() == [address]
     end
 
-    test "get_location!/1 returns the location with given id" do
-      location = insert(:federal_state)
-      assert Maps.get_location!(location.id) == location
+    test "get_address!/1 returns the address with given id" do
+      address = insert(:address)
+      assert Maps.get_address!(address.id) == address
     end
 
-    test "recursive_location_ids/1 returns location's id and ancestor ids" do
-      other_location = insert(:federal_state)
-      location = insert(:federal_state)
-      country = Maps.get_location!(location.parent_location_id)
-      county = insert(:county, %{parent_location_id: location.id})
-      location_ids = Maps.recursive_location_ids(country)
-      assert location_ids == [country.id]
-      location_ids = Maps.recursive_location_ids(location)
-      assert location_ids == [country.id, location.id]
-      location_ids = Maps.recursive_location_ids(county)
-      assert location_ids == [country.id, location.id, county.id]
-      assert other_location.id not in location_ids
+    test "create_address/1 with valid data creates a address" do
+      school = insert(:school)
+      valid_attrs = Map.put(@valid_attrs, "school_location_id", school.id)
+      assert {:ok, %Address{} = address} = Maps.create_address(valid_attrs)
     end
 
-    test "create_location/1 with valid data creates a location" do
-      assert {:ok, %Location{} = location} = Maps.create_location(@valid_attrs)
-      assert location.is_country == true
-      assert location.name == "Deutschland"
-      assert location.slug == "deutschland"
+    test "create_address/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Maps.create_address(@invalid_attrs)
     end
 
-    test "create_location/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Maps.create_location(@invalid_attrs)
+    test "update_address/2 with valid data updates the address" do
+      address = insert(:address)
+      assert {:ok, %Address{} = address} = Maps.update_address(address, @update_attrs)
     end
 
-    test "update_location/2 with valid data updates the location" do
-      location = insert(:federal_state)
-      assert {:ok, %Location{} = location} = Maps.update_location(location, @update_attrs)
-      assert location.code == "DE"
+    test "update_address/2 with invalid data returns error changeset" do
+      address = insert(:address)
+      assert {:error, %Ecto.Changeset{}} = Maps.update_address(address, @invalid_attrs)
+      assert address == Maps.get_address!(address.id)
     end
 
-    test "update_location/2 with invalid data returns error changeset" do
-      location = insert(:federal_state)
-      assert {:error, %Ecto.Changeset{}} = Maps.update_location(location, @invalid_attrs)
-      assert location == Maps.get_location!(location.id)
+    test "delete_address/1 deletes the address" do
+      address = insert(:address)
+      assert {:ok, %Address{}} = Maps.delete_address(address)
+      assert_raise Ecto.NoResultsError, fn -> Maps.get_address!(address.id) end
     end
 
-    test "delete_location/1 deletes the location" do
-      location = insert(:federal_state)
-      assert {:ok, %Location{}} = Maps.delete_location(location)
-      assert_raise Ecto.NoResultsError, fn -> Maps.get_location!(location.id) end
-    end
-
-    test "change_location/1 returns a location changeset" do
-      location = insert(:federal_state)
-      assert %Ecto.Changeset{} = Maps.change_location(location)
+    test "change_address/1 returns a address changeset" do
+      address = insert(:address)
+      assert %Ecto.Changeset{} = Maps.change_address(address)
     end
   end
 

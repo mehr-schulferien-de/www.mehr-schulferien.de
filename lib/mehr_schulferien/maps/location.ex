@@ -4,7 +4,8 @@ defmodule MehrSchulferien.Maps.Location do
   import Ecto.Changeset
 
   alias MehrSchulferien.LocationNameSlug
-  alias MehrSchulferien.Maps.ZipCode
+  alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period}
+  alias MehrSchulferien.Maps.{Address, ZipCode}
 
   schema "locations" do
     field :is_city, :boolean, default: false
@@ -16,8 +17,16 @@ defmodule MehrSchulferien.Maps.Location do
     field :code, :string
     field :slug, LocationNameSlug.Type
 
-    belongs_to :parent_location, MehrSchulferien.Maps.Location
-    belongs_to :cachable_calendar_location, MehrSchulferien.Maps.Location
+    belongs_to :parent_location, __MODULE__
+    belongs_to :cachable_calendar_location, __MODULE__
+
+    has_one :address, Address, foreign_key: :school_location_id, on_delete: :delete_all
+
+    has_many :holiday_or_vacation_types, HolidayOrVacationType,
+      foreign_key: :country_location_id,
+      on_delete: :delete_all
+
+    has_many :periods, Period, on_delete: :delete_all
 
     many_to_many(
       :zip_codes,

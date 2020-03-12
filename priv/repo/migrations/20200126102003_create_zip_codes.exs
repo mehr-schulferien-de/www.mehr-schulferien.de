@@ -5,7 +5,7 @@ defmodule MehrSchulferien.Repo.Migrations.CreateZipCodes do
     create table(:zip_codes) do
       add :value, :string
       add :slug, :string
-      add :country_location_id, references(:locations, on_delete: :nothing)
+      add :country_location_id, references(:locations, on_delete: :delete_all)
 
       timestamps()
     end

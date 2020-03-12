@@ -4,7 +4,7 @@ defmodule MehrSchulferien.PeriodsTest do
   import MehrSchulferien.Factory
 
   alias MehrSchulferien.Periods
-  alias MehrSchulferien.Maps
+  alias MehrSchulferien.Locations
 
   describe "periods for certain time frame" do
     setup [:add_federal_state, :add_periods]
@@ -14,7 +14,7 @@ defmodule MehrSchulferien.PeriodsTest do
       periods: periods,
       other_period: other_period
     } do
-      location_ids = Maps.recursive_location_ids(federal_state)
+      location_ids = Locations.recursive_location_ids(federal_state)
       period_ids = Enum.map(periods, & &1.id)
 
       short_time_periods =
@@ -41,7 +41,7 @@ defmodule MehrSchulferien.PeriodsTest do
       federal_state: federal_state,
       periods: periods
     } do
-      location_ids = Maps.recursive_location_ids(federal_state)
+      location_ids = Locations.recursive_location_ids(federal_state)
       period_ids = Enum.map(periods, & &1.id)
       today = ~D[2020-02-26]
       next_12_months_periods = Periods.chunk_one_year_school_periods(location_ids, today)
@@ -56,7 +56,7 @@ defmodule MehrSchulferien.PeriodsTest do
     test "chunk_multi_year_school_periods/2 returns the periods for 3 years", %{
       federal_state: federal_state
     } do
-      location_ids = Maps.recursive_location_ids(federal_state)
+      location_ids = Locations.recursive_location_ids(federal_state)
       current_year = 2019
 
       {next_3_years_headers, next_3_years_periods} =

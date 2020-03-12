@@ -6,8 +6,8 @@ defmodule MehrSchulferien.Calendars do
   import Ecto.Query, warn: false
 
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType, Period, Religion}
+  alias MehrSchulferien.Locations
   alias MehrSchulferien.Repo
-  alias MehrSchulferien.Maps
 
   @doc """
   Checks if the given day is a school day at that location.
@@ -39,7 +39,10 @@ defmodule MehrSchulferien.Calendars do
   def recursive_location_ids(location) do
     case location.parent_location_id do
       id when is_integer(id) ->
-        [location.id, recursive_location_ids(Maps.get_location!(location.parent_location_id))]
+        [
+          location.id,
+          recursive_location_ids(Locations.get_location!(location.parent_location_id))
+        ]
 
       _ ->
         [location.id]

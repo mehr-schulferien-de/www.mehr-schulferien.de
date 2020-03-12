@@ -11,8 +11,8 @@ defmodule MehrSchulferien.Repo.Migrations.CreateLocations do
       add :is_county, :boolean, default: false, null: false
       add :is_city, :boolean, default: false, null: false
       add :is_school, :boolean, default: false, null: false
-      add :parent_location_id, references(:locations, on_delete: :nothing)
-      add :cachable_calendar_location_id, references(:locations, on_delete: :nothing)
+      add :parent_location_id, references(:locations, on_delete: :delete_all)
+      add :cachable_calendar_location_id, references(:locations, on_delete: :delete_all)
 
       timestamps()
     end

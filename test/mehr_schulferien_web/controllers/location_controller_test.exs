@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.LocationControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  alias MehrSchulferien.Maps
+  alias MehrSchulferien.Locations
 
   @create_attrs %{
     is_country: true,
@@ -47,7 +47,7 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
 
       conn = get(conn, Routes.location_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Show Location"
-      assert Maps.get_location!(id)
+      assert Locations.get_location!(id)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -65,7 +65,7 @@ defmodule MehrSchulferienWeb.LocationControllerTest do
 
       conn = get(conn, Routes.location_path(conn, :show, location))
       assert html_response(conn, 200) =~ "Show Location"
-      location = Maps.get_location!(location.id)
+      location = Locations.get_location!(location.id)
       assert location.code == "DE"
     end
 

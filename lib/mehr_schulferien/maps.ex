@@ -5,68 +5,53 @@ defmodule MehrSchulferien.Maps do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Maps.{Location, ZipCode, ZipCodeMapping}
+  alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
   alias MehrSchulferien.Repo
 
   @doc """
-  Returns the list of locations.
+  Returns the list of addresses.
   """
-  def list_locations do
-    Repo.all(Location)
+  def list_addresses do
+    Repo.all(Address)
   end
 
   @doc """
-  Gets a single location.
+  Gets a single address.
 
-  Raises `Ecto.NoResultsError` if the Location does not exist.
+  Raises `Ecto.NoResultsError` if the Zip code does not exist.
   """
-  def get_location!(id), do: Repo.get!(Location, id)
+  def get_address!(id), do: Repo.get!(Address, id)
 
   @doc """
-  Returns a list of ids of the location and all it's ancestors.
+  Creates a address.
   """
-  def recursive_location_ids(location) do
-    build_ids_list([], location)
-  end
-
-  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: nil}) do
-    [id | ids_list]
-  end
-
-  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: parent_location_id}) do
-    build_ids_list([id | ids_list], Repo.get(Location, parent_location_id))
-  end
-
-  @doc """
-  Creates a location.
-  """
-  def create_location(attrs \\ %{}) do
-    %Location{}
-    |> Location.changeset(attrs)
+  def create_address(attrs \\ %{}) do
+    %Address{}
+    |> Address.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a location.
+  Updates a address.
   """
-  def update_location(%Location{} = location, attrs) do
-    location
-    |> Location.changeset(attrs)
+  def update_address(%Address{} = address, attrs) do
+    address
+    |> Address.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a location.
+  Deletes a address.
   """
-  def delete_location(%Location{} = location) do
-    Repo.delete(location)
+  def delete_address(%Address{} = address) do
+    Repo.delete(address)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking location changes.
+  Returns an `%Ecto.Changeset{}` for tracking address changes.
   """
-  def change_location(%Location{} = location) do
-    Location.changeset(location, %{})
+  def change_address(%Address{} = address) do
+    Address.changeset(address, %{})
   end
 
   @doc """
