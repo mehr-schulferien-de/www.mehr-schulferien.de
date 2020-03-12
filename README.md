@@ -2,8 +2,12 @@
 
 This project is the 2020 version of https://www.mehr-schulferien.de
 
-The webpage provides information about school vacations and public holidays 
+The webpage provides information about school vacations and public holidays
 in Germany.
+
+See the [contributing guide](https://github.com/vutuv/vutuv/blob/master/CONTRIBUTING.md)
+for more information about setting up your development environment and opening pull
+requests.
 
 ## Data structure
 
@@ -43,8 +47,8 @@ The list will get longer while other entities get ready for seeding. The README 
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
+  * Create and migrate your database with `priv/repo/reset-db.sh`
+  * Install Node.js dependencies with `(cd assets && npm install)`
+  * Start Phoenix endpoint with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
