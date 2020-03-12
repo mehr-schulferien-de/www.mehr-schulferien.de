@@ -13,10 +13,6 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
       Periods.chunk_multi_year_school_periods(location_ids, current_year, 3)
 
     public_periods = Periods.list_multi_year_all_public_periods(location_ids, current_year, 3)
-
-    public_periods =
-      Enum.filter(public_periods, &(&1.holiday_or_vacation_type.name != "Wochenende"))
-
     days = DateHelpers.create_3_years(current_year)
     months = DateHelpers.get_months_map()
 

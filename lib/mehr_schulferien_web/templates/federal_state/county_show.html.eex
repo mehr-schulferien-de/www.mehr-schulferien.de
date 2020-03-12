@@ -4,7 +4,7 @@
   <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
 </ol>
 
-<ol class="breadcrumb hidden-xs">
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
   <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
