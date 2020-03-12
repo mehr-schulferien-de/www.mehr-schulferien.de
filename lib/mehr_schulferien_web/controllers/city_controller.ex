@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.CityController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars, Locations, Maps}
+  alias MehrSchulferien.{Calendars, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   def show(conn, %{
@@ -10,8 +10,8 @@ defmodule MehrSchulferienWeb.CityController do
       }) do
     country = Locations.get_country_by_slug!(country_slug)
     city = Locations.get_city_by_slug!(city_slug)
-    county = Maps.get_location!(city.parent_location_id)
-    federal_state = Maps.get_location!(county.parent_location_id)
+    county = Locations.get_location!(city.parent_location_id)
+    federal_state = Locations.get_location!(county.parent_location_id)
 
     unless country.id == federal_state.parent_location_id do
       raise MehrSchulferien.CountryNotParentError

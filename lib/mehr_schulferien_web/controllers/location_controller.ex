@@ -1,21 +1,21 @@
 defmodule MehrSchulferienWeb.LocationController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.Maps
+  alias MehrSchulferien.Locations
   alias MehrSchulferien.Maps.Location
 
   def index(conn, _params) do
-    locations = Maps.list_locations()
+    locations = Locations.list_locations()
     render(conn, "index.html", locations: locations)
   end
 
   def new(conn, _params) do
-    changeset = Maps.change_location(%Location{})
+    changeset = Locations.change_location(%Location{})
     render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"location" => location_params}) do
-    case Maps.create_location(location_params) do
+    case Locations.create_location(location_params) do
       {:ok, location} ->
         conn
         |> put_flash(:info, "Location created successfully.")
@@ -27,20 +27,20 @@ defmodule MehrSchulferienWeb.LocationController do
   end
 
   def show(conn, %{"id" => id}) do
-    location = Maps.get_location!(id)
+    location = Locations.get_location!(id)
     render(conn, "show.html", location: location)
   end
 
   def edit(conn, %{"id" => id}) do
-    location = Maps.get_location!(id)
-    changeset = Maps.change_location(location)
+    location = Locations.get_location!(id)
+    changeset = Locations.change_location(location)
     render(conn, "edit.html", location: location, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "location" => location_params}) do
-    location = Maps.get_location!(id)
+    location = Locations.get_location!(id)
 
-    case Maps.update_location(location, location_params) do
+    case Locations.update_location(location, location_params) do
       {:ok, location} ->
         conn
         |> put_flash(:info, "Location updated successfully.")
@@ -52,8 +52,8 @@ defmodule MehrSchulferienWeb.LocationController do
   end
 
   def delete(conn, %{"id" => id}) do
-    location = Maps.get_location!(id)
-    {:ok, _location} = Maps.delete_location(location)
+    location = Locations.get_location!(id)
+    {:ok, _location} = Locations.delete_location(location)
 
     conn
     |> put_flash(:info, "Location deleted successfully.")

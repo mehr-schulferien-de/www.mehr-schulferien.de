@@ -10,7 +10,7 @@ defmodule MehrSchulferien.Maps.ZipCode do
     field :slug, ZipCodeValueSlug.Type
     field :value, :string
 
-    belongs_to :country_location, MehrSchulferien.Maps.Location
+    belongs_to :country_location, Location
 
     many_to_many(
       :locations,

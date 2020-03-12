@@ -21,6 +21,8 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
     belongs_to :country_location, Maps.Location
     belongs_to :default_religion, Calendars.Religion
 
+    has_many :periods, Calendars.Period, on_delete: :delete_all
+
     timestamps()
   end
 

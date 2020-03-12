@@ -9,6 +9,67 @@ defmodule MehrSchulferien.Locations do
   alias MehrSchulferien.Repo
 
   @doc """
+  Returns the list of locations.
+  """
+  def list_locations do
+    Repo.all(Location)
+  end
+
+  @doc """
+  Gets a single location.
+
+  Raises `Ecto.NoResultsError` if the Location does not exist.
+  """
+  def get_location!(id), do: Repo.get!(Location, id)
+
+  @doc """
+  Returns a list of ids of the location and all it's ancestors.
+  """
+  def recursive_location_ids(location) do
+    build_ids_list([], location)
+  end
+
+  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: nil}) do
+    [id | ids_list]
+  end
+
+  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: parent_location_id}) do
+    build_ids_list([id | ids_list], Repo.get(Location, parent_location_id))
+  end
+
+  @doc """
+  Creates a location.
+  """
+  def create_location(attrs \\ %{}) do
+    %Location{}
+    |> Location.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a location.
+  """
+  def update_location(%Location{} = location, attrs) do
+    location
+    |> Location.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a location.
+  """
+  def delete_location(%Location{} = location) do
+    Repo.delete(location)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking location changes.
+  """
+  def change_location(%Location{} = location) do
+    Location.changeset(location, %{})
+  end
+
+  @doc """
   Returns the list of federal states in a country.
   """
   def list_federal_states(country) do

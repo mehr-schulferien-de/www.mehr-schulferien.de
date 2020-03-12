@@ -13,8 +13,8 @@ defmodule MehrSchulferien.Repo.Migrations.CreateHolidayOrVacationTypes do
       add :default_is_valid_for_everybody, :boolean, default: false, null: false
       add :default_is_valid_for_students, :boolean, default: false, null: false
       add :wikipedia_url, :string
-      add :country_location_id, references(:locations, on_delete: :nothing)
-      add :default_religion_id, references(:religions, on_delete: :nothing)
+      add :country_location_id, references(:locations, on_delete: :delete_all)
+      add :default_religion_id, references(:religions, on_delete: :delete_all)
 
       timestamps()
     end
