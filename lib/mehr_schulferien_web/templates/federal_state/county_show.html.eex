@@ -22,14 +22,15 @@
 
 <div class="row">
   <div class="col-xs-12">
-    <ul>
     <%= for {county, cities} <- @counties_with_cities do %>
-    <li><%= county.name %><br/>
-    <%= for city <- cities do %>
-      <%= link city.name, to: Routes.city_path(@conn, :show, @country.slug, city.slug) %>
-      <p>Postleitzahlen: <%= MehrSchulferienWeb.FederalStateView.format_zip_codes(city) %></p>
-    <% end %></li>
+    <h2><%= county.name %></h2>
+    <ul>
+    <%= for city <- Enum.reverse(cities) do %>
+      <li><%= link city.name, to: Routes.city_path(@conn, :show, @country.slug, city.slug) %>
+      <p>Postleitzahl(en): <%= MehrSchulferienWeb.FederalStateView.format_zip_codes(city) %></li>
     <% end %>
     </ul>
+    <% end %>
+
   </div>
 </div>

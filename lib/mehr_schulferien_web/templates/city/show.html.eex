@@ -23,22 +23,51 @@
 </div>
 
 <div class="row">
-  <div class="col-xs-12">
-
+  <div class="col-md-9">
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods, months: @months %>
 
     <h2>Ferien <%= @city.name %> <%= @next_three_years %></h2>
     <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_headers: @next_3_years_headers, next_3_years_periods: @next_3_years_periods, current_year: @current_year, months: @months %>
+  </div>
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Sonstiges</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+          <li><a href="#liste_aller_schulen">Liste aller Schulen</li>
+        </ul>
+      </div>
+    </div>
 
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Informationen für Entwickler</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+          <li>Diese Seite ist <a href="https://github.com/wintermeyer/www.mehr-schulferien.de">ein Open-Source-Projekt</a>.</li>
+          <li>Wir freuen uns über Ihr Feedback, Hilfe und <a href="https://github.com/wintermeyer/www.mehr-schulferien.de/issues">Bug-Reports</a>!</li>
+          <li>Alle Daten sind im JSON-Format über eine RESTful-API abrufbar.</li>
+          <li>Wir arbeiten an einem Wordpress-Plugin. Stay tuned!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
     <h2>Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
-    <h2>Schulen in <%= @city.name %></h2>
+    <h2 id="liste_aller_schulen">Schulen in <%= @city.name %></h2>
       <ul>
       <%= for school <- @schools do %>
         <li>
           <%= link school.name, to: Routes.school_path(@conn, :show, @country.slug, school.slug) %><br>
-          <p><%= school.address.line1 %>, <%= school.address.street %></p>
+          <p><%= school.address.street %>, <%= school.address.zip_code %> <%= school.address.city %></p>
         </li>
       <% end %>
       </ul>
