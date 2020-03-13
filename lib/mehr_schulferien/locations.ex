@@ -101,6 +101,7 @@ defmodule MehrSchulferien.Locations do
   def list_schools(city) do
     from(l in Location, where: l.is_school == true and l.parent_location_id == ^city.id)
     |> Repo.all()
+    |> Repo.preload([:address])
   end
 
   @doc """
