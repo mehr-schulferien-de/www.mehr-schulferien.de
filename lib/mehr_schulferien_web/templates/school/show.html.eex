@@ -60,19 +60,7 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Informationen für Entwickler</h3>
-      </div>
-      <div class="panel-body">
-        <ul>
-          <li>Diese Seite ist <a href="https://github.com/wintermeyer/www.mehr-schulferien.de">ein Open-Source-Projekt</a>.</li>
-          <li>Wir freuen uns über Ihr Feedback, Hilfe und <a href="https://github.com/wintermeyer/www.mehr-schulferien.de/issues">Bug-Reports</a>!</li>
-          <li>Alle Daten sind im JSON-Format über eine RESTful-API abrufbar.</li>
-          <li>Wir arbeiten an einem Wordpress-Plugin. Stay tuned!</li>
-        </ul>
-      </div>
-    </div>
+    <%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
 
   </div>
 </div>
