@@ -3,7 +3,7 @@ defmodule MehrSchulferien.Maps.Address do
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Locations.Location
 
   schema "addresses" do
     field :line1, :string

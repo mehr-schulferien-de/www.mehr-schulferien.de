@@ -5,7 +5,8 @@
 import Ecto.Query
 alias MehrSchulferien.Repo
 alias MehrSchulferien.Maps
-alias MehrSchulferien.Maps.Location
+alias MehrSchulferien.Locations
+alias MehrSchulferien.Locations.Location
 alias MehrSchulferien.Maps.ZipCode
 
 # Only seed an empty city table.
@@ -51,7 +52,7 @@ else
       case Repo.one(query) do
         nil ->
           {:ok, county} =
-            Maps.create_location(%{
+            Locations.create_location(%{
               name: json_county,
               is_county: true,
               parent_location_id: federal_state.id,
@@ -91,7 +92,7 @@ else
       end
 
     # Create City
-    # 
+    #
     json_city = json_city_data["city"]
 
     query =
@@ -106,7 +107,7 @@ else
       case Repo.one(query) do
         nil ->
           {:ok, city} =
-            Maps.create_location(%{
+            Locations.create_location(%{
               name: json_city,
               is_city: true,
               cachable_calendar_location_id: federal_state.id,

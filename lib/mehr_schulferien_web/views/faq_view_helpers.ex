@@ -2,6 +2,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   @moduledoc """
   Helper functions for use with views.
   """
+
+  alias MehrSchulferien.Locations
   alias MehrSchulferienWeb.ViewHelpers
 
   @doc """
@@ -54,7 +56,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   An humanized answer for the next school vacations.
   """
   def next_school_vacation_answer(location) do
-    location_ids = MehrSchulferien.Calendars.recursive_location_ids(location)
+    location_ids = Locations.recursive_location_ids(location)
     period = MehrSchulferien.Periods.next_school_vacation_period(location_ids)
 
     case Date.diff(period.starts_on, Date.utc_today()) do
@@ -62,14 +64,14 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
         "Morgen starten die #{
           period.holiday_or_vacation_type.colloquial ||
             MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-        } in #{location.name}:  
+        } in #{location.name}:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
 
       n ->
         "In #{n} Tagen starten die #{
           period.holiday_or_vacation_type.colloquial ||
             MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-        } in #{location.name}:  
+        } in #{location.name}:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
     end
   end
@@ -78,7 +80,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   An humanized answer for the next public holiday date.
   """
   def next_public_holiday_answer(location) do
-    location_ids = MehrSchulferien.Calendars.recursive_location_ids(location)
+    location_ids = Locations.recursive_location_ids(location)
     period = MehrSchulferien.Periods.next_public_holiday_period(location_ids)
 
     case Date.diff(period.starts_on, Date.utc_today()) do
@@ -108,7 +110,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   end
 
   @doc """
-  Results in a more human way of telling the date. It adds 
+  Results in a more human way of telling the date. It adds
   vorgestern: the day before yesterday
   gestern: yesterday
   heute: today

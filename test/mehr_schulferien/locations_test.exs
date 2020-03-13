@@ -3,7 +3,7 @@ defmodule MehrSchulferien.LocationsTest do
 
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.{Locations, Maps.Location}
+  alias MehrSchulferien.{Locations, Locations.Location}
 
   describe "locations" do
     @valid_attrs %{

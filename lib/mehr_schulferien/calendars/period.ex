@@ -3,7 +3,7 @@ defmodule MehrSchulferien.Calendars.Period do
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, Religion}
 
   schema "periods" do

@@ -4,7 +4,7 @@ defmodule MehrSchulferien.LocationNameSlug do
   import Ecto.Changeset
   import Ecto.Query
 
-  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Repo
 
   def build_slug(sources, changeset) do
