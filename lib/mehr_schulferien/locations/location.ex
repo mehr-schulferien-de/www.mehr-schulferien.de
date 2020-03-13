@@ -1,4 +1,4 @@
-defmodule MehrSchulferien.Maps.Location do
+defmodule MehrSchulferien.Locations.Location do
   use Ecto.Schema
 
   import Ecto.Changeset

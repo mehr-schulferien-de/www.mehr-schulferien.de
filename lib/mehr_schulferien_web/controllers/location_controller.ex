@@ -2,7 +2,7 @@ defmodule MehrSchulferienWeb.LocationController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.Locations
-  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Locations.Location
 
   def index(conn, _params) do
     locations = Locations.list_locations()

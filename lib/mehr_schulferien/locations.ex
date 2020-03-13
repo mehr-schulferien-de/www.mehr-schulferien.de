@@ -5,7 +5,7 @@ defmodule MehrSchulferien.Locations do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Repo
 
   @doc """

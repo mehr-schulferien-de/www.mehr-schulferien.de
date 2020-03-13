@@ -5,7 +5,7 @@
 defmodule M do
   import Ecto.Query
   alias MehrSchulferien.Repo
-  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Calendars.HolidayOrVacationType
   alias MehrSchulferien.Calendars
 
@@ -108,7 +108,7 @@ defmodule M do
 
   def adds_year_to_date(starts_at, ends_at, vacation_type, year) do
     ends_at_elements = String.split(ends_at, ".")
-    ends_at_month = Enum.at(ends_at_elements,1) |> String.to_integer
+    ends_at_month = Enum.at(ends_at_elements, 1) |> String.to_integer()
 
     case [vacation_type, ends_at_month] do
       ["Herbst", _] ->
@@ -119,7 +119,7 @@ defmodule M do
 
       ["Weihnachten", _] ->
         [starts_at <> Integer.to_string(year), ends_at <> Integer.to_string(year + 1)]
-  
+
       [_, _] ->
         [starts_at <> Integer.to_string(year + 1), ends_at <> Integer.to_string(year + 1)]
     end

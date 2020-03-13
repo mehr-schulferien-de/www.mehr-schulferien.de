@@ -13,7 +13,7 @@ defmodule MehrSchulferien.Calendars do
   Checks if the given day is a school day at that location.
   """
   def is_school_free?(location, day) do
-    location_ids = recursive_location_ids(location)
+    location_ids = Locations.recursive_location_ids(location)
 
     query =
       from(p in Period,
@@ -31,23 +31,6 @@ defmodule MehrSchulferien.Calendars do
       _ ->
         true
     end
-  end
-
-  @doc """
-  Returns a list of ids of the location and all it's ancestors.
-  """
-  def recursive_location_ids(location) do
-    case location.parent_location_id do
-      id when is_integer(id) ->
-        [
-          location.id,
-          recursive_location_ids(Locations.get_location!(location.parent_location_id))
-        ]
-
-      _ ->
-        [location.id]
-    end
-    |> List.flatten()
   end
 
   @doc """

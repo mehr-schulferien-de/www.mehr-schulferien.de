@@ -5,8 +5,8 @@
 defmodule M do
   import Ecto.Query
   alias MehrSchulferien.Repo
-  alias MehrSchulferien.Maps
-  alias MehrSchulferien.Maps.Location
+  alias MehrSchulferien.Locations
+  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.ZipCode
   alias MehrSchulferien.Maps.ZipCodeMapping
 

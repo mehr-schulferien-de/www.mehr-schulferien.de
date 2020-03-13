@@ -5,7 +5,7 @@
 import Ecto.Query
 alias MehrSchulferien.Repo
 alias MehrSchulferien.Maps
-alias MehrSchulferien.Maps.Location
+alias MehrSchulferien.Locations.Location
 alias MehrSchulferien.Maps.ZipCode
 
 # Only seed an empty city table.
@@ -91,7 +91,7 @@ else
       end
 
     # Create City
-    # 
+    #
     json_city = json_city_data["city"]
 
     query =

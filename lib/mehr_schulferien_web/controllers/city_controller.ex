@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.CityController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars, Locations}
+  alias MehrSchulferien.Locations
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   def show(conn, %{
@@ -18,7 +18,7 @@ defmodule MehrSchulferienWeb.CityController do
     end
 
     today = Date.utc_today()
-    location_ids = Calendars.recursive_location_ids(city)
+    location_ids = Locations.recursive_location_ids(city)
 
     assigns =
       [city: city, country: country, federal_state: federal_state] ++
