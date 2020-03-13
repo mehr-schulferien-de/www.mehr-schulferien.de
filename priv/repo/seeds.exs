@@ -270,3 +270,16 @@ alias MehrSchulferien.Calendars
     country_location_id: deutschland.id,
     default_display_priority: 4
   })
+
+  {:ok, _corona_quarantine} =
+  Calendars.create_holiday_or_vacation_type(%{
+    name: "Corona Virus Quarantäne",
+    default_html_class: "warning",
+    default_is_listed_below_month: true,
+    default_is_school_vacation: true,
+    default_is_valid_for_everybody: false,
+    default_is_valid_for_students: true,
+    wikipedia_url: "https://de.wikipedia.org/wiki/COVID-19-Pandemie",
+    country_location_id: deutschland.id,
+    default_display_priority: 9
+  })
