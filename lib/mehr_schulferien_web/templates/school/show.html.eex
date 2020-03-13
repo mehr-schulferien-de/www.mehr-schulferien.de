@@ -37,3 +37,27 @@
 
   </div>
 </div>
+
+<%= for period <- List.flatten(@next_3_years_periods) do %>
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "Event",
+      "name": "<%= MehrSchulferienWeb.PeriodView.vacation_type_name(period) %>",
+      "startDate": "<%= period.starts_on %>",
+      "endDate": "<%= period.ends_on %>",
+      "location": {
+        "@type": "Place",
+        "name": "<%= @city.name %>",
+        "address":{
+          "@type": "PostalAddress",
+          "streetAddress": "",
+          "addressLocality": "<%= @city.name %>",
+          "postalCode": "",
+          "addressRegion": "<%= @city.name %>",
+          "addressCountry": "<%= @country.code %>"
+        }
+      }
+    }
+  </script>
+<% end %>

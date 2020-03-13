@@ -8,7 +8,7 @@ alias MehrSchulferien.Calendars
 # Countries
 #
 {:ok, deutschland} =
-  Locations.create_location(%{name: "Deutschland", code: "D", is_country: true, slug: "d"})
+  Locations.create_location(%{name: "Deutschland", code: "DE", is_country: true, slug: "d"})
 
 # Create the federal_states of Deutschland
 #
