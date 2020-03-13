@@ -41,7 +41,7 @@ The configured checks are:
 * merge conflict check
 * yaml file check
 * end of each file ends in a newline check
-* a check that you are not committing to the v5, master, staging or production branch
+* a check that you are not committing to the master, staging or production branch
 
 If the end-of-file-fixer fails, run the commit again and it should pass
 the second time.
@@ -55,11 +55,11 @@ We recommend that you follow this guide, which is based on the
 (If a relevant issue does not exist yet, open the issue first and then assign
 yourself to it).
 
-1. Create a new topic branch (off of `v5`, which is the main branch for the 2020 version)
+1. Create a new topic branch (off of `master`, which is the main branch for the 2020 version)
 to work on the issue.
 
-    **IMPORTANT**: making changes in `v5` is discouraged. You should always
-    keep your local `v5` in sync with upstream `v5` and make your
+    **IMPORTANT**: making changes in `master` is discouraged. You should always
+    keep your local `master` in sync with upstream `master` and make your
     changes in topic branches.
 
     ```bash
@@ -83,15 +83,15 @@ pull request better):
       * do not leave the description blank
 
 1. Make sure that your topic branch is up-to-date. If necessary, rebase
-on v5 and resolve any conflicts.
+on master and resolve any conflicts.
 
-    **IMPORTANT**: _Never ever_ merge upstream `v5` into your branches. You
-    should always `git rebase` on `v5` to bring your changes up to date when
+    **IMPORTANT**: _Never ever_ merge upstream `master` into your branches. You
+    should always `git rebase` on `master` to bring your changes up to date when
     necessary.
 
     ```bash
-    git checkout v5
-    git pull upstream v5
+    git checkout master
+    git pull upstream master
     git checkout <your-topic-branch>
-    git rebase v5
+    git rebase master
     ```

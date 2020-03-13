@@ -3,7 +3,8 @@ defmodule MehrSchulferien.Maps.ZipCodeMapping do
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.Maps.{Location, ZipCode}
+  alias MehrSchulferien.Locations.Location
+  alias MehrSchulferien.Maps.ZipCode
 
   schema "zip_code_mappings" do
     field :lat, :float

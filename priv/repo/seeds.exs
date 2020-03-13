@@ -271,7 +271,7 @@ alias MehrSchulferien.Calendars
     default_display_priority: 4
   })
 
-  {:ok, _corona_quarantine} =
+{:ok, _corona_quarantine} =
   Calendars.create_holiday_or_vacation_type(%{
     name: "Corona Virus Quarantäne",
     default_html_class: "warning",
