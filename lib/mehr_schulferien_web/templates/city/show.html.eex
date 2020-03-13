@@ -33,5 +33,15 @@
     <h2>Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
 
+    <h2>Schulen in <%= @city.name %></h2>
+      <ul>
+      <%= for school <- @schools do %>
+        <li>
+          <%= link school.name, to: Routes.school_path(@conn, :show, @country.slug, school.slug) %><br>
+          <p><%= school.address.line1 %>, <%= school.address.street %></p>
+        </li>
+      <% end %>
+      </ul>
+
   </div>
 </div>

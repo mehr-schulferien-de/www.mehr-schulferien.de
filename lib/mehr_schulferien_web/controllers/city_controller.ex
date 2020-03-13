@@ -19,9 +19,10 @@ defmodule MehrSchulferienWeb.CityController do
 
     today = Date.utc_today()
     location_ids = Locations.recursive_location_ids(city)
+    schools = Locations.list_schools(city)
 
     assigns =
-      [city: city, country: country, federal_state: federal_state] ++
+      [city: city, country: country, federal_state: federal_state, schools: schools] ++
         CH.show_period_data(location_ids, today)
 
     render(conn, "show.html", assigns)

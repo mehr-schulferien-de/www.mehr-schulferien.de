@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 mix ecto.reset
 mix run priv/repo/seed_cities.exs
