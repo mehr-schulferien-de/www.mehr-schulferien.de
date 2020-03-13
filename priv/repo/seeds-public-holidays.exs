@@ -86,7 +86,7 @@ defmodule M do
         limit: 1
       )
 
-    holiday_or_vacation_type =
+    _holiday_or_vacation_type =
       case Repo.one(query) do
         nil ->
           {:ok, holiday_or_vacation_type} =

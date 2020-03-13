@@ -7,6 +7,7 @@ defmodule M do
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Locations.Location
+  alias MehrSchulferien.Maps
   alias MehrSchulferien.Maps.ZipCode
   alias MehrSchulferien.Maps.ZipCodeMapping
 
@@ -14,13 +15,13 @@ defmodule M do
     "priv/repo/seeds.d/schools.json"
     |> File.read!()
     |> Jason.decode!()
-    |> Enum.each(fn school ->
-      federal_state = find_federal_state(school["federal_state"]["name"])
-      slug = school["slug"]
-      name = school["name"]
+    |> Enum.each(fn school_attrs ->
+      federal_state = find_federal_state(school_attrs["federal_state"]["name"])
+      slug = school_attrs["slug"]
+      name = school_attrs["name"]
 
-      city_name = school["city"]["name"]
-      city_zip_code = school["city"]["zip_code"]
+      city_name = school_attrs["city"]["name"]
+      city_zip_code = school_attrs["city"]["zip_code"]
 
       city =
         case find_city(city_name, city_zip_code) do
@@ -37,13 +38,17 @@ defmodule M do
             city
         end
 
-      Locations.create_location(%{
-        name: name,
-        slug: slug,
-        parent_location_id: city.id,
-        is_school: true,
-        cachable_calendar_location_id: federal_state.id
-      })
+      {:ok, school} =
+        Locations.create_location(%{
+          name: name,
+          slug: slug,
+          parent_location_id: city.id,
+          is_school: true,
+          cachable_calendar_location_id: federal_state.id
+        })
+
+      attrs = Map.put(school_attrs, "school_location_id", school.id)
+      Maps.create_address(attrs)
     end)
   end
 
