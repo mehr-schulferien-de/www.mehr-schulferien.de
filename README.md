@@ -5,7 +5,9 @@ This project is the 2020 version of https://www.mehr-schulferien.de
 The webpage provides information about school vacations and public holidays
 in Germany.
 
-See the [contributing guide](https://github.com/vutuv/vutuv/blob/master/CONTRIBUTING.md)
+# Developers
+
+See the [contributing guide](https://github.com/wintermeyer/www.mehr-schulferien.de/blob/master/CONTRIBUTING.md)
 for more information about setting up your development environment and opening pull
 requests.
 
