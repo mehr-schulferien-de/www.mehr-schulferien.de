@@ -1,5 +1,5 @@
 <ol class="breadcrumb hidden-xs">
-  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
   <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
   <li><%= link @city.name, to: Routes.city_path(@conn, :show, @country.slug, @city.slug) %></li>
@@ -7,9 +7,8 @@
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><%= link "Home", to: Routes.page_path(@conn, :index) %></li>
-  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
-  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @federal_state.code, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
   <li><%= link @city.name, to: Routes.city_path(@conn, :show, @country.slug, @city.slug) %></li>
   <li><%= link @school.name, to: Routes.school_path(@conn, :show, @country.slug, @school.slug), class: "active" %></li>
 </ol>
