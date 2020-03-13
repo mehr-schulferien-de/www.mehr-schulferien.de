@@ -164,5 +164,6 @@ defmodule MehrSchulferien.Locations do
   """
   def get_school_by_slug!(school_slug) do
     Repo.get_by!(Location, slug: school_slug, is_school: true)
+    |> Repo.preload([:address])
   end
 end

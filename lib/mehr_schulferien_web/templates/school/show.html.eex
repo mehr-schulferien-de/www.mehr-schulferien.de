@@ -25,16 +25,63 @@
 </div>
 
 <div class="row">
-  <div class="col-xs-12">
-
+  <div class="col-md-9">
+    <p>In der <a href="#kalenderansicht">Kalenderansicht</a> bekommen Sie eine Darstellung der einzelnen Monate inkl. Schulferien und allen Feiertagen.</p>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods, months: @months %>
 
     <h2>Ferien <%= @school.name %> <%= @next_three_years %></h2>
     <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_headers: @next_3_years_headers, next_3_years_periods: @next_3_years_periods, current_year: @current_year, months: @months %>
+  </div>
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kontaktdaten</h3>
+      </div>
+      <div class="panel-body">
+        <address>
+          <%= @school.name %><br />
+          <%= @school.address.street %><br />
+          <%= @school.address.zip_code %> <%= @school.address.city %>
+        </address>
 
-    <h2>Kalenderansicht</h2>
+        <%= if @school.address.phone_number != nil or @school.address.fax_number != nil do %>
+          <address style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <%= if @school.address.phone_number != nil do %>
+            <strong>Telefonnummer:</strong><br>
+            <a href="tel:<%= @school.address.phone_number %>"><%= @school.address.phone_number %></a><br />
+            <% end %>
+
+            <%= if @school.address.fax_number != nil do %>
+            <strong>Fax:</strong><br>
+            <%= @school.address.fax_number %><br>
+            <% end %>
+          </address>
+        <% end %>
+
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Informationen für Entwickler</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+          <li>Diese Seite ist <a href="https://github.com/wintermeyer/www.mehr-schulferien.de">ein Open-Source-Projekt</a>.</li>
+          <li>Wir freuen uns über Ihr Feedback, Hilfe und <a href="https://github.com/wintermeyer/www.mehr-schulferien.de/issues">Bug-Reports</a>!</li>
+          <li>Alle Daten sind im JSON-Format über eine RESTful-API abrufbar.</li>
+          <li>Wir arbeiten an einem Wordpress-Plugin. Stay tuned!</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <h2 id="kalenderansicht">Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: List.flatten(@next_3_years_periods), public_periods: @public_periods, days: @days, months: @months %>
-
   </div>
 </div>
 
