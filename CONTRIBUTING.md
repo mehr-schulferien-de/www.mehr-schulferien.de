@@ -1,6 +1,6 @@
 # Contributing to mehr-schulferien.de
 
-The aim of this document is to help developers contribute to this project.
+This document aims to help developers contribute to this project.
 
 This document is a work-in-progress. If you feel that you can improve it,
 please open an issue and let us know.
