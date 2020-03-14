@@ -7,7 +7,7 @@ in Germany.
 
 # Developers
 
-See the [contributing guide](https://github.com/wintermeyer/www.mehr-schulferien.de/blob/master/CONTRIBUTING.md)
+See the [contributing guide](https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/blob/master/CONTRIBUTING.md)
 for more information about setting up your development environment and opening pull
 requests.
 
