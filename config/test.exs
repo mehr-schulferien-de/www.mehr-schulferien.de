@@ -1,12 +1,22 @@
 use Mix.Config
 
 # Configure your database
-config :mehr_schulferien, MehrSchulferien.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "mehr_schulferien_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+if System.get_env("GITHUB_ACTIONS") do
+  # Configure the database for GitHub Actions
+  config :mehr_schulferien, MehrSchulferien.Repo,
+    username: "postgres",
+    password: "postgres",
+    database: "mehr_schulferien_test",
+    hostname: "localhost",
+    pool: Ecto.Adapters.SQL.Sandbox
+else
+  config :mehr_schulferien, MehrSchulferien.Repo,
+    username: "postgres",
+    password: "postgres",
+    database: "mehr_schulferien_test",
+    hostname: "localhost",
+    pool: Ecto.Adapters.SQL.Sandbox
+end
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
