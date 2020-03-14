@@ -37,24 +37,28 @@
         <h3 class="panel-title">Kontaktdaten</h3>
       </div>
       <div class="panel-body">
-        <address>
-          <%= @school.name %><br />
-          <%= @school.address.street %><br />
-          <%= @school.address.zip_code %> <%= @school.address.city %>
-        </address>
-
-        <%= if @school.address.phone_number != nil or @school.address.fax_number != nil do %>
-          <address style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            <%= if @school.address.phone_number != nil do %>
-            <strong>Telefonnummer:</strong><br>
-            <a href="tel:<%= @school.address.phone_number %>"><%= @school.address.phone_number %></a><br />
-            <% end %>
-
-            <%= if @school.address.fax_number != nil do %>
-            <strong>Fax:</strong><br>
-            <%= @school.address.fax_number %><br>
-            <% end %>
+        <%= if @school.address != nil do %>
+          <address>
+            <%= @school.name %><br />
+            <%= @school.address.street %><br />
+            <%= @school.address.zip_code %> <%= @school.address.city %>
           </address>
+
+          <%= if @school.address.phone_number != nil or @school.address.fax_number != nil do %>
+            <address style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <%= if @school.address.phone_number != nil do %>
+              <strong>Telefonnummer:</strong><br>
+              <a href="tel:<%= @school.address.phone_number %>"><%= @school.address.phone_number %></a><br />
+              <% end %>
+
+              <%= if @school.address.fax_number != nil do %>
+              <strong>Fax:</strong><br>
+              <%= @school.address.fax_number %><br>
+              <% end %>
+            </address>
+          <% end %>
+        <% else %>
+          <p>Nicht verfügbar.</p>
         <% end %>
 
       </div>
