@@ -17,7 +17,7 @@ jobs:
       db:
         image: postgres:11
         ports: ['5432:5432']
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd pg_isready --health-interval 15s --health-timeout 8s --health-retries 8
 
     steps:
       - uses: actions/checkout@v1.0.0
