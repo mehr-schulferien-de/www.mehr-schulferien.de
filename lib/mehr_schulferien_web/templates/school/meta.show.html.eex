@@ -1,0 +1,2 @@
+<title>Schulferientermine für <%= @school.name %></title>
+<meta name="description" content="Ferientermine und gesetzliche Feiertage für <%= @school.name %> in <%= @city.name %> (<%= @federal_state.name %>). Optional mit islamischen, jüdischen und orthodoxen Feiertagen, zu denen es eine Beurlaubung gibt.">

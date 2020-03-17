@@ -104,6 +104,18 @@ defmodule MehrSchulferien.Locations do
     |> Repo.preload([:address])
   end
 
+  def number_schools do
+    Repo.aggregate(from(l in Location, where: l.is_school == true), :count, :id)
+  end
+
+  def number_schools(city) do
+    Repo.aggregate(
+      from(l in Location, where: l.is_school == true and l.parent_location_id == ^city.id),
+      :count,
+      :id
+    )
+  end
+
   @doc """
   Gets a single federal_state.
 
@@ -154,7 +166,9 @@ defmodule MehrSchulferien.Locations do
   Raises `Ecto.NoResultsError` if the city does not exist.
   """
   def get_city_by_slug!(city_slug) do
-    Repo.get_by!(Location, slug: city_slug, is_city: true)
+    Location
+    |> Repo.get_by!(slug: city_slug, is_city: true)
+    |> Repo.preload([:zip_codes])
   end
 
   @doc """
@@ -163,7 +177,8 @@ defmodule MehrSchulferien.Locations do
   Raises `Ecto.NoResultsError` if the school does not exist.
   """
   def get_school_by_slug!(school_slug) do
-    Repo.get_by!(Location, slug: school_slug, is_school: true)
+    Location
+    |> Repo.get_by!(slug: school_slug, is_school: true)
     |> Repo.preload([:address])
   end
 end

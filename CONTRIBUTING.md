@@ -10,7 +10,7 @@ please open an issue and let us know.
 1. Make sure you have the following programs installed:
 
     * Erlang > 22
-    * Elixir > 1.9
+    * Elixir > 1.10
     * nodejs > 6.8.0
     * postgresql
 

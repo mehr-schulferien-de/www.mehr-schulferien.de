@@ -19,6 +19,7 @@ defmodule MehrSchulferienWeb.PageController do
     months = DateHelpers.get_months_map()
 
     render(conn, "index.html",
+      country: country,
       days: days,
       day_names: day_names,
       federal_states: federal_states,

@@ -1,0 +1,2 @@
+<title>Schulferienkalender für <%= @federal_state.name %> <%= @next_three_years %></title>
+<meta name="description" content="Ferientermine und gesetzliche Feiertage für <%= @federal_state.name %>. Optional mit islamischen, jüdischen und orthodoxen Feiertagen, zu denen es eine Beurlaubung gibt.">
