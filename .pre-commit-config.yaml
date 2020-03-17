@@ -30,4 +30,4 @@
   - id: check-yaml
   - id: end-of-file-fixer
   - id: no-commit-to-branch
-    args: [-b, v5, -b, master, -b, production, -b, staging]
+    args: [-b, master, -b, production, -b, staging]

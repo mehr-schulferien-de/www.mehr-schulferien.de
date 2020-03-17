@@ -9,13 +9,13 @@ please open an issue and let us know.
 
 1. Make sure you have the following programs installed:
 
-    * Erlang > 21.1
-    * Elixir > 1.8
+    * Erlang > 22
+    * Elixir > 1.9
     * nodejs > 6.8.0
     * postgresql
 
-1. [Fork](https://help.github.com/articles/fork-a-repo/) the project, clone your fork,
-and configure the remotes.
+1. Clone this repository (do not create a fork, as pull requests from forks
+are not being handled properly by Github actions).
 
 1. Create and migrate your database with `priv/repo/reset-db.sh` (this might take some time).
 
@@ -24,7 +24,7 @@ in the root directory of the project.
 
 ## Tooling
 
-We use the following tools in our development process.
+We use the following tool in our development process.
 
 ### Pre-commit
 
@@ -48,19 +48,18 @@ the second time.
 
 ## Pull requests
 
-We recommend that you follow this guide, which is based on the
+We recommend that you follow this guide, which has been adapted from the
 [Phoenix contributing guide](https://github.com/phoenixframework/phoenix/blob/master/CONTRIBUTING.md).
 
 1. Choose an issue you want to work on and assign yourself to it.
 (If a relevant issue does not exist yet, open the issue first and then assign
 yourself to it).
 
-1. Create a new topic branch (off of `master`, which is the main branch for the 2020 version)
-to work on the issue.
+1. Create a new topic branch (off of `master`) to work on the issue.
+Give the topic branch a meaningful name and prefix the name with your Github username
+and a forward slash (for example, `riverrun/update_readme`).
 
-    **IMPORTANT**: making changes in `master` is discouraged. You should always
-    keep your local `master` in sync with upstream `master` and make your
-    changes in topic branches.
+    **IMPORTANT**: do not make changes in `master`.
 
     ```bash
     git checkout -b <topic-branch-name>
@@ -68,7 +67,7 @@ to work on the issue.
 
 1. As you work on the issue, commit your changes in logical chunks.
 
-1. Push your topic branch up to your fork:
+1. Push your topic branch:
 
     ```bash
     git push origin <topic-branch-name>
@@ -85,13 +84,12 @@ pull request better):
 1. Make sure that your topic branch is up-to-date. If necessary, rebase
 on master and resolve any conflicts.
 
-    **IMPORTANT**: _Never ever_ merge upstream `master` into your branches. You
-    should always `git rebase` on `master` to bring your changes up to date when
-    necessary.
+    **IMPORTANT**: Do not merge `master` into your branches. You should
+    always `git rebase` on `master` to bring your changes up to date when necessary.
 
     ```bash
     git checkout master
-    git pull upstream master
+    git pull origin master
     git checkout <your-topic-branch>
     git rebase master
     ```
