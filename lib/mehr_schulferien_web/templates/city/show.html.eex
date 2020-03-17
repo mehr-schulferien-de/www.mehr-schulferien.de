@@ -36,7 +36,7 @@
       </div>
       <div class="panel-body">
         <ul>
-          <li><a href="#liste_aller_schulen">Liste aller Schulen</li>
+          <li><%= link "Liste aller Schulen", to: "#liste_aller_schulen" %></li>
         </ul>
       </div>
     </div>
