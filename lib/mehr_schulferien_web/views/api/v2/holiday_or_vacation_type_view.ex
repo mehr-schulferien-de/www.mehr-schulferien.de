@@ -9,7 +9,9 @@ defmodule MehrSchulferienWeb.Api.V2.HolidayOrVacationTypeView do
     %{data: render_one(holiday_or_vacation_type, __MODULE__, "holiday_or_vacation_type.json")}
   end
 
-  def render("holiday_or_vacation_type.json", %{holiday_or_vacation_type: holiday_or_vacation_type}) do
+  def render("holiday_or_vacation_type.json", %{
+        holiday_or_vacation_type: holiday_or_vacation_type
+      }) do
     %{
       id: holiday_or_vacation_type.id,
       name: holiday_or_vacation_type.name,

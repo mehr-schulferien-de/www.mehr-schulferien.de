@@ -11,4 +11,3 @@ defmodule MehrSchulferienWeb.Api.V2.HolidayOrVacationTypeController do
     render(conn, "show.json", holiday_or_vacation_type: holiday_or_vacation_type)
   end
 end
-

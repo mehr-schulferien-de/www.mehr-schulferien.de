@@ -49,6 +49,6 @@ defmodule MehrSchulferienWeb.Router do
 
     resources "/locations", LocationController, only: [:index, :show]
     resources "/periods", PeriodController, only: [:index, :show]
-    resources "/holiday_or_vacation_types", HolidayOrVacationTypeController , only: [:index, :show]
+    resources "/holiday_or_vacation_types", HolidayOrVacationTypeController, only: [:index, :show]
   end
 end
