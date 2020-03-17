@@ -43,4 +43,10 @@ defmodule MehrSchulferienWeb.Router do
         FederalStateController,
         :county_show
   end
+
+  scope "/api/v2", MehrSchulferienWeb.Api.V2 do
+    pipe_through :api
+
+    resources "/locations", LocationController, only: [:index, :show]
+  end
 end
