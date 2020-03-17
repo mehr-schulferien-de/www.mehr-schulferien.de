@@ -1,0 +1,2 @@
+<title>Schulferienkalender und gesetzliche Feiertage für Deutschland</title>
+<meta name="description" content="Ferientermine (inkl. bewegliche Ferientage) für <%= MehrSchulferienWeb.PageView.number_schools() %> Schulen in Deutschland. Gesetzliche Feiertage und religiöse Feiertage (jüdisch, islamisch und orthodox). Brückentageübersicht. Kalender- und Schuljahre. Für Entwickler zusätzlich mit RESTful JSON API.">

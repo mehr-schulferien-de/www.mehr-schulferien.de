@@ -13,6 +13,15 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
       assert html_response(conn, 200) =~ federal_state.name
     end
 
+    test "custom meta tags are generated", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn = get(conn, Routes.federal_state_path(conn, :show, country.slug, federal_state.slug))
+      assert html_response(conn, 200) =~ "Schulferienkalender für #{federal_state.name}"
+    end
+
     test "shows schema.org events for school holiday periods", %{
       conn: conn,
       country: country,

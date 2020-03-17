@@ -4,9 +4,14 @@ defmodule MehrSchulferienWeb.CityControllerTest do
   describe "read city data" do
     setup [:add_city]
 
-    test "shows info for a specific federal state", %{conn: conn, city: city, country: country} do
+    test "shows info for a specific city", %{conn: conn, city: city, country: country} do
       conn = get(conn, Routes.city_path(conn, :show, country.slug, city.slug))
       assert html_response(conn, 200) =~ city.name
+    end
+
+    test "custom meta tags are generated", %{conn: conn, city: city, country: country} do
+      conn = get(conn, Routes.city_path(conn, :show, country.slug, city.slug))
+      assert html_response(conn, 200) =~ "Schulferientermine für #{city.name}"
     end
 
     test "returns 404 if country is not the root parent of the school", %{conn: conn, city: city} do

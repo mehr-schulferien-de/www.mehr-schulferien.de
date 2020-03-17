@@ -1,0 +1,2 @@
+<title>Schulferientermine für <%= @city.name %> <%= MehrSchulferienWeb.CityView.format_zip_codes(@city) %></title>
+<meta name="description" content="Schulferientermine für <%= @city.name %> <%= MehrSchulferienWeb.CityView.format_zip_codes(@city) %> in <%= @federal_state.name %>. Mit beweglichen Ferientagen für <%= MehrSchulferienWeb.CityView.number_schools(@city) %> Schulen.">
