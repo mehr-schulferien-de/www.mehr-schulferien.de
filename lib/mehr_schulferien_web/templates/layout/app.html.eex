@@ -7,6 +7,7 @@
     <%= render_existing(@view_module, "meta." <> @view_template, assigns) ||
         render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <%= render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html") %>
   </head>
   <body>
     <div class="container">
