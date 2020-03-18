@@ -22,7 +22,7 @@ defmodule MehrSchulferien.Factory do
 
   def holiday_or_vacation_type_factory(attrs) do
     name = attrs[:name] || Enum.random(["Herbst", "Sommer", "Weihnachts"])
-    country = insert(:country)
+    country_id = attrs[:country_location_id] || insert(:country).id
 
     holiday_or_vacation_type = %HolidayOrVacationType{
       name: name,
@@ -33,7 +33,7 @@ defmodule MehrSchulferien.Factory do
       default_is_school_vacation: true,
       default_is_valid_for_students: true,
       wikipedia_url: "https://de.wikipedia.org/wiki/Schulferien##{name}ferien",
-      country_location_id: country.id
+      country_location_id: country_id
     }
 
     merge_attributes(holiday_or_vacation_type, attrs)

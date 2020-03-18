@@ -1,0 +1,27 @@
+<%= form_for @changeset, @action, [], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Something went wrong. Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <% today = Date.utc_today() |> Date.to_erl() %>
+  <%= hidden_input f, :location_id, value: @federal_state_id  %>
+  <%= hidden_input f, :holiday_or_vacation_type_id, value: @holiday_or_vacation_type_id  %>
+
+  <%= label f, :created_by_email_address, "Email" %>
+  <%= text_input f, :created_by_email_address %>
+  <%= error_tag f, :created_by_email_address %>
+
+  <%= label f, :starts_on, "Start date" %>
+  <%= date_select f, :starts_on, default: today %>
+  <%= error_tag f, :starts_on %>
+
+  <%= label f, :ends_on, "End date" %>
+  <%= date_select f, :ends_on, default: today %>
+  <%= error_tag f, :ends_on %>
+
+  <div>
+    <%= submit "Save" %>
+  </div>
+<% end %>
