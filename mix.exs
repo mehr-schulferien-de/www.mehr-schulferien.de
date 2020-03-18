@@ -35,6 +35,7 @@ defmodule MehrSchulferien.MixProject do
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.1"},
+      {:bamboo, "~> 1.4"},
       {:plug_cowboy, "~> 2.1"},
       {:ex_machina, "~> 2.4", only: :test},
       {:faker, "~> 0.13.0", only: :test},

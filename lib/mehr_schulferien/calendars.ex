@@ -93,6 +93,10 @@ defmodule MehrSchulferien.Calendars do
   """
   def get_holiday_or_vacation_type!(id), do: Repo.get!(HolidayOrVacationType, id)
 
+  def get_holiday_or_vacation_type_by_name!(name) do
+    Repo.get_by!(HolidayOrVacationType, name: name)
+  end
+
   @doc """
   Creates a holiday_or_vacation_type.
   """
