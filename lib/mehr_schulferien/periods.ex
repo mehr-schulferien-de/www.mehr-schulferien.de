@@ -8,6 +8,14 @@ defmodule MehrSchulferien.Periods do
   alias MehrSchulferien.Calendars.Period
   alias MehrSchulferien.Repo
 
+  def fetch_all do
+    Repo.all(Period)
+  end
+
+  def fetch_period_by_id(id) do
+    Repo.get!(Period, id)
+  end
+
   @doc """
   Gets the holiday periods for a single year.
   """

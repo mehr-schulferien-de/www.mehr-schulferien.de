@@ -48,5 +48,6 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :api
 
     resources "/locations", LocationController, only: [:index, :show]
+    resources "/periods", PeriodController, only: [:index, :show]
   end
 end
