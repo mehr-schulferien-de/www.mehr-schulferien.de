@@ -15,6 +15,10 @@ defmodule MehrSchulferienWeb.ErrorView do
   end
 
   def render("404.json", _assigns) do
-    %{errors: %{detail: "Not found"}}
+    %{
+      errors: %{
+        detail: "Not found"
+      }
+    }
   end
 end
