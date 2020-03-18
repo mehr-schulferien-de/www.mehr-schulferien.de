@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   alias MehrSchulferien.{Calendars, Calendars.Period, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
+  alias MehrSchulferienWeb.Email
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
@@ -30,7 +31,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "period" => period_params
       }) do
     case Calendars.create_period(period_params) do
-      {:ok, _period} ->
+      {:ok, period} ->
+        Email.period_added_notification(period)
+
         conn
         |> put_flash(:info, "Period created successfully.")
         |> redirect(to: Routes.federal_state_path(conn, :show, country_slug, federal_state_slug))

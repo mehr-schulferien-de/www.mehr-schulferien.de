@@ -17,6 +17,9 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   render_errors: [view: MehrSchulferienWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: MehrSchulferien.PubSub, adapter: Phoenix.PubSub.PG2]
 
+# Mailer configuration
+config :mehr_schulferien, MehrSchulferienWeb.Mailer, adapter: Bamboo.LocalAdapter
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
