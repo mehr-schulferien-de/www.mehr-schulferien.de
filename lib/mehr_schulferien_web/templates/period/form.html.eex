@@ -5,12 +5,13 @@
     </div>
   <% end %>
 
+  <% today = Date.utc_today() |> Date.to_erl() %>
   <%= label f, :starts_on %>
-  <%= date_select f, :starts_on %>
+  <%= date_select f, :starts_on, default: today %>
   <%= error_tag f, :starts_on %>
 
   <%= label f, :ends_on %>
-  <%= date_select f, :ends_on %>
+  <%= date_select f, :ends_on, default: today %>
   <%= error_tag f, :ends_on %>
 
   <%= label f, :created_by_email_address %>

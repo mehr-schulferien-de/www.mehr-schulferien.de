@@ -35,6 +35,8 @@ defmodule MehrSchulferienWeb.Router do
 
     # School vacations
     get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
+    get "/ferien/:country_slug/bundesland/:federal_state_slug/new", FederalStateController, :new
+    post "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :create
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show
     get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
 

@@ -1,10 +1,56 @@
 defmodule MehrSchulferienWeb.FederalStateController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.Locations
+  alias MehrSchulferien.{Calendars, Calendars.Period, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+  def new(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
+    country = Locations.get_country_by_slug!(country_slug)
+    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+
+    holiday_or_vacation_type =
+      Calendars.get_holiday_or_vacation_type_by_name!("Corona Virus Quarantäne")
+
+    changeset = Calendars.change_period(%Period{})
+
+    render(conn, "new.html",
+      changeset: changeset,
+      country_slug: country_slug,
+      federal_state_slug: federal_state_slug,
+      federal_state_id: federal_state.id,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id
+    )
+  end
+
+  def create(conn, %{
+        "country_slug" => country_slug,
+        "federal_state_slug" => federal_state_slug,
+        "period" => period_params
+      }) do
+    case Calendars.create_period(period_params) do
+      {:ok, _period} ->
+        conn
+        |> put_flash(:info, "Period created successfully.")
+        |> redirect(to: Routes.federal_state_path(conn, :show, country_slug, federal_state_slug))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        country = Locations.get_country_by_slug!(country_slug)
+        federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+
+        holiday_or_vacation_type =
+          Calendars.get_holiday_or_vacation_type_by_name!("Corona Virus Quarantäne")
+
+        render(conn, "new.html",
+          changeset: changeset,
+          country_slug: country_slug,
+          federal_state_slug: federal_state_slug,
+          federal_state_id: federal_state.id,
+          holiday_or_vacation_type_id: holiday_or_vacation_type.id
+        )
+    end
+  end
 
   def show(conn, %{
         "country_slug" => country_slug,
