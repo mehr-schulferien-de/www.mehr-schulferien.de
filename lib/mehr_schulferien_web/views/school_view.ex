@@ -12,7 +12,10 @@ defmodule MehrSchulferienWeb.SchoolView do
   end
 
   defp snip(string) do
-    string
-    |> String.slice(0..27)
+    string =
+      string
+      |> String.slice(0..24)
+
+    string <> "..."
   end
 end
