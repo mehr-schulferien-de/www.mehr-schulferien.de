@@ -273,7 +273,7 @@ alias MehrSchulferien.Calendars
 
 {:ok, _corona_quarantine} =
   Calendars.create_holiday_or_vacation_type(%{
-    name: "Corona Virus Quarantäne",
+    name: "Schulschließung wegen der COVID-19-Pandemie (Corona)",
     default_html_class: "danger",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,

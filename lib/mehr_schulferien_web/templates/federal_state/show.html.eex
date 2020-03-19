@@ -30,6 +30,19 @@
   <div class="col-md-3">
     <div class="panel panel-default">
       <div class="panel-heading">
+        <h3 class="panel-title">Corona</h3>
+      </div>
+      <div class="panel-body">
+        <p>Während der <a href="https://de.wikipedia.org/wiki/COVID-19-Pandemie">COVID-19-Pandemie</a>
+        möchten wir mit der Bereitstellung von Daten zu Corona-Schließzeiten von Schulen helfen.
+        Bei der Erfassung der Daten benötigen wir Ihre Hilfe.
+        Wenn Sie neue Quarantäne-Termine für das Bundesland
+        <%= @federal_state.name %> kennen, dann tragen Sie sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) <> "/new_period"%> ein. Danke!</p>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
         <h3 class="panel-title">Sonstiges</h3>
       </div>
       <div class="panel-body">
