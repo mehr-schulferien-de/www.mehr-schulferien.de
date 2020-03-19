@@ -1,24 +1,65 @@
 defmodule MehrSchulferienWeb.CityController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.Locations
+  alias MehrSchulferien.{Calendars, Calendars.Period, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
+  alias MehrSchulferienWeb.Email
+
+  def new_period(conn, %{"country_slug" => country_slug, "city_slug" => city_slug}) do
+    %{city: city} = Locations.show_city_to_country_map(country_slug, city_slug)
+
+    holiday_or_vacation_type =
+      Calendars.get_holiday_or_vacation_type_by_name!("Corona Virus Quarantäne")
+
+    changeset = Calendars.change_period(%Period{})
+
+    render(conn, "new.html",
+      changeset: changeset,
+      country_slug: country_slug,
+      city_slug: city_slug,
+      city_id: city.id,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id
+    )
+  end
+
+  def create_period(conn, %{
+        "country_slug" => country_slug,
+        "city_slug" => city_slug,
+        "period" => period_params
+      }) do
+    case Calendars.create_period(period_params) do
+      {:ok, period} ->
+        Email.period_added_notification(period)
+
+        conn
+        |> put_flash(:info, "Period created successfully.")
+        |> redirect(to: Routes.city_path(conn, :show, country_slug, city_slug))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        %{city: city} = Locations.show_city_to_country_map(country_slug, city_slug)
+
+        holiday_or_vacation_type =
+          Calendars.get_holiday_or_vacation_type_by_name!("Corona Virus Quarantäne")
+
+        render(conn, "new.html",
+          changeset: changeset,
+          country_slug: country_slug,
+          city_slug: city_slug,
+          city_id: city.id,
+          holiday_or_vacation_type_id: holiday_or_vacation_type.id
+        )
+    end
+  end
 
   def show(conn, %{
         "country_slug" => country_slug,
         "city_slug" => city_slug
       }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    city = Locations.get_city_by_slug!(city_slug)
-    county = Locations.get_location!(city.parent_location_id)
-    federal_state = Locations.get_location!(county.parent_location_id)
-
-    unless country.id == federal_state.parent_location_id do
-      raise MehrSchulferien.CountryNotParentError
-    end
+    %{country: country, federal_state: federal_state, county: county, city: city} =
+      Locations.show_city_to_country_map(country_slug, city_slug)
 
     today = Date.utc_today()
-    location_ids = Locations.recursive_location_ids(city)
+    location_ids = [country.id, federal_state.id, county.id, city.id]
     schools = Locations.list_schools(city)
 
     assigns =
