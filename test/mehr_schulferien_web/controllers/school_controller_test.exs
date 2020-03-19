@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.SchoolControllerTest do
   use MehrSchulferienWeb.ConnCase
 
+  alias MehrSchulferien.Calendars
+
   describe "read city data" do
     setup [:add_school]
 
@@ -25,6 +27,40 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
       assert_error_sent 404, fn ->
         get(conn, Routes.school_path(conn, :show, "ch", school.slug))
       end
+    end
+  end
+
+  describe "write holiday period" do
+    setup [:add_school]
+
+    test "creates new period for school", %{
+      conn: conn,
+      country: country,
+      school: school
+    } do
+      holiday_or_vacation_type =
+        insert(:holiday_or_vacation_type, %{country_location_id: country.id})
+
+      today = Date.utc_today()
+
+      attrs = %{
+        "created_by_email_address" => "froderick@example.com",
+        "ends_on" => Date.add(today, 6),
+        "location_id" => school.id,
+        "holiday_or_vacation_type_id" => holiday_or_vacation_type.id,
+        "starts_on" => Date.add(today, 1)
+      }
+
+      conn =
+        post(conn, Routes.school_path(conn, :create_period, country.slug, school.slug),
+          period: attrs
+        )
+
+      assert redirected_to(conn) == Routes.school_path(conn, :show, country.slug, school.slug)
+      assert get_flash(conn, :info) =~ "Period created successfully"
+      assert [period] = Calendars.list_periods()
+      assert period.created_by_email_address == "froderick@example.com"
+      assert period.holiday_or_vacation_type_id == holiday_or_vacation_type.id
     end
   end
 

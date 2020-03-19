@@ -58,7 +58,9 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
       }
 
       conn =
-        post(conn, Routes.federal_state_path(conn, :create, country.slug, federal_state.slug),
+        post(
+          conn,
+          Routes.federal_state_path(conn, :create_period, country.slug, federal_state.slug),
           period: attrs
         )
 

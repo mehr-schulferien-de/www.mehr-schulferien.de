@@ -7,7 +7,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-  def new(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
+  def new_period(conn, %{
+        "country_slug" => country_slug,
+        "federal_state_slug" => federal_state_slug
+      }) do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
@@ -25,7 +28,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     )
   end
 
-  def create(conn, %{
+  def create_period(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug,
         "period" => period_params

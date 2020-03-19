@@ -1,0 +1,5 @@
+<h1>New Coronavirus quarantine holiday period</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.city_path(@conn, :create_period, @country_slug, @city_slug)) %>
+
+<span><%= link "Back", to: Routes.city_path(@conn, :show, @country_slug, @city_slug) %></span>

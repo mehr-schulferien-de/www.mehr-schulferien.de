@@ -181,4 +181,37 @@ defmodule MehrSchulferien.Locations do
     |> Repo.get_by!(slug: school_slug, is_school: true)
     |> Repo.preload([:address])
   end
+
+  @doc """
+  Shows a map for the related locations from city -> country.
+  """
+  def show_city_to_country_map(country_slug, city_slug) do
+    country = get_country_by_slug!(country_slug)
+    city = get_city_by_slug!(city_slug)
+    county = get_location!(city.parent_location_id)
+    federal_state = get_location!(county.parent_location_id)
+
+    unless country.id == federal_state.parent_location_id do
+      raise MehrSchulferien.CountryNotParentError
+    end
+
+    %{country: country, federal_state: federal_state, county: county, city: city}
+  end
+
+  @doc """
+  Shows a map for the related locations from school -> country.
+  """
+  def show_school_to_country_map(country_slug, school_slug) do
+    country = get_country_by_slug!(country_slug)
+    school = get_school_by_slug!(school_slug)
+    city = get_location!(school.parent_location_id)
+    county = get_location!(city.parent_location_id)
+    federal_state = get_location!(county.parent_location_id)
+
+    unless country.id == federal_state.parent_location_id do
+      raise MehrSchulferien.CountryNotParentError
+    end
+
+    %{country: country, federal_state: federal_state, county: county, city: city, school: school}
+  end
 end
