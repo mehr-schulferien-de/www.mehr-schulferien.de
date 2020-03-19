@@ -28,6 +28,6 @@
   - id: trailing-whitespace
   - id: check-merge-conflict
   - id: check-yaml
-  # - id: end-of-file-fixer
+  - id: end-of-file-fixer
   - id: no-commit-to-branch
     args: [-b, master, -b, production, -b, staging]
