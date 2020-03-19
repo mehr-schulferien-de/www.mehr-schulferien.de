@@ -1,0 +1,17 @@
+name: Bump version number
+on: [push]  # Recommended to use either of one event
+
+jobs:
+  Version-check:
+    runs-on: ubuntu-latest
+    name: Bump-N-Tag Version
+    steps:
+    - uses: actions/checkout@master
+    - name: Increment version
+      id: version
+      uses: vinodhraj/Bump-N-Tag-Version@master
+      with:
+        file_name: './mix.exs'
+        tag_version: "false"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
