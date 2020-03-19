@@ -81,17 +81,17 @@
     {
       "@context": "http://schema.org",
       "@type": "Event",
-      "name": "<%= MehrSchulferienWeb.PeriodView.vacation_type_name(period) %>",
+      "name": "<%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %>",
       "startDate": "<%= period.starts_on %>",
       "endDate": "<%= period.ends_on %>",
       "location": {
         "@type": "Place",
-        "name": "<%= @city.name %>",
+        "name": "<%= @school.name %>",
         "address":{
           "@type": "PostalAddress",
-          "streetAddress": "",
+          "streetAddress": "<%= @school.address.street %>",
           "addressLocality": "<%= @city.name %>",
-          "postalCode": "",
+          "postalCode": "<%= @school.address.zip_code %>",
           "addressRegion": "<%= @city.name %>",
           "addressCountry": "<%= @country.code %>"
         }
