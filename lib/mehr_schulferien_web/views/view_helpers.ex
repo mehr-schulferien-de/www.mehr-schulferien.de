@@ -5,6 +5,10 @@ defmodule MehrSchulferienWeb.ViewHelpers do
 
   alias MehrSchulferien.Calendars
 
+  @version Mix.Project.config()[:version]
+
+  def version, do: @version
+
   @doc """
   Returns the number of days a holiday period lasts for.
   """
