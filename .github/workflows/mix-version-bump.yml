@@ -1,0 +1,17 @@
+name: mix.exs version bump
+on: [push]  # Recommended to use just one
+
+jobs:
+  Version-check:
+    runs-on: ubuntu-latest
+    name: mix.exs version bump
+    steps:
+    - uses: actions/checkout@master
+    - name: Increment version
+      id: version
+      uses: wintermeyer/version-bump@master
+      with:
+        file_name: './mix.exs'
+        tag_version: "false"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
