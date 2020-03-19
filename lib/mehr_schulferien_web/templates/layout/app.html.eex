@@ -38,7 +38,7 @@
         <div class="row">
           <div class="col-xs-6">
             <p>
-              2020 Copyright by Stefan Wintermeyer - <a href="/impressum">Impressum und Datenschutzerklärung</a>
+              Version <%= ViewHelpers.version() %> - 2020 Copyright by Stefan Wintermeyer - <a href="/impressum">Impressum und Datenschutzerklärung</a>
             </p>
           </div>
           <div class="col-xs-6">
