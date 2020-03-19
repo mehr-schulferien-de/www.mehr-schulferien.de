@@ -15,7 +15,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
     holiday_or_vacation_type =
-      Calendars.get_holiday_or_vacation_type_by_name!("Corona Virus Quarantäne")
+      Calendars.get_holiday_or_vacation_type_by_name!(
+        "Schulschließung wegen der COVID-19-Pandemie (Corona)"
+      )
 
     changeset = Calendars.change_period(%Period{})
 
@@ -24,7 +26,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
       country_slug: country_slug,
       federal_state_slug: federal_state_slug,
       federal_state_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_or_vacation_type.id
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+      country: country,
+      federal_state: federal_state
     )
   end
 
@@ -38,22 +42,30 @@ defmodule MehrSchulferienWeb.FederalStateController do
         Email.period_added_notification(period)
 
         conn
-        |> put_flash(:info, "Period created successfully.")
+        |> put_flash(
+          :info,
+          "Die Daten zur Schulschließung wegen der COVID-19-Pandemie wurden eingetragen."
+        )
         |> redirect(to: Routes.federal_state_path(conn, :show, country_slug, federal_state_slug))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         country = Locations.get_country_by_slug!(country_slug)
         federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+        country = Locations.get_country_by_slug!(country_slug)
 
         holiday_or_vacation_type =
-          Calendars.get_holiday_or_vacation_type_by_name!("Corona Virus Quarantäne")
+          Calendars.get_holiday_or_vacation_type_by_name!(
+            "Schulschließung wegen der COVID-19-Pandemie (Corona)"
+          )
 
         render(conn, "new.html",
           changeset: changeset,
           country_slug: country_slug,
           federal_state_slug: federal_state_slug,
           federal_state_id: federal_state.id,
-          holiday_or_vacation_type_id: holiday_or_vacation_type.id
+          holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+          country: country,
+          federal_state: federal_state
         )
     end
   end

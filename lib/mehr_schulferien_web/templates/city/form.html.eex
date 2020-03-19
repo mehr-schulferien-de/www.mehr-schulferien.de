@@ -1,27 +1,36 @@
 <%= form_for @changeset, @action, [], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Something went wrong. Please check the errors below.</p>
+  <div class="form-row">
+    <%= if @changeset.action do %>
+      <div class="alert alert-danger">
+        <p>Something went wrong. Please check the errors below.</p>
+      </div>
+    <% end %>
+
+    <% today = Date.utc_today() |> Date.to_erl() %>
+    <%= hidden_input f, :location_id, value: @city_id  %>
+    <%= hidden_input f, :holiday_or_vacation_type_id, value: @holiday_or_vacation_type_id  %>
+
+    <div class="form-group">
+      <%= label f, :created_by_email_address, "Ihre E-Mail Adresse" %>
+      <%= text_input f, :created_by_email_address, class: "form-control", autofocus: true %>
+      <small id="emailHelp" class="form-text text-muted">Die E-Mail Adresse wird nicht veröffentlicht und dient nur für uns zur Verifizierung der Daten.</small>
+      <%= error_tag f, :created_by_email_address %>
     </div>
-  <% end %>
 
-  <% today = Date.utc_today() |> Date.to_erl() %>
-  <%= hidden_input f, :location_id, value: @city_id  %>
-  <%= hidden_input f, :holiday_or_vacation_type_id, value: @holiday_or_vacation_type_id  %>
+    <div class="form-group">
+      <%= label f, :starts_on, "Start (erster Tag)" %>
+      <%= date_select f, :starts_on, default: today, class: "form-control" %>
+      <%= error_tag f, :starts_on %>
+    </div>
 
-  <%= label f, :created_by_email_address, "Email" %>
-  <%= text_input f, :created_by_email_address %>
-  <%= error_tag f, :created_by_email_address %>
+    <div class="form-group">
+      <%= label f, :ends_on, "Ende (letzter Tag)" %>
+      <%= date_select f, :ends_on, default: today, class: "form-control" %>
+      <%= error_tag f, :ends_on %>
+    </div>
 
-  <%= label f, :starts_on, "Start date" %>
-  <%= date_select f, :starts_on, default: today %>
-  <%= error_tag f, :starts_on %>
-
-  <%= label f, :ends_on, "End date" %>
-  <%= date_select f, :ends_on, default: today %>
-  <%= error_tag f, :ends_on %>
-
-  <div>
-    <%= submit "Save" %>
+    <div class="form-group">
+      <%= submit "Abspeichern", class: "btn" %>
+    </div>
   </div>
 <% end %>

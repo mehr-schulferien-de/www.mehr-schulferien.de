@@ -1,5 +1,32 @@
-<h1>New Coronavirus quarantine holiday period</h1>
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
+</ol>
 
-<%= render "form.html", Map.put(assigns, :action, Routes.federal_state_path(@conn, :create_period, @country_slug, @federal_state_slug)) %>
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
+</ol>
 
-<span><%= link "Back", to: Routes.federal_state_path(@conn, :show, @country_slug, @federal_state_slug) %></span>
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        Meldeformular Schulschließung wegen der COVID-19-Pandemie<br/><small>für das Bundesland <%= @federal_state.name %></small>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-warning" role="alert">
+  <p>Es versteht sich von selbst, das dies nicht die Zeit für Scherz-Einträge oder nicht validierte Daten ist.
+    Bitte benutzen Sie dieses Formular nur, wenn Sie sich 100% sicher sind, das die eingetragenen Daten stimmen.</p>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= render "form.html", Map.put(assigns, :action, Routes.federal_state_path(@conn, :create_period, @country_slug, @federal_state_slug)) %>
+  </div>
+</div>

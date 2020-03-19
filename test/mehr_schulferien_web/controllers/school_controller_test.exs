@@ -57,7 +57,10 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
         )
 
       assert redirected_to(conn) == Routes.school_path(conn, :show, country.slug, school.slug)
-      assert get_flash(conn, :info) =~ "Period created successfully"
+
+      assert get_flash(conn, :info) =~
+               "Die Daten zur Schulschließung wegen der COVID-19-Pandemie wurden eingetragen."
+
       assert [period] = Calendars.list_periods()
       assert period.created_by_email_address == "froderick@example.com"
       assert period.holiday_or_vacation_type_id == holiday_or_vacation_type.id
