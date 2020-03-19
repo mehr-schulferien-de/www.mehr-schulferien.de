@@ -1,15 +1,15 @@
-name: Bump version number
+name: mix.exs version bump
 on: [push]  # Recommended to use either of one event
 
 jobs:
   Version-check:
     runs-on: ubuntu-latest
-    name: Bump-N-Tag Version
+    name: mix.exs version bump
     steps:
     - uses: actions/checkout@master
     - name: Increment version
       id: version
-      uses: vinodhraj/Bump-N-Tag-Version@master
+      uses: wintermeyer/version-bump@master
       with:
         file_name: './mix.exs'
         tag_version: "false"
