@@ -30,11 +30,13 @@
   <tbody>
     <%= for {federal_state, periods} <- @periods do %>
       <tr>
-        <td><a href="/ferien/<%= "d/bundesland/#{federal_state.slug}" %>"><%= federal_state.name %></a></td>
+        <td><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) %></td>
         <%= for day <- @days do %>
           <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
           <td class="text-center <%= td_html_class %>">
-            <%= if td_html_class != "" and td_html_class != "active" do %><%= link to: "/ferien/d/bundesland/#{federal_state.slug}##{String.downcase(@months[day.month])}#{day.year}" do %>x<% end %><% end %>
+            <%= if td_html_class != "" and td_html_class != "active" do %>
+              <%= link "x", to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}"%>
+            <% end %>
           </td>
         <% end %>
       </tr>

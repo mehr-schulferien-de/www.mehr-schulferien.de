@@ -50,7 +50,8 @@ defmodule MehrSchulferien.Factory do
       name: sequence("Berlin"),
       code: "BE",
       is_federal_state: true,
-      parent_location_id: country_id
+      parent_location_id: country_id,
+      slug: sequence("berlin")
     }
 
     merge_attributes(federal_state, attrs)
