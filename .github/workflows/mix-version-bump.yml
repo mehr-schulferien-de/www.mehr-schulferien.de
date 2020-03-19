@@ -1,5 +1,5 @@
 name: mix.exs version bump
-on: [push]  # Recommended to use either of one event
+on: [push]  # Recommended to use just one
 
 jobs:
   Version-check:
