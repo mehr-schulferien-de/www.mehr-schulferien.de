@@ -46,14 +46,13 @@
 
           <%= if @school.address.homepage_url != nil do %>
             <strong>Homepage:</strong><br>
-
-            <%= truncate(@school.address.homepage_url)%>
+            <%= truncate_url(@school.address.homepage_url)%>
             <br><br>
           <% end %>
 
           <%= if @school.address.email_address != nil do %>
             <strong>Email:</strong><br>
-            <%= truncate(@school.address.email_address) %>
+            <%= truncate_email(@school.address.email_address) %>
             <br><br>
           <% end %>
 
