@@ -34,6 +34,9 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers", PageController, :developers
     get "/land/:country_slug", CountryController, :show
 
+    # Old routes
+    get "/cities/:city_slug", OldRoutes.CityController, :show
+
     # School vacations
     get "/ferien/:country_slug/stadt/:city_slug/new_period", CityController, :new_period
     post "/ferien/:country_slug/stadt/:city_slug", CityController, :create_period
