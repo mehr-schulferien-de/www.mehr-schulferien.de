@@ -8,8 +8,8 @@
   </thead>
   <tbody>
   <%= for periods <- @next_12_months_periods do %>
-    <tr>
-      <% period = Enum.at(periods, 0) %>
+    <% period = Enum.at(periods, 0) %>
+    <tr class="<%= if period.html_class in ["warning", "danger"], do: period.html_class %>">
       <td><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></td>
       <td>
         <span>
