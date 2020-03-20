@@ -3,8 +3,8 @@ defmodule MehrSchulferienWeb.SchoolViewTest do
 
   import MehrSchulferienWeb.SchoolView
 
-  describe "#truncate" do
-    test "it truncates a string with length > 28" do
+  describe "truncate function" do
+    test "snips a string with length > 28" do
       string = "http://localhost:4000/ferien/d/schule/56077-grundschule-arenberg"
 
       html_string =
@@ -20,7 +20,7 @@ defmodule MehrSchulferienWeb.SchoolViewTest do
       assert truncate(string) == html_string
     end
 
-    test "it doesn't truncate string of length < 28" do
+    test "doesn't truncate string of length < 28" do
       string = "emmanuelhayford.com"
 
       assert truncate(string) == "emmanuelhayford.com"
