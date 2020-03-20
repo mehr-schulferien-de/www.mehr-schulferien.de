@@ -44,6 +44,19 @@
             <%= @school.address.zip_code %> <%= @school.address.city %>
           </address>
 
+          <%= if @school.address.homepage_url != nil do %>
+            <strong>Homepage:</strong><br>
+
+            <%= truncate(@school.address.homepage_url)%>
+            <br><br>
+          <% end %>
+
+          <%= if @school.address.email_address != nil do %>
+            <strong>Email:</strong><br>
+            <%= truncate(@school.address.email_address) %>
+            <br><br>
+          <% end %>
+
           <%= if @school.address.phone_number != nil or @school.address.fax_number != nil do %>
             <address style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <%= if @school.address.phone_number != nil do %>
