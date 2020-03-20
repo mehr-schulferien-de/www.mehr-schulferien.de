@@ -1,5 +1,9 @@
-# See http://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# SEO-Robots are welcome. Feel free to hit us hard.
 #
-# To ban all spiders from the entire site uncomment the next two lines:
-# User-agent: *
-# Disallow: /
+# If you are a non SEO scraper you probably want to have a look at our
+# RESTful JSON API. Less work for you and less load for us.
+#
+
+User-agent: *
+Disallow: /admin
+Disallow: /api
