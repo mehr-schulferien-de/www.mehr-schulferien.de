@@ -1,13 +1,27 @@
 defmodule MehrSchulferienWeb.SchoolView do
   use MehrSchulferienWeb, :view
 
-  def truncate(string) do
-    if String.length(string) > 28 do
+  def truncate_url(url) do
+    if String.length(url) > 28 do
       ~E"""
-      <abbr title="<%= string %>"><%= snip(string) %></abbr>
+      <a href="<%= url %>"><%= snip(url) %></a>
       """
     else
-      string
+      ~E"""
+      <a href="<%= url %>"><%= url %></a>
+      """
+    end
+  end
+
+  def truncate_email(email) do
+    if String.length(email) > 28 do
+      ~E"""
+      <a href="mailto:<%= email %>"><%= snip(email) %></a>
+      """
+    else
+      ~E"""
+      <a href="mailto:<%= email %>"><%= email %></a>
+      """
     end
   end
 
