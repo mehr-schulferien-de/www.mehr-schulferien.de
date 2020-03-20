@@ -6,8 +6,7 @@
     <ul>
       <li>Diese Seite ist ein Open-Source-<a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de">Projekt</a>.</li>
       <li>Wir freuen uns über Ihr Feedback, Hilfe und <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues">Bug-Reports</a>!</li>
-      <li>Alle Daten sind im JSON-Format über eine RESTful-API abrufbar.</li>
-      <li>Wir arbeiten an einem Wordpress-Plugin. Stay tuned!</li>
+      <li>Alle Daten sind im <a href="/developers">JSON-Format über eine RESTful-API abrufbar</a>.</li>
     </ul>
   </div>
 </div>

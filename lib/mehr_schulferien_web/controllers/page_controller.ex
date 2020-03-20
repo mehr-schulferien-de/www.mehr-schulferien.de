@@ -27,4 +27,8 @@ defmodule MehrSchulferienWeb.PageController do
       periods: periods
     )
   end
+
+  def developers(conn, _params) do
+    render(conn, "developers.html")
+  end
 end

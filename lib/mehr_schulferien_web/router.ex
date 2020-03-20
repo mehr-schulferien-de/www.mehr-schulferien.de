@@ -31,6 +31,7 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/developers", PageController, :developers
     get "/land/:country_slug", CountryController, :show
 
     # School vacations
@@ -57,7 +58,7 @@ defmodule MehrSchulferienWeb.Router do
         :county_show
   end
 
-  scope "/api/v2", MehrSchulferienWeb.Api.V2 do
+  scope "/api/v2.0", MehrSchulferienWeb.Api.V2 do
     pipe_through :api
 
     resources "/locations", LocationController, only: [:index, :show]
