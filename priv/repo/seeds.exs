@@ -12,7 +12,7 @@ alias MehrSchulferien.Calendars
 
 # Create the federal_states of Deutschland
 #
-{:ok, _badenwuerttemberg} =
+{:ok, badenwuerttemberg} =
   Locations.create_location(%{
     name: "Baden-Württemberg",
     code: "BW",
@@ -20,7 +20,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _bayern} =
+{:ok, bayern} =
   Locations.create_location(%{
     name: "Bayern",
     code: "BY",
@@ -28,7 +28,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _berlin} =
+{:ok, berlin} =
   Locations.create_location(%{
     name: "Berlin",
     code: "BE",
@@ -36,7 +36,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _brandenburg} =
+{:ok, brandenburg} =
   Locations.create_location(%{
     name: "Brandenburg",
     code: "BB",
@@ -44,7 +44,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _bremen} =
+{:ok, bremen} =
   Locations.create_location(%{
     name: "Bremen",
     code: "HB",
@@ -52,7 +52,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _hamburg} =
+{:ok, hamburg} =
   Locations.create_location(%{
     name: "Hamburg",
     code: "HH",
@@ -60,7 +60,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _hessen} =
+{:ok, hessen} =
   Locations.create_location(%{
     name: "Hessen",
     code: "HE",
@@ -68,7 +68,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _mecklenburgvorpommern} =
+{:ok, mecklenburgvorpommern} =
   Locations.create_location(%{
     name: "Mecklenburg-Vorpommern",
     code: "MV",
@@ -76,7 +76,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _niedersachsen} =
+{:ok, niedersachsen} =
   Locations.create_location(%{
     name: "Niedersachsen",
     code: "NI",
@@ -84,7 +84,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _nordrheinwestfalen} =
+{:ok, nordrheinwestfalen} =
   Locations.create_location(%{
     name: "Nordrhein-Westfalen",
     code: "NW",
@@ -92,7 +92,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _rheinlandpfalz} =
+{:ok, rheinlandpfalz} =
   Locations.create_location(%{
     name: "Rheinland-Pfalz",
     code: "RP",
@@ -100,7 +100,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _saarland} =
+{:ok, saarland} =
   Locations.create_location(%{
     name: "Saarland",
     code: "SL",
@@ -108,7 +108,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _sachsen} =
+{:ok, sachsen} =
   Locations.create_location(%{
     name: "Sachsen",
     code: "SN",
@@ -116,7 +116,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _sachsenanhalt} =
+{:ok, sachsenanhalt} =
   Locations.create_location(%{
     name: "Sachsen-Anhalt",
     code: "ST",
@@ -124,7 +124,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _schleswigholstein} =
+{:ok, schleswigholstein} =
   Locations.create_location(%{
     name: "Schleswig-Holstein",
     code: "SH",
@@ -132,7 +132,7 @@ alias MehrSchulferien.Calendars
     parent_location_id: deutschland.id
   })
 
-{:ok, _thueringen} =
+{:ok, thueringen} =
   Locations.create_location(%{
     name: "Thüringen",
     code: "TH",
@@ -271,9 +271,10 @@ alias MehrSchulferien.Calendars
     default_display_priority: 4
   })
 
-{:ok, _corona_quarantine} =
+{:ok, corona_quarantine} =
   Calendars.create_holiday_or_vacation_type(%{
     name: "Schulschließung wegen der COVID-19-Pandemie (Corona)",
+    colloquial: "Corona-Schulschließung",
     default_html_class: "danger",
     default_is_listed_below_month: true,
     default_is_school_vacation: true,
@@ -281,5 +282,152 @@ alias MehrSchulferien.Calendars
     default_is_valid_for_students: true,
     wikipedia_url: "https://de.wikipedia.org/wiki/COVID-19-Pandemie",
     country_location_id: deutschland.id,
-    default_display_priority: 9
+    default_display_priority: 20
   })
+
+# Corona quarantine dates
+#
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: badenwuerttemberg.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: bayern.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: berlin.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: brandenburg.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-03-27",
+  location_id: bremen.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-09",
+  location_id: hamburg.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: hessen.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: mecklenburgvorpommern.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-03-27",
+  location_id: niedersachsen.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: nordrheinwestfalen.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-08",
+  location_id: rheinlandpfalz.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-09",
+  location_id: saarland.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-09",
+  location_id: sachsen.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: sachsenanhalt.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-03-27",
+  location_id: schleswigholstein.id,
+  display_priority: 20
+})
+
+Calendars.create_period(%{
+  created_by_email_address: "sw@wintermeyer-consulting.de",
+  holiday_or_vacation_type_id: corona_quarantine.id,
+  starts_on: "2020-03-16",
+  ends_on: "2020-04-03",
+  location_id: thueringen.id,
+  display_priority: 20
+})
