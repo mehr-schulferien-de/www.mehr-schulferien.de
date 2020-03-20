@@ -6,7 +6,6 @@ defmodule MehrSchulferienWeb.SchoolViewTest do
   describe "truncate function" do
     test "snips a string with length > 28" do
       string = "http://localhost:4000/ferien/d/schule/56077-grundschule-arenberg"
-
       html_string =
         {:safe,
          [
