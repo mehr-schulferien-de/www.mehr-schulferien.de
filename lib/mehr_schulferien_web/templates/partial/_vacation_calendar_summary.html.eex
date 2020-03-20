@@ -9,7 +9,7 @@
           <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
         <% end %>
         <% number_days = ViewHelpers.number_days(periods) %>
-        <span class="label label-<%= @number_days_html_class %>"><%= number_days %> <%= if number_days == 1, do: "Tag", else: "Tage" %></span>
+        <span class="label label-<%= period.html_class %>"><%= number_days %> <%= if number_days == 1, do: "Tag", else: "Tage" %></span>
       </dd>
     </dl>
   <% end %>
