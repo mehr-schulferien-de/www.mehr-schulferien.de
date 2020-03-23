@@ -4,7 +4,7 @@ defmodule MehrSchulferienWeb.CityControllerTest do
   alias MehrSchulferien.Calendars
 
   describe "read city data" do
-    setup [:add_city]
+    setup [:add_city, :add_periods]
 
     test "shows info for a specific city", %{conn: conn, city: city, country: country} do
       conn = get(conn, Routes.city_path(conn, :show, country.slug, city.slug))
@@ -63,6 +63,12 @@ defmodule MehrSchulferienWeb.CityControllerTest do
     federal_state = insert(:federal_state, %{parent_location_id: country.id, slug: "berlin"})
     county = insert(:county, %{parent_location_id: federal_state.id, slug: "berlin"})
     city = insert(:city, %{parent_location_id: county.id, slug: "berlin"})
+    {:ok, %{city: city, country: country}}
+  end
+
+  defp add_periods(%{city: city, country: country}) do
+    _school_periods = add_school_periods(%{location: city})
+    _public_periods = add_public_periods(%{location: city})
     {:ok, %{city: city, country: country}}
   end
 end

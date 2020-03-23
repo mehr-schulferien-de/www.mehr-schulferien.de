@@ -3,10 +3,10 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
 
   alias MehrSchulferien.Calendars
 
-  describe "read city data" do
-    setup [:add_school]
+  describe "read school data" do
+    setup [:add_school, :add_periods]
 
-    test "shows info for a specific federal state", %{
+    test "shows info for a specific school", %{
       conn: conn,
       country: country,
       school: school
@@ -73,6 +73,13 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
     county = insert(:county, %{parent_location_id: federal_state.id, slug: "berlin"})
     city = insert(:city, %{parent_location_id: county.id, slug: "berlin"})
     school = insert(:school, %{parent_location_id: city.id, slug: "kopernikus-gymnasium"})
+    _address = insert(:address, %{school_location_id: school.id})
+    {:ok, %{country: country, school: school}}
+  end
+
+  defp add_periods(%{country: country, school: school}) do
+    _school_periods = add_school_periods(%{location: school})
+    _public_periods = add_public_periods(%{location: school})
     {:ok, %{country: country, school: school}}
   end
 end

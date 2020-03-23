@@ -3,7 +3,12 @@ defmodule MehrSchulferienWeb.PageControllerTest do
 
   setup %{conn: conn} do
     country = insert(:country, %{slug: "d"})
-    _federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
+    federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
+
+    for federal_state <- federal_states do
+      add_periods(%{federal_state: federal_state})
+    end
+
     {:ok, %{conn: conn}}
   end
 
@@ -17,5 +22,10 @@ defmodule MehrSchulferienWeb.PageControllerTest do
 
     assert html_response(conn, 200) =~
              "Schulferienkalender und gesetzliche Feiertage für Deutschland"
+  end
+
+  defp add_periods(%{federal_state: federal_state}) do
+    _school_periods = add_school_periods(%{location: federal_state})
+    _public_periods = add_public_periods(%{location: federal_state})
   end
 end
