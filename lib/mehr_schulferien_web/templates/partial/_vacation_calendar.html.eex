@@ -48,11 +48,11 @@
 
           <div class="row">
             <%= unless Enum.empty?(public_periods) do %>
-              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_periods, number_days_html_class: "info" %>
+              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_periods %>
             <% end %>
 
             <%= unless Enum.empty?(school_periods) do %>
-              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_periods, number_days_html_class: "success" %>
+              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_periods %>
             <% end %>
           </div>
 

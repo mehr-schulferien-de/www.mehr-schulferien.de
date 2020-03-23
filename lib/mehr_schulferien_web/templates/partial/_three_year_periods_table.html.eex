@@ -1,16 +1,17 @@
 <table class="table">
-    <thead>
-      <tr>
-        <th></th>
-        <%= for period <- @next_3_years_headers do %>
-          <th>
-            <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: period.holiday_or_vacation_type.wikipedia_url %>
-          </th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-    <%= for period_list <- @next_3_years_periods do %>
+  <% {grouped_headers, grouped_periods} = MehrSchulferien.Periods.group_periods_multi_year(@next_3_years_periods) %>
+  <thead>
+    <tr>
+      <th></th>
+      <%= for period <- grouped_headers do %>
+        <th>
+          <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: period.holiday_or_vacation_type.wikipedia_url %>
+        </th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for period_list <- grouped_periods do %>
       <% year = ViewHelpers.display_year(period_list) %>
       <tr class="<%= if year == @current_year, do: "active", else: "" %>">
         <td>
