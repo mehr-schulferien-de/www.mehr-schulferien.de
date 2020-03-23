@@ -8,7 +8,7 @@ defmodule MehrSchulferien.Factory do
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
 
   def address_factory(attrs) do
-    school_id = attrs[:parent_location_id] || insert(:school).id
+    school_id = attrs[:school_location_id] || insert(:school).id
 
     address = %Address{
       line1: "Schubart-Gymnasium Partnerschule für Europa",
@@ -136,5 +136,52 @@ defmodule MehrSchulferien.Factory do
       lat: 51.2,
       lon: 10.5
     }
+  end
+
+  def add_school_periods(%{location: location}) do
+    oster = insert(:holiday_or_vacation_type, %{name: "Oster"})
+    herbst = insert(:holiday_or_vacation_type, %{name: "Herbst"})
+    weihnachts = insert(:holiday_or_vacation_type, %{name: "Weihnachts"})
+    winter = insert(:holiday_or_vacation_type, %{name: "Winter"})
+
+    data = [
+      {oster, ~D[2020-04-06], ~D[2020-04-18]},
+      {herbst, ~D[2020-10-31], ~D[2020-10-31]},
+      {weihnachts, ~D[2020-12-23], ~D[2021-01-04]},
+      {winter, ~D[2021-02-24], ~D[2021-02-28]},
+      {oster, ~D[2021-04-06], ~D[2021-04-18]},
+      {herbst, ~D[2021-10-24], ~D[2021-10-27]},
+      {herbst, ~D[2021-10-31], ~D[2021-10-31]},
+      {weihnachts, ~D[2021-12-23], ~D[2022-01-04]},
+      {oster, ~D[2022-04-06], ~D[2022-04-18]},
+      {herbst, ~D[2022-10-31], ~D[2022-10-31]},
+      {weihnachts, ~D[2022-12-23], ~D[2023-01-04]}
+    ]
+
+    for {vacation_type, starts_on, ends_on} <- data do
+      create_period(%{
+        created_by_email_address: "froderick@example.com",
+        location_id: location.id,
+        holiday_or_vacation_type_id: vacation_type.id,
+        starts_on: starts_on,
+        ends_on: ends_on
+      })
+    end
+  end
+
+  def add_public_periods(%{location: location}) do
+    today = Date.utc_today()
+
+    insert(:period, %{
+      is_public_holiday: true,
+      location_id: location.id,
+      starts_on: Date.add(today, 1),
+      ends_on: Date.add(today, 1)
+    })
+  end
+
+  defp create_period(attrs) do
+    {:ok, period} = MehrSchulferien.Calendars.create_period(attrs)
+    period
   end
 end
