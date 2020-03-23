@@ -37,39 +37,46 @@ defmodule MehrSchulferien.PeriodsTest do
       assert other_period not in long_time_periods
     end
 
-    test "chunk_one_year_school_periods/2 returns the periods for a year", %{
-      federal_state: federal_state,
-      periods: periods
-    } do
-      location_ids = Locations.recursive_location_ids(federal_state)
-      period_ids = Enum.map(periods, & &1.id)
-      today = ~D[2020-02-26]
-      next_12_months_periods = Periods.chunk_one_year_school_periods(location_ids, today)
-      assert length(next_12_months_periods) == 4
-      assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
-      today = ~D[2020-03-02]
-      next_12_months_periods = Periods.chunk_one_year_school_periods(location_ids, today)
-      assert length(next_12_months_periods) == 3
-      assert Enum.all?(List.flatten(next_12_months_periods), &(&1.id in period_ids))
-    end
-
-    test "chunk_multi_year_school_periods/2 returns the periods for 3 years", %{
+    test "group_periods_single_year/1 groups periods with the same name together", %{
       federal_state: federal_state
     } do
       location_ids = Locations.recursive_location_ids(federal_state)
+      today = ~D[2020-02-26]
+
+      next_12_months_periods =
+        Periods.list_school_periods(location_ids, today, Date.add(today, 365))
+
+      assert length(next_12_months_periods) == 5
+      grouped_periods = Periods.group_periods_single_year(next_12_months_periods)
+      assert length(grouped_periods) == 4
+      today = ~D[2020-03-02]
+
+      next_12_months_periods =
+        Periods.list_school_periods(location_ids, today, Date.add(today, 365))
+
+      assert length(next_12_months_periods) == 4
+      grouped_periods = Periods.group_periods_single_year(next_12_months_periods)
+      assert length(grouped_periods) == 3
+    end
+
+    test "group_periods_multi_year/1 returns headers and periods, with periods with the same name grouped together",
+         %{
+           federal_state: federal_state
+         } do
+      location_ids = Locations.recursive_location_ids(federal_state)
       current_year = 2019
-
-      {next_3_years_headers, next_3_years_periods} =
-        Periods.chunk_multi_year_school_periods(location_ids, current_year, 3)
-
-      assert [winter, oster, herbst, weihnachts] = next_3_years_headers
+      {:ok, first_day} = Date.new(current_year, 1, 1)
+      {:ok, last_day} = Date.new(current_year + 2, 12, 31)
+      next_3_years_periods = Periods.list_school_periods(location_ids, first_day, last_day)
+      {grouped_headers, grouped_periods} = Periods.group_periods_multi_year(next_3_years_periods)
+      assert [winter, oster, herbst, weihnachts] = grouped_headers
       assert winter.holiday_or_vacation_type.name == "Winter"
       assert oster.holiday_or_vacation_type.name == "Oster"
       assert herbst.holiday_or_vacation_type.name == "Herbst"
       assert weihnachts.holiday_or_vacation_type.name == "Weihnachts"
-      assert length(next_3_years_headers) == 4
-      assert length(next_3_years_periods) == 3
-      assert [year_1_periods, year_2_periods, _] = next_3_years_periods
+      assert length(grouped_headers) == 4
+      assert length(grouped_periods) == 3
+      assert [year_1_periods, year_2_periods, _] = grouped_periods
       assert [[] | _] = year_1_periods
       assert [[winter], [oster], [herbst, _], [weihnachts]] = year_2_periods
       assert winter.holiday_or_vacation_type.name == "Winter"

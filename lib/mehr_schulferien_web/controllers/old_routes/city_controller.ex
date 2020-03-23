@@ -15,8 +15,6 @@ defmodule MehrSchulferienWeb.OldRoutes.CityController do
   defp find_city_slug([location], _), do: location.slug
 
   defp find_city_slug(locations, city_name) do
-    IO.inspect(find_city_most_schools(locations).slug)
-
     case Enum.find(locations, &(&1.slug == city_name)) do
       nil -> find_city_most_schools(locations).slug
       location -> location.slug

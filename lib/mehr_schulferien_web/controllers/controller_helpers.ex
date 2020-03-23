@@ -7,11 +7,13 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
 
   def show_period_data(location_ids, today) do
     current_year = today.year
-    next_12_months_periods = Periods.chunk_one_year_school_periods(location_ids, today)
 
-    {next_3_years_headers, next_3_years_periods} =
-      Periods.chunk_multi_year_school_periods(location_ids, current_year, 3)
+    next_12_months_periods =
+      Periods.list_school_periods(location_ids, today, Date.add(today, 365))
 
+    {:ok, first_day} = Date.new(current_year, 1, 1)
+    {:ok, last_day} = Date.new(current_year + 2, 12, 31)
+    next_3_years_periods = Periods.list_school_periods(location_ids, first_day, last_day)
     public_periods = Periods.list_multi_year_all_public_periods(location_ids, current_year, 3)
     days = DateHelpers.create_3_years(current_year)
     months = DateHelpers.get_months_map()
@@ -29,7 +31,6 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
       months: months,
       next_three_years: next_three_years,
       next_12_months_periods: next_12_months_periods,
-      next_3_years_headers: next_3_years_headers,
       next_3_years_periods: next_3_years_periods,
       public_periods: public_periods
     ]

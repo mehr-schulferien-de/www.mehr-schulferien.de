@@ -17,22 +17,17 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
-  Gets the holiday periods for a single year.
+  Groups periods with same holiday_or_vacation_type.
   """
-  def chunk_one_year_school_periods(location_ids, today) do
-    location_ids
-    |> list_school_periods(today, Date.add(today, 365))
-    |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
+  def group_periods_single_year(periods) do
+    Enum.chunk_by(periods, & &1.holiday_or_vacation_type.name)
   end
 
   @doc """
-  Gets the holiday periods for a certain amount of years.
+  Groups periods with same holiday_or_vacation_type. This function
+  works for many years and returns a `{headers, periods}` tuple.
   """
-  def chunk_multi_year_school_periods(location_ids, current_year, number_years) do
-    {:ok, first_day} = Date.new(current_year, 1, 1)
-    {:ok, last_day} = Date.new(current_year + number_years - 1, 12, 31)
-    periods = list_school_periods(location_ids, first_day, last_day)
-
+  def group_periods_multi_year(periods) do
     headers =
       periods
       |> Enum.uniq_by(& &1.holiday_or_vacation_type.name)
