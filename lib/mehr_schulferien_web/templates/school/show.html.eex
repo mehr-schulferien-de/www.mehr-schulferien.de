@@ -117,7 +117,7 @@
           "streetAddress": "<%= @school.address.street %>",
           "addressLocality": "<%= @city.name %>",
           "postalCode": "<%= @school.address.zip_code %>",
-          "addressRegion": "<%= @city.name %>",
+          "addressRegion": "<%= @federal_state.name %>",
           "addressCountry": "<%= @country.code %>"
         }
       }

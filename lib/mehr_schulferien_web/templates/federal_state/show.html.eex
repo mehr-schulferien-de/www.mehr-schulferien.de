@@ -83,7 +83,7 @@
         "address":{
           "@type": "PostalAddress",
           "streetAddress": "",
-          "addressLocality": "<%= @federal_state.name %>",
+          "addressLocality": "",
           "postalCode": "",
           "addressRegion": "<%= @federal_state.name %>",
           "addressCountry": "<%= @country.code %>"
