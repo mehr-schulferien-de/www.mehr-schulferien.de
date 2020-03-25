@@ -93,7 +93,7 @@
           "streetAddress": "",
           "addressLocality": "<%= @city.name %>",
           "postalCode": "",
-          "addressRegion": "<%= @city.name %>",
+          "addressRegion": "<%= @federal_state.name %>",
           "addressCountry": "<%= @country.code %>"
         }
       }
