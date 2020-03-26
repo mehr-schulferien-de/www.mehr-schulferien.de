@@ -89,6 +89,8 @@
       "name": "<%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %>",
       "startDate": "<%= period.starts_on %>",
       "endDate": "<%= period.ends_on %>",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
       "location": {
         "@type": "Place",
         "name": "<%= @city.name %>",
