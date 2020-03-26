@@ -43,16 +43,18 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Sonstiges</h3>
+    <%= if @schools != [] do %>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Sonstiges</h3>
+        </div>
+        <div class="panel-body">
+          <ul>
+            <li><%= link "Liste aller Schulen", to: "#liste_aller_schulen" %></li>
+          </ul>
+        </div>
       </div>
-      <div class="panel-body">
-        <ul>
-          <li><%= link "Liste aller Schulen", to: "#liste_aller_schulen" %></li>
-        </ul>
-      </div>
-    </div>
+    <% end %>
 
     <%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
 
@@ -64,15 +66,17 @@
     <h2>Kalenderansicht</h2>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @next_3_years_periods, public_periods: @public_periods, days: @days, months: @months %>
 
-    <h2 id="liste_aller_schulen">Schulen in <%= @city.name %></h2>
-      <ul>
-      <%= for school <- @schools do %>
-        <li>
-          <%= link school.name, to: Routes.school_path(@conn, :show, @country.slug, school.slug) %><br>
-          <p><%= school.address.street %>, <%= school.address.zip_code %> <%= school.address.city %></p>
-        </li>
-      <% end %>
-      </ul>
+    <%= if @schools != [] do %>
+      <h2 id="liste_aller_schulen">Schulen in <%= @city.name %></h2>
+        <ul>
+        <%= for school <- @schools do %>
+          <li>
+            <%= link school.name, to: Routes.school_path(@conn, :show, @country.slug, school.slug) %><br>
+            <p><%= school.address.street %>, <%= school.address.zip_code %> <%= school.address.city %></p>
+          </li>
+        <% end %>
+        </ul>
+    <% end %>
 
   </div>
 </div>
