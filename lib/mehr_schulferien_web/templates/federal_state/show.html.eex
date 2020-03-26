@@ -37,7 +37,7 @@
         möchten wir mit der Bereitstellung von Daten zu Corona-Schließzeiten von Schulen helfen.
         Bei der Erfassung der Daten benötigen wir Ihre Hilfe.
         Wenn Sie neue Quarantäne-Termine für das Bundesland
-        <%= @federal_state.name %> kennen, dann tragen Sie sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) <> "/new_period"%> ein. Danke!</p>
+        <%= @federal_state.name %> kennen, dann tragen Sie sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", rel: "nofollow", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) <> "/new_period"%> ein. Danke!</p>
       </div>
     </div>
 
