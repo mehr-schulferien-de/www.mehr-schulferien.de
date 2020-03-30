@@ -90,6 +90,17 @@ defmodule MehrSchulferien.Periods do
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
+  defp public_periods_query(location_ids, starts_on, ends_on) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.is_valid_for_everybody == true and
+          p.ends_on >= ^starts_on and
+          p.starts_on <= ^ends_on,
+      order_by: p.starts_on
+    )
+  end
+
   @doc """
   Returns a list of public holiday periods for a given date and location_ids.
   """
@@ -111,15 +122,8 @@ defmodule MehrSchulferien.Periods do
   free for students for a given date and location_ids.
   """
   def list_school_free_periods(location_ids, date) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          (p.is_valid_for_students == true or
-             p.is_valid_for_everybody == true) and
-          p.ends_on >= ^date and
-          p.starts_on <= ^date,
-      order_by: p.display_priority
-    )
+    location_ids
+    |> school_free_periods_query(date, date)
     |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
@@ -129,6 +133,13 @@ defmodule MehrSchulferien.Periods do
   period for students.
   """
   def list_school_free_periods(location_ids, starts_on, ends_on) do
+    location_ids
+    |> school_free_periods_query(starts_on, ends_on)
+    |> Repo.all()
+    |> Repo.preload(:holiday_or_vacation_type)
+  end
+
+  defp school_free_periods_query(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
@@ -138,8 +149,6 @@ defmodule MehrSchulferien.Periods do
           p.starts_on <= ^ends_on,
       order_by: p.display_priority
     )
-    |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
   end
 
   @doc """
@@ -186,17 +195,6 @@ defmodule MehrSchulferien.Periods do
     )
     |> Repo.one()
     |> Repo.preload(:holiday_or_vacation_type)
-  end
-
-  defp public_periods_query(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_valid_for_everybody == true and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: p.starts_on
-    )
   end
 
   @doc """

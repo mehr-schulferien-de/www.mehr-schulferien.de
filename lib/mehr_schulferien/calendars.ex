@@ -223,6 +223,24 @@ defmodule MehrSchulferien.Calendars do
     Enum.filter(periods, &is_holiday?(&1, date))
   end
 
+  @doc """
+  Returns the next schoolday (the next day that is not a holiday).
+  """
+  def find_next_schoolday([], _), do: nil
+
+  def find_next_schoolday([first | rest], date) do
+    if is_holiday?(first, date) do
+      new_date = Date.add(first.ends_on, 1)
+      find_next_schoolday(rest, new_date)
+    else
+      if check_ends_on(date, first) do
+        date
+      else
+        find_next_schoolday(rest, date)
+      end
+    end
+  end
+
   defp is_holiday?(period, date) do
     case Date.compare(date, period.starts_on) do
       :lt -> false
