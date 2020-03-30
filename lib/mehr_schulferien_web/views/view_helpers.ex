@@ -116,4 +116,16 @@ defmodule MehrSchulferienWeb.ViewHelpers do
         Enum.join(first_elements, ", ") <> " und " <> last_element
     end
   end
+
+  @doc """
+  Returns the next schoolday (the next day that is not a school / public holiday).
+  """
+  def next_schoolday(periods) do
+    today = Date.utc_today()
+
+    periods
+    |> Enum.filter(&(Date.compare(today, &1.ends_on) == :lt))
+    |> Enum.sort(&(Date.compare(&1.starts_on, &2.starts_on) == :lt))
+    |> Calendars.find_next_schoolday(today)
+  end
 end
