@@ -1,5 +1,12 @@
-# See http://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# Hello Robot friend,
 #
-# To ban all spiders from the entire site uncomment the next two lines:
-# User-agent: *
-# Disallow: /
+# welcome to our page! Feel free to crawl us as fast as you wish.
+# No need to be polite. We can handle it. Otherwise it will take
+# ages to crawl through the whole page.
+#
+# In case you are not a search engine: We offer a JSON RESTful API.
+# Have a look at https://www.mehr-schulferien.de/developers for
+# more information.
+
+User-agent: *
+Disallow: /api
