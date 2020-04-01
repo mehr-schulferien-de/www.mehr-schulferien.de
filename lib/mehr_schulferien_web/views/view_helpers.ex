@@ -23,7 +23,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   @doc """
-  Returns a string showing the date range in DD.MM. or DD.MM.YY format.
+  Returns a string showing the date range in DD.MM. (`:short`) or DD.MM.YY format.
 
   If the from_date and till_date are the same, then just a single date is
   returned.
@@ -37,6 +37,11 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   def format_date_range(from_date, till_date, short) do
     format_date(from_date, short) <> " - " <> format_date(till_date, short)
   end
+
+  @doc """
+  Returns a string showing the date in DD.MM. (`:short`) or DD.MM.YY format.
+  """
+  def format_date(nil), do: ""
 
   def format_date(date) do
     format_date(date, nil)
@@ -127,5 +132,22 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     |> Enum.filter(&(Date.compare(today, &1.ends_on) == :lt))
     |> Enum.sort(&(Date.compare(&1.starts_on, &2.starts_on) == :lt))
     |> Calendars.find_next_schoolday(today)
+  end
+
+  @doc """
+  Returns the zip code for a city.
+
+  If the city only has one zip_code, then that zip_code.value is returned.
+  If there are many zip_codes, then the zip code with the most schools is
+  used (by searching for the `address.zip_code` in the list of schools.
+  """
+  def find_zip_code([], _), do: ""
+  def find_zip_code([zip_code], _), do: zip_code.value
+
+  def find_zip_code(_, schools) do
+    schools
+    |> Enum.frequencies_by(& &1.address.zip_code)
+    |> Enum.max_by(fn {_k, v} -> v end)
+    |> elem(0)
   end
 end
