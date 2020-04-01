@@ -36,6 +36,8 @@ defmodule MehrSchulferien.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.1"},
       {:bamboo, "~> 1.4"},
+      {:phauxth, "~> 2.3"},
+      {:argon2_elixir, "~> 2.3"},
       {:plug_cowboy, "~> 2.1"},
       {:ex_machina, "~> 2.4", only: :test},
       {:faker, "~> 0.13.0", only: :test},
