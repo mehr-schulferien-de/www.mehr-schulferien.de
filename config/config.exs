@@ -20,6 +20,15 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
 # Mailer configuration
 config :mehr_schulferien, MehrSchulferienWeb.Mailer, adapter: Bamboo.LocalAdapter
 
+# Phauxth authentication configuration
+config :phauxth,
+  user_context: MehrSchulferien.Accounts,
+  crypto_module: Argon2,
+  token_module: MehrSchulferienWeb.Auth.Token
+
+# Mailer configuration
+config :mehr_schulferien, MehrSchulferienWeb.Mailer, adapter: Bamboo.LocalAdapter
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
