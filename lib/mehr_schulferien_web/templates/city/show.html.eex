@@ -81,6 +81,7 @@
   </div>
 </div>
 
+<% postal_code = ViewHelpers.find_zip_code(@city.zip_codes, @schools) %>
 <%= for period <- @next_3_years_periods do %>
   <script type="application/ld+json">
     {
@@ -98,7 +99,7 @@
           "@type": "PostalAddress",
           "streetAddress": "",
           "addressLocality": "<%= @city.name %>",
-          "postalCode": "",
+          "postalCode": "<%= postal_code %>",
           "addressRegion": "<%= @federal_state.name %>",
           "addressCountry": "<%= @country.code %>"
         }
