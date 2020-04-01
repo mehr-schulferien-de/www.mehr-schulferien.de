@@ -144,17 +144,10 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   def find_zip_code([], _), do: ""
   def find_zip_code([zip_code], _), do: zip_code.value
 
-  # NOTE: riverrun(01-04-2020)
-  # We need elixir 1.10 installed to search the list of schools.
-  #
-  # After elixir 1.10 has been installed, this clause should be deleted
-  # and the commented-out clause should be uncommented.
-  def find_zip_code([zip_code | _], _), do: zip_code.value
-
-  #  def find_zip_code(_, schools) do
-  #    schools
-  #    |> Enum.frequencies_by(& &1.address.zip_code)
-  #    |> Enum.max_by(fn {_k, v} -> v end)
-  #    |> elem(0)
-  #  end
+  def find_zip_code(_, schools) do
+    schools
+    |> Enum.frequencies_by(& &1.address.zip_code)
+    |> Enum.max_by(fn {_k, v} -> v end)
+    |> elem(0)
+  end
 end
