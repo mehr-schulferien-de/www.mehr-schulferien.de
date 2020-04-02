@@ -3,6 +3,11 @@ defmodule MehrSchulferienWeb.CityControllerTest do
 
   alias MehrSchulferien.Calendars
 
+  setup %{conn: conn} do
+    conn = conn |> bypass_through(MehrSchulferienWeb.Router, [:browser]) |> get("/users")
+    {:ok, %{conn: conn}}
+  end
+
   describe "read city data" do
     setup [:add_city, :add_periods]
 
@@ -31,6 +36,9 @@ defmodule MehrSchulferienWeb.CityControllerTest do
       country: country,
       city: city
     } do
+      user = add_user("reg@example.com")
+      conn = conn |> add_session(user) |> send_resp(:ok, "/users")
+
       holiday_or_vacation_type =
         insert(:holiday_or_vacation_type, %{country_location_id: country.id})
 

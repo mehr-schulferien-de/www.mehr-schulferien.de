@@ -7,7 +7,6 @@ defmodule MehrSchulferienWeb.UserController do
   alias MehrSchulferien.{Accounts, Accounts.User}
   alias MehrSchulferienWeb.{Auth.Token, Email}
 
-  # the following plugs are defined in the controllers/authorize.ex file
   plug :user_check when action in [:index, :show]
   plug :id_check when action in [:edit, :update, :delete]
 

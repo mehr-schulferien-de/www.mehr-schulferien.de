@@ -3,6 +3,11 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
 
   alias MehrSchulferien.Calendars
 
+  setup %{conn: conn} do
+    conn = conn |> bypass_through(MehrSchulferienWeb.Router, [:browser]) |> get("/users")
+    {:ok, %{conn: conn}}
+  end
+
   describe "read federal state data" do
     setup [:add_federal_state, :add_periods]
 
@@ -44,6 +49,9 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
       country: country,
       federal_state: federal_state
     } do
+      user = add_user("reg@example.com")
+      conn = conn |> add_session(user) |> send_resp(:ok, "/users")
+
       holiday_or_vacation_type =
         insert(:holiday_or_vacation_type, %{country_location_id: country.id})
 
