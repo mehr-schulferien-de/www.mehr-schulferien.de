@@ -1,8 +1,6 @@
 defmodule MehrSchulferienWeb.PasswordResetControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  import MehrSchulferienWeb.AuthTestHelpers
-
   setup %{conn: conn} do
     conn = conn |> bypass_through(MehrSchulferienWeb.Router, :browser) |> get("/")
     user = add_reset_user("gladys@example.com")

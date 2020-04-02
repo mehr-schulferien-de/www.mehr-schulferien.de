@@ -13,8 +13,6 @@ defmodule MehrSchulferienWeb.Authorize do
 
   @doc """
   Plug to only allow authenticated users to access the resource.
-
-  See the user controller for an example.
   """
   def user_check(%Plug.Conn{assigns: %{current_user: nil}} = conn, _opts) do
     need_login(conn)

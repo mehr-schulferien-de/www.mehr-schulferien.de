@@ -1,11 +1,15 @@
 defmodule MehrSchulferienWeb.FederalStateController do
   use MehrSchulferienWeb, :controller
 
+  import MehrSchulferienWeb.Authorize
+
   alias MehrSchulferien.{Calendars, Calendars.Period, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Email
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+  plug :user_check when action in [:new_period, :create_period]
 
   def new_period(conn, %{
         "country_slug" => country_slug,

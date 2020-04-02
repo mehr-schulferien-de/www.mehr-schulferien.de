@@ -23,7 +23,9 @@
 
   <div class="form-group">
     <%= submit "Login" %>
+    <h4>
+      Not registered yet?
+      <span><small><%= link "Register here", to: Routes.user_path(@conn, :new) %></small></span>
+    </h4>
   </div>
 <% end %>
-
-<span><%= link "Back", to: Routes.page_path(@conn, :index) %></span>

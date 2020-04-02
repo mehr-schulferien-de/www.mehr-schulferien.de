@@ -1,8 +1,6 @@
 defmodule MehrSchulferienWeb.UserControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  import MehrSchulferienWeb.AuthTestHelpers
-
   alias MehrSchulferien.Accounts
 
   @create_attrs %{email: "bill@example.com", password: "hard2guess"}

@@ -24,7 +24,8 @@ config :mehr_schulferien, MehrSchulferienWeb.Mailer, adapter: Bamboo.LocalAdapte
 config :phauxth,
   user_context: MehrSchulferien.Accounts,
   crypto_module: Argon2,
-  token_module: MehrSchulferienWeb.Auth.Token
+  token_module: MehrSchulferienWeb.Auth.Token,
+  user_messages: MehrSchulferienWeb.Auth.UserMessages
 
 # Mailer configuration
 config :mehr_schulferien, MehrSchulferienWeb.Mailer, adapter: Bamboo.LocalAdapter

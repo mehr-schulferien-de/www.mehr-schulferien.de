@@ -1,8 +1,6 @@
 defmodule MehrSchulferienWeb.SessionControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  import MehrSchulferienWeb.AuthTestHelpers
-
   @create_attrs %{email: "robin@example.com", password: "reallyHard2gue$$"}
   @invalid_attrs %{email: "robin@example.com", password: "cannotGue$$it"}
   @unconfirmed_attrs %{email: "lancelot@example.com", password: "reallyHard2gue$$"}
