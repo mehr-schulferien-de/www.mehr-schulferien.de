@@ -11,8 +11,8 @@ defmodule MehrSchulferienWeb.Email do
 
     new_email(
       to: "sw@wintermeyer-consulting.de",
-      from: "support@example.com",
-      subject: "New period added",
+      from: "do-not-reply@mehr-schulferien.de",
+      subject: "Neuer Termin wurde eingetragen",
       text_body: text
     )
     |> Mailer.deliver_later()
@@ -85,14 +85,14 @@ defmodule MehrSchulferienWeb.Email do
   def reset_success(address) do
     address
     |> base_email()
-    |> subject("Password reset")
-    |> text_body("Your password has been reset.")
+    |> subject("Passwort reset")
+    |> text_body("Ihr Passwort wurde zurückgesetzt.")
     |> Mailer.deliver_later()
   end
 
   defp base_email(address) do
     new_email()
     |> to(address)
-    |> from("admin@example.com")
+    |> from("sw@wintermeyer-consulting.de")
   end
 end

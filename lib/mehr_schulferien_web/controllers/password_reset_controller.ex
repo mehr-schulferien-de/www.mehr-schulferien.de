@@ -16,7 +16,7 @@ defmodule MehrSchulferienWeb.PasswordResetController do
     end
 
     conn
-    |> put_flash(:info, "Check your inbox for instructions on how to reset your password")
+    |> put_flash(:info, "Bitte überprüfen Sie Ihre E-Mail Inbox.")
     |> redirect(to: Routes.page_path(conn, :index))
   end
 
@@ -47,7 +47,7 @@ defmodule MehrSchulferienWeb.PasswordResetController do
 
     conn
     |> delete_session(:phauxth_session_id)
-    |> put_flash(:info, "Your password has been reset")
+    |> put_flash(:info, "Ihr Passwort wurde zurückgesetzt.")
     |> redirect(to: Routes.session_path(conn, :new))
   end
 

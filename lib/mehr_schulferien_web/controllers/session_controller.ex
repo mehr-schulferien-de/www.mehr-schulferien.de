@@ -39,7 +39,7 @@ defmodule MehrSchulferienWeb.SessionController do
 
       _ ->
         conn
-        |> put_flash(:error, "Unauthorized")
+        |> put_flash(:error, "Nicht autorisiert.")
         |> redirect(to: Routes.user_path(conn, :index))
     end
   end
