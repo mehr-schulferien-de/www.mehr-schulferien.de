@@ -1,43 +1,43 @@
 <%= form_for @changeset, @action, [], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
-      <p>Something went wrong. Please check the errors below.</p>
+      <p>Fehler in der Validierung. Bitte überprüfen Sie Ihre Eingaben.</p>
     </div>
   <% end %>
 
   <div class="form-group">
-    <%= label f, :first_name, "First name" %>
-    <%= text_input f, :first_name %>
+    <%= label f, :gender, "Geschlecht" %>
+    <%= select f, :gender, [{"Frau", "female"}, {"Mann", "male"}, {"Divers", "other"}], class: "form-control", autofocus: true %>
+    <%= error_tag f, :gender %>
+  </div>
+
+  <div class="form-group">
+    <label>Vorname</label>
+    <%= text_input f, :first_name, type: "text", class: "form-control" %>
     <%= error_tag f, :first_name %>
   </div>
 
   <div class="form-group">
-    <%= label f, :last_name, "Last name" %>
-    <%= text_input f, :last_name %>
+    <label>Nachname</label>
+    <%= text_input f, :last_name, type: "text", class: "form-control" %>
     <%= error_tag f, :last_name %>
   </div>
 
   <div class="form-group">
-    <%= label f, :email, "Email address" %>
-    <%= email_input f, :email %>
+    <label>E-Mail Adresse</label>
+    <%= email_input f, :email, type: "email", class: "form-control" %>
     <%= error_tag f, :email %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :gender, "Gender" %>
-    <%= select f, :gender, [{"Female", "female"}, {"Male", "male"}, {"Other", "other"}] %>
-    <%= error_tag f, :gender %>
   </div>
 
   <%= if @action == "/users" do %>
     <div class="form-group">
-      <%= label f, :password, "Password" %>
-      <%= password_input f, :password %>
+      <label>Passwort</label>
+      <%= password_input f, :password, type: "password", class: "form-control" %>
       <%= error_tag f, :password %>
     </div>
   <% end %>
 
   <div class="form-group">
-    <%= submit "Save" %>
+    <%= submit "Anlegen", class: "btn btn-primary" %>
   </div>
 <% end %>

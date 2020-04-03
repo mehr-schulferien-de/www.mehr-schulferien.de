@@ -43,7 +43,7 @@ defmodule MehrSchulferien.Accounts.User do
 
   def create_changeset(%__MODULE__{} = user, attrs) do
     user
-    |> cast(attrs, [:email, :last_name, :password])
+    |> cast(attrs, [:email, :first_name, :last_name, :gender, :password])
     |> validate_required([:email, :password])
     |> unique_email
     |> validate_password(:password)

@@ -31,7 +31,7 @@ defmodule MehrSchulferienWeb.UserControllerTest do
 
     test "renders form for new users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :new))
-      assert html_response(conn, 200) =~ "New user"
+      assert html_response(conn, 200) =~ "Account anlegen"
     end
 
     test "renders form for editing chosen user", %{conn: conn, user: user} do
@@ -63,7 +63,7 @@ defmodule MehrSchulferienWeb.UserControllerTest do
 
     test "does not create user and renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.user_path(conn, :create), user: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New user"
+      assert html_response(conn, 200) =~ "Account anlegen"
     end
   end
 

@@ -1,5 +1,25 @@
-<h1>New user</h1>
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link "Login", to: Routes.session_path(@conn, :new) %></li>
+</ol>
 
-<%= render "form.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %>
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link "Login", to: Routes.session_path(@conn, :new) %></li>
+</ol>
 
-<span><%= link "Back", to: Routes.user_path(@conn, :index) %></span>
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        Account anlegen
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= render "form.html", Map.put(assigns, :action, Routes.user_path(@conn, :create)) %>
+  </div>
+</div>
