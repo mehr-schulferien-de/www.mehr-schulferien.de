@@ -32,9 +32,11 @@ defmodule MehrSchulferienWeb.Email do
   def confirm_request(address, link) do
     address
     |> base_email()
-    |> subject("Confirm email address")
+    |> subject("E-Mail Adresse für mehr-schulferien.de Account bestätigen")
     |> html_body(
-      "<h3>Click on the link below to confirm this email address</h3><p><a href=#{link}>Confirm email</a></p>"
+      "<p>Bitte bestätigen Sie mit einem Klick auf diesen Link Ihre E-Mail Adresse für Ihren mehr-schulferien.de Account.</p><p><a href=#{
+        link
+      }>E-Mail Adresse bestätigen.</a></p>"
     )
     |> Mailer.deliver_later()
   end
@@ -55,9 +57,11 @@ defmodule MehrSchulferienWeb.Email do
   def reset_request(address, link) do
     address
     |> base_email()
-    |> subject("Reset your password")
+    |> subject("Passwort zurücksetzen")
     |> html_body(
-      "<h3>Click on the link below to reset your password</h3><p><a href=#{link}>Password reset</a></p>"
+      "<p>Bitte bestätigen Sie mit einem Klick auf diesen Link das Sie Ihr Passwort auf mehr-schulferien.de zurücksetzen wollen.</p><p><a href=#{
+        link
+      }>Passwort zurücksetzen.</a></p>"
     )
     |> Mailer.deliver_later()
   end
@@ -68,8 +72,10 @@ defmodule MehrSchulferienWeb.Email do
   def confirm_success(address) do
     address
     |> base_email()
-    |> subject("Confirmed account")
-    |> text_body("Your account has been confirmed.")
+    |> subject("mehr-schulferien.de Account-Bestätigung")
+    |> html_body(
+      "<p>Ihr Account für https://www.mehr-schulferien.de wurde freigeschaltet.</p><p>Vielen Dank für Ihre Hilfe!</p>"
+    )
     |> Mailer.deliver_later()
   end
 

@@ -30,7 +30,10 @@ defmodule MehrSchulferienWeb.UserController do
         Email.confirm_request(email, Routes.confirm_url(conn, :index, key: key))
 
         conn
-        |> put_flash(:info, "User created successfully.")
+        |> put_flash(
+          :info,
+          "Account wurde angelegt. Sie bekommen einen Bestätigungslink zur Verifizierung der E-Mail-Adresse per E-Mail."
+        )
         |> redirect(to: Routes.session_path(conn, :new))
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -52,7 +55,7 @@ defmodule MehrSchulferienWeb.UserController do
     case Accounts.update_user(user, user_params) do
       {:ok, user} ->
         conn
-        |> put_flash(:info, "User updated successfully.")
+        |> put_flash(:info, "Die Account-Daten wurden geändert.")
         |> redirect(to: Routes.user_path(conn, :show, user))
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -65,7 +68,7 @@ defmodule MehrSchulferienWeb.UserController do
 
     conn
     |> delete_session(:phauxth_session_id)
-    |> put_flash(:info, "User deleted successfully.")
+    |> put_flash(:info, "Der Account wurde gelöscht.")
     |> redirect(to: Routes.session_path(conn, :new))
   end
 end

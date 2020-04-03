@@ -12,15 +12,15 @@ msgstr ""
 
 ## From Ecto.Changeset.cast/4
 msgid "can't be blank"
-msgstr ""
+msgstr "darf nicht leer sein"
 
 ## From Ecto.Changeset.unique_constraint/3
 msgid "has already been taken"
-msgstr ""
+msgstr "dieser Wert wird bereits bei einem anderen Datensatz benutzt"
 
 ## From Ecto.Changeset.put_change/3
 msgid "is invalid"
-msgstr ""
+msgstr "ist ungültig"
 
 ## From Ecto.Changeset.validate_acceptance/3
 msgid "must be accepted"

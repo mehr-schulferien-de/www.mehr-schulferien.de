@@ -29,7 +29,7 @@ defmodule MehrSchulferienWeb.Authorize do
 
   def guest_check(%Plug.Conn{assigns: %{current_user: _current_user}} = conn, _opts) do
     conn
-    |> put_flash(:error, "You need to log out to view this page")
+    |> put_flash(:error, "Sie müssen sich ausloggen, um diese Seite zu sehen.")
     |> redirect(to: Routes.page_path(conn, :index))
     |> halt()
   end
@@ -51,7 +51,7 @@ defmodule MehrSchulferienWeb.Authorize do
       conn
     else
       conn
-      |> put_flash(:error, "You are not authorized to view this page")
+      |> put_flash(:error, "Sie haben keine Berechtigung für die von Ihnen aufgerufene Webseite.")
       |> redirect(to: Routes.user_path(conn, :show, current_user))
       |> halt()
     end
@@ -60,7 +60,7 @@ defmodule MehrSchulferienWeb.Authorize do
   defp need_login(conn) do
     conn
     |> put_session(:request_path, current_path(conn))
-    |> put_flash(:error, "You need to log in to view this page")
+    |> put_flash(:error, "Sie müssen sich zu erst einloggen.")
     |> redirect(to: Routes.session_path(conn, :new))
     |> halt()
   end

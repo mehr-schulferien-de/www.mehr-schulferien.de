@@ -12,7 +12,7 @@ defmodule MehrSchulferienWeb.ConfirmController do
         Email.confirm_success(user.email)
 
         conn
-        |> put_flash(:info, "Your account has been confirmed")
+        |> put_flash(:info, "Ihr Account wurde freigeschaltet. Bitte loggen Sie sich jetzt ein.")
         |> redirect(to: Routes.session_path(conn, :new))
 
       {:error, message} ->

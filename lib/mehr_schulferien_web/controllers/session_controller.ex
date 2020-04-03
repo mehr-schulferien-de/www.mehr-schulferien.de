@@ -17,7 +17,7 @@ defmodule MehrSchulferienWeb.SessionController do
       {:ok, user} ->
         conn
         |> add_session(user, params)
-        |> put_flash(:info, "User successfully logged in.")
+        |> put_flash(:info, "Sie sind jetzt eingeloggt.")
         |> redirect(to: get_session(conn, :request_path) || Routes.user_path(conn, :index))
 
       {:error, message} ->
@@ -34,7 +34,7 @@ defmodule MehrSchulferienWeb.SessionController do
 
         conn
         |> delete_session(:phauxth_session_id)
-        |> put_flash(:info, "User successfully logged out.")
+        |> put_flash(:info, "Sie wurden ausgeloggt.")
         |> redirect(to: Routes.page_path(conn, :index))
 
       _ ->
