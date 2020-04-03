@@ -9,7 +9,10 @@ defmodule MehrSchulferienWeb.ConfirmControllerTest do
 
   test "confirmation succeeds for correct key", %{conn: conn} do
     conn = get(conn, Routes.confirm_path(conn, :index, key: gen_key("arthur@example.com")))
-    assert get_flash(conn, :info) =~ "account has been confirmed"
+
+    assert get_flash(conn, :info) =~
+             "Ihr Account wurde freigeschaltet. Bitte loggen Sie sich jetzt ein."
+
     assert redirected_to(conn) == Routes.session_path(conn, :new)
   end
 
