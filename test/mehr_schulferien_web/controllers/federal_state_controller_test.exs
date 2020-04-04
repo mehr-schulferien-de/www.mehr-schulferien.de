@@ -26,7 +26,7 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
       federal_state: federal_state
     } do
       conn = get(conn, Routes.federal_state_path(conn, :show, country.slug, federal_state.slug))
-      assert html_response(conn, 200) =~ "Schulferien für #{federal_state.name}"
+      assert html_response(conn, 200) =~ "Schulferien im Bundesland #{federal_state.name}"
     end
 
     test "shows schema.org events for school holiday periods", %{

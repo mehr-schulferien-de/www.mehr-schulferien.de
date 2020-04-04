@@ -1,4 +1,4 @@
-<title>Schulferien für <%= @federal_state.name %> <%= @next_three_years %></title>
+<title>Schulferien im Bundesland <%= @federal_state.name %> (<%= @next_three_years %>)</title>
 <meta name="description" content="Alle Ferientermine und gesetzliche Feiertage für das Bundesland <%= @federal_state.name %>.">
 
 <script type="application/ld+json">
