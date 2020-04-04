@@ -14,14 +14,14 @@ defmodule MehrSchulferienWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Aktuelle Schulferien und Feiertage"
+    assert html_response(conn, 200) =~ "Schulferien und gesetzliche Feiertage für Deutschland"
   end
 
   test "custom meta tags are generated", %{conn: conn} do
     conn = get(conn, "/")
 
     assert html_response(conn, 200) =~
-             "Schulferienkalender und gesetzliche Feiertage für Deutschland"
+             "Alle Ferientermine für"
   end
 
   defp add_periods(%{federal_state: federal_state}) do

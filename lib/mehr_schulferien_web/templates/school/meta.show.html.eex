@@ -1,5 +1,5 @@
-<title>Schulferien für <%= @school.name %></title>
-<meta name="description" content="Ferientermine und gesetzliche Feiertage für <%= @school.name %> in <%= @city.name %> (<%= @federal_state.name %>).">
+<title>Schulferien <%= @school.name %> (<%= @school.address.zip_code %> <%= @school.address.city %>)</title>
+<meta name="description" content="Alle Ferientermine und gesetzliche Feiertage für <%= @school.name %> in <%= @city.name %> (<%= @federal_state.name %>).">
 
 <script type="application/ld+json">
 {

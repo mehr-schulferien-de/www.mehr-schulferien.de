@@ -51,7 +51,7 @@
           <% end %>
 
           <%= if @school.address.email_address != nil do %>
-            <strong>Email:</strong><br>
+            <strong>E-Mail Adresse:</strong><br>
             <%= truncate_email(@school.address.email_address) %>
             <br><br>
           <% end %>
