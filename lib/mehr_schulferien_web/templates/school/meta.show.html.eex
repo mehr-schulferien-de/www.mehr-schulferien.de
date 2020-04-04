@@ -1,2 +1,30 @@
-<title>Schulferientermine für <%= @school.name %></title>
-<meta name="description" content="Ferientermine und gesetzliche Feiertage für <%= @school.name %> in <%= @city.name %> (<%= @federal_state.name %>). Optional mit islamischen, jüdischen und orthodoxen Feiertagen, zu denen es eine Beurlaubung gibt.">
+<title>Schulferien für <%= @school.name %></title>
+<meta name="description" content="Ferientermine und gesetzliche Feiertage für <%= @school.name %> in <%= @city.name %> (<%= @federal_state.name %>).">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "name": "<%= @country.name %>",
+    "item": "<%= Routes.country_path(@conn, :show, @country.slug) %>"
+  },{
+    "@type": "ListItem",
+    "position": 2,
+    "name": "Ferientermine <%= @federal_state.name %>",
+    "item": "<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>"
+  },{
+    "@type": "ListItem",
+    "position": 3,
+    "name": "<%= @city.name %>",
+    "item": "<%= Routes.city_path(@conn, :show, @country.slug, @city.slug) %>"
+  },{
+    "@type": "ListItem",
+    "position": 4,
+    "name": "<%= @school.name %>",
+    "item": "<%= Routes.school_path(@conn, :show, @country.slug, @school.slug) %>"
+  }]
+}
+</script>
