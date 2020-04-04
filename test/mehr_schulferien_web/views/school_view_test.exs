@@ -13,7 +13,7 @@ defmodule MehrSchulferienWeb.SchoolViewTest do
            "<a href=\"",
            "http://localhost:4000/ferien/d/schule/56077-grundschule-arenberg",
            "\">",
-           "http://localhost:4000/fer...",
+           "localhost:4000/ferien/d/s...",
            "</a>\n"
          ]}
 

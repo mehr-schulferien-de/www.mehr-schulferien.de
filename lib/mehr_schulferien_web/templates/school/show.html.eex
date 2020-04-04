@@ -39,8 +39,8 @@
       <div class="panel-body">
         <%= if @school.address != nil do %>
           <address>
-            <%= @school.name %><br />
-            <%= @school.address.street %><br />
+            <%= @school.name %><br>
+            <%= @school.address.street %><br>
             <%= @school.address.zip_code %> <%= @school.address.city %>
           </address>
 
@@ -60,12 +60,15 @@
             <address style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <%= if @school.address.phone_number != nil do %>
               <strong>Telefonnummer:</strong><br>
-              <a href="tel:<%= @school.address.phone_number %>"><%= @school.address.phone_number %></a><br />
+              <a href="tel:<%= String.replace(@school.address.phone_number," ", "") %>"><%= String.replace(@school.address.phone_number, "+49 ", "0") %></a><br>
+              <%= if @school.address.fax_number != nil do %>
+              <br>
+              <% end %>
               <% end %>
 
               <%= if @school.address.fax_number != nil do %>
               <strong>Fax:</strong><br>
-              <%= @school.address.fax_number %><br>
+              <%= String.replace(@school.address.fax_number, "+49 ", "0") %><br>
               <% end %>
             </address>
           <% end %>
@@ -88,8 +91,6 @@
         <%= @school.name %> kennen, dann tragen Sie sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", rel: "nofollow", to: Routes.school_path(@conn, :show, @country.slug, @school.slug) <> "/new_period"%> ein. Danke!</p>
       </div>
     </div>
-
-    <%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
 
   </div>
 </div>

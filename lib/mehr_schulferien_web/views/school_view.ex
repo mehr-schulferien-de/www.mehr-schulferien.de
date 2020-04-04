@@ -2,13 +2,18 @@ defmodule MehrSchulferienWeb.SchoolView do
   use MehrSchulferienWeb, :view
 
   def truncate_url(url) do
-    if String.length(url) > 28 do
+    short_url =
+      String.replace(url, "http://", "")
+      |> String.replace("https://", "")
+      |> String.replace("www.", "")
+
+    if String.length(short_url) > 28 do
       ~E"""
-      <a href="<%= url %>"><%= snip(url) %></a>
+      <a href="<%= url %>"><%= snip(short_url) %></a>
       """
     else
       ~E"""
-      <a href="<%= url %>"><%= url %></a>
+      <a href="<%= url %>"><%= short_url %></a>
       """
     end
   end
