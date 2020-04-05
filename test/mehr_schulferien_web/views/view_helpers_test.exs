@@ -25,7 +25,10 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
 
     test "different dates show range" do
       assert ViewHelpers.format_date_range(~D[2020-04-06], ~D[2020-04-16]) ==
-               "06.04.20 - 16.04.20"
+               "06.04. - 16.04.20"
+
+      assert ViewHelpers.format_date_range(~D[2020-12-22], ~D[2021-01-10]) ==
+               "22.12.20 - 10.01.21"
     end
 
     test "setting short value does not show year" do
