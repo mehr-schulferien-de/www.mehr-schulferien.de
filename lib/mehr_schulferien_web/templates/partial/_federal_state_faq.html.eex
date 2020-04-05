@@ -6,7 +6,7 @@
   <div class="col-xs-12">
   <p>Antworten zu häufigen Fragen zum Thema Schulferien und Feiertagen in <%= @location.name %>.</p>
 
-  <h2>Schulferien</h2>
+  <h3>Schulferien</h3>
   <dl class="row">
     <dt class="col-sm-5">War gestern schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
@@ -34,7 +34,7 @@
     </dd>
   </dl>
 
-  <h2>Feiertage</h2>
+  <h3>Feiertage</h3>
   <dl class="row">
     <dt class="col-sm-5">War gestern ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
@@ -62,7 +62,7 @@
     </dd>
   </dl>
 
-  <h2>Sonstiges</h2>
+  <h3>Sonstiges</h3>
   <dl class="row">
     <dt class="col-sm-5">Wann fängt die Schule in <%= @location.name %> wieder an?</dt>
     <dd class="col-sm-7">
