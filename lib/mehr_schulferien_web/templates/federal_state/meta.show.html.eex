@@ -9,12 +9,12 @@
     "@type": "ListItem",
     "position": 1,
     "name": "<%= @country.name %>",
-    "item": "<%= Routes.country_path(@conn, :show, @country.slug) %>"
+    "item": "https://www.mehr-schulferien.de<%= Routes.country_path(@conn, :show, @country.slug) %>"
   },{
     "@type": "ListItem",
     "position": 2,
     "name": "Ferientermine <%= @federal_state.name %>",
-    "item": "<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>"
+    "item": "https://www.mehr-schulferien.de<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>"
   }]
 }
 </script>
