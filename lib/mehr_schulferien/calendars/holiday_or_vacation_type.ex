@@ -44,7 +44,7 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
       :default_religion_id,
       :default_display_priority
     ])
-    |> validate_required([:name, :country_location_id, :default_display_priority])
+    |> validate_required([:name, :colloquial, :country_location_id, :default_display_priority])
     |> assoc_constraint(:country_location)
     |> NameSlug.maybe_generate_slug()
     |> NameSlug.unique_constraint()
