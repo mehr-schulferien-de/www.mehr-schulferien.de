@@ -111,6 +111,15 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
+  Gets a single get_holiday_or_vacation_type by querying for the slug.
+
+  Raises `Ecto.NoResultsError` if the federal state does not exist.
+  """
+  def get_holiday_or_vacation_type_by_slug!(slug) do
+    Repo.get_by!(HolidayOrVacationType, slug: slug)
+  end
+
+  @doc """
   Creates a holiday_or_vacation_type.
   """
   def create_holiday_or_vacation_type(attrs \\ %{}) do
