@@ -74,6 +74,32 @@ defmodule MehrSchulferienWeb.FederalStateController do
     end
   end
 
+  # Display all future dates for this holiday_or_vacation_type
+  #
+  def show_holiday_or_vacation_type(conn, %{
+        "country_slug" => country_slug,
+        "federal_state_slug" => federal_state_slug,
+        "holiday_or_vacation_type_slug" => holiday_or_vacation_type_slug
+      }) do
+    country = Locations.get_country_by_slug!(country_slug)
+    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+
+    holiday_or_vacation_type =
+      Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
+
+    periods = Calendars.list_current_and_future_periods(federal_state, holiday_or_vacation_type)
+
+    months = MehrSchulferien.Calendars.DateHelpers.get_months_map()
+
+    render(conn, "show_holiday_or_vacation_type.html",
+      country: country,
+      federal_state: federal_state,
+      holiday_or_vacation_type: holiday_or_vacation_type,
+      periods: periods,
+      months: months
+    )
+  end
+
   def show(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => <<first::binary-size(1)>> <> _ = id
