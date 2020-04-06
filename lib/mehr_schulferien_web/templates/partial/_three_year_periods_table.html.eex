@@ -5,7 +5,7 @@
       <th></th>
       <%= for period <- grouped_headers do %>
         <th>
-          <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: period.holiday_or_vacation_type.wikipedia_url %>
+          <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
         </th>
       <% end %>
     </tr>
