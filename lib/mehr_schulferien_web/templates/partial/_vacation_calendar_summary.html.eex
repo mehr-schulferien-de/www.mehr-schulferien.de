@@ -3,7 +3,13 @@
   <%= for periods <- holiday_periods do %>
     <% period = Enum.at(periods, 0) %>
     <dl>
-      <dt><%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></dt>
+      <dt>
+        <%= if assigns[:federal_state] != nil && assigns[:country] != nil && assigns[:conn] != nil && period.is_public_holiday == true do %>
+          <%= link "#{period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period)}", to: Routes.public_holiday_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
+        <% else %>
+          <%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %>
+        <% end %>
+      </dt>
       <dd>
         <%= for period <- periods do %>
           <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>

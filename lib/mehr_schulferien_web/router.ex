@@ -64,6 +64,11 @@ defmodule MehrSchulferienWeb.Router do
     post "/ferien/:country_slug/schule/:school_slug", SchoolController, :create_period
     get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
 
+    # Public holidays
+    get "/feiertag/:country_slug/bundesland/:federal_state_slug/:holiday_or_vacation_type_slug",
+        PublicHolidayController,
+        :show_within_federal_state
+
     # Misc
     get "/landkreise-und-staedte/:country_slug/:federal_state_slug",
         FederalStateController,
