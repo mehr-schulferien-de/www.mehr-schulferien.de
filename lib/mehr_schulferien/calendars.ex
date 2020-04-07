@@ -97,6 +97,11 @@ defmodule MehrSchulferien.Calendars do
     Repo.get_by!(HolidayOrVacationType, name: name)
   end
 
+  @doc """
+  Gets a single get_holiday_or_vacation_type by querying for the slug.
+
+  Raises `Ecto.NoResultsError` if the federal state does not exist.
+  """
   def get_holiday_or_vacation_type_by_slug!(slug) do
     Repo.get_by!(HolidayOrVacationType, slug: slug)
   end
@@ -146,6 +151,22 @@ defmodule MehrSchulferien.Calendars do
   Raises `Ecto.NoResultsError` if the Period does not exist.
   """
   def get_period!(id), do: Repo.get!(Period, id)
+
+  def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
+    today = Date.utc_today()
+
+    query =
+      from(p in Period,
+        where:
+          p.location_id == ^federal_state.id and
+            p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
+            p.ends_on >= ^today,
+        order_by: p.starts_on
+      )
+
+    Repo.all(query)
+    |> Repo.preload([:holiday_or_vacation_type])
+  end
 
   @doc """
   Creates a period.
