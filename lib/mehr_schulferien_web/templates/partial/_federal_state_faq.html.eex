@@ -69,7 +69,15 @@
     <dd class="col-sm-7">
       Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an.
     </dd>
+    <dt class="col-sm-5">Wann beginnt die Schule wieder in <%= @location.name %>?</dt>
+    <dd class="col-sm-7">
+      Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an.
+    </dd>
     <dt class="col-sm-5">Schulbeginn <%= @location.name %></dt>
+    <dd class="col-sm-7">
+      <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)
+    </dd>
+    <dt class="col-sm-5">Schulanfang <%= @location.name %></dt>
     <dd class="col-sm-7">
       <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)
     </dd>
@@ -170,10 +178,25 @@
           "@type": "Answer",
           "text": "Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an."
         }
+    },{
+        "@type": "Question",
+        "name": "Wann beginnt die Schule wieder in <%= @location.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an."
+        }
     },
     {
         "@type": "Question",
         "name": "Schulbeginn <%= @location.name %>",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)"
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Schulanfang <%= @location.name %>",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "<%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)"
