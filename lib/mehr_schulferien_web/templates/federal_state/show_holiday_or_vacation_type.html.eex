@@ -25,7 +25,6 @@
 <div class="row">
   <div class="col-md-12">
     <%= render MehrSchulferienWeb.PartialView, "_holiday_or_vacation_type_periods_table_for_federal_state.html", periods: @periods, federal_state: @federal_state, holiday_or_vacation_type: @holiday_or_vacation_type, conn: @conn, country: @country, months: @months %>
-
     <h3>Links</h3>
     <ul>
     <li><a href="<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>">Übersicht aller Ferientermine <%= @federal_state.name %></a></li>
