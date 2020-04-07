@@ -103,60 +103,50 @@
       "@type": "Answer",
       "text": "<%= next_public_holiday_answer %>"
     }
-  }
-</script>
+  },
 
 <%= for period <- @periods do %>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [{
+    {
       "@type": "Question",
       "name": "Wann ist <%= @holiday_or_vacation_type.name %> in <%= @federal_state.name %> im Jahr <%= period.starts_on.year %>?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Am <%= ViewHelpers.format_date(period.starts_on) %> (<%= ViewHelpers.weekday(period.starts_on) %>) ist im Jahr <%= period.starts_on.year %> <%= @holiday_or_vacation_type.name %> in <%= @federal_state.name %>. Das ist in <%= Date.diff(period.starts_on, @today) %> Tagen."
       }
-    }
-  </script>
+    },
 <% end %>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [{
+  {
     "@type": "Question",
     "name": "<%= @holiday_or_vacation_type.name %> <%= @federal_state.name %>",
     "acceptedAnswer": {
       "@type": "Answer",
       "text": "<%= next_public_holiday_answer %>"
     }
-  }
-</script>
+  },
 
 <%= for period <- @periods do %>
-  <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [{
       "@type": "Question",
       "name": "<%= @holiday_or_vacation_type.name %> <%= @federal_state.name %> <%= period.starts_on.year %>",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Am <%= ViewHelpers.format_date(period.starts_on) %> (<%= ViewHelpers.weekday(period.starts_on) %>) ist im Jahr <%= period.starts_on.year %> <%= @holiday_or_vacation_type.name %> in <%= @federal_state.name %>."
       }
-    }
-  </script>
+    },
 <% end %>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [{
+<%= for period <- @periods do %>
+    {
+      "@type": "Question",
+      "name": "<%= @holiday_or_vacation_type.name %> <%= @federal_state.code %> <%= period.starts_on.year %>",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Am <%= ViewHelpers.format_date(period.starts_on) %> (in <%= Date.diff(period.starts_on, @today) %> Tagen) ist im Jahr <%= period.starts_on.year %> <%= @holiday_or_vacation_type.name %> in <%= @federal_state.name %>."
+      }
+    },
+<% end %>
+  {
     "@type": "Question",
     "name": "<%= @holiday_or_vacation_type.name %> <%= @federal_state.code %>",
     "acceptedAnswer": {
@@ -164,23 +154,10 @@
       "text": "<%= next_public_holiday_answer %>"
     }
   }
-</script>
-
-<%= for period <- @periods do %>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [{
-      "@type": "Question",
-      "name": "<%= @holiday_or_vacation_type.name %> <%= @federal_state.code %> <%= period.starts_on.year %>",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Am <%= ViewHelpers.format_date(period.starts_on) %> (in <%= Date.diff(period.starts_on, @today) %> Tagen) ist im Jahr <%= period.starts_on.year %> <%= @holiday_or_vacation_type.name %> in <%= @federal_state.name %>."
-      }
-    }
+  ]
+}
   </script>
-<% end %>
+
 
 <%= for period <- @periods do %>
   <script type="application/ld+json">
