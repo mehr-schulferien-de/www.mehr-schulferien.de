@@ -73,6 +73,76 @@
   </div>
 </div>
 
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      <% period = Enum.at(@periods, 0) %>
+      {
+        "@type": "Question",
+        "name": "<%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %>",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Der Termin für die <%= @holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> in <%= @federal_state.name %> ist <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>."
+        }
+      },
+      <%= for period <- @periods do %>
+      {
+          "@type": "Question",
+          "name": "<%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= period.starts_on.year %>",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "<%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>"
+          }
+      },
+      <% end %>
+
+      <% period = Enum.at(@periods, 0) %>
+      {
+        "@type": "Question",
+        "name": "<%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.code %>",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Der Termin für die <%= @holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> in <%= @federal_state.name %> ist <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>."
+        }
+      },
+      <%= for period <- @periods do %>
+      {
+          "@type": "Question",
+          "name": "<%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.code %> <%= period.starts_on.year %>",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "<%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>"
+          }
+      },
+      <% end %>
+
+      <%= for period <- @periods do %>
+      {
+          "@type": "Question",
+          "name": "Wann sind <%= period.starts_on.year %> <%= @holiday_or_vacation_type.colloquial %> in <%= @federal_state.name %>?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "<%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>"
+          }
+      },
+      <% end %>
+      <% period = Enum.at(@periods, 0) %>
+      {
+        "@type": "Question",
+        "name": "Wann sind <%= @holiday_or_vacation_type.colloquial %> in <%= @federal_state.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Der Termin für die <%= @holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> in <%= @federal_state.name %> ist <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>."
+        }
+      }
+
+    ]
+  }
+</script>
+
 <%= for period <- @periods do %>
   <script type="application/ld+json">
     {
