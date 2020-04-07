@@ -65,7 +65,7 @@
   <div class="col-xs-12">
     <h2>Kalenderansicht</h2>
     <p>Ferienkalender mit allen Schulferienterminen für die nächsten Jahre.</p>
-    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @next_3_years_periods, public_periods: @public_periods, days: @days, months: @months %>
+    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @next_3_years_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 
     <%= if @schools != [] do %>
       <h2 id="liste_aller_schulen">Schulen in <%= @city.name %></h2>
