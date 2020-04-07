@@ -62,13 +62,19 @@
     </dd>
   </dl>
 
-  <h3>Sonstiges</h3>
+  <%= if Enum.count(@todays_school_free_periods) > 0 do %>
+  <h3>Schulbeginn</h3>
   <dl class="row">
     <dt class="col-sm-5">Wann fängt die Schule in <%= @location.name %> wieder an?</dt>
     <dd class="col-sm-7">
-      <%= ViewHelpers.format_date(@next_schoolday) %>
+      Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an.
+    </dd>
+    <dt class="col-sm-5">Schulbeginn <%= @location.name %></dt>
+    <dd class="col-sm-7">
+      <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)
     </dd>
   </dl>
+  <% end %>
   </div>
 </div>
 
@@ -155,14 +161,25 @@
           "@type": "Answer",
           "text": "<%= FaqViewHelpers.next_public_holiday_answer(@location) %>"
         }
-    },
-    {
+    }
+    <%= if Enum.count(@todays_school_free_periods) > 0 do %>
+    ,{
         "@type": "Question",
         "name": "Wann fängt die Schule in <%= @location.name %> wieder an?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "<%= ViewHelpers.format_date(@next_schoolday) %>"
+          "text": "Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an."
         }
-    }]
+    },
+    {
+        "@type": "Question",
+        "name": "Schulbeginn <%= @location.name %>",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)"
+        }
+    }
+    <% end %>
+    ]
   }
   </script>
