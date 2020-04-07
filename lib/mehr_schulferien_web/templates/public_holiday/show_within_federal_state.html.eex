@@ -92,7 +92,6 @@
 "Diese Jahr ist #{@holiday_or_vacation_type.name} am #{ViewHelpers.format_date(period.starts_on)} (#{ViewHelpers.weekday(period.starts_on)}). Das ist in #{Date.diff(period.starts_on, @today)} Tagen." else
   "Nächstes Jahr ist #{@holiday_or_vacation_type.name} am #{ViewHelpers.format_date(period.starts_on)} (#{ViewHelpers.weekday(period.starts_on)}). Das ist in #{Date.diff(period.starts_on, @today)} Tagen." end %>
 
-<% period = Enum.at(@periods, 0) %>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -123,7 +122,6 @@
   </script>
 <% end %>
 
-<% period = Enum.at(@periods, 0) %>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -154,7 +152,6 @@
   </script>
 <% end %>
 
-<% period = Enum.at(@periods, 0) %>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
