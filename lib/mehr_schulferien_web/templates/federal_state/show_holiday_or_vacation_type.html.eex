@@ -25,11 +25,51 @@
 <div class="row">
   <div class="col-md-12">
     <%= render MehrSchulferienWeb.PartialView, "_holiday_or_vacation_type_periods_table_for_federal_state.html", periods: @periods, federal_state: @federal_state, holiday_or_vacation_type: @holiday_or_vacation_type, conn: @conn, country: @country, months: @months %>
+
     <h3>Links</h3>
     <ul>
     <li><a href="<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>">Übersicht aller Ferientermine <%= @federal_state.name %></a></li>
     <li><a href="<%= @holiday_or_vacation_type.wikipedia_url %>">Wikipediaeintrag zu <%= @holiday_or_vacation_type.colloquial %></a></li>
     </ul>
+
+    <h3>FAQ <small>(häufig gestellte Fragen)</small></h3>
+    <dl class="row">
+      <% period = Enum.at(@periods, 0) %>
+      <dt class="col-sm-5"><%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %></dt>
+      <dd class="col-sm-7">
+        Der Termin für die <%= @holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> in <%= @federal_state.name %> ist <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>.
+      </dd>
+      <%= for period <- @periods do %>
+        <dt class="col-sm-5"><%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= period.starts_on.year %></dt>
+        <dd class="col-sm-7">
+          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>
+        </dd>
+      <% end %>
+
+      <% period = Enum.at(@periods, 0) %>
+      <dt class="col-sm-5"><%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.code %></dt>
+      <dd class="col-sm-7">
+        Der Termin für die <%= @holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> in <%= @federal_state.name %> ist <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>.
+      </dd>
+      <%= for period <- @periods do %>
+        <dt class="col-sm-5"><%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.code %> <%= period.starts_on.year %></dt>
+        <dd class="col-sm-7">
+          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>
+        </dd>
+      <% end %>
+
+      <% period = Enum.at(@periods, 0) %>
+      <dt class="col-sm-5">Wann sind <%= @holiday_or_vacation_type.colloquial %> in <%= @federal_state.name %>?</dt>
+      <dd class="col-sm-7">
+        Der Termin für die <%= @holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> in <%= @federal_state.name %> ist <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>.
+      </dd>
+      <%= for period <- @periods do %>
+        <dt class="col-sm-5">Wann sind <%= period.starts_on.year %> <%= @holiday_or_vacation_type.colloquial %> in <%= @federal_state.name %>?</dt>
+        <dd class="col-sm-7">
+          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>
+        </dd>
+      <% end %>
+    </dl>
   </div>
 </div>
 
