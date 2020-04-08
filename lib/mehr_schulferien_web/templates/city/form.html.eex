@@ -7,15 +7,9 @@
     <% end %>
 
     <% today = Date.utc_today() |> Date.to_erl() %>
-    <%= hidden_input f, :location_id, value: @city_id  %>
+    <%= hidden_input f, :location_id, value: @city.id  %>
     <%= hidden_input f, :holiday_or_vacation_type_id, value: @holiday_or_vacation_type_id  %>
-
-    <div class="form-group">
-      <%= label f, :created_by_email_address, "Ihre E-Mail Adresse" %>
-      <%= text_input f, :created_by_email_address, class: "form-control", autofocus: true %>
-      <small id="emailHelp" class="form-text text-muted">Die E-Mail Adresse wird nicht veröffentlicht und dient nur für uns zur Verifizierung der Daten.</small>
-      <%= error_tag f, :created_by_email_address %>
-    </div>
+    <%= hidden_input f, :created_by_email_address, value: @user_email  %>
 
     <div class="form-group">
       <%= label f, :starts_on, "Start (erster Tag)" %>

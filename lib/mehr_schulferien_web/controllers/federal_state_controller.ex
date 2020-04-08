@@ -15,6 +15,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug
       }) do
+    user = conn.assigns.current_user
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
@@ -27,12 +28,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     render(conn, "new.html",
       changeset: changeset,
-      country_slug: country_slug,
-      federal_state_slug: federal_state_slug,
-      federal_state_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
       country: country,
-      federal_state: federal_state
+      federal_state: federal_state,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+      user_email: user.email
     )
   end
 
@@ -53,6 +52,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         |> redirect(to: Routes.federal_state_path(conn, :show, country_slug, federal_state_slug))
 
       {:error, %Ecto.Changeset{} = changeset} ->
+        user = conn.assigns.current_user
         country = Locations.get_country_by_slug!(country_slug)
         federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
         country = Locations.get_country_by_slug!(country_slug)
@@ -64,12 +64,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
         render(conn, "new.html",
           changeset: changeset,
-          country_slug: country_slug,
-          federal_state_slug: federal_state_slug,
-          federal_state_id: federal_state.id,
-          holiday_or_vacation_type_id: holiday_or_vacation_type.id,
           country: country,
-          federal_state: federal_state
+          federal_state: federal_state,
+          holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+          user_email: user.email
         )
     end
   end

@@ -30,6 +30,6 @@
 
 <div class="row">
   <div class="col-md-12">
-    <%= render "form.html", Map.put(assigns, :action, Routes.school_path(@conn, :create_period, @country_slug, @school_slug)) %>
+    <%= render "form.html", Map.put(assigns, :action, Routes.school_path(@conn, :create_period, @country.slug, @school.slug)) %>
   </div>
 </div>

@@ -27,6 +27,6 @@
 
 <div class="row">
   <div class="col-md-12">
-    <%= render "form.html", Map.put(assigns, :action, Routes.federal_state_path(@conn, :create_period, @country_slug, @federal_state_slug)) %>
+    <%= render "form.html", Map.put(assigns, :action, Routes.federal_state_path(@conn, :create_period, @country.slug, @federal_state.slug)) %>
   </div>
 </div>
