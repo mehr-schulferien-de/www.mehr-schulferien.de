@@ -10,6 +10,8 @@ defmodule MehrSchulferienWeb.SchoolController do
   plug :user_check when action in [:new_period, :create_period]
 
   def new_period(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do
+    user = conn.assigns.current_user
+
     %{country: country, federal_state: federal_state, city: city, school: school} =
       Locations.show_school_to_country_map(country_slug, school_slug)
 
@@ -22,14 +24,12 @@ defmodule MehrSchulferienWeb.SchoolController do
 
     render(conn, "new.html",
       changeset: changeset,
-      country_slug: country_slug,
-      school_slug: school_slug,
-      school_id: school.id,
-      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+      city: city,
       country: country,
       federal_state: federal_state,
-      city: city,
-      school: school
+      school: school,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+      user_email: user.email
     )
   end
 
@@ -50,6 +50,8 @@ defmodule MehrSchulferienWeb.SchoolController do
         |> redirect(to: Routes.school_path(conn, :show, country_slug, school_slug))
 
       {:error, %Ecto.Changeset{} = changeset} ->
+        user = conn.assigns.current_user
+
         %{
           country: country,
           federal_state: federal_state,
@@ -64,14 +66,12 @@ defmodule MehrSchulferienWeb.SchoolController do
 
         render(conn, "new.html",
           changeset: changeset,
-          country_slug: country_slug,
-          school_slug: school_slug,
-          school_id: school.id,
-          holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+          city: city,
           country: country,
           federal_state: federal_state,
-          city: city,
-          school: school
+          school: school,
+          holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+          user_email: user.email
         )
     end
   end
