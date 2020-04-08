@@ -22,7 +22,7 @@
 
 <div class="row">
   <div class="col-md-9">
-    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table_for_federal_states.html", next_12_months_periods: @next_12_months_periods, months: @months, federal_state: @federal_state %>
+    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", next_12_months_periods: @next_12_months_periods, months: @months, federal_state: @federal_state, federal_state_code: @federal_state.code %>
 
     <h2>Ferien <%= @federal_state.name %> <%= @next_three_years %></h2>
     <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", next_3_years_periods: @next_3_years_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
