@@ -34,11 +34,16 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     format_date(same_date, short)
   end
 
+  def format_date_range(from_date, till_date, :short) do
+    format_date(from_date, :short) <> " - " <> format_date(till_date, :short)
+  end
+
   def format_date_range(from_date, till_date, short) do
     from_date_string =
-      case {from_date.year, till_date.year, String.length(format_date(from_date, short))} do
-        {same_year, same_year, 8} -> String.slice(format_date(from_date, short), 0..-3)
-        _ -> format_date(from_date, short)
+      if from_date.year == till_date.year do
+        format_date(from_date, :short)
+      else
+        format_date(from_date, nil)
       end
 
     from_date_string <> " - " <> format_date(till_date, short)
