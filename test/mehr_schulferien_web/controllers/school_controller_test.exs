@@ -11,21 +11,19 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
   describe "read school data" do
     setup [:add_school, :add_periods]
 
-    # TODO: Fix the tests or fix the code.
-    #
-    # test "shows info for a specific school", %{
-    #   conn: conn,
-    #   country: country,
-    #   school: school
-    # } do
-    #   conn = get(conn, Routes.school_path(conn, :show, country.slug, school.slug))
-    #   assert html_response(conn, 200) =~ school.name
-    # end
+    test "shows info for a specific school", %{
+      conn: conn,
+      country: country,
+      school: school
+    } do
+      conn = get(conn, Routes.school_path(conn, :show, country.slug, school.slug))
+      assert html_response(conn, 200) =~ school.name
+    end
 
-    # test "custom meta tags are generated", %{conn: conn, country: country, school: school} do
-    #   conn = get(conn, Routes.school_path(conn, :show, country.slug, school.slug))
-    #   assert html_response(conn, 200) =~ "Schulferien #{school.name}"
-    # end
+    test "custom meta tags are generated", %{conn: conn, country: country, school: school} do
+      conn = get(conn, Routes.school_path(conn, :show, country.slug, school.slug))
+      assert html_response(conn, 200) =~ "Schulferien #{school.name}"
+    end
 
     test "returns 404 if country is not the root parent of the school", %{
       conn: conn,
