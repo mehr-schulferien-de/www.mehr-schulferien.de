@@ -32,6 +32,7 @@ defmodule MehrSchulferien.Factory do
       default_is_listed_below_month: true,
       default_is_school_vacation: true,
       default_is_valid_for_students: true,
+      slug: String.downcase("name"),
       wikipedia_url: "https://de.wikipedia.org/wiki/Schulferien##{name}ferien",
       country_location_id: country_id
     }
