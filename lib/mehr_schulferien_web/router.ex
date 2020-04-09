@@ -35,6 +35,8 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers", PageController, :developers
     get "/land/:country_slug", CountryController, :show
 
+    get "/sitemap.xml", SitemapController, :index
+
     # Authentication
     resources "/users", UserController
     resources "/sessions", SessionController, only: [:new, :create, :delete]

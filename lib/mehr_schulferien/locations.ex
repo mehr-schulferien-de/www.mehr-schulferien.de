@@ -96,6 +96,14 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns the list of cities for a certain county.
+  """
+  def list_cities_of_country(_country) do
+    from(l in Location, where: l.is_city == true)
+    |> Repo.all()
+  end
+
+  @doc """
   Returns the list of schools for a certain city.
   """
   def list_schools(city) do
