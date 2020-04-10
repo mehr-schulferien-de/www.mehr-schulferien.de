@@ -7,5 +7,68 @@
     <h1>Aktuelle Schulferien und Feiertage<br><small>plus Schulschließung wegen der COVID-19-Pandemie (Corona)</small></h1>
     <p>Eine Schnellübersicht der nächsten 6 Wochen. Über die Bundesländer bekommen Sie Zugriff auf die Ferientermine und Feiertage von allen 14.522 Städte und 23.432 Schulen.</p>
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, country: @country, days: @days, day_names: @day_names, federal_states: @federal_states, months: @months, periods: @periods %>
+
+  <h2>FAQ</h2>
+  <p>Nachfolgend beantworten wir die häufigsten Fragen, die aktuell über Suchmaschinen auf
+  unsere Seite kommen.</p>
+
+    <dl class="row">
+      <dt class="col-sm-5">Wann fängt die Schule wieder an 2020?</dt>
+      <dd class="col-sm-7">
+        Mit Ausnahme des Saarlandes (dort am 27.04.) fängt die Schule in allen Bundesländer
+        am 20.04.2020 wieder an. Sobald sich diese Daten im Verlauf der Corona-Krise ändern sollten,
+        werden wir diese Seite updaten.
+      </dd>
+
+      <dt class="col-sm-5">Wann fängt die Schule wieder an?</dt>
+      <dd class="col-sm-7">
+        Mit Ausnahme des Saarlandes (dort am 27.04.) fängt die Schule in allen Bundesländer
+        am 20.04.2020 wieder an. Sobald sich diese Daten im Verlauf der Corona-Krise ändern sollten,
+        werden wir diese Seite updaten.
+      </dd>
+
+      <dt class="col-sm-5">Schulbeginn</dt>
+      <dd class="col-sm-7">
+        20.04.2020. Nur im Saarland eine Woche später (27.04.). Sobald sich diese Daten im
+        Verlauf der Corona-Krise ändern sollten, werden wir diese Seite updaten.
+      </dd>
+    </dl>
   </div>
 </div>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": "Wann fängt die Schule wieder an 2020?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mit Ausnahme des Saarlandes (dort am 27.04.) fängt die Schule in allen Bundesländer
+        am 20.04.2020 wieder an. Sobald sich diese Daten im Verlauf der Corona-Krise ändern sollten,
+        werden wir diese Seite updaten."
+      }
+    },
+    {
+        "@type": "Question",
+        "name": "Wann fängt die Schule wieder an?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Mit Ausnahme des Saarlandes (dort am 27.04.) fängt die Schule in allen Bundesländer
+        am 20.04.2020 wieder an. Sobald sich diese Daten im Verlauf der Corona-Krise ändern sollten,
+        werden wir diese Seite updaten."
+        }
+    },
+        {
+        "@type": "Question",
+        "name": "Schulbeginn",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "20.04.2020. Nur im Saarland eine Woche später (27.04.). Sobald sich diese Daten im
+          Verlauf der Corona-Krise ändern sollten, werden wir diese Seite updaten."
+        }
+    }
+    ]
+  }
+  </script>
