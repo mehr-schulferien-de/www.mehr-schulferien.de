@@ -153,7 +153,7 @@ defmodule MehrSchulferien.Calendars do
   def get_period!(id), do: Repo.get!(Period, id)
 
   def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
-    today = Date.utc_today()
+    today = DateHelpers.today_berlin()
 
     query =
       from(p in Period,

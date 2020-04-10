@@ -6,7 +6,7 @@ defmodule MehrSchulferienWeb.PageController do
   def index(conn, _params) do
     country = Locations.get_country_by_slug!("d")
     federal_states = Locations.list_federal_states(country)
-    today = Date.utc_today()
+    today = DateHelpers.today_berlin()
     ends_on = Date.add(today, 42)
 
     periods =

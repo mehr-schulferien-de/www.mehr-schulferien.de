@@ -6,7 +6,7 @@
       </div>
     <% end %>
 
-    <% today = Date.utc_today() |> Date.to_erl() %>
+    <% today = MehrSchulferien.Calendars.DateHelpers.today_berlin() |> Date.to_erl() %>
     <%= hidden_input f, :location_id, value: @school.id  %>
     <%= hidden_input f, :holiday_or_vacation_type_id, value: @holiday_or_vacation_type_id  %>
     <%= hidden_input f, :created_by_email_address, value: @user_email  %>

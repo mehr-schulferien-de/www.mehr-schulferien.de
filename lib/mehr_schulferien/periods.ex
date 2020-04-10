@@ -5,7 +5,7 @@ defmodule MehrSchulferien.Periods do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Calendars.Period
+  alias MehrSchulferien.Calendars.{DateHelpers, Period}
   alias MehrSchulferien.Repo
 
   def fetch_all do
@@ -155,7 +155,7 @@ defmodule MehrSchulferien.Periods do
   Returns the next school vacation period that is greater than today.
   """
   def next_school_vacation_period(location_ids) do
-    next_school_vacation_period(location_ids, Date.utc_today())
+    next_school_vacation_period(location_ids, DateHelpers.today_berlin())
   end
 
   @doc """
@@ -178,7 +178,7 @@ defmodule MehrSchulferien.Periods do
   Returns the next public holiday that is greater than today.
   """
   def next_public_holiday_period(location_ids) do
-    next_public_holiday_period(location_ids, Date.utc_today())
+    next_public_holiday_period(location_ids, DateHelpers.today_berlin())
   end
 
   @doc """

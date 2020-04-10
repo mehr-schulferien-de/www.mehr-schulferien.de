@@ -3,7 +3,7 @@ defmodule MehrSchulferien.Factory do
 
   use ExMachina.Ecto, repo: MehrSchulferien.Repo
 
-  alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period, Religion}
+  alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType, Period, Religion}
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
 
@@ -171,7 +171,7 @@ defmodule MehrSchulferien.Factory do
   end
 
   def add_public_periods(%{location: location}) do
-    today = Date.utc_today()
+    today = DateHelpers.today_berlin()
 
     insert(:period, %{
       is_public_holiday: true,

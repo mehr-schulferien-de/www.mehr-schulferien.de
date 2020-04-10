@@ -49,7 +49,7 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
       holiday_or_vacation_type =
         insert(:holiday_or_vacation_type, %{country_location_id: country.id})
 
-      today = Date.utc_today()
+      today = MehrSchulferien.Calendars.DateHelpers.today_berlin()
 
       attrs = %{
         "created_by_email_address" => "froderick@example.com",
