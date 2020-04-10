@@ -11,10 +11,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   """
   def is_off_school_answer(periods, date, location) do
     reasons =
-      Enum.map(periods, fn period ->
-        period.holiday_or_vacation_type.colloquial ||
-          MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-      end)
+      periods
+      |> Enum.map(& &1.holiday_or_vacation_type.colloquial)
       |> ViewHelpers.comma_join_with_a_final_und()
 
     case Enum.count(periods) do
@@ -33,10 +31,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   """
   def is_public_holiday_answer(periods, date, location) do
     reasons =
-      Enum.map(periods, fn period ->
-        period.holiday_or_vacation_type.colloquial ||
-          MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-      end)
+      periods
+      |> Enum.map(& &1.holiday_or_vacation_type.colloquial)
       |> ViewHelpers.comma_join_with_a_final_und()
 
     case Enum.count(periods) do
@@ -61,17 +57,13 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
 
     case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->
-        "Morgen starten die #{
-          period.holiday_or_vacation_type.colloquial ||
-            MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-        } in #{location.name}:
+        "Morgen starten die #{period.holiday_or_vacation_type.colloquial} in #{location.name}:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
 
       n ->
-        "In #{n} Tagen starten die #{
-          period.holiday_or_vacation_type.colloquial ||
-            MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-        } in #{location.name}:
+        "In #{n} Tagen starten die #{period.holiday_or_vacation_type.colloquial} in #{
+          location.name
+        }:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
     end
   end
@@ -85,16 +77,10 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
 
     case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->
-        "Morgen ist #{
-          period.holiday_or_vacation_type.colloquial ||
-            MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-        } in #{location.name}."
+        "Morgen ist #{period.holiday_or_vacation_type.colloquial} in #{location.name}."
 
       n ->
-        "In #{n} Tagen ist #{
-          period.holiday_or_vacation_type.colloquial ||
-            MehrSchulferienWeb.PeriodView.vacation_type_name(period)
-        } in #{location.name}."
+        "In #{n} Tagen ist #{period.holiday_or_vacation_type.colloquial} in #{location.name}."
     end
   end
 

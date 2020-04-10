@@ -12,7 +12,7 @@
     <% period = Enum.at(periods, 0) %>
     <tr class="<%= if period.html_class in ["warning", "danger"], do: period.html_class %>">
       <td>
-        <%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %> <%= period.starts_on.year %>
+        <%= period.holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %>
         <%= if assigns[:federal_state_code] do %>
           (<%= @federal_state_code %>)
         <% end %>

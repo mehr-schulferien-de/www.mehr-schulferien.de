@@ -92,6 +92,7 @@ defmodule M do
           {:ok, holiday_or_vacation_type} =
             Calendars.create_holiday_or_vacation_type(%{
               name: public_holiday_type,
+              colloquial: public_holiday_type,
               country_location_id: 1,
               html_class: "info",
               default_display_priority: 10

@@ -77,7 +77,7 @@
     {
       "@context": "http://schema.org",
       "@type": "Event",
-      "name": "<%= period.holiday_or_vacation_type.colloquial || MehrSchulferienWeb.PeriodView.vacation_type_name(period) %>",
+      "name": "<%= period.holiday_or_vacation_type.colloquial %>",
       "startDate": "<%= period.starts_on %>",
       "endDate": "<%= period.ends_on %>",
       "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
