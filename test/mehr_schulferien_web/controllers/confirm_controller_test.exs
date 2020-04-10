@@ -2,7 +2,7 @@ defmodule MehrSchulferienWeb.ConfirmControllerTest do
   use MehrSchulferienWeb.ConnCase
 
   setup %{conn: conn} do
-    conn = conn |> bypass_through(MehrSchulferien.Router, :browser) |> get("/users")
+    conn = conn |> bypass_through(MehrSchulferien.Router, :browser) |> get("/users/new")
     add_user("arthur@example.com")
     {:ok, %{conn: conn}}
   end

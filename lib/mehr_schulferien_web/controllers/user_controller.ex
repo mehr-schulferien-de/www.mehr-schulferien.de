@@ -7,13 +7,8 @@ defmodule MehrSchulferienWeb.UserController do
   alias MehrSchulferien.{Accounts, Accounts.User}
   alias MehrSchulferienWeb.{Auth.Token, Email}
 
-  plug :user_check when action in [:index, :show]
+  plug :user_check when action in [:show]
   plug :id_check when action in [:edit, :update, :delete]
-
-  def index(conn, _) do
-    users = Accounts.list_users()
-    render(conn, "index.html", users: users)
-  end
 
   def new(conn, _) do
     changeset = Accounts.change_user(%User{})

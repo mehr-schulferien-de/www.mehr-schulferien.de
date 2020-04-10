@@ -2,7 +2,7 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
   use MehrSchulferienWeb.ConnCase
 
   setup %{conn: conn} do
-    conn = conn |> bypass_through(MehrSchulferienWeb.Router, [:browser]) |> get("/users")
+    conn = conn |> bypass_through(MehrSchulferienWeb.Router, [:browser]) |> get("/users/new")
     {:ok, %{conn: conn}}
   end
 
