@@ -10,3 +10,7 @@
 
 User-agent: *
 Disallow: /api
+Disallow: /users
+Disallow: /sessions
+Disallow: /password_resets
+Disallow: /admin
