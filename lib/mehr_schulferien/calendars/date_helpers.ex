@@ -33,6 +33,11 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
     12 => "Dezember"
   }
 
+  def today_berlin do
+    {:ok, today_datetime} = DateTime.now("Europe/Berlin")
+    DateTime.to_date(today_datetime)
+  end
+
   @doc """
   Returns 3 years of dates.
   """

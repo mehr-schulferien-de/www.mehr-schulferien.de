@@ -5,7 +5,7 @@
     </div>
   <% end %>
 
-  <% today = Date.utc_today() |> Date.to_erl() %>
+  <% today = MehrSchulferien.Calendars.DateHelpers.today_berlin() |> Date.to_erl() %>
   <%= label f, :starts_on %>
   <%= date_select f, :starts_on, default: today %>
   <%= error_tag f, :starts_on %>

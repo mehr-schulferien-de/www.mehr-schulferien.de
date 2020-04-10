@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   Helper functions for use with views.
   """
 
-  alias MehrSchulferien.Locations
+  alias MehrSchulferien.{Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ViewHelpers
 
   @doc """
@@ -59,7 +59,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
     location_ids = Locations.recursive_location_ids(location)
     period = MehrSchulferien.Periods.next_school_vacation_period(location_ids)
 
-    case Date.diff(period.starts_on, Date.utc_today()) do
+    case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->
         "Morgen starten die #{
           period.holiday_or_vacation_type.colloquial ||
@@ -83,7 +83,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
     location_ids = Locations.recursive_location_ids(location)
     period = MehrSchulferien.Periods.next_public_holiday_period(location_ids)
 
-    case Date.diff(period.starts_on, Date.utc_today()) do
+    case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->
         "Morgen ist #{
           period.holiday_or_vacation_type.colloquial ||
@@ -102,7 +102,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   ist is the German word for is. Depending on present or past it becomes war.
   """
   def ist_in_time(date) do
-    if Date.diff(date, Date.utc_today()) < 0 do
+    if Date.diff(date, DateHelpers.today_berlin()) < 0 do
       "war"
     else
       "ist"
@@ -118,7 +118,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   übermorgen: the day after tomorrow
   """
   def humanized_date(date) do
-    case Date.diff(date, Date.utc_today()) do
+    case Date.diff(date, DateHelpers.today_berlin()) do
       -2 -> "vorgestern (#{ViewHelpers.weekday(date)}, der #{ViewHelpers.format_date(date)})"
       -1 -> "gestern (#{ViewHelpers.weekday(date)}, der #{ViewHelpers.format_date(date)})"
       0 -> "heute (#{ViewHelpers.weekday(date)}, der #{ViewHelpers.format_date(date)})"

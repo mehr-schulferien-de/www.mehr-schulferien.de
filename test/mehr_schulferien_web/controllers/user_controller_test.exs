@@ -12,20 +12,6 @@ defmodule MehrSchulferienWeb.UserControllerTest do
     {:ok, %{conn: conn}}
   end
 
-  describe "index" do
-    test "lists all entries on index", %{conn: conn} do
-      user = add_user("reg@example.com")
-      conn = conn |> add_session(user) |> send_resp(:ok, "/")
-      conn = get(conn, Routes.user_path(conn, :index))
-      assert html_response(conn, 200) =~ "Listing users"
-    end
-
-    test "renders /users error for nil user", %{conn: conn} do
-      conn = get(conn, Routes.user_path(conn, :index))
-      assert redirected_to(conn) == Routes.session_path(conn, :new)
-    end
-  end
-
   describe "renders forms" do
     setup [:add_user_session]
 

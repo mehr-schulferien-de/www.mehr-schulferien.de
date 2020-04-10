@@ -24,7 +24,7 @@ defmodule MehrSchulferienWeb.PasswordResetControllerTest do
   end
 
   describe "update password reset" do
-    test "reset password succeeds for correct key", %{conn: conn} do
+    test "reset password succeeds for correct key", %{conn: conn, user: user} do
       valid_attrs = %{key: gen_key("gladys@example.com"), password: "^hEsdg*F899"}
 
       reset_conn =
@@ -38,7 +38,7 @@ defmodule MehrSchulferienWeb.PasswordResetControllerTest do
           session: %{email: "gladys@example.com", password: "^hEsdg*F899"}
         )
 
-      assert redirected_to(conn) == Routes.user_path(conn, :index)
+      assert redirected_to(conn) == Routes.user_path(conn, :show, user)
     end
 
     test "reset password fails for incorrect key", %{conn: conn} do

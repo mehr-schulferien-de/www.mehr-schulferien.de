@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   import MehrSchulferienWeb.Authorize
 
-  alias MehrSchulferien.{Calendars, Calendars.Period, Locations}
+  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Calendars.Period, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Email
 
@@ -111,7 +111,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
     location_ids = [country.id, federal_state.id]
-    today = Date.utc_today()
+    today = DateHelpers.today_berlin()
 
     assigns =
       [
@@ -137,7 +137,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
       end)
 
     location_ids = [country.id, federal_state.id]
-    today = Date.utc_today()
+    today = DateHelpers.today_berlin()
 
     assigns =
       [

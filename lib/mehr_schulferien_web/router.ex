@@ -38,7 +38,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/sitemap.xml", SitemapController, :index
 
     # Authentication
-    resources "/users", UserController
+    resources "/users", UserController, except: [:index]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
     get "/confirms", ConfirmController, :index
     resources "/password_resets", PasswordResetController, only: [:new, :create]

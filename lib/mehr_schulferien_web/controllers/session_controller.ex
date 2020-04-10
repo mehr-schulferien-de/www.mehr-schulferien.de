@@ -18,7 +18,7 @@ defmodule MehrSchulferienWeb.SessionController do
         conn
         |> add_session(user, params)
         |> put_flash(:info, "Sie sind jetzt eingeloggt.")
-        |> redirect(to: get_session(conn, :request_path) || Routes.user_path(conn, :index))
+        |> redirect(to: get_session(conn, :request_path) || Routes.user_path(conn, :show, user))
 
       {:error, message} ->
         conn
@@ -40,7 +40,7 @@ defmodule MehrSchulferienWeb.SessionController do
       _ ->
         conn
         |> put_flash(:error, "Nicht autorisiert.")
-        |> redirect(to: Routes.user_path(conn, :index))
+        |> redirect(to: Routes.user_path(conn, :show, user_id))
     end
   end
 

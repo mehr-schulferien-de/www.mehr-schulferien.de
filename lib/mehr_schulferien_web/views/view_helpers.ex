@@ -137,7 +137,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Returns the next schoolday (the next day that is not a school / public holiday).
   """
   def next_schoolday(periods) do
-    today = Date.utc_today()
+    today = Calendars.DateHelpers.today_berlin()
 
     periods
     |> Enum.filter(&(Date.compare(today, &1.ends_on) == :lt))
