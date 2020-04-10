@@ -87,6 +87,20 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
+  Returns the list of holiday_or_vacation_types which are is_school_vacation == true.
+  """
+  def list_is_school_vacation_types(country) do
+    query =
+      from(p in HolidayOrVacationType,
+        where:
+          p.default_is_school_vacation == true and
+            p.country_location_id == ^country.id
+      )
+
+    Repo.all(query)
+  end
+
+  @doc """
   Gets a single holiday_or_vacation_type.
 
   Raises `Ecto.NoResultsError` if the Holiday or vacation type does not exist.
