@@ -118,6 +118,8 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   The last comma is replaced with an "und" ("and").
   """
   def comma_join_with_a_final_und(list) do
+    list = Enum.filter(list, &(!is_nil(&1)))
+
     case Enum.count(list) do
       0 ->
         ""
