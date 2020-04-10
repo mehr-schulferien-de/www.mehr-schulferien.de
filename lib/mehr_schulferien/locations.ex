@@ -96,10 +96,19 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
-  Returns the list of cities for a certain county.
+  Returns the list of cities for a certain country.
   """
-  def list_cities_of_country(_country) do
-    from(l in Location, where: l.is_city == true)
+  def list_cities_of_country(country) do
+    federal_state_ids = country |> list_federal_states() |> Enum.map(& &1.id)
+
+    county_ids =
+      from(l in Location,
+        where: l.is_county == true and l.parent_location_id in ^federal_state_ids,
+        select: l.id
+      )
+      |> Repo.all()
+
+    from(l in Location, where: l.is_city == true and l.parent_location_id in ^county_ids)
     |> Repo.all()
   end
 

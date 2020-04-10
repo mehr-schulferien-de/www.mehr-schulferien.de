@@ -95,5 +95,25 @@ defmodule MehrSchulferien.LocationsTest do
       cities_1_ids = Enum.map(cities_1, & &1.id)
       assert cities_1_ids == cities_ids
     end
+
+    test "list_cities_of_country/1 returns a country's cities" do
+      german_cities = add_country_cities("d")
+      german_city_ids = Enum.map(german_cities, & &1.id)
+      country = Locations.get_country_by_slug!("d")
+      assert cities = Locations.list_cities_of_country(country)
+      assert Enum.all?(cities, &(&1.id in german_city_ids))
+      swiss_cities = add_country_cities("ch")
+      swiss_city_ids = Enum.map(swiss_cities, & &1.id)
+      country = Locations.get_country_by_slug!("ch")
+      assert cities = Locations.list_cities_of_country(country)
+      assert Enum.all?(cities, &(&1.id in swiss_city_ids))
+    end
+  end
+
+  defp add_country_cities(slug) do
+    country = insert(:country, slug: slug)
+    federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
+    counties = Enum.map(federal_states, &insert(:county, %{parent_location_id: &1.id}))
+    Enum.map(counties, &insert(:city, %{parent_location_id: &1.id}))
   end
 end
