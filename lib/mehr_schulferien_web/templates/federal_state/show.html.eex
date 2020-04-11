@@ -67,7 +67,7 @@
 
     <h2 id="faq">FAQ</h2>
     <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @next_3_years_periods) %>
-    <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", location: @federal_state, today: @today, todays_public_holiday_periods: @todays_public_holiday_periods, yesterdays_public_holiday_periods: @yesterdays_public_holiday_periods, tomorrows_public_holiday_periods: @tomorrows_public_holiday_periods, day_after_tomorrows_public_holiday_periods: @day_after_tomorrows_public_holiday_periods, todays_school_free_periods: @todays_school_free_periods, tomorrows_school_free_periods: @tomorrows_school_free_periods, day_after_tomorrows_school_free_periods: @day_after_tomorrows_school_free_periods, next_schoolday: next_schoolday %>
+    <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", conn: @conn, country: @country, federal_state: @federal_state, location: @federal_state, today: @today, todays_public_holiday_periods: @todays_public_holiday_periods, yesterdays_public_holiday_periods: @yesterdays_public_holiday_periods, tomorrows_public_holiday_periods: @tomorrows_public_holiday_periods, day_after_tomorrows_public_holiday_periods: @day_after_tomorrows_public_holiday_periods, todays_school_free_periods: @todays_school_free_periods, tomorrows_school_free_periods: @tomorrows_school_free_periods, day_after_tomorrows_school_free_periods: @day_after_tomorrows_school_free_periods, next_schoolday: next_schoolday %>
 
   </div>
 </div>
