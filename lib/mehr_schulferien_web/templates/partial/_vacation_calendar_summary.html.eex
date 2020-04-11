@@ -5,9 +5,13 @@
     <dl>
       <dt>
         <%= if assigns[:federal_state] != nil && assigns[:country] != nil && assigns[:conn] != nil && period.is_public_holiday == true do %>
-          <%= link "#{period.holiday_or_vacation_type.colloquial}", to: Routes.public_holiday_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
+          <%= link period.holiday_or_vacation_type.colloquial, to: Routes.public_holiday_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
         <% else %>
-          <%= period.holiday_or_vacation_type.colloquial %>
+          <%= if assigns[:federal_state] != nil && assigns[:country] != nil && assigns[:conn] != nil && period.is_school_vacation == true do %>
+            <%= link period.holiday_or_vacation_type.colloquial, to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
+          <% else %>
+            <%= period.holiday_or_vacation_type.colloquial %>
+          <% end %>
         <% end %>
       </dt>
       <dd>
