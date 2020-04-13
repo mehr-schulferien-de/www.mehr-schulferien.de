@@ -81,7 +81,11 @@
     </dd>
     <dt class="col-sm-5">Schulanfang <%= @location.name %></dt>
     <dd class="col-sm-7">
-      Schulanfang <%= @location.name %>: <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)
+      Die Schule fängt am <%= ViewHelpers.format_date(@next_schoolday) %> in <%= @location.name %> wieder an. Das ist in <%= Date.diff(@next_schoolday, @today) %> Tagen.
+    </dd>
+    <dt class="col-sm-5">Schulstart <%= @location.name %></dt>
+    <dd class="col-sm-7">
+      Die Schule startet am <%= ViewHelpers.format_date(@next_schoolday) %> (<%= ViewHelpers.weekday(@next_schoolday) %>) in <%= @location.name %>.
     </dd>
     <dt class="col-sm-5">Wann ist der erste Schultag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
@@ -205,7 +209,15 @@
         "name": "Schulanfang <%= @location.name %>",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Schulanfang <%= @location.name %>: <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)"
+          "text": "Die Schule fängt am <%= ViewHelpers.format_date(@next_schoolday) %> in <%= @location.name %> wieder an. Das ist in <%= Date.diff(@next_schoolday, @today) %> Tagen."
+        }
+    },
+    {
+        "@type": "Question",
+        "name": "Schulstart <%= @location.name %>",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Die Schule startet am <%= ViewHelpers.format_date(@next_schoolday) %> (<%= ViewHelpers.weekday(@next_schoolday) %>) in <%= @location.name %>."
         }
     },
     {
