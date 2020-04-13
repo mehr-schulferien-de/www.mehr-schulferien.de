@@ -8,10 +8,10 @@
     <p>Eine Schnellübersicht der nächsten 6 Wochen. Über die Bundesländer bekommen Sie Zugriff auf die Ferientermine und Feiertage von allen 14.522 Städte und 23.432 Schulen.</p>
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, country: @country, days: @days, day_names: @day_names, federal_states: @federal_states, months: @months, periods: @periods %>
 
-  <h2>FAQ</h2>
-  <p>Nachfolgend beantworten wir die häufigsten Fragen, die aktuell über Suchmaschinen auf
-  unsere Seite kommen. Bitte helfen Sie uns beim Sammeln von aktuellen Corona-Daten. Auf der Seite der jeweiligen
-  Bundesländer und Schulen finden Sie einen entsprechenden Link.</p>
+    <h2>FAQ</h2>
+    <p>Nachfolgend beantworten wir die häufigsten Fragen, die aktuell über Suchmaschinen auf
+    unsere Seite kommen. Bitte helfen Sie uns beim Sammeln von aktuellen Corona-Daten. Auf der Seite der jeweiligen
+    Bundesländer und Schulen finden Sie einen entsprechenden Link.</p>
 
     <dl class="row">
       <dt class="col-sm-5">Wann fängt die Schule wieder an 2020?</dt>
@@ -40,6 +40,57 @@
         Verlauf der Corona-Krise ändern sollten, werden wir diese Seite updaten.
       </dd>
     </dl>
+
+    <h2>Coronavirus-Pandemie – Die Krise nachhaltig überwinden</h2>
+    <p>Am 13.04.2020 wurde von der <a href="https://www.leopoldina.org">Leopoldina</a>
+    (Nationale Akademie der Wissenschaften) die Ad-hoc-Stellungnahme
+    "Coronavirus-Pandemie – Die Krise nachhaltig überwinden" veröffentlicht. Auch wenn dieses Papier
+    an sich eine rein wissenschaftliche Empfehlung ist, haben viele Politiker
+    (u.a. Bundeskanzerlin Angela Merkel) bereits gesagt, das es für die Entscheidungen der nächsten
+    von großer Bedeutung ist. Im Punkt 6 (Seite 13) geht es um die Schulen.</p>
+    <h3>Probleme</h3>
+    <p><i>"Mit dem „Shutdown“ werden ... wesentliche Funktionen der Schule außer Kraft gesetzt ...
+    Die Krise führt somit insgesamt zu einem Rückgang der Betreuungs-, Lehr- und Lernleistungen. ...
+    die in Deutschland ohnehin stark ausgeprägte soziale Ungleichheit in Bezug auf Zugänge zu Betreuung
+    und Unterricht sowie in Bezug auf Lernleistungen und Bildungserfolge verstärkt."</i> Da hat
+    das Gremium hinter dem Papier vollkommen Recht. Ich habe selber zwei schulpflichtige Kinder und
+    sehe, welche Schere sich gerade weiter öffnet. Es gibt Kinder, die beim Home-Schooling
+    durch die eigenen Eltern unterstützt werden und die auch technisch (z.B. Laptop, Internetzugang,
+    Scanner und Drucker) alle Möglichkeiten haben und andere Kinder, deren Eltern nicht die
+    Möglichkeiten haben ihre Kinder entsprechend zu unterstützen. Das ist extrem unfair den Kindern
+    und den Familien gegenüber.</p>
+    <h3>Wann soll die Schule wieder geöffnet werden?</h3>
+    <p><i>"Bildungseinrichtungen sollten schrittweise und nach Jahrgangsstufen differenziert wiedereröffnen. ...
+    Für eine längere Übergangszeit wird gelten, dass eingeschränkte, wenn auch schrittweise erweiterte
+    Formen von Betreuung und Unterricht akzeptiert werden müssen, um das weiterhin erhebliche
+    Ansteckungsrisiko zu reduzieren. ... Zu empfehlen ist eine Konzentration auf Schwerpunktfächer
+    (Deutsch und Mathematik in der Grundschule) ... Gruppengröße von maximal 15 ...
+    Eine gestaffelte Pausenregelung für die einzelnen Gruppen ist notwendig."</i></p>
+    <p>In dem Papier wird eine Öffnung der 4. Klasse in der Grundschule als Start empfohlen.
+    Danach sollen einzelne Klassenstufen nachkommen. Die älteren Klassenstufen müssen noch länger
+    Homeschooling machen. <i>"In der gymnasialen Oberstufe kann in höherem Maße auf das
+    selbstorganisierte Lernen der Schülerinnen und Schüler, auf der Basis digitaler und analoger
+    Lernmedien, gesetzt werden.</i>". Stimmt.</p>
+    <p>Wichtig: Es wird noch lange ein Ausnahmezustand herschen. Auf jeden Fall bis zu den Sommerferien.
+    Es würde mich nicht wundern, wenn das nächste Schuljahr auch noch davon betroffen sein wird.
+    So schnell wird kein Impfstoff verfügbar sein und Schulen sind ein Ort, an dem sich Menschen nah
+    kommen.</p>
+    <h3>Digitale Unterrichtsmaterialien</h3>
+    <p><i>"Das Angebot digitaler Unterrichtsmaterialien muss vergrößert und leicht zugänglich
+    gemacht werden ... Festzuhalten ist aber auch, dass die Krise den Digitalisierungsschub im
+    Bildungsbereich beschleunigt"</i></p>
+    <p>Ja, diese Krise beschleunigt den Digitalisierungsschub. Leider muss diese zusätzliche
+    Beschleunigung bei mehr oder weniger Null anfangen. Am Anfang der Krise waren die meisten
+    Online-Systeme mit dem Ansturm völlig überfordert. Viele Lehrer hatten und haben auch noch
+    Probleme mit der aktuellen Art der Kommunikation mit den Schülern. Ich bin froh, das
+    in diesem Feld jetzt etwas geschieht, aber es ist ein langer Weg. Man kann nicht mal eben
+    gerade ganze Schulbücher sinnvoll digitalisieren und einfach nur ein PDF zu exportieren -
+    was ja sehr viele Schulbuchverlage gerne machen - ist keine Lösung.</p>
+    <h3>Wie geht es weiter?</h3>
+    <p>Wie oben geschrieben, hat das Papier der Leopoldina hat keinen Richtliniencharakter. Es ist
+    lediglich eine Empfehlung. Aus meiner Sicht machen diese Empfehlungen bezüglich des Schulsystems
+    Sinn. Im Laufe der Woche werden die einzelnen Bundesländer sich hoffentlich zu einer einheitlichen
+    Regelung abstimmen. Wir werden das Angebot auf dieser Seite dann entsprechend anpassen und updaten.</p>
   </div>
 </div>
 
