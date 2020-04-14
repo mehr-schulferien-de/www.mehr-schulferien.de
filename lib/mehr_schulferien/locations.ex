@@ -122,6 +122,15 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns the list of schools for a certain country.
+  """
+  def list_schools_of_country(_country) do
+    from(l in Location, where: l.is_school == true)
+    |> Repo.all()
+    |> Repo.preload([:address])
+  end
+
+  @doc """
   Returns the total number of schools in the database.
   """
   def number_schools do
