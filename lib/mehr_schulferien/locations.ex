@@ -237,4 +237,8 @@ defmodule MehrSchulferien.Locations do
 
     %{country: country, federal_state: federal_state, county: county, city: city, school: school}
   end
+
+  def with_periods(locations) do
+    Repo.preload(locations, [:periods])
+  end
 end

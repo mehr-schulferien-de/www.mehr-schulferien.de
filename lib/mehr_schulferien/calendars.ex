@@ -160,12 +160,8 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
-  Gets a single period.
-
-  Raises `Ecto.NoResultsError` if the Period does not exist.
+  Returns a list of current and future periods for a federal_state.
   """
-  def get_period!(id), do: Repo.get!(Period, id)
-
   def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
     today = DateHelpers.today_berlin()
 
@@ -181,6 +177,13 @@ defmodule MehrSchulferien.Calendars do
     Repo.all(query)
     |> Repo.preload([:holiday_or_vacation_type])
   end
+
+  @doc """
+  Gets a single period.
+
+  Raises `Ecto.NoResultsError` if the Period does not exist.
+  """
+  def get_period!(id), do: Repo.get!(Period, id)
 
   @doc """
   Creates a period.
