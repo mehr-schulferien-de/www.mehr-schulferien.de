@@ -1,0 +1,26 @@
+<title>Schulbeginn <%= @federal_state.name %></title>
+<meta name="description" content="Tagesaktuelle Informationen zum Schulanfang im Bundesland <%= @federal_state.name %>.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "name": "<%= @country.name %>",
+    "item": "https://www.mehr-schulferien.de<%= Routes.country_path(@conn, :show, @country.slug) %>"
+  },{
+    "@type": "ListItem",
+    "position": 2,
+    "name": "Ferientermine <%= @federal_state.name %>",
+    "item": "https://www.mehr-schulferien.de<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>"
+  },{
+    "@type": "ListItem",
+    "position": 3,
+    "name": "Schulbeginn <%= @federal_state.name %>",
+    "item": "https://www.mehr-schulferien.de/ferien/<%= @country.slug %>/bundesland/<%= @federal_state.slug %>/schulbeginn"
+  }
+  ]
+}
+</script>
