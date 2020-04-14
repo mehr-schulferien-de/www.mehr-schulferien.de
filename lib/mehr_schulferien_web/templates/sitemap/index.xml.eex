@@ -15,12 +15,15 @@
     </url>
   <% end %>
   <%= for federal_state <- @federal_states do %>
+    <% holiday_or_vacation_type_ids = Enum.map(federal_state.periods, & &1.holiday_or_vacation_type_id) %>
     <%= for is_school_vacation_type <- @is_school_vacation_types do %>
-      <url>
-        <loc><%= Routes.federal_state_url(@conn, :show_holiday_or_vacation_type, @country.slug, federal_state.slug, is_school_vacation_type.slug) %></loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.4</priority>
-      </url>
+      <%= if is_school_vacation_type.id in holiday_or_vacation_type_ids do %>
+        <url>
+          <loc><%= Routes.federal_state_url(@conn, :show_holiday_or_vacation_type, @country.slug, federal_state.slug, is_school_vacation_type.slug) %></loc>
+          <changefreq>monthly</changefreq>
+          <priority>0.4</priority>
+        </url>
+      <% end %>
     <% end %>
   <% end %>
   <%= for city <- @cities do %>

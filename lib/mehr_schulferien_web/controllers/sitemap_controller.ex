@@ -1,5 +1,6 @@
 defmodule MehrSchulferienWeb.SitemapController do
   use MehrSchulferienWeb, :controller
+
   plug :put_layout, false
 
   alias MehrSchulferien.Locations
@@ -10,7 +11,7 @@ defmodule MehrSchulferienWeb.SitemapController do
     today = DateTime.to_date(today_datetime)
 
     country = Locations.get_country_by_slug!("d")
-    federal_states = Locations.list_federal_states(country)
+    federal_states = country |> Locations.list_federal_states() |> Locations.with_periods()
     cities = Locations.list_cities_of_country(country)
     is_school_vacation_types = Calendars.list_is_school_vacation_types(country)
 

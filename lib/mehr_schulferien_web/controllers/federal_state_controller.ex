@@ -87,6 +87,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     periods = Calendars.list_current_and_future_periods(federal_state, holiday_or_vacation_type)
 
+    if Enum.empty?(periods) do
+      raise MehrSchulferien.NoHolidayOrVacationTypePeriod
+    end
+
     months = MehrSchulferien.Calendars.DateHelpers.get_months_map()
 
     render(conn, "show_holiday_or_vacation_type.html",
