@@ -63,35 +63,8 @@
   </dl>
 
   <%= if Enum.count(@todays_school_free_periods) > 0 do %>
-  <h3>Schulbeginn</h3>
-  <p>Die folgenden Fragen nach dem Schulbeginn beantworten wir tagesaktuell. Während der Corona-Krise bemühen wir uns um regelmässige Updates.
-  Bitte helfen Sie uns dabei und <%= link "geben Sie neue Informationen im Corona-Schließzeiten-Formular ein.", rel: "nofollow", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) <> "/new_period"%></p>
-  <dl class="row">
-    <dt class="col-sm-5">Wann fängt die Schule in <%= @location.name %> wieder an?</dt>
-    <dd class="col-sm-7">
-      Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an.
-    </dd>
-    <dt class="col-sm-5">Wann beginnt die Schule wieder in <%= @location.name %>?</dt>
-    <dd class="col-sm-7">
-      Die Schule in <%= @location.name%> beginnt wieder am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
-    </dd>
-    <dt class="col-sm-5">Schulbeginn <%= @location.name %></dt>
-    <dd class="col-sm-7">
-      Schulbeginn <%= @location.name %>: <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)
-    </dd>
-    <dt class="col-sm-5">Schulanfang <%= @location.name %></dt>
-    <dd class="col-sm-7">
-      Die Schule fängt am <%= ViewHelpers.format_date(@next_schoolday) %> in <%= @location.name %> wieder an. Das ist in <%= Date.diff(@next_schoolday, @today) %> Tagen.
-    </dd>
-    <dt class="col-sm-5">Schulstart <%= @location.name %></dt>
-    <dd class="col-sm-7">
-      Die Schule startet am <%= ViewHelpers.format_date(@next_schoolday) %> (<%= ViewHelpers.weekday(@next_schoolday) %>) in <%= @location.name %>.
-    </dd>
-    <dt class="col-sm-5">Wann ist der erste Schultag in <%= @location.name %>?</dt>
-    <dd class="col-sm-7">
-      Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
-    </dd>
-  </dl>
+    <h3>Schulbeginn</h3>
+    <p><a href="/ferien/<%= @country.slug %>/bundesland/<%= @federal_state.slug %>/schulbeginn">Wann fängt die Schule wieder an FAQ?</a></p>
   <% end %>
   </div>
 </div>
@@ -180,55 +153,6 @@
           "text": "<%= FaqViewHelpers.next_public_holiday_answer(@location) %>"
         }
     }
-    <%= if Enum.count(@todays_school_free_periods) > 0 do %>
-    ,{
-        "@type": "Question",
-        "name": "Wann fängt die Schule in <%= @location.name %> wieder an?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an."
-        }
-    },{
-        "@type": "Question",
-        "name": "Wann beginnt die Schule wieder in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Die Schule in <%= @location.name%> beginnt wieder am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)."
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Schulbeginn <%= @location.name %>",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Schulbeginn <%= @location.name %>: <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Schulanfang <%= @location.name %>",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Die Schule fängt am <%= ViewHelpers.format_date(@next_schoolday) %> in <%= @location.name %> wieder an. Das ist in <%= Date.diff(@next_schoolday, @today) %> Tagen."
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Schulstart <%= @location.name %>",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Die Schule startet am <%= ViewHelpers.format_date(@next_schoolday) %> (<%= ViewHelpers.weekday(@next_schoolday) %>) in <%= @location.name %>."
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Wann ist der erste Schultag in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)."
-        }
-    }
-    <% end %>
     ]
   }
   </script>
