@@ -24,7 +24,8 @@
 
 <div class="row">
   <div class="col-md-12">
-    <%= render MehrSchulferienWeb.PartialView, "_public_holidays_table_for_federal_state.html", periods: @periods, months: @months, federal_state: @federal_state, country: @country %>
+    <% grouped_periods = Enum.chunk_by(@periods, & &1.starts_on.year) %>
+    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state, page_link: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>
 
     <h2>FAQ <small>(häufig gestellte Fragen)</small></h2>
     <dl class="row">
