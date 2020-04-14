@@ -142,7 +142,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     today = Calendars.DateHelpers.today_berlin()
 
     periods
-    |> Enum.filter(&(Date.compare(today, &1.ends_on) == :lt))
+    |> Enum.filter(&(Date.compare(today, &1.ends_on) != :gt))
     |> Enum.sort(&(Date.compare(&1.starts_on, &2.starts_on) == :lt))
     |> Calendars.find_next_schoolday(today)
   end
