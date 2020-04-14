@@ -14,6 +14,7 @@ defmodule MehrSchulferienWeb.SitemapController do
     federal_states = country |> Locations.list_federal_states() |> Locations.with_periods()
     cities = Locations.list_cities_of_country(country)
     is_school_vacation_types = Calendars.list_is_school_vacation_types(country)
+    schools = Locations.list_schools_of_country(country)
 
     conn
     |> put_resp_content_type("text/xml")
@@ -22,7 +23,8 @@ defmodule MehrSchulferienWeb.SitemapController do
       federal_states: federal_states,
       cities: cities,
       today: today,
-      is_school_vacation_types: is_school_vacation_types
+      is_school_vacation_types: is_school_vacation_types,
+      schools: schools
     )
   end
 end
