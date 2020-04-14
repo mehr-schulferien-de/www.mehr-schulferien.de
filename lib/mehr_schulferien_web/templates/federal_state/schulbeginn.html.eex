@@ -1,0 +1,59 @@
+<ol class="breadcrumb hidden-xs">
+  <li class="breadcrumb-item"><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li class="breadcrumb-item"><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li class="breadcrumb-item"><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li class="breadcrumb-item active" aria-current="page"><%= link "Schulbeginn #{@federal_state.name}", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li class="breadcrumb-item"><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li class="breadcrumb-item"><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li class="breadcrumb-item"><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
+  <li class="breadcrumb-item active" aria-current="page"><%= link "Schulbeginn #{@federal_state.name}", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        Schulbeginn <%= @federal_state.name %>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-9">
+    <h2 id="faq">FAQ</h2>
+    <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @next_3_years_periods) %>
+    <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", conn: @conn, country: @country, federal_state: @federal_state, location: @federal_state, today: @today, todays_public_holiday_periods: @todays_public_holiday_periods, yesterdays_public_holiday_periods: @yesterdays_public_holiday_periods, tomorrows_public_holiday_periods: @tomorrows_public_holiday_periods, day_after_tomorrows_public_holiday_periods: @day_after_tomorrows_public_holiday_periods, todays_school_free_periods: @todays_school_free_periods, tomorrows_school_free_periods: @tomorrows_school_free_periods, day_after_tomorrows_school_free_periods: @day_after_tomorrows_school_free_periods, next_schoolday: next_schoolday %>
+  </div>
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Corona</h3>
+      </div>
+      <div class="panel-body">
+        <p>Während der <a href="https://de.wikipedia.org/wiki/COVID-19-Pandemie">COVID-19-Pandemie</a>
+        möchten wir mit der Bereitstellung von Daten zu Corona-Schließzeiten von Schulen helfen.
+        Bei der Erfassung der Daten benötigen wir Ihre Hilfe.
+        Wenn Sie neue Quarantäne-Termine für das Bundesland
+        <%= @federal_state.name %> kennen, dann tragen Sie sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", rel: "nofollow", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) <> "/new_period"%> ein. Danke!</p>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Sonstiges</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+          <li><%= link "Liste mit allen Landkreisen und Städten in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %></li>
+        </ul>
+      </div>
+    </div>
+
+    <%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
+
+  </div>
+</div>
