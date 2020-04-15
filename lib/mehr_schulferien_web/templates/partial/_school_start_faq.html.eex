@@ -33,6 +33,14 @@
         <td>
           Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
         </td></tr>
+        <tr><td>schulbeginn <%= @location.name %> corona</td>
+        <td>
+          Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage).
+        </td></tr>
+        <tr><td>Schule <%= @location.name %> Corona</td>
+        <td>
+          Schulbeginn in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage).
+        </td></tr>
         <%= for period <- @todays_school_free_periods do %>
           <%= if period.is_school_vacation == true do %>
             <tr><td>Schule nach <%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %></td>
@@ -122,6 +130,22 @@
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)."
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "schulbeginn <%= @location.name %> corona",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage)."
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "schule <%= @location.name %> corona",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Schulbeginn in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage)."
       }
   }
   ]
