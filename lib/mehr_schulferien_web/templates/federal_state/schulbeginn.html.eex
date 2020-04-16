@@ -56,6 +56,7 @@
       <div class="panel-body">
         <span class="badge badge-primary">Schulstart</span>
         <span class="badge badge-primary">Schulbeginn</span>
+        <span class="badge badge-primary">Schulanfang</span>
         <span class="badge badge-secondary">Schule</span>
         <span class="badge badge-secondary">Corona</span>
         <span class="badge badge-secondary">COVID-19</span>
