@@ -49,6 +49,22 @@
         </ul>
       </div>
     </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Tags</h3>
+      </div>
+      <div class="panel-body">
+        <span class="badge badge-primary">Schulstart</span>
+        <span class="badge badge-primary">Schulbeginn</span>
+        <span class="badge badge-primary">Schulanfang</span>
+        <span class="badge badge-secondary">Schule</span>
+        <span class="badge badge-secondary">Corona</span>
+        <span class="badge badge-secondary">COVID-19</span>
+        <span class="badge badge-secondary">COVID-19-Pandemie</span>
+        <span class="badge badge-secondary"><%= @federal_state.name %></span>
+        <span class="badge badge-secondary"><%= @federal_state.code %></span>
+      </div>
+    </div>
 
     <%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
 
