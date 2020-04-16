@@ -107,6 +107,25 @@ defmodule MehrSchulferien.LocationsTest do
       country = Locations.get_country_by_slug!("ch")
       assert cities = Locations.list_cities_of_country(country)
       assert Enum.all?(cities, &(&1.id in swiss_city_ids))
+      refute Enum.any?(cities, &(&1.id in german_city_ids))
+    end
+  end
+
+  describe "school data" do
+    test "list_schools_of_country/1 returns a country's schools" do
+      german_cities = add_country_cities("d")
+      german_schools = Enum.map(german_cities, &insert(:school, %{parent_location_id: &1.id}))
+      german_school_ids = Enum.map(german_schools, & &1.id)
+      country = Locations.get_country_by_slug!("d")
+      assert schools = Locations.list_schools_of_country(country)
+      assert Enum.all?(schools, &(&1.id in german_school_ids))
+      swiss_cities = add_country_cities("ch")
+      swiss_schools = Enum.map(swiss_cities, &insert(:school, %{parent_location_id: &1.id}))
+      swiss_school_ids = Enum.map(swiss_schools, & &1.id)
+      country = Locations.get_country_by_slug!("ch")
+      assert schools = Locations.list_schools_of_country(country)
+      assert Enum.all?(schools, &(&1.id in swiss_school_ids))
+      refute Enum.any?(schools, &(&1.id in german_school_ids))
     end
   end
 

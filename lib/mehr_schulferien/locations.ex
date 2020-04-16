@@ -124,8 +124,10 @@ defmodule MehrSchulferien.Locations do
   @doc """
   Returns the list of schools for a certain country.
   """
-  def list_schools_of_country(_country) do
-    from(l in Location, where: l.is_school == true)
+  def list_schools_of_country(country) do
+    city_ids = country |> list_cities_of_country() |> Enum.map(& &1.id)
+
+    from(l in Location, where: l.is_school == true and l.parent_location_id in ^city_ids)
     |> Repo.all()
     |> Repo.preload([:address])
   end
