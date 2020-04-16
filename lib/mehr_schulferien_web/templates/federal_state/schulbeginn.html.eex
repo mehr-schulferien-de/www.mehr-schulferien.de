@@ -2,14 +2,14 @@
   <li class="breadcrumb-item"><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
   <li class="breadcrumb-item"><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li class="breadcrumb-item"><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
-  <li class="breadcrumb-item active" aria-current="page"><a href="/ferien/<%= @country.slug %>/bundesland/<%= @federal_state.slug %>/schulbeginn">Schulbeginn <%= @federal_state.name %></a></li>
+  <li class="breadcrumb-item active" aria-current="page"><%= link "Schulbeginn #{@federal_state.name}", to: Routes.federal_state_path(@conn, :schulbeginn, @country.slug, @federal_state.slug) %></li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li class="breadcrumb-item"><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
   <li class="breadcrumb-item"><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li class="breadcrumb-item"><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "active" %></li>
-  <li class="breadcrumb-item active" aria-current="page"><a href="/ferien/<%= @country.slug %>/bundesland/<%= @federal_state.slug %>/schulbeginn">Schulbeginn <%= @federal_state.name %></a></li>
+  <li class="breadcrumb-item active" aria-current="page"><%= link "Schulbeginn #{@federal_state.name}", to: Routes.federal_state_path(@conn, :schulbeginn, @country.slug, @federal_state.slug) %></li>
 </ol>
 
 <div class="page-header">
