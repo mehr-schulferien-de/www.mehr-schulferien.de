@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <%= render_existing(@view_module, "meta." <> @view_template, assigns) ||
         render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
-    <%= if true do %>
+    <%= if false do %>
       <style>
       <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
       </style>
@@ -17,46 +17,48 @@
     <script data-ad-client="ca-pub-9538764634478220" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   </head>
   <body>
-    <div class="container">
-      <main role="main">
+
+    <main role="main">
+      <div class="container">
         <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
         <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
         <%= render @view_module, @view_template, assigns %>
-      </main>
+      </div>
+    </main>
+
+    <footer>
       <!--
-      <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+        <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
       -->
-      <div class="row">
-        <div class="col-xs-12">
-        <hr>
-          <p>Alle Angaben ohne Gewähr.</p>
-          <h4>DSGVO und Cookies</h4>
-          <p class="small">
+      <div class="dsgvo text-center">
+        <div class="container">
+          <p class="text-center">Alle Angaben ohne Gewähr.</p>
+          <h5 class="text-center">DSGVO und Cookies</h5>
+          <p>
             Wir weisen darauf hin, dass diese Seite Google Analytics einsetzt und verweisen hierzu auf die <a href="https://policies.google.com/privacy">Datenschutzerklärung</a> sowie auf die <a href="http://tools.google.com/dlpage/gaoptout?hl=de">Opt-Out-Möglichkeiten für Google-Analytics</a>.
           </p>
-          <p class="small">
+          <p>
             Diese Webseite verwendet Cookies, um Inhalte und Anzeigen zu personalisieren, Funktionen für soziale Medien anbieten zu können und die Zugriffe auf unsere Website zu analysieren. Außerdem geben wir Informationen zu Ihrer Verwendung unserer Website an unsere Partner für soziale Medien, Werbung und Analysen weiter. Unsere Partner führen diese Informationen möglicherweise mit weiteren Daten zusammen, die Sie ihnen bereitgestellt haben oder die sie im Rahmen Ihrer Nutzung der Dienste gesammelt haben. Sie geben Einwilligung zu unseren Cookies, wenn Sie unsere Webseite weiterhin nutzen.
           </p>
-          <p class="small">
+          <p>
             Weiterhin behalten wir uns vor alle Daten an den Nikolaus (a.k.a. Weihnachtsmann) zu verkaufen. Je nachdem wie gut Sie sich im laufenden Jahr verhalten haben, wird der Nikolaus Ihnen dann pünklich zum 06.12. den vor die Haustür gestellten Stiefel füllen. Es hat sich in der Vergangenheit gezeigt, das es auch gut ist, wenn man zum Besuch des Nikolaus ein - möglichst schönes - Gedicht auswendig vortragen kann.
           </p>
         </div>
       </div>
-      <footer>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>
-              Version <%= ViewHelpers.version() %> - 2020 Copyright by Stefan Wintermeyer - <a href="/impressum">Impressum und Datenschutzerklärung</a>
-            </p>
-          </div>
-          <div class="col-xs-6">
-            <p class="pull-right">
-              <a href="https://www.wintermeyer-consulting.de">Wintermeyer Consulting</a>
-            </p>
-          </div>
+      <div class="copy">
+        <div class="container">
+          <p>
+            Version <%= ViewHelpers.version() %> - 2020 &copy; Stefan Wintermeyer
+          </p>
+          <p>
+            <a href="https://www.wintermeyer-consulting.de/impressum">Impressum und Datenschutzerklärung</a>
+          </p>
+          <p>
+            <a href="https://www.wintermeyer-consulting.de">Wintermeyer Consulting</a>
+          </p>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
 
   </body>
 </html>
