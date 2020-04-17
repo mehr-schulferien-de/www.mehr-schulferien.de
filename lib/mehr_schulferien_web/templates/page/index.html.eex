@@ -8,5 +8,14 @@
     <p>Eine Schnellübersicht der nächsten 6 Wochen. Über die Bundesländer bekommen Sie Zugriff auf die Ferientermine und Feiertage von allen 14.522 Städte und 23.432 Schulen.</p>
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, country: @country, days: @days, day_names: @day_names, federal_states: @federal_states, months: @months, periods: @periods %>
 
+    <h2>Schulbeginn/Schulanfang</h2>
+    <p>Nach dem Beginn der Corona-Krise stiegen die Suchanfragen rund um das Thema Schulanfang stark an.
+    Da jedes Bundesland andere Ferientermine hat, beantworten wir Fragen rund um dieses Thema auf
+    spezielen FAQ-Seiten:</p>
+    <ul>
+      <%= for federal_state <- @federal_states do %>
+        <li><%= link "Schulbeginn/Schulanfang #{federal_state.name}", to: Routes.federal_state_path(@conn, :schulbeginn, @country.slug, federal_state.slug) %></li>
+      <% end %>
+    </ul>
   </div>
 </div>
