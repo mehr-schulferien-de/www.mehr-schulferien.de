@@ -33,6 +33,7 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/", PageController, :index
     get "/developers", PageController, :developers
+    get "/impressum", PageController, :impressum
     get "/land/:country_slug", CountryController, :show
 
     get "/sitemap.xml", SitemapController, :index

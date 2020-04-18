@@ -117,7 +117,7 @@
             Version <%= ViewHelpers.version() %> - 2020 &copy; Stefan Wintermeyer
           </p>
           <p>
-            <a href="https://www.wintermeyer-consulting.de/impressum">Impressum und Datenschutzerklärung</a>
+            <%= link "Impressum und Datenschutzerklärung", to: Routes.page_path(@conn, :impressum) %>
           </p>
           <p>
             <a href="https://www.wintermeyer-consulting.de">Wintermeyer Consulting</a>

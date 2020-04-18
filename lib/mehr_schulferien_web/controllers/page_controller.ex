@@ -31,4 +31,8 @@ defmodule MehrSchulferienWeb.PageController do
   def developers(conn, _params) do
     render(conn, "developers.html")
   end
+
+  def impressum(conn, _params) do
+    render(conn, "impressum.html")
+  end
 end
