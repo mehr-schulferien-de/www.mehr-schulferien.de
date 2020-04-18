@@ -21,6 +21,7 @@
     <main role="main">
       <div class="container">
         <div class="logo">
+          <%= link to: Routes.page_path(@conn, :index) do %>
           <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 185.1 23.2" style="enable-background:new 0 0 185.1 23.2;" xml:space="preserve">
             <style type="text/css">
@@ -82,6 +83,7 @@
                 h3.6L56.9,11.6z"/>
             </g>
           </svg>
+          <% end %>
         </div>
 
 
