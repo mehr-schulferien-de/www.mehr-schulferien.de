@@ -120,17 +120,11 @@
     "datePosted": "2020-04-19T08:00",
     "expires": "2020-05-03T23:59",
     "category": "https://www.wikidata.org/wiki/Q81068910",
-    "announcementLocation": {
-      "@type": "spatialCoverage",
-      "name": "<%= @city.name %>",
-      "address":{
-        "@type": "PostalAddress",
-        "streetAddress": "",
-        "addressLocality": "<%= @city.name %>",
-        "postalCode": "<%= postal_code %>",
-        "addressRegion": "<%= @federal_state.name %>",
-        "addressCountry": "<%= @country.code %>"
+    "spatialCoverage": [
+      {
+        "type": "AdministrativeArea",
+        "name": "<%= @city.name %> (<%= @federal_state.name %>)"
       }
-    }
+    ]
   }
 </script>
