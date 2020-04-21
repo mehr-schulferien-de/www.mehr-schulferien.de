@@ -24,8 +24,8 @@
 
 <div class="row">
   <div class="col-md-9">
-    <p>Auf dieser Seite bekommen Sie tagesaktuelle Antworten auf Fragen, rund um den Schulstart im Bundesland
-    <%= @federal_state.name %>. Mehr Infos unter <%= link "Kalenderansicht Schulferien #{@federal_state.name}.", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></p>
+    <p>Tagesaktuelle Antworten auf alle Fragen, rund um den Schulstart im Bundesland
+    <%= @federal_state.name %> (<%= @country.name%>). Mehr Infos unter <%= link "Kalenderansicht Schulferien #{@federal_state.name}.", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></p>
     <%= if Enum.count(@todays_school_free_periods) > 0 do %>
 
       <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @next_3_years_periods) %>
