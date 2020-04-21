@@ -110,7 +110,7 @@
     "expires": "2020-05-03T23:59",
     "category": "https://www.wikidata.org/wiki/Q81068910",
     "announcementLocation": {
-      "@type": "Place",
+      "@type": "spatialCoverage",
       "name": "<%= @federal_state.name %>",
       "address":{
         "@type": "PostalAddress",
