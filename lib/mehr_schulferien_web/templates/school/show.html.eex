@@ -129,31 +129,3 @@
     }
   </script>
 <% end %>
-
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SpecialAnnouncement",
-    "name": "COVID-19 Schulschließung in <%= @federal_state.name %>",
-    "text": "Im Bundesland <%= @federal_state.name %> sind bis einschliesslich dem 03.05.2020 alle Schulen geschlossen.
-    Es gibt allerdings Ausnahmen (z.B. für Abiturprüfungen).",
-    "datePosted": "2020-04-19T08:00",
-    "expires": "2020-05-03T23:59",
-    "category": "https://www.wikidata.org/wiki/Q81068910",
-    "announcementLocation": {
-      "@type": "CivicStructure",
-      "name": "<%= @school.name %>",
-      <%= if @school.address.homepage_url != nil do %>
-      "url": "<%= @school.address.homepage_url %>",
-      <% end %>
-      "address":{
-        "@type": "PostalAddress",
-        "streetAddress": "<%= @school.address.street %>",
-        "addressLocality": "<%= @city.name %>",
-        "postalCode": "<%= @school.address.zip_code %>",
-        "addressRegion": "<%= @federal_state.name %>",
-        "addressCountry": "<%= @country.code %>"
-      }
-    }
-  }
-</script>
