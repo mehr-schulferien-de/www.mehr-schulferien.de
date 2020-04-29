@@ -3,7 +3,7 @@
     <tr>
       <th></th>
       <th>von - bis</th>
-      <th>Dauer in Tage</th>
+      <th>Dauer</th>
     </tr>
   </thead>
   <tbody>
@@ -28,7 +28,10 @@
           <% end %>
         </span>
       </td>
-      <td><%= ViewHelpers.number_days(periods) %></td>
+      <td>
+        <%= ViewHelpers.number_days(periods) %>
+        Tag<%= if ViewHelpers.number_days(periods) > 1 do %>e<% end %>
+      </td>
     </tr>
   <% end %>
   </tbody>
