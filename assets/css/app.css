@@ -38,3 +38,56 @@ footer .copy {
   width: 7.972em;
   display: block;
 }
+
+h1 {
+  margin: .5em 0 .5em;
+}
+
+.page-header {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2em;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 1.5em;
+  }
+  h3 {
+    font-size: 1.25em;
+  }
+  h4 {
+    font-size: 1em;
+  }
+}
+
+.panel-body ul {
+  margin-left: 0;
+  padding-left: 1.1em;
+}
+
+mark.public-holiday {
+  background: #d9edf7;
+}
+mark.school-holiday {
+  background: #dff0d8;
+}
+
+i.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+}
+
+i.icon svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+i.icon svg,
+i.icon svg path {
+  fill: currentColor;
+}
