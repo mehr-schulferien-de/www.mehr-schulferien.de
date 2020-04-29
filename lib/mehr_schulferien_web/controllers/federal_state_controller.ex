@@ -139,7 +139,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
     assigns =
       [
         country: country,
-        federal_state: federal_state
+        federal_state: federal_state,
+        today: today
       ] ++
         CH.show_period_data(location_ids, today) ++ CH.faq_data(location_ids, today)
 
