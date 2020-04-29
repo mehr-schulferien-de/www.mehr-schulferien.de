@@ -13,9 +13,6 @@
     <tr class="<%= if period.html_class in ["warning", "danger"], do: period.html_class %>">
       <td>
         <%= period.holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %>
-        <%= if assigns[:federal_state] do %>
-          (<%= @federal_state.code %>)
-        <% end %>
       </td>
       <td>
         <span>
@@ -23,14 +20,13 @@
           <% page_link = if assigns[:page_link], do: @page_link, else: "" %>
           <%= link to: "#{page_link}##{String.downcase(month)}#{period.starts_on.year}" do %>
             <%= for period <- periods do %>
-              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br>
+              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
             <% end %>
           <% end %>
         </span>
       </td>
-      <td>
-        <%= ViewHelpers.number_days(periods) %>
-        Tag<%= if ViewHelpers.number_days(periods) > 1 do %>e<% end %>
+      <td class="text-right">
+        <%= ViewHelpers.number_days(periods) %>&nbspTag<%= if ViewHelpers.number_days(periods) > 1 do %>e<% end %>
       </td>
     </tr>
   <% end %>
