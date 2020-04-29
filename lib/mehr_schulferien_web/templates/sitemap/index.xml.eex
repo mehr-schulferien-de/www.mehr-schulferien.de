@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc><%= Routes.page_url(@conn, :index) |> String.replace("http:", "https:") %></loc>
+    <loc><%= Routes.page_url(@conn, :index) %></loc>
     <changefreq>daily</changefreq>
     <lastmod><%= @today %></lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc><%= Routes.page_url(@conn, :developers) |> String.replace("http:", "https:") %></loc>
+    <loc><%= Routes.page_url(@conn, :developers) %></loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <%= for federal_state <- @federal_states do %>
     <url>
-      <loc><%= Routes.federal_state_url(@conn, :show, @country.slug, federal_state.slug) |> String.replace("http:", "https:") %></loc>
+      <loc><%= Routes.federal_state_url(@conn, :show, @country.slug, federal_state.slug) %></loc>
       <changefreq>daily</changefreq>
       <lastmod><%= @today %></lastmod>
       <priority>0.6</priority>
     </url>
     <url>
-      <loc><%= Routes.federal_state_url(@conn, :show, @country.slug, federal_state.slug) |> String.replace("http:", "https:") %>/schulbeginn</loc>
+      <loc><%= Routes.federal_state_url(@conn, :show, @country.slug, federal_state.slug) %>/schulbeginn</loc>
       <changefreq>daily</changefreq>
       <lastmod><%= @today %></lastmod>
       <priority>0.5</priority>
@@ -30,7 +30,7 @@
     <%= for is_school_vacation_type <- @is_school_vacation_types do %>
       <%= if is_school_vacation_type.id in holiday_or_vacation_type_ids do %>
         <url>
-          <loc><%= Routes.federal_state_url(@conn, :show_holiday_or_vacation_type, @country.slug, federal_state.slug, is_school_vacation_type.slug) |> String.replace("http:", "https:") %></loc>
+          <loc><%= Routes.federal_state_url(@conn, :show_holiday_or_vacation_type, @country.slug, federal_state.slug, is_school_vacation_type.slug) %></loc>
           <changefreq>monthly</changefreq>
           <priority>0.4</priority>
         </url>
@@ -39,14 +39,14 @@
   <% end %>
   <%= for city <- @cities do %>
     <url>
-      <loc><%= Routes.city_url(@conn, :show, @country.slug, city.slug) |> String.replace("http:", "https:") %></loc>
+      <loc><%= Routes.city_url(@conn, :show, @country.slug, city.slug) %></loc>
       <changefreq>monthly</changefreq>
       <priority>0.5</priority>
     </url>
   <% end %>
   <%= for school <- @schools do %>
     <url>
-      <loc><%= Routes.school_url(@conn, :show, @country.slug, school.slug) |> String.replace("http:", "https:") %></loc>
+      <loc><%= Routes.school_url(@conn, :show, @country.slug, school.slug) %></loc>
       <changefreq>monthly</changefreq>
       <priority>0.5</priority>
     </url>
