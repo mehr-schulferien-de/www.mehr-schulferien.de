@@ -47,10 +47,23 @@ h1 {
   margin-top: 0;
 }
 
+mark,
+.mark {
+  line-height: inherit;
+  padding: .1em .2em;
+}
+
+
 @media (max-width: 768px) {
+  mark,
+  .mark {
+    line-height: inherit;
+    padding: 0 .2em;
+  }
   h1 {
     font-size: 1.9em;
     margin-top: 0;
+    line-height: 1.2em;
   }
   h2 {
     font-size: 1.5em;
@@ -90,4 +103,102 @@ i.icon svg {
 i.icon svg,
 i.icon svg path {
   fill: currentColor;
+}
+
+.calendar {
+  margin: 0 0 .75em 0;
+  overflow: hidden;
+  margin: 1em 0;
+}
+
+.calendar .header {
+  padding: 8px 12px;
+  background: rgb(52,98,172);
+  color: #fff;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.calendar .body {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+
+.calendar .text-muted {
+  color: rgba(255,255,255,.7);
+  font-weight: 300;
+}
+
+.calendar .footer {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.calendar .footer .padding {
+}
+
+
+.calendar .header h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.calendar table {
+  margin: 0 0 -1px;
+  border: none;
+}
+
+.calendar .col-xs-6 dl:last-child {
+  margin: 0;
+}
+
+.calendar table th {
+  text-align: center;
+}
+
+.calendar table td {
+  padding-top: .5em !important;
+  padding-bottom: .5em !important;
+  border-top: none;
+  border-bottom: 1px solid #ccc;
+}
+
+@media (min-width:992px) {
+  .calendar table td {
+    padding-right: 1.2em !important;
+    font-size: 1.1em;
+  }
+}
+
+table.table {
+  overflow: hidden;
+}
+
+table.table thead {
+  border-radius: 10px;
+}
+
+.table-wrapper {
+  border: 1px solid #ccc;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: 0 0 2em;
+}
+
+.table-wrapper table {
+  margin: 0;
+}
+
+.table-wrapper table thead th {
+  background: rgb(52,98,172);
+  color: #fff;
+  font-size: 1.2em;
+}
+
+.table-wrapper table thead th a {
+  color: #fff;
 }

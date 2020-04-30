@@ -1,9 +1,10 @@
+<div class="table-wrapper">
 <table class="table table-striped">
   <thead>
     <tr>
-      <th></th>
-      <th>von - bis</th>
-      <th>Dauer</th>
+      <th>Ferien</th>
+      <th>Zeitraum</th>
+      <th class="text-right">Dauer</th>
     </tr>
   </thead>
   <tbody>
@@ -32,3 +33,4 @@
   <% end %>
   </tbody>
 </table>
+</div>

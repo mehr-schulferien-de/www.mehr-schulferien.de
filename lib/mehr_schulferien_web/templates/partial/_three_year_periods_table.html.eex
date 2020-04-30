@@ -1,3 +1,4 @@
+<div class="table-wrapper">
 <table class="table">
   <% {grouped_headers, grouped_periods} = MehrSchulferien.Periods.group_periods_multi_year(@periods) %>
   <thead>
@@ -37,3 +38,4 @@
     <% end %>
   </tbody>
 </table>
+</div>
