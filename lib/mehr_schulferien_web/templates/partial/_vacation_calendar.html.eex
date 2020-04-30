@@ -1,66 +1,66 @@
 <%= for month_days <- @days do %>
-<% first_day = Enum.at(month_days, 0) %>
-<% {public_periods, school_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
-<%= if rem(first_day.month, 3) == 0 do %>
-<div class="row">
-<% end %>
-  <div class="col-sm-4">
+  <% first_day = Enum.at(month_days, 0) %>
+  <% {public_periods, school_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
+
+  <%= if Enum.member?([1,4,7,10], first_day.month) do %>
     <div class="row">
-      <div class="col-xs-12">
-        <% month = @months[first_day.month] %>
-        <h3 id="<%= String.downcase(month) %><%= first_day.year %>">
-          <%= month %>
-          <div class="text-muted pull-right"><%= first_day.year %></div>
-        </h3>
-        <table class="table table-condensed">
-          <thead>
-            <tr>
-              <th>Mo.</th>
-              <th>Di.</th>
-              <th>Mi.</th>
-              <th>Do.</th>
-              <th>Fr.</th>
-              <th class="active">Sa.</th>
-              <th class="active">So.</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <% first_day_of_week = Date.day_of_week(first_day) %>
-              <%= unless first_day_of_week == 1 do %>
-                <%= for _ <- 2..first_day_of_week do %>
-                  <td></td>
-                <% end %>
-              <% end %>
-              <%= for day <- month_days do %>
-                <% day_of_week = Date.day_of_week(day) %>
-                <%= if day_of_week == 1 do %>
-                  </tr>
-                  <tr>
-                <% end %>
-                <td class="text-right <%= ViewHelpers.get_html_class(day, public_periods ++ school_periods) %>"><%= day.day %>.</td>
-              <% end %>
-            </tr>
-          </tbody>
-        </table>
-        <% public_periods = Enum.filter(public_periods, &(&1.holiday_or_vacation_type.name != "Wochenende")) %>
-        <%= unless Enum.empty?(public_periods) and Enum.empty?(school_periods) do %>
+  <% end %>
 
-          <div class="row">
-            <%= unless Enum.empty?(public_periods) do %>
-              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_periods, country: @country, federal_state: @federal_state, conn: @conn %>
+  <div class="col-sm-4">
+    <% month = @months[first_day.month] %>
+    <h3 id="<%= String.downcase(month) %><%= first_day.year %>">
+      <%= month %>
+      <div class="text-muted pull-right"><%= first_day.year %></div>
+    </h3>
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>Mo.</th>
+          <th>Di.</th>
+          <th>Mi.</th>
+          <th>Do.</th>
+          <th>Fr.</th>
+          <th class="active">Sa.</th>
+          <th class="active">So.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <% first_day_of_week = Date.day_of_week(first_day) %>
+          <%= unless first_day_of_week == 1 do %>
+            <%= for _ <- 2..first_day_of_week do %>
+              <td></td>
             <% end %>
-
-            <%= unless Enum.empty?(school_periods) do %>
-              <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_periods, country: @country, federal_state: @federal_state, conn: @conn %>
+          <% end %>
+          <%= for day <- month_days do %>
+            <% day_of_week = Date.day_of_week(day) %>
+            <%= if day_of_week == 1 do %>
+              </tr>
+              <tr>
             <% end %>
-          </div>
+            <td class="text-right <%= ViewHelpers.get_html_class(day, public_periods ++ school_periods) %>"><%= day.day %>.</td>
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
+    <% public_periods = Enum.filter(public_periods, &(&1.holiday_or_vacation_type.name != "Wochenende")) %>
+    <%= unless Enum.empty?(public_periods) and Enum.empty?(school_periods) do %>
 
+      <div class="row">
+        <%= unless Enum.empty?(public_periods) do %>
+          <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_periods, country: @country, federal_state: @federal_state, conn: @conn %>
+        <% end %>
+
+        <%= unless Enum.empty?(school_periods) do %>
+          <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_periods, country: @country, federal_state: @federal_state, conn: @conn %>
         <% end %>
       </div>
-    </div>
+
+    <% end %>
   </div>
-<%= if rem(first_day.month, 3) == 0 do %>
-</div>
-<% end %>
+
+  <%= if Enum.member?([3,6,9,12], first_day.month) do %>
+    </div>
+  <% end %>
+
 <% end %>
