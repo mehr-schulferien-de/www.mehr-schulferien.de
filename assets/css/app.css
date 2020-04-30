@@ -49,7 +49,7 @@ h1 {
 
 @media (max-width: 768px) {
   h1 {
-    font-size: 2em;
+    font-size: 1.9em;
     margin-top: 0;
   }
   h2 {
