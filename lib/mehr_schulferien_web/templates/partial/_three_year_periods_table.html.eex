@@ -5,7 +5,7 @@
       <th></th>
       <%= for period <- grouped_headers do %>
         <th>
-          <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
+          <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period) |> String.replace("Schulschließung wegen der COVID-19-Pandemie (Corona)", "COVID-19") , to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
         </th>
       <% end %>
     </tr>

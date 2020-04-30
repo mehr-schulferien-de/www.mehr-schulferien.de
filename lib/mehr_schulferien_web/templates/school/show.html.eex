@@ -82,14 +82,11 @@
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Corona</h3>
+        <h3 class="panel-title">Corona-Quarantäne</h3>
       </div>
       <div class="panel-body">
-        <p>Während der <a href="https://de.wikipedia.org/wiki/COVID-19-Pandemie">COVID-19-Pandemie</a>
-        möchten wir mit der Bereitstellung von Daten zu Corona-Schließzeiten von Schulen helfen.
-        Bei der Erfassung der Daten benötigen wir Ihre Hilfe.
-        Wenn Sie neue Quarantäne-Termine für
-        <%= @school.name %> kennen, dann tragen Sie sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", rel: "nofollow", to: Routes.school_path(@conn, :show, @country.slug, @school.slug) <> "/new_period"%> ein. Danke!</p>
+        <p>Bitte helfen Sie uns bei der Erfassung von Corona-Schließzeiten (<a href="https://de.wikipedia.org/wiki/COVID-19-Pandemie">COVID-19-Pandemie</a>).
+        Tragen Sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", rel: "nofollow", to: Routes.school_path(@conn, :show, @country.slug, @school.slug) <> "/new_period"%> ein. Danke!</p>
       </div>
     </div>
 
@@ -100,6 +97,7 @@
   <div class="col-xs-12">
     <h2 id="kalenderansicht">Kalenderansicht</h2>
     <p>Ferienkalender mit allen Schulferienterminen für die nächsten Jahre.</p>
+    <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @next_3_years_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
   </div>
 </div>
