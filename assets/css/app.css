@@ -174,17 +174,12 @@ i.icon svg path {
   }
 }
 
-table.table {
-  overflow: hidden;
-}
-
 table.table thead {
   border-radius: 10px;
 }
 
 .table-wrapper {
   border: 1px solid #ccc;
-  overflow: hidden;
   border-radius: 10px;
   margin: 0 0 2em;
 }
