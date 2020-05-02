@@ -7,7 +7,16 @@
     <h1><mark class="school-holiday">Schulferien</mark> und <mark class="public-holiday">Feiertage</mark></h1>
     <p>Die Bundesländer verlinken auf die jeweiligen Ferien und Feiertage. Von dort kommen Sie auch auf alle 14.522 Städte und 23.432 Schulen (teilweise mit beweglichen Ferientagen).</p>
 
+    <div id="big_table">
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, country: @country, days: @days, day_names: @day_names, federal_states: @federal_states, months: @months, periods: @periods %>
+    </div>
+
+    <%# a/b test %>
+    <%= if Date.compare(MehrSchulferien.Calendars.DateHelpers.today_berlin(), ~D[2020-05-18]) == :lt do %>
+      <div id="small_table" class="hidden-sm hidden-md hidden-lg">
+      <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, country: @country, days: @days_b, day_names: @day_names, federal_states: @federal_states, months: @months, periods: @periods_b %>
+      </div>
+    <% end %>
 
     <h2>Schulbeginn/Schulanfang</h2>
     <p>In 2020 (zur Corona-Krise) stiegen die Suchanfragen rund um das Thema Schulanfang stark an.
