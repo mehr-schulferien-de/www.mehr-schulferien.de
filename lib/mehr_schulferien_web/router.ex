@@ -34,7 +34,6 @@ defmodule MehrSchulferienWeb.Router do
     get "/", PageController, :index
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
-    get "/land/:country_slug", CountryController, :show
 
     get "/sitemap.xml", SitemapController, :index
 
@@ -50,6 +49,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/cities/:city_slug", OldRoutes.CityController, :show
 
     # School vacations
+    get "/ferien/land/:country_slug", CountryController, :show
     get "/ferien/:country_slug/stadt/:city_slug/new_period", CityController, :new_period
     post "/ferien/:country_slug/stadt/:city_slug", CityController, :create_period
     get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
