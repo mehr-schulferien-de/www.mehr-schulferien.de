@@ -38,36 +38,36 @@
         <h3 class="panel-title">Kontaktdaten</h3>
       </div>
       <div class="panel-body">
-        <%= if @school.address != nil do %>
+        <%= if @school.address do %>
           <address>
             <%= @school.name %><br>
             <%= @school.address.street %><br>
             <%= @school.address.zip_code %> <%= @school.address.city %>
           </address>
 
-          <%= if @school.address.homepage_url != nil do %>
+          <%= if @school.address.homepage_url do %>
             <strong>Homepage:</strong><br>
             <%= truncate_url(@school.address.homepage_url)%>
             <br><br>
           <% end %>
 
-          <%= if @school.address.email_address != nil do %>
+          <%= if @school.address.email_address do %>
             <strong>E-Mail Adresse:</strong><br>
             <%= truncate_email(@school.address.email_address) %>
             <br><br>
           <% end %>
 
-          <%= if @school.address.phone_number != nil or @school.address.fax_number != nil do %>
+          <%= if @school.address.phone_number || @school.address.fax_number do %>
             <address style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              <%= if @school.address.phone_number != nil do %>
+              <%= if @school.address.phone_number do %>
               <strong>Telefonnummer:</strong><br>
               <a href="tel:<%= String.replace(@school.address.phone_number," ", "") %>"><%= String.replace(@school.address.phone_number, "+49 ", "0") %></a><br>
-              <%= if @school.address.fax_number != nil do %>
+              <%= if @school.address.fax_number do %>
               <br>
               <% end %>
               <% end %>
 
-              <%= if @school.address.fax_number != nil do %>
+              <%= if @school.address.fax_number do %>
               <strong>Fax:</strong><br>
               <%= String.replace(@school.address.fax_number, "+49 ", "0") %><br>
               <% end %>
