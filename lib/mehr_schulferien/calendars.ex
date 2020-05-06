@@ -6,32 +6,7 @@ defmodule MehrSchulferien.Calendars do
   import Ecto.Query, warn: false
 
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType, Period, Religion}
-  alias MehrSchulferien.Locations
   alias MehrSchulferien.Repo
-
-  @doc """
-  Checks if the given day is a school day at that location.
-  """
-  def is_school_free?(location, day) do
-    location_ids = Locations.recursive_location_ids(location)
-
-    query =
-      from(p in Period,
-        where:
-          p.location_id in ^location_ids and
-            p.is_valid_for_students == true and
-            p.starts_on <= ^day and p.ends_on >= ^day,
-        limit: 1
-      )
-
-    case Repo.one(query) do
-      nil ->
-        false
-
-      _ ->
-        true
-    end
-  end
 
   @doc """
   Returns the list of religions.

@@ -25,8 +25,9 @@
 <div class="row">
   <div class="col-md-9">
     <%= if Enum.count(@todays_school_free_periods) > 0 do %>
-      <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @next_3_years_periods) %>
+      <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @school_periods) %>
       <p>Stand heute (<%= ViewHelpers.format_date(@today) %>) ist der nächste Schultag in <%= @federal_state.name %> am <%= ViewHelpers.format_date(next_schoolday) %>.</p>
+
       <%= render MehrSchulferienWeb.PartialView, "_school_start_faq.html", conn: @conn, country: @country, federal_state: @federal_state, location: @federal_state, today: @today, todays_public_holiday_periods: @todays_public_holiday_periods, yesterdays_public_holiday_periods: @yesterdays_public_holiday_periods, tomorrows_public_holiday_periods: @tomorrows_public_holiday_periods, day_after_tomorrows_public_holiday_periods: @day_after_tomorrows_public_holiday_periods, todays_school_free_periods: @todays_school_free_periods, tomorrows_school_free_periods: @tomorrows_school_free_periods, day_after_tomorrows_school_free_periods: @day_after_tomorrows_school_free_periods, next_schoolday: next_schoolday %>
       <p>Während der Corona-Krise bemühen wir uns um regelmässige Updates.
     Bitte helfen Sie uns dabei und <%= link "geben Sie neue Informationen im Corona-Schließzeiten-Formular ein.", rel: "nofollow", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) <> "/new_period"%>

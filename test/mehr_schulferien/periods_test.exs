@@ -37,25 +37,21 @@ defmodule MehrSchulferien.PeriodsTest do
       assert other_period not in long_time_periods
     end
 
-    test "group_periods_single_year/1 groups periods with the same name together", %{
+    test "group_periods_single_year/2 groups periods with the same name together", %{
       federal_state: federal_state
     } do
       location_ids = Locations.recursive_location_ids(federal_state)
       today = ~D[2021-02-26]
-
-      next_12_months_periods =
-        Periods.list_school_periods(location_ids, today, Date.add(today, 365))
-
-      assert length(next_12_months_periods) == 5
-      grouped_periods = Periods.group_periods_single_year(next_12_months_periods)
+      first_day = ~D[2021-01-01]
+      last_day = ~D[2022-12-31]
+      school_periods = Periods.list_school_periods(location_ids, first_day, last_day)
+      assert length(school_periods) == 9
+      grouped_periods = Periods.group_periods_single_year(school_periods, today)
       assert length(grouped_periods) == 4
       today = ~D[2021-03-02]
-
-      next_12_months_periods =
-        Periods.list_school_periods(location_ids, today, Date.add(today, 365))
-
-      assert length(next_12_months_periods) == 4
-      grouped_periods = Periods.group_periods_single_year(next_12_months_periods)
+      school_periods = Periods.list_school_periods(location_ids, first_day, last_day)
+      assert length(school_periods) == 9
+      grouped_periods = Periods.group_periods_single_year(school_periods, today)
       assert length(grouped_periods) == 3
     end
 
