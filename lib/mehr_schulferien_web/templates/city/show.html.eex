@@ -24,12 +24,12 @@
 
 <div class="row">
   <div class="col-md-9">
-    <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@next_12_months_periods) %>
+    <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months %>
     <%= render MehrSchulferienWeb.PartialView, "_calendar_thumbnail.html", next_three_years: @next_three_years %>
 
     <h2 id="ferientermine_naechste_3_jahre">Ferien <%= @city.name %> <%= @next_three_years %></h2>
-    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @next_3_years_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
+    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
   </div>
   <div class="col-md-3">
     <div class="panel panel-default">
@@ -65,7 +65,7 @@
     <h2 id="kalenderansicht">Kalenderansicht</h2>
     <p>Ferienkalender mit allen Schulferienterminen für die nächsten Jahre.</p>
     <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
-    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @next_3_years_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
+    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 
     <%= if @schools != [] do %>
       <h2 id="liste_aller_schulen">Schulen in <%= @city.name %></h2>
@@ -83,7 +83,7 @@
 </div>
 
 <% postal_code = ViewHelpers.find_zip_code(@city.zip_codes, @schools) %>
-<%= for period <- @next_3_years_periods do %>
+<%= for period <- @school_periods do %>
   <script type="application/ld+json">
     {
       "@context": "http://schema.org",
