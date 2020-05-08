@@ -3,14 +3,14 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
   Helper functions for use with controllers.
   """
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Periods}
+  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Periods}
 
   def show_period_data(location_ids, today) do
     current_year = today.year
     {:ok, first_day} = Date.new(current_year, 1, 1)
     {:ok, last_day} = Date.new(current_year + 2, 12, 31)
     school_periods = Periods.list_school_periods(location_ids, first_day, last_day)
-    public_periods = Periods.list_public_periods(location_ids, first_day, last_day)
+    public_periods = Periods.list_public_everybody_periods(location_ids, first_day, last_day)
     days = DateHelpers.create_3_years(current_year)
     months = DateHelpers.get_months_map()
 
@@ -32,34 +32,42 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
   end
 
   def faq_data(location_ids, today) do
-    todays_public_holiday_periods = Periods.list_public_holiday_periods(location_ids, today)
+    yesterday = Date.add(today, -1)
+    tomorrow = Date.add(today, 1)
+    day_after_tomorrow = Date.add(today, 2)
 
-    yesterdays_public_holiday_periods =
-      Periods.list_public_holiday_periods(location_ids, Date.add(today, -1))
+    public_periods = Periods.list_public_periods(location_ids, yesterday, day_after_tomorrow)
 
-    tomorrows_public_holiday_periods =
-      Periods.list_public_holiday_periods(location_ids, Date.add(today, 1))
+    school_free_periods =
+      Periods.list_school_free_periods(location_ids, yesterday, day_after_tomorrow)
+
+    yesterdays_public_holiday_periods = Calendars.find_all_periods(public_periods, yesterday)
+    todays_public_holiday_periods = Calendars.find_all_periods(public_periods, today)
+    tomorrows_public_holiday_periods = Calendars.find_all_periods(public_periods, tomorrow)
 
     day_after_tomorrows_public_holiday_periods =
-      Periods.list_public_holiday_periods(location_ids, Date.add(today, 2))
+      Calendars.find_all_periods(public_periods, day_after_tomorrow)
 
-    todays_school_free_periods = Periods.list_school_free_periods(location_ids, today)
-
-    tomorrows_school_free_periods =
-      Periods.list_school_free_periods(location_ids, Date.add(today, 1))
+    yesterdays_school_free_periods = Calendars.find_all_periods(school_free_periods, yesterday)
+    todays_school_free_periods = Calendars.find_all_periods(school_free_periods, today)
+    tomorrows_school_free_periods = Calendars.find_all_periods(school_free_periods, tomorrow)
 
     day_after_tomorrows_school_free_periods =
-      Periods.list_school_free_periods(location_ids, Date.add(today, 2))
+      Calendars.find_all_periods(school_free_periods, day_after_tomorrow)
 
     [
+      day_after_tomorrow: day_after_tomorrow,
+      day_after_tomorrows_public_holiday_periods: day_after_tomorrows_public_holiday_periods,
+      day_after_tomorrows_school_free_periods: day_after_tomorrows_school_free_periods,
       today: today,
       todays_public_holiday_periods: todays_public_holiday_periods,
-      yesterdays_public_holiday_periods: yesterdays_public_holiday_periods,
-      tomorrows_public_holiday_periods: tomorrows_public_holiday_periods,
-      day_after_tomorrows_public_holiday_periods: day_after_tomorrows_public_holiday_periods,
       todays_school_free_periods: todays_school_free_periods,
+      tomorrow: tomorrow,
+      tomorrows_public_holiday_periods: tomorrows_public_holiday_periods,
       tomorrows_school_free_periods: tomorrows_school_free_periods,
-      day_after_tomorrows_school_free_periods: day_after_tomorrows_school_free_periods
+      yesterday: yesterday,
+      yesterdays_public_holiday_periods: yesterdays_public_holiday_periods,
+      yesterdays_school_free_periods: yesterdays_school_free_periods
     ]
   end
 end

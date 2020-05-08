@@ -8,51 +8,49 @@
         </tr>
       </thead>
       <tbody>
-      <%= if Enum.count(@todays_school_free_periods) > 0 do %>
-        <tr><td>Wann fängt die Schule in <%= @location.name %> wieder an?</td>
-        <td>
-          Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an.
-        </td></tr>
-        <tr><td>Wann beginnt die Schule wieder in <%= @location.name %>?</td>
-        <td>
-          Die Schule in <%= @location.name%> beginnt wieder am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
-        </td></tr>
-        <tr><td>Schulbeginn <%= @location.name %></td>
-        <td>
-          Schulbeginn <%= @location.name %>: <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)
-        </td></tr>
-        <tr><td>Schulanfang <%= @location.name %></td>
-        <td>
-          Die Schule fängt am <%= ViewHelpers.format_date(@next_schoolday) %> in <%= @location.name %> wieder an. Das ist in <%= Date.diff(@next_schoolday, @today) %> Tagen.
-        </td></tr>
-        <tr><td>Schulstart <%= @location.name %></td>
-        <td>
-          Die Schule startet am <%= ViewHelpers.format_date(@next_schoolday) %> (<%= ViewHelpers.weekday(@next_schoolday) %>) in <%= @location.name %>.
-        </td></tr>
-        <tr><td>Wann ist der erste Schultag in <%= @location.name %>?</td>
-        <td>
-          Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
-        </td></tr>
-        <tr><td>schulbeginn <%= @location.name %> corona</td>
-        <td>
-          Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage).
-        </td></tr>
-        <tr><td>Schule <%= @location.name %> Corona</td>
-        <td>
-          Schulbeginn in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage).
-        </td></tr>
-        <%= for period <- @todays_school_free_periods do %>
-          <%= if period.is_school_vacation == true do %>
-            <tr><td>Schule nach <%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %></td>
-            <td>
-              Nach den <%= period.holiday_or_vacation_type.colloquial %> fängt die Schule in <%= @location.name %> wieder am <%= ViewHelpers.format_date(@next_schoolday) %> an (noch <%= Date.diff(@next_schoolday, @today) %> Tagen).
-            </td></tr>
+      <tr><td>Wann fängt die Schule in <%= @location.name %> wieder an?</td>
+      <td>
+        Am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen) fängt die Schule in <%= @location.name %> wieder an.
+      </td></tr>
+      <tr><td>Wann beginnt die Schule wieder in <%= @location.name %>?</td>
+      <td>
+        Die Schule in <%= @location.name%> beginnt wieder am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
+      </td></tr>
+      <tr><td>Schulbeginn <%= @location.name %></td>
+      <td>
+        Schulbeginn <%= @location.name %>: <%= ViewHelpers.weekday(@next_schoolday) %> der <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen)
+      </td></tr>
+      <tr><td>Schulanfang <%= @location.name %></td>
+      <td>
+        Die Schule fängt am <%= ViewHelpers.format_date(@next_schoolday) %> in <%= @location.name %> wieder an. Das ist in <%= Date.diff(@next_schoolday, @today) %> Tagen.
+      </td></tr>
+      <tr><td>Schulstart <%= @location.name %></td>
+      <td>
+        Die Schule startet am <%= ViewHelpers.format_date(@next_schoolday) %> (<%= ViewHelpers.weekday(@next_schoolday) %>) in <%= @location.name %>.
+      </td></tr>
+      <tr><td>Wann ist der erste Schultag in <%= @location.name %>?</td>
+      <td>
+        Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
+      </td></tr>
+      <tr><td>schulbeginn <%= @location.name %> corona</td>
+      <td>
+        Der erste Schultag in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage).
+      </td></tr>
+      <tr><td>Schule <%= @location.name %> Corona</td>
+      <td>
+        Schulbeginn in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (noch <%= Date.diff(@next_schoolday, @today) %> Tage).
+      </td></tr>
+      <%= for period <- @todays_school_free_periods do %>
+        <%= if period.is_school_vacation == true do %>
+          <tr><td>Schule nach <%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %></td>
+          <td>
+            Nach den <%= period.holiday_or_vacation_type.colloquial %> fängt die Schule in <%= @location.name %> wieder am <%= ViewHelpers.format_date(@next_schoolday) %> an (noch <%= Date.diff(@next_schoolday, @today) %> Tagen).
+          </td></tr>
 
-            <tr><td>Wann ist der erste Schultag nach den <%= period.holiday_or_vacation_type.colloquial %> in <%= @location.name %>?</td>
-            <td>
-              Der erste Schultag nach den <%= period.holiday_or_vacation_type.colloquial %> in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
-            </td></tr>
-          <% end %>
+          <tr><td>Wann ist der erste Schultag nach den <%= period.holiday_or_vacation_type.colloquial %> in <%= @location.name %>?</td>
+          <td>
+            Der erste Schultag nach den <%= period.holiday_or_vacation_type.colloquial %> in <%= @location.name %> ist am <%= ViewHelpers.format_date(@next_schoolday) %> (in <%= Date.diff(@next_schoolday, @today) %> Tagen).
+          </td></tr>
         <% end %>
       <% end %>
     </table>

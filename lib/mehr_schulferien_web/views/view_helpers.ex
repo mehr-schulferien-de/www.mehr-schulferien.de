@@ -93,7 +93,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   is a holiday period.
   """
   def get_html_class(date, periods) do
-    case Calendars.find_all_periods(date, periods) do
+    case Calendars.find_all_periods(periods, date) do
       [] -> ""
       [period] -> period.html_class
       periods -> select_html_class(periods)

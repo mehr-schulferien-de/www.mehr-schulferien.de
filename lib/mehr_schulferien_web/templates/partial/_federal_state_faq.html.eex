@@ -1,6 +1,15 @@
-<% yesterday = Date.add(@today, -1) %>
-<% tomorrow = Date.add(@today, 1) %>
-<% day_after_tomorrow = Date.add(@today, 2) %>
+<% off_school_yesterday_answer = FaqViewHelpers.is_off_school_answer(@yesterdays_school_free_periods, @yesterday, @location) %>
+<% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @location) %>
+<% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @location) %>
+<% off_school_day_after_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, @day_after_tomorrow, @location) %>
+<% next_school_vacation_answer = FaqViewHelpers.next_school_vacation_answer(@location, @school_periods) %>
+
+<% public_holiday_yesterday_answer = FaqViewHelpers.is_public_holiday_answer(@yesterdays_public_holiday_periods, @yesterday, @location) %>
+<% public_holiday_today_answer = FaqViewHelpers.is_public_holiday_answer(@todays_public_holiday_periods, @today, @location) %>
+<% public_holiday_tomorrow_answer = FaqViewHelpers.is_public_holiday_answer(@tomorrows_public_holiday_periods, @tomorrow, @location) %>
+<% public_holiday_day_after_tomorrow_answer = FaqViewHelpers.is_public_holiday_answer(@day_after_tomorrows_public_holiday_periods, @day_after_tomorrow, @location) %>
+<% public_periods = Enum.filter(@public_periods, & &1.is_public_holiday) %>
+<% next_public_holiday_answer = FaqViewHelpers.next_public_holiday_answer(@location, public_periods) %>
 
 <div class="row">
   <div class="col-xs-12">
@@ -10,27 +19,27 @@
   <dl class="row">
     <dt class="col-sm-5">War gestern schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, yesterday, @location) %>
+      <%= off_school_yesterday_answer %>
     </dd>
 
     <dt class="col-sm-5">Ist heute schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @location) %>
+      <%= off_school_today_answer %>
     </dd>
 
     <dt class="col-sm-5">Ist morgen schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, tomorrow, @location) %>
+      <%= off_school_tomorrow_answer %>
     </dd>
 
     <dt class="col-sm-5">Ist übermorgen schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, day_after_tomorrow, @location) %>
+      <%= off_school_day_after_tomorrow_answer %>
     </dd>
 
     <dt class="col-sm-5">Wann sind die nächsten Schulferien in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.next_school_vacation_answer(@location) %>
+      <%= next_school_vacation_answer %>
     </dd>
   </dl>
 
@@ -38,27 +47,27 @@
   <dl class="row">
     <dt class="col-sm-5">War gestern ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_public_holiday_answer(@yesterdays_public_holiday_periods, yesterday, @location) %>
+      <%= public_holiday_yesterday_answer %>
     </dd>
 
     <dt class="col-sm-5">Ist heute ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_public_holiday_answer(@todays_public_holiday_periods, @today, @location) %>
+      <%= public_holiday_today_answer %>
     </dd>
 
     <dt class="col-sm-5">Ist morgen ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_public_holiday_answer(@tomorrows_public_holiday_periods, tomorrow, @location) %>
+      <%= public_holiday_tomorrow_answer %>
     </dd>
 
     <dt class="col-sm-5">Ist übermorgen ein Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.is_public_holiday_answer(@day_after_tomorrows_public_holiday_periods, day_after_tomorrow, @location) %>
+      <%= public_holiday_day_after_tomorrow_answer %>
     </dd>
 
     <dt class="col-sm-5">Wann ist der nächste Feiertag in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
-      <%= FaqViewHelpers.next_public_holiday_answer(@location) %>
+      <%= next_public_holiday_answer %>
     </dd>
   </dl>
 
@@ -69,90 +78,90 @@
   </div>
 </div>
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "War gestern schulfrei in <%= @location.name %>?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<%= off_school_yesterday_answer %> "
+    }
+  },
   {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [{
       "@type": "Question",
-      "name": "War gestern schulfrei in <%= @location.name %>?",
+      "name": "Ist heute schulfrei in <%= @location.name %>?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "<%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, yesterday, @location) %> "
+        "text": "<%= off_school_today_answer %>"
       }
-    },
-    {
-        "@type": "Question",
-        "name": "Ist heute schulfrei in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Ist morgen schulfrei in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, tomorrow, @location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Ist übermorgen schulfrei in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, day_after_tomorrow, @location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Wann sind die nächsten Schulferien in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.next_school_vacation_answer(@location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "War gestern ein Feiertag in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@yesterdays_public_holiday_periods, yesterday, @location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Ist heute ein Feiertag in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@todays_public_holiday_periods, @today, @location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Ist morgen ein Feiertag in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@tomorrows_public_holiday_periods, tomorrow, @location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Ist übermorgen ein Feiertag in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.is_public_holiday_answer(@day_after_tomorrows_public_holiday_periods, day_after_tomorrow, @location) %>"
-        }
-    },
-    {
-        "@type": "Question",
-        "name": "Wann ist der nächste Feiertag in <%= @location.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= FaqViewHelpers.next_public_holiday_answer(@location) %>"
-        }
-    }
-    ]
+  },
+  {
+      "@type": "Question",
+      "name": "Ist morgen schulfrei in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= off_school_tomorrow_answer %>"
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "Ist übermorgen schulfrei in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= off_school_day_after_tomorrow_answer %>"
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "Wann sind die nächsten Schulferien in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= next_school_vacation_answer %>"
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "War gestern ein Feiertag in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= public_holiday_yesterday_answer %>"
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "Ist heute ein Feiertag in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= public_holiday_today_answer %>"
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "Ist morgen ein Feiertag in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= public_holiday_tomorrow_answer %>"
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "Ist übermorgen ein Feiertag in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= public_holiday_day_after_tomorrow_answer %>"
+      }
+  },
+  {
+      "@type": "Question",
+      "name": "Wann ist der nächste Feiertag in <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<%= next_public_holiday_answer %>"
+      }
   }
-  </script>
+  ]
+}
+</script>
