@@ -236,7 +236,7 @@ defmodule MehrSchulferien.Calendars do
   @doc """
   Finds all the holiday periods for a certain date.
   """
-  def find_all_periods(date, periods) do
+  def find_all_periods(periods, date) do
     Enum.filter(periods, &is_holiday?(&1, date))
   end
 

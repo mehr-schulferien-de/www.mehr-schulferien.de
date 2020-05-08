@@ -9,6 +9,18 @@ defmodule MehrSchulferien.Periods do
   alias MehrSchulferien.Repo
 
   @doc """
+  Returns the periods for a certain date range.
+
+  The periods need to be sorted (by the `starts_on` date) before calling
+  this function.
+  """
+  def find_periods_for_date_range(periods, start_date, end_date) do
+    periods
+    |> Enum.drop_while(&(Date.compare(&1.ends_on, start_date) == :lt))
+    |> Enum.take_while(&(Date.compare(&1.starts_on, end_date) != :gt))
+  end
+
+  @doc """
   Takes a year's periods, from `start_date`, and groups them based on
   the holiday_or_vacation_type.
   """
@@ -66,10 +78,14 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
-  Returns a list of public holiday periods, including weekends,
-  for a certain time frame.
+  Returns a list of public holiday periods, and periods that are valid
+  for everybody, for a certain time frame.
+
+  This function also returns periods that are valid for everybody, such as
+  weekends. If you want to see just the public holiday periods, use
+  `list_public_periods` instead.
   """
-  def list_public_periods(location_ids, starts_on, ends_on) do
+  def list_public_everybody_periods(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
@@ -83,27 +99,10 @@ defmodule MehrSchulferien.Periods do
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
-  # NOTE: riverrun (2020-05-06)
-  # CHANGE THIS TO TAKE periods AS INPUT
-  # AND ADD START_DATE AND END_DATE, SO THAT WE CAN QUERY
-  # ALL THE NEEDED DAYS AT ONCE
   @doc """
-  Returns a list of public holiday periods for a given date and location_ids.
+  Returns a list of public holiday periods for a certain time frame.
   """
-  def list_public_holiday_periods(location_ids, date) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_public_holiday == true and
-          p.ends_on >= ^date and
-          p.starts_on <= ^date,
-      order_by: p.display_priority
-    )
-    |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
-  end
-
-  def list_public_holiday_periods(location_ids, starts_on, ends_on) do
+  def list_public_periods(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
@@ -116,31 +115,11 @@ defmodule MehrSchulferien.Periods do
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
-  # NOTE: riverrun (2020-05-06)
-  # CHANGE THIS TO TAKE periods AS INPUT
   @doc """
-  Returns a list of periods which indicate that this day is school
-  free for students for a given date and location_ids.
-  """
-  def list_school_free_periods(location_ids, date) do
-    location_ids
-    |> school_free_periods_query(date, date)
-    |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
-  end
-
-  @doc """
-  Returns a list of periods for which this date range is a holiday
-  period for students.
+  Returns a list of periods that are non-school days for a certain date
+  range.
   """
   def list_school_free_periods(location_ids, starts_on, ends_on) do
-    location_ids
-    |> school_free_periods_query(starts_on, ends_on)
-    |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
-  end
-
-  defp school_free_periods_query(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and
@@ -150,59 +129,16 @@ defmodule MehrSchulferien.Periods do
           p.starts_on <= ^ends_on,
       order_by: p.display_priority
     )
-  end
-
-  # NOTE: riverrun (2020-05-06)
-  # CHANGE THIS TO TAKE periods AS INPUT
-  @doc """
-  Returns the next school vacation period that is greater than today.
-  """
-  def next_school_vacation_period(location_ids) do
-    next_school_vacation_period(location_ids, DateHelpers.today_berlin())
-  end
-
-  # NOTE: riverrun (2020-05-06)
-  # CHANGE THIS TO TAKE periods AS INPUT
-  @doc """
-  Returns the next school vacation period that is greater than date.
-  """
-  def next_school_vacation_period(location_ids, date) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_school_vacation == true and
-          p.starts_on > ^date,
-      order_by: p.starts_on,
-      limit: 1
-    )
-    |> Repo.one()
+    |> Repo.all()
     |> Repo.preload(:holiday_or_vacation_type)
   end
 
-  # NOTE: riverrun (2020-05-06)
-  # CHANGE THIS TO TAKE periods AS INPUT
   @doc """
-  Returns the next public holiday that is greater than today.
+  Returns the first period after a certain date (the default date is today).
   """
-  def next_public_holiday_period(location_ids) do
-    next_public_holiday_period(location_ids, DateHelpers.today_berlin())
-  end
-
-  # NOTE: riverrun (2020-05-06)
-  # CHANGE THIS TO TAKE periods AS INPUT
-  @doc """
-  Returns the next public holiday that is greater than date.
-  """
-  def next_public_holiday_period(location_ids, date) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_public_holiday == true and
-          p.starts_on > ^date,
-      order_by: p.starts_on,
-      limit: 1
-    )
-    |> Repo.one()
-    |> Repo.preload(:holiday_or_vacation_type)
+  def next_period(periods, today \\ DateHelpers.today_berlin()) do
+    periods
+    |> Enum.drop_while(&(Date.compare(&1.ends_on, today) == :lt))
+    |> hd()
   end
 end

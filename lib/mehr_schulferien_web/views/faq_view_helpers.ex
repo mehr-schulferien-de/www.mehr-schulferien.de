@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   Helper functions for use with views.
   """
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.{Calendars.DateHelpers, Periods}
   alias MehrSchulferienWeb.ViewHelpers
 
   @doc """
@@ -51,9 +51,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   @doc """
   An humanized answer for the next school vacations.
   """
-  def next_school_vacation_answer(location) do
-    location_ids = Locations.recursive_location_ids(location)
-    period = MehrSchulferien.Periods.next_school_vacation_period(location_ids)
+  def next_school_vacation_answer(location, periods) do
+    period = Periods.next_period(periods)
 
     case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->
@@ -71,9 +70,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   @doc """
   An humanized answer for the next public holiday date.
   """
-  def next_public_holiday_answer(location) do
-    location_ids = Locations.recursive_location_ids(location)
-    period = MehrSchulferien.Periods.next_public_holiday_period(location_ids)
+  def next_public_holiday_answer(location, public_periods) do
+    period = Periods.next_period(public_periods)
 
     case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->
