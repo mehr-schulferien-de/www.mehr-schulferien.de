@@ -11,44 +11,57 @@
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
-  <%= for federal_state <- @federal_states do %>
+  <%= for place <- @countries do %>
+    <% country = place[:country] %>
+    <% federal_states = place[:federal_states] %>
+    <% cities = place[:cities] %>
+    <% is_school_vacation_types = place[:is_school_vacation_types] %>
+    <% schools = place[:schools] %>
     <url>
-      <loc><%= Routes.federal_state_url(@conn, :show, @country.slug, federal_state.slug) %></loc>
+      <loc><%= Routes.country_url(@conn, :show, country.slug) %></loc>
       <changefreq>daily</changefreq>
       <lastmod><%= @today %></lastmod>
       <priority>0.6</priority>
     </url>
-    <url>
-      <loc><%= Routes.federal_state_url(@conn, :show, @country.slug, federal_state.slug) %>/schulbeginn</loc>
-      <changefreq>daily</changefreq>
-      <lastmod><%= @today %></lastmod>
-      <priority>0.5</priority>
-    </url>
-  <% end %>
-  <%= for federal_state <- @federal_states do %>
-    <% holiday_or_vacation_type_ids = Enum.map(federal_state.periods, & &1.holiday_or_vacation_type_id) %>
-    <%= for is_school_vacation_type <- @is_school_vacation_types do %>
-      <%= if is_school_vacation_type.id in holiday_or_vacation_type_ids do %>
-        <url>
-          <loc><%= Routes.federal_state_url(@conn, :show_holiday_or_vacation_type, @country.slug, federal_state.slug, is_school_vacation_type.slug) %></loc>
-          <changefreq>monthly</changefreq>
-          <priority>0.4</priority>
-        </url>
+    <%= for federal_state <- federal_states do %>
+      <url>
+        <loc><%= Routes.federal_state_url(@conn, :show, country.slug, federal_state.slug) %></loc>
+        <changefreq>daily</changefreq>
+        <lastmod><%= @today %></lastmod>
+        <priority>0.6</priority>
+      </url>
+      <url>
+        <loc><%= Routes.federal_state_url(@conn, :show, country.slug, federal_state.slug) %>/schulbeginn</loc>
+        <changefreq>daily</changefreq>
+        <lastmod><%= @today %></lastmod>
+        <priority>0.5</priority>
+      </url>
+    <% end %>
+    <%= for federal_state <- federal_states do %>
+      <% holiday_or_vacation_type_ids = Enum.map(federal_state.periods, & &1.holiday_or_vacation_type_id) %>
+      <%= for is_school_vacation_type <- is_school_vacation_types do %>
+        <%= if is_school_vacation_type.id in holiday_or_vacation_type_ids do %>
+          <url>
+            <loc><%= Routes.federal_state_url(@conn, :show_holiday_or_vacation_type, country.slug, federal_state.slug, is_school_vacation_type.slug) %></loc>
+            <changefreq>monthly</changefreq>
+            <priority>0.4</priority>
+          </url>
+        <% end %>
       <% end %>
     <% end %>
-  <% end %>
-  <%= for city <- @cities do %>
-    <url>
-      <loc><%= Routes.city_url(@conn, :show, @country.slug, city.slug) %></loc>
-      <changefreq>monthly</changefreq>
-      <priority>0.5</priority>
-    </url>
-  <% end %>
-  <%= for school <- @schools do %>
-    <url>
-      <loc><%= Routes.school_url(@conn, :show, @country.slug, school.slug) %></loc>
-      <changefreq>monthly</changefreq>
-      <priority>0.5</priority>
-    </url>
+    <%= for city <- cities do %>
+      <url>
+        <loc><%= Routes.city_url(@conn, :show, country.slug, city.slug) %></loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+      </url>
+    <% end %>
+    <%= for school <- schools do %>
+      <url>
+        <loc><%= Routes.school_url(@conn, :show, country.slug, school.slug) %></loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+      </url>
+    <% end %>
   <% end %>
 </urlset>
