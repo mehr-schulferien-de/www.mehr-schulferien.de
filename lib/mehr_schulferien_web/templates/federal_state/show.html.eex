@@ -20,7 +20,7 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row" id="9-3-variant">
   <div class="col-md-9">
     <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state %>
@@ -96,3 +96,57 @@
     }
   </script>
 <% end %>
+
+<div class="row" id="4-4-4-variant">
+  <div class="col-md-4">
+    <h2>Termine</h2>
+    <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
+    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state %>
+    <%= render MehrSchulferienWeb.PartialView, "_calendar_thumbnail.html", next_three_years: @next_three_years %>
+  </div>
+  <div class="col-md-4">
+    <h2 id="ferientermine_naechste_3_jahre"><%= @next_three_years %></h2>
+    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
+  </div>
+  <div class="col-md-4">
+    <h2>FAQ</h2>
+    <% off_school_yesterday_answer = FaqViewHelpers.is_off_school_answer(@yesterdays_school_free_periods, @yesterday, @federal_state) %>
+    <% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @federal_state) %>
+    <% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @federal_state) %>
+    <% off_school_day_after_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, @day_after_tomorrow, @federal_state) %>
+    <% next_school_vacation_answer = FaqViewHelpers.next_school_vacation_answer(@federal_state, @school_periods) %>
+
+    <p><strong>Wann sind die nächsten Schulferien in <%= @federal_state.name %>?</strong><br>
+      <%= next_school_vacation_answer %>
+    </p>
+
+    <p><strong>Ist heute schulfrei in <%= @federal_state.name %>?</strong><br>
+      <%= off_school_today_answer %>
+    </p>
+
+    <p><strong>Ist morgen schulfrei in <%= @federal_state.name %>?</strong><br>
+      <%= off_school_tomorrow_answer %>
+    </p>
+
+    <p><strong>Ist übermorgen schulfrei in <%= @federal_state.name %>?</strong><br>
+      <%= off_school_day_after_tomorrow_answer %>
+    </p>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Sonstiges</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+          <li><a href="#faq">Komplette FAQ zu Schulferien in <%= @federal_state.name %></a></li>
+          <li><%= link "Liste mit allen Landkreisen und Städten in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="bottom-developer-info">
+<%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
+</div>
