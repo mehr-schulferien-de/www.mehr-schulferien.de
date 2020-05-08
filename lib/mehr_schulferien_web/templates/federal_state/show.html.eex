@@ -110,7 +110,6 @@
   </div>
   <div class="col-md-4">
     <h2>FAQ</h2>
-    <% off_school_yesterday_answer = FaqViewHelpers.is_off_school_answer(@yesterdays_school_free_periods, @yesterday, @federal_state) %>
     <% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @federal_state) %>
     <% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @federal_state) %>
     <% off_school_day_after_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, @day_after_tomorrow, @federal_state) %>
