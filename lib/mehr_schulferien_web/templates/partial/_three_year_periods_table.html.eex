@@ -1,30 +1,30 @@
 <div class="table-wrapper">
 <table class="table">
-  <% {grouped_headers, grouped_periods} = MehrSchulferien.Periods.group_periods_multi_year(@periods) %>
+  <% unique_periods = MehrSchulferien.Periods.list_periods_by_vacation_names(@periods) %>
+  <% grouped_periods = Enum.group_by(@periods, & &1.holiday_or_vacation_type.name) %>
   <thead>
     <tr>
       <th></th>
-      <%= for period <- grouped_headers do %>
-        <th>
-          <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period) |> String.replace("Schulschließung wegen der COVID-19-Pandemie (Corona)", "COVID-19") , to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
-        </th>
-      <% end %>
+      <th><%= @current_year %></th>
+      <th><%= @current_year + 1 %></th>
+      <th><%= @current_year + 2 %></th>
     </tr>
   </thead>
   <tbody>
-    <%= for period_list <- grouped_periods do %>
-      <% year = ViewHelpers.display_year(period_list) %>
-      <tr class="<%= if year == @current_year, do: "active", else: "" %>">
+    <%= for period <- unique_periods do %>
+      <tr>
         <td>
-          <span><%= year %></span>
+          <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
         </td>
-        <%= for periods <- period_list do %>
-          <%= if period = Enum.at(periods, 0) do %>
+        <% periods = grouped_periods[period.holiday_or_vacation_type.name] %>
+        <%= for year <- 0..2 do %>
+          <% year_periods = Enum.filter(periods, & &1.starts_on.year == @current_year + year) %>
+          <%= if period = Enum.at(year_periods, 0) do %>
             <td>
               <span>
                 <% month = @months[period.starts_on.month] %>
                 <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-                  <%= for period <- periods do %>
+                  <%= for period <- year_periods do %>
                     <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
                   <% end %>
                 <% end %>
