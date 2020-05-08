@@ -70,6 +70,13 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns the list of countries.
+  """
+  def list_countries do
+    Repo.all(from l in Location, where: l.is_country == true)
+  end
+
+  @doc """
   Returns the list of federal states in a country.
   """
   def list_federal_states(country) do
