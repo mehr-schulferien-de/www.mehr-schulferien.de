@@ -54,32 +54,6 @@ defmodule MehrSchulferien.PeriodsTest do
       grouped_periods = Periods.group_periods_single_year(school_periods, today)
       assert length(grouped_periods) == 3
     end
-
-    test "group_periods_multi_year/1 returns headers and periods, with periods with the same name grouped together",
-         %{
-           federal_state: federal_state
-         } do
-      location_ids = Locations.recursive_location_ids(federal_state)
-      current_year = 2020
-      {:ok, first_day} = Date.new(current_year, 1, 1)
-      {:ok, last_day} = Date.new(current_year + 2, 12, 31)
-      next_3_years_periods = Periods.list_school_periods(location_ids, first_day, last_day)
-      {grouped_headers, grouped_periods} = Periods.group_periods_multi_year(next_3_years_periods)
-      assert [winter, oster, herbst, weihnachts] = grouped_headers
-      assert winter.holiday_or_vacation_type.name == "Winter"
-      assert oster.holiday_or_vacation_type.name == "Oster"
-      assert herbst.holiday_or_vacation_type.name == "Herbst"
-      assert weihnachts.holiday_or_vacation_type.name == "Weihnachts"
-      assert length(grouped_headers) == 4
-      assert length(grouped_periods) == 3
-      assert [year_1_periods, year_2_periods, _] = grouped_periods
-      assert [[] | _] = year_1_periods
-      assert [[winter], [oster], [herbst, _], [weihnachts]] = year_2_periods
-      assert winter.holiday_or_vacation_type.name == "Winter"
-      assert oster.holiday_or_vacation_type.name == "Oster"
-      assert herbst.holiday_or_vacation_type.name == "Herbst"
-      assert weihnachts.holiday_or_vacation_type.name == "Weihnachts"
-    end
   end
 
   defp add_federal_state(_) do

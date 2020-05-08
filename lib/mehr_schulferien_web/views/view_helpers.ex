@@ -156,6 +156,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   """
   def find_zip_code([], _), do: ""
   def find_zip_code([zip_code], _), do: zip_code.value
+  def find_zip_code([zip_code | _], []), do: zip_code.value
 
   def find_zip_code(_, schools) do
     schools

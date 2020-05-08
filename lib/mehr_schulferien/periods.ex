@@ -34,30 +34,12 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
-  Groups periods with same holiday_or_vacation_type. This function
-  works for many years and returns a `{headers, periods}` tuple.
+  Returns a list of periods, sorted by the holiday_or_vacation_type names.
   """
-  def group_periods_multi_year(periods) do
-    headers =
-      periods
-      |> Enum.uniq_by(& &1.holiday_or_vacation_type.name)
-      |> Enum.sort(&(Date.day_of_year(&1.starts_on) <= Date.day_of_year(&2.starts_on)))
-
-    periods =
-      for period_list <- Enum.chunk_by(periods, & &1.starts_on.year) do
-        create_year_periods(period_list, headers)
-      end
-
-    {headers, periods}
-  end
-
-  defp create_year_periods(periods, headers) do
-    for title <- headers do
-      Enum.filter(
-        periods,
-        &(&1.holiday_or_vacation_type.name == title.holiday_or_vacation_type.name)
-      )
-    end
+  def list_periods_by_vacation_names(periods) do
+    periods
+    |> Enum.uniq_by(& &1.holiday_or_vacation_type.name)
+    |> Enum.sort(&(Date.day_of_year(&1.starts_on) <= Date.day_of_year(&2.starts_on)))
   end
 
   @doc """

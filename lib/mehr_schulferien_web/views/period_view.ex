@@ -6,6 +6,12 @@ defmodule MehrSchulferienWeb.PeriodView do
   @doc """
   Returns an abbreviated form of the period name.
   """
+  def vacation_type_name(%Period{
+        holiday_or_vacation_type: %HolidayOrVacationType{colloquial: "Corona-Schulschließung"}
+      }) do
+    "COVID-19"
+  end
+
   def vacation_type_name(%Period{holiday_or_vacation_type: %HolidayOrVacationType{name: name}}) do
     name |> String.split("/") |> List.first()
   end
