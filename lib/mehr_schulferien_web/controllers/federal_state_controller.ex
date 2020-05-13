@@ -72,7 +72,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
     end
   end
 
-  # Display all future dates for this holiday_or_vacation_type
+  # Display all present and future dates for this holiday_or_vacation_type.
+  # If no future dates are available, then previous dates are displayed.
   #
   def show_holiday_or_vacation_type(conn, %{
         "country_slug" => country_slug,
@@ -85,11 +86,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
     holiday_or_vacation_type =
       Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
 
-    periods = Calendars.list_current_and_future_periods(federal_state, holiday_or_vacation_type)
-
-    if Enum.empty?(periods) do
-      raise MehrSchulferien.NoHolidayOrVacationTypePeriod
-    end
+    periods =
+      federal_state
+      |> Calendars.list_current_and_future_periods(holiday_or_vacation_type)
+      |> check_future_periods(federal_state, holiday_or_vacation_type)
 
     months = MehrSchulferien.Calendars.DateHelpers.get_months_map()
 
@@ -101,6 +101,15 @@ defmodule MehrSchulferienWeb.FederalStateController do
       months: months
     )
   end
+
+  defp check_future_periods([], federal_state, holiday_or_vacation_type) do
+    case Calendars.list_previous_periods(federal_state, holiday_or_vacation_type) do
+      [] -> raise MehrSchulferien.NoHolidayOrVacationTypePeriod
+      periods -> periods
+    end
+  end
+
+  defp check_future_periods(periods, _, _), do: periods
 
   def show(conn, %{
         "country_slug" => country_slug,
