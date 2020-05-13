@@ -118,9 +118,9 @@ defmodule MehrSchulferien.Periods do
   @doc """
   Returns the first period after a certain date (the default date is today).
   """
-  def next_period(periods, today \\ DateHelpers.today_berlin()) do
+  def next_periods(periods, today \\ DateHelpers.today_berlin(), number) do
     periods
     |> Enum.drop_while(&(Date.compare(&1.ends_on, today) == :lt))
-    |> hd()
+    |> Enum.take(number)
   end
 end
