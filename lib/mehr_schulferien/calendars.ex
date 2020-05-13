@@ -135,21 +135,36 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
+  Returns a list of previous periods for a federal_state.
+  """
+  def list_previous_periods(federal_state, holiday_or_vacation_type) do
+    today = DateHelpers.today_berlin()
+
+    from(p in Period,
+      where:
+        p.location_id == ^federal_state.id and
+          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
+          p.ends_on < ^today,
+      order_by: [desc: p.starts_on]
+    )
+    |> Repo.all()
+    |> Repo.preload([:holiday_or_vacation_type])
+  end
+
+  @doc """
   Returns a list of current and future periods for a federal_state.
   """
   def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
     today = DateHelpers.today_berlin()
 
-    query =
-      from(p in Period,
-        where:
-          p.location_id == ^federal_state.id and
-            p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
-            p.ends_on >= ^today,
-        order_by: p.starts_on
-      )
-
-    Repo.all(query)
+    from(p in Period,
+      where:
+        p.location_id == ^federal_state.id and
+          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
+          p.ends_on >= ^today,
+      order_by: p.starts_on
+    )
+    |> Repo.all()
     |> Repo.preload([:holiday_or_vacation_type])
   end
 
