@@ -52,7 +52,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   An humanized answer for the next school vacations.
   """
   def next_school_vacation_answer(location, periods) do
-    period = Periods.next_period(periods)
+    [period] = Periods.next_periods(periods, 1)
 
     case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->
@@ -71,7 +71,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   An humanized answer for the next public holiday date.
   """
   def next_public_holiday_answer(location, public_periods) do
-    period = Periods.next_period(public_periods)
+    [period] = Periods.next_periods(public_periods, 1)
 
     case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
       1 ->

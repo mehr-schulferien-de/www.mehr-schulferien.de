@@ -41,6 +41,40 @@
     <dd class="col-sm-7">
       <%= next_school_vacation_answer %>
     </dd>
+
+    <% sorted_periods = Enum.sort(public_periods ++ @school_periods, &(Date.compare(&1.starts_on, &2.starts_on) == :lt)) %>
+    <dt class="col-sm-5">Schulferien <%= @location.name %>?</dt>
+    <dd class="col-sm-7">
+      <% next_schulferien_periods = MehrSchulferien.Periods.next_periods(sorted_periods, 3) %>
+      <%= for period <- next_schulferien_periods do %>
+        <span>
+          <% month = @months[period.starts_on.month] %>
+          <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+            <%= period.holiday_or_vacation_type.colloquial %> &nbsp(
+            <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
+          <% end %>
+          &nbsp
+        </span>
+      <% end %>
+    </dd>
+
+    <% grouped_periods = Enum.chunk_by(sorted_periods, & &1.starts_on.year) %>
+    <%= for periods <- grouped_periods do %>
+      <% first_period = Enum.at(periods, 0) %>
+      <dt class="col-sm-5">Schulfrei <%= @location.name %> <%= first_period.starts_on.year %>?</dt>
+      <dd class="col-sm-7">
+        <%= for period <- periods do %>
+          <span>
+            <% month = @months[period.starts_on.month] %>
+            <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+              <%= period.holiday_or_vacation_type.colloquial %> &nbsp(
+              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
+            <% end %>
+            &nbsp
+          </span>
+        <% end %>
+      </dd>
+    <% end %>
   </dl>
 
   <h3>Feiertage</h3>
@@ -122,6 +156,25 @@
         "text": "<%= next_school_vacation_answer %>"
       }
   },
+  {
+      "@type": "Question",
+      "name": "Schulferien <%= @location.name %>?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": <%= Enum.map_join(next_schulferien_periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>
+      }
+  },
+  <%= for periods <- grouped_periods do %>
+    <% first_period = Enum.at(periods, 0) %>
+    {
+        "@type": "Question",
+        "name": "Schulferien <%= @location.name %> <%= first_period.starts_on.year %>",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": <%= Enum.map_join(periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>
+        }
+    },
+  <% end %>
   {
       "@type": "Question",
       "name": "War gestern ein Feiertag in <%= @location.name %>?",
