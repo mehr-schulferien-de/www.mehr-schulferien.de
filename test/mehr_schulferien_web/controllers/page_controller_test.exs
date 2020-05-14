@@ -5,8 +5,14 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     country = insert(:country, %{slug: "d"})
     federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
 
+    holiday_or_vacation_type =
+      insert(:holiday_or_vacation_type, %{country_location_id: country.id})
+
     for federal_state <- federal_states do
-      add_periods(%{federal_state: federal_state})
+      MehrSchulferien.Calendars.create_period(%{
+        holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+        location_id: federal_state.id
+      })
     end
 
     {:ok, %{conn: conn}}
@@ -22,10 +28,5 @@ defmodule MehrSchulferienWeb.PageControllerTest do
 
     assert html_response(conn, 200) =~
              "Alle Ferientermine für"
-  end
-
-  defp add_periods(%{federal_state: federal_state}) do
-    _school_periods = add_school_periods(%{location: federal_state})
-    _public_periods = add_public_periods(%{location: federal_state})
   end
 end
