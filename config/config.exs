@@ -15,7 +15,7 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "wt0jWSOR3yQpDxdWDMOdkjAMgWc99flPw5EfR3fnYm4zouQKoPNqCi40BE3maX8/",
   render_errors: [view: MehrSchulferienWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: MehrSchulferien.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: MehrSchulferien.PubSub
 
 # Mailer configuration
 config :mehr_schulferien, MehrSchulferienWeb.Mailer, adapter: Bamboo.LocalAdapter
