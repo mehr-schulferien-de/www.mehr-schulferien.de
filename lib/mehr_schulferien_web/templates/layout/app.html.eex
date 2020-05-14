@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <%= render_existing(@view_module, "meta." <> @view_template, assigns) ||
+    <%= render_existing(view_module(@conn), "meta." <> view_template(@conn), assigns) ||
         render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
     <%= if true do %>
       <style>
@@ -92,7 +92,7 @@
         <%= if get_flash(@conn, :inerrorfo) do  %>
         <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
         <% end %>
-        <%= render @view_module, @view_template, assigns %>
+        <%= @inner_content %>
       </div>
     </main>
 

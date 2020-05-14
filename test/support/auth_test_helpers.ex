@@ -1,6 +1,5 @@
 defmodule MehrSchulferienWeb.AuthTestHelpers do
-  use Phoenix.ConnTest
-
+  import Plug.Conn
   import Ecto.Changeset
 
   alias MehrSchulferien.{Accounts, Repo, Sessions}
