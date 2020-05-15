@@ -30,7 +30,7 @@
   <tbody>
     <%= for place <- @countries do %>
       <% country = place[:country] %>
-      <h3><%= country.name %></h3>
+      <h3><%= link country.name, to: Routes.country_path(@conn, :show, country.slug) %></h3>
       <% periods = place[:periods] %>
       <%= for {federal_state, periods} <- periods do %>
         <tr>

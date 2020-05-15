@@ -89,6 +89,15 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   def display_year([[period | _] | _]), do: period.starts_on.year
 
   @doc """
+  Abbreviates entry.
+  """
+  def abbreviate(name, size) when byte_size(name) > size do
+    String.slice(name, 0, size - 3) <> "..."
+  end
+
+  def abbreviate(name, _size), do: name
+
+  @doc """
   Returns the html class for a date. This is based on whether the date
   is a holiday period.
   """

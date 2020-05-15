@@ -12,7 +12,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Bundesländer in <%= @country.name %>
+        Schulferien in <%= @country.name %>
       </h1>
     </div>
   </div>
@@ -20,12 +20,6 @@
 
 <div class="row">
   <div class="col-xs-12">
-    <ul>
-    <%= for federal_state <- @federal_states do %>
-      <li>
-        <%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) %>
-      </li>
-    <% end %>
-    </ul>
+    <%= render MehrSchulferienWeb.PartialView, "_country_periods_table.html", assigns %>
   </div>
 </div>
