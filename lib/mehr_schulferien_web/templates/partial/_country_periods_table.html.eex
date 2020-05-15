@@ -1,0 +1,50 @@
+<div class="table-wrapper">
+<table class="table table-striped">
+  <% all_periods = List.flatten(Map.values(@periods)) %>
+  <% unique_periods = MehrSchulferien.Periods.list_periods_by_vacation_names(all_periods) %>
+  <thead>
+    <tr>
+      <% num_unique_periods = length(unique_periods) %>
+      <% colspan = Enum.find_index(unique_periods, & &1.starts_on.month > 7) || num_unique_periods %>
+      <th></th>
+      <th colspan="<%= colspan %>">Schuljahr <%= @current_year - 1 %>/<%= @current_year %></th>
+      <th colspan="<%= num_unique_periods - colspan %>">Schuljahr <%= @current_year %>/<%= @current_year + 1 %></th>
+    </tr>
+    <tr>
+      <th></th>
+      <%= for period <- unique_periods do %>
+        <th><%= MehrSchulferienWeb.PeriodView.vacation_type_name(period) %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for federal_state <- @federal_states do %>
+      <tr>
+        <td>
+          <%= link to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) do %>
+            <%= ViewHelpers.abbreviate(federal_state.name, 12) %><br>
+          <% end %>
+        </td>
+        <% periods = Map.get(@periods, federal_state.name) %>
+        <%= for header_period <- unique_periods do %>
+          <% periods = Enum.filter(periods, & &1.holiday_or_vacation_type.name == header_period.holiday_or_vacation_type.name) %>
+          <%= if period = Enum.at(periods, 0) do %>
+            <td>
+              <span>
+                <% month = @months[period.starts_on.month] %>
+                <%= link to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) <> "##{String.downcase(month)}#{period.starts_on.year}" do %>
+                  <%= for period <- periods do %>
+                    <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
+                  <% end %>
+                <% end %>
+              </span>
+            </td>
+          <% else %>
+            <td></td>
+          <% end %>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
