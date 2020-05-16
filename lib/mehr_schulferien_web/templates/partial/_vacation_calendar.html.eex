@@ -1,8 +1,9 @@
+<% row_offset = assigns[:row_offset] || 0 %>
 <%= for month_days <- @days do %>
   <% first_day = Enum.at(month_days, 0) %>
   <% {public_periods, school_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
 
-  <%= if Enum.member?([1,4,7,10], first_day.month) do %>
+  <%= if Enum.member?([1,4,7,10], first_day.month - row_offset) do %>
     <div class="row">
   <% end %>
 
@@ -67,7 +68,7 @@
     </div>
   </div>
 
-  <%= if Enum.member?([3,6,9,12], first_day.month) do %>
+  <%= if Enum.member?([3,6,9,12], first_day.month - row_offset) do %>
     </div>
   <% end %>
 
