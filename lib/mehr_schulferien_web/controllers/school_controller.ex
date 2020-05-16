@@ -85,7 +85,7 @@ defmodule MehrSchulferienWeb.SchoolController do
 
     assigns =
       [city: city, country: country, federal_state: federal_state, school: school] ++
-        CH.show_period_data(location_ids, today)
+        CH.list_period_data(location_ids, today)
 
     render(conn, "show.html", assigns)
   end

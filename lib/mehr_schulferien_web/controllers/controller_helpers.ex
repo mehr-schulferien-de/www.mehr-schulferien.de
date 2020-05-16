@@ -5,7 +5,7 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
 
   alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Periods}
 
-  def show_period_data(location_ids, today) do
+  def list_period_data(location_ids, today) do
     current_year = today.year
     {:ok, first_day} = Date.new(current_year, 1, 1)
     {:ok, last_day} = Date.new(current_year + 2, 12, 31)
@@ -31,7 +31,7 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
     ]
   end
 
-  def faq_data(location_ids, today) do
+  def list_faq_data(location_ids, today) do
     yesterday = Date.add(today, -1)
     tomorrow = Date.add(today, 1)
     day_after_tomorrow = Date.add(today, 2)
