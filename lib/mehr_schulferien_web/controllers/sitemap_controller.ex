@@ -3,8 +3,7 @@ defmodule MehrSchulferienWeb.SitemapController do
 
   plug :put_layout, false
 
-  alias MehrSchulferien.Locations
-  alias MehrSchulferien.Calendars
+  alias MehrSchulferien.{Calendars, Locations}
 
   def index(conn, _params) do
     today = Calendars.DateHelpers.today_berlin()
@@ -17,9 +16,17 @@ defmodule MehrSchulferienWeb.SitemapController do
 
   defp build_country(country) do
     federal_states = country |> Locations.list_federal_states() |> Locations.with_periods()
-    cities = Locations.list_cities_of_country(country)
+
+    cities =
+      federal_states |> Enum.map(&Locations.list_cities_of_federal_state(&1)) |> List.flatten()
+
     is_school_vacation_types = Calendars.list_is_school_vacation_types(country)
-    schools = Locations.list_schools_of_country(country)
+
+    schools =
+      country
+      |> Locations.list_schools_of_country()
+      |> Locations.with_periods()
+      |> Locations.combine_school_periods(cities)
 
     %{
       country: country,

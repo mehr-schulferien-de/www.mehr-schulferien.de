@@ -50,8 +50,8 @@
         <span>
           <% month = @months[period.starts_on.month] %>
           <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-            <%= period.holiday_or_vacation_type.colloquial %> &nbsp(
-            <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
+            <%= period.holiday_or_vacation_type.colloquial %>
+            &nbsp(<%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
           <% end %>
           &nbsp
         </span>
@@ -67,8 +67,8 @@
           <span>
             <% month = @months[period.starts_on.month] %>
             <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-              <%= period.holiday_or_vacation_type.colloquial %> &nbsp(
-              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
+              <%= period.holiday_or_vacation_type.colloquial %>
+              &nbsp(<%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
             <% end %>
             &nbsp
           </span>

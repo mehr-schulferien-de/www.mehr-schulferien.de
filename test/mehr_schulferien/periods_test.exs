@@ -56,6 +56,35 @@ defmodule MehrSchulferien.PeriodsTest do
     end
   end
 
+  describe "filter periods" do
+    setup [:add_federal_state, :add_periods]
+
+    test "next_periods/3 returns a certain number of next periods", %{
+      school_periods: school_periods
+    } do
+      today = ~D[2020-04-02]
+      assert [period_1, period_2, period_3] = Periods.next_periods(school_periods, today, 3)
+      assert period_1.starts_on == ~D[2020-04-06]
+      assert period_2.starts_on == ~D[2020-10-31]
+      assert period_3.starts_on == ~D[2020-12-23]
+      today = ~D[2020-05-16]
+      assert [period_4, period_5] = Periods.next_periods(school_periods, today, 2)
+      assert period_4 == period_2
+      assert period_5 == period_3
+    end
+
+    test "find_most_recent_period/2 returns the most recently ended period", %{
+      school_periods: school_periods
+    } do
+      today = ~D[2020-05-02]
+      period = Periods.find_most_recent_period(school_periods, today)
+      assert period.starts_on == ~D[2020-04-06]
+      today = ~D[2021-03-16]
+      period = Periods.find_most_recent_period(school_periods, today)
+      assert period.starts_on == ~D[2021-02-24]
+    end
+  end
+
   defp add_federal_state(_) do
     federal_state = insert(:federal_state)
     {:ok, %{federal_state: federal_state}}

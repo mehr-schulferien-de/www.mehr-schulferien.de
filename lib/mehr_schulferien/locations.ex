@@ -103,6 +103,29 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns the list of cities for a certain federal_state.
+  """
+  def list_cities_of_federal_state(federal_state) do
+    counties =
+      from(l in Location, where: l.is_county == true and l.parent_location_id == ^federal_state.id)
+      |> Repo.all()
+      |> Repo.preload([:periods])
+
+    county_ids = Enum.map(counties, & &1.id)
+
+    from(l in Location, where: l.is_city == true and l.parent_location_id in ^county_ids)
+    |> Repo.all()
+    |> Repo.preload([:periods])
+    |> Enum.map(&combine_city_periods(federal_state, counties, &1))
+  end
+
+  defp combine_city_periods(federal_state, counties, city) do
+    county = Enum.find(counties, &(&1.id == city.parent_location_id))
+    periods = federal_state.periods ++ county.periods ++ city.periods
+    %Location{city | periods: periods}
+  end
+
+  @doc """
   Returns the list of cities for a certain country.
   """
   def list_cities_of_country(country) do
@@ -128,6 +151,13 @@ defmodule MehrSchulferien.Locations do
     |> Repo.preload([:address])
   end
 
+  def combine_school_periods(schools, cities) do
+    Enum.map(schools, fn school ->
+      city = Enum.find(cities, &(&1.id == school.parent_location_id))
+      %Location{school | periods: school.periods ++ city.periods}
+    end)
+  end
+
   @doc """
   Returns the list of schools for a certain country.
   """
@@ -136,7 +166,6 @@ defmodule MehrSchulferien.Locations do
 
     from(l in Location, where: l.is_school == true and l.parent_location_id in ^city_ids)
     |> Repo.all()
-    |> Repo.preload([:address])
   end
 
   @doc """
