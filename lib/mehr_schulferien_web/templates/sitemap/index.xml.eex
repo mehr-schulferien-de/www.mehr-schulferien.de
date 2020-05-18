@@ -50,16 +50,24 @@
       <% end %>
     <% end %>
     <%= for city <- cities do %>
+      <% most_recent_period = MehrSchulferien.Periods.find_most_recent_period(city.periods) %>
       <url>
         <loc><%= Routes.city_url(@conn, :show, country.slug, city.slug) %></loc>
         <changefreq>monthly</changefreq>
+        <%= if most_recent_period do %>
+          <lastmod><%= Date.add(most_recent_period.ends_on, 1) %></lastmod>
+        <% end %>
         <priority>0.5</priority>
       </url>
     <% end %>
     <%= for school <- schools do %>
+      <% most_recent_period = MehrSchulferien.Periods.find_most_recent_period(school.periods) %>
       <url>
         <loc><%= Routes.school_url(@conn, :show, country.slug, school.slug) %></loc>
         <changefreq>monthly</changefreq>
+        <%= if most_recent_period do %>
+          <lastmod><%= Date.add(most_recent_period.ends_on, 1) %></lastmod>
+        <% end %>
         <priority>0.5</priority>
       </url>
     <% end %>

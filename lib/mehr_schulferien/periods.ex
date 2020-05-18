@@ -117,10 +117,23 @@ defmodule MehrSchulferien.Periods do
 
   @doc """
   Returns the first period after a certain date (the default date is today).
+
+  The periods need to be sorted (by the `starts_on` date) before calling
+  this function.
   """
   def next_periods(periods, today \\ DateHelpers.today_berlin(), number) do
     periods
     |> Enum.drop_while(&(Date.compare(&1.ends_on, today) == :lt))
     |> Enum.take(number)
+  end
+
+  @doc """
+  Returns the most recently ended period.
+  """
+  def find_most_recent_period(periods, today \\ DateHelpers.today_berlin()) do
+    periods
+    |> Enum.sort(&(Date.compare(&1.starts_on, &2.starts_on) == :lt))
+    |> Enum.take_while(&(Date.compare(&1.ends_on, today) == :lt))
+    |> List.last()
   end
 end
