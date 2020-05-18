@@ -20,45 +20,8 @@
   </div>
 </div>
 
-<div class="row" id="9-3-variant">
-  <div class="col-md-9">
-    <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
-    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state %>
-    <%= render MehrSchulferienWeb.PartialView, "_calendar_thumbnail.html", next_three_years: @next_three_years %>
-
-    <h2 id="ferientermine_naechste_3_jahre">Ferien <%= @federal_state.name %> <%= @next_three_years %></h2>
-    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
-  </div>
-  <div class="col-md-3">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Corona-Quarantäne</h3>
-      </div>
-      <div class="panel-body">
-        <p>Bitte helfen Sie uns bei der Erfassung von Corona-Schließzeiten (<a href="https://de.wikipedia.org/wiki/COVID-19-Pandemie">COVID-19-Pandemie</a>).
-        Tragen Sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", rel: "nofollow", to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) <> "/new_period"%> ein. Danke!</p>
-      </div>
-    </div>
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Sonstiges</h3>
-      </div>
-      <div class="panel-body">
-        <ul>
-          <li><a href="#faq">FAQ zu Schulferien in <%= @federal_state.name %></a></li>
-          <li><%= link "Liste mit allen Landkreisen und Städten in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %></li>
-        </ul>
-      </div>
-    </div>
-
-    <%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
-
-  </div>
-</div>
-
 <div class="row" id="4-4-4-variant">
-  <div class="col-md-4">
+  <div class="col-md-5">
     <h2>Termine</h2>
     <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state %>
@@ -72,17 +35,14 @@
         <a href="#kalenderansicht"><img alt="Kalender-Thumbnail" class="media-object img-thumbnail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFIAAABSBAMAAAA1Ap6oAAAAJFBMVEX+/v7y8/Tk6+bX3+LMzsesz+UzZK7w3t5dg76GqdKSzpLlk5G7UWeFAAAFaElEQVR4AZWWxZvryhHFT8lhrGo5uFK3FFhKLU1oNbb0mJ8v7oOrR/N9YSbPKpzMrMLkTZj/uXSV5JEf+N17f/e65eo+U8d4yiDcLe8dRk5xJ5YPDQ8NP74bJUmCRUiI9MIsx3om53U/dEOi1+t6qI92rZKobTcnbdvGs7MHhmfxiri+f3i32/32uvGT/yX+jFcka8OB8poqtedRaFwYQkRHNIvrB+DkoHiKDo9qfHC7/c4nR77znfriqvr09hOv3W71nlXf+T4+eHn+06ncJmWqZuX55V653X4N77k8oLh9UPxkcXj0JKin1WtOK26zfrnCcvWaopOeTperylPHLa1fc7rkwfUMaqlZ1DkH6vMV8mbBJUcq8qbyKDlQk9UZd6JKAC4YIsyYkATNryDJeJLHKgyhdw2ucJILZsjve5apZfQv6ukEV5X1JCIWxXknCDMieqQIiQsF0KDIigVi1uQNqnUVu9CX62q9FDh4FJQOg9swiAFigv6hcBnLUIZ1CGV0QgQBE1M6igxSoB4JiHjxafEhrdMBJaU4BjXJm0v4bJXc88Ih6NbSV4IcDaXDnFpZMUiIidXFOw/hydHJ7C4I4hmzQ4JHZKzo+ec++670/12fTYzuOZdostWygeOcJ/dOaPjsA5994OwBuzwL8sQZO/isydU9g1CRcS6l0NlnP5tEnz0blWauNzJ3sDG6f/aAQt1rc4eSc45IdVYvC4AG9T5LPQfrWeirFOChOHYIupX7UfnZA6WwWNYAEIhCosDc0zN/zmDLJcYoYZhkD1mrCQbp9xV43/VEg9emtdgLZ6VBIdYM5CGMiSJt3EvVXfiw55NQ5fNaLne/6T9cY0IgAIh5VF6asmrXltC73S8wQfqQak2ZDZSp58d2u1Pr+fAczpSHyEkZYmyYwTAeHpuRCBNGGB+9/jSScrO5vnlKPYzqN4P2xIu4ff2HALLO960+azKtapjxYuz1w5v/979/hQKvjmBU/v0OOoLxmtRzND3O9GW0e7gHsnYmIm9jW+q/2LYFtQcw3r3dzsFbXKRizuRPHxxpel98ck7vy8tZ+ZnXnl+8KL3PtzPFxcVcfPu185H2zHq3WtYVt67P17xslkUn66xZNp2nrmhpnTe5dEEzebCcLzS955yvNedhysXpYk7vdymSYIyI14qkgMJ0dWRf/uca12CSLqLzuVBZCAriDKVM6W3B85wXv1e6aAlW+ik/nfbMQggvfPbDz8eQ4AkxSGROt6TsQ4rqKmw0sVmtnCZT7ktLb6ozy8+G4foQq1iFtlyXo1LAKJwmmKUZaayoMhsnTKlrABOYFHO3CoCY+6LVeTGEPmgqWi7BX7nv09s1qizXXexU6RqolRuVQRAwhitFVWbiguL8lJ9k800hqLs4VbjiJZls7lms1qWUY89iHGW9JS3nXNKU80WOuHg6PXTfCtnMrtZDHJXqYDdzJzCLhLDPUSYXDHMv1NMwd69buQShIaRWV1C9qJdcYiQvKjS0SlvqPpTDldIyWf0svQl2XxeFkqk/UOqikCnBWtmFSHSFjfkpvQG84+Qp7HPN9p7GGOlPpb3rlqDJIlome6eubRABQvTazVmVlRKidr/v+qn2HH+7veb6NQay4TeWtyfXtPNrHh76vgbo8rblfMzakvGOn/xElRa7NOXnm3a73xxMhC+mQDPl9VFpPS2TVflrjHmNxCP2U5anKnhGQnzBYAnBEwHUhhC0pyohsXlJfM7QSbvZYIIXbYOjtH2tz31zXTX55uR6fURIt6fn7hoBZ2Xp+Zj7OOO6oew6Rt4NjCOQDV+bXAy21/M484yz1/MOoyRFe0Gk2YORI3OFjxYz/wdJC6AupznSPwAAAABJRU5ErkJggg==" data-holder-rendered="true" style="width: 90px; height: 90px;"></a>
       </div>
     </div>
-
   </div>
   <div class="col-md-4">
     <h2 id="ferientermine_naechste_3_jahre"><%= @next_three_years %></h2>
     <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <h2>FAQ</h2>
     <% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @federal_state) %>
-    <% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @federal_state) %>
-    <% off_school_day_after_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@day_after_tomorrows_school_free_periods, @day_after_tomorrow, @federal_state) %>
     <% next_school_vacation_answer = FaqViewHelpers.next_school_vacation_answer(@federal_state, @school_periods) %>
 
     <p><strong>Wann sind die nächsten Schulferien in <%= @federal_state.name %>?</strong><br>
@@ -93,26 +53,17 @@
       <%= off_school_today_answer %>
     </p>
 
-    <p><strong>Ist morgen schulfrei in <%= @federal_state.name %>?</strong><br>
-      <%= off_school_tomorrow_answer %>
-    </p>
-
-    <p><strong>Ist übermorgen schulfrei in <%= @federal_state.name %>?</strong><br>
-      <%= off_school_day_after_tomorrow_answer %>
-    </p>
-
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Sonstiges</h3>
       </div>
       <div class="panel-body">
         <ul>
-          <li><a href="#faq">Komplette FAQ zu Schulferien in <%= @federal_state.name %></a></li>
-          <li><%= link "Liste mit allen Landkreisen und Städten in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %></li>
+          <li><a href="#faq">Komplette Schulferien-FAQ</a></li>
+          <li><%= link "Landkreise und Städte in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %></li>
         </ul>
       </div>
     </div>
-
   </div>
 </div>
 
