@@ -161,7 +161,7 @@
       "name": "Schulferien <%= @location.name %>?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": <%= Enum.map_join(next_schulferien_periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>
+        "text": "<%= Enum.map_join(next_schulferien_periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>"
       }
   },
   <%= for periods <- grouped_periods do %>
@@ -171,7 +171,7 @@
         "name": "Schulferien <%= @location.name %> <%= first_period.starts_on.year %>",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": <%= Enum.map_join(periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>
+          "text": "<%= Enum.map_join(periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>"
         }
     },
   <% end %>
