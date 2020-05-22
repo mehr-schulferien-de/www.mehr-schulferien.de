@@ -54,17 +54,41 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   def next_school_vacation_answer(location, periods) do
     [period] = Periods.next_periods(periods, 1)
 
-    case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
-      1 ->
-        "Morgen starten die #{period.holiday_or_vacation_type.colloquial} in #{location.name}:
-    #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
+    distance_in_words =
+      case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
+        0 ->
+          "Heute"
 
-      n ->
-        "In #{n} Tagen starten die #{period.holiday_or_vacation_type.colloquial} in #{
-          location.name
-        }:
+        1 ->
+          "Morgen"
+
+        2 ->
+          "Übermorgen"
+
+        7 ->
+          "In einer Woche"
+
+        14 ->
+          "In zwei Wochen"
+
+        n when n < 14 ->
+          "In #{n} Tagen"
+
+        n ->
+          case rem(n, 7) do
+            0 ->
+              "In #{round(n / 7)} Wochen (#{n} Tage)"
+
+            _ ->
+              weeks = trunc(n / 7)
+              "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tage)"
+          end
+      end
+
+    "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{
+      location.name
+    }:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
-    end
   end
 
   @doc """
