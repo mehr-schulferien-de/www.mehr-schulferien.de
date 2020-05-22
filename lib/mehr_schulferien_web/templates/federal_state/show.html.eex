@@ -43,27 +43,26 @@
   <div class="col-md-3">
     <h2>FAQ</h2>
     <% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @federal_state) %>
+    <% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @federal_state) %>
     <% next_school_vacation_answer = FaqViewHelpers.next_school_vacation_answer(@federal_state, @school_periods) %>
 
-    <p><strong>Wann sind die nächsten Schulferien in <%= @federal_state.name %>?</strong><br>
+    <p><strong>Wann sind die nächsten Schulferien?</strong><br>
       <%= next_school_vacation_answer %>
     </p>
 
-    <p><strong>Ist heute schulfrei in <%= @federal_state.name %>?</strong><br>
+    <p><strong>Ist heute schulfrei?</strong><br>
       <%= off_school_today_answer %>
     </p>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Sonstiges</h3>
-      </div>
-      <div class="panel-body">
-        <ul>
-          <li><a href="#faq">Komplette Schulferien-FAQ</a></li>
-          <li><%= link "Landkreise und Städte in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %></li>
-        </ul>
-      </div>
-    </div>
+    <p><strong>Ist morgen schulfrei?</strong><br>
+      <%= off_school_tomorrow_answer %>
+    </p>
+
+    <p><strong>Für welche Städte gelten diese Feriendaten?</strong><br>
+      <%= link "Landkreise und Städte in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %>
+    </p>
+
+    <p><a href="#faq">Komplette Schulferien-FAQ</a></p>
   </div>
 </div>
 
