@@ -14,7 +14,7 @@
       <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <% end %>
     <%= render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html") %>
-    <script src="https://www.googleoptimize.com/optimize.js?id=GTM-5KRZPSK"></script>
+    <%# <script src="https://www.googleoptimize.com/optimize.js?id=GTM-5KRZPSK"></script> %>
   </head>
   <body>
 
