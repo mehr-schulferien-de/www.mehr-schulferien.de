@@ -11,13 +11,6 @@
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, countries: @countries, days: @days, day_names: @day_names, months: @months %>
     </div>
 
-    <%# a/b test %>
-    <%= if Date.compare(MehrSchulferien.Calendars.DateHelpers.today_berlin(), ~D[2020-05-18]) == :lt do %>
-      <div id="small_table" class="hidden-sm hidden-md hidden-lg">
-      <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, countries: @countries, days: @days_b, day_names: @day_names, months: @months, periods: @periods_b %>
-      </div>
-    <% end %>
-
     <h2>Schulbeginn/Schulanfang</h2>
     <p>In 2020 (zur Corona-Krise) stiegen die Suchanfragen rund um das Thema Schulanfang stark an.
     Da jedes Bundesland andere Ferientermine hat, beantworten wir Fragen rund um dieses Thema auf
