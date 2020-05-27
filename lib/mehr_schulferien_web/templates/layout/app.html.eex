@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="de">
   <head>
+    <%= render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html") %>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <%= render_existing(view_module(@conn), "meta." <> view_template(@conn), assigns) ||
         render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
-    <%= if true do %>
+    <%= if false do %>
       <style>
       <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
       </style>
     <% else %>
       <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <% end %>
-    <%= render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html") %>
-    <%# <script src="https://www.googleoptimize.com/optimize.js?id=GTM-5KRZPSK"></script> %>
   </head>
   <body>
 
@@ -97,9 +96,6 @@
     </main>
 
     <footer>
-      <!--
-        <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
-      -->
       <div class="dsgvo text-center">
         <div class="container">
           <p class="text-center">Alle Angaben ohne Gewähr.</p>
