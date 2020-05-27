@@ -1,0 +1,45 @@
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "Brückentage #{@federal_state.name}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug), class: "active" %></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "Brückentage #{@federal_state.name}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug), class: "active" %></li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        Brückentage <%= @federal_state.name %> <%= @current_year %>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= for num <- 2..5 do %>
+      <%= for bridge_day <- @bridge_day_map[num] do %>
+        <% [before_bd | query_periods] = Enum.drop_while(@public_periods, & &1.id != bridge_day.last_period_id) %>
+        <% all_periods = [before_bd, bridge_day | MehrSchulferien.Periods.list_consecutive_periods(query_periods)] %>
+        <%= render MehrSchulferienWeb.PartialView, "_bridge_day_panel.html", all_periods: all_periods, bridge_days_number: num - 1, current_year: @current_year %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+
+    <h2 id="kalenderansicht">Kalenderansicht</h2>
+    <p>Ferienkalender mit allen Brückentage für diese Jahr.</p>
+    <% periods = List.flatten(Map.values(@bridge_day_map)) %>
+    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
+  </div>
+</div>

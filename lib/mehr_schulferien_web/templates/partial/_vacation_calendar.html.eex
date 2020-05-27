@@ -1,7 +1,7 @@
 <% row_offset = assigns[:row_offset] || 0 %>
 <%= for month_days <- @days do %>
   <% first_day = Enum.at(month_days, 0) %>
-  <% {public_periods, school_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
+  <% {public_periods, school_or_bridge_day_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
 
   <%= if Enum.member?([1,4,7,10], first_day.month - row_offset) do %>
     <div class="row">
@@ -43,7 +43,7 @@
                   </tr>
                   <tr>
                 <% end %>
-                <td class="text-right <%= ViewHelpers.get_html_class(day, public_periods ++ school_periods) %>"><%= day.day %></td>
+                <td class="text-right <%= ViewHelpers.get_html_class(day, public_periods ++ school_or_bridge_day_periods) %>"><%= day.day %></td>
               <% end %>
             </tr>
           </tbody>
@@ -51,15 +51,15 @@
       </div>
       <div class="footer">
         <% public_periods = Enum.filter(public_periods, & &1.is_public_holiday) %>
-        <%= unless Enum.empty?(public_periods) and Enum.empty?(school_periods) do %>
+        <%= unless Enum.empty?(public_periods) and Enum.empty?(school_or_bridge_day_periods) do %>
           <div class="padding">
             <div class="row">
               <%= unless Enum.empty?(public_periods) do %>
                 <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: public_periods, country: @country, federal_state: @federal_state, conn: @conn %>
               <% end %>
 
-              <%= unless Enum.empty?(school_periods) do %>
-                <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_periods, country: @country, federal_state: @federal_state, conn: @conn %>
+              <%= unless Enum.empty?(school_or_bridge_day_periods) do %>
+                <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar_summary.html", holiday_periods: school_or_bridge_day_periods, country: @country, federal_state: @federal_state, conn: @conn %>
               <% end %>
             </div>
           </div>
