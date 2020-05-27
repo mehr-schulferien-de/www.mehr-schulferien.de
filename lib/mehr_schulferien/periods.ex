@@ -5,7 +5,7 @@ defmodule MehrSchulferien.Periods do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Calendars.{DateHelpers, Period}
+  alias MehrSchulferien.Calendars.{BridgeDayPeriod, DateHelpers, Period}
   alias MehrSchulferien.Repo
 
   @doc """
@@ -135,5 +135,57 @@ defmodule MehrSchulferien.Periods do
     |> Enum.sort(&(Date.compare(&1.starts_on, &2.starts_on) == :lt))
     |> Enum.take_while(&(Date.compare(&1.ends_on, today) == :lt))
     |> List.last()
+  end
+
+  @doc """
+  Returns a map containing periods that are separated by 1..4 days.
+
+  This is used for calculating bridge days.
+  """
+  def group_by_interval(periods) do
+    periods
+    |> Enum.reduce(%{}, fn period, acc ->
+      acc =
+        if last_period = acc["last_period"] do
+          diff = Date.diff(period.starts_on, last_period.ends_on)
+
+          case {diff, acc} do
+            {diff, _} when diff not in 2..5 ->
+              acc
+
+            {_, %{^diff => value}} ->
+              %{acc | diff => value ++ [BridgeDayPeriod.create(last_period, period, diff)]}
+
+            {_, %{}} ->
+              Map.put(acc, diff, [BridgeDayPeriod.create(last_period, period, diff)])
+          end
+        else
+          %{}
+        end
+
+      Map.put(acc, "last_period", period)
+    end)
+    |> Map.delete("last_period")
+  end
+
+  @doc """
+  Returns a list of consecutive periods, starting with the first period
+  in the input.
+
+  The periods need to be sorted (by the `starts_on` date) before calling
+  this function.
+  """
+  def list_consecutive_periods([first | rest]) do
+    list_consecutive_periods(rest, [first])
+  end
+
+  defp list_consecutive_periods([], output), do: output
+
+  defp list_consecutive_periods([first | rest], output) do
+    if Date.diff(first.starts_on, List.last(output).ends_on) < 2 do
+      list_consecutive_periods(rest, output ++ [first])
+    else
+      output
+    end
   end
 end
