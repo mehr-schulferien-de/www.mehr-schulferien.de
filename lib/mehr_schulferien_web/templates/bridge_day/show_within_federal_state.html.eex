@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Die besten <%= Enum.count(@bridge_day_map[2]) + Enum.count(@bridge_day_map[3]) + Enum.count(@bridge_day_map[4]) + Enum.count(@bridge_day_map[5]) %> Brückentage für <%= @federal_state.name %> in <%= @year %>
+        Die besten <%= @bridge_day_proposal_count %> Brückentage für <%= @federal_state.name %> in <%= @year %>
       </h1>
     </div>
   </div>
