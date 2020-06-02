@@ -46,6 +46,7 @@ defmodule MehrSchulferienWeb.Router do
     put "/password_resets/update", PasswordResetController, :update
 
     # Old routes
+    get "/cities/:city_slug/:from/:till", OldRoutes.CityController, :show
     get "/cities/:city_slug", OldRoutes.CityController, :show
 
     # School vacations
