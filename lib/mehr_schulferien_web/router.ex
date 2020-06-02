@@ -85,6 +85,10 @@ defmodule MehrSchulferienWeb.Router do
     # Bridge days
     get "/brueckentage/:country_slug/bundesland/:federal_state_slug",
         BridgeDayController,
+        :index_within_federal_state
+
+    get "/brueckentage/:country_slug/bundesland/:federal_state_slug/:year",
+        BridgeDayController,
         :show_within_federal_state
 
     # Misc
