@@ -1,0 +1,26 @@
+<ol class="breadcrumb hidden-xs">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "Brückentage #{@federal_state.name}", to: Routes.bridge_day_path(@conn, :index_within_federal_state, @country.slug, @federal_state.slug), class: "active" %></li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "Brückentage #{@federal_state.name}", to: Routes.bridge_day_path(@conn, :index_within_federal_state, @country.slug, @federal_state.slug), class: "active" %></li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Brückentage <%= @federal_state.name %></h1>
+      <ul>
+        <%= for year <- @current_year..@current_year + 2 do %>
+          <li><%= link year, to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year) %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>
