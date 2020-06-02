@@ -37,8 +37,18 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     days = DateHelpers.create_year(year)
     months = DateHelpers.get_months_map()
 
+    bridge_day_proposal_count =
+      for num <- 2..5 do
+        if bridge_day_map[num] do
+          Enum.count(bridge_day_map[num])
+        end
+      end
+      |> Enum.filter(&(!is_nil(&1)))
+      |> Enum.sum()
+
     assigns = [
       bridge_day_map: bridge_day_map,
+      bridge_day_proposal_count: bridge_day_proposal_count,
       country: country,
       days: days,
       federal_state: federal_state,
