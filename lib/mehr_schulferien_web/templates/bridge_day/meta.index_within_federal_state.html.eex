@@ -1,0 +1,2 @@
+<title>Brückentage <%= @federal_state.name %></title>
+<meta name="description" content="Brückentage für Bundesland <%= @federal_state.name %>.">

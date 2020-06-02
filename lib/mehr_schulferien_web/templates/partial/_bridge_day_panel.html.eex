@@ -1,6 +1,5 @@
 <% max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(@all_periods) %>
-<% number_weekend_days = MehrSchulferienWeb.BridgeDayView.get_number_weekend_days(@all_periods) %>
-<% number_public_holidays = max_days - number_weekend_days - @bridge_days_number %>
+<% number_public_holidays_and_weekend_days = max_days - @bridge_days_number %>
 <% first_day = hd(@all_periods).starts_on %>
 <% last_day = List.last(@all_periods).ends_on %>
 
@@ -19,7 +18,7 @@
     </div>
     <div class="panel-body">
       <h3>
-        <%= MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day) %> <div class="pull-right text-muted"> <%= @current_year %></div>
+        <%= MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day) %> <div class="pull-right text-muted"> <%= @year %></div>
       </h3>
       <table class="table table-condensed">
         <thead>
@@ -59,12 +58,8 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-9 text-right">Feiertage</div>
-          <div class="col-xs-3 text-right">+ <%= number_public_holidays %></div>
-        </div>
-        <div class="row">
-          <div class="col-xs-9 text-right">Wochenend-Tage</div>
-          <div class="col-xs-3 text-right">+ <%= number_weekend_days %></div>
+          <div class="col-xs-9 text-right">Feiertage + Wochenend-Tage</div>
+          <div class="col-xs-3 text-right">+ <%= number_public_holidays_and_weekend_days %></div>
         </div>
         <div class="row-sum">
           <div class="row">
