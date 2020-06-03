@@ -5,6 +5,7 @@ defmodule MehrSchulferienWeb.PageController do
 
   def index(conn, _params) do
     today = DateHelpers.today_berlin()
+    current_year = today.year
     ends_on = Date.add(today, 42)
     days = DateHelpers.create_days(today, 42)
     day_names = DateHelpers.short_days_map()
@@ -15,7 +16,8 @@ defmodule MehrSchulferienWeb.PageController do
       countries: countries,
       days: days,
       day_names: day_names,
-      months: months
+      months: months,
+      current_year: current_year
     )
   end
 
