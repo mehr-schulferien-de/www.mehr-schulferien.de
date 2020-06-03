@@ -81,7 +81,11 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
 
             _ ->
               weeks = trunc(n / 7)
-              "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tage)"
+
+              case n - weeks * 7 do
+                1 -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tag)"
+                _ -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tage)"
+              end
           end
       end
 
