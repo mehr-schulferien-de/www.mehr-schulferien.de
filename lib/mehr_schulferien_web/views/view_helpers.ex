@@ -173,4 +173,14 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     |> Enum.max_by(fn {_k, v} -> v end)
     |> elem(0)
   end
+
+  @doc """
+  Returns a list of dates between, and including, a period's `starts_on`
+  and `ends_on` dates.
+  """
+  def list_period_dates(period, dates) do
+    dates
+    |> Enum.drop_while(&(Date.compare(&1, period.starts_on) == :lt))
+    |> Enum.take_while(&(Date.compare(&1, period.ends_on) != :gt))
+  end
 end
