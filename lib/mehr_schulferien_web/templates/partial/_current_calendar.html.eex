@@ -1,54 +1,56 @@
 <% breakpoint_days = Enum.filter(@days, fn(x) -> x == Enum.at(@days, 0) or x.day == 1 or x == Enum.at(@days, -1) end) %>
 
-<table class="table table-bordered table-condensed">
-  <thead>
-    <tr>
-      <th rowspan="3"></th>
-      <%= for {day, counter} <- Enum.with_index(breakpoint_days) do %>
-        <%= if day != Enum.at(breakpoint_days, -1) do %>
-          <%= if day == Enum.at(breakpoint_days, -2) do %>
-            <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1 }" %>"><%= @months[day.month] %> <%= day.year%></th>
-          <% else %>
-            <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) }" %>"><%= @months[day.month] %> <%= day.year%></th>
+<div class="table-responsive">
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th rowspan="3"></th>
+        <%= for {day, counter} <- Enum.with_index(breakpoint_days) do %>
+          <%= if day != Enum.at(breakpoint_days, -1) do %>
+            <%= if day == Enum.at(breakpoint_days, -2) do %>
+              <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1 }" %>"><%= @months[day.month] %> <%= day.year%></th>
+            <% else %>
+              <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) }" %>"><%= @months[day.month] %> <%= day.year%></th>
+            <% end %>
           <% end %>
         <% end %>
-      <% end %>
-    </tr>
-    <tr>
-      <%= for day <- @days do %>
-        <% day_of_week = Date.day_of_week(day) %>
-        <td class="text-right <%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= @day_names[day_of_week] %><span class="hidden-xs hidden-sm hidden-md">.</span></small><% end %></td>
-      <% end %>
-    </tr>
-    <tr>
-      <%= for day <- @days do %>
-        <% day_of_week = Date.day_of_week(day) %>
-        <td class="text-right <%= if day_of_week > 5, do: "active", else: "" %>"><%= if day_of_week < 6 do %><small><%= day.day %><span class="hidden-xs hidden-sm hidden-md">.</span></small><% end %></td>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for place <- @countries do %>
-      <% country = place[:country] %>
-      <h3><%= link country.name, to: Routes.country_path(@conn, :show, country.slug) %></h3>
-      <% periods = place[:periods] %>
-      <%= for {federal_state, periods} <- periods do %>
-        <tr>
-          <td><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></td>
-          <%= for day <- @days do %>
-            <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
-            <td class="text-center <%= td_html_class %>">
-              <%= if td_html_class != "" and td_html_class != "active" do %>
-                <%= link title: "Termin anzeigen", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}" do %>
-                  <i class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>
-                  </i>
+      </tr>
+      <tr>
+        <%= for day <- @days do %>
+          <% day_of_week = Date.day_of_week(day) %>
+          <td class="text-right <%= if day_of_week > 5, do: "active", else: "" %>"><small><%= @day_names[day_of_week] %><span class="hidden-xs hidden-sm hidden-md">.</span></small></td>
+        <% end %>
+      </tr>
+      <tr>
+        <%= for day <- @days do %>
+          <% day_of_week = Date.day_of_week(day) %>
+          <td class="text-right <%= if day_of_week > 5, do: "active", else: "" %>"><small><%= day.day %><span class="hidden-xs hidden-sm hidden-md">.</span></small></td>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for place <- @countries do %>
+        <% country = place[:country] %>
+        <h3><%= link country.name, to: Routes.country_path(@conn, :show, country.slug) %></h3>
+        <% periods = place[:periods] %>
+        <%= for {federal_state, periods} <- periods do %>
+          <tr>
+            <td><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></td>
+            <%= for day <- @days do %>
+              <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
+              <td class="text-center <%= td_html_class %>">
+                <%= if td_html_class != "" and td_html_class != "active" do %>
+                  <%= link title: "Termin anzeigen", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}" do %>
+                    <i class="icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>
+                    </i>
+                  <% end %>
                 <% end %>
-              <% end %>
-            </td>
-          <% end %>
-        </tr>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
       <% end %>
-    <% end %>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</div>
