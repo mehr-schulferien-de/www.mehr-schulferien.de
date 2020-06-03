@@ -10,20 +10,53 @@
     <div id="big_table">
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, countries: @countries, days: @days, day_names: @day_names, months: @months %>
     </div>
+  </div>
+</div>
 
+<div class="row">
+  <div class="col-md-6">
+    <h2>Brückentage</h2>
+    <p>Unser Algorithmus zeigt nicht nur normale <a href="https://de.wikipedia.org/wiki/Brückentag">Brückentage</a>, sondern auch
+    die Variationen, in denen 2 bis 4 genommenen Urlaubstagen ein vielfaches an effektiven
+    Urlaub realisieren.</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Bundesland</th>
+          <th colspan="3">Jahr</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for place <- @countries do %>
+          <% country = place[:country] %>
+          <% federal_states = place[:federal_states] %>
+          <%= for federal_state <- federal_states do %>
+            <tr>
+              <td><%= federal_state.name %></td>
+              <%= for year <- @current_year..@current_year + 2 do %>
+                <td><%= link year, to: Routes.bridge_day_path(@conn, :show_within_federal_state, country.slug, federal_state.slug, year) %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+  </div>
+  <div class="col-md-6">
     <h2>Schulbeginn/Schulanfang</h2>
     <p>In 2020 (zur Corona-Krise) stiegen die Suchanfragen rund um das Thema Schulanfang stark an.
     Da jedes Bundesland andere Ferientermine hat, beantworten wir Fragen rund um dieses Thema auf
     spezielen FAQ-Seiten:</p>
-    <ul>
-      <%= for place <- @countries do %>
-        <% country = place[:country] %>
-        <% federal_states = place[:federal_states] %>
-        <h3><%= country.name %></h3>
-        <%= for federal_state <- federal_states do %>
-          <li><%= link "Schulbeginn/Schulanfang #{federal_state.name}", to: Routes.federal_state_path(@conn, :schulbeginn, country.slug, federal_state.slug) %></li>
-        <% end %>
+    <%= for place <- @countries do %>
+      <% country = place[:country] %>
+      <% federal_states = place[:federal_states] %>
+      <ul>
+      <%= for federal_state <- federal_states do %>
+        <li><%= link "Schulbeginn/Schulanfang #{federal_state.name}", to: Routes.federal_state_path(@conn, :schulbeginn, country.slug, federal_state.slug) %></li>
       <% end %>
-    </ul>
+      </ul>
+    <% end %>
   </div>
 </div>
