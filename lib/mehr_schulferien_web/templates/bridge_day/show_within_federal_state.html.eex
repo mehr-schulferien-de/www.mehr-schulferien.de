@@ -26,6 +26,11 @@
 
 <div class="row">
   <div class="col-md-12">
+    <p>
+      Die optimale Kombination von Brücken-, Feiertagen und Wochenenden ergibt mit einem minimalen
+      Einsatz von Urlaubstagen maximal viel freie Tage am Stück.
+    </p>
+
     <%= for num <- 2..5 do %>
       <%= if @bridge_day_map[num] do %>
         <%= for bridge_day <- @bridge_day_map[num] do %>

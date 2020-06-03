@@ -49,27 +49,23 @@
         </tbody>
       </table>
 
-      <div>
-        <div class="row">
-          <div class="col-xs-9 text-right"> Eingereichte Urlaubstage<br>
-          </div>
-          <div class="col-xs-3 text-right">
-            <%= @bridge_days_number %>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-9 text-right">Feiertage + Wochenend-Tage</div>
-          <div class="col-xs-3 text-right">+ <%= number_public_holidays_and_weekend_days %></div>
-        </div>
-        <div class="row-sum">
-          <div class="row">
-            <div class="col-xs-9 text-right">Freie Tage</div>
-            <div class="col-xs-3 text-right">
-              <%= max_days %>
-            </div>
-          </div>
-        </div>
-      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td class="text-right">Eingereichte Urlaubstage:</td>
+            <td class="text-right"><%= @bridge_days_number %></td>
+          </tr>
+          <tr>
+            <td class="text-right">Feiertage + Wochenend-Tage:</td>
+            <td class="text-right">+ <%= number_public_holidays_and_weekend_days %></td>
+          </tr>
+          <tr>
+            <td class="text-right"><strong>Summe der freien Tage:</strong></td>
+            <td class="text-right"><strong><%= max_days %></strong></td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
   </div>
 </div>
