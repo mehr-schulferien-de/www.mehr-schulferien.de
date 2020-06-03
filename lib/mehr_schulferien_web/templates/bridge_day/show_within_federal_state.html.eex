@@ -2,14 +2,16 @@
   <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
   <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
-  <li><%= link "Brückentage #{@federal_state.name} #{@year}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year), class: "active" %></li>
+  <li><%= link "Brückentage", to: Routes.bridge_day_path(@conn, :index_within_federal_state, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "#{@year}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year), class: "active" %></li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
   <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
-  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
-  <li><%= link "Brückentage #{@federal_state.name} #{@year}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year), class: "active" %></li>
+  <li><%= link @federal_state.code, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "Brückentage", to: Routes.bridge_day_path(@conn, :index_within_federal_state, @country.slug, @federal_state.slug) %></li>
+  <li><%= link "#{@year}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year), class: "active" %></li>
 </ol>
 
 <div class="page-header">

@@ -50,7 +50,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
           )
         )
 
-      assert html_response(conn, 200) =~ "Brückentage #{federal_state.name} #{current_year}"
+      assert html_response(conn, 200) =~ "#{current_year}"
     end
 
     test "returns 404 for invalid year", %{
