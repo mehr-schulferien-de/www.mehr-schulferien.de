@@ -53,7 +53,7 @@
         <tbody>
           <tr>
             <td class="text-right">Eingereichte Urlaubstage:</td>
-            <td class="text-right"><%= @bridge_days_number %></td>
+            <td class="text-right"><%= bridge_days_number %></td>
           </tr>
           <tr>
             <td class="text-right">Feiertage + Wochenend-Tage:</td>
