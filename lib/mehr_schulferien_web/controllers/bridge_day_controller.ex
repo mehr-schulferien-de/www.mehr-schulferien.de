@@ -10,8 +10,8 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
     today = DateHelpers.today_berlin()
-    last_day = Date.add(today, 365)
     current_year = today.year
+    {:ok, last_day} = Date.from_erl({current_year, 12, 31})
 
     assigns =
       [
