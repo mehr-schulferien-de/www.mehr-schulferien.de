@@ -14,6 +14,7 @@
             <% end %>
           <% end %>
         <% end %>
+        <%= if Enum.count(@days) < 360 do %><th rowspan="3"></th><% end  %>
       </tr>
       <tr>
         <%= for day <- @days do %>
@@ -48,6 +49,7 @@
                 <% end %>
               </td>
             <% end %>
+            <%= if Enum.count(@days) < 360 do %><td><%= link "➡️", to: Routes.page_path(@conn, :index, anzahl_tage: "364") %></td><% end  %>
           </tr>
         <% end %>
       <% end %>
