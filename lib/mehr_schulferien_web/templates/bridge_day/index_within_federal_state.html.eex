@@ -24,3 +24,24 @@
     </div>
   </div>
 </div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h1>
+      Die besten <%= @bridge_day_proposal_count %> Brückentage für <%= @federal_state.name %> von <%= @today %> bis <%= @last_day %>
+    </h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= for num <- 2..5 do %>
+      <%= if @bridge_day_map[num] do %>
+        <%= for bridge_day <- @bridge_day_map[num] do %>
+          <% all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
+          <%= render MehrSchulferienWeb.PartialView, "_bridge_day_panel.html", all_periods: all_periods, bridge_day: bridge_day, year: @current_year %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -34,8 +34,7 @@
     <%= for num <- 2..5 do %>
       <%= if @bridge_day_map[num] do %>
         <%= for bridge_day <- @bridge_day_map[num] do %>
-          <% [before_bd | query_periods] = Enum.drop_while(@public_periods, & &1.id != bridge_day.last_period_id) %>
-          <% all_periods = [before_bd, bridge_day | MehrSchulferien.Periods.list_consecutive_periods(query_periods)] %>
+          <% all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
           <%= render MehrSchulferienWeb.PartialView, "_bridge_day_panel.html", all_periods: all_periods, bridge_day: bridge_day, year: @year %>
         <% end %>
       <% end %>
