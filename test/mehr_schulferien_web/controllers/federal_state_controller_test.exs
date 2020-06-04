@@ -39,6 +39,19 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
       assert response =~ ~s("@context": "http://schema.org")
       assert response =~ ~s("name": "#{federal_state.name}")
     end
+
+    test "invalid query params returns a 404 error", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      assert_error_sent 404, fn ->
+        get(
+          conn,
+          Routes.federal_state_path(conn, :show, country.slug, federal_state.slug, modus: "invers")
+        )
+      end
+    end
   end
 
   describe "write holiday period" do

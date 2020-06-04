@@ -111,6 +111,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   defp check_future_periods(periods, _, _), do: periods
 
+  def show(_conn, %{"modus" => _}) do
+    raise MehrSchulferien.InvalidQueryParamsError
+  end
+
   def show(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => <<first::binary-size(1)>> <> _ = id
