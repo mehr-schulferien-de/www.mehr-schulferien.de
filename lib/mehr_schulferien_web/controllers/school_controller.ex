@@ -76,6 +76,14 @@ defmodule MehrSchulferienWeb.SchoolController do
     end
   end
 
+  def show(conn, %{
+        "country_slug" => country_slug,
+        "school_slug" => school_slug,
+        "additional_categories" => _
+      }) do
+    redirect(conn, to: Routes.school_path(conn, :show, country_slug, school_slug))
+  end
+
   def show(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do
     %{country: country, federal_state: federal_state, county: county, city: city, school: school} =
       Locations.show_school_to_country_map(country_slug, school_slug)

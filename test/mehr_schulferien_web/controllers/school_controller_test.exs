@@ -33,6 +33,19 @@ defmodule MehrSchulferienWeb.SchoolControllerTest do
         get(conn, Routes.school_path(conn, :show, "ch", school.slug))
       end
     end
+
+    test "is redirected if additional_categories query parameter is present", %{
+      conn: conn,
+      school: school
+    } do
+      conn =
+        get(
+          conn,
+          Routes.school_path(conn, :show, "d", school.slug, additional_categories: "feiertag")
+        )
+
+      assert redirected_to(conn) == Routes.school_path(conn, :show, "d", school.slug)
+    end
   end
 
   describe "write holiday period" do
