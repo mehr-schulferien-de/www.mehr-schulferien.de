@@ -1,5 +1,6 @@
 <% max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(@all_periods) %>
-<% number_public_holidays_and_weekend_days = max_days - @bridge_days_number %>
+<% bridge_days_number = @bridge_day.number_days %>
+<% number_public_holidays_and_weekend_days = max_days - bridge_days_number %>
 <% first_day = hd(@all_periods).starts_on %>
 <% last_day = List.last(@all_periods).ends_on %>
 
@@ -7,8 +8,8 @@
   <div class='panel panel-default'>
     <div class="panel-heading">
       <h3 class="panel-title">
-        <%= @bridge_days_number %>
-        <%= if @bridge_days_number == 1 do %>
+        <%= bridge_days_number %>
+        <%= if bridge_days_number == 1 do %>
           Tag
         <% else %>
           Tage
@@ -48,7 +49,6 @@
           </tr>
         </tbody>
       </table>
-
       <table>
         <tbody>
           <tr>
@@ -65,7 +65,6 @@
           </tr>
         </tbody>
       </table>
-
     </div>
   </div>
 </div>

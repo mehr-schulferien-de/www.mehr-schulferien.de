@@ -168,14 +168,18 @@ defmodule MehrSchulferien.Periods do
     |> Map.delete("last_period")
   end
 
-  @doc """
-  Returns a list of consecutive periods, starting with the first period
-  in the input.
+  def list_periods_with_bridge_day(periods, bridge_day) do
+    [before_bd | query_periods] = Enum.drop_while(periods, &(&1.id != bridge_day.last_period_id))
+    after_bd_periods = list_consecutive_periods(query_periods)
+    query_periods = Enum.take_while(periods, &(&1.id != bridge_day.last_period_id))
 
-  The periods need to be sorted (by the `starts_on` date) before calling
-  this function.
-  """
-  def list_consecutive_periods([first | rest]) do
+    before_bd_periods =
+      reverse_list_consecutive_periods([before_bd | Enum.reverse(query_periods)])
+
+    before_bd_periods ++ [bridge_day | after_bd_periods]
+  end
+
+  defp list_consecutive_periods([first | rest]) do
     list_consecutive_periods(rest, [first])
   end
 
@@ -184,6 +188,20 @@ defmodule MehrSchulferien.Periods do
   defp list_consecutive_periods([first | rest], output) do
     if Date.diff(first.starts_on, List.last(output).ends_on) < 2 do
       list_consecutive_periods(rest, output ++ [first])
+    else
+      output
+    end
+  end
+
+  defp reverse_list_consecutive_periods([first | rest]) do
+    reverse_list_consecutive_periods(rest, [first])
+  end
+
+  defp reverse_list_consecutive_periods([], output), do: output
+
+  defp reverse_list_consecutive_periods([first | rest], output) do
+    if Date.diff(List.last(output).starts_on, first.ends_on) < 2 do
+      reverse_list_consecutive_periods(rest, [first | output])
     else
       output
     end
