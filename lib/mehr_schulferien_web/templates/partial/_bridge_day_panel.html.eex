@@ -6,17 +6,6 @@
 
 <div class="col-sm-4">
   <div class='panel panel-default'>
-    <div class="panel-heading">
-      <h3 class="panel-title">
-        <%= bridge_days_number %>
-        <%= if bridge_days_number == 1 do %>
-          Tag
-        <% else %>
-          Tage
-        <% end %>
-        Urlaub = <%= max_days %> Tage frei
-      </h3>
-    </div>
     <div class="panel-body">
       <h3>
         <%= MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day) %> <div class="pull-right text-muted"> <%= @year %></div>
@@ -52,11 +41,11 @@
       <table>
         <tbody>
           <tr>
-            <td class="text-right">Eingereichte Urlaubstage:</td>
+            <td class="text-right"><%= if bridge_days_number == 1 do %>Beantragter Urlaubstag:<% else %>Beantragte Urlaubstage:<% end %></td>
             <td class="text-right"><%= bridge_days_number %></td>
           </tr>
           <tr>
-            <td class="text-right">Feiertage + Wochenend-Tage:</td>
+            <td class="text-right">Feiertag + Wochenende:</td>
             <td class="text-right">+ <%= number_public_holidays_and_weekend_days %></td>
           </tr>
           <tr>
@@ -65,6 +54,7 @@
           </tr>
         </tbody>
       </table>
+
     </div>
   </div>
 </div>

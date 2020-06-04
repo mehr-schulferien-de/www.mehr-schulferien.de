@@ -18,7 +18,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Die besten <%= @bridge_day_proposal_count %> Brückentage für <%= @federal_state.name %> in <%= @year %>
+        Die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> in <%= @year %>
       </h1>
     </div>
   </div>
@@ -30,14 +30,28 @@
       Die optimale Kombination von Brücken-, Feiertagen und Wochenenden ergibt mit einem minimalen
       Einsatz von Urlaubstagen maximal viel freie Tage am Stück.
     </p>
-
-    <%= for num <- 2..5 do %>
-      <%= if @bridge_day_map[num] do %>
-        <%= for bridge_day <- @bridge_day_map[num] do %>
-          <% all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
-          <%= render MehrSchulferienWeb.PartialView, "_bridge_day_panel.html", all_periods: all_periods, bridge_day: bridge_day, year: @year %>
-        <% end %>
-      <% end %>
-    <% end %>
   </div>
 </div>
+
+<%= for num <- 2..5 do %>
+  <%= if @bridge_day_map[num] && Enum.count(@bridge_day_map[num]) > 0 do %>
+    <div class="row">
+      <div class="col-md-12">
+        <h2>
+          <%= if num == 2 do %>
+            <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Normale<% else %>Normaler<% end %>
+          <% else %>
+            <%= num - 1 %>er
+          <% end %>
+          <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Brückentage<% else %>Brückentag<% end %>
+        </h2>
+      </div>
+    </div>
+    <div class="row">
+      <%= for bridge_day <- @bridge_day_map[num] do %>
+        <% all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
+        <%= render MehrSchulferienWeb.PartialView, "_bridge_day_panel.html", all_periods: all_periods, bridge_day: bridge_day, year: @year %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
