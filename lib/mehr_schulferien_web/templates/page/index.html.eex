@@ -1,5 +1,5 @@
 <ol class="breadcrumb">
-  <li class="breadcrumb-item active">6 Wochen Schnellübersicht</li>
+  <li class="breadcrumb-item active"><%= "#{round(@number_of_days / 7)}" %> Wochen Vergleichsübersicht</li>
 </ol>
 
 <div class="row">
