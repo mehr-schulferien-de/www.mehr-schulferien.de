@@ -36,6 +36,18 @@
         <lastmod><%= @today %></lastmod>
         <priority>0.5</priority>
       </url>
+      <url>
+        <loc><%= Routes.bridge_day_url(@conn, :index_within_federal_state, country.slug, federal_state.slug) %></loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+      </url>
+      <%= for year <- @today.year .. @today.year + 2 do %>
+        <url>
+          <loc><%= Routes.bridge_day_url(@conn, :show_within_federal_state, country.slug, federal_state.slug, year) %></loc>
+          <changefreq>monthly</changefreq>
+          <priority>0.5</priority>
+        </url>
+      <% end %>
     <% end %>
     <%= for federal_state <- federal_states do %>
       <% holiday_or_vacation_type_ids = Enum.map(federal_state.periods, & &1.holiday_or_vacation_type_id) %>
