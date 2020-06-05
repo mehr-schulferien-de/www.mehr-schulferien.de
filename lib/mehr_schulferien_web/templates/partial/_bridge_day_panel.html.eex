@@ -64,8 +64,8 @@
     "@context": "http://schema.org",
     "@type": "Event",
     "name": "<%= max_days %> Tage frei für <%= if bridge_days_number == 1 do %>Brückentag<% else %>Brückentage<% end %>",
-    "startDate" : "<%= first_day %>",
-    "endDate" : "<%= last_day %>",
+    "startDate" : "<%= @bridge_day.starts_on %>",
+    "endDate" : "<%= @bridge_day.ends_on %>",
     "location": {
       "@type": "Place",
       "name": "<%= @federal_state.name %>",
