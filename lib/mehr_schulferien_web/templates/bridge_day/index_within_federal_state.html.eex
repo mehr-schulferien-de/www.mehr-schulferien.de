@@ -63,7 +63,7 @@
     <div class="row">
       <%= for bridge_day <- @bridge_day_map[num] do %>
         <% all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
-        <%= render MehrSchulferienWeb.PartialView, "_bridge_day_panel.html", all_periods: all_periods, bridge_day: bridge_day, year: @current_year %>
+        <%= render MehrSchulferienWeb.PartialView, "_bridge_day_panel.html", all_periods: all_periods, bridge_day: bridge_day, country: @country, federal_state: @federal_state, year: @current_year %>
       <% end %>
     </div>
   <% end %>
