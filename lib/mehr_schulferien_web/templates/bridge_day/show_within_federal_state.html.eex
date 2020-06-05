@@ -28,7 +28,8 @@
   <div class="col-md-12">
     <p>
       Die optimale Kombination von Brücken-, Feiertagen und Wochenenden ergibt mit einem minimalen
-      Einsatz von Urlaubstagen maximal viel freie Tage am Stück.
+      Einsatz von Urlaubstagen maximal viel freie Tage am Stück. Wir finden mit unserem Spezialalgorithmus nicht nur die normalen Brückentage (meistens ein Freitag),
+    sondern auch Konstellationen, in denen zwei oder mehr Tage zwischen einem Feiertag und einem Wochenende liegen.
     </p>
   </div>
 </div>

@@ -35,14 +35,15 @@
 <div class="row">
   <div class="col-md-12">
     <h2>
-      Die besten <%= if @bridge_day_proposal_count > 1 do %><%= @bridge_day_proposal_count %> <% end %>Brückentage für das restliche Jahr (<%= @current_year %>)
+      Die <%= if @bridge_day_proposal_count > 1 do %><%= @bridge_day_proposal_count %> <% end %>besten Brückentage für das restliche Jahr (<%= @current_year %>)
     </h2>
-    <%= if @bridge_day_proposal_count < 4 do %>
-    <p>
-      Mit Brückentagen können Sie in diesem Jahr nicht mehr viel rausholen. Am besten Sie starten schon einmal die Urlaubsplanung für das
+    <p>Wir finden mit unserem Spezialalgorithmus nicht nur die normalen Brückentage (meistens ein Freitag),
+    sondern auch Konstellationen, in denen zwei oder mehr Tage zwischen einem Feiertag und einem Wochenende liegen.
+    <%= if @bridge_day_proposal_count < 3 do %>
+      Allerdings können Sie mit Brückentagen im aktuellen Jahr (<%= @current_year %>) nicht mehr viel rausholen. Am besten Sie starten schon einmal die Urlaubsplanung für das
       nächste Jahr: <%= link "Brückentage #{@current_year + 1}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, Integer.to_string(@current_year + 1)) %>
-    </p>
     <% end %>
+    </p>
   </div>
 </div>
 
