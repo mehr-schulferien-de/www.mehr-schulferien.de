@@ -129,11 +129,14 @@ defmodule MehrSchulferienWeb.FederalStateController do
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
     location_ids = [country.id, federal_state.id]
     today = DateHelpers.today_berlin()
+    current_year = today.year
 
     assigns =
       [
         country: country,
-        federal_state: federal_state
+        federal_state: federal_state,
+        current_year: current_year,
+        today: today
       ] ++
         CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
 

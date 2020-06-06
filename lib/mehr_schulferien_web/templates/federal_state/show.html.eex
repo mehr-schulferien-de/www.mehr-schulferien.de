@@ -76,7 +76,7 @@
 
     <h2 id="faq">FAQ</h2>
     <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @school_periods) %>
-    <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", Map.merge(assigns, %{location: @federal_state, next_schoolday: next_schoolday}) %>
+    <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", Map.merge(assigns, %{location: @federal_state, next_schoolday: next_schoolday, current_year: @current_year, today: @today}) %>
   </div>
 </div>
 
