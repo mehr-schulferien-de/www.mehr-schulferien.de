@@ -75,6 +75,55 @@
         <% end %>
       </dd>
     <% end %>
+
+    <%= for periods <- grouped_periods do %>
+      <%= for period <- periods do %>
+        <%= if period.is_school_vacation == true do %>
+          <%= if period.starts_on.year == @current_year && Date.compare(period.starts_on, @today) == :gt do %>
+            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %></dt>
+            <dd class="col-sm-7">
+              <% month = @months[period.starts_on.month] %>
+              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+              <% end %>
+            </dd>
+
+            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @current_year %> <%= @location.name %></dt>
+            <dd class="col-sm-7">
+              <% month = @months[period.starts_on.month] %>
+              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+              <% end %>
+            </dd>
+
+            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %> <%= @current_year %></dt>
+            <dd class="col-sm-7">
+              <% month = @months[period.starts_on.month] %>
+              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+              <% end %>
+            </dd>
+          <% else %>
+            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> <%= @location.name %></dt>
+            <dd class="col-sm-7">
+              <% month = @months[period.starts_on.month] %>
+              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+              <% end %>
+            </dd>
+
+            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %> <%= period.starts_on.year %></dt>
+            <dd class="col-sm-7">
+              <% month = @months[period.starts_on.month] %>
+              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+              <% end %>
+            </dd>
+          <% end  %>
+        <% end %>
+      <% end %>
+    <% end %>
+
   </dl>
 
   <h3>Feiertage</h3>
@@ -207,7 +256,21 @@
         "text": "<%= public_holiday_day_after_tomorrow_answer %>"
       }
   },
-  {
+  <%= for periods <- grouped_periods do %>
+    <%= for period <- periods do %>
+      <%= if period.is_school_vacation == true do %>
+        <%= if period.starts_on.year == @current_year && Date.compare(period.starts_on, @today) == :gt do %>
+          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
+          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@current_year} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
+          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name} #{@current_year}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
+        <% else %>
+          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{period.starts_on.year} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
+          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name} #{period.starts_on.year}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
+        <% end  %>
+      <% end %>
+    <% end %>
+  <% end %>
+      {
       "@type": "Question",
       "name": "Wann ist der nächste Feiertag in <%= @location.name %>?",
       "acceptedAnswer": {
