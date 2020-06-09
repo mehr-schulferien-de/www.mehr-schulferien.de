@@ -63,7 +63,7 @@
   {
     "@context": "http://schema.org",
     "@type": "Event",
-    "name": "<%= max_days %> Tage Urlaub für nur <%= bridge_days_number %> <%= if bridge_days_number == 1 do %>Brückentag<% else %>Brückentage<% end %>.",
+    "name": "<%= max_days %> Tage frei für <%= bridge_days_number %> <%= if bridge_days_number == 1 do %>Brückentag<% else %>Brückentage<% end %>.",
     "startDate" : "<%= @bridge_day.starts_on %>",
     "endDate" : "<%= @bridge_day.ends_on %>",
     "location": {
