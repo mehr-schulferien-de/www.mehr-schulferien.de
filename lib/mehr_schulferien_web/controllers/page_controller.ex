@@ -3,8 +3,7 @@ defmodule MehrSchulferienWeb.PageController do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
 
-  def index(conn, %{"anzahl_tage" => anzahl_tage}) do
-    number_of_days = String.to_integer(anzahl_tage)
+  def index(conn, %{"number_of_days" => number_of_days}) do
     today = DateHelpers.today_berlin()
     current_year = today.year
     ends_on = Date.add(today, number_of_days)
@@ -24,7 +23,11 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def index(conn, _params) do
-    index(conn, %{"anzahl_tage" => "84"})
+    index(conn, %{"number_of_days" => 84})
+  end
+
+  def full_year(conn, _params) do
+    index(conn, %{"number_of_days" => 364})
   end
 
   def developers(conn, _params) do
