@@ -21,7 +21,7 @@
           <% page_link = if assigns[:page_link], do: @page_link, else: "" %>
           <%= link to: "#{page_link}##{String.downcase(month)}#{period.starts_on.year}" do %>
             <%= for period <- periods do %>
-              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
+              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><%= if Enum.count(periods) > 1 && List.last(periods) != period do %>, <% end %>
             <% end %>
           <% end %>
         </span>

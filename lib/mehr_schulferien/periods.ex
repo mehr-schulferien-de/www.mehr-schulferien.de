@@ -25,7 +25,8 @@ defmodule MehrSchulferien.Periods do
   the holiday_or_vacation_type.
   """
   def group_periods_single_year(periods, start_date \\ DateHelpers.today_berlin()) do
-    end_date = Date.add(start_date, 365)
+    # Until next years summer vacation
+    {:ok, end_date} = Date.from_erl({start_date.year + 1, 8, 1})
 
     periods
     |> Enum.drop_while(&(Date.compare(&1.ends_on, start_date) == :lt))
