@@ -54,45 +54,51 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   def next_school_vacation_answer(location, periods) do
     [period] = Periods.next_periods(periods, 1)
 
-    distance_in_words =
-      case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
-        0 ->
-          "Heute"
+    if Date.diff(period.starts_on, DateHelpers.today_berlin()) > 0 do
+      distance_in_words =
+        case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
+          0 ->
+            "Heute"
 
-        1 ->
-          "Morgen"
+          1 ->
+            "Morgen"
 
-        2 ->
-          "Übermorgen"
+          2 ->
+            "Übermorgen"
 
-        7 ->
-          "In einer Woche"
+          7 ->
+            "In einer Woche"
 
-        14 ->
-          "In zwei Wochen"
+          14 ->
+            "In zwei Wochen"
 
-        n when n < 14 ->
-          "In #{n} Tagen"
+          n when n < 14 ->
+            "In #{n} Tagen"
 
-        n ->
-          case rem(n, 7) do
-            0 ->
-              "In #{round(n / 7)} Wochen (#{n} Tage)"
+          n ->
+            case rem(n, 7) do
+              0 ->
+                "In #{round(n / 7)} Wochen (#{n} Tage)"
 
-            _ ->
-              weeks = trunc(n / 7)
+              _ ->
+                weeks = trunc(n / 7)
 
-              case n - weeks * 7 do
-                1 -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tag)"
-                _ -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tage)"
-              end
-          end
-      end
+                case n - weeks * 7 do
+                  1 -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tag)"
+                  _ -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tage)"
+                end
+            end
+        end
 
-    "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{
-      location.name
-    }:
+      "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{
+        location.name
+      }:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
+    else
+      "Aktuell sind #{period.holiday_or_vacation_type.colloquial} in #{location.name}: #{
+        ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)
+      }"
+    end
   end
 
   @doc """
