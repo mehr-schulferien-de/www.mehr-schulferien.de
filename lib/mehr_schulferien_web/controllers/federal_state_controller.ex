@@ -83,6 +83,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
+    today = DateHelpers.today_berlin()
+
     holiday_or_vacation_type =
       Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
 
@@ -98,7 +100,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
       federal_state: federal_state,
       holiday_or_vacation_type: holiday_or_vacation_type,
       periods: periods,
-      months: months
+      months: months,
+      today: today
     )
   end
 

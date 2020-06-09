@@ -25,7 +25,188 @@
 <div class="row">
   <div class="col-md-12">
     <% grouped_periods = Enum.chunk_by(@periods, & &1.starts_on.year) %>
-    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, federal_state: @federal_state, page_link: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), months: @months %>
+    <%= for periods <- grouped_periods do %>
+      <% period = Enum.at(periods, 0) %>
+      <h2><%= period.starts_on.year %></h2>
+
+      <% month = @months[period.starts_on.month] %>
+      <% page_link = if assigns[:page_link], do: @page_link, else: "" %>
+      <div class="table-wrapper">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Zeitraum</th>
+            <th>Start</th>
+            <th class="text-right">Dauer</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>
+            <%= link to: "#{page_link}##{String.downcase(month)}#{period.starts_on.year}" do %>
+              <%= for period <- periods do %>
+                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br>
+              <% end %>
+            <% end %>
+          </td>
+          <td>
+            In <%= Date.diff(period.starts_on, @today) %> Tagen.
+          </td>
+          <td class="text-right">
+            <%= ViewHelpers.number_days(periods) %>&nbspTag<%= if ViewHelpers.number_days(periods) > 1 do %>e<% end %>
+          </td>
+        </tr>
+      </table>
+      </div>
+
+      <%= if period.holiday_or_vacation_type.colloquial == "Sommerferien" &&
+      @federal_state.name == "Niedersachsen" && period.starts_on.year == 2020 do %>
+      <h3>Kalenderansicht</h3>
+
+<div class="calendar">
+      <div class="header">
+        <h3 style="margin:0" id="juli2020">
+Juli          <div class="text-muted pull-right">2020</div>
+        </h3>
+      </div>
+      <div class="body">
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo</th>
+              <th>Di</th>
+              <th>Mi</th>
+              <th>Do</th>
+              <th>Fr</th>
+              <th class="active">Sa</th>
+              <th class="active">So</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                  <td></td>
+                  <td></td>
+                <td class="text-right ">1</td>
+                <td class="text-right ">2</td>
+                <td class="text-right ">3</td>
+                <td class="text-right active">4</td>
+                <td class="text-right active">5</td>
+                  </tr>
+                  <tr>
+                <td class="text-right ">6</td>
+                <td class="text-right ">7</td>
+                <td class="text-right ">8</td>
+                <td class="text-right ">9</td>
+                <td class="text-right ">10</td>
+                <td class="text-right active">11</td>
+                <td class="text-right active">12</td>
+                  </tr>
+                  <tr>
+                <td class="text-right ">13</td>
+                <td class="text-right ">14</td>
+                <td class="text-right ">15</td>
+                <td class="text-right success">16</td>
+                <td class="text-right success">17</td>
+                <td class="text-right success">18</td>
+                <td class="text-right success">19</td>
+                  </tr>
+                  <tr>
+                <td class="text-right success">20</td>
+                <td class="text-right success">21</td>
+                <td class="text-right success">22</td>
+                <td class="text-right success">23</td>
+                <td class="text-right success">24</td>
+                <td class="text-right success">25</td>
+                <td class="text-right success">26</td>
+                  </tr>
+                  <tr>
+                <td class="text-right success">27</td>
+                <td class="text-right success">28</td>
+                <td class="text-right success">29</td>
+                <td class="text-right success">30</td>
+                <td class="text-right success">31</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+<div class="calendar">
+      <div class="header">
+        <h3 style="margin:0" id="august2020">
+August          <div class="text-muted pull-right">2020</div>
+        </h3>
+      </div>
+      <div class="body">
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Mo</th>
+              <th>Di</th>
+              <th>Mi</th>
+              <th>Do</th>
+              <th>Fr</th>
+              <th class="active">Sa</th>
+              <th class="active">So</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                <td class="text-right success">1</td>
+                <td class="text-right success">2</td>
+                  </tr>
+                  <tr>
+                <td class="text-right success">3</td>
+                <td class="text-right success">4</td>
+                <td class="text-right success">5</td>
+                <td class="text-right success">6</td>
+                <td class="text-right success">7</td>
+                <td class="text-right success">8</td>
+                <td class="text-right success">9</td>
+                  </tr>
+                  <tr>
+                <td class="text-right success">10</td>
+                <td class="text-right success">11</td>
+                <td class="text-right success">12</td>
+                <td class="text-right success">13</td>
+                <td class="text-right success">14</td>
+                <td class="text-right success">15</td>
+                <td class="text-right success">16</td>
+                  </tr>
+                  <tr>
+                <td class="text-right success">17</td>
+                <td class="text-right success">18</td>
+                <td class="text-right success">19</td>
+                <td class="text-right success">20</td>
+                <td class="text-right success">21</td>
+                <td class="text-right success">22</td>
+                <td class="text-right success">23</td>
+                  </tr>
+                  <tr>
+                <td class="text-right success">24</td>
+                <td class="text-right success">25</td>
+                <td class="text-right success">26</td>
+                <td class="text-right ">27</td>
+                <td class="text-right ">28</td>
+                <td class="text-right active">29</td>
+                <td class="text-right active">30</td>
+                  </tr>
+                  <tr>
+                <td class="text-right ">31</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+      <% end %>
+
+    <% end %>
+
     <h3>Links</h3>
     <ul>
     <li><a href="<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>">Übersicht aller Ferientermine <%= @federal_state.name %></a></li>
