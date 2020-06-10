@@ -17,17 +17,23 @@
 
   <h3>Schulferien</h3>
   <dl class="row">
+
+    <dt class="col-sm-5">Wann sind die nächsten Schulferien?</strong></dt>
+    <dd class="col-sm-7">
+      <%= next_school_vacation_answer %>
+    </dd>
+
     <dt class="col-sm-5">War gestern schulfrei in <%= @location.name %>?</dt>
     <dd class="col-sm-7">
       <%= off_school_yesterday_answer %>
     </dd>
 
-    <dt class="col-sm-5">Ist heute schulfrei in <%= @location.name %>?</dt>
+    <dt class="col-sm-5">Ist heute schulfrei in <%= @location.name %>?</strong></dt>
     <dd class="col-sm-7">
       <%= off_school_today_answer %>
     </dd>
 
-    <dt class="col-sm-5">Ist morgen schulfrei in <%= @location.name %>?</dt>
+    <dt class="col-sm-5">Ist morgen schulfrei in <%= @location.name %>?</strong></dt>
     <dd class="col-sm-7">
       <%= off_school_tomorrow_answer %>
     </dd>
@@ -42,8 +48,13 @@
       <%= next_school_vacation_answer %>
     </dd>
 
+    <dt class="col-sm-5">Für welche Städte gelten diese Feriendaten?</strong></dt>
+    <dd class="col-sm-7">
+      <%= link "Landkreise und Städte in #{@federal_state.name}", to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug) %>
+    </dd>
+
     <% sorted_periods = Enum.sort(public_periods ++ @school_periods, &(Date.compare(&1.starts_on, &2.starts_on) == :lt)) %>
-    <dt class="col-sm-5">Schulferien <%= @location.name %>?</dt>
+    <dt class="col-sm-5">Schulferien <%= @location.name %></dt>
     <dd class="col-sm-7">
       <% next_schulferien_periods = MehrSchulferien.Periods.next_periods(sorted_periods, 3) %>
       <%= for period <- next_schulferien_periods do %>
@@ -61,7 +72,7 @@
     <% grouped_periods = Enum.chunk_by(sorted_periods, & &1.starts_on.year) %>
     <%= for periods <- grouped_periods do %>
       <% first_period = Enum.at(periods, 0) %>
-      <dt class="col-sm-5">Schulfrei <%= @location.name %> <%= first_period.starts_on.year %>?</dt>
+      <dt class="col-sm-5">Schulfrei <%= @location.name %> <%= first_period.starts_on.year %></dt>
       <dd class="col-sm-7">
         <%= for period <- periods do %>
           <span>
