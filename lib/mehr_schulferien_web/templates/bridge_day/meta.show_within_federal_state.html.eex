@@ -1,2 +1,2 @@
-<title>Brückentage <%= @federal_state.name %> für das Jahr <%= @year %></title>
-<meta name="description" content="Die besten <%= @bridge_day_proposal_count %> Brückentage für <%= @federal_state.name %> für das Jahr <%= @year %>.">
+<title>Die <%= @bridge_day_proposal_count %> besten Brückentage <%= @federal_state.name %> <%= @year %></title>
+<meta name="description" content="Mit wenig eingereichten Urlaubstagen die maximale Anzahl an freien Tagen am Stück realisieren. Die besten <%= @bridge_day_proposal_count %> Brückentage für <%= @federal_state.name %> für das Jahr <%= @year %>.">
