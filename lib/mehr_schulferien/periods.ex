@@ -23,10 +23,13 @@ defmodule MehrSchulferien.Periods do
   @doc """
   Takes a year's periods, from `start_date`, and groups them based on
   the holiday_or_vacation_type.
+
+  The single year starts with the `start_date`, which is usually the current
+  date and continues until August 1, the following year (the next year's
+  summer vacation).
   """
   def group_periods_single_year(periods, start_date \\ DateHelpers.today_berlin()) do
-    # Until next years summer vacation
-    {:ok, end_date} = Date.from_erl({start_date.year + 1, 8, 1})
+    {:ok, end_date} = Date.new(start_date.year + 1, 8, 1)
 
     periods
     |> Enum.drop_while(&(Date.compare(&1.ends_on, start_date) == :lt))
