@@ -10,9 +10,10 @@
   <li><%= @federal_state.name %></li>
 </ol>
 
-<div class="page-header">
+<div>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-xs-12">
+      <img align="right" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAmBAMAAACG6oCqAAAALVBMVEX////jNSXwioHhJRQBAQFGRUWtr691bWyPjY3w7OvTz88fHx/fIxLeIhHYsa4dudwrAAAA0ElEQVR4Ad3UJUAFQRgE4MHdenu9/RGHwd3dLeIQcSpOw7Xj+Sr0QqT3hjvsXIbv/NYVST7+RgT74vbGs68Q8IEvovvq26Gs5rAcThGT2BxREcIysDmrIoTnLUaNcBJOUdU5PaSq5BpPyQE4RWPuVOZwNxl+Si6KCPnVZBHcIvlkW8Q4nt8ndVeHkZNQeshyCJE8ZSGEfVbzCsIIm1ggI+RFyAjjs+VR1YVqNNmO/Vy4rTctxnMAUtQYvgv4gJl5Kc+npVybpdjzx/tp/2N/eAAB/V7H6iAYrgAAAABJRU5ErkJggg==" width="64" heigth="38" alt="Landesflage Berlin">
       <h1>
         Schulferien <%= @federal_state.name %>
       </h1>
@@ -20,29 +21,15 @@
   </div>
 </div>
 
-<div class="row" id="4-4-4-variant">
-  <div class="col-md-5">
+<div class="row">
+  <div class="col-md-6">
     <% next_school_vacation_answer = FaqViewHelpers.next_school_vacation_answer(@federal_state, @school_periods) %>
     <p class="hidden-md hidden-lg"><%= next_school_vacation_answer %></p>
     <h2 class="hidden-xs">Termine</h2>
     <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state %>
-
-    <div class="media">
-      <div class="media-body">
-        <h4 class="media-heading">Kalenderansicht</h4>
-        Alle Ferientermine und Feiertage in einer <a href="#kalenderansicht">Kalenderansicht anzeigen</a>.
-      </div>
-      <div class="media-right">
-        <a href="#kalenderansicht"><img alt="Kalender-Thumbnail" class="media-object img-thumbnail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJgAAABeBAMAAAAtXcC7AAAAKlBMVEX////29vY3ZrDt7u7g8Nre5uzS1dHBwby80+h+sNaoqKeHh4d4xXjgb2shc5NiAAAGrklEQVR4Ad2Yx3PjyBnFuxcKLp/QhSLH9s3ZuhHVA8o5bd4TURCo4EQVTWDzLosW4IFqL47i0Zk8OXBEVoFHZ9I5B5198//i76EFkoIlAAqObzgfgcZPDw/dH5sqsTvVut1lVRxs1JjSIZ2bNzN7fTzyXqg7nvFC57DZdLxKu+e90I71m5nNq/PpdEb/j2czvP+Y3ubzm5pN5vPZbDx/33z6w3g2iWfzo+OPxexG2uyR13QyjufHs9F8Fk5nk3l8cHyzZFw3HXPdFMLRbN2SwrBrUgiD/Z+JZ2ZHx2t5cj1teqSm1wk6dd/yPTfwndBL1PHqgRMcekd03N7wvcMSZs/HcYTX2I8O4vgoCidx8i+KJl7kxadRHMZx8HwcnZZ4TM10pGtJxxTScBzhSEvalrRMKR1hCcc2XBNnjin/p1eTQWthouANJ0t9cVsN9sqbbVSbnhfUz5T6QyW8D177e6K/pWjZ1dz9ox96vn/W/+IJ1EcZvBYGQeiH1zDTHF8asnqmtD9caJBJVl78sUSParaAKhUhbNuQiWp3tTqc6Zz9X8hyC1Uae91bivWVstgbS1BvZ+UworZyia/S9XfBbAiwAHvkLVvD4Ve/Sv8vZb66tfVVlaw/HBAE7irsXUS9a/BgMHzw5UtvuIV7fvVdidngs4P+8MFJHvYIUcOfDob9y8226KYq2Ve3EAzcVRiSFYqoktidrSbMsB0W6fOsJMbZVRKmFCRDCJOVwgRR0bhGe+REpxK3qIwb9LOTBuPGpE1Q3CGqFGYSNZ2/Sr9ZTWtU1NGIqPhVJoz5j4iazogqhSGZ1SRgvUO31NQR3ZfZOuPCo1BJYaUwM3cyiDGTwkpimmEIepl07jjSsu7LR++n2tnZoXJ/h8yWGGTQIZ0qyVQXkrnQY5foI7nJlrq9GRd4UJRMsl2YPfMZ+vknUZ5IysOiZJVDQeUom2zfdXfOzR6i/ABm46JklS7FqpxeTGa773Zdsvi0SkbCEcXLNdOEYSNZT4g7XAAkE5AO5ZqJhbievhKJ874wqTXWQD+aXMzcaLWBgKXSUylPdB9JGkZqVtRAq2YZjC8xUD7M6jpdqKJs1IhwsR10MLOPtwWSAcNykJnC1msorbQ1DMJAxTDbBnDQoPKmV2mJwi4TRtAlKjg9TxbB7AWYvbfGqLRw4xYluzcirDomDBTMLEbahdk9UD6oDm7p9YS5NHseZtsphnjkQ12BPsvMGVcF0okiGcIws3O2xCBOBGECmKLYJSLCJAJveQsAFwNuhGmS9hopssq2BjD5KL0elTlYub2lFGaCIlbRK0dcV5MhUEwMco7h7NQCk+leS2P3fKzNrk4L7ddQaJm0AN8U4UhQQWskGBGbuwxEY4G1gGE1CUOyqg+f51FAaRFR3KOmFTAT/liZbYYg6gxYjTD/VRqlsoIRpbkEaAaSWzoKoUyiNSz0mURrA7MWWH2BmbUUs4Dl7sfoHogVYYbCuIAKW6MMlpcMO4v6fjNZPmYAAlaugUr3Wd3D5tPEMnn43vewpG1sQQHNrOH11JwpoqmjLDCvBqydYpxtTwjYTpotRAOFrxIaoc+ikaAyVsnuNUFE6MSoRWVCZV31GbCQMKJ2kWzborKJjqt6cDyiLagS9IgKjlSydQetAULbhSN6cr1XIyzsphhnWaUjQu0HZtGcLTGiMn9iWfyYZmA9UWCWseOEKlYQkmKauFJoRaBIpuX3mQkWyYrFC1tDVxhnhkyeKS1c6lRMfZVnwHgWU4ULx1RmSWv46ZpX40a65mErm2w7BBbqwLCaRKgOqkSjZbLdDlqDzMhxYRY0sma7ITA/xTY9tC+Z8cpkxUziqCKRH4da9jFBARMptp5gJgNbo6Z17aVZsYq3oHTORAkVbkHL32n1mydLL6hk5fusWGXnrOQDcO3EfffeF90vustR+luV6+6d7H1xz7XVLYHR2QmwvGTa8Fz60my40DfSZBxnfWB5ybhFN7SoLCnLdRzXrbiWdM3FnIGxHMspNWe85ALoTM95zKAdOMuPIuT3vK7X1cIOLqRzFrbDFvfafs/v5pl5QTNjFjR7/siNgvMLIjELokMZjaOjsJczZ7ZhV9za6h0cx7CNBr3ZFl1Qybjr0ARKSdPZuDoZRw9cHH3CI314lSIMY4d5kwuz9eEgu95n0K8umq1h7HcMyjMbDE76F8z4WfhH/8UVMwGzP/7R9/PNBJJRtH9K9sez72SSYey3RcmY67r2xdH7j5Gyc4axj9zgg85J2Q86Bov3AyE4F/nSQUJF2F3qH78CFbZI8dBSAAAAAElFTkSuQmCC" data-holder-rendered="true" style="width: 152px; height: 94px;"></a>
-      </div>
-    </div>
   </div>
-  <div class="col-md-4">
-    <h2 id="ferientermine_naechste_3_jahre"><%= @next_three_years %></h2>
-    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
-  </div>
-  <div class="col-md-3">
+  <div class="col-md-6 hidden-xs">
     <h2>FAQ</h2>
     <% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @federal_state) %>
     <% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @federal_state) %>
@@ -71,7 +58,6 @@
   <div class="col-xs-12">
 
     <h2 id="kalenderansicht">Kalenderansicht</h2>
-    <p>Ferienkalender mit allen Schulferienterminen für die nächsten Jahre.</p>
     <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 
@@ -80,6 +66,14 @@
     <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", Map.merge(assigns, %{location: @federal_state, next_schoolday: next_schoolday, current_year: @current_year, today: @today}) %>
   </div>
 </div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <h2 id="ferientermine_naechste_3_jahre"><%= @next_three_years %></h2>
+    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
+  </div>
+</div>
+
 
 <%= for period <- @school_periods do %>
   <script type="application/ld+json">
