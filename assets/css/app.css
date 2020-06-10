@@ -179,13 +179,19 @@ table.table thead {
 }
 
 .table-wrapper {
-  border: 1px solid #ccc;
   border-radius: 10px;
-  margin: 0 0 2em;
+  margin: 0 0 1em;
+  overflow: hidden;
+  border: 1px solid #ccc;
 }
 
 .table-wrapper table {
   margin: 0;
+}
+
+.table-wrapper table thead {
+  margin: -1px;
+  position: relative;
 }
 
 .table-wrapper table thead th {
