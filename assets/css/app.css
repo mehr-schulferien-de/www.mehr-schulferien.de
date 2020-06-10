@@ -156,20 +156,31 @@ i.icon svg path {
   margin: 0;
 }
 
-.calendar table th {
+.calendar table thead th {
   text-align: center;
+  border-left: 1px solid rgba(0,0,0,.2);
+  border-bottom: 2px solid rgba(0,0,0,.2);
 }
 
 .calendar table td {
   padding-top: .5em !important;
   padding-bottom: .5em !important;
   border-top: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid rgba(0,0,0,.2);
+  border-left: 1px solid rgba(0,0,0,.2);
+  text-align: center;
+}
+
+.calendar table tr td:first-child {
+  border-left: none;
+}
+
+.calendar table tr th:first-child {
+  border-left: none;
 }
 
 @media (min-width:992px) {
   .calendar table td {
-    padding-right: 1.2em !important;
     font-size: 1.1em;
   }
 }
@@ -182,7 +193,7 @@ table.table thead {
   border-radius: 10px;
   margin: 0 0 1em;
   overflow: hidden;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,.2);
 }
 
 .table-wrapper table {
