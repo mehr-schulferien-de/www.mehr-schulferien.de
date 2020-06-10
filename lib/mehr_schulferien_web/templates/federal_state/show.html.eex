@@ -10,9 +10,34 @@
   <li><%= @federal_state.name %></li>
 </ol>
 
-<div class="page-header">
+<%
+flag_src = case @federal_state.code do
+  "BE" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAmBAMAAACG6oCqAAAALVBMVEX////jNSXwioHhJRQBAQFGRUWtr691bWyPjY3w7OvTz88fHx/fIxLeIhHYsa4dudwrAAAA0ElEQVR4Ad3UJUAFQRgE4MHdenu9/RGHwd3dLeIQcSpOw7Xj+Sr0QqT3hjvsXIbv/NYVST7+RgT74vbGs68Q8IEvovvq26Gs5rAcThGT2BxREcIysDmrIoTnLUaNcBJOUdU5PaSq5BpPyQE4RWPuVOZwNxl+Si6KCPnVZBHcIvlkW8Q4nt8ndVeHkZNQeshyCJE8ZSGEfVbzCsIIm1ggI+RFyAjjs+VR1YVqNNmO/Vy4rTctxnMAUtQYvgv4gJl5Kc+npVybpdjzx/tp/2N/eAAB/V7H6iAYrgAAAABJRU5ErkJggg=="
+  "BW" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAmAQMAAABOCg/aAAAABlBMVEX43Q0CAQDFNqShAAAAEElEQVR4AWP4DwVDgDF0AAC945dpoBfoSwAAAABJRU5ErkJggg=="
+  "BY" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAmBAMAAACG6oCqAAAAElBMVEUBmNX+//8+s+B4yems3vHY8PmMOJxFAAABQ0lEQVR4AV2RN7LDQAxD4aDeSr1S71w71473P8vnLmZ3+EEHvqFQYJ5QlhXiLG5dXGWcBpwSmedlGyNvJjpeL3BcxsiWgTOPPRwbWiQsmxWPSzjmk3p6uxJzhBPIDLTA4R0XJ9xIrt7cIhtwHnYip3ovQ4vY4oyPVKJgIHm5IkeIdOS98B742+U+3gsjZIuwhHpBZpM4S45cJc/fyf7Uy39H46VUL+povIgXoq9nETpCkQLqaPw4L0R1dOvkPZFdpTZGQh/cd1Sljlp6KY1/O57EkUWCl8gWWaojenmXYL3fnqcW6iXz8IhrI148LyySHM2cF8fjgyfnRRjjXbx45tw772WjjOClEy9k/wot4r14RvIyZC+7pE0c7emlQ9nukjZxNNKL/V0P9qeOVslL5LlFkqOleCFb5M2TekHm+ZElxMsfyZZFjg1DG74AAAAASUVORK5CYII="
+  "BB" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAmBAMAAACG6oCqAAAAGFBMVEXnAAD////27+65BwbHcmzEOTTa0dDOtqR8llIuAAAA/ElEQVR4AeXPt3aFMAyA4dQHELfNlHMZU2TDSmdMMT5ZacesdB4/vSd6geSfP1vSwf+Ly9cEAYJSh10C+8aigOB6jbtjtiZAGoqyCWvJRgJE1xlsUQ9ZTQBfsGJzYoec2iESrKvcncioEX6I0flpjC61ZMAR8RhRkCNifC6KCHBnCjxHlBfkFdXABReu82UH46NuqKKQRw7bGh8dwEdFVpXHx8oZtvDRZ6Bu4rWUfrZRFNB7e3B7G/YU0JZR8HQpFAHs3TIPbjN2PQG2+iLjTCqtIIBWbqIoim92QACwLWUlc9CTQFP65kZrdBLAVu3LpgAagKFUAQQg+hvgAWRvXWIZFkPbAAAAAElFTkSuQmCC"
+  "HB" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA8AgMAAACba0XWAAAADFBMVEXfAwP75OTvgYH///+zDXPoAAAAOklEQVR4AWNgYPr/hQETDDrxVVjBAob//xgY/2OADwMmHhrGwBiKAQKA/goNGQ3n0XAeDefRcCZBHAA7Bo5bc2uqaAAAAABJRU5ErkJggg=="
+  "HH" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA8BAMAAAAUK7B2AAAAHlBMVEXbCRP9/v7s6+vPzs7AGSHDrq6+QUfPAwifm5y6dHechAnFAAABgklEQVR4Ae3UNWPzMBAGYA3BUecPR51Dq63SGIYtDFOZtjJs5XYr07/tucynqfyG48diSZjmJ4umMDhCr/OkEPkpA70cTQofaV/11EDPw4AQY0IEVMtAL3SoXE2v43GDZotCcGoZT4NTc4JveK40OXlakb+XT06O6qweyowe1xEx12l2xVg9qJQ611qfA8AfVhfbO5uT7XbjpL2zs8HqZdvVea31iLbdU364pZR5eo3Qq/WZ9Y/2FUHDmNRqTGm1kWR0AFy00Qt9qgFOyxp2QzfWVA1rktcgFT3Ae7Dat3M/SU7j/bBaybuAoUZDfcn6GuuXn+x4e+hfFaOr3pcBE90A7TRMNaw5aCWUgQ6TsVyFYDv0bY9fgqTXMEGaX4R+Mr9daomRTl+WTeNtV+hbhDs0yfy+bTdzbAb3b8v29P+p17VzOyZeS6wpfpn8vi0bkuxwS+t2TOTrZ/JSd6PR6Lsc73X6Vtt+fQCRctWSivc1wutozdV2d5XXvuzDJMU75icX5L10k9+poxUAAAAASUVORK5CYII="
+  "HE" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA2AQMAAAB9UBxgAAAABlBMVEXiAQH///97iWuBAAAAFElEQVR4AWOgKRgF/xHgALU5oxwA5bY8J5tn08MAAAAASUVORK5CYII="
+  "MV" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA2BAMAAAC1sJMQAAAAHlBMVEX///8nV6TfACT59AD690H//vDfACWmudnxlKUoWKX74orNAAAAQ0lEQVR4Ae3KQQFAQBRF0VtBBRVUmAq/ggoqqKCtCv+uYN5ZHxYjO7uDy+AwiDcrg2GwGXIPgzKINzsNdoPVyM7uuAGNKxX5HkSA6QAAAABJRU5ErkJggg=="
+  "NI" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAABBBAMAAADYs2ylAAAAMFBMVEXfAAD/0AAAAADaAABGBAHuAAD7/PydBgbY29vzjgDAAwO4tbWgi4uZWlqLNyq4gwDq/R+VAAACdUlEQVR4Ae3RA2wlXxTH8ZOc2oqT/39t3GTWxnSN2m18d2ob0WY66UOyccPabfxSB2vbthW7e1Jz7ky8+ObF75PfPRlYYLZ/4q8X8owEYhFML9qQQImNARQLhsB2fGMIIz/JyAY6l1lzTWxQO/qUJzVmBD7Q+OXbZsR2B1dSB5kJ0a6l9nFbjQnhfeXbBcWSNbeQpwQAWBitKtoLoJCEPD2InFweUM4dXNFuAGPojBgdHDktkCa1ngQC3uO8mzZgfdt6jN4rTQsmR4KK6+bc8hoAPC7fZ9G7QC8SrPNRp8b5yUYA1q6kXhIKjLts+Uwb1k8Sc27h2gkSqL/RUXWv28G5pvVfKfHhnATqb3hc+NT1gA7nVFqzRU0XviraXmq5whVaoSznVUuzUFgf3FNUrg4LWycfcKU7BOJJs4Mrw0CxtfNrwjug8EFjefeV7mFh3a6dEb4KnC/XYHk5CZXElie0IRLwJAtCwruePjuiapYa+Zv4e6x/1wuMhUus4kl3amPzJwMb26oAgAGENz/gva41QsHAowSGY847utMaMTqY6QnWwGA8yePquUsYka8rwCkLYTy8UFoZ4qQvMGLkDQwowHtfK0MaakA3upPhGIh7/D69MS8cpidNDvdP+sP2DFelcT9K04LqKb0JgfEKKpOszQerpwf+UwqaOBQfXCq65PTTf3rTxP8LcVw01zveyv4i4T/8rBHlHN3fvFwsgoIRhwECYk3dT5Gg5JDxS1j0Wn8DImjvGJGcc36KBfUqK0QCAJQiG477GxL/y7mRAMw5smGNvzFBZH89wMa8Y6cMCiJvZIqeZFiQGRqiAZGY3p8q/olfm2+4Qdwxv/gAAAAASUVORK5CYII="
+  "NW" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA2AgMAAAA68GawAAAADFBMVEXlARX+/f0AkjMVnkuHXOmgAAAAIklEQVR4AWNYhRUsGGDxUfH/WMEHhlCsIGCQio+KDykwCgBmT6MCFe7IHwAAAABJRU5ErkJggg=="
+  "RP" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA8BAMAAAAUK7B2AAAAKlBMVEXdAAD/zwABAADiAQD8xAClFAxAGwaffwVrUQe2mpfFoAOVaGj9/v7a2NgdkDGHAAABaklEQVR4Ae3QtXIjQRCA4a6aw/Cyi7tKo70zTZXZDo2ZmVksRWJYR2ZmhkQsbWbm3PQCehtv6mh7He8ffwPdgHrSrzliGLmFolW6bJEUizmBkrY2R7mS+K9ML+e4TNCt88uu6Vbnf78/S/hJJrIgK7KSjeTChCmX5dxkPtTXH1H8BL10AqfvewKgp5OgH19UfVX+/YqR9Zw4Otoka16/d3VH0U8FeCrw3w8nd+cEPQ4AP3Bg4GiIoq0MoBPdxLtXrtiABYv29u6oU6LJcUfeyQnOTre3M5pm8wlPdLycqEHKBRe5oGh4fPnBU1mXpYv1gGbi8cWCCzL3m8p7hDZffZNkJZWIYle7tmYj53xhnv9dQE7RPxBRyganEbtAuypVmxMyImcELSwo+aZnw2gSBK2umUcss37sAkqVFkSM0q4GVv4D1XgX0Cr/7nDYuwQQYwLKBQMd6cCffmFUrido1BP80dPXtKENbegPStEgyyjNrKcAAAAASUVORK5CYII="
+  "SL" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA2BAMAAAC1sJMQAAAAMFBMVEXfAAD/zwABAADLJwT5+/syZZRgBwZRTVDP0NG7W1vUsRuUlZyrjR08MROdIByEZQTML7bsAAABxklEQVR4Ae3OA8xcQRSG4Umj8ibnhj9WU2Md1EEZ81QT1bYZrGrba9XtsrZt27btrmY2rN443zMgNJ/+KP1fD/w5nq6MiM2fIxs5csqNkSP78DSLIPOzeMOGE680bMrXtuZDx2ALQY0sko/GuNXWXFyvXh3JeneHX+uIbPVqGxthNpsvX64/IGUlKZXCkav7j1y9jpD6hEgTSWqpOoKrB9pazplz4facOXyNLcYMtX39t4iO4EhhzUbacJWwjq9GJn53c0SMiOoeHYft2bNn79mz9NjZs1xtmDkBAOT3VHuP7uXqrlbHQwDXq0PaN28Xc/XLpuvqAsg1FmtfvT3E1YsGTJGcIGt37Sp8S7na+U6aORtk+ia06Cxfb1TWWmUHl/bMokd6rpachU8ajjDK70N7FHqtgXDaCNtjy8rKZ96/faWtTHjNhuIe9+Zsohtdr85WJamZU5oL8LiWtQ99c15FT6aOBFIqdoJyVdM+9OHbwkeTIKU0XbgRoNPqS28WHXIeB66GRQC+EZP3nNWrTgnoj5cXXzBRuuusU0DDIic8LkEpHQIiunCPU/Xx7jMgpD/yRW20w5yCGiAUCgHwdWr/9R+kPwB34WlZzjmAoAAAAABJRU5ErkJggg=="
+  "SN" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA2AQMAAAB9UBxgAAAABlBMVEUPbR////89V9k9AAAAFElEQVR4AWP4jwAHqM4Z5dASjAIAYq08J+4eXtIAAAAASUVORK5CYII="
+  "ST" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA2BAMAAAC1sJMQAAAAJFBMVEX90w4BAADtxQwWiCD7+/ubkY+fBw8oNxJiXyCumw7Mx8PCq0QISz29AAABfklEQVR4Ae2StfsaQRBA95t4OXiJQxfBqfEqglexo0f3vjTx5EqkiTQRrEzPP5c5bmO3ELaM/N7J2ttZZWccwq/4wN++zB8f/f1+YOL90U4/kH0pkFCPAG8t3u92O0mSZEg8f/ssGAxGGqvG9EC7rZhIDDOcc91neL8wGcnOvNY5NxB9exvEz/9zeL9YNjxP0FyesAuIbhH7hygB/aE5F3Rvvd2pEO2d/D9sw0gkEq/1R0XfkuwTy4Qpi5O+yNde1iRb6gSI6EwkONGfytOw1YBBJGjqXDdMGxj87ixN5Yo5l2swlcf2iyvE9i9AHwkv7bo5E79QwEokwNjznKb+VF5l0I6piLlM7W0Mj0FzQTuy3SDaL1dmomAvC4Vi39ctEP3Tdt2yKKmhkt2mxE1DKNgvCoUyJd6lku0qFFof6/1b9UJZwXYXl92PS/1jvX5Lwcam1mtqWrOp9VVsT8/iHqrYSGaXvr6aTcGXIrSCTfqSZEWb4IjqtsyZfWar8xUxT7UudN/MjAAAAABJRU5ErkJggg=="
+  "SH" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAA2AgMAAAA68GawAAAADFBMVEXYEgn+/f4ANq4VTrfJCnx8AAAAIklEQVR4AWNYhRUsGGDxUfH/WMEHhlCsIGCQio+KDykwCgBmT6MCFe7IHwAAAABJRU5ErkJggg=="
+  "TH" -> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAtAgMAAABT4ZToAAAADFBMVEX////iAADhAADwgYE8twprAAAAIElEQVR4AWNABqNgFPzHCj4wrMIKFjCEYgUBw1t8VBwAdpLGDTHsvhUAAAAASUVORK5CYII="
+  _ -> nil
+end
+%>
+
+<div class="hidden-sm hidden-md hidden-lg">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-xs-12">
+      <%= if flag_src do %>
+      <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
+      <% end %>
       <h1>
         Schulferien <%= @federal_state.name %>
       </h1>
@@ -20,34 +45,33 @@
   </div>
 </div>
 
-<div class="row" id="4-4-4-variant">
-  <div class="col-md-5">
-    <% next_school_vacation_answer = FaqViewHelpers.next_school_vacation_answer(@federal_state, @school_periods) %>
-    <p class="hidden-md hidden-lg"><%= next_school_vacation_answer %></p>
-    <h2 class="hidden-xs">Termine</h2>
-    <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
-    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state %>
-
-    <div class="media">
-      <div class="media-body">
-        <h4 class="media-heading">Kalenderansicht</h4>
-        Alle Ferientermine und Feiertage in einer <a href="#kalenderansicht">Kalenderansicht anzeigen</a>.
-      </div>
-      <div class="media-right">
-        <a href="#kalenderansicht"><img alt="Kalender-Thumbnail" class="media-object img-thumbnail" src="data:image/png;base64,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" data-holder-rendered="true" style="width: 152px; height: 94px;"></a>
-      </div>
+<div class="page-header hidden-xs">
+  <div class="row">
+    <div class="col-md-12">
+      <%= if flag_src do %>
+      <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
+      <% end %>
+      <h1>
+        Schulferien <%= @federal_state.name %>
+      </h1>
     </div>
   </div>
-  <div class="col-md-4">
-    <h2 id="ferientermine_naechste_3_jahre"><%= @next_three_years %></h2>
-    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
+</div>
+
+<div class="row">
+  <div class="col-sm-6">
+    <h2 class="hidden-xs">Termine</h2>
+    <% next_school_vacation_answer = FaqViewHelpers.next_school_vacation_answer(@federal_state, @school_periods) %>
+    <p class="hidden-sm hidden-md hidden-lg"><%= next_school_vacation_answer %></p>
+    <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
+    <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months, federal_state: @federal_state %>
   </div>
-  <div class="col-md-3">
+  <div class="col-sm-6 hidden-xs">
     <h2>FAQ</h2>
     <% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @federal_state) %>
     <% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @federal_state) %>
 
-    <p class="hidden-xs"><strong>Wann sind die nächsten Schulferien?</strong><br>
+    <p><strong>Wann sind die nächsten Schulferien?</strong><br>
       <%= next_school_vacation_answer %>
     </p>
 
@@ -71,13 +95,19 @@
   <div class="col-xs-12">
 
     <h2 id="kalenderansicht">Kalenderansicht</h2>
-    <p>Ferienkalender mit allen Schulferienterminen für die nächsten Jahre.</p>
     <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
     <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 
     <h2 id="faq">FAQ</h2>
     <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", Map.merge(assigns, %{location: @federal_state, next_schoolday: next_schoolday, current_year: @current_year, today: @today}) %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <h2 id="ferientermine_naechste_3_jahre">Schulferien <%= @next_three_years %></h2>
+    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
   </div>
 </div>
 
