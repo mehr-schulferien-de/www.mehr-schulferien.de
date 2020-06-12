@@ -27,16 +27,20 @@ defmodule MehrSchulferienWeb.PageView do
     Date.diff(period.ends_on, date) + 1
   end
 
-  def show_period_info(period, colspan) when colspan < 10 do
-    show_period_name(period)
-  end
+  def show_period_info(period, colspan) do
+    name = period.holiday_or_vacation_type.colloquial
+    name_len = String.length(name)
+    span = colspan * 4
 
-  def show_period_info(period, _) do
-    show_period_name(period) <> " " <> show_period_date(period)
-  end
-
-  defp show_period_name(period) do
-    "#{period.holiday_or_vacation_type.colloquial}"
+    if name_len + 16 < span do
+      "#{name} #{show_period_date(period)}"
+    else
+      if name_len < span do
+        name
+      else
+        String.slice(name, 0, span)
+      end
+    end
   end
 
   defp show_period_date(period) do
