@@ -3,7 +3,7 @@ defmodule MehrSchulferien.LocationsTest do
 
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.{Locations, Locations.Location}
+  alias MehrSchulferien.{Locations, Locations.Flag, Locations.Location}
 
   describe "locations" do
     @valid_attrs %{
@@ -80,7 +80,7 @@ defmodule MehrSchulferien.LocationsTest do
       country = insert(:country)
       federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
       locations = Locations.list_federal_states(country)
-      assert Enum.map(federal_states, & &1.id) == Enum.map(locations, & &1.id)
+      assert Enum.map(federal_states, & &1.id) == locations |> Enum.map(& &1.id) |> Enum.sort()
       assert Enum.filter(locations, &(&1.parent_location_id == country.id))
     end
   end
@@ -126,6 +126,23 @@ defmodule MehrSchulferien.LocationsTest do
       assert schools = Locations.list_schools_of_country(country)
       assert Enum.all?(schools, &(&1.id in swiss_school_ids))
       refute Enum.any?(schools, &(&1.id in german_school_ids))
+    end
+  end
+
+  describe "federal_state flags" do
+    test "get_flag/1 show federal_state's flag" do
+      assert flag = Flag.get_flag("BE")
+
+      assert String.starts_with?(
+               flag,
+               "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAmBAMAAACG6oC"
+             )
+
+      assert String.ends_with?(flag, "Vybpdjzx/tp/2N/eAAB/V7H6iAYrgAAAABJRU5ErkJggg==")
+    end
+
+    test "get_flag/1 returns nil if flag cannot be found" do
+      refute Flag.get_flag("CC")
     end
   end
 
