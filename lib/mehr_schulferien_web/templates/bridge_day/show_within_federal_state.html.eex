@@ -14,9 +14,21 @@
   <li><%= link "#{@year}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year), class: "active" %></li>
 </ol>
 
-<div class="page-header">
+<div class="hidden-sm hidden-md hidden-lg">
+    <%= if flag_src = MehrSchulferien.Locations.Flag.get_flag(@federal_state.code) do %>
+    <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
+    <% end %>
+    <h1>
+      Die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> in <%= @year %>
+    </h1>
+</div>
+
+<div class="page-header hidden-xs">
   <div class="row">
     <div class="col-md-12">
+      <%= if flag_src do %>
+      <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
+      <% end %>
       <h1>
         Die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> in <%= @year %>
       </h1>
@@ -24,30 +36,21 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-md-12">
-    <p>
-      Die optimale Kombination von Brücken-, Feiertagen und Wochenenden ergibt mit einem minimalen
-      Einsatz von Urlaubstagen maximal viel freie Tage am Stück. Wir finden mit unserem Spezialalgorithmus nicht nur die normalen Brückentage (meistens ein Freitag),
-    sondern auch Konstellationen, in denen zwei oder mehr Tage zwischen einem Feiertag und einem Wochenende liegen.
-    </p>
-  </div>
-</div>
+<p class="lead">
+  In <strong><%= @year %></strong> gibt es <strong><%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %></strong> (jeweils 1 Tag) und <strong><%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %></strong> (2-4 Tage zwischen Feiertag und Wochenende).
+</p>
 
 <%= for num <- 2..5 do %>
   <%= if @bridge_day_map[num] && Enum.count(@bridge_day_map[num]) > 0 do %>
-    <div class="row">
-      <div class="col-md-12">
-        <h2>
-          <%= if num == 2 do %>
-            <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Normale<% else %>Normaler<% end %>
-          <% else %>
-            <%= num - 1 %>er
-          <% end %>
-          <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Brückentage<% else %>Brückentag<% end %>
-        </h2>
-      </div>
-    </div>
+    <h2>
+      <%= if num == 2 do %>
+        <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Normale<% else %>Normaler<% end %>
+      <% else %>
+        <%= num - 1 %>er
+      <% end %>
+      <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Brückentage<% else %>Brückentag<% end %>
+    </h2>
+
     <div class="row">
       <%= for bridge_day <- @bridge_day_map[num] do %>
         <% all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
@@ -56,3 +59,29 @@
     </div>
   <% end %>
 <% end %>
+
+<h2>Brückentag FAQ</h2>
+
+<dl class="row">
+  <dt class="col-sm-5">Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?</dt>
+  <dd class="col-sm-7">
+    In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %> Brückentage.
+    Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>.
+  </dd>
+</dl>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %> Brückentage. Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>."
+    }
+  }
+  ]
+}
+</script>
