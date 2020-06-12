@@ -55,7 +55,7 @@
                   <%= if MehrSchulferienWeb.PageView.display_period_info?(day, @days, days_period) do %>
                     <% colspan = MehrSchulferienWeb.PageView.get_period_colspan(day, days_period) %>
                     <td class="<%= days_period.html_class %>" colspan="<%= colspan %>">
-                      <%= MehrSchulferienWeb.PageView.show_period_info(days_period, colspan) %>
+                      <%= link MehrSchulferienWeb.PageView.show_period_info(days_period, colspan), to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}" %>
                     </td>
                   <% else %>
                     <%= if days_period.holiday_or_vacation_type.name == "Wochenende" or days_period.is_school_vacation == false do %>
