@@ -66,7 +66,7 @@
 <dl class="row">
   <dt class="col-sm-5">Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?</dt>
   <dd class="col-sm-7">
-    In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %> Brückentage.
+    In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage" %>.
     Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>.
   </dd>
 </dl>
@@ -80,7 +80,7 @@
     "name": "Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?",
     "acceptedAnswer": {
       "@type": "Answer",
-      "text": "In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %> Brückentage. Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>."
+      "text": "In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage" %>. Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>."
     }
   }
   ]
