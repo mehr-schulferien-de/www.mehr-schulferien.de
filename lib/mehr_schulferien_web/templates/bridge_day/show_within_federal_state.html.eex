@@ -37,7 +37,7 @@
 </div>
 
 <p class="lead">
-  In <strong><%= @year %></strong> gibt es <strong><%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %></strong> (jeweils 1 Tag) und <strong><%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %></strong> (2-4 Tage zwischen Feiertag und Wochenende).
+  In <strong><%= @year %></strong> gibt es <%= if @bridge_day_map[2] != nil do %><strong><%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %></strong> (jeweils 1 Tag) und <strong><%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %></strong> (2-4 Tage zwischen Feiertag und Wochenende).<% end %>
 </p>
 
 <%= for num <- 2..5 do %>
@@ -60,6 +60,7 @@
   <% end %>
 <% end %>
 
+<%= if @bridge_day_map[2] != nil do %>
 <h2>Brückentag FAQ</h2>
 
 <dl class="row">
@@ -85,3 +86,4 @@
   ]
 }
 </script>
+<% end %>
