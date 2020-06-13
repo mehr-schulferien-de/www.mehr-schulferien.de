@@ -183,4 +183,21 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     |> Enum.drop_while(&(Date.compare(&1, period.starts_on) == :lt))
     |> Enum.take_while(&(Date.compare(&1, period.ends_on) != :gt))
   end
+
+  def truncate(text, max_length \\ 30) do
+    omission = "..."
+
+    cond do
+      not String.valid?(text) ->
+        text
+
+      String.length(text) < max_length ->
+        text
+
+      true ->
+        length_with_omission = max_length - String.length(omission)
+
+        "#{String.slice(text, 0, length_with_omission)}#{omission}"
+    end
+  end
 end
