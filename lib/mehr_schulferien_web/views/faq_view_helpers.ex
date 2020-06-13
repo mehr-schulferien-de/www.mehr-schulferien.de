@@ -48,6 +48,51 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
     end
   end
 
+  def day_distance_in_words(days) do
+    case days do
+      0 ->
+        "Heute"
+
+      1 ->
+        "Morgen"
+
+      2 ->
+        "Übermorgen"
+
+      7 ->
+        "In einer Woche"
+
+      14 ->
+        "In zwei Wochen"
+
+      21 ->
+        "In drei Wochen"
+
+      n when n < 14 ->
+        "In #{n} Tagen"
+
+      n ->
+        case rem(n, 7) do
+          0 ->
+            "In #{round(n / 7)} Wochen (#{n} Tage)"
+
+          _ ->
+            weeks = trunc(n / 7)
+
+            woche_word =
+              case weeks do
+                1 -> "Woche"
+                _ -> "Wochen"
+              end
+
+            case n - weeks * 7 do
+              1 -> "In #{n} Tagen (#{weeks} #{woche_word} und #{n - weeks * 7} Tag)"
+              _ -> "In #{n} Tagen (#{weeks} #{woche_word} und #{n - weeks * 7} Tage)"
+            end
+        end
+    end
+  end
+
   @doc """
   An humanized answer for the next school vacations.
   """
@@ -56,39 +101,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
 
     if Date.diff(period.starts_on, DateHelpers.today_berlin()) > 0 do
       distance_in_words =
-        case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
-          0 ->
-            "Heute"
-
-          1 ->
-            "Morgen"
-
-          2 ->
-            "Übermorgen"
-
-          7 ->
-            "In einer Woche"
-
-          14 ->
-            "In zwei Wochen"
-
-          n when n < 14 ->
-            "In #{n} Tagen"
-
-          n ->
-            case rem(n, 7) do
-              0 ->
-                "In #{round(n / 7)} Wochen (#{n} Tage)"
-
-              _ ->
-                weeks = trunc(n / 7)
-
-                case n - weeks * 7 do
-                  1 -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tag)"
-                  _ -> "In #{n} Tagen (#{weeks} Wochen und #{n - weeks * 7} Tage)"
-                end
-            end
-        end
+        day_distance_in_words(Date.diff(period.starts_on, DateHelpers.today_berlin()))
 
       "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{
         location.name
@@ -99,6 +112,11 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
         ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)
       }"
     end
+  end
+
+  def next_school_vacation(periods) do
+    [period] = Periods.next_periods(periods, 1)
+    period
   end
 
   @doc """

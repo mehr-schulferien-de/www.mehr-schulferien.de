@@ -12,7 +12,13 @@
   <li><%= @city.name %></li>
 </ol>
 
-<div class="page-header">
+<div class="hidden-sm hidden-md hidden-lg">
+  <h1>
+    Schulferien der Stadt <%= @city.name %>
+  </h1>
+</div>
+
+<div class="page-header hidden-xs">
   <div class="row">
     <div class="col-md-12">
       <h1>
@@ -26,61 +32,57 @@
   <div class="col-md-9">
     <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months %>
-    <%= render MehrSchulferienWeb.PartialView, "_calendar_thumbnail.html", next_three_years: @next_three_years %>
 
-    <h2 id="ferientermine_naechste_3_jahre">Ferien <%= @city.name %> <%= @next_three_years %></h2>
-    <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
+    <% next_school_vacation = FaqViewHelpers.next_school_vacation(@school_periods) %>
+    <% days_till_vaction = Date.diff(next_school_vacation.starts_on, MehrSchulferien.Calendars.DateHelpers.today_berlin()) %>
+    <% distance_in_words = FaqViewHelpers.day_distance_in_words(days_till_vaction) %>
+    <h2><%= next_school_vacation.holiday_or_vacation_type.colloquial %> <%= @city.name %> <%= @current_year %></h2>
+
+    <p>
+      <%= if days_till_vaction > -1 do %>
+        <%= if days_till_vaction < 21 && days_till_vaction != 0 do %>
+        Bald ist es soweit!
+        <% end %>
+        <%= distance_in_words %> fangen die <strong><%= next_school_vacation.holiday_or_vacation_type.colloquial %></strong> in
+        <%= @city.name %> an:
+      <% else %>
+        Seit <%= days_till_vaction * -1 %> Tagen sind <%= next_school_vacation.holiday_or_vacation_type.colloquial %> in <%= @city.name %>:
+      <% end %>
+      <strong><%= ViewHelpers.format_date_range(next_school_vacation.starts_on, next_school_vacation.ends_on, nil) %></strong>
+    </p>
   </div>
-  <div class="col-md-3">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Corona-Quarantäne</h3>
-      </div>
-      <div class="panel-body">
-        <p>Bitte helfen Sie uns bei der Erfassung von Corona-Schließzeiten (<a href="https://de.wikipedia.org/wiki/COVID-19-Pandemie">COVID-19-Pandemie</a>).
-        Tragen Sie diese bitte <%= link "in unserer Corona-Schließzeiten-Formular", rel: "nofollow", to: Routes.city_path(@conn, :show, @country.slug, @city.slug) <> "/new_period"%> ein. Danke!</p>
-      </div>
-    </div>
-
-    <%= if @schools != [] do %>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Sonstiges</h3>
-        </div>
-        <div class="panel-body">
-          <ul>
-            <li><%= link "Liste aller Schulen", to: "#liste_aller_schulen" %></li>
-          </ul>
-        </div>
-      </div>
-    <% end %>
-
-    <%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
-
+  <div class="col-md-3 hidden-xs">
+    <%= render MehrSchulferienWeb.PartialView, "_jobs_panel.html" %>
   </div>
 </div>
+
+<h2 id="kalenderansicht">Kalenderansicht <small><%= @next_three_years %></small></h2>
+<%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
+<%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
+
+<h2 id="ferientermine_naechste_3_jahre">Ferien <%= @city.name %> <%= @next_three_years %></h2>
+<%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
 
 <div class="row">
-  <div class="col-xs-12">
-    <h2 id="kalenderansicht">Kalenderansicht</h2>
-    <p>Ferienkalender mit allen Schulferienterminen für die nächsten Jahre.</p>
-    <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
-    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
-
-    <%= if @schools != [] do %>
-      <h2 id="liste_aller_schulen">Schulen in <%= @city.name %></h2>
-        <ul>
-        <%= for school <- @schools do %>
-          <li>
-            <%= link school.name, to: Routes.school_path(@conn, :show, @country.slug, school.slug) %><br>
-            <p><%= school.address.street %>, <%= school.address.zip_code %> <%= school.address.city %></p>
-          </li>
-        <% end %>
-        </ul>
-    <% end %>
-
+  <div class="col-md-6">
+<%= render MehrSchulferienWeb.PartialView, "_open_source_project_panel.html" %>
+  </div>
+  <div class="col-md-6">
+<%= render MehrSchulferienWeb.PartialView, "_jobs_panel.html" %>
   </div>
 </div>
+
+<%= if @schools != [] do %>
+  <h2 id="liste_aller_schulen">Schulen in <%= @city.name %></h2>
+    <ul>
+    <%= for school <- @schools do %>
+      <li>
+        <%= link school.name, to: Routes.school_path(@conn, :show, @country.slug, school.slug) %><br>
+        <p><%= school.address.street %>, <%= school.address.zip_code %> <%= school.address.city %></p>
+      </li>
+    <% end %>
+    </ul>
+<% end %>
 
 <% postal_code = ViewHelpers.find_zip_code(@city.zip_codes, @schools) %>
 <%= for period <- @school_periods do %>
