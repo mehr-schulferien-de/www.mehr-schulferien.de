@@ -63,8 +63,7 @@
           <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
             <%= period.holiday_or_vacation_type.colloquial %>
             &nbsp(<%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
-          <% end %>
-          &nbsp
+          <% end %><%= unless period == List.last(next_schulferien_periods) do %>,&nbsp<% end %>
         </span>
       <% end %>
     </dd>
@@ -80,58 +79,51 @@
             <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
               <%= period.holiday_or_vacation_type.colloquial %>
               &nbsp(<%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>)
-            <% end %>
-            &nbsp
+            <% end %><%= unless period == List.last(periods) do %>,&nbsp<% end %>
           </span>
         <% end %>
       </dd>
     <% end %>
 
-    <%= for periods <- grouped_periods do %>
-      <%= for period <- periods do %>
-        <%= if period.is_school_vacation == true do %>
-          <%= if period.starts_on.year == @current_year && Date.compare(period.starts_on, @today) == :gt do %>
+    <% year_school_periods = Enum.chunk_by(@school_periods, & &1.starts_on.year) %>
+    <%= for year_periods <- year_school_periods do %>
+      <% periods_groups = year_periods |> Enum.group_by(& &1.holiday_or_vacation_type.name) |> Map.values() %>
+      <%= for periods <- periods_groups do %>
+        <% period = Enum.at(periods, 0) %>
+        <%= if period.starts_on.year == @current_year do %>
+          <% periods = Enum.filter(periods, & Date.compare(&1.starts_on, @today) == :gt) %>
+          <%= if periods != [] do %>
             <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %></dt>
             <dd class="col-sm-7">
-              <% month = @months[period.starts_on.month] %>
-              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+              <%= for period <- periods do %>
+                <% month = @months[period.starts_on.month] %>
+                <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+                  <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+                <% end %><%= unless period == List.last(periods) do %>,&nbsp<% end %>
               <% end %>
             </dd>
-
-            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @current_year %> <%= @location.name %></dt>
-            <dd class="col-sm-7">
-              <% month = @months[period.starts_on.month] %>
-              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
-              <% end %>
-            </dd>
-
-            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %> <%= @current_year %></dt>
-            <dd class="col-sm-7">
-              <% month = @months[period.starts_on.month] %>
-              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
-              <% end %>
-            </dd>
-          <% else %>
-            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> <%= @location.name %></dt>
-            <dd class="col-sm-7">
-              <% month = @months[period.starts_on.month] %>
-              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
-              <% end %>
-            </dd>
-
-            <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %> <%= period.starts_on.year %></dt>
-            <dd class="col-sm-7">
-              <% month = @months[period.starts_on.month] %>
-              <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
-                <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
-              <% end %>
-            </dd>
-          <% end  %>
+          <% end %>
         <% end %>
+
+        <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %> <%= @location.name %></dt>
+        <dd class="col-sm-7">
+          <%= for period <- periods do %>
+            <% month = @months[period.starts_on.month] %>
+            <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+            <% end %><%= unless period == List.last(periods) do %>,&nbsp<% end %>
+          <% end %>
+        </dd>
+
+        <dt class="col-sm-5"><%= period.holiday_or_vacation_type.colloquial %> <%= @location.name %> <%= period.starts_on.year %></dt>
+        <dd class="col-sm-7">
+          <%= for period <- periods do %>
+            <% month = @months[period.starts_on.month] %>
+            <%= link to: "##{String.downcase(month)}#{period.starts_on.year}" do %>
+              <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %>
+            <% end %><%= unless period == List.last(periods) do %>,&nbsp<% end %>
+          <% end %>
+        </dd>
       <% end %>
     <% end %>
 
@@ -267,17 +259,20 @@
         "text": "<%= public_holiday_day_after_tomorrow_answer %>"
       }
   },
-  <%= for periods <- grouped_periods do %>
-    <%= for period <- periods do %>
-      <%= if period.is_school_vacation == true do %>
-        <%= if period.starts_on.year == @current_year && Date.compare(period.starts_on, @today) == :gt do %>
+  <% year_school_periods = Enum.chunk_by(@school_periods, & &1.starts_on.year) %>
+  <%= for year_periods <- year_school_periods do %>
+    <% periods_groups = year_periods |> Enum.group_by(& &1.holiday_or_vacation_type.name) |> Map.values() %>
+    <%= for periods <- periods_groups do %>
+      <% period = Enum.at(periods, 0) %>
+      <%= if period.starts_on.year == @current_year do %>
+        <% periods = Enum.filter(periods, & Date.compare(&1.starts_on, @today) == :gt) %>
+        <%= for period <- periods do %>
           <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@current_year} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name} #{@current_year}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-        <% else %>
-          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{period.starts_on.year} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name} #{period.starts_on.year}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-        <% end  %>
+        <% end %>
+      <% end %>
+      <%= for period <- periods do %>
+        <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{period.starts_on.year} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
+        <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name} #{period.starts_on.year}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
       <% end %>
     <% end %>
   <% end %>
