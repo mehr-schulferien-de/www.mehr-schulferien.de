@@ -59,7 +59,7 @@
     </p>
   </div>
   <div class="col-sm-6 hidden-xs">
-    <h2>FAQ</h2>
+    <h2>Ferien FAQ</h2>
     <% off_school_today_answer = FaqViewHelpers.is_off_school_answer(@todays_school_free_periods, @today, @federal_state) %>
     <% off_school_tomorrow_answer = FaqViewHelpers.is_off_school_answer(@tomorrows_school_free_periods, @tomorrow, @federal_state) %>
 
@@ -87,7 +87,7 @@
 <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
 <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 
-<h2 id="faq">FAQ</h2>
+<h2 id="faq"> Ferien FAQ</h2>
 <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @school_periods) %>
 <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", Map.merge(assigns, %{location: @federal_state, next_schoolday: next_schoolday, current_year: @current_year, today: @today}) %>
 
