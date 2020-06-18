@@ -53,6 +53,11 @@ mark,
   padding: .1em .2em;
 }
 
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 2rem;
+}
 
 @media (max-width: 768px) {
   mark,
@@ -73,6 +78,9 @@ mark,
   }
   h4 {
     font-size: 1em;
+  }
+  .calendar-grid {
+    grid-template-columns: 1fr;
   }
 }
 

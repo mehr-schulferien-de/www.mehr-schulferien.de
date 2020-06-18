@@ -74,10 +74,9 @@
 <div class="row">
   <div class="col-xs-12">
     <% start_date = @today %>
-    <% row_offset = @today.month - 1 %>
     <% end_date = List.last(List.last(@three_month_days)) %>
     <% school_periods = MehrSchulferien.Periods.find_periods_for_date_range(@school_periods, start_date, end_date) %>
     <% public_periods = MehrSchulferien.Periods.find_periods_for_date_range(@public_periods, start_date, end_date) %>
-    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: school_periods, public_periods: public_periods, days: @three_month_days, months: @months, country: @country, federal_state: @federal_state, conn: @conn, row_offset: row_offset %>
+    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: school_periods, public_periods: public_periods, days: @three_month_days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
   </div>
 </div>
