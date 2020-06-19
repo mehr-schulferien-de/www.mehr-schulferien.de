@@ -59,10 +59,8 @@
     </p>
   </div>
 
-  <%= if period.starts_on.year == @today.year do %>
-    <% days = MehrSchulferienWeb.FederalStateView.get_vacation_type_days(periods) %>
-    <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @periods, public_periods: [], days: days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
-  <% end %>
+  <% days = MehrSchulferienWeb.FederalStateView.get_vacation_type_days(periods) %>
+  <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @periods, public_periods: [], days: days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 <% end %>
 
 <div class="row">
