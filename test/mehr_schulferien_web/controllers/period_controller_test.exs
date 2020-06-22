@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.PeriodControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  alias MehrSchulferien.Calendars
+  alias MehrSchulferien.Periods
 
   @create_attrs %{
     created_by_email_address: "george@example.com",
@@ -59,7 +59,7 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
 
       conn = get(conn, Routes.period_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Show Period"
-      assert Calendars.get_period!(id)
+      assert Periods.get_period!(id)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -78,7 +78,7 @@ defmodule MehrSchulferienWeb.PeriodControllerTest do
 
       conn = get(conn, Routes.period_path(conn, :show, period))
       assert html_response(conn, 200) =~ "white"
-      period = Calendars.get_period!(period.id)
+      period = Periods.get_period!(period.id)
       assert period.is_public_holiday == true
     end
 

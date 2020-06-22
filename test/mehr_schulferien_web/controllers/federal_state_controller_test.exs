@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.FederalStateControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  alias MehrSchulferien.Calendars
+  alias MehrSchulferien.Periods
 
   setup %{conn: conn} do
     conn = conn |> bypass_through(MehrSchulferienWeb.Router, [:browser]) |> get("/users/new")
@@ -91,7 +91,7 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
       assert get_flash(conn, :info) =~
                "Die Daten zur Schulschließung wegen der COVID-19-Pandemie wurden eingetragen."
 
-      assert [period] = Calendars.list_periods()
+      assert [period] = Periods.list_periods()
       assert period.created_by_email_address == "froderick@example.com"
       assert period.holiday_or_vacation_type_id == holiday_or_vacation_type.id
     end

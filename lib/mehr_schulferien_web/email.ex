@@ -18,7 +18,7 @@ defmodule MehrSchulferienWeb.Email do
     |> Mailer.deliver_later()
   end
 
-  defp encode_data(%MehrSchulferien.Calendars.Period{
+  defp encode_data(%MehrSchulferien.Periods.Period{
          created_by_email_address: email,
          starts_on: starts_on,
          ends_on: ends_on

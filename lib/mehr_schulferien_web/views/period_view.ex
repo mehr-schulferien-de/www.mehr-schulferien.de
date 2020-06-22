@@ -1,7 +1,8 @@
 defmodule MehrSchulferienWeb.PeriodView do
   use MehrSchulferienWeb, :view
 
-  alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period}
+  alias MehrSchulferien.Calendars.HolidayOrVacationType
+  alias MehrSchulferien.Periods.Period
 
   @doc """
   Returns an abbreviated form of the period name.

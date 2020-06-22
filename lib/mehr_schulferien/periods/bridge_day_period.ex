@@ -1,4 +1,4 @@
-defmodule MehrSchulferien.Calendars.BridgeDayPeriod do
+defmodule MehrSchulferien.Periods.BridgeDayPeriod do
   @moduledoc """
   Module to handle BridgeDayPeriod structs.
 

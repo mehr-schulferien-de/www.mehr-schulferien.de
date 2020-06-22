@@ -3,7 +3,8 @@ defmodule MehrSchulferien.Factory do
 
   use ExMachina.Ecto, repo: MehrSchulferien.Repo
 
-  alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType, Period, Religion}
+  alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType, Religion}
+  alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
 
@@ -182,7 +183,7 @@ defmodule MehrSchulferien.Factory do
   end
 
   defp create_period(attrs) do
-    {:ok, period} = MehrSchulferien.Calendars.create_period(attrs)
+    {:ok, period} = MehrSchulferien.Periods.create_period(attrs)
     period
   end
 end

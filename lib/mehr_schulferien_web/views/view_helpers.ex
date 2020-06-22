@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Helper functions for use with views.
   """
 
-  alias MehrSchulferien.Calendars
+  alias MehrSchulferien.{Calendars.DateHelpers, Periods}
 
   @version Mix.Project.config()[:version]
 
@@ -102,7 +102,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   is a holiday period.
   """
   def get_html_class(date, periods) do
-    case Calendars.find_all_periods(periods, date) do
+    case Periods.find_all_periods(periods, date) do
       [] -> ""
       [period] -> period.html_class
       periods -> select_html_class(periods)
@@ -118,8 +118,8 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Returns the public holiday periods and school holiday periods for a month.
   """
   def list_month_holidays(date, public_periods, school_periods) do
-    {Calendars.find_periods_by_month(date, public_periods),
-     Calendars.find_periods_by_month(date, school_periods)}
+    {Periods.find_periods_by_month(date, public_periods),
+     Periods.find_periods_by_month(date, school_periods)}
   end
 
   @doc """
@@ -148,12 +148,12 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Returns the next schoolday (the next day that is not a school / public holiday).
   """
   def next_schoolday(periods) do
-    today = Calendars.DateHelpers.today_berlin()
+    today = DateHelpers.today_berlin()
 
     periods
     |> Enum.filter(&(Date.compare(today, &1.ends_on) != :gt))
     |> Enum.sort(&(Date.compare(&1.starts_on, &2.starts_on) == :lt))
-    |> Calendars.find_next_schoolday(today)
+    |> Periods.find_next_schoolday(today)
   end
 
   @doc """

@@ -3,7 +3,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   import MehrSchulferienWeb.Authorize
 
-  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Calendars.Period, Locations}
+  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.{Periods, Periods.Period}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Email
 
@@ -24,7 +25,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "Schulschließung wegen der COVID-19-Pandemie (Corona)"
       )
 
-    changeset = Calendars.change_period(%Period{})
+    changeset = Periods.change_period(%Period{})
 
     render(conn, "new.html",
       changeset: changeset,
@@ -40,7 +41,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "federal_state_slug" => federal_state_slug,
         "period" => period_params
       }) do
-    case Calendars.create_period(period_params) do
+    case Periods.create_period(period_params) do
       {:ok, period} ->
         Email.period_added_notification(period)
 
@@ -90,7 +91,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     periods =
       federal_state
-      |> Calendars.list_current_and_future_periods(holiday_or_vacation_type)
+      |> Periods.list_current_and_future_periods(holiday_or_vacation_type)
       |> check_future_periods(federal_state, holiday_or_vacation_type)
 
     months = MehrSchulferien.Calendars.DateHelpers.get_months_map()
@@ -106,7 +107,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   end
 
   defp check_future_periods([], federal_state, holiday_or_vacation_type) do
-    case Calendars.list_previous_periods(federal_state, holiday_or_vacation_type) do
+    case Periods.list_previous_periods(federal_state, holiday_or_vacation_type) do
       [] -> raise MehrSchulferien.NoHolidayOrVacationTypePeriod
       periods -> periods
     end

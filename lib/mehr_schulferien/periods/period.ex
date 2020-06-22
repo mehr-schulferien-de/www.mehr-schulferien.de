@@ -1,4 +1,4 @@
-defmodule MehrSchulferien.Calendars.Period do
+defmodule MehrSchulferien.Periods.Period do
   use Ecto.Schema
 
   import Ecto.Changeset
