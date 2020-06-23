@@ -174,7 +174,7 @@ defmodule MehrSchulferien.Factory do
   def add_public_periods(%{location: location}) do
     today = DateHelpers.today_berlin()
 
-    insert(:period, %{
+    insert_list(3, :period, %{
       is_public_holiday: true,
       location_id: location.id,
       starts_on: Date.add(today, 1),

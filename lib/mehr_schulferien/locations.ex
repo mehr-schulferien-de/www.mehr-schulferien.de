@@ -23,6 +23,15 @@ defmodule MehrSchulferien.Locations do
   def get_location!(id), do: Repo.get!(Location, id)
 
   @doc """
+  Gets a single location by querying the slug.
+
+  Raises `Ecto.NoResultsError` if the Location does not exist.
+  """
+  def get_location_by_slug!(slug) do
+    Repo.get_by!(Location, slug: slug)
+  end
+
+  @doc """
   Returns a list of ids of the location and all it's ancestors.
   """
   def recursive_location_ids(location) do

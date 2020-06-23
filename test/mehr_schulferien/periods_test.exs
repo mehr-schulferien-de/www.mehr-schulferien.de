@@ -3,7 +3,7 @@ defmodule MehrSchulferien.PeriodsTest do
 
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.{Periods, Periods.Period}
+  alias MehrSchulferien.{Periods, Periods.ICal, Periods.Period}
   alias MehrSchulferien.Locations
 
   describe "periods" do
@@ -207,6 +207,33 @@ defmodule MehrSchulferien.PeriodsTest do
     end
   end
 
+  describe "icalendar" do
+    test "period_to_event/1 converts period to an ICalendar event" do
+      federal_state = insert(:federal_state)
+      vacation_type = insert(:holiday_or_vacation_type)
+
+      period =
+        create_period(%{
+          ends_on: ~D[2020-07-10],
+          location_id: federal_state.id,
+          starts_on: ~D[2020-07-07],
+          vacation_type_id: vacation_type.id
+        })
+
+      assert %ICalendar.Event{
+               dtend: dtend,
+               dtstart: dtstart,
+               location: location,
+               summary: summary
+             } = ICal.period_to_event(period, federal_state)
+
+      assert dtend == {{2020, 7, 10}, {23, 59, 59}}
+      assert dtstart == {{2020, 7, 7}, {0, 0, 0}}
+      assert location == federal_state.name
+      assert summary == vacation_type.colloquial
+    end
+  end
+
   defp add_federal_state(_) do
     federal_state = insert(:federal_state)
     {:ok, %{federal_state: federal_state}}
@@ -225,5 +252,23 @@ defmodule MehrSchulferien.PeriodsTest do
 
     {:ok,
      %{federal_state: federal_state, school_periods: school_periods, other_period: other_period}}
+  end
+
+  defp create_period(%{
+         ends_on: ends_on,
+         location_id: location_id,
+         starts_on: starts_on,
+         vacation_type_id: vacation_type_id
+       }) do
+    {:ok, period} =
+      Periods.create_period(%{
+        created_by_email_address: "froderick@example.com",
+        location_id: location_id,
+        holiday_or_vacation_type_id: vacation_type_id,
+        starts_on: starts_on,
+        ends_on: ends_on
+      })
+
+    Periods.get_period!(period.id)
   end
 end

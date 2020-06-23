@@ -43,7 +43,8 @@ defmodule MehrSchulferien.MixProject do
       {:faker, "~> 0.13.0", only: :test},
       {:ecto_autoslug_field, "~> 2.0"},
       {:csv, "~> 2.3"},
-      {:tzdata, "~> 1.0.3"}
+      {:tzdata, "~> 1.0.3"},
+      {:icalendar, "~> 1.0"}
     ]
   end
 

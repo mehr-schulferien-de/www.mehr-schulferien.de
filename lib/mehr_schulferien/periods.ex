@@ -56,7 +56,11 @@ defmodule MehrSchulferien.Periods do
 
   Raises `Ecto.NoResultsError` if the Period does not exist.
   """
-  def get_period!(id), do: Repo.get!(Period, id)
+  def get_period!(id) do
+    Period
+    |> Repo.get!(id)
+    |> Repo.preload([:holiday_or_vacation_type, :location])
+  end
 
   @doc """
   Creates a period.
