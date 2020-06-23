@@ -3,10 +3,10 @@ defmodule MehrSchulferienWeb.PublicHolidayController do
 
   alias MehrSchulferien.{
     Calendars,
-    Calendars.Period,
     Calendars.HolidayOrVacationType,
     Calendars.DateHelpers,
-    Locations
+    Locations,
+    Periods.Period
   }
 
   alias MehrSchulferien.Repo

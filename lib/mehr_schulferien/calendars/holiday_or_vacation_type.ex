@@ -3,7 +3,7 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.{Calendars, NameSlug}
+  alias MehrSchulferien.{Calendars, NameSlug, Periods}
   alias MehrSchulferien.Locations.Location
 
   schema "holiday_or_vacation_types" do
@@ -22,7 +22,7 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
     belongs_to :country_location, Location
     belongs_to :default_religion, Calendars.Religion
 
-    has_many :periods, Calendars.Period, on_delete: :delete_all
+    has_many :periods, Periods.Period, on_delete: :delete_all
 
     timestamps()
   end

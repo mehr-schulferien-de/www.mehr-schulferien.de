@@ -52,7 +52,7 @@
           </tr>
           <tr>
             <%= for day <- @days do %>
-              <% current_day_periods = MehrSchulferien.Calendars.find_all_periods(periods, day) %>
+              <% current_day_periods = MehrSchulferien.Periods.find_all_periods(periods, day) %>
               <%= if current_day_periods != [] do %>
                 <% school_period = MehrSchulferienWeb.PageView.get_school_period(current_day_periods) %>
                 <%= if MehrSchulferienWeb.PageView.display_period_info?(day, @days, school_period) do %>

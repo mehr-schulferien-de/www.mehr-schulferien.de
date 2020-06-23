@@ -4,7 +4,8 @@ defmodule MehrSchulferien.Locations.Location do
   import Ecto.Changeset
 
   alias MehrSchulferien.LocationNameSlug
-  alias MehrSchulferien.Calendars.{HolidayOrVacationType, Period}
+  alias MehrSchulferien.Calendars.HolidayOrVacationType
+  alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Maps.{Address, ZipCode}
 
   schema "locations" do

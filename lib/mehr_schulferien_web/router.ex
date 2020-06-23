@@ -99,12 +99,13 @@ defmodule MehrSchulferienWeb.Router do
         :county_show
   end
 
-  scope "/api/v2.0", MehrSchulferienWeb.Api.V2 do
+  scope "/api/v2.0", MehrSchulferienWeb.Api.V2, as: :api do
     pipe_through :api
 
     resources "/locations", LocationController, only: [:index, :show]
     resources "/periods", PeriodController, only: [:index, :show]
     resources "/holiday_or_vacation_types", HolidayOrVacationTypeController, only: [:index, :show]
     get "/vcards/schools/:slug", VCardController, :school_show
+    get "/icalendars/location/:slug", ICalController, :show
   end
 end

@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
   Helper functions for use with controllers.
   """
 
-  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Periods}
+  alias MehrSchulferien.{Calendars.DateHelpers, Periods}
 
   def list_period_data(location_ids, today) do
     current_year = today.year
@@ -41,19 +41,19 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
     school_free_periods =
       Periods.list_school_free_periods(location_ids, yesterday, day_after_tomorrow)
 
-    yesterdays_public_holiday_periods = Calendars.find_all_periods(public_periods, yesterday)
-    todays_public_holiday_periods = Calendars.find_all_periods(public_periods, today)
-    tomorrows_public_holiday_periods = Calendars.find_all_periods(public_periods, tomorrow)
+    yesterdays_public_holiday_periods = Periods.find_all_periods(public_periods, yesterday)
+    todays_public_holiday_periods = Periods.find_all_periods(public_periods, today)
+    tomorrows_public_holiday_periods = Periods.find_all_periods(public_periods, tomorrow)
 
     day_after_tomorrows_public_holiday_periods =
-      Calendars.find_all_periods(public_periods, day_after_tomorrow)
+      Periods.find_all_periods(public_periods, day_after_tomorrow)
 
-    yesterdays_school_free_periods = Calendars.find_all_periods(school_free_periods, yesterday)
-    todays_school_free_periods = Calendars.find_all_periods(school_free_periods, today)
-    tomorrows_school_free_periods = Calendars.find_all_periods(school_free_periods, tomorrow)
+    yesterdays_school_free_periods = Periods.find_all_periods(school_free_periods, yesterday)
+    todays_school_free_periods = Periods.find_all_periods(school_free_periods, today)
+    tomorrows_school_free_periods = Periods.find_all_periods(school_free_periods, tomorrow)
 
     day_after_tomorrows_school_free_periods =
-      Calendars.find_all_periods(school_free_periods, day_after_tomorrow)
+      Periods.find_all_periods(school_free_periods, day_after_tomorrow)
 
     [
       day_after_tomorrow: day_after_tomorrow,

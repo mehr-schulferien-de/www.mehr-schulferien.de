@@ -3,7 +3,8 @@ defmodule MehrSchulferienWeb.CityController do
 
   import MehrSchulferienWeb.Authorize
 
-  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Calendars.Period, Locations}
+  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.{Periods, Periods.Period}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Email
 
@@ -20,7 +21,7 @@ defmodule MehrSchulferienWeb.CityController do
         "Schulschließung wegen der COVID-19-Pandemie (Corona)"
       )
 
-    changeset = Calendars.change_period(%Period{})
+    changeset = Periods.change_period(%Period{})
 
     render(conn, "new.html",
       changeset: changeset,
@@ -37,7 +38,7 @@ defmodule MehrSchulferienWeb.CityController do
         "city_slug" => city_slug,
         "period" => period_params
       }) do
-    case Calendars.create_period(period_params) do
+    case Periods.create_period(period_params) do
       {:ok, period} ->
         Email.period_added_notification(period)
 

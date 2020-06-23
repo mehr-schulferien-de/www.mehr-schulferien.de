@@ -9,7 +9,7 @@ defmodule MehrSchulferienWeb.PageControllerTest do
       insert(:holiday_or_vacation_type, %{country_location_id: country.id})
 
     for federal_state <- federal_states do
-      MehrSchulferien.Calendars.create_period(%{
+      MehrSchulferien.Periods.create_period(%{
         holiday_or_vacation_type_id: holiday_or_vacation_type.id,
         location_id: federal_state.id
       })
