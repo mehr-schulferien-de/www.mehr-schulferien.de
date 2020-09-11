@@ -35,7 +35,7 @@ defmodule MehrSchulferien.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.1"},
       {:bamboo, "~> 1.4"},
-      {:bamboo_smtp, "~> 2.1.0"},
+      {:bamboo_smtp, "~> 3.0.0"},
       {:phauxth, "~> 2.3"},
       {:argon2_elixir, "~> 2.3"},
       {:plug_cowboy, "~> 2.1"},
