@@ -1,5 +1,5 @@
-<title>Schulferien <%= @federal_state.name %> (<%= @next_three_years %>)</title>
-<meta name="description" content="Alle Ferientermine und gesetzliche Feiertage für das Bundesland <%= @federal_state.name %>.">
+<title>Kalender <%= @current_year %> mit Schulferien <%= @federal_state.name %></title>
+<meta name="description" content="Alle Ferientermine und gesetzliche Feiertage für <%= @federal_state.name %> (<%= @next_three_years %>).">
 
 <script type="application/ld+json">
 {
