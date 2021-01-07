@@ -35,7 +35,10 @@
         <% periods = place[:periods] %>
         <%= for {federal_state, periods} <- periods do %>
           <tr>
-            <td rowspan="2"><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></td>
+            <td rowspan="2">
+              <span class="hidden-xs "><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
+              <span class="hidden-sm hidden-md hidden-lg hidden-xl"><%= link "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
+            </td>
             <%= for day <- @days do %>
               <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
               <td class="text-center <%= td_html_class %>">
