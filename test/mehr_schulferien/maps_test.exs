@@ -38,7 +38,7 @@ defmodule MehrSchulferien.MapsTest do
     test "create_address/1 with valid data creates a address" do
       school = insert(:school)
       valid_attrs = Map.put(@valid_attrs, "school_location_id", school.id)
-      assert {:ok, %Address{} = address} = Maps.create_address(valid_attrs)
+      assert {:ok, %Address{} = _address} = Maps.create_address(valid_attrs)
     end
 
     test "create_address/1 with invalid data returns error changeset" do
@@ -47,7 +47,7 @@ defmodule MehrSchulferien.MapsTest do
 
     test "update_address/2 with valid data updates the address" do
       address = insert(:address)
-      assert {:ok, %Address{} = address} = Maps.update_address(address, @update_attrs)
+      assert {:ok, %Address{} = _address} = Maps.update_address(address, @update_attrs)
     end
 
     test "update_address/2 with invalid data returns error changeset" do
