@@ -17,7 +17,7 @@
       <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        Schulferien <%= @federal_state.name %> <%= @next_three_years %>
+        Schulferien <%= @federal_state.name %> <%= @current_year %>
       </h1>
     </div>
   </div>
@@ -30,7 +30,7 @@
       <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        Schulferien <%= @federal_state.name %> <%= @next_three_years %>
+        Schulferien <%= @federal_state.name %> <%= @current_year %>
       </h1>
     </div>
   </div>
@@ -68,9 +68,9 @@
         iCal für das Schuljahr <%= @current_year + 1 %>-<%= @current_year + 2 %> (<%= @federal_state.name %>)
       <% end %></li>
     </ul>
-    <h2>Podcast?</h2>
+    <h2>Reise-Podcast?</h2>
     <p>Unser Tipp: <a href="https://www.reisepassnummer.de">Reisepassnummer Podcast</a></p>
-    <p>Der Podcast mit interessanten Reisefeatures (z.B. Manhatten, Griechenland, Nordsee, Florida, usw.).</p>
+    <p>Der Podcast mit interessanten Reisefeatures (z.B. Manhatten, Griechenland, Florida, Nordsee, Österreich, Malediven, usw.).</p>
   </div>
 </div>
 
