@@ -82,7 +82,7 @@
 <% next_schoolday = ViewHelpers.next_schoolday(@public_periods ++ @school_periods) %>
 <%= render MehrSchulferienWeb.PartialView, "_federal_state_faq.html", Map.merge(assigns, %{location: @federal_state, next_schoolday: next_schoolday, current_year: @current_year, today: @today}) %>
 
-<h2 id="ferientermine_naechste_3_jahre">Schulferien <%= @next_three_years %></h2>
+<h2 id="ferientermine_naechste_3_jahre">Schulferien <%= @federal_state.name %></h2>
 <%= render MehrSchulferienWeb.PartialView, "_three_year_periods_table.html", periods: @school_periods, current_year: @current_year, months: @months, conn: @conn, country: @country, federal_state: @federal_state %>
 
 <%= for period <- @school_periods do %>
