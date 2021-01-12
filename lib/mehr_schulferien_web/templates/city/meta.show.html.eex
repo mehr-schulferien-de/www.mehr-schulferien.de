@@ -1,5 +1,5 @@
 <title>
-Schulferien für <%= @city.name %> <%= MehrSchulferienWeb.CityView.format_zip_codes(@city) %>
+Schulferien <%= @city.name %> <%= @current_year %>
 </title>
 <%= if Locations.number_schools(@city) > 0 do %>
 <meta name="description" content="Ferientermine und gesetzliche Feiertage für <%= MehrSchulferienWeb.CityView.number_schools(@city) %> Schulen in <%= @city.name %> <%= MehrSchulferienWeb.CityView.format_zip_codes(@city) %>.">
