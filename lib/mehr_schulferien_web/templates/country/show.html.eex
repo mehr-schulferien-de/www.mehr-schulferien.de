@@ -1,9 +1,4 @@
-<ol class="breadcrumb hidden-xs">
-  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
-  <li><%= @country.name %></li>
-</ol>
-
-<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+<ol class="breadcrumb">
   <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
   <li><%= @country.name %></li>
 </ol>
@@ -12,7 +7,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Schulferien in <%= @country.name %>
+        Schulferien <%= @current_year %>
       </h1>
     </div>
   </div>
