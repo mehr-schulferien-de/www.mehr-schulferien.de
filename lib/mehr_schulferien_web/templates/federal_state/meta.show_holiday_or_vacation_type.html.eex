@@ -1,5 +1,5 @@
-<title><%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %></title>
-<meta name="description" content="Alle <%= @holiday_or_vacation_type.colloquial %> Termine der nächsten Jahre im Bundesland <%= @federal_state.name %>.">
+<title><%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= @next_three_years %></title>
+<meta name="description" content="Alle <%= @holiday_or_vacation_type.colloquial %> Termine der Jahre <%= @next_three_years %> im Bundesland <%= @federal_state.name %>.">
 
 <script type="application/ld+json">
 {

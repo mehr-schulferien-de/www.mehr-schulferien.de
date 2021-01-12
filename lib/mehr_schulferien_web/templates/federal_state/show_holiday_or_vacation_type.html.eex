@@ -19,7 +19,7 @@
       <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        <%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %>
+        <%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= @next_three_years %>
       </h1>
     </div>
   </div>
@@ -32,7 +32,7 @@
       <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        <%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %>
+        <%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= @next_three_years %>
       </h1>
     </div>
   </div>
