@@ -48,7 +48,6 @@
       <% end %>
       <strong><%= ViewHelpers.format_date_range(next_school_vacation.starts_on, next_school_vacation.ends_on, nil) %></strong>
     </p>
-
   </div>
   <div class="col-md-3">
     <div class="panel panel-default">
@@ -109,10 +108,11 @@
             Schuljahr <%= @current_year + 1 %>-<%= @current_year + 2 %>
           <% end %></li>
       </div>
+    </div>
   </div>
 </div>
 
-<h2 id="kalenderansicht">Kalenderansicht <small><%= @next_three_years %></small></h2>
+<h2 id="kalenderansicht">Ferien <%= @federal_state.name %> Kalenderansicht <small><%= @next_three_years %></small></h2>
 <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
 <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 
