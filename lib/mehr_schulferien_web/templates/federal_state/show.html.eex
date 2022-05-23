@@ -45,17 +45,7 @@
     <% next_school_vacation = FaqViewHelpers.next_school_vacation(@school_periods) %>
     <% days_till_vaction = Date.diff(next_school_vacation.starts_on, MehrSchulferien.Calendars.DateHelpers.today_berlin()) %>
     <% distance_in_words = FaqViewHelpers.day_distance_in_words(days_till_vaction) %>
-    <h2><%= next_school_vacation.holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= @current_year %></h2>
 
-    <p>
-      <%= if days_till_vaction > -1 do %>
-        <%= distance_in_words %> beginnen die <strong><%= next_school_vacation.holiday_or_vacation_type.colloquial %></strong> in
-        <%= @federal_state.name %>:
-      <% else %>
-        Seit <%= days_till_vaction * -1 %> Tagen sind <%= next_school_vacation.holiday_or_vacation_type.colloquial %> in <%= @federal_state.name %>:
-      <% end %>
-      <strong><%= ViewHelpers.format_date_range(next_school_vacation.starts_on, next_school_vacation.ends_on, nil) %></strong>
-    </p>
   </div>
   <div class="col-sm-6 hidden-xs">
     <h2>Ferien im iCal-Format</h2>
@@ -68,11 +58,25 @@
         iCal für das Schuljahr <%= @current_year + 1 %>-<%= @current_year + 2 %> (<%= @federal_state.name %>)
       <% end %></li>
     </ul>
-    <h2>Reise-Podcast?</h2>
-    <p>Unser Tipp: <a href="https://www.reisepassnummer.de">Reisepassnummer Podcast</a></p>
-    <p>Der Podcast mit interessanten Reisefeatures (z.B. Manhatten, Griechenland, Florida, Nordsee, Österreich, Malediven, usw.).</p>
   </div>
 </div>
+
+<%= if @federal_state.name == "Rheinland-Pfalz" do %>
+<h2>Allgemeine Informationen</h2>
+<%= render "rheinland-pfalz.html" %>
+<% end %>
+
+<h2><%= next_school_vacation.holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= @current_year %></h2>
+
+<p>
+  <%= if days_till_vaction > -1 do %>
+    <%= distance_in_words %> beginnen die <strong><%= next_school_vacation.holiday_or_vacation_type.colloquial %></strong> in
+    <%= @federal_state.name %>:
+  <% else %>
+    Seit <%= days_till_vaction * -1 %> Tagen sind <%= next_school_vacation.holiday_or_vacation_type.colloquial %> in <%= @federal_state.name %>:
+  <% end %>
+  <strong><%= ViewHelpers.format_date_range(next_school_vacation.starts_on, next_school_vacation.ends_on, nil) %></strong>
+</p>
 
 <h2 id="kalenderansicht">Kalenderansicht <small><%= @next_three_years %></small></h2>
 <%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
