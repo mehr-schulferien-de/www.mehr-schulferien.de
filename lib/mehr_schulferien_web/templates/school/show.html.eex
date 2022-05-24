@@ -37,6 +37,8 @@
     <% next_school_vacation = FaqViewHelpers.next_school_vacation(@school_periods) %>
     <% days_till_vaction = Date.diff(next_school_vacation.starts_on, MehrSchulferien.Calendars.DateHelpers.today_berlin()) %>
     <% distance_in_words = FaqViewHelpers.day_distance_in_words(days_till_vaction) %>
+    <p>An dieser Schule gelten die Termine der <%= link "Schulferien " <> @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>.</p>
+
     <h2><%= next_school_vacation.holiday_or_vacation_type.colloquial %> <%= @current_year %></h2>
     <p>
       <%= if days_till_vaction > -1 do %>
