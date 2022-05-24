@@ -26,6 +26,30 @@ defmodule MehrSchulferienWeb.PageController do
     index(conn, %{"number_of_days" => 84})
   end
 
+  def summer_vacations(conn, _params) do
+    today = DateHelpers.today_berlin()
+    current_year = today.year
+    number_of_days = 60
+
+    # Start der Sommerferien (irgendwo)
+    {:ok, today} = Date.from_erl({current_year, 6, 27})
+
+    ends_on = Date.add(today, number_of_days)
+    days = DateHelpers.create_days(today, number_of_days)
+    day_names = DateHelpers.short_days_map()
+    months = DateHelpers.get_months_map()
+    countries = Enum.map(Locations.list_countries(), &build_country_periods(&1, today, ends_on))
+
+    render(conn, "summer_vacations.html",
+      countries: countries,
+      days: days,
+      day_names: day_names,
+      months: months,
+      current_year: current_year,
+      number_of_days: number_of_days
+    )
+  end
+
   def full_year(conn, _params) do
     index(conn, %{"number_of_days" => 364})
   end

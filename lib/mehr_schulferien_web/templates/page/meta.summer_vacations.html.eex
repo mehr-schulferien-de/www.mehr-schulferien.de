@@ -1,0 +1,2 @@
+<title>Sommerferien in Deutschland</title>
+<meta name="description" content="Eine Kalender Vergleichsübersicht der Sommerferientermine aller Bundesländern im Jahr <%= @current_year %>.">
