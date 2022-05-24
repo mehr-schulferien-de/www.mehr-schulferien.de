@@ -32,6 +32,7 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/sommerferien", PageController, :summer_vacations
     get "/ferien/d/", PageController, :full_year
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
