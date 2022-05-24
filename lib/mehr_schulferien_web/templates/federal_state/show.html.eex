@@ -66,6 +66,11 @@
 <%= render "rheinland-pfalz.html" %>
 <% end %>
 
+<%= if @federal_state.name == "Nordrhein-Westfalen" do %>
+<h2>Allgemeine Informationen</h2>
+<%= render "nordrhein-westfalen.html" %>
+<% end %>
+
 <h2><%= next_school_vacation.holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= @current_year %></h2>
 
 <p>
