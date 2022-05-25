@@ -61,15 +61,7 @@
   </div>
 </div>
 
-<%= if @federal_state.name == "Rheinland-Pfalz" do %>
-<h2>Allgemeine Informationen</h2>
-<%= render "rheinland-pfalz.html" %>
-<% end %>
-
-<%= if @federal_state.name == "Nordrhein-Westfalen" do %>
-<h2>Allgemeine Informationen</h2>
-<%= render "nordrhein-westfalen.html" %>
-<% end %>
+<%= render_existing(view_module(@conn), @federal_state.slug <> ".html", assigns) %>
 
 <h2><%= next_school_vacation.holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= @current_year %></h2>
 
