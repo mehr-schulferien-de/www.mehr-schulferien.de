@@ -8,13 +8,13 @@
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
   <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
-  <li><%= link @federal_state.code, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
+  <li><%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %></li>
   <li><%= @city.name %></li>
 </ol>
 
 <div class="hidden-sm hidden-md hidden-lg">
   <h1>
-    Schulferien <%= @city.name %> <%= @current_year %>
+    Schulferien <%= @city.name %>
   </h1>
 </div>
 
@@ -22,7 +22,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Schulferien <%= @city.name %> <%= @current_year %>
+        Schulferien <%= @city.name %>
       </h1>
     </div>
   </div>
@@ -32,6 +32,8 @@
   <div class="col-md-9">
     <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months %>
+
+    <p>An allen <a href="#liste_aller_schulen">Schulen</a> in <%= @city.name %> gelten die Termine der <%= link "Schulferien " <> @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>.</p>
 
     <% next_school_vacation = FaqViewHelpers.next_school_vacation(@school_periods) %>
     <% days_till_vaction = Date.diff(next_school_vacation.starts_on, MehrSchulferien.Calendars.DateHelpers.today_berlin()) %>

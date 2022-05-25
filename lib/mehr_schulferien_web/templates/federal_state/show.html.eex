@@ -6,7 +6,7 @@
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
   <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
-  <li><%= link @country.code, to: Routes.country_path(@conn, :show, @country.slug) %></li>
+  <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li><%= @federal_state.name %></li>
 </ol>
 
@@ -17,7 +17,7 @@
       <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        Schulferien <%= @federal_state.name %> <%= @current_year %>
+        Schulferien <%= @federal_state.name %>
       </h1>
     </div>
   </div>
@@ -30,7 +30,7 @@
       <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        Schulferien <%= @federal_state.name %> <%= @current_year %>
+        Schulferien <%= @federal_state.name %>
       </h1>
     </div>
   </div>
