@@ -18,7 +18,8 @@ defmodule MehrSchulferienWeb.CityControllerTest do
 
     test "custom meta tags are generated", %{conn: conn, city: city, country: country} do
       conn = get(conn, Routes.city_path(conn, :show, country.slug, city.slug))
-      assert html_response(conn, 200) =~ "Schulferien #{city.name}"
+      assert html_response(conn, 200) =~ "Schulferien"
+      assert html_response(conn, 200) =~ "#{city.name}"
     end
 
     test "returns 404 if country is not the root parent of the school", %{conn: conn, city: city} do
