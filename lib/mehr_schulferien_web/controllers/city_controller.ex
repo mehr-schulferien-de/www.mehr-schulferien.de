@@ -82,7 +82,7 @@ defmodule MehrSchulferienWeb.CityController do
     location_ids = [country.id, federal_state.id, county.id, city.id]
     schools = Locations.list_schools(city)
 
-    city_name_is_similar_to_a_federal_state? =
+    city_name_equals_a_federal_state? =
       Enum.member?(["hessen", "hamburg", "bremen", "berlin", "bayern"], city.slug)
 
     assigns =
@@ -91,7 +91,7 @@ defmodule MehrSchulferienWeb.CityController do
         country: country,
         federal_state: federal_state,
         schools: schools,
-        city_name_is_similar_to_a_federal_state?: city_name_is_similar_to_a_federal_state?
+        city_name_equals_a_federal_state?: city_name_equals_a_federal_state?
       ] ++
         CH.list_period_data(location_ids, today)
 

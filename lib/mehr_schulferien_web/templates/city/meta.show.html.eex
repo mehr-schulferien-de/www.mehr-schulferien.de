@@ -1,5 +1,5 @@
 <title>
-  <%= if @city_name_is_similar_to_a_federal_state? == true do %>
+  <%= if @city_name_equals_a_federal_state? do %>
     Schulferien der Stadt <%= @city.name %>
   <% else %>
     Schulferien <%= @city.name %>
