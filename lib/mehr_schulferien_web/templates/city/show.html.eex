@@ -14,7 +14,11 @@
 
 <div class="hidden-sm hidden-md hidden-lg">
   <h1>
-    Schulferien <%= @city.name %>
+    <%= if @city_name_is_similar_to_a_federal_state? do %>
+      Schulferien der Stadt <%= @city.name %>
+    <% else %>
+      Schulferien <%= @city.name %>
+    <% end %>
   </h1>
 </div>
 
@@ -22,7 +26,11 @@
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Schulferien <%= @city.name %>
+        <%= if @city_name_is_similar_to_a_federal_state? do %>
+          Schulferien der Stadt <%= @city.name %>
+        <% else %>
+          Schulferien <%= @city.name %>
+        <% end %>
       </h1>
     </div>
   </div>
@@ -30,6 +38,11 @@
 
 <div class="row">
   <div class="col-md-9">
+    <%= if @city_name_is_similar_to_a_federal_state? do %>
+    <p>
+      Auf dieser Seite sind die Schulferien der Stadt <%= @city.name %> im Bundesland <%= @federal_state.name %> aufgeführt. Die Schulferien des Bundeslandes <%= @city.name %> finden Sie unter <%= link "Schulferien Bundesland " <> @city.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @city.slug) %>.
+    </p>
+    <% end %>
     <% grouped_periods = MehrSchulferien.Periods.group_periods_single_year(@school_periods) %>
     <%= render MehrSchulferienWeb.PartialView, "_one_year_periods_table.html", grouped_periods: grouped_periods, months: @months %>
 
