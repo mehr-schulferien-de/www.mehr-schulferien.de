@@ -15,10 +15,12 @@
         },
         "Karfreitag": {
             "datum": "2023-04-07",
+            "school_vacation": true,
             "hinweis": ""
         },
         "Ostermontag": {
             "datum": "2023-04-10",
+            "school_vacation": true,
             "hinweis": ""
         },
         "Tag der Arbeit": {
