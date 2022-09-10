@@ -39,7 +39,7 @@ defmodule M do
           if school_vacation == true do
             public_holiday_type = first_or_create(json_public_holiday_name)
 
-            Calendars.create_period(%{
+            MehrSchulferien.Periods.create_period(%{
               location_id: federal_state.id,
               created_by_email_address: "sw@wintermeyer-consulting.de",
               starts_on: json_date,
@@ -60,7 +60,7 @@ defmodule M do
           unless itscomplicated == true do
             public_holiday_type = first_or_create(json_public_holiday_name)
 
-            Calendars.create_period(%{
+            MehrSchulferien.Periods.create_period(%{
               location_id: federal_state.id,
               created_by_email_address: "sw@wintermeyer-consulting.de",
               starts_on: json_date,
@@ -106,6 +106,6 @@ defmodule M do
   end
 end
 
-Enum.each([2020, 2021, 2022], fn year ->
+Enum.each([2020, 2021, 2022, 2023], fn year ->
   M.import_json(year)
 end)
