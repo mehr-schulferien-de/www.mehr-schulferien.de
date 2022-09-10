@@ -96,7 +96,7 @@ defmodule M do
         " - " <> Date.to_string(ends_at)
     )
 
-    Calendars.create_period(%{
+    MehrSchulferien.Periods.create_period(%{
       created_by_email_address: "sw@wintermeyer-consulting.de",
       holiday_or_vacation_type_id: holiday_or_vacation_type.id,
       starts_on: starts_at,
@@ -163,7 +163,7 @@ defmodule M do
 
     Enum.each(range, fn day ->
       if Date.day_of_week(day) == 6 do
-        Calendars.create_period(%{
+        MehrSchulferien.Periods.create_period(%{
           created_by_email_address: "sw@wintermeyer-consulting.de",
           holiday_or_vacation_type_id: holiday_or_vacation_type.id,
           starts_on: day,
@@ -176,7 +176,12 @@ defmodule M do
   end
 end
 
-Enum.each([2019, 2020, 2021, 2022], fn year ->
+# Enum.each([2019, 2020, 2021, 2022], fn year ->
+#   M.parse_the_csv(year)
+#   M.generate_weekend_periods(year)
+# end)
+
+Enum.each([2023], fn year ->
   M.parse_the_csv(year)
   M.generate_weekend_periods(year)
 end)
