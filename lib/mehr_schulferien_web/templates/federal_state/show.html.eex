@@ -47,7 +47,7 @@
     <% distance_in_words = FaqViewHelpers.day_distance_in_words(days_till_vaction) %>
 
   </div>
-  <div class="col-sm-6 hidden-xs">
+  <div class="col-sm-6">
     <h2>Ferien im iCal-Format</h2>
     <p>Importieren Sie die Feriendaten in Ihren eigenen Terminkalender:</p>
     <ul>
@@ -58,6 +58,9 @@
         iCal für das Schuljahr <%= @current_year + 1 %>-<%= @current_year + 2 %> (<%= @federal_state.name %>)
       <% end %></li>
     </ul>
+
+    <h2>Weitere Informationen</h2>
+    <p>Besuchen Sie auf unserer Schwesterseite feriendaten.de den Bereich <%= link to: "https://feriendaten.de/ferien/#{String.downcase(@federal_state.name) |> String.replace("ü", "ue")}" do %>Ferien <%= @federal_state.name %><% end %>. Dort können Sie u.a. auch Ferienkalender im PDF Format downloaden.</p>
   </div>
 </div>
 
