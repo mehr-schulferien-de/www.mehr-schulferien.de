@@ -52,7 +52,7 @@
       <%= for period <- periods do %>
         <strong><%= ViewHelpers.format_date_range(period.starts_on, period.ends_on) %></strong>
       <% end %>
-      und sie <strong>dauern <%= ViewHelpers.number_days(periods) %>&nbspTag<%= if ViewHelpers.number_days(periods) > 1 do %>e<% end %></strong>.
+      und sie <strong>dauern <%= ViewHelpers.number_days(periods) %>&nbspTag<%= if ViewHelpers.number_days(periods) > 1 do %>e<% end %></strong>. Weitere Informationen finden Sie auf feriendaten.de unter <a href="https://feriendaten.de/<%= String.downcase(@holiday_or_vacation_type.colloquial) %>/<%= @federal_state.slug %>/<%= period.starts_on.year %>"><%= @holiday_or_vacation_type.colloquial %> <%= @federal_state.name %> <%= period.starts_on.year %></a>.
     </p>
     <p>
       Ferienbeginn ist <strong>in <%= Date.diff(period.starts_on, @today) %> Tag<%= if Date.diff(period.starts_on, @today) > 1 do %>en<% end %></strong>.
