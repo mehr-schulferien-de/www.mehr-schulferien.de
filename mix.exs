@@ -4,8 +4,8 @@ defmodule MehrSchulferien.MixProject do
   def project do
     [
       app: :mehr_schulferien,
-      version: "3.5.1",
-      elixir: "~> 1.10",
+      version: "3.6.0",
+      elixir: "~> 1.11.4",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
