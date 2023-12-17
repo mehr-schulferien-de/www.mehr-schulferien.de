@@ -5,7 +5,7 @@
 <div class="row">
   <div class="col-xs-12">
     <h1><mark class="school-holiday">Schulferien</mark> und <mark class="public-holiday">Feiertage</mark></h1>
-    <p>Die Bundesländer verlinken auf die jeweiligen Ferien und Feiertage. Von dort kommen Sie auch auf alle 14.522 Städte und 23.432 Schulen (teilweise mit beweglichen Ferientagen).</p>
+    <p>Die Bundesländer verlinken auf die jeweiligen Ferien und Feiertage. Von dort kommen Sie auch auf alle 14.522 Orte und 23.432 Schulen (teilweise mit beweglichen Ferientagen).</p>
 
     <div id="big_table">
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, countries: @countries, days: @days, day_names: @day_names, months: @months %>
@@ -17,7 +17,7 @@
   <div class="col-md-6">
     <h2>Brückentage</h2>
     <p>Unser Algorithmus zeigt nicht nur normale <a href="https://de.wikipedia.org/wiki/Brückentag">Brückentage</a>, sondern auch
-    die Variationen, in denen 2 bis 4 genommenen Urlaubstagen ein vielfaches an effektiven
+    die Variationen, in denen 2 bis 4 genommene Urlaubstagen ein Vielfaches an effektivem
     Urlaub realisieren.</p>
 
     <table class="table">
@@ -46,7 +46,7 @@
   </div>
   <div class="col-md-6">
     <h2>Schulbeginn/Schulanfang</h2>
-    <p>In 2020 (zur Corona-Krise) stiegen die Suchanfragen rund um das Thema Schulanfang stark an.
+    <p>2020 (zur Corona-Krise) stiegen die Suchanfragen rund um das Thema Schulanfang stark an.
     Da jedes Bundesland andere Ferientermine hat, beantworten wir Fragen rund um dieses Thema auf
     spezielen FAQ-Seiten:</p>
     <%= for place <- @countries do %>

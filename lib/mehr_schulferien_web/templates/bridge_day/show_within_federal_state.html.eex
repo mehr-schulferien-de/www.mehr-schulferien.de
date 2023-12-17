@@ -19,7 +19,7 @@
     <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
     <% end %>
     <h1>
-      Die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> in <%= @year %>
+      Die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> <%= @year %>
     </h1>
 </div>
 
@@ -30,14 +30,14 @@
       <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        Die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> in <%= @year %>
+        Die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> <%= @year %>
       </h1>
     </div>
   </div>
 </div>
 
 <p class="lead">
-  In <strong><%= @year %></strong> gibt es <%= if @bridge_day_map[2] != nil do %><strong><%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %></strong> (jeweils 1 Tag) und <strong><%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %></strong> (2-4 Tage zwischen Feiertag und Wochenende).<% end %>
+  <strong><%= @year %></strong> gibt es <%= if @bridge_day_map[2] != nil do %><strong><%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen", else: "normale" %></strong> (jeweils 1 Tag) und <strong><%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %></strong> (2-4 Tage zwischen Feiertag und Wochenende).<% end %>
 </p>
 
 <%= for num <- 2..5 do %>
@@ -61,7 +61,7 @@
 <% end %>
 
 <%= if @bridge_day_map[2] != nil do %>
-<h2>Brückentag FAQ</h2>
+<h2>Brückentag-FAQ</h2>
 
 <dl class="row">
   <dt class="col-sm-5">Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?</dt>

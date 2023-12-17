@@ -3,7 +3,7 @@
   <thead>
     <tr>
       <th>Ferien</th>
-      <th>Zeitraum</th>
+      <th class="text-center">Zeitraum</th>
       <th class="text-right">Dauer</th>
     </tr>
   </thead>
@@ -15,7 +15,7 @@
       <td>
         <%= period.holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %>
       </td>
-      <td>
+      <td class="text-center">
         <span>
           <% month = @months[period.starts_on.month] %>
           <% page_link = if assigns[:page_link], do: @page_link, else: "" %>
