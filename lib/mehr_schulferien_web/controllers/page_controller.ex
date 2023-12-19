@@ -29,10 +29,10 @@ defmodule MehrSchulferienWeb.PageController do
   def summer_vacations(conn, _params) do
     today = DateHelpers.today_berlin()
     current_year = today.year
-    number_of_days = 60
+    number_of_days = 87   # 20.6. + 87 Tage = 15.9.
 
     # Start der Sommerferien (irgendwo)
-    {:ok, today} = Date.from_erl({current_year, 6, 27})
+    {:ok, today} = Date.from_erl({current_year, 6, 20})
 
     ends_on = Date.add(today, number_of_days)
     days = DateHelpers.create_days(today, number_of_days)
