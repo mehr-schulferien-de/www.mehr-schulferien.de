@@ -35,10 +35,10 @@
         <% periods = place[:periods] %>
         <%= for {federal_state, periods} <- periods do %>
           <tr>
-            <td rowspan="2">
+            <th rowspan="2">
               <span class="hidden-xs "><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
               <span class="hidden-sm hidden-md hidden-lg hidden-xl"><%= link "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
-            </td>
+            </th>
             <%= for day <- @days do %>
               <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
               <td class="text-center <%= td_html_class %>">
@@ -53,6 +53,7 @@
             <% end %>
             <%= if Enum.count(@days) < 360 do %><td><%= link "➡️", to: Routes.page_path(@conn, :full_year) %></td><% end %>
           </tr>
+
           <tr>
             <%= for day <- @days do %>
               <% current_day_periods = MehrSchulferien.Periods.find_all_periods(periods, day) %>
@@ -61,7 +62,7 @@
                 <%= if MehrSchulferienWeb.PageView.display_period_info?(day, @days, school_period) do %>
                   <% colspan = MehrSchulferienWeb.PageView.get_period_colspan(day, List.last(@days), school_period) %>
                   <td class="<%= school_period.html_class %>" colspan="<%= colspan %>">
-                    <%= link MehrSchulferienWeb.PageView.show_period_info(school_period, colspan), to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}" %>
+                    <%= link MehrSchulferienWeb.PageView.show_period_info(school_period, colspan), title: "#{school_period.holiday_or_vacation_type.colloquial} #{day.year} in #{federal_state.name}", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}" %>
                   </td>
                 <% else %>
                   <%= if non_school_period = MehrSchulferienWeb.PageView.get_non_school_period(day, school_period, current_day_periods) do %>
@@ -78,3 +79,17 @@
     </tbody>
   </table>
 </div>
+
+<%#
+
+# For Emacs:
+# Local Variables:
+# mode: html
+# indent-tabs-mode: nil
+# tab-width: 2
+# c-basic-offset: 2
+# End:
+# For VIM:
+# vim:set softtabstop=2 shiftwidth=2 tabstop=2 expandtab:
+
+%>
