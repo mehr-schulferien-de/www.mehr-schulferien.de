@@ -51,7 +51,7 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def full_year(conn, _params) do
-    index(conn, %{"number_of_days" => 364})
+    index(conn, %{"number_of_days" => 366})
   end
 
   def developers(conn, _params) do
