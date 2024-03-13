@@ -31,7 +31,7 @@ defmodule MehrSchulferien.Periods do
       order_by: [desc: p.starts_on]
     )
     |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type])
+    |> Repo.preload([:holiday_or_vacation_type, :location])
   end
 
   @doc """
@@ -48,7 +48,7 @@ defmodule MehrSchulferien.Periods do
       order_by: p.starts_on
     )
     |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type])
+    |> Repo.preload([:holiday_or_vacation_type, :location])
   end
 
   @doc """
@@ -244,7 +244,7 @@ defmodule MehrSchulferien.Periods do
       order_by: p.starts_on
     )
     |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
+    |> Repo.preload([:holiday_or_vacation_type, :location])
   end
 
   @doc """
@@ -266,7 +266,7 @@ defmodule MehrSchulferien.Periods do
       order_by: p.starts_on
     )
     |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
+    |> Repo.preload([:holiday_or_vacation_type, :location])
   end
 
   @doc """
@@ -282,7 +282,7 @@ defmodule MehrSchulferien.Periods do
       order_by: p.display_priority
     )
     |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
+    |> Repo.preload([:holiday_or_vacation_type, :location])
   end
 
   @doc """
@@ -300,7 +300,7 @@ defmodule MehrSchulferien.Periods do
       order_by: p.display_priority
     )
     |> Repo.all()
-    |> Repo.preload(:holiday_or_vacation_type)
+    |> Repo.preload([:holiday_or_vacation_type, :location])
   end
 
   @doc """

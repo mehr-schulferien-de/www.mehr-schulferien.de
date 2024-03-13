@@ -4,14 +4,40 @@
     <% period = Enum.at(periods, 0) %>
     <dl>
       <dt>
-        <%= if period.is_public_holiday == true do %>
-          <%= link period.holiday_or_vacation_type.colloquial, to: Routes.public_holiday_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
+        <%= if (false
+        ||  period.holiday_or_vacation_type.slug == "beweglicher-ferientag"
+        ||  period.holiday_or_vacation_type.slug == "unterrichtsfrei"
+        || (period.holiday_or_vacation_type.slug == "mariae-himmelfahrt" && ! period.is_valid_for_everybody)
+        ) do %>
+        	<%= period.holiday_or_vacation_type.colloquial %>
         <% else %>
-          <%= if period.is_school_vacation == true && "kategorie" not in @conn.path_info do %>
-            <%= link period.holiday_or_vacation_type.colloquial, to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
-          <% else %>
-            <%= period.holiday_or_vacation_type.colloquial %>
-          <% end %>
+					<%= if period.location.is_federal_state do %>
+						<%= if period.is_public_holiday == true do %>
+							<%= link period.holiday_or_vacation_type.colloquial, to: Routes.public_holiday_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
+						<% else %><%= if period.is_school_vacation == true && "kategorie" not in @conn.path_info do %>
+							<%= link period.holiday_or_vacation_type.colloquial, to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
+						<% else %>
+							<%= period.holiday_or_vacation_type.colloquial %>
+						<% end %>
+						<% end %>
+					<% else %>
+						<%= period.holiday_or_vacation_type.colloquial %><br>
+						<%=           if period.location.is_country do %>
+							<span style="color:#888;font-weight:normal">(Land: <%=
+								period.location.name %>)</span>
+						<% else %><%= if period.location.is_county do %>
+							<span style="color:#888;font-weight:normal">(Landkreis: <%=
+								period.location.name %>)</span>
+						<% else %><%= if period.location.is_city do %>
+							<span style="color:#888;font-weight:normal">(Ort: <%=
+								period.location.name %>)</span>
+						<% else %>
+							<span style="color:#888;font-weight:normal">(?: <%=
+								period.location.name %>)</span>
+						<% end %>
+						<% end %>
+						<% end %>
+					<% end %>
         <% end %>
       </dt>
       <dd>
@@ -24,3 +50,17 @@
     </dl>
   <% end %>
 </div>
+
+<%#
+
+# For Emacs:
+# Local Variables:
+# mode: html
+# indent-tabs-mode: nil
+# tab-width: 2
+# c-basic-offset: 2
+# End:
+# For VIM:
+# vim:set softtabstop=2 shiftwidth=2 tabstop=2 expandtab:
+
+%>

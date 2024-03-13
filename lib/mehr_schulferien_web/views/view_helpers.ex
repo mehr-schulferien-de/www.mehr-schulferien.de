@@ -35,6 +35,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   def format_date_range(from_date, till_date, :short) do
+    #format_date(from_date, :short) <> " \u2013 " <> format_date(till_date, :short)
     format_date(from_date, :short) <> " - " <> format_date(till_date, :short)
   end
 
@@ -46,6 +47,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
         format_date(from_date, nil)
       end
 
+    #from_date_string <> " \u2013 " <> format_date(till_date, short)
     from_date_string <> " - " <> format_date(till_date, short)
   end
 
@@ -59,11 +61,16 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   def format_date(date, nil) do
+    #format_date(date, :short) <> "\u202F#{date.year}"
+    #format_date(date, :short) <> "#{date.year |> Integer.to_string() |> String.slice(2, 2)}"
+    #format_date(date, :short) <> "\u202F'#{date.year |> Integer.to_string() |> String.slice(2, 2)}"
     format_date(date, :short) <> "#{date.year |> Integer.to_string() |> String.slice(2, 2)}"
   end
 
   def format_date(date, :short) do
-    "#{add_padding(date.day)}.#{add_padding(date.month)}."
+    #"#{add_padding(date.day)}.\u202F#{add_padding(date.month)}."
+    #"#{date.day}.\u202F#{date.month}."
+    "#{date.day}.#{date.month}."
   end
 
   def weekday(date) do
