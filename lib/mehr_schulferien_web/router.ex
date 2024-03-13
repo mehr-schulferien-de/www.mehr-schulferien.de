@@ -14,19 +14,19 @@ defmodule MehrSchulferienWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/admin", MehrSchulferienWeb do
-    pipe_through :browser
+  # scope "/admin", MehrSchulferienWeb do
+  #   pipe_through :browser
 
-    # Maps
-    resources "/locations", LocationController
-    resources "/zip_codes", ZipCodeController
-    resources "/zip_code_mappings", ZipCodeMappingController
+  #   # Maps
+  #   resources "/locations", LocationController
+  #   resources "/zip_codes", ZipCodeController
+  #   resources "/zip_code_mappings", ZipCodeMappingController
 
-    # Calendars
-    resources "/religions", ReligionController
-    resources "/holiday_or_vacation_types", HolidayOrVacationTypeController
-    resources "/periods", PeriodController
-  end
+  #   # Calendars
+  #   resources "/religions", ReligionController
+  #   resources "/holiday_or_vacation_types", HolidayOrVacationTypeController
+  #   resources "/periods", PeriodController
+  # end
 
   scope "/", MehrSchulferienWeb do
     pipe_through :browser
