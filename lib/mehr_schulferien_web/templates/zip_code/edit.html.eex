@@ -1,5 +1,0 @@
-<h1>Edit Zip code</h1>
-
-<%= render "form.html", Map.put(assigns, :action, Routes.zip_code_path(@conn, :update, @zip_code)) %>
-
-<span><%= link "Back", to: Routes.zip_code_path(@conn, :index) %></span>

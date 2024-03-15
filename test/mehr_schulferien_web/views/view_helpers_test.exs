@@ -20,22 +20,22 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
 
   describe "format date range" do
     test "same date just shows one date" do
-      assert ViewHelpers.format_date_range(~D[2020-04-06], ~D[2020-04-06]) == "06.04.20"
+      assert ViewHelpers.format_date_range(~D[2020-04-06], ~D[2020-04-06]) == "6.4.20"
     end
 
     test "different dates show range" do
       assert ViewHelpers.format_date_range(~D[2020-04-06], ~D[2020-04-16]) ==
-               "06.04. - 16.04.20"
+               "6.4. - 16.4.20"
 
       assert ViewHelpers.format_date_range(~D[2020-12-22], ~D[2021-01-10]) ==
-               "22.12.20 - 10.01.21"
+               "22.12.20 - 10.1.21"
     end
 
     test "setting short value does not show year" do
-      assert ViewHelpers.format_date_range(~D[2020-04-06], ~D[2020-04-06], :short) == "06.04."
+      assert ViewHelpers.format_date_range(~D[2020-04-06], ~D[2020-04-06], :short) == "6.4."
 
       assert ViewHelpers.format_date_range(~D[2020-04-06], ~D[2020-04-16], :short) ==
-               "06.04. - 16.04."
+               "6.4. - 16.4."
     end
   end
 
