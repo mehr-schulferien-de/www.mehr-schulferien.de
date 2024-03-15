@@ -2,7 +2,7 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   @moduledoc """
   Date helper functions.
   """
-  
+
   require Logger
 
   @leap_years [2020, 2024, 2028, 2032, 2036, 2040, 2044, 2048]
@@ -58,15 +58,25 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   Returns a list of dates for a certain month.
   """
   def create_month(year, month) do
-    days_in_month = if month <= 12 do
-      days_in_month = get_days_in_month( year     , month     )
-    else
-      Logger.warn(fn() -> "#################### Huh? Month #{inspect month} out of range 1-12 for create_month( #{inspect year}, #{inspect month} ). Running get_days_in_month( #{inspect( year + 1 )}, #{inspect( month - 12 )} )" end)
-      days_in_month = get_days_in_month( year + 1, month - 12 )
-    end
-    
-    if ! days_in_month do
-      Logger.warn(fn() -> "#################### Huh? No days in month #{inspect month}/#{inspect year}" end)
+    days_in_month =
+      if month <= 12 do
+        days_in_month = get_days_in_month(year, month)
+      else
+        Logger.warn(fn ->
+          "#################### Huh? Month #{inspect(month)} out of range 1-12 for create_month( #{
+            inspect(year)
+          }, #{inspect(month)} ). Running get_days_in_month( #{inspect(year + 1)}, #{
+            inspect(month - 12)
+          } )"
+        end)
+
+        days_in_month = get_days_in_month(year + 1, month - 12)
+      end
+
+    if !days_in_month do
+      Logger.warn(fn ->
+        "#################### Huh? No days in month #{inspect(month)}/#{inspect(year)}"
+      end)
     end
 
     for day <- 1..days_in_month do
