@@ -32,7 +32,7 @@ defmodule MehrSchulferien.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.11"},
+      {:gettext, "~> 0.20.0"},
       {:jason, "~> 1.1"},
       {:bamboo, "~> 1.4"},
       {:bamboo_smtp, "~> 3.0.0"},
