@@ -7,7 +7,7 @@ defmodule MehrSchulferien.MixProject do
       version: "3.6.0",
       elixir: "~> 1.11.4",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -26,11 +26,11 @@ defmodule MehrSchulferien.MixProject do
 
   defp deps do
     [
-      {:phoenix, "~> 1.5.1"},
+      {:phoenix, "~> 1.6.0"},
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.14"},
+      {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.1"},
@@ -44,7 +44,8 @@ defmodule MehrSchulferien.MixProject do
       {:ecto_autoslug_field, "~> 2.0"},
       {:csv, "~> 2.3"},
       {:tzdata, "~> 1.0.3"},
-      {:icalendar, "~> 1.0"}
+      {:icalendar, "~> 1.0"},
+      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -52,7 +53,8 @@ defmodule MehrSchulferien.MixProject do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end
