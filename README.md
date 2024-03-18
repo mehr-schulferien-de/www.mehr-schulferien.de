@@ -1,6 +1,7 @@
 # mehr-schulferien.de
 
-This project is the 2020 version of https://www.mehr-schulferien.de
+This project is the 2020 (last update 2024) version of 
+https://www.mehr-schulferien.de
 
 The webpage provides information about school vacations and public holidays
 in Germany.
@@ -32,25 +33,15 @@ of a city.
 Religion stores available religions. holiday_or_vacation_types stores the
 types of different holidays and vacations. periods store the actual dates.
 
-## More to come
-
-This document will be updated regularly.
-
-## Seeds
-
-The seedings process is not finalized yet. Until then you have to do the following steps:
-
-- `priv/repo/reset-db.sh`
-
-The list will get longer while other entities get ready for seeding. The README will be updated regularly.
-
-# Phoenix
+# Development System
 
 To start your Phoenix server:
 
+  * Clone the project
   * Install dependencies with `mix deps.get`
   * Create and migrate your database with `priv/repo/reset-db.sh`
-  * Install Node.js dependencies with `(cd assets && npm install)`
   * Start Phoenix endpoint with `iex -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Open [`localhost:4000`](http://localhost:4000) in your browser.
+
+Open an issue in case you run into any problems.
