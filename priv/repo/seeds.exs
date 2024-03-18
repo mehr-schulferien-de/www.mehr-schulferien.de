@@ -282,7 +282,7 @@ alias MehrSchulferien.Calendars
 # Corona quarantine dates
 #
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -291,7 +291,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -300,7 +300,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -309,7 +309,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -318,7 +318,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -327,7 +327,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -336,7 +336,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -345,7 +345,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -354,7 +354,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -363,7 +363,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -372,7 +372,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -381,7 +381,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -390,7 +390,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -399,7 +399,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -408,7 +408,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
@@ -417,7 +417,7 @@ Calendars.create_period(%{
   display_priority: 20
 })
 
-Calendars.create_period(%{
+MehrSchulferien.Periods.create_period(%{
   created_by_email_address: "sw@wintermeyer-consulting.de",
   holiday_or_vacation_type_id: corona_quarantine.id,
   starts_on: "2020-03-16",
