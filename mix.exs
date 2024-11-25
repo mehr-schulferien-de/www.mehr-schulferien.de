@@ -41,7 +41,7 @@ defmodule MehrSchulferien.MixProject do
       {:plug_cowboy, "~> 2.1"},
       {:ex_machina, "~> 2.4", only: :test},
       {:faker, "~> 0.16.0", only: :test},
-      {:ecto_autoslug_field, "~> 2.0"},
+      {:ecto_autoslug_field, "~> 3.1"},
       {:csv, "~> 2.3"},
       {:tzdata, "~> 1.0.3"},
       {:icalendar, "~> 1.0"},
