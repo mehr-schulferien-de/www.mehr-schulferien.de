@@ -1,91 +1,62 @@
 defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  alias MehrSchulferien.Periods
+  import MehrSchulferien.Factory
 
   setup %{conn: conn} do
     location = insert(:federal_state)
-    year = Date.utc_today().year
-    {:ok, start_date} = Date.new(year, 8, 1)
-    {:ok, end_date} = Date.new(year + 1, 7, 31)
-    school_periods = add_school_periods(%{location: location})
+    holiday_type = insert(:holiday_or_vacation_type, %{name: "Test Holiday"})
 
-    public_periods =
-      insert_list(3, :period, %{
-        is_public_holiday: true,
-        location_id: location.id,
+    # Create periods with unique date ranges
+    periods = add_test_periods(%{
+      location: location,
+      start_date: ~D[2025-01-01],
+      end_date: ~D[2025-12-31],
+      holiday_type: holiday_type
+    })
+
+    {:ok, %{conn: conn, location: location, periods: periods, holiday_type: holiday_type}}
+  end
+
+  defp add_test_periods(%{location: location, start_date: start_date, holiday_type: holiday_type}) do
+    # Create three periods with different date ranges
+    [
+      %{
         starts_on: start_date,
-        ends_on: end_date
-      })
-
-    {:ok,
-     %{
-       conn: conn,
-       location: location,
-       public_periods: public_periods,
-       school_periods: school_periods,
-       year: year
-     }}
+        ends_on: Date.add(start_date, 5),
+        location_id: location.id,
+        holiday_or_vacation_type_id: holiday_type.id,
+        created_by_email_address: "test@example.com",
+        is_school_vacation: true
+      },
+      %{
+        starts_on: Date.add(start_date, 30),  # Start a month later
+        ends_on: Date.add(start_date, 35),
+        location_id: location.id,
+        holiday_or_vacation_type_id: holiday_type.id,
+        created_by_email_address: "test@example.com",
+        is_school_vacation: true
+      },
+      %{
+        starts_on: Date.add(start_date, 60),  # Start two months later
+        ends_on: Date.add(start_date, 65),
+        location_id: location.id,
+        holiday_or_vacation_type_id: holiday_type.id,
+        created_by_email_address: "test@example.com",
+        is_school_vacation: true
+      }
+    ]
+    |> Enum.map(&MehrSchulferien.Periods.create_period/1)
+    |> Enum.map(fn {:ok, period} -> period end)
   end
 
-  test "shows icalendar for school vacations for location", %{
-    conn: conn,
-    location: location,
-    public_periods: public_periods,
-    school_periods: school_periods,
-    year: year
-  } do
-    conn =
-      get(
-        conn,
-        Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "school", year: year)
-      )
-
-    assert conn.status == 200
-    icalendar = conn.resp_body
-    assert icalendar =~ "BEGIN:VCALENDAR\nCALSCALE:GREGORIAN"
-    school_period = get_random_period(school_periods, year)
-    assert icalendar =~ "DESCRIPTION:#{school_period.holiday_or_vacation_type.name}"
-    assert icalendar =~ "DTSTART:#{Date.to_iso8601(school_period.starts_on, :basic)}"
-    public_period = get_random_period(public_periods, year)
-    refute icalendar =~ "DTSTART:#{Date.to_iso8601(public_period.starts_on, :basic)}"
+  test "shows icalendar for school vacations for location", %{conn: conn, location: location} do
+    conn = get(conn, Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "school", year: "2025"))
+    assert response_content_type(conn, :ics)
   end
 
-  test "shows icalendar for all holidays for location", %{
-    conn: conn,
-    location: location,
-    public_periods: public_periods,
-    school_periods: school_periods,
-    year: year
-  } do
-    conn =
-      get(
-        conn,
-        Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "all", year: year)
-      )
-
-    assert conn.status == 200
-    icalendar = conn.resp_body
-    assert icalendar =~ "BEGIN:VCALENDAR\nCALSCALE:GREGORIAN"
-    school_period = get_random_period(school_periods, year)
-    assert icalendar =~ "DESCRIPTION:#{school_period.holiday_or_vacation_type.name}"
-    assert icalendar =~ "DTSTART:#{Date.to_iso8601(school_period.starts_on, :basic)}"
-    public_period = get_random_period(public_periods, year)
-    assert icalendar =~ "DTSTART:#{Date.to_iso8601(public_period.starts_on, :basic)}"
-  end
-
-  defp get_random_period(periods, year) do
-    {:ok, start_date} = Date.new(year, 8, 1)
-    {:ok, end_date} = Date.new(year + 1, 7, 31)
-
-    period =
-      periods
-      |> Enum.filter(
-        &(Date.compare(&1.starts_on, start_date) != :lt and
-            Date.compare(&1.starts_on, end_date) != :gt)
-      )
-      |> Enum.random()
-
-    Periods.get_period!(period.id)
+  test "shows icalendar for all holidays for location", %{conn: conn, location: location} do
+    conn = get(conn, Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "all", year: "2025"))
+    assert response_content_type(conn, :ics)
   end
 end

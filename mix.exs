@@ -5,7 +5,7 @@ defmodule MehrSchulferien.MixProject do
     [
       app: :mehr_schulferien,
       version: "3.6.0",
-      elixir: "~> 1.11.4",
+      elixir: "~> 1.12.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -45,7 +45,8 @@ defmodule MehrSchulferien.MixProject do
       {:csv, "~> 2.3"},
       {:tzdata, "~> 1.0.3"},
       {:icalendar, "~> 1.0"},
-      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev}
+      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
+      {:ecto_erd, "~> 0.5", only: [:dev]}
     ]
   end
 
