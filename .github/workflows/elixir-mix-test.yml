@@ -86,3 +86,4 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           WALLABY_DRIVER: chrome
           WALLABY_CHROME_BINARY: /usr/bin/chromium-browser
+          WALLABY_BASE_URL: http://localhost:4002
