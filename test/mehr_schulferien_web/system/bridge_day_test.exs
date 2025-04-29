@@ -47,10 +47,8 @@ defmodule MehrSchulferienWeb.BridgeDaySystemTest do
 
     page = session |> visit("/brueckentage/d/bundesland/brandenburg/#{@future_year}")
 
-    assert_has(
-      page,
-      Query.text("Brückentage #{@future_year} in Brandenburg: Die 0 besten Tipps für mehr Urlaub")
-    )
+    assert_has(page, Query.text("Brückentage #{@future_year} in Brandenburg"))
+    assert_has(page, Query.text("Die 0 besten Tipps für mehr Urlaub"))
   end
 
   feature "view bridge days for a federal state without data", %{session: session} do

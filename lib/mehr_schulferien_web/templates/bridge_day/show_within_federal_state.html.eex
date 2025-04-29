@@ -30,11 +30,14 @@ end) |> Enum.sum() %>
         <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
       <% end %>
       <h1>
-        Brückentage <%= @year %> in <%= @federal_state.name %>: Die <%= @bridge_day_proposal_count %> besten Tipps für mehr Urlaub
+        Brückentage <%= @year %> in <%= @federal_state.name %>
       </h1>
+      <h2 style="margin-top:0.5em; font-size:1.6em;">
+        Die <%= @bridge_day_proposal_count %> besten Tipps für <%= if min_leave > 0 and max_free > 0 do %><%= round((max_free - min_leave) / min_leave * 100) %>%<% end %> mehr Urlaub.
+      </h2>
       <%= if min_leave > 0 and max_free > 0 do %>
         <div class="alert alert-info" style="font-size:1.2em; margin-top: 1em;">
-          Für nur <b><%= min_leave %> eingereichte Urlaubstage</b> können Sie <b><%= max_free %> Tage Gesamturlaub</b> machen!
+          Mit nur <b><%= min_leave %></b> eingereichten Urlaubstagen können Sie <b><%= max_free %> Tage Urlaub machen!</b>
         </div>
       <% end %>
     </div>
@@ -50,11 +53,12 @@ end) %>
 
 <%!-- Optional: Short intro text --%>
 <p class="lead">
-  Wir finden mit unserem Spezialalgorithmus nicht nur die normalen Brückentage (meistens ein Freitag), sondern auch Konstellationen, in denen zwei oder mehr Tage zwischen einem Feiertag und einem Wochenende liegen.
+  Unser Spezial-Algorithmus findet nicht nur die klassischen Brückentage (z. B. ein Freitag zwischen Feiertag und Wochenende), sondern auch besondere Konstellationen, bei denen Sie mit cleverer Planung noch mehr freie Tage herausholen können.
   <%= if Enum.any?(future_years) do %>
-    Siehe auch <%= for {year, idx} <- Enum.with_index(future_years) do %>
+    Entdecken Sie jetzt die besten Tipps für Ihre Urlaubsplanung <%= @year %> – und werfen Sie auch einen Blick auf
+    <%= for {year, idx} <- Enum.with_index(future_years) do %>
       <%= if idx > 0, do: if(idx == length(future_years) - 1, do: " und ", else: ", ") %>
-      <%= link "#{year}#{if idx == length(future_years) - 1, do: ".", else: ""}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year) %>
+      <%= link "Brückentage #{year}#{if idx == length(future_years) - 1, do: ".", else: ""}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year) %>
     <% end %>
   <% end %>
 </p>
