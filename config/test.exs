@@ -38,5 +38,5 @@ config :wallaby,
   chromedriver: [
     version: "ignore"
   ],
-  screenshot_on_failure: true,
+  screenshot_on_failure: false,
   screenshot_dir: "test/screenshots"
