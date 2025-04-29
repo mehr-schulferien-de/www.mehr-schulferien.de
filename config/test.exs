@@ -36,7 +36,9 @@ config :wallaby,
     binary: System.get_env("WALLABY_CHROME_BINARY", "/usr/bin/chromium-browser")
   ],
   chromedriver: [
+    path: "/usr/bin/chromedriver",
     version: "ignore"
   ],
   screenshot_on_failure: false,
-  screenshot_dir: "test/screenshots"
+  screenshot_dir: "test/screenshots",
+  max_wait_time: 5000

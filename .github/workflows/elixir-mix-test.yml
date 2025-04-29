@@ -76,6 +76,11 @@ jobs:
             sudo ln -s /usr/bin/chromium-browser /usr/bin/chromium
           fi
 
+      - name: Start ChromeDriver
+        run: |
+          chromedriver --port=9515 --url-base=wd/hub &
+          sleep 5
+
       - name: Run tests
         run: |
           mix compile --warnings-as-errors
@@ -87,3 +92,4 @@ jobs:
           WALLABY_DRIVER: chrome
           WALLABY_CHROME_BINARY: /usr/bin/chromium-browser
           WALLABY_BASE_URL: http://localhost:4002
+          WEBDRIVER_URL: http://localhost:9515/wd/hub
