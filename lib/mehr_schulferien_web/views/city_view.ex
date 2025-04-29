@@ -9,11 +9,7 @@ defmodule MehrSchulferienWeb.CityView do
 
   def format_zip_codes(city) do
     joined_zip_codes =
-      "#{
-        Enum.map(city.zip_codes, & &1.value)
-        |> Enum.sort()
-        |> truncate()
-      }"
+      "#{Enum.map(city.zip_codes, & &1.value) |> Enum.sort() |> truncate()}"
 
     case Enum.count(city.zip_codes) do
       0 -> ""

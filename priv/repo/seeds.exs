@@ -155,7 +155,10 @@ alias MehrSchulferien.Calendars
   })
 
 {:ok, _islam} =
-  Calendars.create_religion(%{name: "Islam", wikipedia_url: "https://de.wikipedia.org/wiki/Islam"})
+  Calendars.create_religion(%{
+    name: "Islam",
+    wikipedia_url: "https://de.wikipedia.org/wiki/Islam"
+  })
 
 # Seed holiday or vacation types
 #

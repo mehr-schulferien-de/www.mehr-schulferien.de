@@ -20,9 +20,7 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
         "Nein, #{humanized_date(date)} #{ist_in_time(date)} nicht schulfrei in #{location.name}."
 
       _ ->
-        "Ja, #{humanized_date(date)} #{ist_in_time(date)} schulfrei in #{location.name} (#{
-          reasons
-        })."
+        "Ja, #{humanized_date(date)} #{ist_in_time(date)} schulfrei in #{location.name} (#{reasons})."
     end
   end
 
@@ -37,14 +35,10 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
 
     case Enum.count(periods) do
       0 ->
-        "Nein, #{humanized_date(date)} #{ist_in_time(date)} kein gesetzlicher Feiertag in #{
-          location.name
-        }."
+        "Nein, #{humanized_date(date)} #{ist_in_time(date)} kein gesetzlicher Feiertag in #{location.name}."
 
       _ ->
-        "Ja, #{humanized_date(date)} #{ist_in_time(date)} ein gesetzlicher Feiertag in #{
-          location.name
-        } (#{reasons})."
+        "Ja, #{humanized_date(date)} #{ist_in_time(date)} ein gesetzlicher Feiertag in #{location.name} (#{reasons})."
     end
   end
 
@@ -103,14 +97,10 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
       distance_in_words =
         day_distance_in_words(Date.diff(period.starts_on, DateHelpers.today_berlin()))
 
-      "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{
-        location.name
-      }:
+      "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{location.name}:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
     else
-      "Aktuell sind #{period.holiday_or_vacation_type.colloquial} in #{location.name}: #{
-        ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)
-      }"
+      "Aktuell sind #{period.holiday_or_vacation_type.colloquial} in #{location.name}: #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
     end
   end
 

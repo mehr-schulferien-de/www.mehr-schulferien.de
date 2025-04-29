@@ -4,4 +4,4 @@ defmodule MehrSchulferien.Repo.Migrations.RemoveUsers do
   def change do
     drop table(:users)
   end
-end 
+end

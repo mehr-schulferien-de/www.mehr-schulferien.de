@@ -13,7 +13,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
       }) do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    holiday_or_vacation_type = Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
+
+    holiday_or_vacation_type =
+      Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
 
     today = DateHelpers.today_berlin()
     location_ids = [country.id, federal_state.id]

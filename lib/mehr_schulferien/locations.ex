@@ -116,7 +116,9 @@ defmodule MehrSchulferien.Locations do
   """
   def list_cities_of_federal_state(federal_state) do
     counties =
-      from(l in Location, where: l.is_county == true and l.parent_location_id == ^federal_state.id)
+      from(l in Location,
+        where: l.is_county == true and l.parent_location_id == ^federal_state.id
+      )
       |> Repo.all()
       |> Repo.preload([:periods])
 

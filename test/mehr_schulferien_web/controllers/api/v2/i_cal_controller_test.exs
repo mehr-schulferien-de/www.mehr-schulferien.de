@@ -8,12 +8,13 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
     holiday_type = insert(:holiday_or_vacation_type, %{name: "Test Holiday"})
 
     # Create periods with unique date ranges
-    periods = add_test_periods(%{
-      location: location,
-      start_date: ~D[2025-01-01],
-      end_date: ~D[2025-12-31],
-      holiday_type: holiday_type
-    })
+    periods =
+      add_test_periods(%{
+        location: location,
+        start_date: ~D[2025-01-01],
+        end_date: ~D[2025-12-31],
+        holiday_type: holiday_type
+      })
 
     {:ok, %{conn: conn, location: location, periods: periods, holiday_type: holiday_type}}
   end
@@ -30,7 +31,8 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
         is_school_vacation: true
       },
       %{
-        starts_on: Date.add(start_date, 30),  # Start a month later
+        # Start a month later
+        starts_on: Date.add(start_date, 30),
         ends_on: Date.add(start_date, 35),
         location_id: location.id,
         holiday_or_vacation_type_id: holiday_type.id,
@@ -38,7 +40,8 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
         is_school_vacation: true
       },
       %{
-        starts_on: Date.add(start_date, 60),  # Start two months later
+        # Start two months later
+        starts_on: Date.add(start_date, 60),
         ends_on: Date.add(start_date, 65),
         location_id: location.id,
         holiday_or_vacation_type_id: holiday_type.id,
@@ -51,12 +54,22 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
   end
 
   test "shows icalendar for school vacations for location", %{conn: conn, location: location} do
-    conn = get(conn, Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "school", year: "2025"))
+    conn =
+      get(
+        conn,
+        Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "school", year: "2025")
+      )
+
     assert response_content_type(conn, :ics)
   end
 
   test "shows icalendar for all holidays for location", %{conn: conn, location: location} do
-    conn = get(conn, Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "all", year: "2025"))
+    conn =
+      get(
+        conn,
+        Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "all", year: "2025")
+      )
+
     assert response_content_type(conn, :ics)
   end
 end

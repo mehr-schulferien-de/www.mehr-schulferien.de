@@ -19,9 +19,7 @@ defmodule MehrSchulferienWeb.Api.V2.VCardView do
       "EMAIL;INTERNET:#{location.address.email_address}",
       "URL:#{location.address.homepage_url}",
       "URL:https://www.mehr-schulferien.de/ferien/d/schule/#{location.slug}",
-      "ADR;TYPE=WORK:;;#{location.address.street};#{location.address.city};;#{
-        location.address.zip_code
-      };Deutschland",
+      "ADR;TYPE=WORK:;;#{location.address.street};#{location.address.city};;#{location.address.zip_code};Deutschland",
       "TEL;TYPE=WORK,VOICE:#{location.address.phone_number}",
       "TEL;TYPE=WORK,FAX:#{location.address.fax_number}",
       "NOTE:Importiert aus https://www.mehr-schulferien.de",

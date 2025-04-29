@@ -11,9 +11,7 @@ defmodule MehrSchulferienWeb.BridgeDayView do
     if first_month == last_month do
       months_map[first_month]
     else
-      "#{String.slice(months_map[first_month], 0, 3)}-#{
-        String.slice(months_map[last_month], 0, 3)
-      }"
+      "#{String.slice(months_map[first_month], 0, 3)}-#{String.slice(months_map[last_month], 0, 3)}"
     end
   end
 

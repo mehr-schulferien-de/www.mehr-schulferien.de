@@ -4,11 +4,7 @@ defmodule MehrSchulferienWeb.FederalStateView do
   alias MehrSchulferien.Calendars.DateHelpers
 
   def format_zip_codes(city) do
-    "#{
-      Enum.map(city.zip_codes, & &1.value)
-      |> Enum.sort()
-      |> MehrSchulferienWeb.ViewHelpers.comma_join_with_a_final_und()
-    }"
+    "#{Enum.map(city.zip_codes, & &1.value) |> Enum.sort() |> MehrSchulferienWeb.ViewHelpers.comma_join_with_a_final_und()}"
   end
 
   def get_vacation_type_days([period]), do: get_period_days(period)
