@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Use `mise` and not `asdf` to setup the used versions of Elixir, Erlang and other software which can be configured with `mise`.

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+After each code change run `mix test` and fix all the occoring problems. Run the tests so long until there are no problems.
