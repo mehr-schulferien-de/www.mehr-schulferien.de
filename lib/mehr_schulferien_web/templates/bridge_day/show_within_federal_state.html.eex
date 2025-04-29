@@ -83,7 +83,7 @@ end) %>
   <% end %>
 <% end %>
 
-<%= if @bridge_day_map[2] != nil do %>
+<%= if @bridge_day_map[2] && Enum.count(@bridge_day_map[2]) > 0 do %>
 <h2>Brückentag-FAQ</h2>
 
 <dl class="row">
@@ -91,6 +91,20 @@ end) %>
   <dd class="col-sm-7">
     In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage" %>.
     Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>.
+  </dd>
+
+  <dt class="col-sm-5">Was ist der beste Brückentag <%= @year %> in <%= @federal_state.name %>?</dt>
+  <dd class="col-sm-7">
+    <% best_bridge_day = Enum.flat_map(@bridge_day_map, fn {_k, v} -> v || [] end)
+      |> Enum.max_by(fn bd ->
+        periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bd)
+        max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods)
+        round((max_days - bd.number_days) / bd.number_days * 100)
+      end) %>
+    <% periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, best_bridge_day) %>
+    <% max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods) %>
+    <% percentage = round((max_days - best_bridge_day.number_days) / best_bridge_day.number_days * 100) %>
+    Der beste Brückentag ist <%= ViewHelpers.format_date_range(best_bridge_day.starts_on, best_bridge_day.ends_on) %>. Mit nur <%= best_bridge_day.number_days %> Urlaubstag(en) können Sie <%= max_days %> Tage frei machen - das sind <%= percentage %>% mehr Urlaub!
   </dd>
 </dl>
 
@@ -104,6 +118,14 @@ end) %>
     "acceptedAnswer": {
       "@type": "Answer",
       "text": "In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage" %>. Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>."
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Was ist der beste Brückentag <%= @year %> in <%= @federal_state.name %>?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Der beste Brückentag ist <%= ViewHelpers.format_date_range(best_bridge_day.starts_on, best_bridge_day.ends_on) %>. Mit nur <%= best_bridge_day.number_days %> Urlaubstag(en) können Sie <%= max_days %> Tage frei machen - das sind <%= percentage %>% mehr Urlaub!"
     }
   }
   ]
