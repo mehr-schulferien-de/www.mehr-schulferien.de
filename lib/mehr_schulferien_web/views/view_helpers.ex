@@ -85,10 +85,6 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     end
   end
 
-  defp add_padding(entry) do
-    entry |> Integer.to_string() |> String.pad_leading(2, "0")
-  end
-
   @doc """
   Returns the year based on the `starts_on` value in the first non-empty period.
   """

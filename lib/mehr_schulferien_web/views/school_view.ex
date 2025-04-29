@@ -8,25 +8,17 @@ defmodule MehrSchulferienWeb.SchoolView do
       |> String.replace("www.", "")
 
     if String.length(short_url) > 28 do
-      ~E"""
-      <a href="<%= url %>"><%= snip(short_url) %></a>
-      """
+      {:safe, ["<a href=\"", url, "\">", snip(short_url), "</a>\n"]}
     else
-      ~E"""
-      <a href="<%= url %>"><%= short_url %></a>
-      """
+      {:safe, ["<a href=\"", url, "\">", short_url, "</a>\n"]}
     end
   end
 
   def truncate_email(email) do
     if String.length(email) > 28 do
-      ~E"""
-      <a href="mailto:<%= email %>"><%= snip(email) %></a>
-      """
+      {:safe, ["<a href=\"mailto:", email, "\">", snip(email), "</a>\n"]}
     else
-      ~E"""
-      <a href="mailto:<%= email %>"><%= email %></a>
-      """
+      {:safe, ["<a href=\"mailto:", email, "\">", email, "</a>\n"]}
     end
   end
 
