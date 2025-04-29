@@ -5,11 +5,14 @@ defmodule MehrSchulferienWeb.ErrorViewTest do
   import Phoenix.View
 
   test "renders 404.html" do
-    assert render_to_string(MehrSchulferienWeb.ErrorView, "404.html", []) == "Not Found"
+    html = render_to_string(MehrSchulferienWeb.ErrorView, "404.html", [])
+    assert html =~ "404"
+    assert html =~ "Not Found"
+    assert html =~ "Die angeforderte Seite wurde nicht gefunden"
   end
 
   test "renders 500.html" do
-    assert render_to_string(MehrSchulferienWeb.ErrorView, "500.html", []) ==
-             "Internal Server Error"
+    html = render_to_string(MehrSchulferienWeb.ErrorView, "500.html", [])
+    assert html == "Internal Server Error"
   end
 end

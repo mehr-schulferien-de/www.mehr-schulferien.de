@@ -4,60 +4,154 @@
 <% first_day = hd(@all_periods).starts_on %>
 <% last_day = List.last(@all_periods).ends_on %>
 
-<div class="col-sm-4">
-  <div class='panel panel-default'>
+<article class="col-xs-12 col-sm-6 col-md-4" itemscope itemtype="https://schema.org/Event">
+  <div class='panel panel-default bridge-day-panel'>
     <div class="panel-body">
-      <h3>
-        <%= MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day) %> <div class="pull-right text-muted"> <%= @year %></div>
-      </h3>
-      <table class="table table-condensed">
-        <thead>
-          <tr>
-            <th>Mo.</th>
-            <th>Di.</th>
-            <th>Mi.</th>
-            <th>Do.</th>
-            <th>Fr.</th>
-            <th class="active">Sa.</th>
-            <th class="active">So.</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <% panel_first_day = Date.add(first_day, 1 - Date.day_of_week(first_day)) %>
-            <% panel_last_day = Date.add(last_day, 7 - Date.day_of_week(last_day)) %>
-            <% days = MehrSchulferien.Calendars.DateHelpers.create_days(panel_first_day, Date.diff(panel_last_day, panel_first_day) + 1) %>
-            <%= for day <- days do %>
-              <% day_of_week = Date.day_of_week(day) %>
-              <%= if day_of_week == 1 do %>
-                </tr>
-                <tr>
+      <header>
+        <h3 class="bridge-day-header" itemprop="name">
+          <%= MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day) %> 
+          <small class="text-muted"><%= @year %></small>
+        </h3>
+      </header>
+      
+      <!-- Mobile-friendly date range display -->
+      <div class="visible-xs">
+        <div class="date-range-mobile">
+          <time datetime="<%= first_day %>" itemprop="startDate">
+            <strong><%= ViewHelpers.format_date(first_day) %></strong>
+          </time> bis 
+          <time datetime="<%= last_day %>" itemprop="endDate">
+            <strong><%= ViewHelpers.format_date(last_day) %></strong>
+          </time>
+        </div>
+      </div>
+      
+      <!-- Desktop calendar view -->
+      <div class="hidden-xs">
+        <table class="table table-condensed" role="presentation">
+          <thead>
+            <tr>
+              <th scope="col">Mo</th>
+              <th scope="col">Di</th>
+              <th scope="col">Mi</th>
+              <th scope="col">Do</th>
+              <th scope="col">Fr</th>
+              <th scope="col" class="active">Sa</th>
+              <th scope="col" class="active">So</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <% panel_first_day = Date.add(first_day, 1 - Date.day_of_week(first_day)) %>
+              <% panel_last_day = Date.add(last_day, 7 - Date.day_of_week(last_day)) %>
+              <% days = MehrSchulferien.Calendars.DateHelpers.create_days(panel_first_day, Date.diff(panel_last_day, panel_first_day) + 1) %>
+              <%= for day <- days do %>
+                <% day_of_week = Date.day_of_week(day) %>
+                <%= if day_of_week == 1 do %>
+                  </tr>
+                  <tr>
+                <% end %>
+                <td class="text-right <%= ViewHelpers.get_html_class(day, @all_periods) %>">
+                  <time datetime="<%= day %>"><%= day.day %></time>
+                </td>
               <% end %>
-              <td class="text-right <%= ViewHelpers.get_html_class(day, @all_periods) %>"><%= day.day %></td>
-            <% end %>
-          </tr>
-        </tbody>
-      </table>
-      <table>
-        <tbody>
-          <tr>
-            <td class="text-right"><%= if bridge_days_number == 1 do %>Beantragter Urlaubstag:<% else %>Beantragte Urlaubstage:<% end %></td>
-            <td class="text-right"><%= bridge_days_number %></td>
-          </tr>
-          <tr>
-            <td class="text-right">Feiertag + Wochenende:</td>
-            <td class="text-right">+ <%= number_public_holidays_and_weekend_days %></td>
-          </tr>
-          <tr>
-            <td class="text-right"><strong>Summe der freien Tage:</strong></td>
-            <td class="text-right"><strong><%= max_days %></strong></td>
-          </tr>
-        </tbody>
-      </table>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
+      <!-- Vacation summary -->
+      <div class="vacation-summary">
+        <div class="row">
+          <div class="col-xs-6">
+            <div class="vacation-days" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+              <span class="days-number" itemprop="price"><%= bridge_days_number %></span>
+              <span class="days-label" itemprop="description"><%= if bridge_days_number == 1 do %>Urlaubstag<% else %>Urlaubstage<% end %></span>
+            </div>
+          </div>
+          <div class="col-xs-6">
+            <div class="total-days">
+              <span class="days-number"><%= max_days %></span>
+              <span class="days-label">freie Tage</span>
+            </div>
+          </div>
+        </div>
+        <div class="days-details">
+          <small class="text-muted">
+            + <%= number_public_holidays_and_weekend_days %> Tage Feiertag & Wochenende
+          </small>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</article>
+
+<style>
+.bridge-day-panel {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bridge-day-header {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.date-range-mobile {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.vacation-summary {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.vacation-days, .total-days {
+  text-align: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.days-number {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.days-label {
+  display: block;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.days-details {
+  text-align: center;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .bridge-day-panel {
+    margin-bottom: 15px;
+  }
+  
+  .vacation-days, .total-days {
+    padding: 8px;
+  }
+  
+  .days-number {
+    font-size: 20px;
+  }
+}
+</style>
 
 <script type="application/ld+json">
   {
@@ -77,6 +171,12 @@
         "addressRegion": "<%= @federal_state.name %>",
         "addressCountry": "<%= @country.code %>"
       }
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "<%= bridge_days_number %>",
+      "priceCurrency": "DAYS",
+      "description": "<%= if bridge_days_number == 1 do %>Urlaubstag<% else %>Urlaubstage<% end %>"
     }
   }
 </script>

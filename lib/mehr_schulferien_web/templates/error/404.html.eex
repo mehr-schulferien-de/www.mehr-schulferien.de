@@ -1,0 +1,9 @@
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>404 - Not Found</h1>
+      <p>Die angeforderte Seite wurde nicht gefunden.</p>
+      <p><a href="/">Zurück zur Startseite</a></p>
+    </div>
+  </div>
+</div> 

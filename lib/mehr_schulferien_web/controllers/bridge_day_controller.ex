@@ -30,17 +30,25 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    year = check_year!(year)
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    {:ok, start_date} = Date.new(year, 1, 1)
-    {:ok, end_date} = Date.new(year, 12, 31)
+    with {:ok, year} <- check_year(year),
+         country <- Locations.get_country_by_slug!(country_slug),
+         federal_state <- Locations.get_federal_state_by_slug!(federal_state_slug, country),
+         {:ok, start_date} <- Date.new(year, 1, 1),
+         {:ok, end_date} <- Date.new(year, 12, 31) do
+      assigns =
+        [country: country, federal_state: federal_state, year: year] ++
+          list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
 
-    assigns =
-      [country: country, federal_state: federal_state, year: year] ++
-        list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
+      render(conn, "show_within_federal_state.html", assigns)
+    else
+      {:error, :invalid_year} ->
+        conn = Plug.Conn.put_status(conn, :not_found)
+        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
 
-    render(conn, "show_within_federal_state.html", assigns)
+      _ ->
+        conn = Plug.Conn.put_status(conn, :not_found)
+        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+    end
   end
 
   defp list_bridge_day_data(location_ids, start_date, end_date) do
@@ -63,15 +71,20 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     ]
   end
 
-  defp check_year!(year) do
-    year = String.to_integer(year)
-    today = DateHelpers.today_berlin()
-    current_year = today.year
+  defp check_year(year) do
+    case Integer.parse(year) do
+      {year, ""} ->
+        today = DateHelpers.today_berlin()
+        current_year = today.year
 
-    if year in [current_year, current_year + 1, current_year + 2] do
-      year
-    else
-      raise MehrSchulferien.InvalidYearError
+        if year in [current_year, current_year + 1, current_year + 2] do
+          {:ok, year}
+        else
+          {:error, :invalid_year}
+        end
+
+      _ ->
+        {:error, :invalid_year}
     end
   end
 

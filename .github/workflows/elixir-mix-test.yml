@@ -54,6 +54,18 @@ jobs:
           MIX_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
+      - name: Install Chrome
+        run: sudo apt-get update && sudo apt-get install -y chromium-browser
+
+      - name: Install Chromedriver
+        run: sudo apt-get install -y chromium-chromedriver
+
+      - name: Symlink chromedriver (if needed)
+        run: |
+          if [ ! -e /usr/bin/chromedriver ]; then
+            sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+          fi
+
       - name: Run tests
         run: |
           mix compile --warnings-as-errors
@@ -62,3 +74,4 @@ jobs:
         env:
           MIX_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          WALLABY_DRIVER: chrome

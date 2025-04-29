@@ -60,7 +60,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       today = DateHelpers.today_berlin()
       invalid_year = today.year + 3
 
-      assert_error_sent 404, fn ->
+      conn =
         get(
           conn,
           Routes.bridge_day_path(
@@ -71,7 +71,8 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
             invalid_year
           )
         )
-      end
+
+      assert conn.status == 404
     end
   end
 

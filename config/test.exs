@@ -19,10 +19,25 @@ config :mehr_schulferien, MehrSchulferien.Repo,
 # you can enable the server option below.
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  server: false
+  secret_key_base: "Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+",
+  server: true
 
 # Print only warnings and errors during test
 config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Configure Wallaby
+config :wallaby,
+  driver: Wallaby.Chrome,
+  chrome: [
+    headless: true,
+    binary: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  ],
+  chromedriver: [
+    path: "/opt/homebrew/bin/chromedriver",
+    version: "ignore"
+  ],
+  screenshot_on_failure: true,
+  screenshot_dir: "test/screenshots"
