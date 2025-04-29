@@ -1,6 +1,6 @@
 <% max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(@all_periods) %>
 <% bridge_days_number = @bridge_day.number_days %>
-<% number_public_holidays_and_weekend_days = max_days - bridge_days_number %>
+<% _number_public_holidays_and_weekend_days = max_days - bridge_days_number %>
 <% first_day = hd(@all_periods).starts_on %>
 <% last_day = List.last(@all_periods).ends_on %>
 
@@ -51,7 +51,7 @@
                   </tr>
                   <tr>
                 <% end %>
-                <td class="text-right <%= ViewHelpers.get_html_class(day, @all_periods) %>">
+                <td class="text-right <%= ViewHelpers.get_html_class(day, @all_periods) %><%= if Enum.any?(@all_periods, fn p -> Date.compare(day, p.starts_on) != :lt and Date.compare(day, p.ends_on) != :gt end), do: " bridge-free-day", else: "" %>">
                   <time datetime="<%= day %>"><%= day.day %></time>
                 </td>
               <% end %>
@@ -61,25 +61,22 @@
       </div>
 
       <!-- Vacation summary -->
-      <div class="vacation-summary">
-        <div class="row">
-          <div class="col-xs-6">
-            <div class="vacation-days" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-              <span class="days-number" itemprop="price"><%= bridge_days_number %></span>
-              <span class="days-label" itemprop="description"><%= if bridge_days_number == 1 do %>Urlaubstag<% else %>Urlaubstage<% end %></span>
-            </div>
-          </div>
-          <div class="col-xs-6">
-            <div class="total-days">
-              <span class="days-number"><%= max_days %></span>
-              <span class="days-label">freie Tage</span>
-            </div>
-          </div>
+      <div class="vacation-joy-card">
+        <div class="deal-grid">
+          <span class="icon" style="grid-column: 1;">🧳</span>
+          <span></span>
+          <span class="icon" style="grid-column: 3;">🎉</span>
+          <span class="days-number urlaub" style="grid-column: 1;" itemprop="price"><%= bridge_days_number %></span>
+          <span class="arrow" style="grid-column: 2;">➔</span>
+          <span class="days-number frei" style="grid-column: 3;"><%= max_days %></span>
         </div>
-        <div class="days-details">
-          <small class="text-muted">
-            + <%= number_public_holidays_and_weekend_days %> Tage Feiertag & Wochenende
-          </small>
+        <div class="deal-labels">
+          <span class="days-label" style="grid-column: 1;" itemprop="description"><%= if bridge_days_number == 1 do %>Urlaubstag<% else %>Urlaubstage<% end %></span>
+          <span></span>
+          <span class="days-label" style="grid-column: 3;">freie Tage</span>
+        </div>
+        <div class="joyful-text">
+          Wow! Mit nur <b><%= bridge_days_number %> <%= if bridge_days_number == 1, do: "Urlaubstag", else: "Urlaubstagen" %></b> bekommst du <b><%= max_days %> <%= if max_days == 1, do: "freien Tag", else: "freie Tage" %></b>! Super gemacht! 😎
         </div>
       </div>
     </div>
@@ -107,48 +104,107 @@
   text-align: center;
 }
 
-.vacation-summary {
+.vacation-joy-card {
+  font-family: 'Quicksand', 'Nunito', Arial, sans-serif;
+  background: #FFF9E1;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  padding: 1.2rem 1rem 1rem 1rem;
   margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
-}
-
-.vacation-days, .total-days {
+  margin-bottom: 0.5em;
+  position: relative;
   text-align: center;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
 }
-
+.deal-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  justify-items: center;
+  margin-bottom: 0.2em;
+}
+.deal-grid .arrow {
+  font-size: 2em;
+  color: #B8860B;
+  margin: 0 0.5em;
+}
+.deal-labels {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  justify-items: center;
+  margin-bottom: 1em;
+}
+.deal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 1em;
+}
+.icon {
+  font-size: 2em;
+  margin-bottom: 0.2em;
+}
 .days-number {
-  display: block;
-  font-size: 24px;
+  font-size: 2.5em;
   font-weight: bold;
-  color: #2c3e50;
+  margin-bottom: 0.1em;
+  text-shadow: 0 2px 8px #fffbe7;
 }
-
+.urlaub {
+  color: #B8860B;
+  text-shadow: 0 2px 8px #fffbe7;
+}
+.frei {
+  color: #007E33;
+  text-shadow: 0 2px 8px #d0f5e8;
+}
 .days-label {
-  display: block;
-  font-size: 12px;
-  color: #6c757d;
+  font-size: 1em;
+  color: #333;
 }
-
+.arrow {
+  font-size: 2em;
+  color: #B8860B;
+  margin: 0 0.5em;
+  position: relative;
+  top: 0.12em;
+}
+.joyful-text {
+  font-size: 1.1em;
+  color: #B8860B;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
 .days-details {
-  text-align: center;
-  margin-top: 10px;
+  color: #555;
+  font-size: 0.95em;
+  margin-top: 0.5em;
 }
-
+.bridge-free-day {
+  border-bottom: 4px solid #007E33 !important;
+}
 @media (max-width: 768px) {
   .bridge-day-panel {
     margin-bottom: 15px;
   }
-  
-  .vacation-days, .total-days {
-    padding: 8px;
+  .vacation-joy-card {
+    padding: 0.8rem 0.5rem 0.8rem 0.5rem;
   }
-  
+  .deal-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .deal-grid .arrow {
+    grid-column: 1 / span 2;
+  }
+  .deal-labels {
+    grid-template-columns: 1fr 1fr;
+  }
+  .icon {
+    font-size: 1.5em;
+  }
   .days-number {
-    font-size: 20px;
+    font-size: 2em;
   }
 }
 </style>
