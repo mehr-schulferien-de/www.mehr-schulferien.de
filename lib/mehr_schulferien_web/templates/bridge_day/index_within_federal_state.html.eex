@@ -25,7 +25,9 @@
     <p>Optimale Brückentage pro Jahr aufgelistet:</p>
     <ul>
       <%= for year <- @current_year..@current_year + 2 do %>
-        <li><%= link year, to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year) %></li>
+        <%= if MehrSchulferienWeb.BridgeDayController.has_bridge_days?([@country.id, @federal_state.id], year) do %>
+          <li><%= link year, to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year) %></li>
+        <% end %>
       <% end %>
     </ul>
   </div>
