@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.PageController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferienWeb.BridgeDayController
 
   def index(conn, %{"number_of_days" => number_of_days}) do
     today = DateHelpers.today_berlin()
@@ -11,6 +12,26 @@ defmodule MehrSchulferienWeb.PageController do
     day_names = DateHelpers.short_days_map()
     months = DateHelpers.get_months_map()
     countries = Enum.map(Locations.list_countries(), &build_country_periods(&1, today, ends_on))
+
+    # Add bridge day information for each federal state
+    countries =
+      Enum.map(countries, fn country ->
+        federal_states =
+          Enum.map(country[:federal_states], fn federal_state ->
+            # Get years with valid bridge days
+            years_with_bridge_days =
+              Enum.filter(current_year..(current_year + 2), fn year ->
+                BridgeDayController.has_bridge_days?(
+                  [country[:country].id, federal_state.id],
+                  year
+                )
+              end)
+
+            Map.put(federal_state, :years_with_bridge_days, years_with_bridge_days)
+          end)
+
+        Map.put(country, :federal_states, federal_states)
+      end)
 
     render(conn, "index.html",
       countries: countries,

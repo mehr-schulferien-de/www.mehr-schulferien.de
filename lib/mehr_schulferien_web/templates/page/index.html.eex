@@ -24,7 +24,13 @@
       <thead>
         <tr>
           <th>Bundesland</th>
-          <th colspan="3">Jahr</th>
+          <%= if Enum.any?(@countries, fn country -> 
+               Enum.any?(country[:federal_states], fn federal_state -> 
+                 length(federal_state.years_with_bridge_days) > 0 
+               end)
+             end) do %>
+            <th colspan="<%= length(@countries |> hd() |> get_in([:federal_states]) |> hd() |> Map.get(:years_with_bridge_days)) %>">Jahr</th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
@@ -34,8 +40,10 @@
           <%= for federal_state <- federal_states do %>
             <tr>
               <td><%= federal_state.name %></td>
-              <%= for year <- @current_year..@current_year + 2 do %>
-                <td><%= link year, to: Routes.bridge_day_path(@conn, :show_within_federal_state, country.slug, federal_state.slug, year) %></td>
+              <%= if length(federal_state.years_with_bridge_days) > 0 do %>
+                <%= for year <- federal_state.years_with_bridge_days do %>
+                  <td><%= link year, to: Routes.bridge_day_path(@conn, :show_within_federal_state, country.slug, federal_state.slug, year) %></td>
+                <% end %>
               <% end %>
             </tr>
           <% end %>

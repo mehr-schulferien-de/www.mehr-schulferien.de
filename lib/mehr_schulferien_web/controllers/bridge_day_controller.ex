@@ -74,4 +74,15 @@ defmodule MehrSchulferienWeb.BridgeDayController do
       raise MehrSchulferien.InvalidYearError
     end
   end
+
+  def has_bridge_days?(location_ids, year) do
+    {:ok, start_date} = Date.new(year, 1, 1)
+    {:ok, end_date} = Date.new(year, 12, 31)
+    public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
+    bridge_day_map = Periods.group_by_interval(public_periods)
+
+    Enum.any?(2..5, fn num ->
+      if bridge_day_map[num], do: Enum.count(bridge_day_map[num]) > 0, else: false
+    end)
+  end
 end
