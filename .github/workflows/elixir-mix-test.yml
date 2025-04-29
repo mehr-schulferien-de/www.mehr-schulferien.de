@@ -60,10 +60,20 @@ jobs:
       - name: Install Chromedriver
         run: sudo apt-get install -y chromium-chromedriver
 
+      - name: Print Chrome and Chromedriver versions and paths
+        run: |
+          which chromium-browser || true
+          chromium-browser --version || true
+          which chromedriver || true
+          chromedriver --version || true
+
       - name: Symlink chromedriver (if needed)
         run: |
           if [ ! -e /usr/bin/chromedriver ]; then
             sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+          fi
+          if [ ! -e /usr/bin/chromium ]; then
+            sudo ln -s /usr/bin/chromium-browser /usr/bin/chromium
           fi
 
       - name: Run tests
