@@ -8,11 +8,6 @@ defmodule MehrSchulferienWeb.BridgeDaySystemTest do
   @future_year @current_year + 1
   @past_year @current_year - 100
 
-  setup do
-    Ecto.Adapters.SQL.Sandbox.checkout(MehrSchulferien.Repo)
-    :ok
-  end
-
   feature "view bridge days for a federal state with data", %{session: session} do
     country = insert(:country, %{code: "DE", name: "Deutschland", slug: "d"})
 
