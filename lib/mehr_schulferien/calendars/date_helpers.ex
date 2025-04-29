@@ -62,7 +62,7 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
       if month <= 12 do
         get_days_in_month(year, month)
       else
-        Logger.warn(fn ->
+        Logger.warning(fn ->
           "#################### Huh? Month #{inspect(month)} out of range 1-12 for create_month( #{
             inspect(year)
           }, #{inspect(month)} ). Running get_days_in_month( #{inspect(year + 1)}, #{
@@ -74,7 +74,7 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
       end
 
     if !days_in_month do
-      Logger.warn(fn ->
+      Logger.warning(fn ->
         "#################### Huh? No days in month #{inspect(month)}/#{inspect(year)}"
       end)
     end
