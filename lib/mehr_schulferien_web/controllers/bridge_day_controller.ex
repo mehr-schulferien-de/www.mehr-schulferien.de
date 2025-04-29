@@ -7,22 +7,21 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug
       }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
     today = DateHelpers.today_berlin()
     current_year = today.year
-    {:ok, last_day} = Date.new(current_year, 12, 31)
 
-    assigns =
-      [
-        country: country,
-        current_year: current_year,
-        federal_state: federal_state,
-        last_day: last_day,
-        today: today
-      ] ++ list_bridge_day_data([country.id, federal_state.id], today, last_day)
-
-    render(conn, "index_within_federal_state.html", assigns)
+    conn
+    |> put_status(:moved_permanently)
+    |> redirect(
+      to:
+        Routes.bridge_day_path(
+          conn,
+          :show_within_federal_state,
+          country_slug,
+          federal_state_slug,
+          current_year
+        )
+    )
   end
 
   def show_within_federal_state(conn, %{

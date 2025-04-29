@@ -1,5 +1,6 @@
 defmodule MehrSchulferienWeb.BridgeDayControllerTest do
   use MehrSchulferienWeb.ConnCase
+  import Phoenix.ConnTest
 
   alias MehrSchulferien.Calendars.DateHelpers
 
@@ -26,7 +27,10 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
           )
         )
 
-      assert html_response(conn, 200) =~ "Brückentage #{federal_state.name}"
+      assert conn.status in [301, 302]
+
+      assert get_resp_header(conn, "location") |> Enum.at(0) =~
+               "/brueckentage/d/bundesland/#{federal_state.slug}"
     end
 
     test "shows certain year for bridge days", %{

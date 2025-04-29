@@ -37,7 +37,7 @@
 <div class="row">
   <div class="col-md-12">
     <h2>
-      Die <%= if @bridge_day_proposal_count > 1 do %><%= @bridge_day_proposal_count %> <% end %>besten Brückentage für das restliche Jahr (<%= @current_year %>)
+      Die <%= if @bridge_day_proposal_count > 1 do %><%= @bridge_day_proposal_count %> <% end %>besten Brückentage für das Jahr (<%= @current_year %>)
     </h2>
     <p>Wir finden mit unserem Spezialalgorithmus nicht nur die normalen Brückentage (meistens ein Freitag),
     sondern auch Konstellationen, in denen zwei oder mehr Tage zwischen einem Feiertag und einem Wochenende liegen.
