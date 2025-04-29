@@ -7,7 +7,6 @@ defmodule MehrSchulferienWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug Phauxth.Authenticate
   end
 
   pipeline :api do
@@ -24,14 +23,6 @@ defmodule MehrSchulferienWeb.Router do
     get "/impressum", PageController, :impressum
 
     get "/sitemap.xml", SitemapController, :index
-
-    # Authentication
-    resources "/users", UserController, except: [:index]
-    resources "/sessions", SessionController, only: [:new, :create, :delete]
-    get "/confirms", ConfirmController, :index
-    resources "/password_resets", PasswordResetController, only: [:new, :create]
-    get "/password_resets/edit", PasswordResetController, :edit
-    put "/password_resets/update", PasswordResetController, :update
 
     # Old routes
     get "/cities/:city_slug/:from/:till", OldRoutes.CityController, :show

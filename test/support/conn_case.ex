@@ -23,7 +23,6 @@ defmodule MehrSchulferienWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import MehrSchulferien.Factory
-      import MehrSchulferienWeb.AuthTestHelpers
       alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing

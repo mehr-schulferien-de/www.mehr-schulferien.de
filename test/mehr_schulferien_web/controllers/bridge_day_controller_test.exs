@@ -4,7 +4,6 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
   alias MehrSchulferien.Calendars.DateHelpers
 
   setup %{conn: conn} do
-    conn = conn |> bypass_through(MehrSchulferienWeb.Router, [:browser]) |> get("/users/new")
     {:ok, %{conn: conn}}
   end
 

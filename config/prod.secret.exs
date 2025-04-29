@@ -36,16 +36,3 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
-
-# Bamboo Email
-config :mehr_schulferien, MehrSchulferienWeb.Mailer,
-  adapter: Bamboo.SMTPAdapter,
-  server: "127.0.0.1",
-  port: 25,
-  username: "",
-  password: "",
-  # can be `:always` or `:never`
-  tls: :if_available,
-  # can be `true`
-  ssl: false,
-  retries: 3
