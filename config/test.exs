@@ -33,10 +33,9 @@ config :wallaby,
   driver: Wallaby.Chrome,
   chrome: [
     headless: true,
-    binary: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    binary: System.get_env("WALLABY_CHROME_BINARY", "/usr/bin/chromium-browser")
   ],
   chromedriver: [
-    path: "/opt/homebrew/bin/chromedriver",
     version: "ignore"
   ],
   screenshot_on_failure: true,

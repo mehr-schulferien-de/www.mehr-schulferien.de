@@ -75,3 +75,4 @@ jobs:
           MIX_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           WALLABY_DRIVER: chrome
+          WALLABY_CHROME_BINARY: /usr/bin/chromium-browser
