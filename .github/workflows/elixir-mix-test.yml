@@ -46,6 +46,14 @@ jobs:
           mix deps.get
           yarn --cwd assets install
 
+      - name: Setup database
+        run: |
+          mix ecto.create
+          mix ecto.migrate
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+
       - name: Run tests
         run: |
           mix compile --warnings-as-errors
@@ -53,3 +61,4 @@ jobs:
           mix test
         env:
           MIX_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
