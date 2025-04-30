@@ -31,12 +31,6 @@
         <priority>0.6</priority>
       </url>
       <url>
-        <loc><%= Routes.federal_state_url(@conn, :show, country.slug, federal_state.slug) %>/schulbeginn</loc>
-        <changefreq>daily</changefreq>
-        <lastmod><%= @today %></lastmod>
-        <priority>0.5</priority>
-      </url>
-      <url>
         <loc><%= Routes.bridge_day_url(@conn, :index_within_federal_state, country.slug, federal_state.slug) %></loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>

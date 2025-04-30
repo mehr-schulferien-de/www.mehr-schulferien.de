@@ -157,10 +157,6 @@
     </dd>
   </dl>
 
-  <%= if Enum.count(@todays_school_free_periods) > 0 do %>
-    <h3>Schulbeginn</h3>
-    <p><%= link "Wann fängt die Schule wieder an FAQ?", to: Routes.federal_state_path(@conn, :schulbeginn, @country.slug, @federal_state.slug) %></p>
-  <% end %>
   </div>
 </div>
 

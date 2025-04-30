@@ -52,19 +52,4 @@
     </table>
 
   </div>
-  <div class="col-md-6">
-    <h2>Schulbeginn/Schulanfang</h2>
-    <p>2020 (zur Corona-Krise) stiegen die Suchanfragen rund um das Thema Schulanfang stark an.
-    Da jedes Bundesland andere Ferientermine hat, beantworten wir Fragen rund um dieses Thema auf
-    spezielen FAQ-Seiten:</p>
-    <%= for place <- @countries do %>
-      <% country = place[:country] %>
-      <% federal_states = place[:federal_states] %>
-      <ul>
-      <%= for federal_state <- federal_states do %>
-        <li><%= link "Schulbeginn/Schulanfang #{federal_state.name}", to: Routes.federal_state_path(@conn, :schulbeginn, country.slug, federal_state.slug) %></li>
-      <% end %>
-      </ul>
-    <% end %>
-  </div>
 </div>

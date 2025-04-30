@@ -63,30 +63,6 @@ defmodule MehrSchulferienWeb.FederalStateController do
     render(conn, "show.html", assigns)
   end
 
-  def schulbeginn(conn, %{
-        "country_slug" => country_slug,
-        "federal_state_slug" => federal_state_slug
-      }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    location_ids = [country.id, federal_state.id]
-    today = DateHelpers.today_berlin()
-
-    three_month_days =
-      for month <- 0..2, do: DateHelpers.create_month(today.year, today.month + month)
-
-    assigns =
-      [
-        country: country,
-        federal_state: federal_state,
-        three_month_days: three_month_days,
-        today: today
-      ] ++
-        CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
-
-    render(conn, "schulbeginn.html", assigns)
-  end
-
   def county_show(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug
