@@ -27,18 +27,3 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
-
-# Configure Wallaby
-config :wallaby,
-  driver: Wallaby.Chrome,
-  chrome: [
-    headless: true,
-    binary: System.get_env("WALLABY_CHROME_BINARY", "/usr/bin/chromium-browser")
-  ],
-  chromedriver: [
-    path: "/usr/bin/chromedriver",
-    version: "ignore"
-  ],
-  screenshot_on_failure: false,
-  screenshot_dir: "test/screenshots",
-  max_wait_time: 5000

@@ -54,33 +54,6 @@ jobs:
           MIX_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
 
-      - name: Install Chrome
-        run: sudo apt-get update && sudo apt-get install -y chromium-browser
-
-      - name: Install Chromedriver
-        run: sudo apt-get install -y chromium-chromedriver
-
-      - name: Print Chrome and Chromedriver versions and paths
-        run: |
-          which chromium-browser || true
-          chromium-browser --version || true
-          which chromedriver || true
-          chromedriver --version || true
-
-      - name: Symlink chromedriver (if needed)
-        run: |
-          if [ ! -e /usr/bin/chromedriver ]; then
-            sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
-          fi
-          if [ ! -e /usr/bin/chromium ]; then
-            sudo ln -s /usr/bin/chromium-browser /usr/bin/chromium
-          fi
-
-      - name: Start ChromeDriver
-        run: |
-          chromedriver --port=9515 --url-base=wd/hub &
-          sleep 5
-
       - name: Run tests
         run: |
           mix compile --warnings-as-errors
@@ -89,7 +62,3 @@ jobs:
         env:
           MIX_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-          WALLABY_DRIVER: chrome
-          WALLABY_CHROME_BINARY: /usr/bin/chromium-browser
-          WALLABY_BASE_URL: http://localhost:4002
-          WEBDRIVER_URL: http://localhost:9515/wd/hub

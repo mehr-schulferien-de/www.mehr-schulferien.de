@@ -54,7 +54,6 @@ defmodule MehrSchulferien.MixProject do
       {:ecto_autoslug_field, "~> 3.0"},
       {:icalendar, "~> 1.1"},
       {:slugger, "~> 0.3"},
-      {:wallaby, "~> 0.30.10", runtime: false, only: :test},
       {:tidewave, "~> 0.1"}
     ]
   end
