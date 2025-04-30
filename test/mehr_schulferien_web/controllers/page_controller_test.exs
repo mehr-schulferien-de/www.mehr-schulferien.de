@@ -3,18 +3,38 @@ defmodule MehrSchulferienWeb.PageControllerTest do
 
   setup %{conn: conn} do
     country = insert(:country, %{slug: "d"})
-    federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
-
-    holiday_or_vacation_type =
-      insert(:holiday_or_vacation_type, %{country_location_id: country.id})
-
-    for federal_state <- federal_states do
-      MehrSchulferien.Periods.create_period(%{
-        holiday_or_vacation_type_id: holiday_or_vacation_type.id,
-        location_id: federal_state.id
-      })
-    end
-
+    # Insert NRW as required for the teaser
+    nrw = insert(:federal_state, %{slug: "nordrhein-westfalen", parent_location_id: country.id})
+    # Insert a holiday_or_vacation_type and a period for the current year
+    holiday_or_vacation_type = insert(:holiday_or_vacation_type, %{country_location_id: country.id})
+    year = Date.utc_today().year
+    # Insert a period that covers a bridge day in the current year (Thursday)
+    start_date = Date.new!(year, 5, 1) # May 1st, 2025 is a Thursday
+    end_date = start_date
+    # Insert a period before the public holiday to create a bridge day
+    insert(:period, %{
+      holiday_or_vacation_type: nil,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+      location_id: nrw.id,
+      starts_on: Date.new!(year, 4, 30),
+      ends_on: Date.new!(year, 4, 30),
+      is_public_holiday: false,
+      is_valid_for_everybody: true,
+      created_by_email_address: "test@example.com",
+      display_priority: 3
+    })
+    # Insert the public holiday period
+    insert(:period, %{
+      holiday_or_vacation_type: nil,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+      location_id: nrw.id,
+      starts_on: start_date,
+      ends_on: end_date,
+      is_public_holiday: true,
+      is_valid_for_everybody: true,
+      created_by_email_address: "test@example.com",
+      display_priority: 3
+    })
     {:ok, %{conn: conn}}
   end
 
@@ -29,4 +49,5 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     assert html_response(conn, 200) =~
              "Alle Ferientermine für"
   end
+
 end

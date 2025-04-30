@@ -79,4 +79,39 @@ defmodule MehrSchulferienWeb.PageView do
   defp non_school_period(period) do
     period.holiday_or_vacation_type.name == "Wochenende" or period.is_school_vacation == false
   end
+
+  def best_bridge_day_teaser do
+    # Use NRW as the example (largest state)
+    try do
+      today = MehrSchulferien.Calendars.DateHelpers.today_berlin()
+      current_year = today.year
+      country = MehrSchulferien.Locations.get_country_by_slug!("d")
+      federal_states = MehrSchulferien.Locations.list_federal_states(country)
+      nrw = Enum.find(federal_states, &(&1.slug == "nordrhein-westfalen"))
+      location_ids = [country.id, nrw.id]
+      {:ok, start_date} = Date.new(current_year, 1, 1)
+      {:ok, end_date} = Date.new(current_year, 12, 31)
+      public_periods = MehrSchulferien.Periods.list_public_everybody_periods(location_ids, start_date, end_date)
+      bridge_day_map = MehrSchulferien.Periods.group_by_interval(public_periods)
+      best =
+        List.flatten(Enum.map(bridge_day_map, fn {_k, v} -> v || [] end))
+        |> Enum.max_by(fn bd ->
+          periods = MehrSchulferien.Periods.list_periods_with_bridge_day(public_periods, bd)
+          max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods)
+          percent = round((max_days - bd.number_days) / bd.number_days * 100)
+          percent
+        end, fn -> nil end)
+      if best do
+        periods = MehrSchulferien.Periods.list_periods_with_bridge_day(public_periods, best)
+        max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods)
+        min_leave = best.number_days
+        percent = round((max_days - min_leave) / min_leave * 100)
+        {percent, min_leave, max_days, current_year, best.starts_on, best.ends_on}
+      else
+        nil
+      end
+    rescue
+      _ -> nil
+    end
+  end
 end

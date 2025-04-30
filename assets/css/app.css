@@ -222,3 +222,14 @@ table.table thead {
 .table-wrapper table thead th a {
   color: #fff;
 }
+
+.icon-calendar {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2em;
+  margin-right: 0.2em;
+}
+
+body {
+  font-size: 16px;
+}
