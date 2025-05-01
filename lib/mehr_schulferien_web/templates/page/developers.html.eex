@@ -16,18 +16,6 @@
 
 <div class="w-full">
   <div class="w-full">
-    <h2 class="text-2xl font-semibold mb-3">Die COVID-19-Pandemie (Corona)</h2>
-    <p class="mb-4">Fangen wir direkt mal mit dem aktuell wichtigten Thema an: Wir waren mitten in der Arbeit zu der aktuellen
-    Software-Version, als die Pandemie langsam in Deutschland startete. Projektleiter
-    <a href="https://www.wintermeyer.de" class="text-blue-600 hover:text-blue-800">Stefan Wintermeyer</a> (<a href="https://twitter.com/wintermeyer" class="text-blue-600 hover:text-blue-800">@wintermeyer</a>) hat selber
-    schulpflichtige Kinder und deshalb es war ihm schnell klar, das hier "ready is better than perfect" wichtig ist.
-    Wir haben einige Features, für die neue Version erst mal nach hinten gestellt und lassen sogar die alte Version
-    auf dem Server noch parallel mitlaufen, um einige Abfragen nach dort zu pipen. Deshalb gibt es sowohl beim Layout
-    (schon immer unsere Stärke gewesen ;-)), als auch bei den URLs einige Überlappungen. Wir wollten die neue Version
-    so schnell wie möglich online bringen, weil wir mit dem neuen Datenbankmodell, die Schulschließungen wegen
-    Corona relativ leicht anzeigen können.</p>
-    <p class="mb-4">Deshalb: Wir werden die nächsten Wochen weiter an der neuen Version arbeiten und wir freuen uns über Ihre Mithilfe!</p>
-
     <h2 class="text-2xl font-semibold mb-3">Das Open-Source-Projekt</h2>
 
     <p class="mb-4">mehr-schulferien.de ist ein mit der Programmiersprache Elixir und dem
