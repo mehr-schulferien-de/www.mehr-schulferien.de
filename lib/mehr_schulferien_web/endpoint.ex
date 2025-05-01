@@ -5,6 +5,10 @@ defmodule MehrSchulferienWeb.Endpoint do
     websocket: true,
     longpoll: false
 
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: true,
+    longpoll: false
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
@@ -19,7 +23,6 @@ defmodule MehrSchulferienWeb.Endpoint do
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
-    plug Tidewave
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
   end
@@ -43,5 +46,6 @@ defmodule MehrSchulferienWeb.Endpoint do
     key: "_mehr_schulferien_key",
     signing_salt: "ld6G7jfc"
 
+  plug Tidewave
   plug MehrSchulferienWeb.Router
 end

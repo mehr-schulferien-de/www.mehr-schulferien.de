@@ -26,6 +26,9 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Configure websocket adapter
+config :phoenix, :socket_handlers, [Phoenix.Transports.WebSocket]
+
 # Configure esbuild
 config :esbuild,
   version: "0.17.11"
