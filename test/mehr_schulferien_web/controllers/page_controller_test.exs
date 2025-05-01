@@ -6,10 +6,13 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     # Insert NRW as required for the teaser
     nrw = insert(:federal_state, %{slug: "nordrhein-westfalen", parent_location_id: country.id})
     # Insert a holiday_or_vacation_type and a period for the current year
-    holiday_or_vacation_type = insert(:holiday_or_vacation_type, %{country_location_id: country.id})
+    holiday_or_vacation_type =
+      insert(:holiday_or_vacation_type, %{country_location_id: country.id})
+
     year = Date.utc_today().year
     # Insert a period that covers a bridge day in the current year (Thursday)
-    start_date = Date.new!(year, 5, 1) # May 1st, 2025 is a Thursday
+    # May 1st, 2025 is a Thursday
+    start_date = Date.new!(year, 5, 1)
     end_date = start_date
     # Insert a period before the public holiday to create a bridge day
     insert(:period, %{
@@ -23,6 +26,7 @@ defmodule MehrSchulferienWeb.PageControllerTest do
       created_by_email_address: "test@example.com",
       display_priority: 3
     })
+
     # Insert the public holiday period
     insert(:period, %{
       holiday_or_vacation_type: nil,
@@ -35,6 +39,7 @@ defmodule MehrSchulferienWeb.PageControllerTest do
       created_by_email_address: "test@example.com",
       display_priority: 3
     })
+
     {:ok, %{conn: conn}}
   end
 
@@ -49,5 +54,4 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     assert html_response(conn, 200) =~
              "Alle Ferientermine für"
   end
-
 end

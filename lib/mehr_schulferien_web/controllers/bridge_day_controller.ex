@@ -41,10 +41,11 @@ defmodule MehrSchulferienWeb.BridgeDayController do
 
       render(conn, "show_within_federal_state.html", assigns)
     else
-      false -> # No bridge days for this year
+      # No bridge days for this year
+      false ->
         conn = Plug.Conn.put_status(conn, :not_found)
         raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
-        
+
       {:error, :invalid_year} ->
         conn = Plug.Conn.put_status(conn, :not_found)
         raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router

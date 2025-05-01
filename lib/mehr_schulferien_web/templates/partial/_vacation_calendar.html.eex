@@ -1,7 +1,14 @@
 <div class="calendar-grid">
+<% # Get the unique vacation types that are displayed in the main table %>
+<% displayed_vacation_types = MehrSchulferien.Periods.list_periods_by_vacation_names(@periods) |> Enum.map(& &1.holiday_or_vacation_type.name) %>
+
 <%= for month_days <- @days do %>
   <% first_day = Enum.at(month_days, 0) %>
-  <% {public_periods, school_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
+  <% {public_periods, all_school_periods} = ViewHelpers.list_month_holidays(first_day, @public_periods, @periods) %>
+  
+  <% # Filter school periods to only include those with vacation types displayed in the main table %>
+  <% school_periods = Enum.filter(all_school_periods, fn period -> Enum.member?(displayed_vacation_types, period.holiday_or_vacation_type.name) end) %>
+  
   <% month = @months[first_day.month] %>
   <div class="calendar">
     <div class="header">

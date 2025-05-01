@@ -97,4 +97,4 @@ defmodule MehrSchulferien.PeriodDisplay do
   defp non_school_period(period) do
     period.holiday_or_vacation_type.name == "Wochenende" or period.is_school_vacation == false
   end
-end 
+end

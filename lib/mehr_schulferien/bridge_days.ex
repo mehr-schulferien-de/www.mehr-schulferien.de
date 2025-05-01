@@ -29,16 +29,19 @@ defmodule MehrSchulferien.BridgeDays do
       {:ok, end_date} = Date.new(current_year, 12, 31)
       public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
       bridge_day_map = Periods.group_by_interval(public_periods)
-      
+
       best =
         List.flatten(Enum.map(bridge_day_map, fn {_k, v} -> v || [] end))
-        |> Enum.max_by(fn bd ->
-          periods = Periods.list_periods_with_bridge_day(public_periods, bd)
-          max_days = BridgeDayView.get_number_max_days(periods)
-          percent = round((max_days - bd.number_days) / bd.number_days * 100)
-          percent
-        end, fn -> nil end)
-        
+        |> Enum.max_by(
+          fn bd ->
+            periods = Periods.list_periods_with_bridge_day(public_periods, bd)
+            max_days = BridgeDayView.get_number_max_days(periods)
+            percent = round((max_days - bd.number_days) / bd.number_days * 100)
+            percent
+          end,
+          fn -> nil end
+        )
+
       if best do
         periods = Periods.list_periods_with_bridge_day(public_periods, best)
         max_days = BridgeDayView.get_number_max_days(periods)
@@ -52,4 +55,4 @@ defmodule MehrSchulferien.BridgeDays do
       _ -> nil
     end
   end
-end 
+end

@@ -178,14 +178,14 @@ defmodule MehrSchulferien.Factory do
 
     # Create bridge days for current year
     create_bridge_day_periods(location.id, current_year)
-    
+
     # Create bridge days for next year
     create_bridge_day_periods(location.id, future_year)
   end
 
   defp create_bridge_day_periods(location_id, year) do
     holiday_type = insert(:holiday_or_vacation_type, %{name: "Test Holiday"})
-    
+
     # Create a bridge day scenario - two holidays with one day in between
     # First holiday
     create_period(%{
@@ -197,7 +197,7 @@ defmodule MehrSchulferien.Factory do
       display_priority: 1,
       created_by_email_address: "test@example.com"
     })
-    
+
     # Second holiday
     create_period(%{
       is_public_holiday: true,

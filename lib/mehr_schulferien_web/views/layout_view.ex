@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.LayoutView do
 
   @doc """
   Determines whether to use Bootstrap CSS (legacy) or Tailwind CSS (new).
-  
+
   Checks in the following order:
   1. View-specific preference in assigns[:css_framework]
   2. Global application config

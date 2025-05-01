@@ -1,1 +1,19 @@
-<p>Legende: <span class="label label-success">Schulferien</span> <span class="label label-info">Gesetzlicher Feiertag</span> <span class="label label-danger">Quarantäne</span></p>
+<p>Legende: <span class="label label-success">Schulferien</span> <span class="label label-info">Gesetzlicher Feiertag</span>
+<%= if assigns[:periods] do %>
+  <% 
+    # Check if quarantine periods exist
+    quarantine_period_exists = Enum.any?(assigns[:periods], fn period -> 
+      period.holiday_or_vacation_type.name == "Quarantäne"
+    end)
+    
+    # Get vacation types that appear in the table
+    displayed_vacation_types = MehrSchulferien.Periods.list_periods_by_vacation_names(assigns[:periods]) 
+                              |> Enum.map(& &1.holiday_or_vacation_type.name)
+    
+    # Only show quarantine in legend if it appears in the displayed vacation types
+  %>
+  <%= if quarantine_period_exists && Enum.member?(displayed_vacation_types, "Quarantäne") do %>
+    <span class="label label-danger">Quarantäne</span>
+  <% end %>
+<% end %>
+</p>

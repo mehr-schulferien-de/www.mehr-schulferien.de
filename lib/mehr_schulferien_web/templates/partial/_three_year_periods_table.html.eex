@@ -2,12 +2,16 @@
 <table class="table table-striped">
   <% unique_periods = MehrSchulferien.Periods.list_periods_by_vacation_names(@periods) %>
   <% grouped_periods = Enum.group_by(@periods, & &1.holiday_or_vacation_type.name) %>
+  
+  <% # Extract years that have vacation data %>
+  <% years_with_data = @periods |> Enum.map(& &1.starts_on.year) |> Enum.uniq() |> Enum.sort() %>
+  
   <thead>
     <tr>
       <th></th>
-      <th><%= @current_year %></th>
-      <th><%= @current_year + 1 %></th>
-      <th><%= @current_year + 2 %></th>
+      <%= for year <- years_with_data do %>
+        <th><%= year %></th>
+      <% end %>
     </tr>
   </thead>
   <tbody>
@@ -17,8 +21,8 @@
           <%= link MehrSchulferienWeb.PeriodView.vacation_type_name(period), to: Routes.federal_state_path(@conn, :show_holiday_or_vacation_type, @country.slug, @federal_state.slug, period.holiday_or_vacation_type.slug) %>
         </td>
         <% periods = grouped_periods[period.holiday_or_vacation_type.name] %>
-        <%= for year <- 0..2 do %>
-          <% year_periods = Enum.filter(periods, & &1.starts_on.year == @current_year + year) %>
+        <%= for year <- years_with_data do %>
+          <% year_periods = Enum.filter(periods, & &1.starts_on.year == year) %>
           <%= if period = Enum.at(year_periods, 0) do %>
             <td>
               <span>

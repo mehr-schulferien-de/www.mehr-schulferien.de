@@ -11,21 +11,34 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
     {:ok, last_day} = Date.new(current_year + 2, 12, 31)
     school_periods = Periods.list_school_periods(location_ids, first_day, last_day)
     public_periods = Periods.list_public_everybody_periods(location_ids, first_day, last_day)
-    days = DateHelpers.create_3_years(current_year)
     months = DateHelpers.get_months_map()
 
-    next_three_years =
-      MehrSchulferienWeb.ViewHelpers.comma_join_with_a_final_und([
-        "#{current_year}",
-        "#{current_year + 1}",
-        "#{current_year + 2}"
-      ])
+    # Group periods by year to determine which years have vacation data
+    years_with_data =
+      school_periods
+      |> Enum.map(& &1.starts_on.year)
+      |> Enum.uniq()
+      |> Enum.sort()
+
+    # Only include years that have vacation data
+    years_to_show =
+      Enum.filter([current_year, current_year + 1, current_year + 2], fn year ->
+        Enum.member?(years_with_data, year)
+      end)
+
+    # Create days only for years with data
+    days = Enum.flat_map(years_to_show, &DateHelpers.create_year/1)
+
+    next_years =
+      MehrSchulferienWeb.ViewHelpers.comma_join_with_a_final_und(
+        Enum.map(years_to_show, &"#{&1}")
+      )
 
     [
       current_year: current_year,
       days: days,
       months: months,
-      next_three_years: next_three_years,
+      next_three_years: next_years,
       school_periods: school_periods,
       public_periods: public_periods
     ]

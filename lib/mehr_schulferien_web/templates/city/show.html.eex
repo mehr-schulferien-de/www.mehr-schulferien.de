@@ -72,7 +72,7 @@
 </div>
 
 <h2 id="kalenderansicht">Kalenderansicht <small><%= @next_three_years %></small></h2>
-<%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn %>
+<%= render MehrSchulferienWeb.PartialView, "_calendar_legend.html", conn: @conn, periods: @school_periods %>
 <%= render MehrSchulferienWeb.PartialView, "_vacation_calendar.html", periods: @school_periods, public_periods: @public_periods, days: @days, months: @months, country: @country, federal_state: @federal_state, conn: @conn %>
 
 <h2 id="ferientermine_naechste_3_jahre">Ferien <%= @city.name %> <%= @next_three_years %></h2>

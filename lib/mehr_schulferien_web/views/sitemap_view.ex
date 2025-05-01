@@ -1,8 +1,8 @@
 defmodule MehrSchulferienWeb.SitemapView do
   use MehrSchulferienWeb, :view
-  
+
   import MehrSchulferienWeb.SitemapHelpers
-  
+
   @doc """
   Finds the most recent period for an entity.
   """
