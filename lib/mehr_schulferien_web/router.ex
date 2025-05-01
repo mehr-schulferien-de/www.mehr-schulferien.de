@@ -30,17 +30,7 @@ defmodule MehrSchulferienWeb.Router do
 
     # School vacations
     get "/ferien/land/:country_slug", CountryController, :show
-    get "/ferien/:country_slug/stadt/:city_slug/new_period", CityController, :new_period
-    post "/ferien/:country_slug/stadt/:city_slug", CityController, :create_period
     get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
-
-    get "/ferien/:country_slug/bundesland/:federal_state_slug/new_period",
-        FederalStateController,
-        :new_period
-
-    post "/ferien/:country_slug/bundesland/:federal_state_slug",
-         FederalStateController,
-         :create_period
 
     # Display holiday_or_vacation_type info
     get "/ferien/:country_slug/bundesland/:federal_state_slug/kategorie/:holiday_or_vacation_type_slug",
@@ -49,8 +39,6 @@ defmodule MehrSchulferienWeb.Router do
 
     # School start information
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show
-    get "/ferien/:country_slug/schule/:school_slug/new_period", SchoolController, :new_period
-    post "/ferien/:country_slug/schule/:school_slug", SchoolController, :create_period
     get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
 
     # Public holidays
