@@ -1,78 +1,80 @@
-<ol class="breadcrumb">
-  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
-</ol>
+<nav class="flex py-3" aria-label="Breadcrumb">
+  <ol class="inline-flex items-center space-x-1 md:space-x-3">
+    <li class="inline-flex items-center">
+      <%= link "Start", to: Routes.page_path(@conn, :index), class: "text-blue-600 hover:text-blue-800" %>
+    </li>
+  </ol>
+</nav>
 
-<div class="page-header">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>
-        Informationen für Entwickler
-      </h1>
-    </div>
+<div class="mb-8">
+  <div class="w-full">
+    <h1 class="text-3xl font-bold mb-6">
+      Informationen für Entwickler
+    </h1>
   </div>
 </div>
 
-<div class="row">
-  <div class="col-sm-12">
-    <h2>Die COVID-19-Pandemie (Corona)</h2>
-    <p>Fangen wir direkt mal mit dem aktuell wichtigten Thema an: Wir waren mitten in der Arbeit zu der aktuellen
+<div class="w-full">
+  <div class="w-full">
+    <h2 class="text-2xl font-semibold mb-3">Die COVID-19-Pandemie (Corona)</h2>
+    <p class="mb-4">Fangen wir direkt mal mit dem aktuell wichtigten Thema an: Wir waren mitten in der Arbeit zu der aktuellen
     Software-Version, als die Pandemie langsam in Deutschland startete. Projektleiter
-    <a href="https://www.wintermeyer.de">Stefan Wintermeyer</a> (<a href="https://twitter.com/wintermeyer">@wintermeyer</a>) hat selber
+    <a href="https://www.wintermeyer.de" class="text-blue-600 hover:text-blue-800">Stefan Wintermeyer</a> (<a href="https://twitter.com/wintermeyer" class="text-blue-600 hover:text-blue-800">@wintermeyer</a>) hat selber
     schulpflichtige Kinder und deshalb es war ihm schnell klar, das hier "ready is better than perfect" wichtig ist.
     Wir haben einige Features, für die neue Version erst mal nach hinten gestellt und lassen sogar die alte Version
     auf dem Server noch parallel mitlaufen, um einige Abfragen nach dort zu pipen. Deshalb gibt es sowohl beim Layout
     (schon immer unsere Stärke gewesen ;-)), als auch bei den URLs einige Überlappungen. Wir wollten die neue Version
     so schnell wie möglich online bringen, weil wir mit dem neuen Datenbankmodell, die Schulschließungen wegen
     Corona relativ leicht anzeigen können.</p>
-    <p>Deshalb: Wir werden die nächsten Wochen weiter an der neuen Version arbeiten und wir freuen uns über Ihre Mithilfe!</p>
+    <p class="mb-4">Deshalb: Wir werden die nächsten Wochen weiter an der neuen Version arbeiten und wir freuen uns über Ihre Mithilfe!</p>
 
-    <h2>Das Open-Source-Projekt</h2>
+    <h2 class="text-2xl font-semibold mb-3">Das Open-Source-Projekt</h2>
 
-    <p>mehr-schulferien.de ist ein mit der Programmiersprache Elixir und dem
-      <a href="http://phoenixframework.org">Phoenix Framework</a> geschriebenes Open-Source-Projekt (MIT Lizenz). Der
-      Code wird auf <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de">https://github.com/mehr-schulferien-de/www.mehr-schulferien.de</a>
+    <p class="mb-4">mehr-schulferien.de ist ein mit der Programmiersprache Elixir und dem
+      <a href="http://phoenixframework.org" class="text-blue-600 hover:text-blue-800">Phoenix Framework</a> geschriebenes Open-Source-Projekt (MIT Lizenz). Der
+      Code wird auf <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de" class="text-blue-600 hover:text-blue-800">https://github.com/mehr-schulferien-de/www.mehr-schulferien.de</a>
       gehostet und dort findet die Entwicklungsarbeit statt.</p>
-    <p><b>Wir freuen uns über gute Feature-Requests und Bug-Reports!</b> Idealerweise
-    als <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new">Issues auf Github</a>, aber auch gerne per E-Mail an Stefan Wintermeyer <a href="mailto:sw@wintermeyer-consulting.de">(sw@wintermeyer-consulting.de)</a></p>
+    <p class="mb-4"><b>Wir freuen uns über gute Feature-Requests und Bug-Reports!</b> Idealerweise
+    als <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new" class="text-blue-600 hover:text-blue-800">Issues auf Github</a>, aber auch gerne per E-Mail an Stefan Wintermeyer <a href="mailto:sw@wintermeyer-consulting.de" class="text-blue-600 hover:text-blue-800">(sw@wintermeyer-consulting.de)</a></p>
 
-    <h2>Die API</h2>
-    <p>Alle Daten können per RESTful JSON-API abgerufen werden. Stück für Stück werden wir hierzu die Dokumentation erweitern. Hier schon mal die Basics.</p>
+    <h2 class="text-2xl font-semibold mb-3">Die API</h2>
+    <p class="mb-4">Alle Daten können per RESTful JSON-API abgerufen werden. Stück für Stück werden wir hierzu die Dokumentation erweitern. Hier schon mal die Basics.</p>
 
-    <h3>locations</h3>
-    <p>Das Model Locations wird für die Speicherung von Ländern (countries), Bundesländern (federal_states), Landkreisen (counties),
+    <h3 class="text-xl font-semibold mb-2">locations</h3>
+    <p class="mb-4">Das Model Locations wird für die Speicherung von Ländern (countries), Bundesländern (federal_states), Landkreisen (counties),
     Städten (cities) und Schulen (schools) benutzt. Die Dabei werden die einzelnen Ebenen mit einander verknüpft.</p>
-    <h4>Beispiel</h4>
-    <ul>
+    <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
+    <ul class="list-disc pl-5 mb-4">
     <li>Daten zu Deutschland abrufen:<br/>
-    <pre>curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/locations/1</pre></li>
+    <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/locations/1</pre></li>
     <li>Daten zu allen Locations abrufen:<br/>
-    <pre>curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/locations</pre></li>
+    <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/locations</pre></li>
     </ul>
 
-    <h3>periods</h3>
-    <p>Das Model Period wird zur Speicherung der einzelnen Ferien und Feiertage benutzt.</p>
-    <h4>Beispiel</h4>
-    <ul>
+    <h3 class="text-xl font-semibold mb-2">periods</h3>
+    <p class="mb-4">Das Model Period wird zur Speicherung der einzelnen Ferien und Feiertage benutzt.</p>
+    <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
+    <ul class="list-disc pl-5 mb-4">
     <li>Daten zum Eintrag mit der ID 23 abrufen:<br/>
-    <pre>curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/periods/23</pre></li>
+    <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/periods/23</pre></li>
     <li>Daten zu allen Einträgen abrufen:<br/>
-    <pre>curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/periods</pre></li>
+    <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/periods</pre></li>
     </ul>
 
-    <h3>holiday_or_vacation_types</h3>
-    <p>Das Model HolidayOrVacationType wird zur Speicherung der einzelnen Arten von Ferien und Feiertage benutzt.</p>
-    <h4>Beispiel</h4>
-    <ul>
+    <h3 class="text-xl font-semibold mb-2">holiday_or_vacation_types</h3>
+    <p class="mb-4">Das Model HolidayOrVacationType wird zur Speicherung der einzelnen Arten von Ferien und Feiertage benutzt.</p>
+    <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
+    <ul class="list-disc pl-5 mb-4">
     <li>Daten zum Eintrag mit der ID 10 abrufen:<br/>
-    <pre>curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/holiday_or_vacation_types/10</pre></li>
+    <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/holiday_or_vacation_types/10</pre></li>
     <li>Daten zu allen Einträgen abrufen:<br/>
-    <pre>curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/holiday_or_vacation_types</pre></li>
+    <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/holiday_or_vacation_types</pre></li>
     </ul>
 
-    <h3>Noch Wünsche an die API?</h3>
-    <p>Mit der aktuellen API haben Sie Zugriff auf alle Daten, müssen diese aber noch selber verarbeiten. In Zukunft
+    <h3 class="text-xl font-semibold mb-2">Noch Wünsche an die API?</h3>
+    <p class="mb-4">Mit der aktuellen API haben Sie Zugriff auf alle Daten, müssen diese aber noch selber verarbeiten. In Zukunft
     werden wir auch Anfragen wie "Ist heute ein Feiertag" per API beantworten. Wenn Sie dazu Wünsche oder Vorschläge
-    haben, würden wir uns über ein entsprechendes Feature-Request-<a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new">Issues auf Github</a>
+    haben, würden wir uns über ein entsprechendes Feature-Request-<a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new" class="text-blue-600 hover:text-blue-800">Issues auf Github</a>
     freuen.</p>
   </div>
 </div>

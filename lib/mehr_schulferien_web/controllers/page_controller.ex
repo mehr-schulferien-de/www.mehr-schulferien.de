@@ -77,7 +77,7 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def developers(conn, _params) do
-    render(conn, "developers.html")
+    render(conn, "developers.html", css_framework: :tailwind)
   end
 
   def impressum(conn, _params) do

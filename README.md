@@ -33,6 +33,78 @@ of a city.
 Religion stores available religions. holiday_or_vacation_types stores the
 types of different holidays and vacations. periods store the actual dates.
 
+# CSS Framework Migration
+
+The application is in the process of migrating from Bootstrap to Tailwind CSS. During this transition period, both frameworks are supported:
+
+- Bootstrap is used by default (legacy system)
+- Tailwind CSS can be enabled for specific views
+
+## How to Switch Between CSS Frameworks
+
+### Global Configuration
+
+The default CSS framework is configured in `config/config.exs`:
+
+```elixir
+config :mehr_schulferien,
+  ecto_repos: [MehrSchulferien.Repo],
+  # Set to :bootstrap for legacy CSS or :tailwind for new CSS implementation
+  css_framework: :bootstrap
+```
+
+To change the default for the entire application, update the `css_framework` value to either `:bootstrap` or `:tailwind`.
+
+### Per-View Configuration
+
+You can override the default CSS framework for individual views by passing the `css_framework` option to the render function:
+
+```elixir
+# Use Tailwind CSS for this view
+def developers(conn, _params) do
+  render(conn, "developers.html", css_framework: :tailwind)
+end
+
+# Use Bootstrap CSS for this view
+def some_action(conn, _params) do
+  render(conn, "some_template.html", css_framework: :bootstrap)
+end
+```
+
+### Implementation Details
+
+The CSS framework is determined by a helper function in `MehrSchulferienWeb.LayoutView`:
+
+```elixir
+def use_bootstrap?(_conn, assigns) do
+  cond do
+    # Check if the current view has explicitly specified which CSS framework to use
+    Map.has_key?(assigns, :css_framework) ->
+      assigns.css_framework == :bootstrap
+
+    # Fall back to application config
+    Application.get_env(:mehr_schulferien, :css_framework) ->
+      Application.get_env(:mehr_schulferien, :css_framework) == :bootstrap
+
+    # Default to Bootstrap during the migration period
+    true ->
+      true
+  end
+end
+```
+
+The layout file checks this function to determine which CSS to include:
+
+```elixir
+<%= if use_bootstrap?(@conn, assigns) do %>
+  <style>
+  <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
+  </style>
+<% else %>
+  <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/assets/app.css") %>"/>
+<% end %>
+```
+
 # Development System
 
 To start your Phoenix server:
