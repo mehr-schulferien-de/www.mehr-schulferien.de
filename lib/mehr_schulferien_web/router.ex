@@ -24,10 +24,6 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/sitemap.xml", SitemapController, :index
 
-    # Old routes
-    get "/cities/:city_slug/:from/:till", OldRoutes.CityController, :show
-    get "/cities/:city_slug", OldRoutes.CityController, :show
-
     # School vacations
     get "/ferien/land/:country_slug", CountryController, :show
     get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
