@@ -20,5 +20,5 @@ defmodule MehrSchulferienWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :mehr_schulferien
+  use Gettext.Backend, otp_app: :mehr_schulferien
 end
