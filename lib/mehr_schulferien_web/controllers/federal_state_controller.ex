@@ -2,7 +2,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Locations}
-  alias MehrSchulferienWeb.ControllerHelpers, as: CH
+  alias MehrSchulferienWeb.Controllers.Helpers.{LocationHelpers, PeriodHelpers}
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
@@ -11,14 +11,13 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "federal_state_slug" => federal_state_slug,
         "holiday_or_vacation_type_slug" => holiday_or_vacation_type_slug
       }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+    {country, federal_state, location_ids} =
+      LocationHelpers.get_locations_and_ids(country_slug, federal_state_slug)
 
     holiday_or_vacation_type =
       Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
 
     today = DateHelpers.today_berlin()
-    location_ids = [country.id, federal_state.id]
 
     assigns =
       [
@@ -26,7 +25,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         federal_state: federal_state,
         holiday_or_vacation_type: holiday_or_vacation_type
       ] ++
-        CH.list_period_data(location_ids, today)
+        PeriodHelpers.list_period_data(location_ids, today)
 
     render(conn, "show_holiday_or_vacation_type.html", assigns)
   end
@@ -45,9 +44,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
   end
 
   def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    location_ids = [country.id, federal_state.id]
+    {country, federal_state, location_ids} =
+      LocationHelpers.get_locations_and_ids(country_slug, federal_state_slug)
+
     today = DateHelpers.today_berlin()
     current_year = today.year
 
@@ -58,7 +57,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
         current_year: current_year,
         today: today
       ] ++
-        CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
+        PeriodHelpers.list_period_data(location_ids, today) ++
+        PeriodHelpers.list_faq_data(location_ids, today)
 
     render(conn, "show.html", assigns)
   end
@@ -67,16 +67,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug
       }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    counties = Locations.list_counties(federal_state)
+    {country, federal_state, location_ids} =
+      LocationHelpers.get_locations_and_ids(country_slug, federal_state_slug)
 
-    counties_with_cities =
-      Enum.reduce(counties, [], fn county, acc ->
-        acc ++ [{county, Locations.list_cities(county)}]
-      end)
-
-    location_ids = [country.id, federal_state.id]
+    counties_with_cities = LocationHelpers.get_counties_with_cities(federal_state)
     today = DateHelpers.today_berlin()
 
     assigns =
@@ -85,7 +79,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
         country: country,
         federal_state: federal_state
       ] ++
-        CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
+        PeriodHelpers.list_period_data(location_ids, today) ++
+        PeriodHelpers.list_faq_data(location_ids, today)
 
     render(conn, "county_show.html", assigns)
   end

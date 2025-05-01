@@ -1,0 +1,7 @@
+[tools]
+elixir = "1.18.3"
+erlang = "26.2.4"
+nodejs = "20.12.1"
+
+[env]
+MIX_ENV = "dev" 
