@@ -24,4 +24,15 @@ defmodule MehrSchulferienWeb.LayoutView do
         true
     end
   end
+
+  @doc """
+  Returns the appropriate layout template file based on the current CSS framework.
+  """
+  def select_layout_template(conn, assigns) do
+    if use_bootstrap?(conn, assigns) do
+      "app_bootstrap.html"
+    else
+      "app_tailwind.html"
+    end
+  end
 end
