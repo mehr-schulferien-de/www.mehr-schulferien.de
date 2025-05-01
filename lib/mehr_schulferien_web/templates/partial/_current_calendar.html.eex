@@ -69,14 +69,14 @@
             <%= for day <- @days do %>
               <% current_day_periods = MehrSchulferien.Periods.find_all_periods(periods, day) %>
               <%= if current_day_periods != [] do %>
-                <% school_period = MehrSchulferienWeb.PageView.get_school_period(current_day_periods) %>
-                <%= if MehrSchulferienWeb.PageView.display_period_info?(day, @days, school_period) do %>
-                  <% colspan = MehrSchulferienWeb.PageView.get_period_colspan(day, List.last(@days), school_period) %>
+                <% school_period = MehrSchulferien.PeriodDisplay.get_school_period(current_day_periods) %>
+                <%= if MehrSchulferien.PeriodDisplay.display_period_info?(day, @days, school_period) do %>
+                  <% colspan = MehrSchulferien.PeriodDisplay.get_period_colspan(day, List.last(@days), school_period) %>
                   <td class="<%= school_period.html_class %>" colspan="<%= colspan %>">
-                    <%= link MehrSchulferienWeb.PageView.show_period_info(school_period, colspan), title: "#{school_period.holiday_or_vacation_type.colloquial} #{day.year} in #{federal_state.name}", to: (if country.slug && federal_state.slug, do: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}", else: "#") %>
+                    <%= link MehrSchulferien.PeriodDisplay.show_period_info(school_period, colspan), title: "#{school_period.holiday_or_vacation_type.colloquial} #{day.year} in #{federal_state.name}", to: (if country.slug && federal_state.slug, do: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}", else: "#") %>
                   </td>
                 <% else %>
-                  <%= if non_school_period = MehrSchulferienWeb.PageView.get_non_school_period(day, school_period, current_day_periods) do %>
+                  <%= if non_school_period = MehrSchulferien.PeriodDisplay.get_non_school_period(day, school_period, current_day_periods) do %>
                     <td class="<%= non_school_period.html_class %>"></td>
                   <% end %>
                 <% end %>

@@ -233,3 +233,38 @@ table.table thead {
 body {
   font-size: 16px;
 }
+
+/* Bridge day section */
+.bridge-day-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.bridge-day-title .icon-calendar {
+  font-size: 1.2em;
+}
+
+.bridge-day-teaser {
+  font-weight: 600;
+  color: #357abd;
+  margin-bottom: 0.5em;
+}
+
+.bridge-day-teaser-example {
+  font-weight: 400;
+  color: #444;
+}
+
+.bridge-day-teaser a {
+  color: #357abd;
+  text-decoration: underline;
+}
+
+.bridge-day-info {
+  margin-bottom: 1em;
+}
+
+.bridge-day-table {
+  margin-top: 1em;
+}
