@@ -3,7 +3,8 @@ defmodule MehrSchulferien.BridgeDays do
   Functions for calculating and handling bridge days.
   """
 
-  alias MehrSchulferien.{Periods, Locations, Calendars.DateHelpers}
+  alias MehrSchulferien.{Locations, Calendars.DateHelpers}
+  alias MehrSchulferien.Periods.{Query, Grouping}
   alias MehrSchulferienWeb.BridgeDayView
 
   @doc """
@@ -27,14 +28,14 @@ defmodule MehrSchulferien.BridgeDays do
       location_ids = [country.id, nrw.id]
       {:ok, start_date} = Date.new(current_year, 1, 1)
       {:ok, end_date} = Date.new(current_year, 12, 31)
-      public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
-      bridge_day_map = Periods.group_by_interval(public_periods)
+      public_periods = Query.list_public_everybody_periods(location_ids, start_date, end_date)
+      bridge_day_map = Grouping.group_by_interval(public_periods)
 
       best =
         List.flatten(Enum.map(bridge_day_map, fn {_k, v} -> v || [] end))
         |> Enum.max_by(
           fn bd ->
-            periods = Periods.list_periods_with_bridge_day(public_periods, bd)
+            periods = Grouping.list_periods_with_bridge_day(public_periods, bd)
             max_days = BridgeDayView.get_number_max_days(periods)
             percent = round((max_days - bd.number_days) / bd.number_days * 100)
             percent
@@ -43,7 +44,7 @@ defmodule MehrSchulferien.BridgeDays do
         )
 
       if best do
-        periods = Periods.list_periods_with_bridge_day(public_periods, best)
+        periods = Grouping.list_periods_with_bridge_day(public_periods, best)
         max_days = BridgeDayView.get_number_max_days(periods)
         min_leave = best.number_days
         percent = round((max_days - min_leave) / min_leave * 100)

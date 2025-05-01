@@ -12,7 +12,7 @@ defmodule MehrSchulferien.Periods do
 
   alias MehrSchulferien.Calendars
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType}
-  alias MehrSchulferien.Periods.{BridgeDayPeriod, Period}
+  alias MehrSchulferien.Periods.{Period, Query, DateOperations, Grouping}
   alias MehrSchulferien.Repo
 
   #
@@ -111,304 +111,42 @@ defmodule MehrSchulferien.Periods do
   end
 
   #
-  # Period queries by time
+  # Period queries by time - delegated to Query module
   #
 
-  @doc """
-  Returns a list of previous periods for a federal_state.
-  """
-  def list_previous_periods(federal_state, holiday_or_vacation_type) do
-    today = DateHelpers.today_berlin()
-
-    from(p in Period,
-      where:
-        p.location_id == ^federal_state.id and
-          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
-          p.ends_on < ^today,
-      order_by: [desc: p.starts_on]
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns a list of current and future periods for a federal_state.
-  """
-  def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
-    today = DateHelpers.today_berlin()
-
-    from(p in Period,
-      where:
-        p.location_id == ^federal_state.id and
-          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
-          p.ends_on >= ^today,
-      order_by: p.starts_on
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
+  defdelegate list_previous_periods(federal_state, holiday_or_vacation_type), to: Query
+  defdelegate list_current_and_future_periods(federal_state, holiday_or_vacation_type), to: Query
+  defdelegate list_school_periods(location_ids, starts_on, ends_on), to: Query
+  defdelegate list_public_everybody_periods(location_ids, starts_on, ends_on), to: Query
+  defdelegate list_public_periods(location_ids, starts_on, ends_on), to: Query
+  defdelegate list_school_free_periods(location_ids, starts_on, ends_on), to: Query
 
   #
-  # Period filtering and finding by date
+  # Period filtering and finding by date - delegated to DateOperations module
   #
 
-  @doc """
-  Finds all the holiday periods for a certain date.
-  """
-  def find_all_periods(periods, date) do
-    Enum.filter(periods, &is_holiday?(&1, date))
-  end
+  defdelegate find_all_periods(periods, date), to: DateOperations
+  defdelegate find_next_schoolday(periods, date), to: DateOperations
+  defdelegate find_periods_by_month(date, periods), to: DateOperations
+  defdelegate find_periods_for_date_range(periods, start_date, end_date), to: DateOperations
+  defdelegate next_periods(periods, today, number), to: DateOperations
+  defdelegate find_most_recent_period(periods, today), to: DateOperations
 
-  @doc """
-  Returns the next schoolday (the next day that is not a holiday).
-  """
-  def find_next_schoolday([], _), do: nil
+  # Default params for next_periods
+  def next_periods(periods, number), do: DateOperations.next_periods(periods, DateHelpers.today_berlin(), number)
+  
+  # Default params for find_most_recent_period
+  def find_most_recent_period(periods), do: DateOperations.find_most_recent_period(periods, DateHelpers.today_berlin())
 
-  def find_next_schoolday([first | rest], date) do
-    if is_holiday?(first, date) do
-      new_date = Date.add(first.ends_on, 1)
-      find_next_schoolday(rest, new_date)
-    else
-      if check_ends_on(date, first) do
-        date
-      else
-        find_next_schoolday(rest, date)
-      end
-    end
-  end
+  #
+  # Period grouping operations - delegated to Grouping module
+  #
 
-  defp is_holiday?(period, date) do
-    case Date.compare(date, period.starts_on) do
-      :lt -> false
-      :eq -> true
-      :gt -> check_ends_on(date, period)
-    end
-  end
+  defdelegate group_periods_single_year(periods, start_date), to: Grouping
+  defdelegate list_periods_by_vacation_names(periods), to: Grouping
+  defdelegate group_by_interval(periods), to: Grouping
+  defdelegate list_periods_with_bridge_day(periods, bridge_day), to: Grouping
 
-  defp check_ends_on(date, first) do
-    case Date.compare(date, first.ends_on) do
-      :gt -> nil
-      _ -> first
-    end
-  end
-
-  @doc """
-  Returns the holiday periods for a certain date's month.
-  """
-  def find_periods_by_month(_date, []), do: []
-
-  def find_periods_by_month(date, [first | rest]) do
-    if DateHelpers.compare_by_month(date, first.starts_on) == :lt do
-      []
-    else
-      if DateHelpers.compare_by_month(date, first.ends_on) == :gt do
-        find_periods_by_month(date, rest)
-      else
-        [first | find_periods_by_month(date, rest)]
-      end
-    end
-  end
-
-  @doc """
-  Returns the periods for a certain date range.
-
-  The periods need to be sorted (by the `starts_on` date) before calling
-  this function.
-  """
-  def find_periods_for_date_range(periods, start_date, end_date) do
-    periods
-    |> Enum.drop_while(&(Date.compare(&1.ends_on, start_date) == :lt))
-    |> Enum.take_while(&(Date.compare(&1.starts_on, end_date) != :gt))
-  end
-
-  @doc """
-  Takes a year's periods, from `start_date`, and groups them based on
-  the holiday_or_vacation_type.
-
-  The single year starts with the `start_date`, which is usually the current
-  date and continues until August 1, the following year (the next year's
-  summer vacation).
-  """
-  def group_periods_single_year(periods, start_date \\ DateHelpers.today_berlin()) do
-    {:ok, end_date} = Date.new(start_date.year + 1, 8, 1)
-
-    periods
-    |> Enum.drop_while(&(Date.compare(&1.ends_on, start_date) == :lt))
-    |> Enum.take_while(&(Date.compare(&1.starts_on, end_date) != :gt))
-    |> Enum.chunk_by(& &1.holiday_or_vacation_type.name)
-  end
-
-  @doc """
-  Returns a list of periods, sorted by the holiday_or_vacation_type names.
-  """
-  def list_periods_by_vacation_names(periods) do
-    periods
-    |> Enum.uniq_by(& &1.holiday_or_vacation_type.name)
-    |> Enum.sort(&(Date.day_of_year(&1.starts_on) <= Date.day_of_year(&2.starts_on)))
-  end
-
-  @doc """
-  Returns a list of school vacation periods for a certain time frame.
-  """
-  def list_school_periods(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_valid_for_students == true and
-          p.is_school_vacation == true and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: p.starts_on
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns a list of public holiday periods, and periods that are valid
-  for everybody, for a certain time frame.
-
-  This function also returns periods that are valid for everybody, such as
-  weekends. If you want to see just the public holiday periods, use
-  `list_public_periods` instead.
-  """
-  def list_public_everybody_periods(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          (p.is_public_holiday == true or
-             p.is_valid_for_everybody == true) and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: p.starts_on
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns a list of public holiday periods for a certain time frame.
-  """
-  def list_public_periods(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_public_holiday == true and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: p.display_priority
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns a list of periods that are non-school days for a certain date
-  range.
-  """
-  def list_school_free_periods(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          (p.is_valid_for_students == true or
-             p.is_valid_for_everybody == true) and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: p.display_priority
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns the first period after a certain date (the default date is today).
-
-  The periods need to be sorted (by the `starts_on` date) before calling
-  this function.
-  """
-  def next_periods(periods, today \\ DateHelpers.today_berlin(), number) do
-    periods
-    |> Enum.drop_while(&(Date.compare(&1.ends_on, today) == :lt))
-    |> Enum.take(number)
-  end
-
-  @doc """
-  Returns the most recently ended period.
-  """
-  def find_most_recent_period(periods, today \\ DateHelpers.today_berlin()) do
-    periods
-    |> Enum.sort(&(Date.compare(&1.starts_on, &2.starts_on) == :lt))
-    |> Enum.take_while(&(Date.compare(&1.ends_on, today) == :lt))
-    |> List.last()
-  end
-
-  @doc """
-  Returns a map containing periods that are separated by 1..4 days.
-
-  This is used for calculating bridge days.
-  """
-  def group_by_interval(periods) do
-    periods
-    |> Enum.reduce(%{}, fn period, acc ->
-      acc =
-        if last_period = acc["last_period"] do
-          diff = Date.diff(period.starts_on, last_period.ends_on)
-
-          case {diff, acc} do
-            {diff, _} when diff not in 2..5 ->
-              acc
-
-            {_, %{^diff => value}} ->
-              %{acc | diff => value ++ [BridgeDayPeriod.create(last_period, period, diff)]}
-
-            {_, %{}} ->
-              Map.put(acc, diff, [BridgeDayPeriod.create(last_period, period, diff)])
-          end
-        else
-          %{}
-        end
-
-      Map.put(acc, "last_period", period)
-    end)
-    |> Map.delete("last_period")
-  end
-
-  def list_periods_with_bridge_day(periods, bridge_day) do
-    [before_bd | query_periods] = Enum.drop_while(periods, &(&1.id != bridge_day.last_period_id))
-    after_bd_periods = list_consecutive_periods(query_periods)
-    query_periods = Enum.take_while(periods, &(&1.id != bridge_day.last_period_id))
-
-    before_bd_periods =
-      reverse_list_consecutive_periods([before_bd | Enum.reverse(query_periods)])
-
-    before_bd_periods ++ [bridge_day | after_bd_periods]
-  end
-
-  defp list_consecutive_periods([first | rest]) do
-    list_consecutive_periods(rest, [first])
-  end
-
-  defp list_consecutive_periods([], output), do: output
-
-  defp list_consecutive_periods([first | rest], output) do
-    if Date.diff(first.starts_on, List.last(output).ends_on) < 2 do
-      list_consecutive_periods(rest, output ++ [first])
-    else
-      output
-    end
-  end
-
-  defp reverse_list_consecutive_periods([first | rest]) do
-    reverse_list_consecutive_periods(rest, [first])
-  end
-
-  defp reverse_list_consecutive_periods([], output), do: output
-
-  defp reverse_list_consecutive_periods([first | rest], output) do
-    if Date.diff(List.last(output).starts_on, first.ends_on) < 2 do
-      reverse_list_consecutive_periods(rest, [first | output])
-    else
-      output
-    end
-  end
+  # Default params for group_periods_single_year
+  def group_periods_single_year(periods), do: Grouping.group_periods_single_year(periods, DateHelpers.today_berlin())
 end
