@@ -1,34 +1,55 @@
 defmodule MehrSchulferien.Locations.Location do
+  @moduledoc """
+  Location schema that represents different geographic entities.
+
+  This schema can represent various location types such as:
+  - Countries
+  - Federal states
+  - Counties
+  - Cities
+  - Schools
+
+  Locations form a hierarchical structure with parent-child relationships.
+  """
+
   use Ecto.Schema
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.LocationNameSlug
+  alias MehrSchulferien.Slugs.LocationNameSlug
   alias MehrSchulferien.Calendars.HolidayOrVacationType
   alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Maps.{Address, ZipCode}
 
   schema "locations" do
-    field :is_city, :boolean, default: false
+    # Location type flags - exactly one must be true
     field :is_country, :boolean, default: false
-    field :is_county, :boolean, default: false
     field :is_federal_state, :boolean, default: false
+    field :is_county, :boolean, default: false
+    field :is_city, :boolean, default: false
     field :is_school, :boolean, default: false
+
+    # Basic location attributes
     field :name, :string
     field :code, :string
     field :slug, LocationNameSlug.Type
 
+    # Hierarchy relationships
     belongs_to :parent_location, __MODULE__
     belongs_to :cachable_calendar_location, __MODULE__
 
+    # School-specific associations
     has_one :address, Address, foreign_key: :school_location_id, on_delete: :delete_all
 
+    # Country-specific associations
     has_many :holiday_or_vacation_types, HolidayOrVacationType,
       foreign_key: :country_location_id,
       on_delete: :delete_all
 
+    # Periods associated with this location
     has_many :periods, Period, on_delete: :delete_all
 
+    # City-specific associations
     many_to_many(
       :zip_codes,
       ZipCode,
@@ -38,7 +59,12 @@ defmodule MehrSchulferien.Locations.Location do
     timestamps()
   end
 
-  @doc false
+  @doc """
+  Changeset for the Location schema.
+
+  Validates that exactly one location type flag is set to true.
+  Countries don't require a parent_location, but all other location types do.
+  """
   def changeset(location, attrs) do
     location
     |> cast(attrs, [
@@ -62,6 +88,11 @@ defmodule MehrSchulferien.Locations.Location do
     |> LocationNameSlug.unique_constraint()
   end
 
+  @doc """
+  Validates that a parent location is present for non-country locations.
+
+  Only countries are allowed to have no parent location.
+  """
   def validate_presence_of_parent(changeset) do
     # Only a country doesn't have a parent.
     case get_field(changeset, :is_country) do
@@ -75,6 +106,9 @@ defmodule MehrSchulferien.Locations.Location do
     end
   end
 
+  @doc """
+  Validates the cachable calendar location if set.
+  """
   def validate_cachable_calendar_location(changeset) do
     # If set the cachable location must exist.
     case get_field(changeset, :cachable_calendar_location_id) do
@@ -87,6 +121,11 @@ defmodule MehrSchulferien.Locations.Location do
     end
   end
 
+  @doc """
+  Validates that exactly one location type is set to true.
+
+  Each location must be exactly one of: country, federal_state, county, city, or school.
+  """
   def validate_one_is_present(changeset, fields) do
     fields
     |> Enum.filter(fn field ->

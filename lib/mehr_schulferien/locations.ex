@@ -1,12 +1,21 @@
 defmodule MehrSchulferien.Locations do
   @moduledoc """
   The Locations context.
+
+  This module handles all operations related to geographic locations in the application,
+  including countries, federal states, counties, cities, and schools. It provides functions
+  for querying, creating, updating, and deleting locations, as well as specialized queries
+  for different location types and their hierarchical relationships.
   """
 
   import Ecto.Query, warn: false
 
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Repo
+
+  #
+  # Basic CRUD operations
+  #
 
   @doc """
   Returns the list of locations.
@@ -29,21 +38,6 @@ defmodule MehrSchulferien.Locations do
   """
   def get_location_by_slug!(slug) do
     Repo.get_by!(Location, slug: slug)
-  end
-
-  @doc """
-  Returns a list of ids of the location and all it's ancestors.
-  """
-  def recursive_location_ids(location) do
-    build_ids_list([], location)
-  end
-
-  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: nil}) do
-    [id | ids_list]
-  end
-
-  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: parent_location_id}) do
-    build_ids_list([id | ids_list], Repo.get(Location, parent_location_id))
   end
 
   @doc """
@@ -78,12 +72,39 @@ defmodule MehrSchulferien.Locations do
     Location.changeset(location, %{})
   end
 
+  #
+  # Location hierarchy utilities
+  #
+
+  @doc """
+  Returns a list of ids of the location and all it's ancestors.
+  """
+  def recursive_location_ids(location) do
+    build_ids_list([], location)
+  end
+
+  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: nil}) do
+    [id | ids_list]
+  end
+
+  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: parent_location_id}) do
+    build_ids_list([id | ids_list], Repo.get(Location, parent_location_id))
+  end
+
+  #
+  # Country queries
+  #
+
   @doc """
   Returns the list of countries.
   """
   def list_countries do
     Repo.all(from l in Location, where: l.is_country == true)
   end
+
+  #
+  # Federal state queries
+  #
 
   @doc """
   Returns the list of federal states in a country.
@@ -93,6 +114,10 @@ defmodule MehrSchulferien.Locations do
     |> Repo.all()
   end
 
+  #
+  # County queries
+  #
+
   @doc """
   Returns the list of counties for a certain federal_state.
   """
@@ -100,6 +125,10 @@ defmodule MehrSchulferien.Locations do
     from(l in Location, where: l.is_county == true and l.parent_location_id == ^federal_state.id)
     |> Repo.all()
   end
+
+  #
+  # City queries
+  #
 
   @doc """
   Returns the list of cities for a certain county.
@@ -152,6 +181,10 @@ defmodule MehrSchulferien.Locations do
     from(l in Location, where: l.is_city == true and l.parent_location_id in ^county_ids)
     |> Repo.all()
   end
+
+  #
+  # School queries
+  #
 
   @doc """
   Returns the list of schools for a certain city.

@@ -1,6 +1,11 @@
 defmodule MehrSchulferien.Periods do
   @moduledoc """
   The Periods context.
+
+  This module handles all operations related to time periods in the application,
+  such as holidays, vacations, and other calendar events. It provides functions
+  for querying, creating, updating, and deleting periods, as well as utility
+  functions for finding periods by date range and determining schooldays.
   """
 
   import Ecto.Query, warn: false
@@ -10,45 +15,15 @@ defmodule MehrSchulferien.Periods do
   alias MehrSchulferien.Periods.{BridgeDayPeriod, Period}
   alias MehrSchulferien.Repo
 
+  #
+  # Basic CRUD operations
+  #
+
   @doc """
   Returns the list of periods.
   """
   def list_periods do
     Repo.all(Period)
-  end
-
-  @doc """
-  Returns a list of previous periods for a federal_state.
-  """
-  def list_previous_periods(federal_state, holiday_or_vacation_type) do
-    today = DateHelpers.today_berlin()
-
-    from(p in Period,
-      where:
-        p.location_id == ^federal_state.id and
-          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
-          p.ends_on < ^today,
-      order_by: [desc: p.starts_on]
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns a list of current and future periods for a federal_state.
-  """
-  def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
-    today = DateHelpers.today_berlin()
-
-    from(p in Period,
-      where:
-        p.location_id == ^federal_state.id and
-          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
-          p.ends_on >= ^today,
-      order_by: p.starts_on
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
   end
 
   @doc """
@@ -134,6 +109,48 @@ defmodule MehrSchulferien.Periods do
   def change_period(%Period{} = period) do
     Period.changeset(period, %{})
   end
+
+  #
+  # Period queries by time
+  #
+
+  @doc """
+  Returns a list of previous periods for a federal_state.
+  """
+  def list_previous_periods(federal_state, holiday_or_vacation_type) do
+    today = DateHelpers.today_berlin()
+
+    from(p in Period,
+      where:
+        p.location_id == ^federal_state.id and
+          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
+          p.ends_on < ^today,
+      order_by: [desc: p.starts_on]
+    )
+    |> Repo.all()
+    |> Repo.preload([:holiday_or_vacation_type, :location])
+  end
+
+  @doc """
+  Returns a list of current and future periods for a federal_state.
+  """
+  def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
+    today = DateHelpers.today_berlin()
+
+    from(p in Period,
+      where:
+        p.location_id == ^federal_state.id and
+          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
+          p.ends_on >= ^today,
+      order_by: p.starts_on
+    )
+    |> Repo.all()
+    |> Repo.preload([:holiday_or_vacation_type, :location])
+  end
+
+  #
+  # Period filtering and finding by date
+  #
 
   @doc """
   Finds all the holiday periods for a certain date.

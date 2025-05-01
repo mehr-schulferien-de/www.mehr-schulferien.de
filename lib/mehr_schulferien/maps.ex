@@ -1,12 +1,21 @@
 defmodule MehrSchulferien.Maps do
   @moduledoc """
   The Maps context.
+
+  This module handles geographic and address-related operations, including:
+  - Address management for schools and other locations
+  - Zip code (postal code) management 
+  - Mappings between zip codes and locations
   """
 
   import Ecto.Query, warn: false
 
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
   alias MehrSchulferien.Repo
+
+  #
+  # Address operations
+  #
 
   @doc """
   Returns the list of addresses.
@@ -18,12 +27,12 @@ defmodule MehrSchulferien.Maps do
   @doc """
   Gets a single address.
 
-  Raises `Ecto.NoResultsError` if the Zip code does not exist.
+  Raises `Ecto.NoResultsError` if the address does not exist.
   """
   def get_address!(id), do: Repo.get!(Address, id)
 
   @doc """
-  Creates a address.
+  Creates an address.
   """
   def create_address(attrs \\ %{}) do
     %Address{}
@@ -32,7 +41,7 @@ defmodule MehrSchulferien.Maps do
   end
 
   @doc """
-  Updates a address.
+  Updates an address.
   """
   def update_address(%Address{} = address, attrs) do
     address
@@ -41,7 +50,7 @@ defmodule MehrSchulferien.Maps do
   end
 
   @doc """
-  Deletes a address.
+  Deletes an address.
   """
   def delete_address(%Address{} = address) do
     Repo.delete(address)
@@ -54,6 +63,10 @@ defmodule MehrSchulferien.Maps do
     Address.changeset(address, %{})
   end
 
+  #
+  # Zip code operations
+  #
+
   @doc """
   Returns the list of zip_codes.
   """
@@ -64,7 +77,7 @@ defmodule MehrSchulferien.Maps do
   @doc """
   Gets a single zip_code.
 
-  Raises `Ecto.NoResultsError` if the Zip code does not exist.
+  Raises `Ecto.NoResultsError` if the zip code does not exist.
   """
   def get_zip_code!(id), do: Repo.get!(ZipCode, id)
 
@@ -73,7 +86,7 @@ defmodule MehrSchulferien.Maps do
 
   This function also preloads all locations data.
 
-  Raises `Ecto.NoResultsError` if the Zip code does not exist.
+  Raises `Ecto.NoResultsError` if the zip code does not exist.
   """
   def get_zip_code_by_value!(zip_code_value) do
     ZipCode
@@ -120,6 +133,10 @@ defmodule MehrSchulferien.Maps do
     Repo.preload(zip_code, [:locations])
   end
 
+  #
+  # Zip code mapping operations
+  #
+
   @doc """
   Returns the list of zip_code_mappings.
   """
@@ -130,7 +147,7 @@ defmodule MehrSchulferien.Maps do
   @doc """
   Gets a single zip_code_mapping.
 
-  Raises `Ecto.NoResultsError` if the Zip code mapping does not exist.
+  Raises `Ecto.NoResultsError` if the zip code mapping does not exist.
   """
   def get_zip_code_mapping!(id), do: Repo.get!(ZipCodeMapping, id)
 

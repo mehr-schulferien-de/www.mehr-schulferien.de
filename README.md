@@ -12,26 +12,61 @@ See the [contributing guide](https://github.com/mehr-schulferien-de/www.mehr-sch
 for more information about setting up your development environment and opening pull
 requests.
 
-## Data structure
+## Project Structure
+
+The application follows a modular structure with clear separation of concerns:
+
+### Core Domains
+
+- **Locations** (`lib/mehr_schulferien/locations`): Manages geographic entities (countries, federal states, counties, cities, schools)
+- **Periods** (`lib/mehr_schulferien/periods`): Handles time periods such as holidays and vacations
+- **Calendars** (`lib/mehr_schulferien/calendars`): Manages holiday/vacation types and religions
+- **Maps** (`lib/mehr_schulferien/maps`): Handles address and zip code data
+
+### Web Layer
+
+- **Controllers** (`lib/mehr_schulferien_web/controllers`): HTTP request handlers
+- **Templates** (`lib/mehr_schulferien_web/templates`): HTML views
+- **Views** (`lib/mehr_schulferien_web/views`): View helpers
+- **Shared** (`lib/mehr_schulferien_web/shared`): Components shared across the application
+
+### Utilities
+
+- **Slugs** (`lib/mehr_schulferien/slugs.ex`): Slug generation for URLs
+
+## Data Structure
 
 The situation: We have countries, federal_states, counties, cities and schools.
 They all have different possibilities to set vacation dates or public holidays.
 
 We aim to be able to render all pages on the fly. So our main problem is to make it possible that we can read the needed data fast. That is the idea behind the data model.
 
-### Maps
+### Locations
 
-Locations are the table which stores countries, federal_states, counties, cities and schools. They are all linked to the parent_location. By that, we can walk up
-the tree.
+Locations are stored in a single table which contains countries, federal_states, counties, cities and schools. They are all linked to the parent_location, creating a hierarchical tree structure that allows us to navigate up the chain from a school to its city, county, federal state, and country.
+
+Each location has exactly one type (country, federal_state, county, city, or school), which is controlled by boolean flags in the schema.
+
+### Maps
 
 A city can have multiple zip_codes and one zip_code can belong to multiple cities.
 Therefore we have a zip_code_mapping table which connects them to the location
 of a city.
 
-## Calendars
+### Calendars
 
-Religion stores available religions. holiday_or_vacation_types stores the
-types of different holidays and vacations. periods store the actual dates.
+The calendars domain contains:
+- **Religions**: Stores available religions
+- **HolidayOrVacationTypes**: Stores types of different holidays and vacations
+
+### Periods
+
+Periods store the actual holiday and vacation dates. Each period is associated with:
+- A location (where it applies)
+- A holiday or vacation type
+- Optional religion (for religious holidays)
+- Start and end dates
+- Various flags that determine visibility and behavior
 
 # CSS Framework Migration
 
@@ -105,7 +140,7 @@ The layout file checks this function to determine which CSS to include:
 <% end %>
 ```
 
-# Development System
+# Development Setup
 
 To start your Phoenix server:
 
