@@ -3,6 +3,9 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   Helper functions for generating sitemap entries.
   """
 
+  alias MehrSchulferien.Periods
+  alias MehrSchulferien.Calendars.DateHelpers
+
   @doc """
   Generates a sitemap URL entry with the given attributes.
   """
@@ -39,6 +42,32 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   def yearly_bridge_day_entry(conn, country, federal_state, year) do
     location = MehrSchulferienWeb.Router.Helpers.bridge_day_url(conn, :show_within_federal_state, country.slug, federal_state.slug, year)
     url_entry(location, "monthly", "0.5")
+  end
+
+  @doc """
+  Checks if a location has bridge days for a given year.
+  Returns true if there are any bridge days, false otherwise.
+  """
+  def has_bridge_days?(location_ids, year) do
+    {:ok, start_date} = Date.new(year, 1, 1)
+    {:ok, end_date} = Date.new(year, 12, 31)
+    public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
+    bridge_day_map = Periods.group_by_interval(public_periods)
+
+    Enum.any?(2..5, fn num ->
+      if bridge_day_map[num], do: Enum.count(bridge_day_map[num]) > 0, else: false
+    end)
+  end
+
+  @doc """
+  Returns a list of years that have bridge days for the given locations.
+  Checks the current year and next two years.
+  """
+  def years_with_bridge_days(location_ids) do
+    today = DateHelpers.today_berlin()
+    
+    today.year..(today.year + 2)
+    |> Enum.filter(fn year -> has_bridge_days?(location_ids, year) end)
   end
 
   @doc """

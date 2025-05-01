@@ -33,13 +33,18 @@ defmodule MehrSchulferienWeb.BridgeDayController do
          country <- Locations.get_country_by_slug!(country_slug),
          federal_state <- Locations.get_federal_state_by_slug!(federal_state_slug, country),
          {:ok, start_date} <- Date.new(year, 1, 1),
-         {:ok, end_date} <- Date.new(year, 12, 31) do
+         {:ok, end_date} <- Date.new(year, 12, 31),
+         true <- has_bridge_days?([country.id, federal_state.id], year) do
       assigns =
         [country: country, federal_state: federal_state, year: year] ++
           list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
 
       render(conn, "show_within_federal_state.html", assigns)
     else
+      false -> # No bridge days for this year
+        conn = Plug.Conn.put_status(conn, :not_found)
+        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+        
       {:error, :invalid_year} ->
         conn = Plug.Conn.put_status(conn, :not_found)
         raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router

@@ -173,12 +173,40 @@ defmodule MehrSchulferien.Factory do
 
   def add_public_periods(%{location: location}) do
     today = DateHelpers.today_berlin()
+    current_year = today.year
+    future_year = current_year + 1
 
-    insert_list(3, :period, %{
+    # Create bridge days for current year
+    create_bridge_day_periods(location.id, current_year)
+    
+    # Create bridge days for next year
+    create_bridge_day_periods(location.id, future_year)
+  end
+
+  defp create_bridge_day_periods(location_id, year) do
+    holiday_type = insert(:holiday_or_vacation_type, %{name: "Test Holiday"})
+    
+    # Create a bridge day scenario - two holidays with one day in between
+    # First holiday
+    create_period(%{
       is_public_holiday: true,
-      location_id: location.id,
-      starts_on: Date.add(today, 1),
-      ends_on: Date.add(today, 1)
+      location_id: location_id,
+      holiday_or_vacation_type_id: holiday_type.id,
+      starts_on: Date.new!(year, 5, 1),
+      ends_on: Date.new!(year, 5, 1),
+      display_priority: 1,
+      created_by_email_address: "test@example.com"
+    })
+    
+    # Second holiday
+    create_period(%{
+      is_public_holiday: true,
+      location_id: location_id,
+      holiday_or_vacation_type_id: holiday_type.id,
+      starts_on: Date.new!(year, 5, 3),
+      ends_on: Date.new!(year, 5, 3),
+      display_priority: 2,
+      created_by_email_address: "test@example.com"
     })
   end
 
