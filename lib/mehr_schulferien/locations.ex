@@ -213,16 +213,16 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
-  Returns the total number of schools in the database.
+  Returns the total count of schools in the database.
   """
-  def number_schools do
+  def count_schools do
     Repo.aggregate(from(l in Location, where: l.is_school == true), :count, :id)
   end
 
   @doc """
-  Returns the total number of schools for a city.
+  Returns the number of schools for a specific city.
   """
-  def number_schools(city) do
+  def count_schools(city) do
     Repo.aggregate(
       from(l in Location, where: l.is_school == true and l.parent_location_id == ^city.id),
       :count,

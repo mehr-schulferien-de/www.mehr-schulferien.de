@@ -3,8 +3,8 @@ defmodule MehrSchulferienWeb.CityView do
 
   alias MehrSchulferien.Locations
 
-  def number_schools(city) do
-    Locations.number_schools(city)
+  def count_schools(city) do
+    Locations.count_schools(city)
   end
 
   def format_zip_codes(city) do

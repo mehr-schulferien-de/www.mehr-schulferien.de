@@ -3,8 +3,8 @@ defmodule MehrSchulferienWeb.PageView do
 
   alias MehrSchulferien.{Locations, BridgeDays, PeriodDisplay}
 
-  def number_schools() do
-    Locations.number_schools()
+  def count_schools() do
+    Locations.count_schools()
   end
 
   def get_school_period(periods) do

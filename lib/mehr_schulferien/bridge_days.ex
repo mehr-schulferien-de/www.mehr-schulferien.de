@@ -24,31 +24,31 @@ defmodule MehrSchulferien.BridgeDays do
       current_year = today.year
       country = Locations.get_country_by_slug!("d")
       federal_states = Locations.list_federal_states(country)
-      nrw = Enum.find(federal_states, &(&1.slug == "nordrhein-westfalen"))
-      location_ids = [country.id, nrw.id]
+      north_rhine_westphalia = Enum.find(federal_states, &(&1.slug == "nordrhein-westfalen"))
+      location_ids = [country.id, north_rhine_westphalia.id]
       {:ok, start_date} = Date.new(current_year, 1, 1)
       {:ok, end_date} = Date.new(current_year, 12, 31)
       public_periods = Query.list_public_everybody_periods(location_ids, start_date, end_date)
       bridge_day_map = Grouping.group_by_interval(public_periods)
 
-      best =
+      best_deal =
         List.flatten(Enum.map(bridge_day_map, fn {_k, v} -> v || [] end))
         |> Enum.max_by(
-          fn bd ->
-            periods = Grouping.list_periods_with_bridge_day(public_periods, bd)
+          fn bridge_day ->
+            periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
             max_days = BridgeDayView.get_number_max_days(periods)
-            percent = round((max_days - bd.number_days) / bd.number_days * 100)
+            percent = round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
             percent
           end,
           fn -> nil end
         )
 
-      if best do
-        periods = Grouping.list_periods_with_bridge_day(public_periods, best)
+      if best_deal do
+        periods = Grouping.list_periods_with_bridge_day(public_periods, best_deal)
         max_days = BridgeDayView.get_number_max_days(periods)
-        min_leave = best.number_days
+        min_leave = best_deal.number_days
         percent = round((max_days - min_leave) / min_leave * 100)
-        {percent, min_leave, max_days, current_year, best.starts_on, best.ends_on}
+        {percent, min_leave, max_days, current_year, best_deal.starts_on, best_deal.ends_on}
       else
         nil
       end
