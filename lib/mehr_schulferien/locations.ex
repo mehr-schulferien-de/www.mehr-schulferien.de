@@ -14,6 +14,39 @@ defmodule MehrSchulferien.Locations do
   alias MehrSchulferien.Repo
 
   #
+  # Internal helpers
+  #
+
+  # List of Location boolean flag fields that indicate the specific type
+  @location_flags [
+    :is_country,
+    :is_federal_state,
+    :is_county,
+    :is_city,
+    :is_school
+  ]
+
+  #
+  # Generic helper for querying child locations by a boolean flag.
+  #
+  # This function centralises the repetitive Ecto query pattern that was
+  # previously duplicated across a handful of `list_*` functions.  Keeping
+  # the implementation in a single place makes the intent explicit and the
+  # codebase easier to maintain: if the underlying schema changes we only
+  # need to update this clause.
+  #
+  # NOTE: The function is **private** on purpose – we do not want to expose
+  #       a new public API and therefore do **not** increase the surface
+  #       area of the context module.  All existing public functions keep
+  #       their original names and signatures.
+  defp list_children_by_flag(%Location{id: parent_id}, flag) when flag in @location_flags do
+    from(l in Location,
+      where: field(l, ^flag) == true and l.parent_location_id == ^parent_id
+    )
+    |> Repo.all()
+  end
+
+  #
   # Basic CRUD operations
   #
 
@@ -110,8 +143,7 @@ defmodule MehrSchulferien.Locations do
   Returns the list of federal states in a country.
   """
   def list_federal_states(country) do
-    from(l in Location, where: l.is_federal_state == true and l.parent_location_id == ^country.id)
-    |> Repo.all()
+    list_children_by_flag(country, :is_federal_state)
   end
 
   #
@@ -122,8 +154,7 @@ defmodule MehrSchulferien.Locations do
   Returns the list of counties for a certain federal_state.
   """
   def list_counties(federal_state) do
-    from(l in Location, where: l.is_county == true and l.parent_location_id == ^federal_state.id)
-    |> Repo.all()
+    list_children_by_flag(federal_state, :is_county)
   end
 
   #
@@ -134,8 +165,8 @@ defmodule MehrSchulferien.Locations do
   Returns the list of cities for a certain county.
   """
   def list_cities(county) do
-    from(l in Location, where: l.is_city == true and l.parent_location_id == ^county.id)
-    |> Repo.all()
+    county
+    |> list_children_by_flag(:is_city)
     |> Repo.preload([:zip_codes])
     |> Enum.sort(&(&1.name >= &2.name))
   end
@@ -190,8 +221,8 @@ defmodule MehrSchulferien.Locations do
   Returns the list of schools for a certain city.
   """
   def list_schools(city) do
-    from(l in Location, where: l.is_school == true and l.parent_location_id == ^city.id)
-    |> Repo.all()
+    city
+    |> list_children_by_flag(:is_school)
     |> Repo.preload([:address])
   end
 
