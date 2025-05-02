@@ -1,7 +1,7 @@
 defmodule MehrSchulferien.Periods.DateOperations do
   @moduledoc """
   Date-related operations for periods.
-
+  
   This module contains functions for finding, filtering, and analyzing
   periods based on dates or date ranges.
   """
@@ -98,4 +98,4 @@ defmodule MehrSchulferien.Periods.DateOperations do
     |> Enum.take_while(&(Date.compare(&1.ends_on, today) == :lt))
     |> List.last()
   end
-end
+end 

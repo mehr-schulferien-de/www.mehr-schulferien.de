@@ -1,7 +1,7 @@
 defmodule MehrSchulferien.Periods.Grouping do
   @moduledoc """
   Operations for grouping and categorizing periods.
-
+  
   This module contains functions for grouping periods by various criteria,
   such as vacation type, interval, or time frame.
   """
@@ -104,4 +104,4 @@ defmodule MehrSchulferien.Periods.Grouping do
       output
     end
   end
-end
+end 

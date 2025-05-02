@@ -133,12 +133,10 @@ defmodule MehrSchulferien.Periods do
   defdelegate find_most_recent_period(periods, today), to: DateOperations
 
   # Default params for next_periods
-  def next_periods(periods, number),
-    do: DateOperations.next_periods(periods, DateHelpers.today_berlin(), number)
-
+  def next_periods(periods, number), do: DateOperations.next_periods(periods, DateHelpers.today_berlin(), number)
+  
   # Default params for find_most_recent_period
-  def find_most_recent_period(periods),
-    do: DateOperations.find_most_recent_period(periods, DateHelpers.today_berlin())
+  def find_most_recent_period(periods), do: DateOperations.find_most_recent_period(periods, DateHelpers.today_berlin())
 
   #
   # Period grouping operations - delegated to Grouping module
@@ -150,6 +148,5 @@ defmodule MehrSchulferien.Periods do
   defdelegate list_periods_with_bridge_day(periods, bridge_day), to: Grouping
 
   # Default params for group_periods_single_year
-  def group_periods_single_year(periods),
-    do: Grouping.group_periods_single_year(periods, DateHelpers.today_berlin())
+  def group_periods_single_year(periods), do: Grouping.group_periods_single_year(periods, DateHelpers.today_berlin())
 end
