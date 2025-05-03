@@ -1,9 +1,13 @@
 /* This file is for your main application css. */
 
-/* @import "./phoenix.css"; */
-@import "./bootstrap.css";
-@import "./bootstrap-theme.css";
+/******** Tailwind base directives ********/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* Custom project-specific styles can follow below. Remove legacy bootstrap imports. */
+
+/* Footer styling (legacy) retained for now */
 footer {
   background: #eee;
   padding: 0;

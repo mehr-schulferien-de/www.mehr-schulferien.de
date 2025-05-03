@@ -21,6 +21,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/ferien/d/", PageController, :full_year
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
+    get "/new", PageController, :new
 
     get "/sitemap.xml", SitemapController, :index
 

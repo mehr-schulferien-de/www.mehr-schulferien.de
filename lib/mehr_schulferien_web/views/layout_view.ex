@@ -13,7 +13,12 @@ defmodule MehrSchulferienWeb.LayoutView do
     cond do
       # Check if the current view has explicitly specified which CSS framework to use
       Map.has_key?(assigns, :css_framework) ->
-        assigns.css_framework == :bootstrap
+        case assigns.css_framework do
+          :bootstrap -> true
+          :tailwind -> false
+          :tailwind_new -> false
+          _ -> true  # Default to bootstrap for unknown values
+        end
 
       # Fall back to application config
       Application.get_env(:mehr_schulferien, :css_framework) ->
@@ -29,10 +34,10 @@ defmodule MehrSchulferienWeb.LayoutView do
   Returns the appropriate layout template file based on the current CSS framework.
   """
   def select_layout_template(conn, assigns) do
-    if use_bootstrap?(conn, assigns) do
-      "app_bootstrap.html"
-    else
-      "app_tailwind.html"
+    cond do
+      Map.get(assigns, :css_framework) == :tailwind_new -> "app_tailwind_new.html"
+      use_bootstrap?(conn, assigns) -> "app_bootstrap.html"
+      true -> "app_tailwind.html"
     end
   end
 end

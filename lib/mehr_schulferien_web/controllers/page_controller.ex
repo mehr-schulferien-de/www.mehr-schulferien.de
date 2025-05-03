@@ -83,6 +83,47 @@ defmodule MehrSchulferienWeb.PageController do
     render(conn, "impressum.html")
   end
 
+  def new(conn, params) do
+    today = DateHelpers.today_berlin()
+    current_year = today.year
+    number_of_days = Map.get(params, "number_of_days", 84) |> ensure_integer()
+    ends_on = Date.add(today, number_of_days)
+    days = DateHelpers.create_days(today, number_of_days)
+    day_names = DateHelpers.short_days_map()
+    months = DateHelpers.get_months_map()
+    countries = Enum.map(Locations.list_countries(), &build_country_periods(&1, today, ends_on))
+
+    # Add bridge day information for each federal state
+    countries =
+      Enum.map(countries, fn country ->
+        federal_states =
+          Enum.map(country[:federal_states], fn federal_state ->
+            # Get years with valid bridge days
+            years_with_bridge_days =
+              Enum.filter(current_year..(current_year + 2), fn year ->
+                BridgeDays.has_bridge_days?(
+                  [country[:country].id, federal_state.id],
+                  year
+                )
+              end)
+
+            Map.put(federal_state, :years_with_bridge_days, years_with_bridge_days)
+          end)
+
+        Map.put(country, :federal_states, federal_states)
+      end)
+
+    render(conn, "new.html",
+      countries: countries,
+      days: days,
+      day_names: day_names,
+      months: months,
+      current_year: current_year,
+      number_of_days: number_of_days,
+      css_framework: :tailwind_new
+    )
+  end
+
   defp build_country_periods(country, today, ends_on) do
     federal_states = country |> Locations.list_federal_states() |> Locations.with_periods()
 
@@ -93,4 +134,8 @@ defmodule MehrSchulferienWeb.PageController do
 
     %{country: country, federal_states: federal_states, periods: periods}
   end
+
+  defp ensure_integer(value) when is_binary(value), do: String.to_integer(value)
+  defp ensure_integer(value) when is_integer(value), do: value
+  defp ensure_integer(_), do: 84
 end

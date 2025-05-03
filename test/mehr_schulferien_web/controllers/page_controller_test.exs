@@ -40,6 +40,21 @@ defmodule MehrSchulferienWeb.PageControllerTest do
       display_priority: 3
     })
 
+    # Insert another federal state with a period for testing the /new route
+    bayern = insert(:federal_state, %{slug: "bayern", parent_location_id: country.id})
+    
+    # Add a vacation period for Bayern
+    insert(:period, %{
+      holiday_or_vacation_type: nil,
+      holiday_or_vacation_type_id: holiday_or_vacation_type.id,
+      location_id: bayern.id,
+      starts_on: Date.new!(year, 5, 15),
+      ends_on: Date.new!(year, 5, 25),
+      is_school_vacation: true,
+      created_by_email_address: "test@example.com",
+      display_priority: 3
+    })
+
     {:ok, %{conn: conn}}
   end
 
@@ -53,5 +68,10 @@ defmodule MehrSchulferienWeb.PageControllerTest do
 
     assert html_response(conn, 200) =~
              "Alle Ferientermine für"
+  end
+  
+  test "GET /new returns 200 status code", %{conn: conn} do
+    conn = get(conn, "/new")
+    assert html_response(conn, 200)
   end
 end

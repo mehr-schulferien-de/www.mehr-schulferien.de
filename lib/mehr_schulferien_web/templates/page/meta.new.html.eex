@@ -1,0 +1,3 @@
+<meta name="description" content="New page with Tailwind CSS">
+<title>New Page with Tailwind CSS - Mehr Schulferien</title>
+<link rel="canonical" href="<%= Routes.page_url(@conn, :new) %>"> 
