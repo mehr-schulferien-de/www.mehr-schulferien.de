@@ -163,7 +163,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
       <% @current_vacation && @days_remaining_in_vacation >= 0 -> %>
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
-            <div class="w-3 h-3 rounded-sm bg-green-600 mr-2 flex-shrink-0"></div>
             <span class="text-gray-500">
               <% holiday_type = @current_vacation.holiday_or_vacation_type %>
               <% display_name = get_display_name(holiday_type) %>
@@ -178,7 +177,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
       <% @next_vacation && @days_until_next_vacation && @days_until_next_vacation > 0 -> %>
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
-            <div class="w-3 h-3 rounded-sm bg-green-600 mr-2 flex-shrink-0"></div>
             <span class="text-gray-500">
               <% holiday_type = @next_vacation.holiday_or_vacation_type %>
               <% display_name = get_display_name(holiday_type) %>

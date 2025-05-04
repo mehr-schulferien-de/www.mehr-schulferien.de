@@ -376,7 +376,8 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         ends_on: ~D[2025-06-20],
         holiday_or_vacation_type: %{name: "Pfingstferien", colloquial: "Pfingstferien"},
         is_school_vacation: true,
-        display_priority: 1  # Lower priority
+        # Lower priority
+        display_priority: 1
       },
       # Fronleichnam (public holiday) with higher priority
       %{
@@ -384,14 +385,15 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         ends_on: ~D[2025-06-19],
         holiday_or_vacation_type: %{name: "Fronleichnam", colloquial: "Fronleichnam"},
         is_public_holiday: true,
-        display_priority: 2  # Higher priority
+        # Higher priority
+        display_priority: 2
       }
     ]
-    
+
     # Create days covering both periods
     days_to_show = create_days(~D[2025-06-01], 30)
     months = get_test_months()
-    
+
     # Directly create and test the HTML output
     component = %{
       days_to_show: days_to_show,
@@ -402,36 +404,43 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         {"Juni", 30, 2025, 6}
       ]
     }
-    
+
     # We need to extract the rendered HTML to check the cell colors
-    html = 
+    html =
       VacationTimelineComponent.render(component)
       |> Phoenix.HTML.Safe.to_iodata()
       |> IO.iodata_to_binary()
-    
+
     # NOTE: The counts include the color markers in the legend at the bottom
-    # So we need to account for that
-    
-    # Count green cells (vacation days) - should be 10 days of Pfingstferien excluding the Fronleichnam day
-    # Plus 1 for the green marker in the legend = 11
-    green_cell_count = 
+    # We're not counting calendar emojis because they've replaced the green rectangles
+
+    # Count green cells (vacation days) in the timeline only
+    # Should be 10 days of Pfingstferien excluding Fronleichnam
+    # Plus 1 for the legend marker = 11
+    green_cell_count =
       html
       |> String.split("bg-green-600")
       |> length()
-      |> Kernel.-(1)  # Subtract 1 because split results in one more segment than delimiters
-    
-    # Count blue cells (public holidays) - should be 1 for Fronleichnam
-    # Plus 1 for the blue marker in the legend = 2
-    blue_cell_count = 
+      # Subtract 1 because split results in one more segment than delimiters
+      |> Kernel.-(1)
+
+    # Count blue cells (public holidays) in the timeline
+    # Should be 1 for Fronleichnam plus 1 for the legend marker = 2
+    blue_cell_count =
       html
       |> String.split("bg-blue-600")
       |> length()
-      |> Kernel.-(1)  # Subtract 1 for the same reason
-    
-    # Adjusted assertions accounting for the legend markers
-    assert green_cell_count == 12  # 10 days of vacation + legend marker + countdown marker
-    assert blue_cell_count == 2    # 1 day of public holiday + legend marker
-    
+      |> Kernel.-(1)
+
+    # Verify that the calendar emoji is present
+    assert html =~ "📅"
+
+    # Adjusted assertions accounting for the removed green rectangles in the status messages
+    # 10 days of vacation + legend marker (no green rectangle in status anymore)
+    assert green_cell_count == 11
+    # 1 day of public holiday + legend marker
+    assert blue_cell_count == 2
+
     # Verify that there is one date with both Pfingstferien and Fronleichnam mentioned
     assert html =~ "Pfingstferien"
     assert html =~ "Fronleichnam"
