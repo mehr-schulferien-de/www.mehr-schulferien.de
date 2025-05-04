@@ -98,9 +98,11 @@ defmodule MehrSchulferienWeb.PageController do
     {custom_start_date, days_to_display} = parse_calendar_params(params)
     noindex = custom_start_date != nil
 
-    today = DateHelpers.today_berlin()
-    current_year = today.year
-    start_date = custom_start_date || today
+    # Only calculate today if we don't have a custom start date
+    start_date = custom_start_date || DateHelpers.today_berlin()
+
+    # Use the actual start date for year calculation
+    current_year = start_date.year
     number_of_days = days_to_display
     ends_on = Date.add(start_date, number_of_days)
 
