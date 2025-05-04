@@ -149,4 +149,92 @@ defmodule MehrSchulferien.BridgeDays do
       |> List.first()
     end
   end
+
+  @doc """
+  Finds the most efficient bridge day opportunity in the next specified months from the given date.
+  Considers using 1-5 vacation days to maximize free time.
+
+  Returns a map containing:
+  - best_opportunity: A BridgeDayPeriod struct
+  - vacation_days: Number of vacation days used
+  - total_free_days: Total number of consecutive free days achieved
+  - efficiency_percentage: Percentage efficiency gain (total free days / vacation days)
+  - adjacent_periods: List of adjacent periods that form the opportunity
+
+  Returns nil if no opportunities are found.
+
+  ## Parameters
+
+  - federal_state: The federal state to search for bridge days
+  - start_date: The date from which to start searching
+  - months_ahead: The number of months to look ahead (defaults to 12)
+
+  ## Examples
+
+      iex> find_best_bridge_day(federal_state, ~D[2023-01-01])
+      %{
+        best_opportunity: %BridgeDayPeriod{...},
+        vacation_days: 1,
+        total_free_days: 4,
+        efficiency_percentage: 300,
+        adjacent_periods: [...]
+      }
+  """
+  def find_best_bridge_day(federal_state, start_date, months_ahead \\ 12) do
+    # Get the country of the federal state
+    country = Locations.get_location!(federal_state.parent_location_id)
+    location_ids = [country.id, federal_state.id]
+
+    # Calculate end date based on months_ahead parameter
+    end_date = Date.add(start_date, months_ahead * 30)
+
+    # Fetch all public periods in the specified time window
+    public_periods = Query.list_public_everybody_periods(location_ids, start_date, end_date)
+
+    # Early return if we don't have enough periods
+    if length(public_periods) < 2 do
+      nil
+    else
+      # Find all potential bridge day opportunities (1-5 days)
+      bridge_day_map = Grouping.group_by_interval(public_periods)
+
+      # Collect all opportunities with 1-5 vacation days
+      opportunities =
+        for days <- 2..6,
+            bridge_days = Map.get(bridge_day_map, days, []),
+            length(bridge_days) > 0 do
+          vacation_days = days - 1
+
+          # Analyze each bridge day opportunity in this category
+          bridge_days
+          |> Enum.filter(&(Date.compare(&1.starts_on, start_date) == :gt))
+          |> Enum.map(fn bridge_day ->
+            periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
+            total_free_days = BridgeDayView.get_number_max_days(periods)
+            efficiency_percentage = round((total_free_days - vacation_days) / vacation_days * 100)
+
+            %{
+              bridge_day: bridge_day,
+              vacation_days: vacation_days,
+              total_free_days: total_free_days,
+              efficiency_percentage: efficiency_percentage,
+              adjacent_periods: periods
+            }
+          end)
+        end
+        |> List.flatten()
+
+      # Find the best opportunity - prioritize total free days first, then efficiency
+      # This ensures we get longer continuous periods off when possible
+      Enum.max_by(
+        opportunities,
+        fn opportunity ->
+          # Create a composite score where total free days is the primary factor
+          # and efficiency is the secondary factor (as a tiebreaker)
+          opportunity.total_free_days * 1000 + opportunity.efficiency_percentage
+        end,
+        fn -> nil end
+      )
+    end
+  end
 end
