@@ -74,7 +74,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       ""
     end}
       
-      <table class="border-collapse w-full">
+      <table class="border-collapse w-full table-fixed">
         #{render_timeline_header(assigns.days_to_show)}
         <tbody>
           <tr>
@@ -88,7 +88,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         true -> ""
       end
 
-      "<td class=\"border border-gray-200 text-center py-1 px-0.5 text-xs h-[30px] #{cell_bg_class}\">#{day.day}.</td>"
+      "<td class=\"border border-gray-200 text-center py-1 w-1/12 text-xs h-[30px] #{cell_bg_class}\">#{day.day}.</td>"
     end) |> Enum.join("")}
           </tr>
         </tbody>
@@ -167,7 +167,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         weekday_abbr = weekday_map[weekday]
 
         """
-        <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center">#{weekday_abbr}</td>
+        <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">#{weekday_abbr}</td>
         """
       end)
       |> Enum.join("")
