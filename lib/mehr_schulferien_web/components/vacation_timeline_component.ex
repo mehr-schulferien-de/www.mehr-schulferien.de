@@ -112,24 +112,45 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <%= for day <- @days_to_show do %>
             <% 
               is_weekend = Date.day_of_week(day) > 5  # 6 = Samstag, 7 = Sonntag
-              # Prüfen ob Ferien oder Feiertag
-              is_vacation = Enum.any?(@all_periods, fn period -> 
-                Map.get(period, :is_school_vacation, false) &&
-                Date.compare(day, period.starts_on) != :lt && 
-                Date.compare(day, period.ends_on) != :gt 
-              end)
-              is_public_holiday = Enum.any?(@all_periods, fn period -> 
-                Map.get(period, :is_public_holiday, false) &&
+              
+              # Find all periods active on this day, respecting display_priority
+              periods_on_day = Enum.filter(@all_periods, fn period -> 
                 Date.compare(day, period.starts_on) != :lt && 
                 Date.compare(day, period.ends_on) != :gt 
               end)
               
-              # Klassen für Hintergrundfarbe
+              # Sort by display_priority if present (higher priority first)
+              sorted_periods = Enum.sort_by(periods_on_day, fn period ->
+                # Default priority is 0 if not specified
+                priority = Map.get(period, :display_priority, 0)
+                # Return negative to sort descending (highest priority first)
+                -priority
+              end)
+              
+              # Get the highest priority period for this day
+              highest_priority_period = List.first(sorted_periods)
+              
+              # Determine color based on highest priority period
               bg_class = cond do
-                is_vacation -> "bg-green-600"
-                is_public_holiday -> "bg-blue-600"
-                is_weekend -> "bg-gray-100"
-                true -> ""
+                # If no periods for this day
+                highest_priority_period == nil -> 
+                  if is_weekend, do: "bg-gray-100", else: ""
+                  
+                # Period is a school vacation
+                Map.get(highest_priority_period, :is_school_vacation, false) ->
+                  "bg-green-600"
+                  
+                # Period is a public holiday  
+                Map.get(highest_priority_period, :is_public_holiday, false) ->
+                  "bg-blue-600"
+                  
+                # Fallback for weekend
+                is_weekend ->
+                  "bg-gray-100"
+                  
+                # Default
+                true ->
+                  ""
               end
             %>
             <td class={"w-6 h-5 border-t border-b border-gray-200 #{bg_class}"}></td>
@@ -143,7 +164,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
             <div class="w-3 h-3 rounded-sm bg-green-600 mr-2 flex-shrink-0"></div>
-            <span>
+            <span class="text-gray-500">
               <% holiday_type = @current_vacation.holiday_or_vacation_type %>
               <% display_name = get_display_name(holiday_type) %>
               <%= if @days_remaining_in_vacation == 0 do %>
@@ -158,7 +179,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
             <div class="w-3 h-3 rounded-sm bg-green-600 mr-2 flex-shrink-0"></div>
-            <span>
+            <span class="text-gray-500">
               <% holiday_type = @next_vacation.holiday_or_vacation_type %>
               <% display_name = get_display_name(holiday_type) %>
               <%= if @days_until_next_vacation == 1 do %>
