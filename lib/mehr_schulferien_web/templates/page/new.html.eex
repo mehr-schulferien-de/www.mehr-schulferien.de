@@ -136,48 +136,7 @@
               
               <!-- Timeline visualization for bridge day -->
               <div id="<%= component_id %>" class="bridge-day-timeline">
-                <style>
-                  #<%= component_id %> table {
-                    border-collapse: collapse;
-                    width: 100%;
-                  }
-                  #<%= component_id %> th {
-                    text-align: left;
-                    padding: 2px 0 2px 4px;
-                    font-weight: 600;
-                    font-size: 12px;
-                    border: 1px solid #e5e7eb;
-                    background-color: #f9fafb;
-                  }
-                  #<%= component_id %> td {
-                    border: 1px solid #e5e7eb;
-                    text-align: center;
-                    padding: 4px 2px;
-                    font-size: 12px;
-                    width: calc(100% / 11);
-                    height: 30px;
-                  }
-                  #<%= component_id %> .weekday-cell {
-                    background-color: #f9fafb;
-                    font-size: 11px;
-                    padding: 2px;
-                    font-weight: normal;
-                    height: 20px;
-                  }
-                  #<%= component_id %> .bg-purple-600 {
-                    background-color: #7c3aed;
-                    color: white;
-                  }
-                  #<%= component_id %> .bg-blue-600 {
-                    background-color: #2563eb;
-                    color: white;
-                  }
-                  #<%= component_id %> .bg-gray-100 {
-                    background-color: #f3f4f6;
-                  }
-                </style>
-                
-                <table>
+                <table class="border-collapse w-full">
                   <thead>
                     <tr>
                       <% 
@@ -187,7 +146,7 @@
                       %>
                       
                       <%= for {{year, month}, days} <- sorted_month_groups do %>
-                        <th colspan="<%= length(days) %>">
+                        <th class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 bg-gray-50" colspan="<%= length(days) %>">
                           <%= DateHelpers.get_months_map()[month] %> <%= year %>
                         </th>
                       <% end %>
@@ -208,7 +167,7 @@
                           weekday = Date.day_of_week(day)
                           weekday_abbr = weekday_map[weekday]
                         %>
-                        <td class="weekday-cell"><%= weekday_abbr %></td>
+                        <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center"><%= weekday_abbr %></td>
                       <% end %>
                     </tr>
                   </thead>
@@ -224,13 +183,13 @@
                           
                           # Determine cell background color
                           cell_bg_class = cond do
-                            highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-purple-600"
-                            highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600"
+                            highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-purple-600 text-white"
+                            highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600 text-white"
                             is_weekend -> "bg-gray-100"
                             true -> ""
                           end
                         %>
-                        <td class="<%= cell_bg_class %>"><%= day.day %>.</td>
+                        <td class="border border-gray-200 text-center py-1 px-0.5 text-xs h-[30px] <%= cell_bg_class %>"><%= day.day %>.</td>
                       <% end %>
                     </tr>
                   </tbody>
@@ -328,48 +287,7 @@
               
               <!-- Timeline visualization for best bridge day -->
               <div id="<%= component_id %>" class="bridge-day-timeline">
-                <style>
-                  #<%= component_id %> table {
-                    border-collapse: collapse;
-                    width: 100%;
-                  }
-                  #<%= component_id %> th {
-                    text-align: left;
-                    padding: 2px 0 2px 4px;
-                    font-weight: 600;
-                    font-size: 12px;
-                    border: 1px solid #e5e7eb;
-                    background-color: #f9fafb;
-                  }
-                  #<%= component_id %> td {
-                    border: 1px solid #e5e7eb;
-                    text-align: center;
-                    padding: 4px 2px;
-                    font-size: 12px;
-                    width: calc(100% / <%= days_count %>);
-                    height: 30px;
-                  }
-                  #<%= component_id %> .weekday-cell {
-                    background-color: #f9fafb;
-                    font-size: 11px;
-                    padding: 2px;
-                    font-weight: normal;
-                    height: 20px;
-                  }
-                  #<%= component_id %> .bg-purple-600 {
-                    background-color: #7c3aed;
-                    color: white;
-                  }
-                  #<%= component_id %> .bg-blue-600 {
-                    background-color: #2563eb;
-                    color: white;
-                  }
-                  #<%= component_id %> .bg-gray-100 {
-                    background-color: #f3f4f6;
-                  }
-                </style>
-                
-                <table>
+                <table class="border-collapse w-full">
                   <thead>
                     <tr>
                       <% 
@@ -379,7 +297,7 @@
                       %>
                       
                       <%= for {{year, month}, days} <- sorted_month_groups do %>
-                        <th colspan="<%= length(days) %>">
+                        <th class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 bg-gray-50" colspan="<%= length(days) %>">
                           <%= DateHelpers.get_months_map()[month] %> <%= year %>
                         </th>
                       <% end %>
@@ -400,7 +318,7 @@
                           weekday = Date.day_of_week(day)
                           weekday_abbr = weekday_map[weekday]
                         %>
-                        <td class="weekday-cell"><%= weekday_abbr %></td>
+                        <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center"><%= weekday_abbr %></td>
                       <% end %>
                     </tr>
                   </thead>
@@ -424,15 +342,15 @@
                           
                           # Determine cell background color
                           cell_bg_class = cond do
-                            is_bridge_day -> "bg-purple-600"
-                            other_period && Map.get(other_period, :is_public_holiday, false) -> "bg-blue-600"
+                            is_bridge_day -> "bg-purple-600 text-white"
+                            other_period && Map.get(other_period, :is_public_holiday, false) -> "bg-blue-600 text-white"
                             other_period && Map.has_key?(other_period, :holiday_or_vacation_type) && 
-                              other_period.holiday_or_vacation_type.name != "Wochenende" -> "bg-blue-600"
+                              other_period.holiday_or_vacation_type.name != "Wochenende" -> "bg-blue-600 text-white"
                             is_weekend -> "bg-gray-100"
                             true -> ""
                           end
                         %>
-                        <td class="<%= cell_bg_class %>"><%= day.day %>.</td>
+                        <td class="border border-gray-200 text-center py-1 px-0.5 text-xs h-[30px] <%= cell_bg_class %>"><%= day.day %>.</td>
                       <% end %>
                     </tr>
                   </tbody>
