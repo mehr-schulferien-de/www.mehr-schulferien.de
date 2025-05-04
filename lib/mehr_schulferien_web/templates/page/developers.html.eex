@@ -25,6 +25,39 @@
     <p class="mb-4"><b>Wir freuen uns über gute Feature-Requests und Bug-Reports!</b> Idealerweise
     als <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new" class="text-blue-600 hover:text-blue-800">Issues auf Github</a>, aber auch gerne per E-Mail an Stefan Wintermeyer <a href="mailto:sw@wintermeyer-consulting.de" class="text-blue-600 hover:text-blue-800">(sw@wintermeyer-consulting.de)</a></p>
 
+    <h2 class="text-2xl font-semibold mb-3">URL-Parameter</h2>
+    <p class="mb-4">Verschiedene Ansichten können über URL-Parameter angepasst werden. Die Ferienübersicht unter <a href="/new" class="text-blue-600 hover:text-blue-800">/new</a> unterstützt folgende Parameter:</p>
+    
+    <div class="overflow-x-auto mb-6">
+      <table class="min-w-full text-sm bg-white border border-gray-300">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="py-2 px-4 border-b text-left">Parameter</th>
+            <th class="py-2 px-4 border-b text-left">Typ</th>
+            <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+            <th class="py-2 px-4 border-b text-left">Beispiel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="py-2 px-4 border-b font-mono">today</td>
+            <td class="py-2 px-4 border-b">String</td>
+            <td class="py-2 px-4 border-b">Startdatum im Format DD.MM.YYYY</td>
+            <td class="py-2 px-4 border-b font-mono">today=01.09.2024</td>
+          </tr>
+          <tr>
+            <td class="py-2 px-4 border-b font-mono">days</td>
+            <td class="py-2 px-4 border-b">Integer</td>
+            <td class="py-2 px-4 border-b">Anzahl der anzuzeigenden Tage (1-365)</td>
+            <td class="py-2 px-4 border-b font-mono">days=180</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <p class="mb-4">Beispiel mit kombinierten Parametern: <a href="/new?today=01.09.2024&days=180" class="text-blue-600 hover:text-blue-800 font-mono">/new?today=01.09.2024&days=180</a></p>
+    <p class="mb-4">Weitere Informationen finden Sie in der <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/blob/master/docs/url_parameters.md" class="text-blue-600 hover:text-blue-800">Dokumentation auf GitHub</a>.</p>
+
     <h2 class="text-2xl font-semibold mb-3">Die API</h2>
     <p class="mb-4">Alle Daten können per RESTful JSON-API abgerufen werden. Stück für Stück werden wir hierzu die Dokumentation erweitern. Hier schon mal die Basics.</p>
 

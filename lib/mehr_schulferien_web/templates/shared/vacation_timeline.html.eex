@@ -1,7 +1,17 @@
 <%
-  # Nur die ersten 120 Tage anzeigen
-  days_to_show = Enum.take(@days, 120)
-  first_day = List.first(days_to_show)
+  # Check for a custom date parameter
+  first_day = if assigns[:custom_start_date] do
+    assigns[:custom_start_date]
+  else
+    days_to_show = Enum.take(@days, 90)
+    List.first(days_to_show)
+  end
+  
+  # Use custom days count or default to 90
+  days_count = assigns[:days_to_display] || 90
+  
+  # Create days to show based on first_day
+  days_to_show = MehrSchulferien.Calendars.DateHelpers.create_days(first_day, days_count)
   last_day = List.last(days_to_show)
   
   # Monate identifizieren und gruppieren
@@ -25,7 +35,7 @@
     |> Enum.sort_by(fn period -> period.starts_on end, Date)
 %>
 
-<!-- Dynamische Timeline Tabelle für die nächsten 120 Tage -->
+<!-- Dynamische Timeline Tabelle für die nächsten <%= days_count %> Tage -->
 <table class="table-fixed border border-gray-300 text-center text-xs" role="presentation">
   <thead>
     <tr>

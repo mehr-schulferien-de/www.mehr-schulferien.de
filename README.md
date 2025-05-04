@@ -12,6 +12,10 @@ See the [contributing guide](https://github.com/mehr-schulferien-de/www.mehr-sch
 for more information about setting up your development environment and opening pull
 requests.
 
+## Documentation
+
+- [URL Parameters](docs/url_parameters.md) - Information about available URL parameters for customizing views
+
 ## Project Structure
 
 The application follows a modular structure with clear separation of concerns:

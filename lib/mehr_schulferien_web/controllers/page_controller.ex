@@ -84,14 +84,48 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def new(conn, params) do
+    # Parse today parameter if present (format: DD.MM.YYYY)
+    custom_start_date = 
+      case Map.get(params, "today") do
+        nil -> nil
+        date_str ->
+          with [day, month, year] <- String.split(date_str, "."),
+               {day, _} <- Integer.parse(day),
+               {month, _} <- Integer.parse(month),
+               {year, _} <- Integer.parse(year),
+               {:ok, date} <- Date.new(year, month, day) do
+            date
+          else
+            _ -> nil
+          end
+      end
+    
+    # Parse days parameter if present (integer)
+    days_to_display = 
+      case Map.get(params, "days") do
+        nil -> 90  # Default
+        days_str ->
+          case Integer.parse(days_str) do
+            {days, _} when days > 0 and days <= 365 -> days
+            _ -> 90  # Use default if invalid
+          end
+      end
+    
+    # If today parameter is present, add noindex flag
+    noindex = custom_start_date != nil
+    
     today = DateHelpers.today_berlin()
     current_year = today.year
     number_of_days = Map.get(params, "number_of_days", 84) |> ensure_integer()
-    ends_on = Date.add(today, number_of_days)
-    days = DateHelpers.create_days(today, number_of_days)
+    
+    # Use custom start date or today
+    start_date = custom_start_date || today
+    
+    ends_on = Date.add(start_date, number_of_days)
+    days = DateHelpers.create_days(start_date, number_of_days)
     day_names = DateHelpers.short_days_map()
     months = DateHelpers.get_months_map()
-    countries = Enum.map(Locations.list_countries(), &build_country_periods(&1, today, ends_on))
+    countries = Enum.map(Locations.list_countries(), &build_country_periods(&1, start_date, ends_on))
 
     # Add bridge day information for each federal state
     countries =
@@ -120,7 +154,10 @@ defmodule MehrSchulferienWeb.PageController do
       months: months,
       current_year: current_year,
       number_of_days: number_of_days,
-      css_framework: :tailwind_new
+      css_framework: :tailwind_new,
+      custom_start_date: custom_start_date,
+      days_to_display: days_to_display,
+      noindex: noindex
     )
   end
 
