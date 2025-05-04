@@ -58,7 +58,8 @@
       <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
         <% 
           # Find next bridge day for the federal state
-          next_bridge_day = MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, DateHelpers.today_berlin(), 1)
+          reference_date = @custom_start_date || DateHelpers.today_berlin()
+          next_bridge_day = MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
           url = if country && country.slug && federal_state && federal_state.slug do 
             "/brueckentage/d/bundesland/#{federal_state.slug}"
           else
@@ -124,8 +125,9 @@
                 timeline_periods = [bridge_period]
                 timeline_periods = if related_holiday, do: [related_holiday | timeline_periods], else: timeline_periods
                 
-                # Calculate days until bridge day
-                days_until = Date.diff(bridge_day_date, DateHelpers.today_berlin())
+                # Calculate days until bridge day using the reference date (custom_start_date or today)
+                days_until = Date.diff(bridge_day_date, reference_date)
+                is_future_reference = Date.compare(reference_date, bridge_day_date) == :gt
                 component_id = "bridge-day-timeline-#{federal_state.id}"
               %>
               
@@ -232,10 +234,18 @@
                 </table>
                 
                 <p class="text-sm text-gray-600 mt-2 mb-3">
-                  <%= if days_until > 0 do %>
+                  <%= if !is_future_reference && days_until > 0 do %>
                     Noch <%= days_until %> Tage bis zum nächsten Brückentag.
                   <% else %>
-                    Brückentag ist <%= if days_until == 0, do: "heute", else: "schon vorbei" %>.
+                    <%= if days_until == 0 do %>
+                      Brückentag ist heute.
+                    <% else %>
+                      <%= if is_future_reference do %>
+                        Diesen Brückentag gab es am <%= Calendar.strftime(bridge_day_date, "%d.%m.%Y") %>.
+                      <% else %>
+                        Brückentag ist schon vorbei.
+                      <% end %>
+                    <% end %>
                   <% end %>
                 </p>
                 
@@ -251,6 +261,17 @@
                     </li>
                   <% end %>
                 </ul>
+                
+                <% 
+                  # Calculate the efficiency gain - typically 1 day off gets you 4 days total (bridge day + holiday + weekend)
+                  vacation_days = 1  # Standard bridge day requires 1 vacation day
+                  total_free_days = 4  # Typically bridge day + holiday + weekend (2 days)
+                  efficiency_percentage = (total_free_days - vacation_days) / vacation_days * 100
+                %>
+                
+                <p class="text-sm text-gray-600 mt-3">
+                  Für <%= vacation_days %> eingereichten Urlaubstag bekommen Sie <%= total_free_days %> freie Tage (<%= trunc(efficiency_percentage) %>% Gewinn).
+                </p>
               </div>
               
             <% else %>
