@@ -432,8 +432,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
       |> length()
       |> Kernel.-(1)
 
-    # Verify that the calendar emoji is present
-    assert html =~ "📅"
+    # Removed calendar emoji assertion as it's no longer used
 
     # Adjusted assertions accounting for the removed green rectangles in the status messages
     # 10 days of vacation + legend marker (no green rectangle in status anymore)
