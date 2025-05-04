@@ -3,11 +3,21 @@ defmodule MehrSchulferienWeb.Endpoint do
 
   socket "/socket", MehrSchulferienWeb.UserSocket,
     websocket: true,
-    longpoll: false
+    longpoll: false,
+    drainer: [
+      batch_size: 10000,
+      batch_interval: 2000,
+      shutdown: 30000
+    ]
 
   socket "/live", Phoenix.LiveView.Socket,
     websocket: true,
-    longpoll: false
+    longpoll: false,
+    drainer: [
+      batch_size: 10000,
+      batch_interval: 2000,
+      shutdown: 30000
+    ]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
