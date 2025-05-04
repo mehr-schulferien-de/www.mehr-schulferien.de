@@ -173,8 +173,4 @@ defmodule MehrSchulferienWeb.PageController do
 
     %{country: country, federal_states: federal_states, periods: periods}
   end
-
-  defp ensure_integer(value) when is_binary(value), do: String.to_integer(value)
-  defp ensure_integer(value) when is_integer(value), do: value
-  defp ensure_integer(_), do: 90
 end

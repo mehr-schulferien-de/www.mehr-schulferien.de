@@ -50,8 +50,8 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
               
               # Klassen für Hintergrundfarbe
               bg_class = cond do
-                is_vacation -> "bg-green-300"
-                is_public_holiday -> "bg-blue-300"
+                is_vacation -> "bg-green-600"
+                is_public_holiday -> "bg-blue-600"
                 is_weekend -> "bg-gray-100"
                 true -> ""
               end
@@ -64,22 +64,25 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
     <div class="mt-4">
       <p class="text-sm font-medium mb-2">Ferien und Feiertage im angezeigten Zeitraum:</p>
-      <ul class="list-disc pl-5 text-sm">
+      <ul class="text-sm">
         <%= for period <- @all_periods do %>
           <% 
             holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
             is_school_vacation = Map.get(period, :is_school_vacation, false)
             name = Map.get(holiday_type, :name, "")
             # CSS-Klasse basierend auf Art des Ereignisses
-            text_class = if is_school_vacation, do: "text-green-800", else: "text-blue-800"
+            marker_color = if is_school_vacation, do: "bg-green-600", else: "bg-blue-600"
           %>
-          <li class={text_class}>
-            <%= name %> 
-            <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
-              (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>)
-            <% else %>
-              (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>)
-            <% end %>
+          <li class={"flex items-center space-x-2 mb-1"}>
+            <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
+            <span>
+              <%= name %> 
+              <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
+                (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>)
+              <% else %>
+                (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>)
+              <% end %>
+            </span>
           </li>
         <% end %>
       </ul>
