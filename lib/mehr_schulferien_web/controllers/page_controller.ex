@@ -94,69 +94,23 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def new(conn, params) do
-    # Parse today parameter if present (format: DD.MM.YYYY)
-    custom_start_date =
-      case Map.get(params, "today") do
-        nil ->
-          nil
-
-        date_str ->
-          with [day, month, year] <- String.split(date_str, "."),
-               {day, _} <- Integer.parse(day),
-               {month, _} <- Integer.parse(month),
-               {year, _} <- Integer.parse(year),
-               {:ok, date} <- Date.new(year, month, day) do
-            date
-          else
-            _ -> nil
-          end
-      end
-
-    # Parse days parameter if present (integer)
-    days_to_display =
-      case Map.get(params, "days") do
-        # Default
-        nil ->
-          90
-
-        days_str ->
-          case Integer.parse(days_str) do
-            {days, _} when days > 0 and days <= 365 -> days
-            # Use default if invalid
-            _ -> 90
-          end
-      end
-
-    # If today parameter is present, add noindex flag
+    # Parse parameters
+    {custom_start_date, days_to_display} = parse_calendar_params(params)
     noindex = custom_start_date != nil
 
     today = DateHelpers.today_berlin()
     current_year = today.year
-
-    # Use days_to_display parameter for number_of_days
-    number_of_days = days_to_display
-
-    # Use custom start date or today
     start_date = custom_start_date || today
-
+    number_of_days = days_to_display
     ends_on = Date.add(start_date, number_of_days)
+
+    # Generate calendar data
     days = DateHelpers.create_days(start_date, number_of_days)
     day_names = DateHelpers.short_days_map()
     months = DateHelpers.get_months_map()
+    months_with_days = calculate_months_with_days(days, months)
 
-    # Calculate months_with_days for the timeline
-    month_groups =
-      days
-      |> Enum.group_by(fn day -> {day.year, day.month} end)
-      |> Enum.sort()
-
-    months_with_days =
-      Enum.map(month_groups, fn {{year, month}, month_days} ->
-        month_name = Map.get(months, month, "") |> to_string()
-        {month_name, length(month_days), year, month}
-      end)
-
-    # Fetch everything in a more efficient way
+    # Fetch countries data
     countries = fetch_countries_with_periods(start_date, ends_on, current_year)
 
     render(conn, "new.html",
@@ -172,6 +126,48 @@ defmodule MehrSchulferienWeb.PageController do
       months_with_days: months_with_days,
       noindex: noindex
     )
+  end
+
+  # Parses and validates the calendar parameters
+  defp parse_calendar_params(params) do
+    custom_start_date = parse_start_date(params["today"])
+    days_to_display = parse_days_count(params["days"])
+
+    {custom_start_date, days_to_display}
+  end
+
+  defp parse_start_date(nil), do: nil
+
+  defp parse_start_date(date_str) do
+    with [day, month, year] <- String.split(date_str, "."),
+         {day, _} <- Integer.parse(day),
+         {month, _} <- Integer.parse(month),
+         {year, _} <- Integer.parse(year),
+         {:ok, date} <- Date.new(year, month, day) do
+      date
+    else
+      _ -> nil
+    end
+  end
+
+  defp parse_days_count(nil), do: 90
+
+  defp parse_days_count(days_str) do
+    case Integer.parse(days_str) do
+      {days, _} when days > 0 and days <= 365 -> days
+      _ -> 90
+    end
+  end
+
+  # Calculates the months with days for the timeline
+  defp calculate_months_with_days(days, months) do
+    days
+    |> Enum.group_by(fn day -> {day.year, day.month} end)
+    |> Enum.sort()
+    |> Enum.map(fn {{year, month}, month_days} ->
+      month_name = Map.get(months, month, "") |> to_string()
+      {month_name, length(month_days), year, month}
+    end)
   end
 
   # This function fetches all data in a more efficient way
