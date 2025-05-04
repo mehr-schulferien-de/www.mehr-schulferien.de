@@ -1,3 +1,7 @@
+<% 
+  alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.Locations
+%>
 <div class="mt-8">
   <h1 class="text-3xl font-bold text-gray-900 mb-6">Schulferien Deutschland</h1>
   <p class="text-gray-700 mb-8">Ferien und Feiertage der nächsten <%= @number_of_days %> Tage auf einen Blick<%= if @custom_start_date && Date.compare(@custom_start_date, Date.utc_today()) != :eq do %> (ab dem <%= Calendar.strftime(@custom_start_date, "%d.%m.%Y") %>)<% end %>.</p>
@@ -39,6 +43,222 @@
             
             <div class="mt-4 text-sm text-blue-600 font-medium">
               Alle Ferientermine für <%= federal_state.name %>.
+            </div>
+          </section>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div> 
+
+<div class="mt-12">
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">Brückentage</h2>
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+    <%= for {%{country: country, federal_states: federal_states}, _country_index} <- Enum.with_index(@countries) do %>
+      <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
+        <% 
+          # Find next bridge day for the federal state
+          next_bridge_day = MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, DateHelpers.today_berlin(), 1)
+          url = if country && country.slug && federal_state && federal_state.slug do 
+            "/brueckentage/d/bundesland/#{federal_state.slug}"
+          else
+            "#"
+          end 
+        %>
+        <%= link to: url, class: "block hover:shadow-lg transition-shadow duration-300" do %>
+          <section class="bg-white rounded shadow p-6 h-full">
+            <h3 class="text-xl font-semibold mb-4"><%= federal_state.name %></h3>
+            
+            <%= if next_bridge_day do %>
+              <% 
+                # Create timeline data for the bridge day (5 days before and after)
+                bridge_day_date = next_bridge_day.starts_on
+                start_date = Date.add(bridge_day_date, -5)
+                days_to_show = DateHelpers.create_days(start_date, 11)
+                
+                # Calculate months for the timeline
+                months = DateHelpers.get_months_map()
+                month_groups = days_to_show
+                  |> Enum.group_by(fn day -> {day.year, day.month} end)
+                  |> Enum.sort()
+                
+                # This variable is no longer needed since we calculate months directly in the template
+                _months_with_days = Enum.map(month_groups, fn {{year, month}, month_days} ->
+                  month_name = Map.get(months, month, "") |> to_string()
+                  {month_name, length(month_days), year, month}
+                end)
+                
+                # Get related periods to find the public holiday
+                country = Locations.get_location!(federal_state.parent_location_id)
+                location_ids = [country.id, federal_state.id]
+                
+                # Fetch public periods for this window to find the holiday that creates the bridge day
+                window_start = Date.add(bridge_day_date, -5)
+                window_end = Date.add(bridge_day_date, 5)
+                public_periods = MehrSchulferien.Periods.Query.list_public_everybody_periods(location_ids, window_start, window_end)
+                
+                # Find the public holiday that creates this bridge day
+                holiday_before = Enum.find(public_periods, fn period -> 
+                  Date.compare(period.ends_on, next_bridge_day.starts_on) == :lt && 
+                  Date.diff(next_bridge_day.starts_on, period.ends_on) <= 3 && 
+                  period.is_public_holiday
+                end)
+                
+                holiday_after = Enum.find(public_periods, fn period -> 
+                  Date.compare(period.starts_on, next_bridge_day.ends_on) == :gt && 
+                  Date.diff(period.starts_on, next_bridge_day.ends_on) <= 3 && 
+                  period.is_public_holiday
+                end)
+                
+                related_holiday = holiday_before || holiday_after
+                
+                # Create periods for the timeline visualization
+                bridge_period = %{
+                  starts_on: bridge_day_date,
+                  ends_on: bridge_day_date,
+                  is_school_vacation: true,
+                  holiday_or_vacation_type: %{name: "Brückentag"}
+                }
+                
+                # Combine the bridge day and public holiday periods for the timeline
+                timeline_periods = [bridge_period]
+                timeline_periods = if related_holiday, do: [related_holiday | timeline_periods], else: timeline_periods
+                
+                # Calculate days until bridge day
+                days_until = Date.diff(bridge_day_date, DateHelpers.today_berlin())
+                component_id = "bridge-day-timeline-#{federal_state.id}"
+              %>
+              
+              <!-- Timeline visualization for bridge day -->
+              <div id="<%= component_id %>" class="bridge-day-timeline">
+                <style>
+                  #<%= component_id %> table {
+                    border-collapse: collapse;
+                    width: 100%;
+                  }
+                  #<%= component_id %> th {
+                    text-align: left;
+                    padding: 2px 0 2px 4px;
+                    font-weight: 600;
+                    font-size: 12px;
+                    border: 1px solid #e5e7eb;
+                    background-color: #f9fafb;
+                  }
+                  #<%= component_id %> td {
+                    border: 1px solid #e5e7eb;
+                    text-align: center;
+                    padding: 4px 2px;
+                    font-size: 12px;
+                    width: calc(100% / 11);
+                    height: 30px;
+                  }
+                  #<%= component_id %> .weekday-cell {
+                    background-color: #f9fafb;
+                    font-size: 11px;
+                    padding: 2px;
+                    font-weight: normal;
+                    height: 20px;
+                  }
+                  #<%= component_id %> .bg-green-600 {
+                    background-color: #059669;
+                    color: white;
+                  }
+                  #<%= component_id %> .bg-blue-600 {
+                    background-color: #2563eb;
+                    color: white;
+                  }
+                  #<%= component_id %> .bg-gray-100 {
+                    background-color: #f3f4f6;
+                  }
+                </style>
+                
+                <table>
+                  <thead>
+                    <tr>
+                      <% 
+                        # Group days by month for header
+                        month_groups = Enum.group_by(days_to_show, fn day -> {day.month, day.year} end)
+                        sorted_month_groups = Enum.sort(month_groups)
+                      %>
+                      
+                      <%= for {{month, year}, days} <- sorted_month_groups do %>
+                        <th colspan="<%= length(days) %>">
+                          <%= DateHelpers.get_months_map()[month] %> <%= year %>
+                        </th>
+                      <% end %>
+                    </tr>
+                    <tr>
+                      <% weekday_map = %{
+                        1 => "Mo",
+                        2 => "Di",
+                        3 => "Mi",
+                        4 => "Do",
+                        5 => "Fr",
+                        6 => "Sa",
+                        7 => "So"
+                      } %>
+                      
+                      <%= for day <- days_to_show do %>
+                        <% 
+                          weekday = Date.day_of_week(day)
+                          weekday_abbr = weekday_map[weekday]
+                        %>
+                        <td class="weekday-cell"><%= weekday_abbr %></td>
+                      <% end %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <%= for day <- days_to_show do %>
+                        <% 
+                          is_weekend = Date.day_of_week(day) > 5
+                          highest_priority_period = Enum.find(timeline_periods, fn period ->
+                            Date.compare(day, period.starts_on) != :lt &&
+                            Date.compare(day, period.ends_on) != :gt
+                          end)
+                          
+                          # Determine cell background color
+                          cell_bg_class = cond do
+                            highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-green-600"
+                            highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600"
+                            is_weekend -> "bg-gray-100"
+                            true -> ""
+                          end
+                        %>
+                        <td class="<%= cell_bg_class %>"><%= day.day %>.</td>
+                      <% end %>
+                    </tr>
+                  </tbody>
+                </table>
+                
+                <p class="text-sm text-gray-600 mt-2 mb-3">
+                  <%= if days_until > 0 do %>
+                    Noch <%= days_until %> Tage bis zum nächsten Brückentag.
+                  <% else %>
+                    Brückentag ist <%= if days_until == 0, do: "heute", else: "schon vorbei" %>.
+                  <% end %>
+                </p>
+                
+                <ul class="text-sm space-y-1">
+                  <li class="flex items-center space-x-3">
+                    <div class="bg-green-600 w-4 h-4 flex-shrink-0"></div>
+                    <span>Brückentag (<%= Calendar.strftime(bridge_day_date, "%d.%m.") %>)</span>
+                  </li>
+                  <%= if related_holiday do %>
+                    <li class="flex items-center space-x-3">
+                      <div class="bg-blue-600 w-4 h-4 flex-shrink-0"></div>
+                      <span><%= related_holiday.holiday_or_vacation_type.name %> (<%= Calendar.strftime(related_holiday.starts_on, "%d.%m.") %>)</span>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+              
+            <% else %>
+              <p class="text-gray-700 mb-4">Kein Brückentag in den nächsten Monaten</p>
+            <% end %>
+            
+            <div class="mt-4 text-sm text-blue-600 font-medium">
+              Alle Brückentage für <%= federal_state.name %> anzeigen
             </div>
           </section>
         <% end %>
