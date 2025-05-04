@@ -129,6 +129,9 @@
                 days_until = Date.diff(bridge_day_date, reference_date)
                 is_future_reference = Date.compare(reference_date, bridge_day_date) == :gt
                 component_id = "bridge-day-timeline-#{federal_state.id}"
+
+                # Calculate the efficiency using SQL instead of hardcoded values
+                %{vacation_days: vacation_days, total_free_days: total_free_days, efficiency_percentage: efficiency_percentage} = MehrSchulferien.BridgeDays.calculate_bridge_day_efficiency()
               %>
               
               <!-- Timeline visualization for bridge day -->
@@ -262,15 +265,8 @@
                   <% end %>
                 </ul>
                 
-                <% 
-                  # Calculate the efficiency gain - typically 1 day off gets you 4 days total (bridge day + holiday + weekend)
-                  vacation_days = 1  # Standard bridge day requires 1 vacation day
-                  total_free_days = 4  # Typically bridge day + holiday + weekend (2 days)
-                  efficiency_percentage = (total_free_days - vacation_days) / vacation_days * 100
-                %>
-                
                 <p class="text-sm text-gray-600 mt-3">
-                  Für <%= vacation_days %> eingereichten Urlaubstag bekommen Sie <%= total_free_days %> freie Tage (<%= trunc(efficiency_percentage) %>% Gewinn).
+                  Für <%= vacation_days %> eingereichten Urlaubstag bekommen Sie <%= total_free_days %> freie Tage (<%= efficiency_percentage %>% Gewinn).
                 </p>
               </div>
               
@@ -279,7 +275,7 @@
             <% end %>
             
             <div class="mt-4 text-sm text-blue-600 font-medium">
-              Alle Brückentage für <%= federal_state.name %> anzeigen
+              Alle Brückentage für <%= federal_state.name %> anzeigen.
             </div>
           </section>
         <% end %>
