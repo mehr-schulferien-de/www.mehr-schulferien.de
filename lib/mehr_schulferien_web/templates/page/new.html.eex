@@ -77,17 +77,17 @@
                 start_date = Date.add(bridge_day_date, -5)
                 days_to_show = DateHelpers.create_days(start_date, 11)
                 
-                # Calculate months for the timeline
-                _months = DateHelpers.get_months_map()
-                _month_groups = days_to_show
-                  |> Enum.group_by(fn day -> {day.year, day.month} end)
-                  |> Enum.sort()
-                
+                # Calculate months for the timeline - only used for _months_with_days
                 # This variable is no longer needed since we calculate months directly in the template
-                _months_with_days = Enum.map(_month_groups, fn {{year, month}, month_days} ->
-                  month_name = Map.get(_months, month, "") |> to_string()
-                  {month_name, length(month_days), year, month}
-                end)
+                _months_with_days = Enum.map(
+                  days_to_show
+                  |> Enum.group_by(fn day -> {day.year, day.month} end)
+                  |> Enum.sort(),
+                  fn {{year, month}, month_days} ->
+                    month_name = Map.get(DateHelpers.get_months_map(), month, "") |> to_string()
+                    {month_name, length(month_days), year, month}
+                  end
+                )
                 
                 # Get related periods to find the public holiday
                 country = Locations.get_location!(federal_state.parent_location_id)
@@ -182,11 +182,11 @@
                     <tr>
                       <% 
                         # Group days by month for header
-                        month_groups = Enum.group_by(days_to_show, fn day -> {day.month, day.year} end)
+                        month_groups = Enum.group_by(days_to_show, fn day -> {day.year, day.month} end)
                         sorted_month_groups = Enum.sort(month_groups)
                       %>
                       
-                      <%= for {{month, year}, days} <- sorted_month_groups do %>
+                      <%= for {{year, month}, days} <- sorted_month_groups do %>
                         <th colspan="<%= length(days) %>">
                           <%= DateHelpers.get_months_map()[month] %> <%= year %>
                         </th>
@@ -294,20 +294,16 @@
                 days_to_show = DateHelpers.create_days(start_date, days_count)
                 
                 # Calculate months for the timeline
-                _months = DateHelpers.get_months_map()
-                _month_groups = days_to_show
-                  |> Enum.group_by(fn day -> {day.month, day.year} end)
-                  |> Enum.sort()
+                component_id = "best-bridge-day-timeline-#{federal_state.id}"
                 
                 # Calculate days until best bridge day
-                days_until = Date.diff(best_bridge_day.starts_on, reference_date)
-                is_future_reference = Date.compare(reference_date, best_bridge_day.starts_on) == :gt
-                component_id = "best-bridge-day-timeline-#{federal_state.id}"
+                _days_until = Date.diff(best_bridge_day.starts_on, reference_date)
+                _is_future_reference = Date.compare(reference_date, best_bridge_day.starts_on) == :gt
                 
                 # Get efficiency metrics
                 vacation_days = best_bridge_day_result.vacation_days
                 total_free_days = best_bridge_day_result.total_free_days
-                efficiency_percentage = best_bridge_day_result.efficiency_percentage
+                _efficiency_percentage = best_bridge_day_result.efficiency_percentage
                 
                 # Create a bridge period to highlight in the timeline
                 bridge_period = %{
@@ -378,11 +374,11 @@
                     <tr>
                       <% 
                         # Group days by month for header
-                        month_groups = Enum.group_by(days_to_show, fn day -> {day.month, day.year} end)
+                        month_groups = Enum.group_by(days_to_show, fn day -> {day.year, day.month} end)
                         sorted_month_groups = Enum.sort(month_groups)
                       %>
                       
-                      <%= for {{month, year}, days} <- sorted_month_groups do %>
+                      <%= for {{year, month}, days} <- sorted_month_groups do %>
                         <th colspan="<%= length(days) %>">
                           <%= DateHelpers.get_months_map()[month] %> <%= year %>
                         </th>
