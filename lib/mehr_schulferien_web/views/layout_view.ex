@@ -17,7 +17,8 @@ defmodule MehrSchulferienWeb.LayoutView do
           :bootstrap -> true
           :tailwind -> false
           :tailwind_new -> false
-          _ -> true  # Default to bootstrap for unknown values
+          # Default to bootstrap for unknown values
+          _ -> true
         end
 
       # Fall back to application config

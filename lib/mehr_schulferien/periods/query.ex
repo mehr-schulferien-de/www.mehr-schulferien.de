@@ -1,7 +1,7 @@
 defmodule MehrSchulferien.Periods.Query do
   @moduledoc """
   Period query operations.
-  
+
   This module contains functions for querying periods by date ranges, 
   grouping them, and other specialized queries related to time.
   """
@@ -118,4 +118,4 @@ defmodule MehrSchulferien.Periods.Query do
     |> Repo.all()
     |> Repo.preload([:holiday_or_vacation_type, :location])
   end
-end 
+end

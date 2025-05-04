@@ -85,9 +85,11 @@ defmodule MehrSchulferienWeb.PageController do
 
   def new(conn, params) do
     # Parse today parameter if present (format: DD.MM.YYYY)
-    custom_start_date = 
+    custom_start_date =
       case Map.get(params, "today") do
-        nil -> nil
+        nil ->
+          nil
+
         date_str ->
           with [day, month, year] <- String.split(date_str, "."),
                {day, _} <- Integer.parse(day),
@@ -99,35 +101,41 @@ defmodule MehrSchulferienWeb.PageController do
             _ -> nil
           end
       end
-    
+
     # Parse days parameter if present (integer)
-    days_to_display = 
+    days_to_display =
       case Map.get(params, "days") do
-        nil -> 90  # Default
+        # Default
+        nil ->
+          90
+
         days_str ->
           case Integer.parse(days_str) do
             {days, _} when days > 0 and days <= 365 -> days
-            _ -> 90  # Use default if invalid
+            # Use default if invalid
+            _ -> 90
           end
       end
-    
+
     # If today parameter is present, add noindex flag
     noindex = custom_start_date != nil
-    
+
     today = DateHelpers.today_berlin()
     current_year = today.year
-    
+
     # Use days_to_display parameter for number_of_days
     number_of_days = days_to_display
-    
+
     # Use custom start date or today
     start_date = custom_start_date || today
-    
+
     ends_on = Date.add(start_date, number_of_days)
     days = DateHelpers.create_days(start_date, number_of_days)
     day_names = DateHelpers.short_days_map()
     months = DateHelpers.get_months_map()
-    countries = Enum.map(Locations.list_countries(), &build_country_periods(&1, start_date, ends_on))
+
+    countries =
+      Enum.map(Locations.list_countries(), &build_country_periods(&1, start_date, ends_on))
 
     # Add bridge day information for each federal state
     countries =

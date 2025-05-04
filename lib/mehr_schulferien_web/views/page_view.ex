@@ -30,16 +30,16 @@ defmodule MehrSchulferienWeb.PageView do
   def best_bridge_day_teaser do
     BridgeDays.best_bridge_day_teaser()
   end
-  
+
   def get_federal_state_periods(country, _federal_state, days) do
     first_day = List.first(days)
     last_day = List.last(days)
-    
+
     # Filter relevant periods for the federal state
     country.periods
     |> Enum.filter(fn period ->
-      Date.compare(period.ends_on, first_day) != :lt && 
-      Date.compare(period.starts_on, last_day) != :gt
+      Date.compare(period.ends_on, first_day) != :lt &&
+        Date.compare(period.starts_on, last_day) != :gt
     end)
   end
 end

@@ -17,28 +17,36 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     # Convert keyword list to map
     render(Map.new(opts))
   end
-  
+
   def render(assigns) when is_map(assigns) do
     # Get the first and last day from the timeline
     first_day = List.first(assigns[:days_to_show])
     last_day = List.last(assigns[:days_to_show])
-    
+
     # Only check years from periods that are actually visible in the timeline
-    visible_periods = Enum.filter(assigns[:all_periods], fn period ->
-      Date.compare(period.ends_on, first_day) != :lt && 
-      Date.compare(period.starts_on, last_day) != :gt
-    end)
-    
+    visible_periods =
+      Enum.filter(assigns[:all_periods], fn period ->
+        Date.compare(period.ends_on, first_day) != :lt &&
+          Date.compare(period.starts_on, last_day) != :gt
+      end)
+
     # Extract unique years only from visible periods
-    years = visible_periods
-    |> Enum.map(& &1.starts_on.year)
-    |> Enum.concat(Enum.map(visible_periods, & &1.ends_on.year))
-    |> Enum.uniq()
-    
+    years =
+      visible_periods
+      |> Enum.map(& &1.starts_on.year)
+      |> Enum.concat(Enum.map(visible_periods, & &1.ends_on.year))
+      |> Enum.uniq()
+
     has_multiple_years = length(years) > 1
-    
-    assigns = Map.put(assigns, :has_multiple_years, has_multiple_years)
-    
+
+    # Sort periods by their starting date
+    sorted_periods = Enum.sort_by(assigns[:all_periods], & &1.starts_on, Date)
+
+    assigns =
+      assigns
+      |> Map.put(:has_multiple_years, has_multiple_years)
+      |> Map.put(:sorted_periods, sorted_periods)
+
     render_timeline(assigns)
   end
 
@@ -88,7 +96,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     <div class="mt-4">
       <p class="text-sm font-medium mb-2">Ferien und Feiertage im angezeigten Zeitraum:</p>
       <ul class="text-sm">
-        <%= for period <- @all_periods do %>
+        <%= for period <- @sorted_periods do %>
           <% 
             holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
             is_school_vacation = Map.get(period, :is_school_vacation, false)
@@ -120,4 +128,4 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     </div>
     """
   end
-end 
+end
