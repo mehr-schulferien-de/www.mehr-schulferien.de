@@ -39,8 +39,8 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
     has_multiple_years = length(years) > 1
 
-    # Sort periods by their starting date
-    sorted_periods = Enum.sort_by(assigns[:all_periods], & &1.starts_on, Date)
+    # The periods are already sorted in the SQL query by starts_on and display_priority
+    sorted_periods = assigns[:all_periods]
 
     # Priority: 
     # 1. Use the first day of the timeline as reference date if provided

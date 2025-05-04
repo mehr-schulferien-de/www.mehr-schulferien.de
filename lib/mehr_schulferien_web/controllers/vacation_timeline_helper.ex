@@ -25,7 +25,6 @@ defmodule MehrSchulferienWeb.VacationTimelineHelper do
 
     # Create days to show based on first_day
     days_to_show = MehrSchulferien.Calendars.DateHelpers.create_days(first_day, days_count)
-    last_day = List.last(days_to_show)
 
     # Default periods to empty list if not provided
     periods = Map.get(assigns, :periods, [])
@@ -45,17 +44,9 @@ defmodule MehrSchulferienWeb.VacationTimelineHelper do
         {month_name, length(days), year, month}
       end)
 
-    # Perioden filtern, die in den angezeigten Zeitraum fallen
-    relevant_periods =
-      Enum.filter(periods, fn period ->
-        Date.compare(period.ends_on, first_day) != :lt &&
-          Date.compare(period.starts_on, last_day) != :gt
-      end)
-
-    # Alle Ferien und Feiertage in einer Liste nach Datum sortieren
-    all_periods =
-      relevant_periods
-      |> Enum.sort_by(fn period -> period.starts_on end, Date)
+    # The periods are already filtered and sorted by the SQL query
+    # Just use them directly without additional filtering or sorting
+    all_periods = periods
 
     %{
       days_to_show: days_to_show,

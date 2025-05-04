@@ -31,11 +31,7 @@
                 months: @months,
                 all_periods: filtered_periods,
                 days_count: @days_to_display,
-                months_with_days: [
-                  {"Mai", 31, 2025, 5},
-                  {"Juni", 30, 2025, 6},
-                  {"Juli", 31, 2025, 7}
-                ]
+                months_with_days: @months_with_days
               ) %>
               <!-- Fallback text for test environment -->
               <div class="hidden" aria-hidden="true">Ferien und Feiertage im angezeigten Zeitraum</div>

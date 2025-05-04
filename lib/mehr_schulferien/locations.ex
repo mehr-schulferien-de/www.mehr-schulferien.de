@@ -135,6 +135,35 @@ defmodule MehrSchulferien.Locations do
     Repo.all(from l in Location, where: l.is_country == true)
   end
 
+  @doc """
+  Returns a list of countries with their federal states efficiently.
+  This combines multiple queries into a more efficient structure.
+  """
+  def list_countries_with_related_data do
+    # Get all countries
+    countries = list_countries()
+
+    # Get all federal states for all countries at once
+    federal_states_query =
+      from(fs in Location,
+        where:
+          fs.is_federal_state == true and
+            fs.parent_location_id in ^Enum.map(countries, & &1.id),
+        order_by: fs.name
+      )
+
+    federal_states = Repo.all(federal_states_query) |> Repo.preload([:periods])
+
+    # Group federal states by parent country
+    federal_states_by_country = Enum.group_by(federal_states, & &1.parent_location_id)
+
+    # Build a map of country -> federal states
+    Enum.map(countries, fn country ->
+      country_federal_states = Map.get(federal_states_by_country, country.id, [])
+      {country, country_federal_states}
+    end)
+  end
+
   #
   # Federal state queries
   #
