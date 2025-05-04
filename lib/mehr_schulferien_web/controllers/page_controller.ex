@@ -43,7 +43,7 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def index(conn, _params) do
-    index(conn, %{"number_of_days" => 84})
+    index(conn, %{"number_of_days" => 90})
   end
 
   def summer_vacations(conn, _params) do
@@ -116,7 +116,9 @@ defmodule MehrSchulferienWeb.PageController do
     
     today = DateHelpers.today_berlin()
     current_year = today.year
-    number_of_days = Map.get(params, "number_of_days", 84) |> ensure_integer()
+    
+    # Use days_to_display parameter for number_of_days
+    number_of_days = days_to_display
     
     # Use custom start date or today
     start_date = custom_start_date || today
@@ -174,5 +176,5 @@ defmodule MehrSchulferienWeb.PageController do
 
   defp ensure_integer(value) when is_binary(value), do: String.to_integer(value)
   defp ensure_integer(value) when is_integer(value), do: value
-  defp ensure_integer(_), do: 84
+  defp ensure_integer(_), do: 90
 end

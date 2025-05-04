@@ -83,11 +83,32 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   @doc """
   Returns a list containing a certain number of dates.
   """
-  def create_days(date, number_days) do
+  def create_days(nil, number_days) do
+    # Use today's date if nil is passed
+    create_days(today_berlin(), number_days)
+  end
+  
+  def create_days(date, nil) do
+    # Default to 90 days if nil is passed
+    create_days(date, 90)
+  end
+  
+  def create_days(nil, nil) do
+    # Handle both parameters being nil
+    create_days(today_berlin(), 90)
+  end
+  
+  def create_days(date, number_days) when is_integer(number_days) and number_days > 0 do
     [date] ++
       for i <- 1..(number_days - 1) do
         Date.add(date, i)
       end
+  end
+  
+  # Catch any other invalid cases
+  def create_days(_date, _number_days) do
+    # Default to today and 90 days
+    create_days(today_berlin(), 90)
   end
 
   @doc """

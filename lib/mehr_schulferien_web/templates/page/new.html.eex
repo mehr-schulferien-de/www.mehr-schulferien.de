@@ -17,6 +17,8 @@
                 period.is_school_vacation || period.is_public_holiday 
               end),
               months: @months,
+              days_to_display: @days_to_display,
+              custom_start_date: @custom_start_date,
               number_of_months: 4 %>
         </section>
       <% end %>
