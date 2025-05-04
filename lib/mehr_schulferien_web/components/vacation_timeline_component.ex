@@ -5,21 +5,44 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
   Renders a vacation timeline.
 
   ## Example
-      <.vacation_timeline 
-        days_to_show={@days_to_show}
-        months={@months}
-        all_periods={@all_periods}
-        days_count={@days_count}
-        months_with_days={@months_with_days}
-      />
+      <%= VacationTimelineComponent.render(
+        days_to_show: @days_to_show,
+        months: @months,
+        all_periods: @all_periods,
+        days_count: @days_count,
+        months_with_days: @months_with_days
+      ) %>
   """
-  attr :days_to_show, :list, required: true
-  attr :months, :map, required: true
-  attr :all_periods, :list, required: true
-  attr :days_count, :integer, required: true
-  attr :months_with_days, :list, required: true
+  def render(opts) when is_list(opts) do
+    # Convert keyword list to map
+    render(Map.new(opts))
+  end
+  
+  def render(assigns) when is_map(assigns) do
+    # Get the first and last day from the timeline
+    first_day = List.first(assigns[:days_to_show])
+    last_day = List.last(assigns[:days_to_show])
+    
+    # Only check years from periods that are actually visible in the timeline
+    visible_periods = Enum.filter(assigns[:all_periods], fn period ->
+      Date.compare(period.ends_on, first_day) != :lt && 
+      Date.compare(period.starts_on, last_day) != :gt
+    end)
+    
+    # Extract unique years only from visible periods
+    years = visible_periods
+    |> Enum.map(& &1.starts_on.year)
+    |> Enum.concat(Enum.map(visible_periods, & &1.ends_on.year))
+    |> Enum.uniq()
+    
+    has_multiple_years = length(years) > 1
+    
+    assigns = Map.put(assigns, :has_multiple_years, has_multiple_years)
+    
+    render_timeline(assigns)
+  end
 
-  def vacation_timeline(assigns) do
+  defp render_timeline(assigns) do
     ~H"""
     <table class="table-fixed border border-gray-300 text-center text-xs" role="presentation">
       <thead>
@@ -78,9 +101,17 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
             <span>
               <%= name %> 
               <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
-                (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>)
+                <%= if @has_multiple_years do %>
+                  (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>)
+                <% else %>
+                  (<%= Calendar.strftime(period.starts_on, "%d.%m.") %>)
+                <% end %>
               <% else %>
-                (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>)
+                <%= if @has_multiple_years do %>
+                  (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>)
+                <% else %>
+                  (<%= Calendar.strftime(period.starts_on, "%d.%m.") %> - <%= Calendar.strftime(period.ends_on, "%d.%m.") %>)
+                <% end %>
               <% end %>
             </span>
           </li>
