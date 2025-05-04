@@ -42,10 +42,55 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     # Sort periods by their starting date
     sorted_periods = Enum.sort_by(assigns[:all_periods], & &1.starts_on, Date)
 
+    # Priority: 
+    # 1. Use the first day of the timeline as reference date if provided
+    # 2. Use _test_today if provided (for testing)
+    # 3. Fall back to Date.utc_today()
+    today =
+      cond do
+        # Use first day of the timeline if available (this is provided by the controller)
+        first_day != nil -> first_day
+        # Use test parameter if provided (for testing)
+        Map.has_key?(assigns, :_test_today) -> assigns[:_test_today]
+        # Default fallback
+        true -> Date.utc_today()
+      end
+
+    # First check if today is within a vacation period
+    current_vacation = find_current_vacation(sorted_periods, today)
+
+    days_remaining_in_vacation =
+      if current_vacation do
+        Date.diff(current_vacation.ends_on, today)
+      else
+        nil
+      end
+
+    # If not in a vacation, find the next upcoming vacation
+    next_vacation =
+      if current_vacation do
+        nil
+      else
+        find_next_vacation(sorted_periods, today)
+      end
+
+    # Calculate days until next vacation
+    days_until_next_vacation =
+      if next_vacation do
+        Date.diff(next_vacation.starts_on, today)
+      else
+        nil
+      end
+
     assigns =
       assigns
       |> Map.put(:has_multiple_years, has_multiple_years)
       |> Map.put(:sorted_periods, sorted_periods)
+      |> Map.put(:next_vacation, next_vacation)
+      |> Map.put(:days_until_next_vacation, days_until_next_vacation)
+      |> Map.put(:current_vacation, current_vacation)
+      |> Map.put(:days_remaining_in_vacation, days_remaining_in_vacation)
+      |> Map.put(:reference_date, today)
 
     render_timeline(assigns)
   end
@@ -93,6 +138,41 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
       </tbody>
     </table>
 
+    <%= cond do %>
+      <% @current_vacation && @days_remaining_in_vacation >= 0 -> %>
+        <div class="mt-2 text-sm font-medium">
+          <div class="flex items-center">
+            <div class="w-3 h-3 rounded-sm bg-green-600 mr-2 flex-shrink-0"></div>
+            <span>
+              <% holiday_type = @current_vacation.holiday_or_vacation_type %>
+              <% display_name = get_display_name(holiday_type) %>
+              <%= if @days_remaining_in_vacation == 0 do %>
+                Aktuell sind <%= display_name %> (letzter Tag).
+              <% else %>
+                Aktuell sind <%= display_name %> (noch <%= @days_remaining_in_vacation %> <%= if @days_remaining_in_vacation == 1, do: "Tag", else: "Tage" %>).
+              <% end %>
+            </span>
+          </div>
+        </div>
+      <% @next_vacation && @days_until_next_vacation && @days_until_next_vacation > 0 -> %>
+        <div class="mt-2 text-sm font-medium">
+          <div class="flex items-center">
+            <div class="w-3 h-3 rounded-sm bg-green-600 mr-2 flex-shrink-0"></div>
+            <span>
+              <% holiday_type = @next_vacation.holiday_or_vacation_type %>
+              <% display_name = get_display_name(holiday_type) %>
+              <%= if @days_until_next_vacation == 1 do %>
+                Noch 1 Tag bis <%= display_name %>
+              <% else %>
+                Noch <%= @days_until_next_vacation %> Tage bis <%= display_name %>.
+              <% end %>
+            </span>
+          </div>
+        </div>
+      <% true -> %>
+        <!-- No vacation message -->
+    <% end %>
+
     <div class="mt-4">
       <p class="text-sm font-medium mb-2">Ferien und Feiertage im angezeigten Zeitraum:</p>
       <ul class="text-sm">
@@ -100,14 +180,14 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <% 
             holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
             is_school_vacation = Map.get(period, :is_school_vacation, false)
-            name = Map.get(holiday_type, :name, "")
+            display_name = get_display_name(holiday_type)
             # CSS-Klasse basierend auf Art des Ereignisses
             marker_color = if is_school_vacation, do: "bg-green-600", else: "bg-blue-600"
           %>
           <li class={"flex items-center space-x-2 mb-1"}>
             <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
             <span>
-              <%= name %> 
+              <%= display_name %> 
               <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
                 <%= if @has_multiple_years do %>
                   (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>)
@@ -127,5 +207,36 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
       </ul>
     </div>
     """
+  end
+
+  # Gets the display name, preferring colloquial name over formal name
+  defp get_display_name(holiday_type) do
+    # First try to get colloquial name, then fall back to regular name
+    Map.get(holiday_type, :colloquial, Map.get(holiday_type, :name, ""))
+  end
+
+  # Finds the current vacation period (if today is within a vacation)
+  defp find_current_vacation(periods, today) do
+    periods
+    |> Enum.find(fn period ->
+      # Only include school vacations
+      # Check if today is within the vacation period
+      Map.get(period, :is_school_vacation, false) &&
+        Date.compare(period.starts_on, today) != :gt &&
+        Date.compare(period.ends_on, today) != :lt
+    end)
+  end
+
+  # Finds the next upcoming vacation period (only school vacations, not public holidays)
+  defp find_next_vacation(periods, today) do
+    periods
+    |> Enum.filter(fn period ->
+      # Only include school vacations
+      # Only include future periods
+      Map.get(period, :is_school_vacation, false) &&
+        Date.compare(period.starts_on, today) == :gt
+    end)
+    |> Enum.sort_by(& &1.starts_on, Date)
+    |> List.first()
   end
 end
