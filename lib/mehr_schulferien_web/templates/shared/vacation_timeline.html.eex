@@ -1,124 +1,88 @@
 <%
-  # Calculate timeline parameters
-  first_day = List.first(@days)
-  # Show a fixed number of months regardless of @days length (defaults to 4)
-  months_to_show = @number_of_months || 4
-  total_days = months_to_show * 31
-  last_day = Date.add(first_day, total_days - 1)
-
-  # Helper to estimate the 1st of month i (0-based) after first_day
-  month_starts =
-    for i <- 0..months_to_show - 1 do
-      new_month_index = first_day.month - 1 + i
-      month = rem(new_month_index, 12) + 1
-      year = first_day.year + div(new_month_index, 12)
-      %Date{year: year, month: month, day: 1, calendar: Calendar.ISO}
-    end
-
-  # Build month markers & labels (skip first which is 0%)
-  {month_markers, month_labels} =
-    month_starts
-    |> Enum.with_index()
-    |> Enum.map(fn {date, idx} ->
-      percent = Float.round(Date.diff(date, first_day) / total_days * 100, 3)
-      {percent, {date, percent}}
-    end)
-    |> Enum.unzip()
-
-  # Remove the very first 0% marker from marker list (already have 0)
-  month_markers = month_markers |> tl()
-  month_labels = month_labels |> tl()
-
-  # Filter periods that overlap our window
+  # Nur die ersten 120 Tage anzeigen
+  days_to_show = Enum.take(@days, 120)
+  first_day = List.first(days_to_show)
+  last_day = List.last(days_to_show)
+  
+  # Monate identifizieren und gruppieren
+  month_groups = days_to_show
+    |> Enum.group_by(fn day -> {day.year, day.month} end)
+    |> Enum.sort()
+  
+  # Monatsnamen und Anzahl der Tage in jedem Monat
+  months_with_days = Enum.map(month_groups, fn {{year, month}, days} ->
+    month_name = @months[month] |> String.slice(0, 3)
+    {month_name, length(days), year, month}
+  end)
+  
+  # Perioden filtern, die in den angezeigten Zeitraum fallen
   relevant_periods = Enum.filter(@periods, fn period ->
     Date.compare(period.ends_on, first_day) != :lt && Date.compare(period.starts_on, last_day) != :gt
   end)
-
-  sorted_periods = Enum.sort_by(relevant_periods, & &1.starts_on)
-
-  # Translate to positions (ensure min width for 1-day public holidays)
-  min_width = 0.8
-  period_positions = Enum.map(sorted_periods, fn period ->
-    start_percent = max(0, Float.round(Date.diff(period.starts_on, first_day) / total_days * 100, 3))
-    end_percent = min(100, Float.round(Date.diff(period.ends_on, first_day) / total_days * 100, 3))
-    width_percent = max(end_percent - start_percent, min_width)
-
-    %{
-      period: period,
-      start_percent: start_percent,
-      width_percent: width_percent
-    }
-  end)
-
-  vacation_periods = Enum.filter(period_positions, & &1.period.is_school_vacation)
-  holiday_periods = Enum.filter(period_positions, & &1.period.is_public_holiday && !&1.period.is_school_vacation)
-  sorted_display_periods =
-    vacation_periods ++ holiday_periods
-    |> Enum.sort_by(& &1.period.starts_on)
-    |> Enum.take(3)
+  
+  # Alle Ferien und Feiertage in einer Liste nach Datum sortieren
+  all_periods = relevant_periods
+    |> Enum.sort_by(fn period -> period.starts_on end, Date)
 %>
 
-<!-- Timeline -->
-<div class="relative mb-8">
-  <!-- Background bar with colored sections -->
-  <div class="relative h-4 bg-gray-200 rounded overflow-hidden">
-    <!-- Vacation periods (green) -->
-    <%= for %{period: period, start_percent: start, width_percent: width} <- vacation_periods do %>
-      <div class="absolute top-0 h-full <%= if period.html_class == "success", do: "bg-green-500", else: "bg-green-400" %> rounded" style="left:<%= start %>% ; width:<%= width %>%;"></div>
-    <% end %>
-    
-    <!-- Holiday periods (blue) -->
-    <%= for %{period: _period, start_percent: start, width_percent: width} <- holiday_periods do %>
-      <div class="absolute top-0 h-full bg-blue-400 rounded" style="left:<%= start %>% ; width:<%= width %>%;"></div>
-    <% end %>
-  </div>
-
-  <!-- Month divider lines -->
-  <div class="pointer-events-none absolute inset-0 z-10">
-    <%= for percent <- [0 | month_markers] do %>
-      <div class="absolute inset-y-0 w-px bg-gray-500" style="left:<%= percent %>%"></div>
-    <% end %>
-  </div>
-
-  <!-- Numbered markers for annotated periods -->
-  <%= for {%{period: _period, start_percent: start, width_percent: width}, index} <- Enum.with_index(sorted_display_periods, 1) do %>
-    <% center_percent = start + width / 2 %>
-    <span class="flex items-center justify-center w-5 h-5 rounded-full bg-white text-[0.85rem] font-semibold text-gray-800
-                absolute top-[18px] -translate-x-1/2" style="left:<%= center_percent %>%">
-      <%= case index do %>
-        <% 1 -> %> ①
-        <% 2 -> %> ②
-        <% 3 -> %> ③
-        <% _ -> %> <%= index %>
+<!-- Dynamische Timeline Tabelle für die nächsten 120 Tage -->
+<table class="table-fixed border border-gray-300 text-center text-xs" role="presentation">
+  <thead>
+    <tr>
+      <%= for {month_name, days_count, _year, _month} <- months_with_days do %>
+        <td colspan="<%= days_count %>" class="border border-gray-200 whitespace-nowrap font-semibold text-left pl-1"><%= month_name %></td>
       <% end %>
-    </span>
-  <% end %>
+    </tr>
+  </thead>
 
-  <!-- Month labels -->
-  <div class="pointer-events-none select-none text-xs text-gray-600">
-    <%= for {day, percent} <- [{first_day, 0} | month_labels] do %>
-      <span class="absolute -top-5 pl-0.5" style="left:<%= percent %>%">
-        1.&nbsp;<%= @months[day.month] |> String.slice(0, 3) %>
-      </span>
-    <% end %>
-  </div>
-</div>
+  <tbody>
+    <!-- Tageszeile -->
+    <tr>
+      <%= for day <- days_to_show do %>
+        <% 
+          is_weekend = Date.day_of_week(day) > 5  # 6 = Samstag, 7 = Sonntag
+          # Prüfen ob Ferien oder Feiertag
+          is_vacation = Enum.any?(all_periods, fn period -> 
+            period.is_school_vacation &&
+            Date.compare(day, period.starts_on) != :lt && 
+            Date.compare(day, period.ends_on) != :gt 
+          end)
+          is_public_holiday = Enum.any?(all_periods, fn period -> 
+            period.is_public_holiday &&
+            Date.compare(day, period.starts_on) != :lt && 
+            Date.compare(day, period.ends_on) != :gt 
+          end)
+          
+          # Klassen für Hintergrundfarbe
+          bg_class = cond do
+            is_vacation -> "bg-green-300"
+            is_public_holiday -> "bg-blue-300"
+            is_weekend -> "bg-gray-100"
+            true -> ""
+          end
+        %>
+        <td class="w-6 h-5 border-t border-b border-gray-200 <%= bg_class %>"></td>
+      <% end %>
+    </tr>
+  </tbody>
+</table>
 
-<!-- Period list with annotations -->
-<ul class="text-sm leading-6">
-  <%= for {%{period: period}, index} <- Enum.with_index(sorted_display_periods, 1) do %>
-    <li class="flex items-center gap-3">
-      <span class="inline-block w-3 h-3 rounded <%= if period.is_school_vacation, do: if(period.html_class == "success", do: "bg-green-500", else: "bg-green-400"), else: "bg-blue-400" %>"></span>
-      <span>
-        <strong><%= MehrSchulferienWeb.ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %>:</strong>
+<div class="mt-4">
+  <p class="text-sm font-medium mb-2">Ferien und Feiertage im angezeigten Zeitraum:</p>
+  <ul class="list-disc pl-5 text-sm">
+    <%= for period <- all_periods do %>
+      <% 
+        # CSS-Klasse basierend auf Art des Ereignisses
+        text_class = if period.is_school_vacation, do: "text-green-800", else: "text-blue-800"
+      %>
+      <li class="<%= text_class %>">
         <%= period.holiday_or_vacation_type.name %> 
-        <%= case index do %>
-          <% 1 -> %> ①
-          <% 2 -> %> ②
-          <% 3 -> %> ③
-          <% _ -> %> <%= index %>
+        <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
+          (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>)
+        <% else %>
+          (<%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>)
         <% end %>
-      </span>
-    </li>
-  <% end %>
-</ul> 
+      </li>
+    <% end %>
+  </ul>
+</div> 

@@ -70,8 +70,20 @@ defmodule MehrSchulferienWeb.PageControllerTest do
              "Alle Ferientermine für"
   end
   
-  test "GET /new returns 200 status code", %{conn: conn} do
+  test "GET /new returns 200 status code and includes vacation timeline", %{conn: conn} do
     conn = get(conn, "/new")
-    assert html_response(conn, 200)
+    response = html_response(conn, 200)
+    
+    # Check that page renders with 200 status code
+    assert response
+    
+    # Check that it includes the Schulferien title
+    assert response =~ "Schulferien in Deutschland - Übersicht"
+    
+    # Check for a federal state name that appears on the page
+    assert response =~ "Berlin"
+    
+    # Check for vacation timeline elements
+    assert response =~ "Ferien und Feiertage im angezeigten Zeitraum"
   end
 end
