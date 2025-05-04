@@ -164,8 +164,8 @@
                     font-weight: normal;
                     height: 20px;
                   }
-                  #<%= component_id %> .bg-green-600 {
-                    background-color: #059669;
+                  #<%= component_id %> .bg-purple-600 {
+                    background-color: #7c3aed;
                     color: white;
                   }
                   #<%= component_id %> .bg-blue-600 {
@@ -224,7 +224,7 @@
                           
                           # Determine cell background color
                           cell_bg_class = cond do
-                            highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-green-600"
+                            highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-purple-600"
                             highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600"
                             is_weekend -> "bg-gray-100"
                             true -> ""
@@ -254,7 +254,7 @@
                 
                 <ul class="text-sm space-y-1">
                   <li class="flex items-center space-x-3">
-                    <div class="bg-green-600 w-4 h-4 flex-shrink-0"></div>
+                    <div class="bg-purple-600 w-4 h-4 flex-shrink-0"></div>
                     <span>Brückentag (<%= Calendar.strftime(bridge_day_date, "%d.%m.") %>)</span>
                   </li>
                   <%= if related_holiday do %>
