@@ -65,21 +65,13 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+    {federal_state, country} =
+      Locations.get_federal_state_and_country_by_slug!(country_slug, federal_state_slug)
 
-    today = DateHelpers.today_berlin()
-    current_year = today.year
-    year = String.to_integer(year)
-    next_three_years = "#{current_year}-#{current_year + 2}"
-
-    render(conn, "show.html", %{
+    render(conn, "show_year.html", %{
       country: country,
       federal_state: federal_state,
-      next_three_years: next_three_years,
-      current_year: current_year,
-      selected_year: year,
-      today: today,
+      year: year,
       css_framework: :tailwind_new
     })
   end

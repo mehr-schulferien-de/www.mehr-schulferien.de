@@ -322,6 +322,29 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Gets both a country and its federal_state in a single query by their slugs.
+
+  Raises `Ecto.NoResultsError` if either the federal state or country does not exist.
+  """
+  def get_federal_state_and_country_by_slug!(country_slug, federal_state_slug) do
+    query =
+      from fs in Location,
+        join: c in Location,
+        on: fs.parent_location_id == c.id,
+        where:
+          c.slug == ^country_slug and
+            c.is_country == true and
+            fs.slug == ^federal_state_slug and
+            fs.is_federal_state == true,
+        select: {fs, c}
+
+    case Repo.one(query) do
+      {federal_state, country} -> {federal_state, country}
+      nil -> raise Ecto.NoResultsError, queryable: query
+    end
+  end
+
+  @doc """
   Gets a single county by querying for the slug.
 
   Raises `Ecto.NoResultsError` if the county does not exist.

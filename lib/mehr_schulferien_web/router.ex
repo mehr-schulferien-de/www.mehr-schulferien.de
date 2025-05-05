@@ -42,7 +42,8 @@ defmodule MehrSchulferienWeb.Router do
     # The year-specific route needs to be defined before the redirect route
     get "/ferien/:country_slug/bundesland/:federal_state_slug/:year",
         FederalStateController,
-        :show_year
+        :show_year,
+        constraints: [year: [format: ~r/20[2-3][0-9]/]]
 
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show
     get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
