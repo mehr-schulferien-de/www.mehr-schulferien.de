@@ -115,9 +115,12 @@
           <thead>
             <tr>
               <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Name</th>
-              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Termine</th>
-              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Dauer</th>
-              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Effektiv</th>
+              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Termin</th>
+              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                <span class="sm:hidden">Dauer*</span>
+                <span class="hidden sm:block">Dauer</span>
+              </th>
+              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b hidden sm:table-cell">Effektiv</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
@@ -144,52 +147,39 @@
                 </td>
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
                   <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
-                  <%= days %> 
-                  <span class="sm:hidden">T.</span>
-                  <span class="hidden sm:block"><%= if days == 1, do: "Tag", else: "Tage" %></span>
+                  <% effective_duration = calculate_effective_duration(period, @periods) %>
+                  <% difference = effective_duration - days %>
+                  
+                  <span class="sm:hidden">
+                    <%= days %> <%= if days == 1, do: "Tag", else: "Tage" %>
+                    <%= if difference != 0 do %>
+                      <span class="text-gray-500">(+<%= difference %>)</span>
+                    <% end %>
+                  </span>
+                  <span class="hidden sm:block">
+                    <%= days %> <%= if days == 1, do: "Tag", else: "Tage" %>
+                  </span>
                 </td>
-                <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
-                  <% 
-                    # Calculate official vacation duration
-                    official_duration = Date.diff(period.ends_on, period.starts_on) + 1
-                    
-                    # Check the days before period.starts_on 
-                    # Looking for weekend (Saturday/Sunday) or public holidays adjacent to period start
-                    day_before_start = Date.add(period.starts_on, -1)
-                    
-                    # Check for weekend (day_of_week: 6=Saturday, 7=Sunday)
-                    days_before = cond do
-                      Date.day_of_week(day_before_start) > 5 -> 
-                        if Date.day_of_week(Date.add(day_before_start, -1)) > 5, do: 2, else: 1
-                      # Check for Friday when period starts on Monday
-                      Date.day_of_week(day_before_start) == 5 && Date.day_of_week(period.starts_on) == 1 -> 3
-                      true -> 0
-                    end
-                    
-                    # Check the days after period.ends_on
-                    # Looking for weekend or public holidays adjacent to period end
-                    day_after_end = Date.add(period.ends_on, 1)
-                    
-                    # Check for weekend 
-                    days_after = cond do
-                      Date.day_of_week(day_after_end) > 5 -> 
-                        if Date.day_of_week(Date.add(day_after_end, 1)) > 5, do: 2, else: 1
-                      # Check for Friday when period ends on Friday
-                      Date.day_of_week(period.ends_on) == 5 && Date.day_of_week(day_after_end) == 6 -> 2
-                      true -> 0
-                    end
-                    
-                    # Calculate effective duration
-                    effective_duration = official_duration + days_before + days_after
-                  %>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700 hidden sm:table-cell">
                   <%= effective_duration %> 
-                  <span class="sm:hidden">T.</span>
-                  <span class="hidden sm:block"><%= if effective_duration == 1, do: "Tag", else: "Tage" %></span>
+                  <%= if effective_duration == 1, do: "Tag", else: "Tage" %>
                 </td>
               </tr>
             <% end %>
           </tbody>
         </table>
+        
+        <% has_differences = Enum.any?(@periods, fn period -> 
+          days = Date.diff(period.ends_on, period.starts_on) + 1
+          effective_duration = calculate_effective_duration(period, @periods)
+          effective_duration != days
+        end) %>
+        
+        <%= if has_differences do %>
+          <div class="text-xs text-gray-500 mt-2 sm:hidden">
+            * Die effektive Dauer enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
+          </div>
+        <% end %>
       </div>
     <% else %>
       <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
