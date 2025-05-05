@@ -73,7 +73,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
               highest_priority_period = get_highest_priority_period_for_day(@all_periods, day)
               bg_class = get_background_class(highest_priority_period, is_weekend)
             %>
-            <td class={"w-6 h-5 border-t border-b border-gray-200 #{bg_class}"}></td>
+            <td class={"w-6 h-5 border-t border-b border-l border-r border-gray-200 #{bg_class}"}></td>
           <% end %>
         </tr>
       </tbody>
@@ -244,9 +244,18 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         holiday_type = next_vacation.holiday_or_vacation_type
         display_name = get_display_name(holiday_type)
 
+        # Check if the vacation name ends with "ferien" (case insensitive)
+        display_format =
+          if String.ends_with?(String.downcase(display_name), "ferien") do
+            "zu den " <> display_name
+          else
+            display_name
+          end
+
         assigns =
           Map.merge(assigns, %{
             display_name: display_name,
+            display_format: display_format,
             days_until: days_until
           })
 
@@ -255,9 +264,9 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <div class="flex items-center">
             <span class="text-gray-500">
               <%= if @days_until == 1 do %>
-                Noch 1 Tag bis <%= @display_name %>
+                Noch 1 Tag bis <%= @display_format %>
               <% else %>
-                Noch <%= @days_until %> Tage bis <%= @display_name %>.
+                Noch <%= @days_until %> Tage bis <%= @display_format %>.
               <% end %>
             </span>
           </div>

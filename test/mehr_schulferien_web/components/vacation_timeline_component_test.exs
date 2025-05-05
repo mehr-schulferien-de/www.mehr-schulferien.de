@@ -155,7 +155,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
       |> IO.iodata_to_binary()
 
     # Assert that the countdown is shown correctly (26 days from May 15 to June 10)
-    assert html =~ "Noch #{expected_days_until} Tage bis Pfingstferien."
+    assert html =~ "Noch #{expected_days_until} Tage bis zu den Pfingstferien."
 
     # Should not display countdown to public holidays
     refute html =~ "Tage bis Christi Himmelfahrt"
@@ -199,7 +199,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
 
     # Assert countdown uses timeline start date (May 1) as reference
     # (40 days from May 1 to June 10)
-    assert html =~ "Noch #{expected_days_until} Tage bis Pfingstferien."
+    assert html =~ "Noch #{expected_days_until} Tage bis zu den Pfingstferien."
   end
 
   test "displays special message when reference date is within a vacation period" do

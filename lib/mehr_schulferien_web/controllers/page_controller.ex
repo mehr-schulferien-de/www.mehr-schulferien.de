@@ -38,7 +38,7 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def index(conn, _params) do
-    index(conn, %{"number_of_days" => 90})
+    index(conn, %{"number_of_days" => 80})
   end
 
   def summer_vacations(conn, _params) do
@@ -152,12 +152,12 @@ defmodule MehrSchulferienWeb.PageController do
     end
   end
 
-  defp parse_days_count(nil), do: 90
+  defp parse_days_count(nil), do: 80
 
   defp parse_days_count(days_str) do
     case Integer.parse(days_str) do
       {days, _} when days > 0 and days <= 365 -> days
-      _ -> 90
+      _ -> 80
     end
   end
 
