@@ -157,7 +157,14 @@
       <div class="flex items-center justify-between">
         <a href="/" class="-m-1.5 p-1.5">
           <span class="sr-only">Mehr Schulferien</span>
-          <img class="h-8 w-auto" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="">
+          <div class="flex items-center">
+            <div class="bg-blue-600 text-white font-bold px-3 py-1 rounded-md flex items-center">
+              <span class="text-lg tracking-wide">MEHR!</span>
+            </div>
+            <div class="ml-2 text-black font-black text-2xl">
+              <span class="italic">Schulferien</span>
+            </div>
+          </div>
         </a>
         <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" @click="mobileMenuOpen = false">
           <span class="sr-only">Close menu</span>
