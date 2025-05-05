@@ -45,6 +45,46 @@ defmodule MehrSchulferienWeb.FederalStateController do
   end
 
   def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
+    today = DateHelpers.today_berlin()
+    current_year = today.year
+
+    redirect(conn,
+      to:
+        Routes.federal_state_path(
+          conn,
+          :show_year,
+          country_slug,
+          federal_state_slug,
+          current_year
+        )
+    )
+  end
+
+  def show_year(conn, %{
+        "country_slug" => country_slug,
+        "federal_state_slug" => federal_state_slug,
+        "year" => year
+      }) do
+    country = Locations.get_country_by_slug!(country_slug)
+    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+
+    today = DateHelpers.today_berlin()
+    current_year = today.year
+    year = String.to_integer(year)
+    next_three_years = "#{current_year}-#{current_year + 2}"
+
+    render(conn, "show.html", %{
+      country: country,
+      federal_state: federal_state,
+      next_three_years: next_three_years,
+      current_year: current_year,
+      selected_year: year,
+      today: today,
+      css_framework: :tailwind_new
+    })
+  end
+
+  def old_show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
     location_ids = [country.id, federal_state.id]
@@ -60,7 +100,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
       ] ++
         CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
 
-    render(conn, "show.html", assigns)
+    render(conn, "old_show.html", assigns)
   end
 
   def county_show(conn, %{
