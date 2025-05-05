@@ -1,7 +1,7 @@
 <nav class="flex py-3" aria-label="Breadcrumb">
   <ol class="inline-flex items-center space-x-1 md:space-x-3">
     <li class="inline-flex items-center">
-      <%= link "Start", to: Routes.page_path(@conn, :index), class: "text-blue-600 hover:text-blue-800" %>
+      <%= link "Start", to: Routes.page_path(@conn, :new), class: "text-blue-600 hover:text-blue-800" %>
     </li>
   </ol>
 </nav>
@@ -26,7 +26,7 @@
     als <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new" class="text-blue-600 hover:text-blue-800">Issues auf Github</a>, aber auch gerne per E-Mail an Stefan Wintermeyer <a href="mailto:sw@wintermeyer-consulting.de" class="text-blue-600 hover:text-blue-800">(sw@wintermeyer-consulting.de)</a></p>
 
     <h2 class="text-2xl font-semibold mb-3">URL-Parameter</h2>
-    <p class="mb-4">Verschiedene Ansichten können über URL-Parameter angepasst werden. Die Ferienübersicht unter <a href="/new" class="text-blue-600 hover:text-blue-800">/new</a> unterstützt folgende Parameter:</p>
+    <p class="mb-4">Verschiedene Ansichten können über URL-Parameter angepasst werden. Die Ferienübersicht unter <a href="/" class="text-blue-600 hover:text-blue-800">/</a> unterstützt folgende Parameter:</p>
     
     <div class="overflow-x-auto mb-6">
       <table class="min-w-full text-sm bg-white border border-gray-300">
@@ -55,7 +55,7 @@
       </table>
     </div>
     
-    <p class="mb-4">Beispiel mit kombinierten Parametern: <a href="/new?today=01.09.2024&days=180" class="text-blue-600 hover:text-blue-800 font-mono">/new?today=01.09.2024&days=180</a></p>
+    <p class="mb-4">Beispiel mit kombinierten Parametern: <a href="/?today=01.09.2024&days=180" class="text-blue-600 hover:text-blue-800 font-mono">/?today=01.09.2024&days=180</a></p>
     <p class="mb-4">Weitere Informationen finden Sie in der <a href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/blob/master/docs/url_parameters.md" class="text-blue-600 hover:text-blue-800">Dokumentation auf GitHub</a>.</p>
 
     <h2 class="text-2xl font-semibold mb-3">Die API</h2>

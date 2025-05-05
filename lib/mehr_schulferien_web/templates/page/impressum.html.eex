@@ -1,5 +1,5 @@
 <ol class="breadcrumb">
-  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link "Start", to: Routes.page_path(@conn, :new) %></li>
 </ol>
 
 <div class="page-header">

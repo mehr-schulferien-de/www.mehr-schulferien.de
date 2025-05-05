@@ -1,11 +1,11 @@
 <ol class="breadcrumb hidden-xs">
-  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link "Start", to: Routes.page_path(@conn, :new) %></li>
   <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li><%= @federal_state.name %></li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><%= link "Start", to: Routes.page_path(@conn, :index) %></li>
+  <li><%= link "Start", to: Routes.page_path(@conn, :new) %></li>
   <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug) %></li>
   <li><%= @federal_state.name %></li>
 </ol>

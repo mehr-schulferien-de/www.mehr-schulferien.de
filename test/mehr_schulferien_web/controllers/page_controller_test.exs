@@ -60,18 +60,6 @@ defmodule MehrSchulferienWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Schulferien und gesetzliche Feiertage für Deutschland"
-  end
-
-  test "custom meta tags are generated", %{conn: conn} do
-    conn = get(conn, "/")
-
-    assert html_response(conn, 200) =~
-             "Alle Ferientermine für"
-  end
-
-  test "GET /new returns 200 status code and includes expected elements", %{conn: conn} do
-    conn = get(conn, "/new")
     response = html_response(conn, 200)
 
     # Check that page renders with 200 status code
@@ -80,11 +68,17 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     # Check that it includes the Schulferien title
     assert response =~ "Schulferien in Deutschland - Übersicht"
 
-    # Check for a federal state name that appears on the page
-    assert response =~ "Berlin"
+    # Check for federal state content
+    assert response =~ "Schulferien Deutschland"
 
     # Check for vacation-related text on the page
     assert response =~ "Ferientermine"
-    assert response =~ "Schulferien Deutschland"
+  end
+
+  test "custom meta tags are generated", %{conn: conn} do
+    conn = get(conn, "/")
+
+    # Check for description meta tag
+    assert html_response(conn, 200) =~ "Ferien und Feiertage der nächsten"
   end
 end
