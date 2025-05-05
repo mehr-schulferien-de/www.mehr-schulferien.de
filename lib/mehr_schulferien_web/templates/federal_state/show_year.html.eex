@@ -1,56 +1,32 @@
 <div class="mt-0 sm:mt-1">
-  <nav class="mb-4">
-    <ol class="flex space-x-2 text-sm">
-      <li><%= link "Start", to: Routes.page_path(@conn, :new), class: "text-blue-600 hover:text-blue-800" %></li>
-      <li class="flex items-center">
-        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-      </li>
-      <li><%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug), class: "text-blue-600 hover:text-blue-800" %></li>
-      <li class="flex items-center">
-        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-      </li>
-      <li class="text-blue-600"><%= @federal_state.name %></li>
-      <li class="flex items-center">
-        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-      </li>
-      <li class="text-gray-600"><%= @year %></li>
-    </ol>
-  </nav>
-
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">Schulferien <%= @federal_state.name %> <%= @year %></h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">Schulferien <%= @federal_state.name %></h1>
       
-      <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+      <div class="flex items-center w-full sm:w-auto mt-4 sm:mt-0">
         <%= if length(@years_with_data) > 0 do %>
-          <div class="inline-flex rounded-md shadow-sm" role="group">
+          <div class="inline-flex rounded-md shadow-sm w-full" role="group">
             <% 
-              # Logic for pagination with max 4 visible years
-              max_visible = 4
+              # Logic for pagination with different max visible years for mobile and desktop
+              mobile_max_visible = 3
               current_index = Enum.find_index(@years_with_data, fn y -> y == @year end) || 0
               total_years = length(@years_with_data)
               
-              # Calculate which years to show
-              {visible_years, _} = cond do
-                total_years <= max_visible ->
-                  # Show all years if total is 4 or less
+              # Calculate which years to show for mobile
+              {mobile_visible_years, _} = cond do
+                total_years <= mobile_max_visible ->
+                  # Show all years if total is 3 or less
                   {@years_with_data, false}
-                current_index <= 1 ->
-                  # Current year is among the first two, show first 4
-                  {Enum.take(@years_with_data, max_visible), false}
-                current_index >= total_years - 2 ->
-                  # Current year is among the last two, show last 4
-                  {Enum.take(@years_with_data, -max_visible), false}
+                current_index <= 0 ->
+                  # Current year is the first, show first 3
+                  {Enum.take(@years_with_data, mobile_max_visible), false}
+                current_index >= total_years - 1 ->
+                  # Current year is the last, show last 3
+                  {Enum.take(@years_with_data, -mobile_max_visible), false}
                 true ->
-                  # Current year is in the middle, show 2 before and after when possible
+                  # Current year is in the middle, show 1 before and 1 after when possible
                   start_idx = max(0, current_index - 1)
-                  end_idx = min(total_years - 1, current_index + 2)
+                  end_idx = min(total_years - 1, current_index + 1)
                   
                   years = Enum.slice(@years_with_data, start_idx..end_idx)
                   {years, false}
@@ -61,44 +37,53 @@
               next_year = if current_index < total_years - 1, do: Enum.at(@years_with_data, current_index + 1)
             %>
             
-            <%= if prev_year do %>
-              <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, prev_year), 
-                      class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg" do %>
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
+            <% # Mobile pagination (3 years) %>
+            <div class="flex w-full">
+              <%= if prev_year do %>
+                <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, prev_year), 
+                        class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg flex items-center" do %>
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                <% end %>
+              <% else %>
+                <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-l-lg cursor-not-allowed flex items-center">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </span>
               <% end %>
-            <% else %>
-              <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-l-lg cursor-not-allowed">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-              </span>
-            <% end %>
-            
-            <%= for year <- visible_years do %>
-              <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, year), 
-                      class: if(year == @year, 
-                              do: "px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600", 
-                              else: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700") do %>
-                <%= year %>
+              
+              <div class="flex flex-grow">
+                <%= for year <- mobile_visible_years do %>
+                  <%= if year == @year do %>
+                    <span class="px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600 flex-1 text-center">
+                      <%= year %>
+                    </span>
+                  <% else %>
+                    <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, year), 
+                            class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center" do %>
+                      <%= year %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </div>
+              
+              <%= if next_year do %>
+                <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, next_year), 
+                        class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg flex items-center" do %>
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                <% end %>
+              <% else %>
+                <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-r-lg cursor-not-allowed flex items-center">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </span>
               <% end %>
-            <% end %>
-            
-            <%= if next_year do %>
-              <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, next_year), 
-                      class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg" do %>
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              <% end %>
-            <% else %>
-              <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-r-lg cursor-not-allowed">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </span>
-            <% end %>
+            </div>
           </div>
         <% else %>
           <span class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg">
@@ -117,10 +102,8 @@
               <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Name</th>
               <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Termin</th>
               <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                <span class="sm:hidden">Dauer*</span>
-                <span class="hidden sm:block">Dauer</span>
+                Dauer*
               </th>
-              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b hidden sm:table-cell">Effektiv</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
@@ -138,11 +121,7 @@
                 </td>
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
                   <span class="whitespace-nowrap">
-                    <span class="sm:hidden"><%= Calendar.strftime(period.starts_on, "%d.%m.") %></span>
-                    <span class="hidden sm:block"><%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %></span>
-                    &#8201;&#8211;&#8201;
-                    <span class="sm:hidden"><%= Calendar.strftime(period.ends_on, "%d.%m.") %></span>
-                    <span class="hidden sm:block"><%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %></span>
+                    <span class="sm:hidden"><%= Calendar.strftime(period.starts_on, "%d.%m.") %></span><span class="hidden sm:inline"><%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %></span><span>&#8201;&#8211;&#8201;</span><span class="sm:hidden"><%= Calendar.strftime(period.ends_on, "%d.%m.") %></span><span class="hidden sm:inline"><%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %></span>
                   </span>
                 </td>
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
@@ -150,19 +129,10 @@
                   <% effective_duration = calculate_effective_duration(period, @periods) %>
                   <% difference = effective_duration - days %>
                   
-                  <span class="sm:hidden">
-                    <%= days %> <%= if days == 1, do: "Tag", else: "Tage" %>
-                    <%= if difference != 0 do %>
-                      <span class="text-gray-500">(+<%= difference %>)</span>
-                    <% end %>
-                  </span>
-                  <span class="hidden sm:block">
-                    <%= days %> <%= if days == 1, do: "Tag", else: "Tage" %>
-                  </span>
-                </td>
-                <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700 hidden sm:table-cell">
-                  <%= effective_duration %> 
-                  <%= if effective_duration == 1, do: "Tag", else: "Tage" %>
+                  <%= days %> <%= if days == 1, do: "Tag", else: "Tage" %>
+                  <%= if difference != 0 do %>
+                    <span class="text-gray-500">(+<%= difference %>)</span>
+                  <% end %>
                 </td>
               </tr>
             <% end %>
@@ -176,7 +146,7 @@
         end) %>
         
         <%= if has_differences do %>
-          <div class="text-xs text-gray-500 mt-2 sm:hidden">
+          <div class="text-xs text-gray-500 mt-2">
             * Die effektive Dauer enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
           </div>
         <% end %>
