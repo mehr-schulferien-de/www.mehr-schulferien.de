@@ -23,9 +23,9 @@
     </ol>
   </nav>
 
-  <div class="bg-white shadow-lg rounded-lg overflow-hidden p-8">
-    <div class="flex flex-col sm:flex-row items-center justify-between mb-6">
-      <h1 class="text-3xl font-bold text-gray-900">Schulferien <%= @federal_state.name %> <%= @year %></h1>
+  <div>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">Schulferien <%= @federal_state.name %> <%= @year %></h1>
       
       <div class="flex items-center space-x-2 mt-4 sm:mt-0">
         <%= if length(@years_with_data) > 0 do %>
@@ -110,10 +110,87 @@
 
     <% has_data = length(@periods) > 0 %>
     <%= if has_data do %>
-      <p class="text-lg text-gray-700">Schulferien für <%= @federal_state.name %> im Jahr <%= @year %></p>
-      
-      <% # TODO: Display the actual periods data here %>
-      
+        <div class="overflow-x-auto mt-4">
+        <table class="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr>
+              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Name</th>
+              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Termine</th>
+              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Dauer</th>
+              <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Effektiv</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <%= for period <- @periods do %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium text-gray-900">
+                  <%= cond do %>
+                    <% is_map_key(period.holiday_or_vacation_type, :colloquial) && period.holiday_or_vacation_type.colloquial && period.holiday_or_vacation_type.colloquial != "" -> %>
+                      <%= period.holiday_or_vacation_type.colloquial %>
+                    <% is_map_key(period.holiday_or_vacation_type, :colloquial_name) && period.holiday_or_vacation_type.colloquial_name && period.holiday_or_vacation_type.colloquial_name != "" -> %>
+                      <%= period.holiday_or_vacation_type.colloquial_name %>
+                    <% true -> %>
+                      <%= period.holiday_or_vacation_type.name %>
+                  <% end %>
+                </td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
+                  <span class="whitespace-nowrap">
+                    <span class="sm:hidden"><%= Calendar.strftime(period.starts_on, "%d.%m.") %></span>
+                    <span class="hidden sm:block"><%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %></span>
+                    &#8201;&#8211;&#8201;
+                    <span class="sm:hidden"><%= Calendar.strftime(period.ends_on, "%d.%m.") %></span>
+                    <span class="hidden sm:block"><%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %></span>
+                  </span>
+                </td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
+                  <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
+                  <%= days %> 
+                  <span class="sm:hidden">T.</span>
+                  <span class="hidden sm:block"><%= if days == 1, do: "Tag", else: "Tage" %></span>
+                </td>
+                <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
+                  <% 
+                    # Calculate official vacation duration
+                    official_duration = Date.diff(period.ends_on, period.starts_on) + 1
+                    
+                    # Check the days before period.starts_on 
+                    # Looking for weekend (Saturday/Sunday) or public holidays adjacent to period start
+                    day_before_start = Date.add(period.starts_on, -1)
+                    
+                    # Check for weekend (day_of_week: 6=Saturday, 7=Sunday)
+                    days_before = cond do
+                      Date.day_of_week(day_before_start) > 5 -> 
+                        if Date.day_of_week(Date.add(day_before_start, -1)) > 5, do: 2, else: 1
+                      # Check for Friday when period starts on Monday
+                      Date.day_of_week(day_before_start) == 5 && Date.day_of_week(period.starts_on) == 1 -> 3
+                      true -> 0
+                    end
+                    
+                    # Check the days after period.ends_on
+                    # Looking for weekend or public holidays adjacent to period end
+                    day_after_end = Date.add(period.ends_on, 1)
+                    
+                    # Check for weekend 
+                    days_after = cond do
+                      Date.day_of_week(day_after_end) > 5 -> 
+                        if Date.day_of_week(Date.add(day_after_end, 1)) > 5, do: 2, else: 1
+                      # Check for Friday when period ends on Friday
+                      Date.day_of_week(period.ends_on) == 5 && Date.day_of_week(day_after_end) == 6 -> 2
+                      true -> 0
+                    end
+                    
+                    # Calculate effective duration
+                    effective_duration = official_duration + days_before + days_after
+                  %>
+                  <%= effective_duration %> 
+                  <span class="sm:hidden">T.</span>
+                  <span class="hidden sm:block"><%= if effective_duration == 1, do: "Tag", else: "Tage" %></span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     <% else %>
       <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
         <p class="font-bold">Information</p>

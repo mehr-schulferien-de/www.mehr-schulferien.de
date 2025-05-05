@@ -29,7 +29,9 @@ defmodule MehrSchulferienWeb.CountryController do
   end
 
   defp list_year_periods(country, federal_state, start_date, end_date) do
-    periods = Periods.list_school_periods([country.id, federal_state.id], start_date, end_date)
+    periods =
+      Periods.list_school_vacation_periods([country.id, federal_state.id], start_date, end_date)
+
     Enum.filter(periods, &(&1.starts_on.year == start_date.year))
   end
 end

@@ -116,7 +116,7 @@ defmodule MehrSchulferien.Periods do
 
   defdelegate list_previous_periods(federal_state, holiday_or_vacation_type), to: Query
   defdelegate list_current_and_future_periods(federal_state, holiday_or_vacation_type), to: Query
-  defdelegate list_school_periods(location_ids, starts_on, ends_on), to: Query
+  defdelegate list_school_vacation_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_public_everybody_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_public_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_school_free_periods(location_ids, starts_on, ends_on), to: Query

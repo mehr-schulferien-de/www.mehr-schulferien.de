@@ -49,7 +49,7 @@ defmodule MehrSchulferien.Periods.Query do
   @doc """
   Returns a list of school vacation periods for a certain time frame.
   """
-  def list_school_periods(location_ids, starts_on, ends_on) do
+  def list_school_vacation_periods(location_ids, starts_on, ends_on) do
     from(p in Period,
       where:
         p.location_id in ^location_ids and

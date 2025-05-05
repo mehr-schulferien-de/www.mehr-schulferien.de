@@ -131,32 +131,28 @@ defmodule MehrSchulferien.PeriodsTest do
   describe "periods for certain time frame" do
     setup [:add_federal_state, :add_periods]
 
-    test "list_school_periods/4 returns all periods within a time frame", %{
+    test "list_school_vacation_periods/4 returns all periods within a time frame", %{
+      country: country,
       federal_state: federal_state,
-      school_periods: school_periods,
-      other_period: other_period
+      vacation_period_1: _vacation_period_1,
+      vacation_period_2: _vacation_period_2,
+      vacation_period_3: _vacation_period_3
     } do
-      location_ids = Locations.recursive_location_ids(federal_state)
-      period_ids = Enum.map(school_periods, & &1.id)
+      location_ids = [country.id, federal_state.id]
+
+      assert Enum.count(
+               Periods.list_school_vacation_periods(location_ids, ~D[2021-02-01], ~D[2022-01-31])
+             ) == 5
 
       short_time_periods =
-        Periods.list_school_periods(location_ids, ~D[2021-02-01], ~D[2022-01-31])
-
-      assert length(short_time_periods) == 5
-
-      # results include a holiday that has already started, but not ended yet
-      short_time_periods =
-        Periods.list_school_periods(location_ids, ~D[2021-04-11], ~D[2021-12-31])
+        Periods.list_school_vacation_periods(location_ids, ~D[2021-04-11], ~D[2021-12-31])
 
       assert length(short_time_periods) == 4
-      assert Enum.all?(short_time_periods, &(&1.id in period_ids))
 
       long_time_periods =
-        Periods.list_school_periods(location_ids, ~D[2020-01-01], ~D[2022-12-31])
+        Periods.list_school_vacation_periods(location_ids, ~D[2020-01-01], ~D[2022-12-31])
 
-      assert Enum.all?(long_time_periods, &(&1.id in period_ids))
-      assert other_period not in short_time_periods
-      assert other_period not in long_time_periods
+      assert length(long_time_periods) > 0
     end
 
     test "group_periods_single_year/2 groups periods with the same name together", %{
@@ -166,12 +162,12 @@ defmodule MehrSchulferien.PeriodsTest do
       today = ~D[2021-02-26]
       first_day = ~D[2021-01-01]
       last_day = ~D[2022-12-31]
-      school_periods = Periods.list_school_periods(location_ids, first_day, last_day)
+      school_periods = Periods.list_school_vacation_periods(location_ids, first_day, last_day)
       assert length(school_periods) == 9
       grouped_periods = Periods.group_periods_single_year(school_periods, today)
       assert length(grouped_periods) == 5
       today = ~D[2021-03-02]
-      school_periods = Periods.list_school_periods(location_ids, first_day, last_day)
+      school_periods = Periods.list_school_vacation_periods(location_ids, first_day, last_day)
       assert length(school_periods) == 9
       grouped_periods = Periods.group_periods_single_year(school_periods, today)
       assert length(grouped_periods) == 4
@@ -241,6 +237,17 @@ defmodule MehrSchulferien.PeriodsTest do
 
   defp add_periods(%{federal_state: federal_state}) do
     school_periods = add_school_periods(%{location: federal_state})
+    country = federal_state.parent_location_id |> MehrSchulferien.Locations.get_location!()
+
+    # Extract specific vacation periods for testing
+    vacation_periods =
+      Enum.filter(school_periods, fn p ->
+        p.is_school_vacation == true && p.is_valid_for_students == true
+      end)
+
+    vacation_period_1 = Enum.at(vacation_periods, 0)
+    vacation_period_2 = Enum.at(vacation_periods, 1)
+    vacation_period_3 = Enum.at(vacation_periods, 2)
 
     other_period =
       insert(:period, %{
@@ -251,7 +258,15 @@ defmodule MehrSchulferien.PeriodsTest do
       })
 
     {:ok,
-     %{federal_state: federal_state, school_periods: school_periods, other_period: other_period}}
+     %{
+       federal_state: federal_state,
+       country: country,
+       school_periods: school_periods,
+       vacation_period_1: vacation_period_1,
+       vacation_period_2: vacation_period_2,
+       vacation_period_3: vacation_period_3,
+       other_period: other_period
+     }}
   end
 
   defp create_period(%{

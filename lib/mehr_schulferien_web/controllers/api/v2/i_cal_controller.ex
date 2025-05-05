@@ -18,19 +18,19 @@ defmodule MehrSchulferienWeb.Api.V2.ICalController do
 
   defp list_periods("all", location_ids, start_date, end_date) do
     periods =
-      list_school_periods(location_ids, start_date, end_date) ++
+      list_school_vacation_periods(location_ids, start_date, end_date) ++
         Periods.list_public_periods(location_ids, start_date, end_date)
 
     Enum.sort(periods, &(Date.compare(&1.starts_on, &2.starts_on) != :gt))
   end
 
   defp list_periods(_, location_ids, start_date, end_date) do
-    list_school_periods(location_ids, start_date, end_date)
+    list_school_vacation_periods(location_ids, start_date, end_date)
   end
 
-  defp list_school_periods(location_ids, start_date, end_date) do
+  defp list_school_vacation_periods(location_ids, start_date, end_date) do
     location_ids
-    |> Periods.list_school_periods(start_date, end_date)
+    |> Periods.list_school_vacation_periods(start_date, end_date)
     |> Enum.reject(
       &(&1.holiday_or_vacation_type.name == "Sommer" and
           Date.compare(&1.starts_on, start_date) == :lt)

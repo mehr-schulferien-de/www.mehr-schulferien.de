@@ -9,7 +9,7 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
     current_year = today.year
     {:ok, first_day} = Date.new(current_year, 1, 1)
     {:ok, last_day} = Date.new(current_year + 2, 12, 31)
-    school_periods = Periods.list_school_periods(location_ids, first_day, last_day)
+    school_periods = Periods.list_school_vacation_periods(location_ids, first_day, last_day)
     public_periods = Periods.list_public_everybody_periods(location_ids, first_day, last_day)
     months = DateHelpers.get_months_map()
 
