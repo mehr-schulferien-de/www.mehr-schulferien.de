@@ -68,10 +68,49 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {federal_state, country} =
       Locations.get_federal_state_and_country_by_slug!(country_slug, federal_state_slug)
 
+    # Convert year to integer
+    year = String.to_integer(year)
+
+    # Get current year for reference
+    current_year = Date.utc_today().year
+
+    # Define the range of years to check (current year and 3 years in each direction)
+    check_years = (year - 3)..(year + 3) |> Enum.to_list()
+
+    # Get vacation periods for the entire range with a single query
+    range_start = Date.from_erl!({Enum.min(check_years), 1, 1})
+    range_end = Date.from_erl!({Enum.max(check_years), 12, 31})
+    location_ids = [country.id, federal_state.id]
+
+    all_periods =
+      MehrSchulferien.Periods.Query.list_school_periods(location_ids, range_start, range_end)
+
+    # Group periods by year
+    periods_by_year =
+      Enum.group_by(all_periods, fn period ->
+        period.starts_on.year
+      end)
+
+    # Determine which years have data
+    years_with_data =
+      Enum.filter(check_years, fn check_year ->
+        case Map.get(periods_by_year, check_year) do
+          nil -> false
+          periods -> length(periods) > 0
+        end
+      end)
+      |> Enum.sort()
+
+    # Get just the periods for the current year
+    current_year_periods = Map.get(periods_by_year, year, [])
+
     render(conn, "show_year.html", %{
       country: country,
       federal_state: federal_state,
       year: year,
+      years_with_data: years_with_data,
+      current_year: current_year,
+      periods: current_year_periods,
       css_framework: :tailwind_new
     })
   end

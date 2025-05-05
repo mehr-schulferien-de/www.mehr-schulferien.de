@@ -24,7 +24,109 @@
   </nav>
 
   <div class="bg-white shadow-lg rounded-lg overflow-hidden p-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">Hello World!</h1>
-    <p class="text-lg text-gray-700">Welcome to <%= @federal_state.name %></p>
+    <div class="flex flex-col sm:flex-row items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-gray-900">Schulferien <%= @federal_state.name %> <%= @year %></h1>
+      
+      <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+        <%= if length(@years_with_data) > 0 do %>
+          <div class="inline-flex rounded-md shadow-sm" role="group">
+            <% 
+              # Logic for pagination with max 4 visible years
+              max_visible = 4
+              current_index = Enum.find_index(@years_with_data, fn y -> y == @year end) || 0
+              total_years = length(@years_with_data)
+              
+              # Calculate which years to show
+              {visible_years, _} = cond do
+                total_years <= max_visible ->
+                  # Show all years if total is 4 or less
+                  {@years_with_data, false}
+                current_index <= 1 ->
+                  # Current year is among the first two, show first 4
+                  {Enum.take(@years_with_data, max_visible), false}
+                current_index >= total_years - 2 ->
+                  # Current year is among the last two, show last 4
+                  {Enum.take(@years_with_data, -max_visible), false}
+                true ->
+                  # Current year is in the middle, show 2 before and after when possible
+                  start_idx = max(0, current_index - 1)
+                  end_idx = min(total_years - 1, current_index + 2)
+                  
+                  years = Enum.slice(@years_with_data, start_idx..end_idx)
+                  {years, false}
+              end
+              
+              # Determine if prev/next arrows should be enabled
+              prev_year = if current_index > 0, do: Enum.at(@years_with_data, current_index - 1)
+              next_year = if current_index < total_years - 1, do: Enum.at(@years_with_data, current_index + 1)
+            %>
+            
+            <%= if prev_year do %>
+              <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, prev_year), 
+                      class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg" do %>
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              <% end %>
+            <% else %>
+              <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-l-lg cursor-not-allowed">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </span>
+            <% end %>
+            
+            <%= for year <- visible_years do %>
+              <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, year), 
+                      class: if(year == @year, 
+                              do: "px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600", 
+                              else: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700") do %>
+                <%= year %>
+              <% end %>
+            <% end %>
+            
+            <%= if next_year do %>
+              <%= link to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, next_year), 
+                      class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg" do %>
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              <% end %>
+            <% else %>
+              <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-r-lg cursor-not-allowed">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </span>
+            <% end %>
+          </div>
+        <% else %>
+          <span class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg">
+            <%= @year %>
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <% has_data = length(@periods) > 0 %>
+    <%= if has_data do %>
+      <p class="text-lg text-gray-700">Schulferien für <%= @federal_state.name %> im Jahr <%= @year %></p>
+      
+      <% # TODO: Display the actual periods data here %>
+      
+    <% else %>
+      <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <p class="font-bold">Information</p>
+        <p>Für das Jahr <%= @year %> liegen keine Feriendaten vor.</p>
+        <%= if length(@years_with_data) > 0 do %>
+          <p class="mt-2">
+            Bitte wählen Sie eines der verfügbaren Jahre: 
+            <%= for available_year <- @years_with_data do %>
+              <%= link "#{available_year}", to: Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, available_year), class: "text-blue-600 hover:underline" %><%= if available_year != List.last(@years_with_data), do: ", ", else: "" %>
+            <% end %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div> 
