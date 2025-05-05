@@ -2,6 +2,7 @@
   alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.Locations
 %>
+
 <div class="mt-8">
   <h1 class="text-3xl font-bold text-gray-900 mb-6">Schulferien Deutschland</h1>
   <p class="text-gray-700 mb-8">Ferien und Feiertage der nächsten <%= @number_of_days %> Tage auf einen Blick<%= if @custom_start_date && Date.compare(@custom_start_date, Date.utc_today()) != :eq do %> (ab dem <%= Calendar.strftime(@custom_start_date, "%d.%m.%Y") %>)<% end %>.</p>
