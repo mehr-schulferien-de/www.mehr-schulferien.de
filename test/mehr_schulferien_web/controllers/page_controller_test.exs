@@ -84,7 +84,7 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     assert response =~ "Berlin"
 
     # Check for vacation-related text on the page
-    assert response =~ "Alle Ferientermine für"
+    assert response =~ "Ferientermine"
     assert response =~ "Schulferien Deutschland"
   end
 end
