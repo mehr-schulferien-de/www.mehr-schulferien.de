@@ -14,6 +14,14 @@ defmodule MehrSchulferienWeb.Api.V2.ICalController do
 
     periods = list_periods(vacation_types, location_ids, start_date, end_date)
 
+    # For calendar year view, filter periods to only include days within the specified year
+    periods =
+      if use_calendar_year do
+        filter_periods_by_calendar_year(periods, year)
+      else
+        periods
+      end
+
     conn
     |> update_headers(location.name, year, is_school_year)
     |> render("icalendar.ics", location: location, periods: periods)
@@ -32,6 +40,38 @@ defmodule MehrSchulferienWeb.Api.V2.ICalController do
     {:ok, start_date} = Date.new(year, 8, 1)
     {:ok, end_date} = Date.new(year + 1, 7, 31)
     {start_date, end_date, true}
+  end
+
+  # Filter periods to only include days within the specified calendar year
+  defp filter_periods_by_calendar_year(periods, year) do
+    {:ok, year_start} = Date.new(year, 1, 1)
+    {:ok, year_end} = Date.new(year, 12, 31)
+
+    Enum.map(periods, fn period ->
+      cond do
+        # Period starts before this year and ends after this year
+        Date.compare(period.starts_on, year_start) == :lt &&
+            Date.compare(period.ends_on, year_end) == :gt ->
+          # Adjust period to only include days within this year
+          %{period | starts_on: year_start, ends_on: year_end}
+
+        # Period starts before this year and ends within this year
+        Date.compare(period.starts_on, year_start) == :lt &&
+            Date.compare(period.ends_on, year_start) != :lt ->
+          # Adjust start date to the beginning of the year
+          %{period | starts_on: year_start}
+
+        # Period starts within this year and ends after this year
+        Date.compare(period.starts_on, year_end) != :gt &&
+            Date.compare(period.ends_on, year_end) == :gt ->
+          # Adjust end date to the end of the year
+          %{period | ends_on: year_end}
+
+        # Period is entirely within this year
+        true ->
+          period
+      end
+    end)
   end
 
   defp list_periods("all", location_ids, start_date, end_date) do

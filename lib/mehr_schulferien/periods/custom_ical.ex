@@ -36,7 +36,6 @@ defmodule MehrSchulferien.Periods.CustomICal do
     SUMMARY:#{escape_text(holiday_or_vacation_type.colloquial)} (#{escape_text(location.name)})
     TRANSP:TRANSPARENT
     UID:#{generate_uid()}
-    DESCRIPTION:#{escape_text(holiday_or_vacation_type.name)}
     LOCATION:#{escape_text(location.name)}
     URL:https://www.mehr-schulferien.de/ferien/d/bundesland/#{location.slug}/#{starts_on.year}
     END:VEVENT
