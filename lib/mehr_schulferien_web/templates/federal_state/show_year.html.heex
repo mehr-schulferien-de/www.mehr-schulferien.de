@@ -159,6 +159,9 @@
               <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                 Termin
               </th>
+              <th class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                Wochentage
+              </th>
               <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                 Dauer*
               </th>
@@ -188,8 +191,17 @@
                     -
                     <span class="sm:hidden">
                       <%= Calendar.strftime(period.ends_on, "%d.%m.") %>
-                    </span><span class="hidden sm:inline"><%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %></span>
+                    </span>
+                    <span class="hidden sm:inline">
+                      <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>
+                    </span>
                   </span>
+                </td>
+                <td class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700 whitespace-nowrap">
+                  <%= Calendar.strftime(period.starts_on, "%a.") %> - <%= Calendar.strftime(
+                    period.ends_on,
+                    "%a."
+                  ) %>
                 </td>
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
                   <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
@@ -215,7 +227,7 @@
 
         <%= if has_differences do %>
           <div class="text-xs text-gray-500 mt-2">
-            * Die effektive Dauer enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
+            * Die effektive Dauer (das + in der Klammer) enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
           </div>
         <% end %>
       </div>
