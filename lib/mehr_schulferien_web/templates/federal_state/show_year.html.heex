@@ -360,9 +360,41 @@
                       <tr>
                         <%= for weekday <- 1..7 do %>
                           <% day = week_start_day + weekday - 1 %>
+                          <% current_date =
+                            if day > 0 and day <= days_in_month do
+                              Date.new!(@year, month, day)
+                            else
+                              nil
+                            end %>
+
+                          <% is_public_holiday =
+                            if current_date do
+                              Enum.any?(@public_periods, fn period ->
+                                Date.compare(period.starts_on, current_date) != :gt &&
+                                  Date.compare(period.ends_on, current_date) != :lt
+                              end)
+                            else
+                              false
+                            end %>
+
+                          <% is_vacation =
+                            if current_date do
+                              Enum.any?(@periods, fn period ->
+                                Date.compare(period.starts_on, current_date) != :gt &&
+                                  Date.compare(period.ends_on, current_date) != :lt
+                              end)
+                            else
+                              false
+                            end %>
+
                           <td class={[
                             "border border-gray-200 text-center py-1 w-1/12 text-xs h-[30px]",
-                            if(weekday >= 6, do: "bg-gray-100")
+                            cond do
+                              is_public_holiday -> "bg-blue-100"
+                              is_vacation -> "bg-green-100"
+                              weekday >= 6 -> "bg-gray-100"
+                              true -> ""
+                            end
                           ]}>
                             <%= if day > 0 and day <= days_in_month do %>
                               <%= day %>.
@@ -375,6 +407,88 @@
                 </tbody>
               </table>
             </div>
+            <!-- Display holidays and vacations for this month -->
+            <% month_periods =
+              Enum.filter(@periods, fn period ->
+                period.starts_on.month == month || period.ends_on.month == month ||
+                  (period.starts_on.month < month && period.ends_on.month > month)
+              end) %>
+
+            <% month_public_periods =
+              Enum.filter(@public_periods, fn period ->
+                period.starts_on.month == month || period.ends_on.month == month ||
+                  (period.starts_on.month < month && period.ends_on.month > month)
+              end) %>
+
+            <%= if length(month_periods) > 0 || length(month_public_periods) > 0 do %>
+              <div class="mt-3 text-xs border-t border-gray-200 pt-2">
+                <ul class="space-y-1">
+                  <%= for period <- month_public_periods do %>
+                    <li class="flex justify-between">
+                      <span class="font-medium text-blue-700">
+                        <%= cond do %>
+                          <% is_map_key(period.holiday_or_vacation_type, :colloquial) && period.holiday_or_vacation_type.colloquial && period.holiday_or_vacation_type.colloquial != "" -> %>
+                            <%= period.holiday_or_vacation_type.colloquial %>
+                          <% is_map_key(period.holiday_or_vacation_type, :colloquial_name) && period.holiday_or_vacation_type.colloquial_name && period.holiday_or_vacation_type.colloquial_name != "" -> %>
+                            <%= period.holiday_or_vacation_type.colloquial_name %>
+                          <% true -> %>
+                            <%= period.holiday_or_vacation_type.name %>
+                        <% end %>
+                      </span>
+                      <span class="text-gray-600">
+                        <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
+                          <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
+                        <% else %>
+                          <%= if period.starts_on.year != period.ends_on.year do %>
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(
+                              period.ends_on,
+                              "%d.%m.%Y"
+                            ) %>
+                          <% else %>
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.") %> - <%= Calendar.strftime(
+                              period.ends_on,
+                              "%d.%m."
+                            ) %>
+                          <% end %>
+                        <% end %>
+                      </span>
+                    </li>
+                  <% end %>
+
+                  <%= for period <- month_periods do %>
+                    <li class="flex justify-between">
+                      <span class="font-medium text-green-700">
+                        <%= cond do %>
+                          <% is_map_key(period.holiday_or_vacation_type, :colloquial) && period.holiday_or_vacation_type.colloquial && period.holiday_or_vacation_type.colloquial != "" -> %>
+                            <%= period.holiday_or_vacation_type.colloquial %>
+                          <% is_map_key(period.holiday_or_vacation_type, :colloquial_name) && period.holiday_or_vacation_type.colloquial_name && period.holiday_or_vacation_type.colloquial_name != "" -> %>
+                            <%= period.holiday_or_vacation_type.colloquial_name %>
+                          <% true -> %>
+                            <%= period.holiday_or_vacation_type.name %>
+                        <% end %>
+                      </span>
+                      <span class="text-gray-600">
+                        <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
+                          <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
+                        <% else %>
+                          <%= if period.starts_on.year != period.ends_on.year do %>
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(
+                              period.ends_on,
+                              "%d.%m.%Y"
+                            ) %>
+                          <% else %>
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.") %> - <%= Calendar.strftime(
+                              period.ends_on,
+                              "%d.%m."
+                            ) %>
+                          <% end %>
+                        <% end %>
+                      </span>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
           </section>
         <% end %>
       </div>

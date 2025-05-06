@@ -108,6 +108,17 @@ defmodule MehrSchulferienWeb.FederalStateController do
     # Get just the periods for the current year
     current_year_periods = Map.get(periods_by_year, year, [])
 
+    # Get public holiday periods for the year
+    {:ok, year_start} = Date.new(year, 1, 1)
+    {:ok, year_end} = Date.new(year, 12, 31)
+
+    public_periods =
+      MehrSchulferien.Periods.Query.list_public_periods(
+        location_ids,
+        year_start,
+        year_end
+      )
+
     render(conn, "show_year.html", %{
       country: country,
       federal_state: federal_state,
@@ -115,6 +126,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
       years_with_data: years_with_data,
       current_year: current_year,
       periods: current_year_periods,
+      public_periods: public_periods,
       css_framework: :tailwind_new
     })
   end
