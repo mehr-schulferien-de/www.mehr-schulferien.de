@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
+  alias MehrSchulferienWeb.FederalStateView
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
@@ -118,6 +119,24 @@ defmodule MehrSchulferienWeb.FederalStateController do
         year_start,
         year_end
       )
+
+    # Calculate adjoining_duration for each period
+    # This ensures display values reflect the current calculation
+    all_periods_for_calculation = current_year_periods ++ public_periods
+
+    current_year_periods =
+      Enum.map(current_year_periods, fn period ->
+        days = Date.diff(period.ends_on, period.starts_on) + 1
+
+        effective_duration =
+          FederalStateView.calculate_effective_duration(period, all_periods_for_calculation)
+
+        difference = effective_duration - days
+
+        # Just set the value in the struct for rendering
+        # No database update since it's a virtual field
+        Map.put(period, :adjoining_duration, difference)
+      end)
 
     render(conn, "show_year.html", %{
       country: country,

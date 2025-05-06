@@ -70,8 +70,8 @@ defmodule MehrSchulferienWeb.FederalStateView do
     # Start checking from the day before the period
     day_before = Date.add(start_date, -1)
 
-    # Look back up to 3 days (reasonable limit for adjacent days)
-    dates_to_check = for i <- 0..2, do: Date.add(day_before, -i)
+    # Look back up to 7 days (to catch full weekends + holidays)
+    dates_to_check = for i <- 0..6, do: Date.add(day_before, -i)
 
     # Keep only consecutive days off
     Enum.take_while(dates_to_check, fn date ->
@@ -87,8 +87,8 @@ defmodule MehrSchulferienWeb.FederalStateView do
     # Start checking from the day after the period
     day_after = Date.add(end_date, 1)
 
-    # Look ahead up to 3 days (reasonable limit for adjacent days)
-    dates_to_check = for i <- 0..2, do: Date.add(day_after, i)
+    # Look ahead up to 7 days (to catch full weekends + holidays)
+    dates_to_check = for i <- 0..6, do: Date.add(day_after, i)
 
     # Keep only consecutive days off
     Enum.take_while(dates_to_check, fn date ->
@@ -108,7 +108,7 @@ defmodule MehrSchulferienWeb.FederalStateView do
     is_holiday =
       Enum.any?(periods, fn p ->
         Date.compare(date, p.starts_on) in [:eq, :gt] &&
-          Date.compare(date, p.ends_on) in [:eq, :lt]
+          Date.compare(date, p.ends_on) in [:lt, :eq]
       end)
 
     is_weekend || is_holiday

@@ -1,4 +1,6 @@
 <div class="mt-0 sm:mt-1">
+  <%!-- Combine school vacation periods with public holiday periods for calculations --%>
+  <% all_periods = @periods ++ @public_periods %>
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
@@ -229,7 +231,7 @@
                 </td>
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
                   <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
-                  <% effective_duration = calculate_effective_duration(period, @periods) %>
+                  <% effective_duration = calculate_effective_duration(period, all_periods) %>
                   <% difference = effective_duration - days %>
 
                   <%= days %> <%= if days == 1, do: "Tag", else: "Tage" %>
@@ -245,7 +247,7 @@
         <% has_differences =
           Enum.any?(@periods, fn period ->
             days = Date.diff(period.ends_on, period.starts_on) + 1
-            effective_duration = calculate_effective_duration(period, @periods)
+            effective_duration = calculate_effective_duration(period, all_periods)
             effective_duration != days
           end) %>
 
@@ -486,7 +488,7 @@
                             <%= period.holiday_or_vacation_type.name %>
                         <% end %>
                         <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
-                        <% effective_duration = calculate_effective_duration(period, @periods) %>
+                        <% effective_duration = calculate_effective_duration(period, all_periods) %>
                         <% difference = effective_duration - days %>
                         <span class="font-normal ml-1">
                           (<%= days %>
