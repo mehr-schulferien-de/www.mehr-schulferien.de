@@ -109,6 +109,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
     # Get just the periods for the current year
     current_year_periods = Map.get(periods_by_year, year, [])
 
+    # Check if data exists for the requested year
+    has_data = length(current_year_periods) > 0
+
     # Get public holiday periods for the year
     {:ok, year_start} = Date.new(year, 1, 1)
     {:ok, year_end} = Date.new(year, 12, 31)
@@ -122,7 +125,6 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     # Combine school vacation periods with public holiday periods for calculations
     all_periods_for_calculation = current_year_periods ++ public_periods
-    has_data = length(current_year_periods) > 0
 
     # Calculate adjoining_duration for each period
     # This ensures display values reflect the current calculation
@@ -139,6 +141,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
         # No database update since it's a virtual field
         Map.put(period, :adjoining_duration, difference)
       end)
+
+    # Set the appropriate status code based on data availability
+    conn = if has_data, do: conn, else: put_status(conn, 404)
 
     render(conn, "show_year.html", %{
       country: country,

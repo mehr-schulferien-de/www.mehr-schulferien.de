@@ -23,4 +23,25 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     assert redirected_to(conn, 302) =~
              "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}"
   end
+
+  test "GET /ferien/:country_slug/bundesland/:federal_state_slug/:year returns 404 when no periods exist for the year",
+       %{
+         conn: conn,
+         country: country,
+         federal_state: federal_state
+       } do
+    # Use a year far in the future (2050) to ensure no periods exist
+    year_without_data = 2050
+
+    # Make the request to the show_year action for a year with no periods
+    conn =
+      get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year_without_data}")
+
+    # Assert that the response has a 404 status code
+    assert conn.status == 404
+
+    # Assert that the page still renders with the correct layout and content
+    assert html_response(conn, 404) =~ federal_state.name
+    assert html_response(conn, 404) =~ "#{year_without_data}"
+  end
 end
