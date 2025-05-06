@@ -1,5 +1,5 @@
 <title>Schulferien <%= @federal_state.name %> <%= @year %></title>
-<meta name="description" content="Alle Ferientermine und gesetzliche Feiertage für <%= @federal_state.name %> im Jahr <%= @year %>.">
+<meta name="description" content="Ferientermine und Feiertage für <%= @federal_state.name %> im Jahr <%= @year %>.">
 
 <script type="application/ld+json">
 {
@@ -18,3 +18,4 @@
   }]
 }
 </script> 
+

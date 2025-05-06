@@ -120,10 +120,12 @@ defmodule MehrSchulferienWeb.FederalStateController do
         year_end
       )
 
+    # Combine school vacation periods with public holiday periods for calculations
+    all_periods_for_calculation = current_year_periods ++ public_periods
+    has_data = length(current_year_periods) > 0
+
     # Calculate adjoining_duration for each period
     # This ensures display values reflect the current calculation
-    all_periods_for_calculation = current_year_periods ++ public_periods
-
     current_year_periods =
       Enum.map(current_year_periods, fn period ->
         days = Date.diff(period.ends_on, period.starts_on) + 1
@@ -146,6 +148,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
       current_year: current_year,
       periods: current_year_periods,
       public_periods: public_periods,
+      all_periods: all_periods_for_calculation,
+      has_data: has_data,
       css_framework: :tailwind_new
     })
   end
