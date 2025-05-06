@@ -9,7 +9,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
 
   def periods_table(assigns) do
     ~H"""
-    <div class="overflow-x-auto mt-4">
+    <div class="overflow-x-auto">
       <table class="min-w-full bg-white border border-gray-200">
         <thead>
           <tr>

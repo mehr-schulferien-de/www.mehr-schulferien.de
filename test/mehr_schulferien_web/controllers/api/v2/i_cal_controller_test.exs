@@ -72,4 +72,51 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
 
     assert response_content_type(conn, :ics)
   end
+
+  test "uses calendar year when calendar_year parameter is true", %{
+    conn: conn,
+    location: location
+  } do
+    path =
+      Routes.api_i_cal_path(conn, :show, location.slug,
+        vacation_types: "school",
+        year: "2025",
+        calendar_year: "true"
+      )
+
+    conn = get(conn, path)
+
+    # Get result body and check for January 1 date which confirms calendar year
+    response = response(conn, 200)
+    assert String.contains?(response, "20250101")
+
+    # Verify filename in content disposition header shows just the year (not year-year+1)
+    content_disposition =
+      Enum.find_value(conn.resp_headers, fn {header, value} ->
+        if header == "content-disposition", do: value, else: nil
+      end)
+
+    assert content_disposition =~ "_2025_icalendar.ics"
+    assert response_content_type(conn, :ics)
+  end
+
+  test "uses school year when calendar_year parameter is not set", %{
+    conn: conn,
+    location: location
+  } do
+    # Without calendar_year parameter, it should use school year format
+    path =
+      Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "school", year: "2025")
+
+    conn = get(conn, path)
+
+    # Verify filename in content disposition header shows the school year format (year-year+1)
+    content_disposition =
+      Enum.find_value(conn.resp_headers, fn {header, value} ->
+        if header == "content-disposition", do: value, else: nil
+      end)
+
+    assert content_disposition =~ "_2025-2026_icalendar.ics"
+    assert response_content_type(conn, :ics)
+  end
 end
