@@ -38,18 +38,21 @@ defmodule MehrSchulferienWeb.TimelineHeaderComponent do
     <thead>
       <tr>
         <%= for {{year, month}, days} <- @sorted_month_groups do %>
-          <th class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 bg-gray-50" colspan={length(days)}>
+          <th
+            class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 bg-gray-50"
+            colspan={length(days)}
+          >
             <%= @months_map[month] %> <%= year %>
           </th>
         <% end %>
       </tr>
       <tr>
         <%= for day <- @days do %>
-          <% 
-            weekday = Date.day_of_week(day)
-            weekday_abbr = @weekday_map[weekday]
-          %>
-          <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center"><%= weekday_abbr %></td>
+          <% weekday = Date.day_of_week(day)
+          weekday_abbr = @weekday_map[weekday] %>
+          <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center">
+            <%= weekday_abbr %>
+          </td>
         <% end %>
       </tr>
     </thead>

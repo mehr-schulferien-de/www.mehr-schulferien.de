@@ -59,7 +59,12 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
       <thead>
         <tr>
           <%= for {month_name, days_count, _year, _month} <- @months_with_days do %>
-            <td colspan={days_count} class="border border-gray-200 whitespace-nowrap font-semibold text-left pl-1"><%= month_name %></td>
+            <td
+              colspan={days_count}
+              class="border border-gray-200 whitespace-nowrap font-semibold text-left pl-1"
+            >
+              <%= month_name %>
+            </td>
           <% end %>
         </tr>
       </thead>
@@ -68,33 +73,35 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         <!-- Tageszeile -->
         <tr>
           <%= for day <- @days_to_show do %>
-            <% 
-              is_weekend = is_weekend?(day)
-              highest_priority_period = get_highest_priority_period_for_day(@all_periods, day)
-              bg_class = get_background_class(highest_priority_period, is_weekend)
-            %>
-            <td class={"w-6 h-5 border-t border-b border-l border-r border-gray-200 #{bg_class}"}></td>
+            <% is_weekend = is_weekend?(day)
+            highest_priority_period = get_highest_priority_period_for_day(@all_periods, day)
+            bg_class = get_background_class(highest_priority_period, is_weekend) %>
+            <td class={"w-6 h-5 border-t border-b border-l border-r border-gray-200 #{bg_class}"}>
+            </td>
           <% end %>
         </tr>
       </tbody>
     </table>
 
-    <%= render_vacation_status(@current_vacation, @days_remaining_in_vacation, @next_vacation, @days_until_next_vacation) %>
+    <%= render_vacation_status(
+      @current_vacation,
+      @days_remaining_in_vacation,
+      @next_vacation,
+      @days_until_next_vacation
+    ) %>
 
     <div class="mt-4">
       <p class="text-sm font-medium mb-2">Ferien und Feiertage im angezeigten Zeitraum:</p>
       <ul class="text-sm">
         <%= for period <- @sorted_periods do %>
-          <% 
-            holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
-            is_school_vacation = Map.get(period, :is_school_vacation, false)
-            display_name = get_display_name(holiday_type)
-            marker_color = if is_school_vacation, do: "bg-green-600", else: "bg-blue-600"
-          %>
-          <li class={"flex items-center space-x-2 mb-1"}>
+          <% holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
+          is_school_vacation = Map.get(period, :is_school_vacation, false)
+          display_name = get_display_name(holiday_type)
+          marker_color = if is_school_vacation, do: "bg-green-600", else: "bg-blue-600" %>
+          <li class="flex items-center space-x-2 mb-1">
             <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
             <span>
-              <%= display_name %> 
+              <%= display_name %>
               <%= render_period_dates(period, @has_multiple_years) %>
             </span>
           </li>
@@ -233,7 +240,10 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
               <%= if @days_remaining == 0 do %>
                 Aktuell sind <%= @display_name %> (letzter Tag).
               <% else %>
-                Aktuell sind <%= @display_name %> (noch <%= @days_remaining %> <%= if @days_remaining == 1, do: "Tag", else: "Tage" %>).
+                Aktuell sind <%= @display_name %> (noch <%= @days_remaining %> <%= if @days_remaining ==
+                                                                                        1,
+                                                                                      do: "Tag",
+                                                                                      else: "Tage" %>).
               <% end %>
             </span>
           </div>
