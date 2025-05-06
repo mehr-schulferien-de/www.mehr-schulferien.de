@@ -55,23 +55,120 @@
       </div>
     </div>
 
-    <div class="mt-8">
-      <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Kalenderansicht</h2>
+    <%= if @has_data do %>
+      <div class="mt-8">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Kalenderansicht</h2>
 
-      <.calendar_legend />
+        <.calendar_legend />
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <%= for month <- 1..12 do %>
-          <.month_calendar
-            month={month}
-            year={@year}
-            periods={@periods}
-            public_periods={@public_periods}
-            all_periods={@all_periods}
-          />
-        <% end %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <%= for month <- 1..12 do %>
+            <.month_calendar
+              month={month}
+              year={@year}
+              periods={@periods}
+              public_periods={@public_periods}
+              all_periods={@all_periods}
+            />
+          <% end %>
+        </div>
       </div>
-    </div>
+
+      <% yesterday = Date.add(@today, -1)
+      tomorrow = Date.add(@today, 1)
+      day_after_tomorrow = Date.add(@today, 2)
+
+      # Find school free periods for specific days
+      yesterdays_school_free_periods =
+        Enum.filter(@periods, fn period ->
+          Date.compare(period.starts_on, yesterday) != :gt &&
+            Date.compare(period.ends_on, yesterday) != :lt
+        end)
+
+      todays_school_free_periods =
+        Enum.filter(@periods, fn period ->
+          Date.compare(period.starts_on, @today) != :gt &&
+            Date.compare(period.ends_on, @today) != :lt
+        end)
+
+      tomorrows_school_free_periods =
+        Enum.filter(@periods, fn period ->
+          Date.compare(period.starts_on, tomorrow) != :gt &&
+            Date.compare(period.ends_on, tomorrow) != :lt
+        end)
+
+      day_after_tomorrows_school_free_periods =
+        Enum.filter(@periods, fn period ->
+          Date.compare(period.starts_on, day_after_tomorrow) != :gt &&
+            Date.compare(period.ends_on, day_after_tomorrow) != :lt
+        end)
+
+      # Find public holiday periods for specific days
+      yesterdays_public_holiday_periods =
+        Enum.filter(@public_periods, fn period ->
+          period.is_public_holiday && Date.compare(period.starts_on, yesterday) != :gt &&
+            Date.compare(period.ends_on, yesterday) != :lt
+        end)
+
+      todays_public_holiday_periods =
+        Enum.filter(@public_periods, fn period ->
+          period.is_public_holiday && Date.compare(period.starts_on, @today) != :gt &&
+            Date.compare(period.ends_on, @today) != :lt
+        end)
+
+      tomorrows_public_holiday_periods =
+        Enum.filter(@public_periods, fn period ->
+          period.is_public_holiday && Date.compare(period.starts_on, tomorrow) != :gt &&
+            Date.compare(period.ends_on, tomorrow) != :lt
+        end)
+
+      day_after_tomorrows_public_holiday_periods =
+        Enum.filter(@public_periods, fn period ->
+          period.is_public_holiday && Date.compare(period.starts_on, day_after_tomorrow) != :gt &&
+            Date.compare(period.ends_on, day_after_tomorrow) != :lt
+        end) %>
+
+      <%= if @today.year == @year do %>
+        <.faq
+          conn={@conn}
+          country={@country}
+          federal_state={@federal_state}
+          location={@federal_state}
+          next_schoolday={ViewHelpers.next_schoolday(@public_periods ++ @periods)}
+          current_year={@year}
+          today={@today}
+          yesterday={yesterday}
+          tomorrow={tomorrow}
+          day_after_tomorrow={day_after_tomorrow}
+          school_periods={@periods}
+          public_periods={@public_periods}
+          months={
+            %{
+              1 => "Januar",
+              2 => "Februar",
+              3 => "März",
+              4 => "April",
+              5 => "Mai",
+              6 => "Juni",
+              7 => "Juli",
+              8 => "August",
+              9 => "September",
+              10 => "Oktober",
+              11 => "November",
+              12 => "Dezember"
+            }
+          }
+          yesterdays_school_free_periods={yesterdays_school_free_periods}
+          todays_school_free_periods={todays_school_free_periods}
+          tomorrows_school_free_periods={tomorrows_school_free_periods}
+          day_after_tomorrows_school_free_periods={day_after_tomorrows_school_free_periods}
+          yesterdays_public_holiday_periods={yesterdays_public_holiday_periods}
+          todays_public_holiday_periods={todays_public_holiday_periods}
+          tomorrows_public_holiday_periods={tomorrows_public_holiday_periods}
+          day_after_tomorrows_public_holiday_periods={day_after_tomorrows_public_holiday_periods}
+        />
+      <% end %>
+    <% end %>
 
     <.schema_org_event periods={@periods} federal_state={@federal_state} country={@country} />
   </div>

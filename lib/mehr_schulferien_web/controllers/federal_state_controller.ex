@@ -74,6 +74,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     # Get current year for reference
     current_year = Date.utc_today().year
+    today = DateHelpers.today_berlin()
 
     # Define the range of years to check (current year and 3 years in each direction)
     check_years = (year - 3)..(year + 3) |> Enum.to_list()
@@ -145,18 +146,55 @@ defmodule MehrSchulferienWeb.FederalStateController do
     # Set the appropriate status code based on data availability
     conn = if has_data, do: conn, else: put_status(conn, 404)
 
-    render(conn, "show_year.html", %{
-      country: country,
-      federal_state: federal_state,
-      year: year,
-      years_with_data: years_with_data,
-      current_year: current_year,
-      periods: current_year_periods,
-      public_periods: public_periods,
-      all_periods: all_periods_for_calculation,
-      has_data: has_data,
-      css_framework: :tailwind_new
-    })
+    # Get FAQ data
+    faq_data = CH.list_faq_data(location_ids, today)
+
+    # Calculate next_schulferien_periods (up to 3 periods) for the FAQ
+    sorted_periods =
+      Enum.sort(
+        public_periods ++ current_year_periods,
+        &(Date.compare(&1.starts_on, &2.starts_on) == :lt)
+      )
+
+    next_schulferien_periods = MehrSchulferien.Periods.next_periods(sorted_periods, 3)
+
+    # Months map for formatting
+    months = %{
+      1 => "Januar",
+      2 => "Februar",
+      3 => "März",
+      4 => "April",
+      5 => "Mai",
+      6 => "Juni",
+      7 => "Juli",
+      8 => "August",
+      9 => "September",
+      10 => "Oktober",
+      11 => "November",
+      12 => "Dezember"
+    }
+
+    render(
+      conn,
+      "show_year.html",
+      %{
+        country: country,
+        federal_state: federal_state,
+        year: year,
+        years_with_data: years_with_data,
+        current_year: current_year,
+        periods: current_year_periods,
+        public_periods: public_periods,
+        all_periods: all_periods_for_calculation,
+        has_data: has_data,
+        css_framework: :tailwind_new,
+        today: today,
+        school_periods: current_year_periods,
+        next_schulferien_periods: next_schulferien_periods,
+        months: months
+      }
+      |> Map.merge(Map.new(faq_data))
+    )
   end
 
   def old_show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
