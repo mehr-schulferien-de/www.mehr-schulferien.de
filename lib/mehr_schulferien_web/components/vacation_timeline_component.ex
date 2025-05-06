@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.VacationTimelineComponent do
   use Phoenix.Component
 
+  alias MehrSchulferien.StyleConfig
+
   @doc """
   Renders a vacation timeline.
 
@@ -97,7 +99,11 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <% holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
           is_school_vacation = Map.get(period, :is_school_vacation, false)
           display_name = get_display_name(holiday_type)
-          marker_color = if is_school_vacation, do: "bg-green-600", else: "bg-blue-600" %>
+
+          marker_color =
+            if is_school_vacation,
+              do: StyleConfig.get_class(:vacation, :tailwind),
+              else: StyleConfig.get_class(:holiday, :tailwind) %>
           <li class="flex items-center space-x-2 mb-1">
             <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
             <span>
@@ -199,19 +205,19 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     cond do
       # If no periods for this day
       period == nil ->
-        if is_weekend, do: "bg-gray-100", else: ""
+        if is_weekend, do: StyleConfig.get_class(:weekend, :tailwind), else: ""
 
       # Period is a school vacation
       Map.get(period, :is_school_vacation, false) ->
-        "bg-green-600"
+        StyleConfig.get_class(:vacation, :tailwind)
 
       # Period is a public holiday  
       Map.get(period, :is_public_holiday, false) ->
-        "bg-blue-600"
+        StyleConfig.get_class(:holiday, :tailwind)
 
       # Fallback for weekend
       is_weekend ->
-        "bg-gray-100"
+        StyleConfig.get_class(:weekend, :tailwind)
 
       # Default
       true ->

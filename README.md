@@ -37,6 +37,7 @@ The application follows a modular structure with clear separation of concerns:
 ### Utilities
 
 - **Slugs** (`lib/mehr_schulferien/slugs.ex`): Slug generation for URLs
+- **StyleConfig** (`lib/mehr_schulferien/style_config.ex`): Centralized color and style configuration for both Bootstrap and Tailwind CSS
 
 ## Data Structure
 
@@ -72,16 +73,49 @@ Periods store the actual holiday and vacation dates. Each period is associated w
 - Start and end dates
 - Various flags that determine visibility and behavior
 
-# CSS Framework Migration
+# Styling and CSS Framework Configuration
+
+## Centralized Style Configuration
+
+The application uses a centralized style configuration module (`MehrSchulferien.StyleConfig`) to manage consistent colors and styles for different types of days (holidays, vacations, weekends, bridge days) across both Bootstrap and Tailwind CSS frameworks.
+
+### Using StyleConfig
+
+```elixir
+# Get a Bootstrap class for holidays
+MehrSchulferien.StyleConfig.get_class(:holiday, :bootstrap)  # Returns "danger"
+
+# Get a Tailwind class for vacations (normal intensity)
+MehrSchulferien.StyleConfig.get_class(:vacation, :tailwind)  # Returns "bg-green-600"
+
+# Get a light Tailwind class for weekends
+MehrSchulferien.StyleConfig.get_class(:weekend, :tailwind, true)  # Returns "bg-gray-100"
+
+# Helper functions for determining the day type
+MehrSchulferien.StyleConfig.html_class_to_day_type("success")  # Returns :vacation
+```
+
+### Day Types
+
+The system uses the following standard day types with their associated colors:
+
+| Day Type    | Description | Bootstrap Class | Tailwind Class | Light Tailwind |
+|-------------|-------------|-----------------|----------------|----------------|
+| `:holiday`  | Feiertage   | `danger` (red)  | `bg-blue-600`  | `bg-blue-100`  |
+| `:vacation` | Schulferien | `success` (green)| `bg-green-600` | `bg-green-100` |
+| `:weekend`  | Wochenenden | `active` (gray) | `bg-gray-100`  | `bg-gray-100`  |
+| `:bridge_day`| Brückentage | `warning` (yellow)| `bg-yellow-500`| `bg-yellow-100`|
+
+## CSS Framework Migration
 
 The application is in the process of migrating from Bootstrap to Tailwind CSS. During this transition period, both frameworks are supported:
 
 - Bootstrap is used by default (legacy system)
 - Tailwind CSS can be enabled for specific views
 
-## How to Switch Between CSS Frameworks
+### How to Switch Between CSS Frameworks
 
-### Global Configuration
+#### Global Configuration
 
 The default CSS framework is configured in `config/config.exs`:
 

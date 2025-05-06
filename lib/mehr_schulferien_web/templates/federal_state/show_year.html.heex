@@ -411,10 +411,17 @@
                           <td class={[
                             "border border-gray-200 text-center py-1 w-1/12 text-xs h-[30px]",
                             cond do
-                              is_public_holiday -> "bg-blue-100"
-                              is_vacation -> "bg-green-100"
-                              weekday >= 6 -> "bg-gray-100"
-                              true -> ""
+                              is_public_holiday ->
+                                MehrSchulferien.StyleConfig.get_class(:holiday, :tailwind, true)
+
+                              is_vacation ->
+                                MehrSchulferien.StyleConfig.get_class(:vacation, :tailwind, true)
+
+                              weekday >= 6 ->
+                                MehrSchulferien.StyleConfig.get_class(:weekend, :tailwind, true)
+
+                              true ->
+                                ""
                             end
                           ]}>
                             <%= if day > 0 and day <= days_in_month do %>
