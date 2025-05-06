@@ -169,7 +169,10 @@
           </thead>
           <tbody class="divide-y divide-gray-200">
             <%= for period <- @periods do %>
-              <tr class="hover:bg-gray-50">
+              <tr
+                class="hover:bg-gray-50 cursor-pointer"
+                onclick={"window.location.href='#month-#{period.starts_on.month}'"}
+              >
                 <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium text-gray-900">
                   <%= cond do %>
                     <% is_map_key(period.holiday_or_vacation_type, :colloquial) && period.holiday_or_vacation_type.colloquial && period.holiday_or_vacation_type.colloquial != "" -> %>
@@ -285,6 +288,21 @@
       <div class="calendar-container">
         <!-- Calendar content will be added here -->
       </div>
+      <!-- Legende für die Farbkennzeichnung -->
+      <div class="mb-4 flex flex-wrap items-center gap-4 text-sm">
+        <div class="flex items-center">
+          <div class="w-4 h-4 bg-blue-100 border border-gray-200 mr-1"></div>
+          <span>Feiertage</span>
+        </div>
+        <div class="flex items-center">
+          <div class="w-4 h-4 bg-green-100 border border-gray-200 mr-1"></div>
+          <span>Schulferien</span>
+        </div>
+        <div class="flex items-center">
+          <div class="w-4 h-4 bg-gray-100 border border-gray-200 mr-1"></div>
+          <span>Wochenenden</span>
+        </div>
+      </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <%= for month <- 1..12 do %>
@@ -307,7 +325,8 @@
           <% first_weekday = Date.day_of_week(first_day_of_month) %>
           <% days_in_month = Date.days_in_month(first_day_of_month) %>
 
-          <section class="bg-white rounded shadow p-6 h-full">
+          <% month_id = "month-#{month}" %>
+          <section class="bg-white rounded shadow p-6 h-full" id={month_id}>
             <div class="bridge-day-timeline">
               <table class="border-collapse w-full table-fixed">
                 <thead>
@@ -466,6 +485,16 @@
                           <% true -> %>
                             <%= period.holiday_or_vacation_type.name %>
                         <% end %>
+                        <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
+                        <% effective_duration = calculate_effective_duration(period, @periods) %>
+                        <% difference = effective_duration - days %>
+                        <span class="font-normal ml-1">
+                          (<%= days %>
+                          <%= if difference != 0 do %>
+                            <span class="text-gray-500">+ <%= difference %></span>
+                          <% end %>
+                          <%= if days == 1, do: "Tag", else: "Tage" %>)
+                        </span>
                       </span>
                       <span class="text-gray-600">
                         <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
