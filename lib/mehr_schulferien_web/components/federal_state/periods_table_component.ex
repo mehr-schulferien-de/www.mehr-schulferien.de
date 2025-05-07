@@ -24,7 +24,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
               Wochentage
             </th>
             <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-              Dauer*
+              Tage*
             </th>
           </tr>
         </thead>
@@ -67,9 +67,9 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
                 <% effective_duration = calculate_effective_duration(period, @all_periods) %>
                 <% difference = effective_duration - days %>
 
-                <%= days %> <%= if days == 1, do: "Tag", else: "Tage" %>
+                <%= days %>
                 <%= if difference != 0 do %>
-                  <span class="text-gray-500">(+<%= difference %>)</span>
+                  / <%= days + difference %>
                 <% end %>
               </td>
             </tr>
@@ -86,7 +86,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
 
       <%= if has_differences do %>
         <div class="text-xs text-gray-500 mt-2">
-          * Die effektive Dauer (das + in der Klammer) enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
+          * Die effektive Dauer (der zweite Wert) enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
         </div>
       <% end %>
     </div>
