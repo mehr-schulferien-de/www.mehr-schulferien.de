@@ -197,25 +197,6 @@ defmodule MehrSchulferienWeb.FederalStateController do
     )
   end
 
-  def old_show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    location_ids = [country.id, federal_state.id]
-    today = DateHelpers.get_today_or_custom_date(conn)
-    current_year = today.year
-
-    assigns =
-      [
-        country: country,
-        federal_state: federal_state,
-        current_year: current_year,
-        today: today
-      ] ++
-        CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
-
-    render(conn, "old_show.html", assigns)
-  end
-
   def county_show(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug

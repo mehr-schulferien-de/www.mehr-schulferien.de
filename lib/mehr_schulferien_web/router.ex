@@ -35,11 +35,6 @@ defmodule MehrSchulferienWeb.Router do
         :show_holiday_or_vacation_type
 
     # School vacations for a federal state
-    # Keep the old implementation accessible at /old/...
-    get "/old/ferien/:country_slug/bundesland/:federal_state_slug",
-        FederalStateController,
-        :old_show
-
     # The year-specific route needs to be defined before the redirect route
     get "/ferien/:country_slug/bundesland/:federal_state_slug/:year",
         FederalStateController,
