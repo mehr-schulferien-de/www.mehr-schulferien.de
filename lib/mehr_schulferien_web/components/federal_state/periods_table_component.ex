@@ -7,6 +7,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
 
   attr :periods, :list, required: true
   attr :all_periods, :list, required: true
+  attr :today, :any, default: Date.utc_today()
 
   def periods_table(assigns) do
     ~H"""
@@ -30,14 +31,19 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
         </thead>
         <tbody class="divide-y divide-gray-200">
           <%= for period <- @periods do %>
+            <% is_current =
+              Date.compare(@today, period.starts_on) != :lt &&
+                Date.compare(@today, period.ends_on) != :gt %>
+            <% is_past =
+              @today.year == period.ends_on.year && Date.compare(@today, period.ends_on) == :gt %>
             <tr
-              class="hover:bg-gray-50 cursor-pointer"
+              class={"hover:bg-gray-50 cursor-pointer #{if is_current, do: "bg-yellow-100"} #{if is_past, do: "text-gray-400"}"}
               onclick={"window.location.href='#month-#{period.starts_on.month}'"}
             >
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium text-gray-900">
+              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium">
                 <.period_name period={period} />
               </td>
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
+              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                 <span class="whitespace-nowrap">
                   <span class="sm:hidden">
                     <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
@@ -54,7 +60,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
                   </span>
                 </span>
               </td>
-              <td class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700 whitespace-nowrap">
+              <td class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-sm whitespace-nowrap">
                 <% start_day = Date.day_of_week(period.starts_on)
                 end_day = Date.day_of_week(period.ends_on)
 
@@ -62,7 +68,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
                 end_day_german = DateHelpers.weekday(end_day, :short_with_dot) %>
                 <%= start_day_german %> - <%= end_day_german %>
               </td>
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-gray-700">
+              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                 <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
                 <% effective_duration = calculate_effective_duration(period, @all_periods) %>
                 <% difference = effective_duration - days %>
