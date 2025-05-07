@@ -96,7 +96,8 @@ defmodule MehrSchulferienWeb.Api.V2.ICalController do
   end
 
   defp update_headers(conn, name, year, true = _is_school_year) do
-    filename = "#{String.replace(name, [" ", "-"], "_")}_#{year}-#{year + 1}_icalendar.ics"
+    filename =
+      "Schulferien_#{String.replace(name, [" ", "-"], "_")}_Schuljahr_#{year}-#{year + 1}.ics"
 
     conn
     |> put_resp_header("content-type", "text/calendar; charset=utf-8")
@@ -104,7 +105,7 @@ defmodule MehrSchulferienWeb.Api.V2.ICalController do
   end
 
   defp update_headers(conn, name, year, false = _is_school_year) do
-    filename = "#{String.replace(name, [" ", "-"], "_")}_#{year}_icalendar.ics"
+    filename = "Schulferien_#{String.replace(name, [" ", "-"], "_")}_#{year}.ics"
 
     conn
     |> put_resp_header("content-type", "text/calendar; charset=utf-8")

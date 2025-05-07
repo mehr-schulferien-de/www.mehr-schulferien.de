@@ -96,7 +96,7 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
         if header == "content-disposition", do: value, else: nil
       end)
 
-    assert content_disposition =~ "_2025_icalendar.ics"
+    assert content_disposition =~ "_2025.ics"
     assert response_content_type(conn, :ics)
   end
 
@@ -116,7 +116,7 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
         if header == "content-disposition", do: value, else: nil
       end)
 
-    assert content_disposition =~ "_2025-2026_icalendar.ics"
+    assert content_disposition =~ "Schuljahr_2025-2026.ics"
     assert response_content_type(conn, :ics)
   end
 end
