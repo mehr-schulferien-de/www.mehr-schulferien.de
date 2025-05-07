@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
 
   import MehrSchulferienWeb.FederalState.MonthEventsComponent
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferienWeb.FederalState.PartialDataComponent
 
   attr :month, :integer, required: true
   attr :year, :integer, required: true
@@ -32,6 +33,10 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
     days_in_month = Date.days_in_month(first_day_of_month)
     month_id = "month-#{assigns.month}"
 
+    # Use the more accurate function to determine if this month should be crossed out
+    should_cross_out =
+      PartialDataComponent.should_cross_out_month?(assigns.month, assigns.year, assigns.periods)
+
     # Filter periods for this month
     month_periods =
       Enum.filter(assigns.periods, fn period ->
@@ -54,20 +59,28 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
         month_id: month_id,
         month_periods: month_periods,
         month_public_periods: month_public_periods,
-        start_day: 1 - (first_weekday - 1)
+        start_day: 1 - (first_weekday - 1),
+        should_cross_out: should_cross_out
       )
 
     ~H"""
     <section class="bg-white rounded shadow p-6 h-full" id={@month_id}>
-      <div class="bridge-day-timeline">
+      <div class={["bridge-day-timeline", @should_cross_out && "opacity-40"]}>
         <table class="border-collapse w-full table-fixed">
           <thead>
             <tr>
               <th
-                class="text-left py-0.5 pl-1 pr-0 font-semibold text-base border border-gray-200 bg-gray-50"
+                class={[
+                  "text-left py-0.5 pl-1 pr-0 font-semibold text-base border border-gray-200",
+                  @should_cross_out && "bg-gray-200 text-gray-500",
+                  !@should_cross_out && "bg-gray-50"
+                ]}
                 colspan="7"
               >
                 <%= @month_name %> <%= @year %>
+                <%= if @should_cross_out do %>
+                  <span class="text-xs ml-2 text-gray-500 italic">(noch keine Daten)</span>
+                <% end %>
               </th>
             </tr>
             <tr>

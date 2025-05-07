@@ -9,6 +9,7 @@ defmodule MehrSchulferienWeb.FederalStateView do
   import MehrSchulferienWeb.FederalState.CalendarLegendComponent
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.FederalState.NoDataComponent
+  import MehrSchulferienWeb.FederalState.PartialDataComponent
   import MehrSchulferienWeb.FederalStateComponents
   import MehrSchulferienWeb.FaqComponent
 
