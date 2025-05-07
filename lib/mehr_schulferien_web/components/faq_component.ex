@@ -51,14 +51,10 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
         <div class="mt-6">
           <dl class="space-y-8 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-8 sm:space-y-0">
-            <!-- School Vacation Section -->
-            <div class="sm:col-span-2">
-              <h3 class="text-lg font-semibold text-gray-900 mb-4">Schulferien</h3>
-            </div>
-
+            <!-- School Vacation FAQ Section -->
             <div>
               <dt class="text-base font-semibold text-gray-900">
-                Wann sind die nächsten Schulferien?
+                Wann sind die nächsten Schulferien in <%= @federal_state.name %>?
               </dt>
               <dd class="mt-2 text-sm text-gray-600">
                 <%= FaqViewHelpers.next_school_vacation_answer(@location, @school_periods) %>
@@ -119,35 +115,14 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
             <div>
               <dt class="text-base font-semibold text-gray-900">
-                Für welche Städte gelten diese Feriendaten?
+                Für welche Städte in <%= @federal_state.name %> gelten diese Feriendaten?
               </dt>
               <dd class="mt-2 text-sm text-gray-600">
-                <%= link("Landkreise und Städte in #{@federal_state.name}",
+                <%= link("Liste der Landkreise und Städte in #{@federal_state.name}.",
                   to:
                     Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug),
                   class: "font-semibold text-blue-600 hover:text-blue-500"
                 ) %>
-              </dd>
-            </div>
-
-            <div>
-              <dt class="text-base font-semibold text-gray-900">Schulferien <%= @location.name %></dt>
-              <dd class="mt-2 text-sm text-gray-600">
-                <%= for period <- @next_schulferien_periods do %>
-                  <span>
-                    <% month = @months[period.starts_on.month] %>
-                    <%= link to: "##{String.downcase(month)}#{period.starts_on.year}", class: "font-semibold text-blue-600 hover:text-blue-500" do %>
-                      <%= period.holiday_or_vacation_type.colloquial %> &nbsp;(<%= ViewHelpers.format_date_range(
-                        period.starts_on,
-                        period.ends_on,
-                        :short
-                      ) %>)
-                    <% end %>
-                    <%= unless period == List.last(@next_schulferien_periods) do %>
-                      ,&nbsp;
-                    <% end %>
-                  </span>
-                <% end %>
               </dd>
             </div>
 
@@ -160,14 +135,11 @@ defmodule MehrSchulferienWeb.FaqComponent do
                 <dd class="mt-2 text-sm text-gray-600">
                   <%= for period <- periods do %>
                     <span>
-                      <% month = @months[period.starts_on.month] %>
-                      <%= link to: "##{String.downcase(month)}#{period.starts_on.year}", class: "font-semibold text-blue-600 hover:text-blue-500" do %>
-                        <%= period.holiday_or_vacation_type.colloquial %> &nbsp;(<%= ViewHelpers.format_date_range(
-                          period.starts_on,
-                          period.ends_on,
-                          :short
-                        ) %>)
-                      <% end %>
+                      <%= period.holiday_or_vacation_type.colloquial %> &nbsp;(<%= ViewHelpers.format_date_range(
+                        period.starts_on,
+                        period.ends_on,
+                        :short
+                      ) %>)
                       <%= unless period == List.last(periods) do %>
                         ,&nbsp;
                       <% end %>
@@ -329,7 +301,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
         },
         {
             "@type": "Question",
-            "name": "Wann sind die nächsten Schulferien in <%= @location.name %>?",
+            "name": "Wann sind die nächsten Schulferien in <%= @federal_state.name %>?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "<%= FaqViewHelpers.next_school_vacation_answer(@location, @school_periods) %>"
