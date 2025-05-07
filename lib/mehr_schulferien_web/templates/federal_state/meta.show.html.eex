@@ -1,5 +1,8 @@
 <title>Schulferien <%= @federal_state.name %></title>
 <meta name="description" content="Alle Ferientermine und gesetzliche Feiertage für <%= @federal_state.name %> (<%= @next_three_years %>).">
+<%= if assigns[:noindex] do %>
+<meta name="robots" content="noindex,nofollow">
+<% end %>
 
 <script type="application/ld+json">
 {

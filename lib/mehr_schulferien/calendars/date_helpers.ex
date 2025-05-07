@@ -41,6 +41,34 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   end
 
   @doc """
+  Returns the effective today date, considering a custom date from conn if available.
+
+  This function checks if a custom date is set in the conn assigns and returns it if present.
+  Otherwise, it returns the current date in Berlin time.
+
+  ## Parameters
+    - conn: The connection struct (optional)
+
+  ## Examples
+    iex> get_today_or_custom_date(conn_with_custom_date)
+    ~D[2025-01-01]
+    
+    iex> get_today_or_custom_date()
+    ~D[2023-06-15] # Current date in Berlin timezone
+  """
+  def get_today_or_custom_date(conn \\ nil) do
+    cond do
+      # If conn is passed and has custom_date in assigns
+      conn && Map.has_key?(conn.assigns, :custom_date) && conn.assigns.custom_date != nil ->
+        conn.assigns.custom_date
+
+      # Default to current date in Berlin
+      true ->
+        today_berlin()
+    end
+  end
+
+  @doc """
   Returns 3 years of dates.
   """
   def create_3_years(year) do

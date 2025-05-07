@@ -18,7 +18,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     holiday_or_vacation_type =
       Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
 
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
     location_ids = [country.id, federal_state.id]
 
     assigns =
@@ -46,7 +46,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   end
 
   def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
 
     redirect(conn,
@@ -74,7 +74,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     # Get current year for reference
     current_year = Date.utc_today().year
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
 
     # Define the range of years to check (current year and 3 years in each direction)
     check_years = (year - 3)..(year + 3) |> Enum.to_list()
@@ -201,7 +201,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
     location_ids = [country.id, federal_state.id]
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
 
     assigns =
@@ -230,7 +230,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
       end)
 
     location_ids = [country.id, federal_state.id]
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
 
     assigns =
       [

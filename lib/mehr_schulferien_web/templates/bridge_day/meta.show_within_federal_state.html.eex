@@ -1,6 +1,9 @@
 <title>Brückentage <%= @federal_state.name %> <%= @year %> | Optimale Urlaubsplanung</title>
 <meta name="description" content="Entdecken Sie die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> im Jahr <%= @year %>. Maximieren Sie Ihren Urlaub mit cleverer Planung - nur <%= @bridge_day_proposal_count %> Urlaubstage für mehr freie Tage am Stück.">
 <meta name="keywords" content="Brückentage, <%= @federal_state.name %>, <%= @year %>, Urlaubsplanung, Feiertage, Wochenende, Urlaubstage, freie Tage">
+<%= if assigns[:noindex] do %>
+<meta name="robots" content="noindex,nofollow">
+<% end %>
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">

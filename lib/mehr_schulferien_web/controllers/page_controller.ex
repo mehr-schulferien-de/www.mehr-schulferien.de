@@ -4,7 +4,7 @@ defmodule MehrSchulferienWeb.PageController do
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods, BridgeDays}
 
   def index(conn, %{"number_of_days" => number_of_days}) do
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
     ends_on = Date.add(today, number_of_days)
     days = DateHelpers.create_days(today, number_of_days)
@@ -42,13 +42,16 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def summer_vacations(conn, _params) do
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
     # 20.6. + 87 Tage = 15.9.
     number_of_days = 87
 
     # Start der Sommerferien (irgendwo)
-    {:ok, today} = Date.from_erl({current_year, 6, 20})
+    {:ok, fixed_start_date} = Date.from_erl({current_year, 6, 20})
+
+    # Only use fixed start date if we're not using a custom date
+    today = if conn.assigns.custom_date, do: today, else: fixed_start_date
 
     ends_on = Date.add(today, number_of_days)
     days = DateHelpers.create_days(today, number_of_days)
@@ -94,26 +97,28 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def new(conn, params) do
-    # Parse parameters
-    {custom_start_date, days_to_display} = parse_calendar_params(params)
-    noindex = custom_start_date != nil
+    # Parse days parameter
+    days_to_display = parse_days_count(params["days"])
 
-    # Only calculate today if we don't have a custom start date
-    start_date = custom_start_date || DateHelpers.today_berlin()
+    # Use our custom date or the current date
+    today = DateHelpers.get_today_or_custom_date(conn)
+
+    # We don't need to set noindex here as it's already set by the DateAssignsPlug
+    # when a custom date is present
 
     # Use the actual start date for year calculation
-    current_year = start_date.year
+    current_year = today.year
     number_of_days = days_to_display
-    ends_on = Date.add(start_date, number_of_days)
+    ends_on = Date.add(today, number_of_days)
 
     # Generate calendar data
-    days = DateHelpers.create_days(start_date, number_of_days)
+    days = DateHelpers.create_days(today, number_of_days)
     day_names = DateHelpers.short_days_map()
     months = DateHelpers.get_months_map()
     months_with_days = calculate_months_with_days(days, months)
 
     # Fetch countries data
-    countries = fetch_countries_with_periods(start_date, ends_on, current_year)
+    countries = fetch_countries_with_periods(today, ends_on, current_year)
 
     render(conn, "new.html",
       countries: countries,
@@ -123,35 +128,13 @@ defmodule MehrSchulferienWeb.PageController do
       current_year: current_year,
       number_of_days: number_of_days,
       css_framework: :tailwind_new,
-      custom_start_date: custom_start_date,
+      custom_start_date: conn.assigns.custom_date,
       days_to_display: days_to_display,
-      months_with_days: months_with_days,
-      noindex: noindex
+      months_with_days: months_with_days
     )
   end
 
-  # Parses and validates the calendar parameters
-  defp parse_calendar_params(params) do
-    custom_start_date = parse_start_date(params["today"])
-    days_to_display = parse_days_count(params["days"])
-
-    {custom_start_date, days_to_display}
-  end
-
-  defp parse_start_date(nil), do: nil
-
-  defp parse_start_date(date_str) do
-    with [day, month, year] <- String.split(date_str, "."),
-         {day, _} <- Integer.parse(day),
-         {month, _} <- Integer.parse(month),
-         {year, _} <- Integer.parse(year),
-         {:ok, date} <- Date.new(year, month, day) do
-      date
-    else
-      _ -> nil
-    end
-  end
-
+  # Parses and validates the days count
   defp parse_days_count(nil), do: 80
 
   defp parse_days_count(days_str) do

@@ -7,7 +7,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug
       }) do
-    today = DateHelpers.today_berlin()
+    today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
 
     conn
@@ -29,7 +29,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    with {:ok, year} <- check_year(year),
+    with {:ok, year} <- check_year(conn, year),
          country <- Locations.get_country_by_slug!(country_slug),
          federal_state <- Locations.get_federal_state_by_slug!(federal_state_slug, country),
          {:ok, start_date} <- Date.new(year, 1, 1),
@@ -76,10 +76,10 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     ]
   end
 
-  defp check_year(year) do
+  defp check_year(conn, year) do
     case Integer.parse(year) do
       {year, ""} ->
-        today = DateHelpers.today_berlin()
+        today = DateHelpers.get_today_or_custom_date(conn)
         current_year = today.year
 
         if year in [current_year, current_year + 1, current_year + 2] do
