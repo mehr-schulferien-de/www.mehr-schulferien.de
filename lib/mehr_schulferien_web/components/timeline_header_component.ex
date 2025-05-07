@@ -17,21 +17,10 @@ defmodule MehrSchulferienWeb.TimelineHeaderComponent do
     sorted_month_groups = Enum.sort(month_groups)
     months_map = DateHelpers.get_months_map()
 
-    weekday_map = %{
-      1 => "Mo",
-      2 => "Di",
-      3 => "Mi",
-      4 => "Do",
-      5 => "Fr",
-      6 => "Sa",
-      7 => "So"
-    }
-
     assigns =
       Map.merge(assigns, %{
         sorted_month_groups: sorted_month_groups,
-        months_map: months_map,
-        weekday_map: weekday_map
+        months_map: months_map
       })
 
     ~H"""
@@ -48,10 +37,9 @@ defmodule MehrSchulferienWeb.TimelineHeaderComponent do
       </tr>
       <tr>
         <%= for day <- @days do %>
-          <% weekday = Date.day_of_week(day)
-          weekday_abbr = @weekday_map[weekday] %>
+          <% weekday = Date.day_of_week(day) %>
           <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center">
-            <%= weekday_abbr %>
+            <%= DateHelpers.weekday(weekday, :short) %>
           </td>
         <% end %>
       </tr>

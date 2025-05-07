@@ -119,6 +119,51 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   end
 
   @doc """
+  Converts a day of week number (1-7) to a German weekday name in different formats.
+
+  ## Format options:
+  - :full - Full name (e.g., "Montag")
+  - :short - Short name without dot (e.g., "Mo")
+  - :short_with_dot - Short name with dot (e.g., "Mo.")
+  """
+  def weekday(day_of_week, format \\ :full) do
+    case format do
+      :full ->
+        case day_of_week do
+          1 -> "Montag"
+          2 -> "Dienstag"
+          3 -> "Mittwoch"
+          4 -> "Donnerstag"
+          5 -> "Freitag"
+          6 -> "Samstag"
+          7 -> "Sonntag"
+        end
+
+      :short ->
+        case day_of_week do
+          1 -> "Mo"
+          2 -> "Di"
+          3 -> "Mi"
+          4 -> "Do"
+          5 -> "Fr"
+          6 -> "Sa"
+          7 -> "So"
+        end
+
+      :short_with_dot ->
+        case day_of_week do
+          1 -> "Mo."
+          2 -> "Di."
+          3 -> "Mi."
+          4 -> "Do."
+          5 -> "Fr."
+          6 -> "Sa."
+          7 -> "So."
+        end
+    end
+  end
+
+  @doc """
   Returns a map containing the month numbers as keys and the month German
   names as values.
   """

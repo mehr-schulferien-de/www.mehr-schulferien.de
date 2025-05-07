@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
   use Phoenix.Component
 
   import MehrSchulferienWeb.FederalState.MonthEventsComponent
+  alias MehrSchulferien.Calendars.DateHelpers
 
   attr :month, :integer, required: true
   attr :year, :integer, required: true
@@ -71,25 +72,25 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
             </tr>
             <tr>
               <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                Mo
+                <%= DateHelpers.weekday(1, :short) %>
               </td>
               <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                Di
+                <%= DateHelpers.weekday(2, :short) %>
               </td>
               <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                Mi
+                <%= DateHelpers.weekday(3, :short) %>
               </td>
               <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                Do
+                <%= DateHelpers.weekday(4, :short) %>
               </td>
               <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                Fr
+                <%= DateHelpers.weekday(5, :short) %>
               </td>
               <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                Sa
+                <%= DateHelpers.weekday(6, :short) %>
               </td>
               <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                So
+                <%= DateHelpers.weekday(7, :short) %>
               </td>
             </tr>
           </thead>

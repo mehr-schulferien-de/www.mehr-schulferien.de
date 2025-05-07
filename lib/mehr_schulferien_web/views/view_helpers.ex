@@ -74,15 +74,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   def weekday(date) do
-    case Date.day_of_week(date) do
-      1 -> "Montag"
-      2 -> "Dienstag"
-      3 -> "Mittwoch"
-      4 -> "Donnerstag"
-      5 -> "Freitag"
-      6 -> "Samstag"
-      _ -> "Sonntag"
-    end
+    DateHelpers.weekday(Date.day_of_week(date), :full)
   end
 
   @doc """

@@ -37,17 +37,17 @@
           <ul class="space-y-2 list-disc pl-5 text-sm">
             <li>
               <%= link to: Routes.api_i_cal_path(@conn, :show, @federal_state.slug, vacation_types: "school", year: @year, calendar_year: true), class: "text-blue-600 hover:text-blue-800" do %>
-                iCal für das Jahr <%= @year %> (<%= @federal_state.name %>)
+                iCal Schulferien <%= @federal_state.name %> <%= @year %>
               <% end %>
             </li>
             <li>
               <%= link to: Routes.api_i_cal_path(@conn, :show, @federal_state.slug, vacation_types: "school", year: @year - 1), class: "text-blue-600 hover:text-blue-800" do %>
-                iCal für das Schuljahr <%= @year - 1 %>/<%= @year %> (<%= @federal_state.name %>)
+                iCal Schuljahr <%= @year - 1 %>/<%= @year %> <%= @federal_state.name %>
               <% end %>
             </li>
             <li>
               <%= link to: Routes.api_i_cal_path(@conn, :show, @federal_state.slug, vacation_types: "school", year: @year), class: "text-blue-600 hover:text-blue-800" do %>
-                iCal für das Schuljahr <%= @year %>/<%= @year + 1 %> (<%= @federal_state.name %>)
+                iCal Schuljahr <%= @year %>/<%= @year + 1 %> <%= @federal_state.name %>
               <% end %>
             </li>
           </ul>

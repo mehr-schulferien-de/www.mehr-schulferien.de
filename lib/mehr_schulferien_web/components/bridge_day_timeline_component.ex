@@ -141,16 +141,6 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     sorted_month_groups = Enum.sort(month_groups)
     months_map = DateHelpers.get_months_map()
 
-    weekday_map = %{
-      1 => "Mo",
-      2 => "Di",
-      3 => "Mi",
-      4 => "Do",
-      5 => "Fr",
-      6 => "Sa",
-      7 => "So"
-    }
-
     month_headers =
       Enum.map(sorted_month_groups, fn {{year, month}, month_days} ->
         """
@@ -164,7 +154,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     weekday_headers =
       Enum.map(days, fn day ->
         weekday = Date.day_of_week(day)
-        weekday_abbr = weekday_map[weekday]
+        weekday_abbr = DateHelpers.weekday(weekday, :short)
 
         """
         <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">#{weekday_abbr}</td>
