@@ -33,22 +33,32 @@
 
         <div class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5" x-show="desktopDropdown2025Open" @click.away="desktopDropdown2025Open = false" x-transition x-cloak>
           <div class="p-2">
-            <a href="/ferien/d/bundesland/baden-wuerttemberg/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Baden-Württemberg</a>
-            <a href="/ferien/d/bundesland/bayern/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bayern</a>
-            <a href="/ferien/d/bundesland/berlin/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Berlin</a>
-            <a href="/ferien/d/bundesland/brandenburg/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Brandenburg</a>
-            <a href="/ferien/d/bundesland/bremen/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bremen</a>
-            <a href="/ferien/d/bundesland/hamburg/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hamburg</a>
-            <a href="/ferien/d/bundesland/hessen/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hessen</a>
-            <a href="/ferien/d/bundesland/mecklenburg-vorpommern/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Mecklenburg-Vorpommern</a>
-            <a href="/ferien/d/bundesland/niedersachsen/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Niedersachsen</a>
-            <a href="/ferien/d/bundesland/nordrhein-westfalen/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Nordrhein-Westfalen</a>
-            <a href="/ferien/d/bundesland/rheinland-pfalz/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Rheinland-Pfalz</a>
-            <a href="/ferien/d/bundesland/saarland/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Saarland</a>
-            <a href="/ferien/d/bundesland/sachsen/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen</a>
-            <a href="/ferien/d/bundesland/sachsen-anhalt/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen-Anhalt</a>
-            <a href="/ferien/d/bundesland/schleswig-holstein/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Schleswig-Holstein</a>
-            <a href="/ferien/d/bundesland/thueringen/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Thüringen</a>
+            <%= for federal_state <- ["baden-wuerttemberg", "bayern", "berlin", "brandenburg", "bremen", "hamburg", "hessen", "mecklenburg-vorpommern", "niedersachsen", "nordrhein-westfalen", "rheinland-pfalz", "saarland", "sachsen", "sachsen-anhalt", "schleswig-holstein", "thueringen"] do %>
+              <% display_name = %{
+                "baden-wuerttemberg" => "Baden-Württemberg",
+                "bayern" => "Bayern",
+                "berlin" => "Berlin",
+                "brandenburg" => "Brandenburg",
+                "bremen" => "Bremen",
+                "hamburg" => "Hamburg",
+                "hessen" => "Hessen",
+                "mecklenburg-vorpommern" => "Mecklenburg-Vorpommern",
+                "niedersachsen" => "Niedersachsen",
+                "nordrhein-westfalen" => "Nordrhein-Westfalen",
+                "rheinland-pfalz" => "Rheinland-Pfalz",
+                "saarland" => "Saarland",
+                "sachsen" => "Sachsen",
+                "sachsen-anhalt" => "Sachsen-Anhalt",
+                "schleswig-holstein" => "Schleswig-Holstein",
+                "thueringen" => "Thüringen"
+              }[federal_state] %>
+              
+              <%= if is_current_page_for_federal_state?(@conn, federal_state, 2025) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400"><%= display_name %></span>
+              <% else %>
+                <a href="/ferien/d/bundesland/<%= federal_state %>/2025" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"><%= display_name %></a>
+              <% end %>
+            <% end %>
           </div>
         </div>
       </div>
@@ -64,22 +74,32 @@
 
         <div class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5" x-show="desktopDropdown2026Open" @click.away="desktopDropdown2026Open = false" x-transition x-cloak>
           <div class="p-2">
-            <a href="/ferien/d/bundesland/baden-wuerttemberg/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Baden-Württemberg</a>
-            <a href="/ferien/d/bundesland/bayern/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bayern</a>
-            <a href="/ferien/d/bundesland/berlin/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Berlin</a>
-            <a href="/ferien/d/bundesland/brandenburg/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Brandenburg</a>
-            <a href="/ferien/d/bundesland/bremen/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bremen</a>
-            <a href="/ferien/d/bundesland/hamburg/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hamburg</a>
-            <a href="/ferien/d/bundesland/hessen/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hessen</a>
-            <a href="/ferien/d/bundesland/mecklenburg-vorpommern/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Mecklenburg-Vorpommern</a>
-            <a href="/ferien/d/bundesland/niedersachsen/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Niedersachsen</a>
-            <a href="/ferien/d/bundesland/nordrhein-westfalen/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Nordrhein-Westfalen</a>
-            <a href="/ferien/d/bundesland/rheinland-pfalz/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Rheinland-Pfalz</a>
-            <a href="/ferien/d/bundesland/saarland/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Saarland</a>
-            <a href="/ferien/d/bundesland/sachsen/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen</a>
-            <a href="/ferien/d/bundesland/sachsen-anhalt/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen-Anhalt</a>
-            <a href="/ferien/d/bundesland/schleswig-holstein/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Schleswig-Holstein</a>
-            <a href="/ferien/d/bundesland/thueringen/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">Thüringen</a>
+            <%= for federal_state <- ["baden-wuerttemberg", "bayern", "berlin", "brandenburg", "bremen", "hamburg", "hessen", "mecklenburg-vorpommern", "niedersachsen", "nordrhein-westfalen", "rheinland-pfalz", "saarland", "sachsen", "sachsen-anhalt", "schleswig-holstein", "thueringen"] do %>
+              <% display_name = %{
+                "baden-wuerttemberg" => "Baden-Württemberg",
+                "bayern" => "Bayern",
+                "berlin" => "Berlin",
+                "brandenburg" => "Brandenburg",
+                "bremen" => "Bremen",
+                "hamburg" => "Hamburg",
+                "hessen" => "Hessen",
+                "mecklenburg-vorpommern" => "Mecklenburg-Vorpommern",
+                "niedersachsen" => "Niedersachsen",
+                "nordrhein-westfalen" => "Nordrhein-Westfalen",
+                "rheinland-pfalz" => "Rheinland-Pfalz",
+                "saarland" => "Saarland",
+                "sachsen" => "Sachsen",
+                "sachsen-anhalt" => "Sachsen-Anhalt",
+                "schleswig-holstein" => "Schleswig-Holstein",
+                "thueringen" => "Thüringen"
+              }[federal_state] %>
+              
+              <%= if is_current_page_for_federal_state?(@conn, federal_state, 2026) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400"><%= display_name %></span>
+              <% else %>
+                <a href="/ferien/d/bundesland/<%= federal_state %>/2026" class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"><%= display_name %></a>
+              <% end %>
+            <% end %>
           </div>
         </div>
       </div>
@@ -185,22 +205,32 @@
                 </svg>
               </button>
               <div class="mt-1 space-y-1" id="disclosure-2025" x-show="isOpen2025" x-transition x-cloak>
-                <a href="/ferien/d/bundesland/baden-wuerttemberg/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Baden-Württemberg</a>
-                <a href="/ferien/d/bundesland/bayern/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bayern</a>
-                <a href="/ferien/d/bundesland/berlin/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Berlin</a>
-                <a href="/ferien/d/bundesland/brandenburg/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Brandenburg</a>
-                <a href="/ferien/d/bundesland/bremen/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bremen</a>
-                <a href="/ferien/d/bundesland/hamburg/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hamburg</a>
-                <a href="/ferien/d/bundesland/hessen/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hessen</a>
-                <a href="/ferien/d/bundesland/mecklenburg-vorpommern/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Mecklenburg-Vorpommern</a>
-                <a href="/ferien/d/bundesland/niedersachsen/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Niedersachsen</a>
-                <a href="/ferien/d/bundesland/nordrhein-westfalen/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Nordrhein-Westfalen</a>
-                <a href="/ferien/d/bundesland/rheinland-pfalz/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Rheinland-Pfalz</a>
-                <a href="/ferien/d/bundesland/saarland/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Saarland</a>
-                <a href="/ferien/d/bundesland/sachsen/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen</a>
-                <a href="/ferien/d/bundesland/sachsen-anhalt/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen-Anhalt</a>
-                <a href="/ferien/d/bundesland/schleswig-holstein/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Schleswig-Holstein</a>
-                <a href="/ferien/d/bundesland/thueringen/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Thüringen</a>
+                <%= for federal_state <- ["baden-wuerttemberg", "bayern", "berlin", "brandenburg", "bremen", "hamburg", "hessen", "mecklenburg-vorpommern", "niedersachsen", "nordrhein-westfalen", "rheinland-pfalz", "saarland", "sachsen", "sachsen-anhalt", "schleswig-holstein", "thueringen"] do %>
+                  <% display_name = %{
+                    "baden-wuerttemberg" => "Baden-Württemberg",
+                    "bayern" => "Bayern",
+                    "berlin" => "Berlin",
+                    "brandenburg" => "Brandenburg",
+                    "bremen" => "Bremen",
+                    "hamburg" => "Hamburg",
+                    "hessen" => "Hessen",
+                    "mecklenburg-vorpommern" => "Mecklenburg-Vorpommern",
+                    "niedersachsen" => "Niedersachsen",
+                    "nordrhein-westfalen" => "Nordrhein-Westfalen",
+                    "rheinland-pfalz" => "Rheinland-Pfalz",
+                    "saarland" => "Saarland",
+                    "sachsen" => "Sachsen",
+                    "sachsen-anhalt" => "Sachsen-Anhalt",
+                    "schleswig-holstein" => "Schleswig-Holstein",
+                    "thueringen" => "Thüringen"
+                  }[federal_state] %>
+                  
+                  <%= if is_current_page_for_federal_state?(@conn, federal_state, 2025) do %>
+                    <span class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-400"><%= display_name %></span>
+                  <% else %>
+                    <a href="/ferien/d/bundesland/<%= federal_state %>/2025" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50"><%= display_name %></a>
+                  <% end %>
+                <% end %>
               </div>
             </div>
             
@@ -213,22 +243,32 @@
                 </svg>
               </button>
               <div class="mt-1 space-y-1" id="disclosure-2026" x-show="isOpen2026" x-transition x-cloak>
-                <a href="/ferien/d/bundesland/baden-wuerttemberg/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Baden-Württemberg</a>
-                <a href="/ferien/d/bundesland/bayern/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bayern</a>
-                <a href="/ferien/d/bundesland/berlin/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Berlin</a>
-                <a href="/ferien/d/bundesland/brandenburg/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Brandenburg</a>
-                <a href="/ferien/d/bundesland/bremen/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Bremen</a>
-                <a href="/ferien/d/bundesland/hamburg/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hamburg</a>
-                <a href="/ferien/d/bundesland/hessen/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Hessen</a>
-                <a href="/ferien/d/bundesland/mecklenburg-vorpommern/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Mecklenburg-Vorpommern</a>
-                <a href="/ferien/d/bundesland/niedersachsen/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Niedersachsen</a>
-                <a href="/ferien/d/bundesland/nordrhein-westfalen/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Nordrhein-Westfalen</a>
-                <a href="/ferien/d/bundesland/rheinland-pfalz/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Rheinland-Pfalz</a>
-                <a href="/ferien/d/bundesland/saarland/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Saarland</a>
-                <a href="/ferien/d/bundesland/sachsen/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen</a>
-                <a href="/ferien/d/bundesland/sachsen-anhalt/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Sachsen-Anhalt</a>
-                <a href="/ferien/d/bundesland/schleswig-holstein/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Schleswig-Holstein</a>
-                <a href="/ferien/d/bundesland/thueringen/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50">Thüringen</a>
+                <%= for federal_state <- ["baden-wuerttemberg", "bayern", "berlin", "brandenburg", "bremen", "hamburg", "hessen", "mecklenburg-vorpommern", "niedersachsen", "nordrhein-westfalen", "rheinland-pfalz", "saarland", "sachsen", "sachsen-anhalt", "schleswig-holstein", "thueringen"] do %>
+                  <% display_name = %{
+                    "baden-wuerttemberg" => "Baden-Württemberg",
+                    "bayern" => "Bayern",
+                    "berlin" => "Berlin",
+                    "brandenburg" => "Brandenburg",
+                    "bremen" => "Bremen",
+                    "hamburg" => "Hamburg",
+                    "hessen" => "Hessen",
+                    "mecklenburg-vorpommern" => "Mecklenburg-Vorpommern",
+                    "niedersachsen" => "Niedersachsen",
+                    "nordrhein-westfalen" => "Nordrhein-Westfalen",
+                    "rheinland-pfalz" => "Rheinland-Pfalz",
+                    "saarland" => "Saarland",
+                    "sachsen" => "Sachsen",
+                    "sachsen-anhalt" => "Sachsen-Anhalt",
+                    "schleswig-holstein" => "Schleswig-Holstein",
+                    "thueringen" => "Thüringen"
+                  }[federal_state] %>
+                  
+                  <%= if is_current_page_for_federal_state?(@conn, federal_state, 2026) do %>
+                    <span class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-400"><%= display_name %></span>
+                  <% else %>
+                    <a href="/ferien/d/bundesland/<%= federal_state %>/2026" class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-900 hover:bg-gray-50"><%= display_name %></a>
+                  <% end %>
+                <% end %>
               </div>
             </div>
             
