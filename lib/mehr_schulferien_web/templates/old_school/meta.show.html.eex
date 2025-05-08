@@ -24,7 +24,7 @@
     "@type": "ListItem",
     "position": 4,
     "name": "<%= @school.name %>",
-    "item": "https://www.mehr-schulferien.de<%= Routes.school_path(@conn, :show, @country.slug, @school.slug) %>"
+    "item": "https://www.mehr-schulferien.de<%= Routes.old_school_path(@conn, :show, @country.slug, @school.slug) %>"
   }]
 }
 </script>

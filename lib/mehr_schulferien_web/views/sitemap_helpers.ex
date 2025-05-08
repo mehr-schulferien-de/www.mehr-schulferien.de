@@ -130,7 +130,7 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   """
   def school_entry(conn, country, school, most_recent_period) do
     location =
-      MehrSchulferienWeb.Router.Helpers.school_url(conn, :show, country.slug, school.slug)
+      MehrSchulferienWeb.Router.Helpers.old_school_url(conn, :show, country.slug, school.slug)
 
     lastmod =
       if most_recent_period do

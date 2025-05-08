@@ -277,14 +277,14 @@ defmodule MehrSchulferienWeb.FaqComponent do
       <dd class="mt-2 text-sm text-gray-600">
         <%= if length(@sorted_schools) == 1 do %>
           <%= link(hd(@sorted_schools).name,
-            to: Routes.school_path(@conn, :show, @country.slug, hd(@sorted_schools).slug),
+            to: Routes.old_school_path(@conn, :show, @country.slug, hd(@sorted_schools).slug),
             class: "text-blue-600 hover:text-blue-500"
           ) %>
         <% else %>
           <% {schools_except_last, [last_school]} = Enum.split(@sorted_schools, -1) %>
           <%= for {school, index} <- Enum.with_index(schools_except_last) do %>
             <%= link(school.name,
-              to: Routes.school_path(@conn, :show, @country.slug, school.slug),
+              to: Routes.old_school_path(@conn, :show, @country.slug, school.slug),
               class: "text-blue-600 hover:text-blue-500"
             ) %><%= if index < length(schools_except_last) - 1, do: ", ", else: "" %>
           <% end %>
@@ -292,7 +292,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
             und
           <% end %>
           <%= link(last_school.name,
-            to: Routes.school_path(@conn, :show, @country.slug, last_school.slug),
+            to: Routes.old_school_path(@conn, :show, @country.slug, last_school.slug),
             class: "text-blue-600 hover:text-blue-500"
           ) %>
         <% end %>
