@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <%= MehrSchulferienWeb.LayoutView.render("_head.html", assigns) %>
+    <!-- Alpine.js -->
+    <style>
+      [x-cloak] { display: none !important; }
+    </style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js">
+    </script>
+  </head>
+  <body class="bg-gray-50">
+    <%= MehrSchulferienWeb.LayoutView.render("_header_tailwind.html", assigns) %>
+    <main role="main">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <%= MehrSchulferienWeb.LayoutView.render("_flash.html", assigns) %>
+        <%= @inner_content %>
+      </div>
+    </main>
+
+    <%= MehrSchulferienWeb.LayoutView.render("_footer_tailwind.html", assigns) %>
+  </body>
+</html>
