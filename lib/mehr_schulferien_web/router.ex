@@ -27,13 +27,21 @@ defmodule MehrSchulferienWeb.Router do
 
     # School vacations
     get "/ferien/land/:country_slug", CountryController, :show
-    get "/ferien/:country_slug/stadt/:city_slug", Old.CityController, :show
     get "/old/ferien/:country_slug/stadt/:city_slug", Old.CityController, :show
 
     # Display holiday_or_vacation_type info
     get "/ferien/:country_slug/bundesland/:federal_state_slug/kategorie/:holiday_or_vacation_type_slug",
         FederalStateController,
         :show_holiday_or_vacation_type
+
+    # School vacations for a city
+    # The year-specific route needs to be defined before the redirect route
+    get "/ferien/:country_slug/stadt/:city_slug/:year",
+        CityController,
+        :show_year,
+        constraints: [year: [format: ~r/20[2-3][0-9]/]]
+
+    get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
 
     # School vacations for a federal state
     # The year-specific route needs to be defined before the redirect route
