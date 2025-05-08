@@ -1,0 +1,178 @@
+<!-- Breadcrumb navigation -->
+<nav class="bg-white shadow-sm mb-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center space-x-2 py-3 text-sm">
+      <%= link to: Routes.page_path(@conn, :new), class: "text-gray-500 hover:text-gray-700" do %>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 inline"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+        </svg>
+        <span>Start</span>
+      <% end %>
+
+      <span class="text-gray-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-3 w-3 inline"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </span>
+
+      <%= link to: Routes.country_path(@conn, :show, @country.slug), class: "text-gray-500 hover:text-gray-700" do %>
+        Deutschland
+      <% end %>
+
+      <span class="text-gray-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-3 w-3 inline"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </span>
+
+      <%= link to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "text-gray-500 hover:text-gray-700" do %>
+        <%= @federal_state.name %>
+      <% end %>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+  <div class="mb-8">
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-2">
+      Landkreise und Städte in <%= @federal_state.name %>
+    </h1>
+    <p class="text-gray-600 text-lg">
+      Alle Städte in <%= @federal_state.name %> mit mindestens einer Schule.
+    </p>
+  </div>
+
+  <div>
+    <%= for {county, cities} <- @counties_with_cities do %>
+      <div class="mb-10 bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
+          <h2 class="text-xl font-bold text-white flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <%= county.name %>
+          </h2>
+        </div>
+
+        <div class="p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <%= for city_item <- Enum.reverse(cities) do %>
+              <div class="group relative bg-white border border-gray-200 rounded-lg transition-all duration-300 hover:shadow-lg hover:border-blue-300 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </div>
+
+                <div class="relative p-4">
+                  <div class="flex items-center mb-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-blue-600 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <%= link to: Routes.city_path(@conn, :show, @country.slug, city_item.city_data.slug), class: "text-gray-900 font-semibold text-lg hover:text-blue-700 transition-colors duration-200" do %>
+                      <%= city_item.city_data.name %>
+                    <% end %>
+                  </div>
+
+                  <div class="mt-2 flex items-center bg-gray-50 rounded-md p-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-gray-500 mr-2 flex-shrink-0"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <span class="text-sm text-gray-600">
+                      <span class="font-medium">PLZ:</span> <%= MehrSchulferienWeb.FederalStateView.format_zip_codes(
+                        city_item.city_data
+                      ) %>
+                    </span>
+                  </div>
+
+                  <div class="mt-2 flex items-center bg-gray-50 rounded-md p-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-gray-500 mr-2 flex-shrink-0"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                    </svg>
+                    <span class="text-sm text-gray-600">
+                      <span class="font-medium">Schulen:</span> <%= city_item.school_count %>
+                    </span>
+                  </div>
+
+                  <div class="mt-4 text-right">
+                    <%= link to: Routes.city_path(@conn, :show, @country.slug, city_item.city_data.slug), class: "inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800" do %>
+                      Details anzeigen
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 ml-1"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

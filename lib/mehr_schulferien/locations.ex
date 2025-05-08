@@ -415,4 +415,58 @@ defmodule MehrSchulferien.Locations do
   def with_periods(locations) do
     Repo.preload(locations, [:periods])
   end
+
+  @doc """
+  Returns counties with their cities that have at least one school, including the school count.
+  This is an optimized query that avoids the N+1 problem by fetching all required data in just
+  a few queries instead of querying separately for each city.
+  """
+  def list_counties_with_cities_having_schools(federal_state) do
+    # First, get all counties for this federal state
+    counties = list_counties(federal_state)
+    county_ids = Enum.map(counties, & &1.id)
+
+    # Get cities with school counts in a single query
+    cities_with_school_counts_query =
+      from city in Location,
+        join: school in Location,
+        on: school.parent_location_id == city.id and school.is_school == true,
+        where: city.parent_location_id in ^county_ids and city.is_city == true,
+        group_by: [city.id, city.name, city.slug, city.parent_location_id],
+        select: %{
+          city_data: city,
+          school_count: count(school.id)
+        },
+        order_by: [desc: city.name]
+
+    cities_with_school_counts = Repo.all(cities_with_school_counts_query)
+
+    # Preload zip_codes for all cities at once
+    city_ids = Enum.map(cities_with_school_counts, & &1.city_data.id)
+
+    cities_with_zip_codes =
+      from(c in Location,
+        where: c.id in ^city_ids,
+        preload: [:zip_codes]
+      )
+      |> Repo.all()
+      |> Map.new(fn city -> {city.id, city} end)
+
+    # Add zip_codes to each city in cities_with_school_counts
+    cities_with_school_counts =
+      Enum.map(cities_with_school_counts, fn %{city_data: city_data} = city_item ->
+        city_with_zip_codes = Map.get(cities_with_zip_codes, city_data.id)
+        %{city_item | city_data: %{city_data | zip_codes: city_with_zip_codes.zip_codes}}
+      end)
+
+    # Group cities by county
+    cities_by_county = Enum.group_by(cities_with_school_counts, & &1.city_data.parent_location_id)
+
+    # Create the final result by mapping counties to their cities
+    Enum.map(counties, fn county ->
+      cities = Map.get(cities_by_county, county.id, [])
+      {county, cities}
+    end)
+    |> Enum.filter(fn {_county, cities} -> length(cities) > 0 end)
+  end
 end

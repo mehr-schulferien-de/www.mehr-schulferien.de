@@ -13,6 +13,11 @@ defmodule MehrSchulferienWeb.CityController do
     %{country: country, federal_state: federal_state, county: county, city: city} =
       Locations.show_city_to_country_map(country_slug, city_slug)
 
+    # Get schools in this city for display
+    # If a city has no schools, it should return a 404
+    schools = Locations.list_schools(city)
+    city_has_schools = not Enum.empty?(schools)
+
     # Convert year to integer
     year = String.to_integer(year)
 
@@ -55,7 +60,8 @@ defmodule MehrSchulferienWeb.CityController do
     current_year_periods = Map.get(periods_by_year, year, [])
 
     # Check if data exists for the requested year
-    has_data = length(current_year_periods) > 0
+    # A page should also be a 404 if there are no vacation periods for the year
+    year_has_vacation_data = length(current_year_periods) > 0
 
     # Get public holiday periods for the year
     {:ok, year_start} = Date.new(year, 1, 1)
@@ -86,8 +92,13 @@ defmodule MehrSchulferienWeb.CityController do
         Map.put(period, :adjoining_duration, difference)
       end)
 
-    # Set the appropriate status code based on data availability
-    conn = if has_data, do: conn, else: put_status(conn, 404)
+    # Set the appropriate status code based on data availability and presence of schools
+    conn =
+      if city_has_schools and year_has_vacation_data do
+        conn
+      else
+        put_status(conn, 404)
+      end
 
     # Get FAQ data
     faq_data = CH.list_faq_data(location_ids, today)
@@ -117,8 +128,8 @@ defmodule MehrSchulferienWeb.CityController do
       12 => "Dezember"
     }
 
-    # Get schools in this city for display
-    schools = Locations.list_schools(city)
+    # Schools are already fetched above
+    # schools = Locations.list_schools(city)
 
     render(
       conn,
@@ -135,7 +146,7 @@ defmodule MehrSchulferienWeb.CityController do
         periods: current_year_periods,
         public_periods: public_periods,
         all_periods: all_periods_for_calculation,
-        has_data: has_data,
+        has_data: year_has_vacation_data,
         css_framework: :tailwind_new,
         today: today,
         school_periods: current_year_periods,

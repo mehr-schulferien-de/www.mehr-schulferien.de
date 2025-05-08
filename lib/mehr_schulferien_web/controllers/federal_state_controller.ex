@@ -210,12 +210,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
       }) do
     country = Locations.get_country_by_slug!(country_slug)
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    counties = Locations.list_counties(federal_state)
 
-    counties_with_cities =
-      Enum.reduce(counties, [], fn county, acc ->
-        acc ++ [{county, Locations.list_cities(county)}]
-      end)
+    # Use the optimized function to get counties with cities having schools
+    counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state)
 
     location_ids = [country.id, federal_state.id]
     today = DateHelpers.get_today_or_custom_date(conn)
@@ -224,7 +221,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
       [
         counties_with_cities: counties_with_cities,
         country: country,
-        federal_state: federal_state
+        federal_state: federal_state,
+        css_framework: :tailwind_new
       ] ++
         CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
 

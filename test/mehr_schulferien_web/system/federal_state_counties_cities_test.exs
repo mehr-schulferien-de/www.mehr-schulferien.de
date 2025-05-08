@@ -43,12 +43,16 @@ defmodule MehrSchulferienWeb.FederalStateCountiesCitiesSystemTest do
           name: "Mainz"
         })
 
+      insert(:school, %{parent_location_id: city1.id, name: "Test School Mainz"})
+
       city2 =
         insert(:city, %{
           parent_location_id: county2.id,
           slug: "trier",
           name: "Trier"
         })
+
+      insert(:school, %{parent_location_id: city2.id, name: "Test School Trier"})
 
       # Visit the counties and cities page using direct URL path
       conn =
@@ -68,9 +72,12 @@ defmodule MehrSchulferienWeb.FederalStateCountiesCitiesSystemTest do
       assert html_response(conn, 200) =~ city1.name
       assert html_response(conn, 200) =~ city2.name
 
-      # Check for links to cities
-      assert html_response(conn, 200) =~ "href=\"/ferien/#{country.slug}/stadt/#{city1.slug}\""
-      assert html_response(conn, 200) =~ "href=\"/ferien/#{country.slug}/stadt/#{city2.slug}\""
+      # Check that the links to the cities are correct
+      assert html_response(conn, 200) =~
+               "href=\"#{Routes.city_path(conn, :show, country.slug, city1.slug)}\""
+
+      assert html_response(conn, 200) =~
+               "href=\"#{Routes.city_path(conn, :show, country.slug, city2.slug)}\""
     end
   end
 end
