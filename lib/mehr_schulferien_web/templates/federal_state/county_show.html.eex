@@ -26,7 +26,7 @@
     <h2><%= county.name %></h2>
     <ul>
     <%= for city <- Enum.reverse(cities) do %>
-      <li><%= link city.name, to: Routes.city_path(@conn, :show, @country.slug, city.slug) %>
+      <li><%= link city.name, to: "/ferien/#{@country.slug}/stadt/#{city.slug}" %>
       <p>Postleitzahl(en): <%= MehrSchulferienWeb.FederalStateView.format_zip_codes(city) %></li>
     <% end %>
     </ul>

@@ -1,4 +1,4 @@
-defmodule MehrSchulferienWeb.CityController do
+defmodule MehrSchulferienWeb.Old.CityController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations}

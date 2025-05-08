@@ -111,8 +111,9 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   @doc """
   Renders a URL entry for a city.
   """
-  def city_entry(conn, country, city, most_recent_period) do
-    location = MehrSchulferienWeb.Router.Helpers.city_url(conn, :show, country.slug, city.slug)
+  def city_entry(_conn, country, city, most_recent_period) do
+    base_url = MehrSchulferienWeb.Endpoint.url()
+    location = "#{base_url}/ferien/#{country.slug}/stadt/#{city.slug}"
 
     lastmod =
       if most_recent_period do

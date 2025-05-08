@@ -1,4 +1,4 @@
-defmodule MehrSchulferienWeb.CityView do
+defmodule MehrSchulferienWeb.Old.CityView do
   use MehrSchulferienWeb, :view
 
   alias MehrSchulferien.Locations

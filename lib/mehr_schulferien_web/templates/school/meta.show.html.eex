@@ -19,7 +19,7 @@
     "@type": "ListItem",
     "position": 3,
     "name": "<%= @city.name %>",
-    "item": "https://www.mehr-schulferien.de<%= Routes.city_path(@conn, :show, @country.slug, @city.slug) %>"
+    "item": "https://www.mehr-schulferien.de/ferien/<%= @country.slug %>/stadt/<%= @city.slug %>"
   },{
     "@type": "ListItem",
     "position": 4,
