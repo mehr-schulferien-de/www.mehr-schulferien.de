@@ -195,21 +195,30 @@ defmodule MehrSchulferienWeb.FaqComponent do
         }
       end)
 
-    # Generate yearly periods questions
-    yearly_periods_questions =
-      Enum.map(grouped_periods, fn periods ->
+    # Generate yearly periods questions - only for current year
+    current_year_periods =
+      Enum.find(grouped_periods, fn periods ->
         first_period = Enum.at(periods, 0)
-        year = first_period.starts_on.year
-        title = "Schulfrei #{location_prep} #{location.name} #{year}"
-        answer = format_periods_answer(periods)
-
-        %{
-          title: title,
-          answer: answer,
-          year: year,
-          periods: periods
-        }
+        first_period.starts_on.year == assigns.current_year
       end)
+
+    yearly_periods_questions =
+      if current_year_periods do
+        year = assigns.current_year
+        title = "Schulfrei #{location_prep} #{location.name} #{year}"
+        answer = format_periods_answer(current_year_periods)
+
+        [
+          %{
+            title: title,
+            answer: answer,
+            year: year,
+            periods: current_year_periods
+          }
+        ]
+      else
+        []
+      end
 
     # Generate next vacation question
     next_vacation_answer =

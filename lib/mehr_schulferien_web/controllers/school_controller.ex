@@ -51,29 +51,40 @@ defmodule MehrSchulferienWeb.SchoolController do
       end)
       |> Enum.sort()
 
-    # Get just the periods for the current year
+    # Get periods for the current year plus next year until July 31st
     current_year_periods = Map.get(periods_by_year, year, [])
+    next_year_periods = Map.get(periods_by_year, year + 1, [])
 
-    # Check if data exists for the requested year
-    has_data = length(current_year_periods) > 0
+    # Filter next year periods to include only those until July 31st
+    next_year_july_periods =
+      Enum.filter(next_year_periods, fn period ->
+        {:ok, july_end_date} = Date.new(year + 1, 7, 31)
+        Date.compare(period.starts_on, july_end_date) in [:lt, :eq]
+      end)
 
-    # Get public holiday periods for the year
+    # Combine current year periods with filtered next year periods
+    extended_periods = current_year_periods ++ next_year_july_periods
+
+    # Check if data exists for the requested period
+    has_data = length(extended_periods) > 0
+
+    # Get public holiday periods for the year and next year until July
     {:ok, year_start} = Date.new(year, 1, 1)
-    {:ok, year_end} = Date.new(year, 12, 31)
+    {:ok, next_year_july_end} = Date.new(year + 1, 7, 31)
 
     public_periods =
       MehrSchulferien.Periods.Query.list_public_periods(
         location_ids,
         year_start,
-        year_end
+        next_year_july_end
       )
 
-    all_periods_for_calculation = current_year_periods ++ public_periods
+    all_periods_for_calculation = extended_periods ++ public_periods
 
     # Calculate adjoining_duration for each period
     # This ensures display values reflect the current calculation
-    current_year_periods =
-      Enum.map(current_year_periods, fn period ->
+    extended_periods =
+      Enum.map(extended_periods, fn period ->
         days = Date.diff(period.ends_on, period.starts_on) + 1
 
         effective_duration =
@@ -95,7 +106,7 @@ defmodule MehrSchulferienWeb.SchoolController do
     # Calculate next_schulferien_periods (up to 3 periods) for the FAQ
     sorted_periods =
       Enum.sort(
-        public_periods ++ current_year_periods,
+        public_periods ++ extended_periods,
         &(Date.compare(&1.starts_on, &2.starts_on) == :lt)
       )
 
@@ -129,13 +140,13 @@ defmodule MehrSchulferienWeb.SchoolController do
         year: year,
         years_with_data: years_with_data,
         current_year: current_year,
-        periods: current_year_periods,
+        periods: extended_periods,
         public_periods: public_periods,
         all_periods: all_periods_for_calculation,
         has_data: has_data,
         css_framework: :tailwind_new,
         today: today,
-        school_periods: current_year_periods,
+        school_periods: extended_periods,
         next_schulferien_periods: next_schulferien_periods,
         months: months
       }

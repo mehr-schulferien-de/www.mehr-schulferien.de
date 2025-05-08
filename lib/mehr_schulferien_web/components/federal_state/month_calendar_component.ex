@@ -2,7 +2,6 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
   use Phoenix.Component
 
   import MehrSchulferienWeb.FederalState.MonthEventsComponent
-  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferienWeb.FederalState.PartialDataComponent
 
   attr :month, :integer, required: true
@@ -32,22 +31,21 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
     first_weekday = Date.day_of_week(first_day_of_month)
     days_in_month = Date.days_in_month(first_day_of_month)
     month_id = "month-#{assigns.month}"
+    last_day_of_month = Date.new!(assigns.year, assigns.month, days_in_month)
 
     # Use the more accurate function to determine if this month should be crossed out
     should_cross_out =
       PartialDataComponent.should_cross_out_month?(assigns.month, assigns.year, assigns.periods)
 
-    # Filter periods for this month
+    # Filter periods for this specific month and year
     month_periods =
       Enum.filter(assigns.periods, fn period ->
-        period.starts_on.month == assigns.month || period.ends_on.month == assigns.month ||
-          (period.starts_on.month < assigns.month && period.ends_on.month > assigns.month)
+        period_overlaps_with_month_and_year?(period, first_day_of_month, last_day_of_month)
       end)
 
     month_public_periods =
       Enum.filter(assigns.public_periods, fn period ->
-        period.starts_on.month == assigns.month || period.ends_on.month == assigns.month ||
-          (period.starts_on.month < assigns.month && period.ends_on.month > assigns.month)
+        period_overlaps_with_month_and_year?(period, first_day_of_month, last_day_of_month)
       end)
 
     assigns =
@@ -84,30 +82,29 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
               </th>
             </tr>
             <tr>
-              <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                <%= DateHelpers.weekday(1, :short) %>
-              </td>
-              <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                <%= DateHelpers.weekday(2, :short) %>
-              </td>
-              <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                <%= DateHelpers.weekday(3, :short) %>
-              </td>
-              <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                <%= DateHelpers.weekday(4, :short) %>
-              </td>
-              <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                <%= DateHelpers.weekday(5, :short) %>
-              </td>
-              <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                <%= DateHelpers.weekday(6, :short) %>
-              </td>
-              <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">
-                <%= DateHelpers.weekday(7, :short) %>
-              </td>
+              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+                Mo
+              </th>
+              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+                Di
+              </th>
+              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+                Mi
+              </th>
+              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+                Do
+              </th>
+              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+                Fr
+              </th>
+              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+                Sa
+              </th>
+              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+                So
+              </th>
             </tr>
           </thead>
-
           <tbody>
             <%= for week <- 0..5 do %>
               <% week_start_day = @start_day + week * 7
@@ -185,5 +182,14 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
       <% end %>
     </section>
     """
+  end
+
+  # Helper function to check if a period overlaps with a specific month and year
+  defp period_overlaps_with_month_and_year?(period, first_day_of_month, last_day_of_month) do
+    # A period overlaps with the month if:
+    # 1. It starts before or on the last day of the month AND
+    # 2. It ends on or after the first day of the month
+    Date.compare(period.starts_on, last_day_of_month) != :gt &&
+      Date.compare(period.ends_on, first_day_of_month) != :lt
   end
 end

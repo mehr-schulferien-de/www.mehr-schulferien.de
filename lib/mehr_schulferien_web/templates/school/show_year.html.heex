@@ -122,17 +122,44 @@
 
         <.calendar_legend />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <%= for month <- 1..12 do %>
-            <.month_calendar
-              month={month}
-              year={@year}
-              periods={@periods}
-              public_periods={@public_periods}
-              all_periods={@all_periods}
-            />
-          <% end %>
-        </div>
+        <% # Find the latest period end date
+        latest_period_end_date =
+          Enum.reduce(@periods, ~D[2000-01-01], fn period, latest ->
+            if Date.compare(period.ends_on, latest) == :gt, do: period.ends_on, else: latest
+          end)
+
+        # Determine which months and years to show
+        current_year = @year
+        latest_year = latest_period_end_date.year
+        latest_month = latest_period_end_date.month
+
+        # Generate a list of all {year, month} pairs to display
+        months_to_show =
+          for year <- current_year..latest_year,
+              month <- 1..12,
+              year < latest_year || month <= latest_month,
+              do: {year, month}
+
+        # Group months by year for display
+        months_by_year = Enum.group_by(months_to_show, fn {year, _month} -> year end) %>
+
+        <%= for {year, year_months} <- Enum.sort_by(months_by_year, fn {year, _} -> year end) do %>
+          <h3 class="text-lg font-bold text-gray-800 mb-4 mt-6">
+            <%= year %><%= if year != current_year && year == latest_year,
+              do: " (Januar bis #{@months[latest_month]})" %>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <%= for {_, month} <- Enum.sort_by(year_months, fn {_, month} -> month end) do %>
+              <.month_calendar
+                month={month}
+                year={year}
+                periods={@periods}
+                public_periods={@public_periods}
+                all_periods={@all_periods}
+              />
+            <% end %>
+          </div>
+        <% end %>
       </div>
 
       <% yesterday = Date.add(@today, -1)

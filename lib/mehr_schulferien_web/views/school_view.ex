@@ -5,7 +5,7 @@ defmodule MehrSchulferienWeb.SchoolView do
 
   # Import the components we need for our templates
   import MehrSchulferienWeb.School.PaginationComponent
-  import MehrSchulferienWeb.FederalState.PeriodsTableComponent
+  import MehrSchulferienWeb.School.PeriodsTableComponent
   import MehrSchulferienWeb.FederalState.CalendarLegendComponent
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.SchoolComponents
