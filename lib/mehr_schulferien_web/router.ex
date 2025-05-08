@@ -61,6 +61,9 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
 
+    # School vCard download
+    get "/schule/:school_slug/vcard", SchoolVCardController, :download, as: :school_vcard
+
     # Public holidays
     get "/feiertag/:country_slug/bundesland/:federal_state_slug/:holiday_or_vacation_type_slug",
         PublicHolidayController,
