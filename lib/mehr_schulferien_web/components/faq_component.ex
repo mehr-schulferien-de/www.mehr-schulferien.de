@@ -26,6 +26,8 @@ defmodule MehrSchulferienWeb.FaqComponent do
   attr :todays_public_holiday_periods, :list, required: true
   attr :tomorrows_public_holiday_periods, :list, required: true
   attr :day_after_tomorrows_public_holiday_periods, :list, required: true
+  attr :city, :any, default: nil
+  attr :schools, :list, default: []
 
   def faq(assigns) do
     sorted_periods =
@@ -112,6 +114,42 @@ defmodule MehrSchulferienWeb.FaqComponent do
                 ) %>
               </dd>
             </div>
+
+            <%= if @city && length(@schools) > 0 do %>
+              <div>
+                <dt class="text-base font-semibold text-gray-900">
+                  Welche Schulen gibt es in <%= @city.name %>?
+                </dt>
+                <dd class="mt-2 text-sm text-gray-600">
+                  <% sorted_schools = Enum.sort_by(@schools, & &1.name) %>
+                  <%= if length(sorted_schools) == 1 do %>
+                    <%= link(hd(sorted_schools).name,
+                      to: Routes.school_path(@conn, :show, @country.slug, hd(sorted_schools).slug),
+                      class: "text-blue-600 hover:text-blue-500"
+                    ) %>
+                  <% else %>
+                    <% {schools_except_last, [last_school]} = Enum.split(sorted_schools, -1) %>
+                    <% school_links =
+                      Enum.map(schools_except_last, fn school ->
+                        link(school.name,
+                          to: Routes.school_path(@conn, :show, @country.slug, school.slug),
+                          class: "text-blue-600 hover:text-blue-500"
+                        )
+                      end) %>
+                    <%= for {link, index} <- Enum.with_index(school_links) do %>
+                      <%= link %><%= if index < length(school_links) - 1, do: ", ", else: "" %>
+                    <% end %>
+                    <%= if length(school_links) > 0 do %>
+                      und
+                    <% end %>
+                    <%= link(last_school.name,
+                      to: Routes.school_path(@conn, :show, @country.slug, last_school.slug),
+                      class: "text-blue-600 hover:text-blue-500"
+                    ) %>
+                  <% end %>
+                </dd>
+              </div>
+            <% end %>
 
             <div>
               <dt class="text-base font-semibold text-gray-900">
@@ -238,6 +276,8 @@ defmodule MehrSchulferienWeb.FaqComponent do
       public_periods={@public_periods}
       next_schulferien_periods={@next_schulferien_periods}
       grouped_periods={@grouped_periods}
+      city={@city}
+      schools={@schools}
     />
     """
   end
@@ -260,6 +300,8 @@ defmodule MehrSchulferienWeb.FaqComponent do
   attr :public_periods, :list, required: true
   attr :next_schulferien_periods, :list, required: true
   attr :grouped_periods, :list, required: true
+  attr :city, :any, default: nil
+  attr :schools, :list, default: []
 
   def schema_org_faq(assigns) do
     ~H"""
@@ -307,6 +349,16 @@ defmodule MehrSchulferienWeb.FaqComponent do
               "text": "<%= FaqViewHelpers.next_school_vacation_answer(@location, @school_periods) %>"
             }
         },
+        <%= if @city && length(@schools) > 0 do %>
+        {
+            "@type": "Question",
+            "name": "Welche Schulen gibt es in <%= @city.name %>?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "<%= Enum.map_join(@schools, ", ", fn school -> school.name end) %>"
+            }
+        },
+        <% end %>
         {
             "@type": "Question",
             "name": "Schulferien <%= @location.name %>?",

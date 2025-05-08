@@ -60,22 +60,6 @@
             </li>
           </ul>
         </div>
-
-        <%= if length(@schools) > 0 do %>
-          <div class="bg-white p-4 rounded-lg shadow-sm mt-4">
-            <h2 class="text-xl font-bold text-gray-900 mb-3">Schulen in <%= @city.name %></h2>
-            <ul class="space-y-2 list-disc pl-5 text-sm">
-              <%= for school <- @schools do %>
-                <li>
-                  <%= link(school.name,
-                    to: Routes.school_path(@conn, :show, @country.slug, school.slug),
-                    class: "text-blue-600 hover:text-blue-800"
-                  ) %>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
       </div>
     </div>
 
@@ -191,6 +175,7 @@
           todays_public_holiday_periods={todays_public_holiday_periods}
           tomorrows_public_holiday_periods={tomorrows_public_holiday_periods}
           day_after_tomorrows_public_holiday_periods={day_after_tomorrows_public_holiday_periods}
+          schools={@schools}
         />
       <% end %>
     <% end %>
