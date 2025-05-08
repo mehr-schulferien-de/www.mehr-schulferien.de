@@ -158,7 +158,8 @@ defmodule MehrSchulferienWeb.CityController do
           country_slug,
           city_slug,
           current_year
-        )
+        ),
+      status: :temporary_redirect
     )
   end
 end

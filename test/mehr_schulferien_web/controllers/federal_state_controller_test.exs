@@ -17,11 +17,11 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     conn = get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}")
 
     # Get the current year
-    current_year = MehrSchulferien.Calendars.DateHelpers.today_berlin().year
+    _current_year = MehrSchulferien.Calendars.DateHelpers.today_berlin().year
 
     # Assert that the request is redirected (302 status code)
     assert redirected_to(conn, 302) =~
-             "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}"
+             "/land/#{country.slug}/bundesland/#{federal_state.slug}"
   end
 
   test "GET /ferien/:country_slug/bundesland/:federal_state_slug/:year returns 404 when no periods exist for the year",
@@ -37,7 +37,14 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     conn =
       get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year_without_data}")
 
-    # Assert that the response has a 404 status code
+    # Assert that the response has a 404 status code (redirected)
+    assert conn.status == 302
+
+    # Follow the redirect
+    redirected_path = redirected_to(conn, 302)
+    conn = get(recycle(conn), redirected_path)
+
+    # Now we should get a 404
     assert conn.status == 404
 
     # Assert that the page still renders with the correct layout and content

@@ -87,8 +87,8 @@ defmodule MehrSchulferienWeb.RobotsController do
       |> Enum.filter(fn year -> year != current_year && year != next_year end)
       |> Enum.flat_map(fn year ->
         [
-          "Disallow: /ferien/*/stadt/*/#{year}$",
-          "Disallow: /ferien/*/schule/*/#{year}$"
+          "Disallow: /land/*/stadt/*/#{year}$",
+          "Disallow: /land/*/schule/*/#{year}$"
         ]
       end)
       |> Enum.join("\n")

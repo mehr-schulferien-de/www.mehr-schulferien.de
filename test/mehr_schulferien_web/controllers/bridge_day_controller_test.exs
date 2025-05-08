@@ -40,21 +40,17 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       country: country,
       federal_state: federal_state
     } do
-      conn =
-        get(
-          conn,
-          Routes.bridge_day_path(
-            conn,
-            :index_within_federal_state,
-            country.slug,
-            federal_state.slug
-          )
-        )
+      # Use the old route format that goes through the redirects pipeline
+      conn = get(conn, "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}")
 
-      assert conn.status in [301, 302]
+      # We expect a 302 temporary redirect
+      assert conn.status == 302
 
-      assert get_resp_header(conn, "location") |> Enum.at(0) =~
-               "/brueckentage/d/bundesland/#{federal_state.slug}"
+      # The redirect URL should contain the correct base path
+      redirect_path = redirected_to(conn, 302)
+
+      assert redirect_path =~
+               "/land/#{country.slug}/bundesland/#{federal_state.slug}/brueckentage"
     end
 
     test "shows certain year for bridge days", %{
@@ -138,6 +134,15 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       })
 
       conn = get(conn, "/brueckentage/d-test/bundesland/brandenburg-test/2025")
+
+      # We expect a redirect first
+      assert conn.status == 302
+
+      # Follow the redirect
+      redirected_path = redirected_to(conn, 302)
+      conn = get(recycle(conn), redirected_path)
+
+      # Now we should get a 200
       assert html_response(conn, 200)
       assert conn.resp_body =~ "Brückentage 2025 in Brandenburg Test"
       assert conn.resp_body =~ "Brückentag-FAQ"

@@ -57,7 +57,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
           country_slug,
           federal_state_slug,
           current_year
-        )
+        ),
+      status: :temporary_redirect
     )
   end
 
@@ -68,6 +69,12 @@ defmodule MehrSchulferienWeb.FederalStateController do
       }) do
     {federal_state, country} =
       Locations.get_federal_state_and_country_by_slug!(country_slug, federal_state_slug)
+
+    # Check if year is "brueckentage" and handle special case
+    if year == "brueckentage" do
+      conn = Plug.Conn.put_status(conn, :not_found)
+      raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+    end
 
     # Convert year to integer
     year = String.to_integer(year)

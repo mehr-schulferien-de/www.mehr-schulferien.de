@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
   import Phoenix.ConnTest
 
   import MehrSchulferien.Factory
+  alias MehrSchulferienWeb.TestRouteHelpers, as: Routes
 
   @current_year Date.utc_today().year
   @next_year @current_year + 1

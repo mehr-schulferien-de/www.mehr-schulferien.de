@@ -11,7 +11,6 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     current_year = today.year
 
     conn
-    |> put_status(:moved_permanently)
     |> redirect(
       to:
         Routes.bridge_day_path(
@@ -20,7 +19,8 @@ defmodule MehrSchulferienWeb.BridgeDayController do
           country_slug,
           federal_state_slug,
           current_year
-        )
+        ),
+      status: :temporary_redirect
     )
   end
 

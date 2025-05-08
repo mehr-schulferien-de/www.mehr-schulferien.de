@@ -113,7 +113,7 @@
             <div class="mt-3">
               <p class="text-sm font-semibold text-gray-700">Kontaktdaten-Download:</p>
               <p class="text-sm">
-                <%= link to: Routes.school_vcard_path(@conn, :download, @school.slug), class: "text-blue-600 hover:text-blue-800 flex items-center" do %>
+                <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), class: "text-blue-600 hover:text-blue-800 flex items-center" do %>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-4 w-4 mr-1"

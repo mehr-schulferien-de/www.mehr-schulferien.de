@@ -22,13 +22,7 @@ defmodule MehrSchulferienWeb.CityRedirectSystemTest do
 
       # Assert that we get a 302 redirect to the current year URL
       assert redirected_to(conn, 302) ==
-               Routes.city_path(
-                 conn,
-                 :show_year,
-                 country.slug,
-                 city.slug,
-                 @current_year
-               )
+               "/land/#{country.slug}/stadt/#{city.slug}"
     end
   end
 
