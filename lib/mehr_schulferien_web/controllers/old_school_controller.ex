@@ -9,7 +9,7 @@ defmodule MehrSchulferienWeb.OldSchoolController do
         "school_slug" => school_slug,
         "additional_categories" => _
       }) do
-    redirect(conn, to: Routes.old_school_path(conn, :show, country_slug, school_slug))
+    redirect(conn, to: Routes.school_path(conn, :show, country_slug, school_slug))
   end
 
   def show(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do

@@ -52,8 +52,14 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show
 
-    # School - Old path (to be removed later)
-    get "/ferien/:country_slug/schule/:school_slug", OldSchoolController, :show
+    # School vacations for a specific school
+    # The year-specific route needs to be defined before the redirect route
+    get "/ferien/:country_slug/schule/:school_slug/:year",
+        SchoolController,
+        :show_year,
+        constraints: [year: [format: ~r/20[2-3][0-9]/]]
+
+    get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
 
     # Public holidays
     get "/feiertag/:country_slug/bundesland/:federal_state_slug/:holiday_or_vacation_type_slug",

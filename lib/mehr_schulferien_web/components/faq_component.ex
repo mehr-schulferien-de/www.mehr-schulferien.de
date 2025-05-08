@@ -33,17 +33,25 @@ defmodule MehrSchulferienWeb.FaqComponent do
     # Process all FAQ data once
     faq_data = prepare_faq_data(assigns)
 
+    # Check if we're on a school page by looking for a school attribute
+    is_school_page = Map.has_key?(assigns, :school) && assigns.school != nil
+
+    # Get correct preposition for this location
+    location_prep = location_preposition(assigns.location, is_school_page)
+
     # Merge data into assigns for rendering
     assigns =
       assigns
       |> assign(:faq_data, faq_data)
+      |> assign(:is_school_page, is_school_page)
+      |> assign(:location_prep, location_prep)
 
     ~H"""
     <div class="mt-8 bg-white p-4 rounded-lg shadow-sm">
       <div class="mx-auto px-4 py-8 sm:py-12">
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4" id="faq">Ferien FAQ</h2>
         <p class="mt-3 max-w-3xl text-sm text-gray-600">
-          Antworten zu häufigen Fragen zum Thema Schulferien und Feiertagen in <%= @location.name %>.
+          Antworten zu häufigen Fragen zum Thema Schulferien und Feiertagen <%= @location_prep %> <%= @location.name %>.
         </p>
 
         <div class="mt-6">
@@ -65,31 +73,58 @@ defmodule MehrSchulferienWeb.FaqComponent do
               />
             <% end %>
 
-            <.cities_in_federal_state federal_state={@federal_state} conn={@conn} country={@country} />
+            <%= unless @is_school_page do %>
+              <.cities_in_federal_state
+                federal_state={@federal_state}
+                conn={@conn}
+                country={@country}
+              />
+            <% end %>
 
             <%= for question <- @faq_data.yearly_periods_questions do %>
               <.faq_question question={question} />
             <% end %>
-            <!-- Public Holidays Section -->
-            <.section_header title="Feiertage" />
 
-            <%= for question <- @faq_data.holiday_questions do %>
-              <.faq_question question={question} />
+            <%= unless @is_school_page do %>
+              <!-- Public Holidays Section -->
+              <.section_header title="Feiertage" />
+
+              <%= for question <- @faq_data.holiday_questions do %>
+                <.faq_question question={question} />
+              <% end %>
+
+              <.faq_question question={@faq_data.next_holiday_question} />
             <% end %>
-
-            <.faq_question question={@faq_data.next_holiday_question} />
           </dl>
         </div>
       </div>
     </div>
 
-    <.schema_org_faq faq_data={@faq_data} />
+    <.schema_org_faq faq_data={@faq_data} is_school_page={@is_school_page} />
     """
+  end
+
+  # Helper function to determine the correct preposition for a location name
+  defp location_preposition(location, is_school_page) do
+    if is_school_page do
+      location_name = location.name
+      downcased_name = String.downcase(location_name)
+
+      cond do
+        String.ends_with?(downcased_name, "schule") -> "in der"
+        String.ends_with?(downcased_name, "gymnasium") -> "im"
+        true -> "in"
+      end
+    else
+      "in"
+    end
   end
 
   # Helper function to prepare all data needed for FAQ rendering
   defp prepare_faq_data(assigns) do
     location = assigns.location
+    is_school_page = Map.has_key?(assigns, :school) && assigns.school != nil
+    location_prep = location_preposition(location, is_school_page)
 
     # Sort all periods by start date
     sorted_periods =
@@ -133,7 +168,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
     # Generate answers for each day's school free status
     school_free_questions =
       Enum.map(day_data, fn %{label: label, date: date, school_periods: periods} ->
-        question = "#{label_to_question(label)} schulfrei in #{location.name}?"
+        question = "#{label_to_question(label)} schulfrei #{location_prep} #{location.name}?"
         answer = FaqViewHelpers.is_off_school_answer(periods, date, location)
 
         %{
@@ -148,7 +183,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
     # Generate answers for each day's holiday status
     holiday_questions =
       Enum.map(day_data, fn %{label: label, date: date, holiday_periods: periods} ->
-        question = "#{label_to_question(label)} ein Feiertag in #{location.name}?"
+        question = "#{label_to_question(label)} ein Feiertag #{location_prep} #{location.name}?"
         answer = FaqViewHelpers.is_public_holiday_answer(periods, date, location)
 
         %{
@@ -165,7 +200,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
       Enum.map(grouped_periods, fn periods ->
         first_period = Enum.at(periods, 0)
         year = first_period.starts_on.year
-        title = "Schulfrei #{location.name} #{year}"
+        title = "Schulfrei #{location_prep} #{location.name} #{year}"
         answer = format_periods_answer(periods)
 
         %{
@@ -181,13 +216,13 @@ defmodule MehrSchulferienWeb.FaqComponent do
       FaqViewHelpers.next_school_vacation_answer(location, assigns.school_periods, assigns.today)
 
     next_vacation_question = %{
-      title: "Wann sind die nächsten Schulferien in #{location.name}?",
+      title: "Wann sind die nächsten Schulferien #{location_prep} #{location.name}?",
       answer: next_vacation_answer
     }
 
     # General schulferien question
     schulferien_question = %{
-      title: "Schulferien #{location.name}?",
+      title: "Schulferien #{location_prep} #{location.name}?",
       answer: format_periods_answer(next_schulferien_periods)
     }
 
@@ -198,7 +233,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
       FaqViewHelpers.next_public_holiday_answer(location, public_holiday_periods, assigns.today)
 
     next_holiday_question = %{
-      title: "Wann ist der nächste Feiertag in #{location.name}?",
+      title: "Wann ist der nächste Feiertag #{location_prep} #{location.name}?",
       answer: next_holiday_answer,
       filtered_periods: public_holiday_periods
     }
@@ -277,14 +312,14 @@ defmodule MehrSchulferienWeb.FaqComponent do
       <dd class="mt-2 text-sm text-gray-600">
         <%= if length(@sorted_schools) == 1 do %>
           <%= link(hd(@sorted_schools).name,
-            to: Routes.old_school_path(@conn, :show, @country.slug, hd(@sorted_schools).slug),
+            to: Routes.school_path(@conn, :show, @country.slug, hd(@sorted_schools).slug),
             class: "text-blue-600 hover:text-blue-500"
           ) %>
         <% else %>
           <% {schools_except_last, [last_school]} = Enum.split(@sorted_schools, -1) %>
           <%= for {school, index} <- Enum.with_index(schools_except_last) do %>
             <%= link(school.name,
-              to: Routes.old_school_path(@conn, :show, @country.slug, school.slug),
+              to: Routes.school_path(@conn, :show, @country.slug, school.slug),
               class: "text-blue-600 hover:text-blue-500"
             ) %><%= if index < length(schools_except_last) - 1, do: ", ", else: "" %>
           <% end %>
@@ -292,7 +327,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
             und
           <% end %>
           <%= link(last_school.name,
-            to: Routes.old_school_path(@conn, :show, @country.slug, last_school.slug),
+            to: Routes.school_path(@conn, :show, @country.slug, last_school.slug),
             class: "text-blue-600 hover:text-blue-500"
           ) %>
         <% end %>
@@ -328,15 +363,29 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
   # Schema.org FAQ page component
   attr :faq_data, :map, required: true
+  attr :is_school_page, :boolean, required: true
 
   def schema_org_faq(assigns) do
+    # Filter out holiday questions if location is a school
+    filtered_questions =
+      if assigns.is_school_page do
+        Enum.reject(assigns.faq_data.all_questions, fn question ->
+          Enum.member?(assigns.faq_data.holiday_questions, question) ||
+            question == assigns.faq_data.next_holiday_question
+        end)
+      else
+        assigns.faq_data.all_questions
+      end
+
+    assigns = assign(assigns, :filtered_questions, filtered_questions)
+
     ~H"""
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
-          <%= for {question, index} <- Enum.with_index(@faq_data.all_questions) do %>
+          <%= for {question, index} <- Enum.with_index(@filtered_questions) do %>
             {
               "@type": "Question",
               "name": "<%= question.title %>",
@@ -344,7 +393,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
                 "@type": "Answer",
                 "text": "<%= question.answer %>"
               }
-            }<%= if index < length(@faq_data.all_questions) - 1, do: ",", else: "" %>
+            }<%= if index < length(@filtered_questions) - 1, do: ",", else: "" %>
           <% end %>
         ]
       }
