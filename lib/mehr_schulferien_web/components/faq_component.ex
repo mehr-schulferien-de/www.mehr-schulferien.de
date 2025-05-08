@@ -32,7 +32,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
   def faq(assigns) do
     # Process all FAQ data once
     faq_data = prepare_faq_data(assigns)
-    
+
     # Merge data into assigns for rendering
     assigns =
       assigns
@@ -56,7 +56,13 @@ defmodule MehrSchulferienWeb.FaqComponent do
             <% end %>
 
             <%= if @city && length(@schools) > 0 do %>
-              <.schools_in_city city={@city} schools={@schools} conn={@conn} country={@country} schools_question={@faq_data.schools_question} />
+              <.schools_in_city
+                city={@city}
+                schools={@schools}
+                conn={@conn}
+                country={@country}
+                schools_question={@faq_data.schools_question}
+              />
             <% end %>
 
             <.cities_in_federal_state federal_state={@federal_state} conn={@conn} country={@country} />
@@ -64,7 +70,6 @@ defmodule MehrSchulferienWeb.FaqComponent do
             <%= for question <- @faq_data.yearly_periods_questions do %>
               <.faq_question question={question} />
             <% end %>
-            
             <!-- Public Holidays Section -->
             <.section_header title="Feiertage" />
 
@@ -85,7 +90,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
   # Helper function to prepare all data needed for FAQ rendering
   defp prepare_faq_data(assigns) do
     location = assigns.location
-    
+
     # Sort all periods by start date
     sorted_periods =
       Enum.sort(
@@ -99,65 +104,82 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
     # Build school free questions for each day
     day_data = [
-      %{label: "gestern", date: assigns.yesterday, 
+      %{
+        label: "gestern",
+        date: assigns.yesterday,
         school_periods: assigns.yesterdays_school_free_periods,
-        holiday_periods: assigns.yesterdays_public_holiday_periods},
-      %{label: "heute", date: assigns.today, 
+        holiday_periods: assigns.yesterdays_public_holiday_periods
+      },
+      %{
+        label: "heute",
+        date: assigns.today,
         school_periods: assigns.todays_school_free_periods,
-        holiday_periods: assigns.todays_public_holiday_periods},
-      %{label: "morgen", date: assigns.tomorrow, 
+        holiday_periods: assigns.todays_public_holiday_periods
+      },
+      %{
+        label: "morgen",
+        date: assigns.tomorrow,
         school_periods: assigns.tomorrows_school_free_periods,
-        holiday_periods: assigns.tomorrows_public_holiday_periods},
-      %{label: "übermorgen", date: assigns.day_after_tomorrow, 
+        holiday_periods: assigns.tomorrows_public_holiday_periods
+      },
+      %{
+        label: "übermorgen",
+        date: assigns.day_after_tomorrow,
         school_periods: assigns.day_after_tomorrows_school_free_periods,
-        holiday_periods: assigns.day_after_tomorrows_public_holiday_periods}
+        holiday_periods: assigns.day_after_tomorrows_public_holiday_periods
+      }
     ]
 
     # Generate answers for each day's school free status
-    school_free_questions = Enum.map(day_data, fn %{label: label, date: date, school_periods: periods} ->
-      question = "#{label_to_question(label)} schulfrei in #{location.name}?"
-      answer = FaqViewHelpers.is_off_school_answer(periods, date, location)
-      
-      %{
-        title: question,
-        answer: answer,
-        day_label: label,
-        day_date: date,
-        periods: periods
-      }
-    end)
+    school_free_questions =
+      Enum.map(day_data, fn %{label: label, date: date, school_periods: periods} ->
+        question = "#{label_to_question(label)} schulfrei in #{location.name}?"
+        answer = FaqViewHelpers.is_off_school_answer(periods, date, location)
+
+        %{
+          title: question,
+          answer: answer,
+          day_label: label,
+          day_date: date,
+          periods: periods
+        }
+      end)
 
     # Generate answers for each day's holiday status
-    holiday_questions = Enum.map(day_data, fn %{label: label, date: date, holiday_periods: periods} ->
-      question = "#{label_to_question(label)} ein Feiertag in #{location.name}?"
-      answer = FaqViewHelpers.is_public_holiday_answer(periods, date, location)
-      
-      %{
-        title: question,
-        answer: answer,
-        day_label: label,
-        day_date: date,
-        periods: periods
-      }
-    end)
+    holiday_questions =
+      Enum.map(day_data, fn %{label: label, date: date, holiday_periods: periods} ->
+        question = "#{label_to_question(label)} ein Feiertag in #{location.name}?"
+        answer = FaqViewHelpers.is_public_holiday_answer(periods, date, location)
+
+        %{
+          title: question,
+          answer: answer,
+          day_label: label,
+          day_date: date,
+          periods: periods
+        }
+      end)
 
     # Generate yearly periods questions
-    yearly_periods_questions = Enum.map(grouped_periods, fn periods ->
-      first_period = Enum.at(periods, 0)
-      year = first_period.starts_on.year
-      title = "Schulfrei #{location.name} #{year}"
-      answer = format_periods_answer(periods)
-      
-      %{
-        title: title,
-        answer: answer,
-        year: year,
-        periods: periods
-      }
-    end)
+    yearly_periods_questions =
+      Enum.map(grouped_periods, fn periods ->
+        first_period = Enum.at(periods, 0)
+        year = first_period.starts_on.year
+        title = "Schulfrei #{location.name} #{year}"
+        answer = format_periods_answer(periods)
+
+        %{
+          title: title,
+          answer: answer,
+          year: year,
+          periods: periods
+        }
+      end)
 
     # Generate next vacation question
-    next_vacation_answer = FaqViewHelpers.next_school_vacation_answer(location, assigns.school_periods, assigns.today)
+    next_vacation_answer =
+      FaqViewHelpers.next_school_vacation_answer(location, assigns.school_periods, assigns.today)
+
     next_vacation_question = %{
       title: "Wann sind die nächsten Schulferien in #{location.name}?",
       answer: next_vacation_answer
@@ -171,7 +193,10 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
     # Next holiday question
     public_holiday_periods = Enum.filter(assigns.public_periods, & &1.is_public_holiday)
-    next_holiday_answer = FaqViewHelpers.next_public_holiday_answer(location, public_holiday_periods, assigns.today)
+
+    next_holiday_answer =
+      FaqViewHelpers.next_public_holiday_answer(location, public_holiday_periods, assigns.today)
+
     next_holiday_question = %{
       title: "Wann ist der nächste Feiertag in #{location.name}?",
       answer: next_holiday_answer,
@@ -179,25 +204,27 @@ defmodule MehrSchulferienWeb.FaqComponent do
     }
 
     # Schools in city question (if applicable)
-    schools_question = if assigns.city && length(assigns.schools) > 0 do
-      schools_answer = Enum.map_join(assigns.schools, ", ", fn school -> school.name end)
-      %{
-        title: "Welche Schulen gibt es in #{assigns.city.name}?",
-        answer: schools_answer
-      }
-    else
-      nil
-    end
+    schools_question =
+      if assigns.city && length(assigns.schools) > 0 do
+        schools_answer = Enum.map_join(assigns.schools, ", ", fn school -> school.name end)
+
+        %{
+          title: "Welche Schulen gibt es in #{assigns.city.name}?",
+          answer: schools_answer
+        }
+      else
+        nil
+      end
 
     # Collect all questions for schema.org
-    all_questions = 
+    all_questions =
       [next_vacation_question] ++
-      school_free_questions ++
-      (if schools_question, do: [schools_question], else: []) ++
-      [schulferien_question] ++
-      yearly_periods_questions ++
-      holiday_questions ++
-      [next_holiday_question]
+        school_free_questions ++
+        if(schools_question, do: [schools_question], else: []) ++
+        [schulferien_question] ++
+        yearly_periods_questions ++
+        holiday_questions ++
+        [next_holiday_question]
 
     # Return complete FAQ data structure
     %{
@@ -241,7 +268,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
   defp schools_in_city(assigns) do
     sorted_schools = Enum.sort_by(assigns.schools, & &1.name)
     assigns = assign(assigns, :sorted_schools, sorted_schools)
-    
+
     ~H"""
     <div>
       <dt class="text-base font-semibold text-gray-900">
@@ -282,8 +309,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
       </dt>
       <dd class="mt-2 text-sm text-gray-600">
         <%= link("Liste der Landkreise und Städte in #{@federal_state.name}.",
-          to:
-            Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug),
+          to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug),
           class: "font-semibold text-blue-600 hover:text-blue-500"
         ) %>
       </dd>

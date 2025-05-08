@@ -187,4 +187,38 @@ defmodule MehrSchulferien.Periods.Query do
 
     Repo.all(query)
   end
+
+  @doc """
+  Returns a list of all distinct years that have periods in the database.
+  This is used for generating robots.txt rules dynamically.
+  """
+  def list_years_with_periods do
+    # Get all years from starts_on
+    start_years_query =
+      from p in Period,
+        select: fragment("EXTRACT(YEAR FROM ?) AS year", p.starts_on),
+        distinct: true
+
+    # Get all years from ends_on
+    end_years_query =
+      from p in Period,
+        select: fragment("EXTRACT(YEAR FROM ?) AS year", p.ends_on),
+        distinct: true
+
+    # Combine both queries
+    start_years = Repo.all(start_years_query)
+    end_years = Repo.all(end_years_query)
+
+    # Combine both lists, remove duplicates, and convert to integers
+    (start_years ++ end_years)
+    |> Enum.uniq()
+    |> Enum.map(fn year ->
+      case year do
+        %Decimal{} -> Decimal.to_integer(year)
+        _ when is_number(year) -> trunc(year)
+        _ -> raise "Unexpected type for year: #{inspect(year)}"
+      end
+    end)
+    |> Enum.sort()
+  end
 end

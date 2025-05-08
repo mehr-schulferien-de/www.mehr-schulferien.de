@@ -122,6 +122,7 @@ defmodule MehrSchulferien.Periods do
   defdelegate list_school_free_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_school_free_periods_for_countries(countries, starts_on, ends_on), to: Query
   defdelegate list_school_free_periods_with_preload(location_ids, starts_on, ends_on), to: Query
+  defdelegate list_years_with_periods(), to: Query
 
   #
   # Period filtering and finding by date - delegated to DateOperations module

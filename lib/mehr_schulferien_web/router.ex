@@ -24,6 +24,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/impressum", PageController, :impressum
 
     get "/sitemap.xml", SitemapController, :index
+    get "/robots.txt", RobotsController, :index
 
     # School vacations
     get "/ferien/land/:country_slug", CountryController, :show
