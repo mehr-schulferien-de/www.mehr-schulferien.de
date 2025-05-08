@@ -78,14 +78,19 @@ defmodule MehrSchulferienWeb.RobotsController do
     Disallow: /password_resets
     Disallow: /admin
 
-    # Allow only current year (#{current_year}) and next year (#{next_year}) for city pages
+    # Allow only current year (#{current_year}) and next year (#{next_year}) for city and school pages
     """
 
     # Generate Disallow rules for all years except current and next
     disallow_rules =
       all_years
       |> Enum.filter(fn year -> year != current_year && year != next_year end)
-      |> Enum.map(fn year -> "Disallow: /ferien/*/stadt/*/#{year}$" end)
+      |> Enum.flat_map(fn year ->
+        [
+          "Disallow: /ferien/*/stadt/*/#{year}$",
+          "Disallow: /ferien/*/schule/*/#{year}$"
+        ]
+      end)
       |> Enum.join("\n")
 
     # Combine base content with disallow rules
