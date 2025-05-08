@@ -42,18 +42,19 @@ defmodule MehrSchulferien.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.24"},
-      {:jason, "~> 1.2"},
+      {:jason, "~> 1.4.0"},
       {:plug_cowboy, "~> 2.6"},
       {:ex_machina, "~> 2.7.0", only: :test},
       {:faker, "~> 0.17", only: :test},
-      {:timex, "~> 3.7"},
+      {:timex, "~> 3.7.11"},
       {:ex_ical, "~> 0.2.0"},
       {:sitemap, "~> 1.0"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:ecto_autoslug_field, "~> 3.0"},
-      {:icalendar, "~> 1.1"},
+      {:icalendar, "~> 1.1.0"},
       {:slugger, "~> 0.3"},
-      {:tidewave, "~> 0.1.2"}
+      {:req, "~> 0.5.10"},
+      {:tidewave, "~> 0.1.5"}
     ]
   end
 
