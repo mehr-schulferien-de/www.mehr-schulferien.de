@@ -85,7 +85,6 @@ defmodule MehrSchulferienWeb.FaqComponent do
   # Helper function to prepare all data needed for FAQ rendering
   defp prepare_faq_data(assigns) do
     location = assigns.location
-    federal_state = assigns.federal_state
     
     # Sort all periods by start date
     sorted_periods =
@@ -158,9 +157,9 @@ defmodule MehrSchulferienWeb.FaqComponent do
     end)
 
     # Generate next vacation question
-    next_vacation_answer = FaqViewHelpers.next_school_vacation_answer(location, assigns.school_periods)
+    next_vacation_answer = FaqViewHelpers.next_school_vacation_answer(location, assigns.school_periods, assigns.today)
     next_vacation_question = %{
-      title: "Wann sind die nächsten Schulferien in #{federal_state.name}?",
+      title: "Wann sind die nächsten Schulferien in #{location.name}?",
       answer: next_vacation_answer
     }
 
@@ -172,7 +171,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
     # Next holiday question
     public_holiday_periods = Enum.filter(assigns.public_periods, & &1.is_public_holiday)
-    next_holiday_answer = FaqViewHelpers.next_public_holiday_answer(location, public_holiday_periods)
+    next_holiday_answer = FaqViewHelpers.next_public_holiday_answer(location, public_holiday_periods, assigns.today)
     next_holiday_question = %{
       title: "Wann ist der nächste Feiertag in #{location.name}?",
       answer: next_holiday_answer,

@@ -90,12 +90,12 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   @doc """
   An humanized answer for the next school vacations.
   """
-  def next_school_vacation_answer(location, periods) do
-    [period] = Periods.next_periods(periods, 1)
+  def next_school_vacation_answer(location, periods, today \\ DateHelpers.today_berlin()) do
+    [period] = Periods.next_periods(periods, today, 1)
 
-    if Date.diff(period.starts_on, DateHelpers.today_berlin()) > 0 do
+    if Date.diff(period.starts_on, today) > 0 do
       distance_in_words =
-        day_distance_in_words(Date.diff(period.starts_on, DateHelpers.today_berlin()))
+        day_distance_in_words(Date.diff(period.starts_on, today))
 
       "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{location.name}:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
@@ -112,10 +112,10 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   @doc """
   An humanized answer for the next public holiday date.
   """
-  def next_public_holiday_answer(location, public_periods) do
-    [period] = Periods.next_periods(public_periods, 1)
+  def next_public_holiday_answer(location, public_periods, today \\ DateHelpers.today_berlin()) do
+    [period] = Periods.next_periods(public_periods, today, 1)
 
-    case Date.diff(period.starts_on, DateHelpers.today_berlin()) do
+    case Date.diff(period.starts_on, today) do
       1 ->
         "Morgen ist #{period.holiday_or_vacation_type.colloquial} in #{location.name}."
 
@@ -127,8 +127,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   @doc """
   ist is the German word for is. Depending on present or past it becomes war.
   """
-  def ist_in_time(date) do
-    if Date.diff(date, DateHelpers.today_berlin()) < 0 do
+  def ist_in_time(date, today \\ DateHelpers.today_berlin()) do
+    if Date.diff(date, today) < 0 do
       "war"
     else
       "ist"
@@ -143,8 +143,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   morgen: tomorrow
   übermorgen: the day after tomorrow
   """
-  def humanized_date(date) do
-    case Date.diff(date, DateHelpers.today_berlin()) do
+  def humanized_date(date, today \\ DateHelpers.today_berlin()) do
+    case Date.diff(date, today) do
       -2 -> "vorgestern (#{ViewHelpers.weekday(date)}, der #{ViewHelpers.format_date(date)})"
       -1 -> "gestern (#{ViewHelpers.weekday(date)}, der #{ViewHelpers.format_date(date)})"
       0 -> "heute (#{ViewHelpers.weekday(date)}, der #{ViewHelpers.format_date(date)})"
