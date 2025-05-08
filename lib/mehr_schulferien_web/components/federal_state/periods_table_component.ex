@@ -35,7 +35,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
               Date.compare(@today, period.starts_on) != :lt &&
                 Date.compare(@today, period.ends_on) != :gt %>
             <% is_past =
-              @today.year == period.ends_on.year && Date.compare(@today, period.ends_on) == :gt %>
+              Date.compare(@today, period.ends_on) == :gt && period.starts_on.year == @today.year %>
             <tr
               class={"hover:bg-gray-50 cursor-pointer #{if is_current, do: "bg-yellow-100"} #{if is_past, do: "text-gray-400"}"}
               onclick={"window.location.href='#month-#{period.starts_on.month}'"}
