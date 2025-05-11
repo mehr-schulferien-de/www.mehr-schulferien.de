@@ -3,4 +3,4 @@ description:
 globs: 
 alwaysApply: true
 ---
-After each code change run `mix test` and fix all the occoring problems. Repeat this process until all tests are green.
+When done run `mix test`, fix occoring problems and rerun `mix test` until all the tests are green.

@@ -36,7 +36,7 @@
       <tbody>
       <%= for periods <- grouped_periods do %>
         <% period = Enum.at(periods, 0) %>
-        <tr class="<%= if period.html_class in ["warning", "danger"], do: period.html_class %>">
+        <tr class={if period.html_class in ["warning", "danger"], do: period.html_class}>
           <td>
             <%= period.holiday_or_vacation_type.colloquial %> <%= period.starts_on.year %>
           </td>
@@ -191,7 +191,7 @@
   }
   ]
 }
-  </script>
+</script>
 
 
 <%= for period <- @periods do %>
@@ -218,4 +218,4 @@
       }
     }
   </script>
-<% end %>
+<% end %> 
