@@ -54,7 +54,7 @@ defmodule MehrSchulferien.MixProject do
       {:icalendar, "~> 1.1.0"},
       {:slugger, "~> 0.3"},
       {:req, "~> 0.5.10"},
-      {:tidewave, "~> 0.1.5"}
+      {:tidewave, "~> 0.1.6"}
     ]
   end
 
