@@ -53,6 +53,86 @@
     <% end %>
   </p>
 
+  <%
+    # Prepare the JSON-LD data for all bridge days
+    json_ld_bridge_days = Enum.flat_map(2..5, fn num ->
+      if @bridge_day_map[num] do
+        Enum.map(@bridge_day_map[num] || [], fn bridge_day ->
+          # Calculate related data
+          all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day)
+          max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(all_periods)
+          efficiency_percentage = round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
+          
+          # Find related holiday
+          window_start = Date.add(bridge_day.starts_on, -5)
+          window_end = Date.add(bridge_day.ends_on, 5)
+          
+          relevant_periods = Enum.filter(@public_periods, fn period ->
+            Date.compare(period.ends_on, window_start) != :lt &&
+            Date.compare(period.starts_on, window_end) != :gt &&
+            period.is_public_holiday
+          end)
+          
+          holiday_before = Enum.find(relevant_periods, fn period -> 
+            Date.compare(period.ends_on, bridge_day.starts_on) == :lt && 
+            Date.diff(bridge_day.starts_on, period.ends_on) <= 3
+          end)
+          
+          holiday_after = Enum.find(relevant_periods, fn period -> 
+            Date.compare(period.starts_on, bridge_day.ends_on) == :gt && 
+            Date.diff(period.starts_on, bridge_day.ends_on) <= 3
+          end)
+          
+          related_holiday = holiday_before || holiday_after
+          
+          # Safely get the holiday name from the holiday_or_vacation_type
+          holiday_name = if related_holiday && related_holiday.holiday_or_vacation_type, 
+            do: related_holiday.holiday_or_vacation_type.name, 
+            else: nil
+          
+          # Format Event data
+          month_header = MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on)
+          event_name = month_header <> " " <> Integer.to_string(@year)
+          
+          %{
+            "@type" => "Event",
+            "name" => event_name,
+            "description" => "Brückentag in #{@federal_state.name}: Mit #{bridge_day.number_days} Urlaubstag(en) #{max_days} Tage frei (#{efficiency_percentage}% mehr)#{if holiday_name, do: " - Verbunden mit #{holiday_name}", else: ""}",
+            "startDate" => Date.to_iso8601(bridge_day.starts_on),
+            "endDate" => Date.to_iso8601(bridge_day.ends_on),
+            "eventStatus" => "https://schema.org/EventScheduled",
+            "location" => %{
+              "@type" => "Place",
+              "name" => @federal_state.name,
+              "address" => %{
+                "@type" => "PostalAddress",
+                "addressRegion" => @federal_state.name,
+                "addressCountry" => @country.name
+              }
+            },
+            "organizer" => %{
+              "@type" => "Organization",
+              "name" => "MehrSchulferien.de",
+              "url" => Routes.page_url(@conn, :new)
+            }
+          }
+        end)
+      else
+        []
+      end
+    end)
+  %>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": <%= Jason.encode!(Enum.with_index(json_ld_bridge_days, 1) |> Enum.map(fn {event, position} -> 
+      Map.merge(%{"@type" => "ListItem", "position" => position}, %{"item" => event}) 
+    end)) %>
+  }
+  </script>
+
   <%= for num <- 2..5 do %>
     <%= if @bridge_day_map[num] && Enum.count(@bridge_day_map[num]) > 0 do %>
       <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">
@@ -97,8 +177,8 @@
             efficiency_percentage = round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
           %>
           
-          <section class="bg-white rounded shadow p-6 h-full" itemscope itemtype="https://schema.org/Event">
-            <h3 class="text-xl font-semibold mb-4" itemprop="name">
+          <section class="bg-white rounded shadow p-6 h-full">
+            <h3 class="text-xl font-semibold mb-4">
               <%= MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on) %> 
               <span class="text-gray-500"><%= @year %></span>
             </h3>
@@ -111,9 +191,6 @@
               total_free_days: max_days,
               efficiency_percentage: efficiency_percentage
             }) %>
-            
-            <meta itemprop="startDate" content="<%= bridge_day.starts_on %>">
-            <meta itemprop="endDate" content="<%= bridge_day.ends_on %>">
           </section>
         <% end %>
       </div>
