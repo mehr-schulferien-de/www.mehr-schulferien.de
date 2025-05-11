@@ -42,4 +42,8 @@ defmodule MehrSchulferienWeb.BridgeDayView do
       acc + Date.diff(period.ends_on, period.starts_on) + 1
     end)
   end
+  
+  def get_reference_date(conn) do
+    DateHelpers.get_today_or_custom_date(conn)
+  end
 end

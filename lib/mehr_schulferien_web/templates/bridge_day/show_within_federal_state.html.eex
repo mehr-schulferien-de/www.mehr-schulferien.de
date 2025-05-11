@@ -1,0 +1,188 @@
+<%
+  alias MehrSchulferien.Calendars.DateHelpers
+  reference_date = MehrSchulferienWeb.BridgeDayView.get_reference_date(@conn)
+%>
+
+<div class="mt-4 sm:mt-8">
+  <nav class="text-gray-500 text-sm mb-4">
+    <%= link "Start", to: Routes.page_path(@conn, :new), class: "hover:text-blue-600" %> &gt;
+    <%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug), class: "hover:text-blue-600" %> &gt;
+    <%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "hover:text-blue-600" %> &gt; 
+    <%= link "Brückentage", to: Routes.bridge_day_path(@conn, :index_within_federal_state, @country.slug, @federal_state.slug), class: "hover:text-blue-600" %> &gt;
+    <span class="text-gray-700 font-medium"><%= @year %></span>
+  </nav>
+
+  <% # Dynamic Teaser Calculation %>
+  <% all_bridge_days = Enum.flat_map(@bridge_day_map, fn {_k, v} -> v || [] end) %>
+  <% min_leave = Enum.map(all_bridge_days, & &1.number_days) |> Enum.sum() %>
+  <% max_free = Enum.map(all_bridge_days, fn bd ->
+    periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bd)
+    MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods)
+  end) |> Enum.sum() %>
+
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Brückentage <%= @year %> in <%= @federal_state.name %></h1>
+      <h2 class="text-xl text-gray-700">
+        Die <%= @bridge_day_proposal_count %> besten Tipps für <%= if min_leave > 0 and max_free > 0 do %><%= round((max_free - min_leave) / min_leave * 100) %>%<% end %> mehr Urlaub.
+      </h2>
+    </div>
+    <div class="hidden sm:block">
+      <%= if flag_src = MehrSchulferien.Locations.Flag.get_flag(@federal_state.code) do %>
+        <img class="rounded shadow-sm" src="<%= flag_src %>" width="64" height="38" alt="Landesflage <%= @federal_state.name %>">
+      <% end %>
+    </div>
+  </div>
+
+  <%= if min_leave > 0 and max_free > 0 do %>
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r">
+      <p class="text-lg">
+        Mit nur <span class="font-semibold"><%= min_leave %></span> eingereichten Urlaubstagen können Sie <span class="font-semibold"><%= max_free %> Tage Urlaub</span> machen!
+      </p>
+    </div>
+  <% end %>
+
+  <% # Year Links as Natural Sentence %>
+  <% current_year = @year %>
+  <% years = Enum.filter([current_year, current_year + 1, current_year + 2], fn y ->
+    MehrSchulferienWeb.BridgeDayController.has_bridge_days?([@country.id, @federal_state.id], y)
+  end) %>
+  <% future_years = Enum.filter(years, &(&1 > current_year)) %>
+
+  <% # Optional: Short intro text %>
+  <p class="text-gray-700 mb-8">
+    Unser Spezial-Algorithmus findet nicht nur die klassischen Brückentage (z. B. ein Freitag zwischen Feiertag und Wochenende), sondern auch besondere Konstellationen, bei denen Sie mit cleverer Planung noch mehr freie Tage herausholen können.
+    <%= if Enum.any?(future_years) do %>
+      Entdecken Sie jetzt die besten Tipps für Ihre Urlaubsplanung <%= @year %> – und werfen Sie auch einen Blick auf
+      <%= for {year, idx} <- Enum.with_index(future_years) do %>
+        <%= if idx > 0, do: if(idx == length(future_years) - 1, do: " und ", else: ", ") %>
+        <%= link "Brückentage #{year}#{if idx == length(future_years) - 1, do: ".", else: ""}", to: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year), class: "text-blue-600 hover:underline" %>
+      <% end %>
+    <% end %>
+  </p>
+
+  <%= for num <- 2..5 do %>
+    <%= if @bridge_day_map[num] && Enum.count(@bridge_day_map[num]) > 0 do %>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">
+        <%= if num == 2 do %>
+          <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Normale<% else %>Normaler<% end %>
+        <% else %>
+          <%= num - 1 %>er
+        <% end %>
+        <%= if Enum.count(@bridge_day_map[num]) > 1 do %>Brückentage<% else %>Brückentag<% end %>
+      </h2>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <%= for bridge_day <- @bridge_day_map[num] do %>
+          <% 
+            all_periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day)
+            
+            # Get related periods to find the public holiday
+            window_start = Date.add(bridge_day.starts_on, -5)
+            window_end = Date.add(bridge_day.ends_on, 5)
+            
+            relevant_periods = Enum.filter(@public_periods, fn period ->
+              Date.compare(period.ends_on, window_start) != :lt &&
+              Date.compare(period.starts_on, window_end) != :gt &&
+              period.is_public_holiday
+            end)
+            
+            # Find the public holiday that creates this bridge day
+            holiday_before = Enum.find(relevant_periods, fn period -> 
+              Date.compare(period.ends_on, bridge_day.starts_on) == :lt && 
+              Date.diff(bridge_day.starts_on, period.ends_on) <= 3
+            end)
+            
+            holiday_after = Enum.find(relevant_periods, fn period -> 
+              Date.compare(period.starts_on, bridge_day.ends_on) == :gt && 
+              Date.diff(period.starts_on, bridge_day.ends_on) <= 3
+            end)
+            
+            related_holiday = holiday_before || holiday_after
+            related_periods = if related_holiday, do: [related_holiday], else: []
+            
+            max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(all_periods)
+            efficiency_percentage = round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
+          %>
+          
+          <section class="bg-white rounded shadow p-6 h-full" itemscope itemtype="https://schema.org/Event">
+            <h3 class="text-xl font-semibold mb-4" itemprop="name">
+              <%= MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on) %> 
+              <span class="text-gray-500"><%= @year %></span>
+            </h3>
+            
+            <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+              bridge_day: bridge_day,
+              periods: related_periods,
+              reference_date: reference_date,
+              vacation_days: bridge_day.number_days,
+              total_free_days: max_days,
+              efficiency_percentage: efficiency_percentage
+            }) %>
+            
+            <meta itemprop="startDate" content="<%= bridge_day.starts_on %>">
+            <meta itemprop="endDate" content="<%= bridge_day.ends_on %>">
+          </section>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= if @bridge_day_map[2] && Enum.count(@bridge_day_map[2]) > 0 do %>
+    <div class="mt-12 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Brückentag-FAQ</h2>
+      
+      <div class="bg-white rounded shadow p-6">
+        <dl class="divide-y divide-gray-200">
+          <div class="py-4">
+            <dt class="text-lg font-medium text-gray-800">Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?</dt>
+            <dd class="mt-2 text-gray-700">
+              In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage" %>.
+              Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>.
+            </dd>
+          </div>
+          
+          <div class="py-4">
+            <dt class="text-lg font-medium text-gray-800">Was ist der beste Brückentag <%= @year %> in <%= @federal_state.name %>?</dt>
+            <dd class="mt-2 text-gray-700">
+              <% best_bridge_day = Enum.flat_map(@bridge_day_map, fn {_k, v} -> v || [] end)
+                |> Enum.max_by(fn bd ->
+                  periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bd)
+                  max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods)
+                  round((max_days - bd.number_days) / bd.number_days * 100)
+                end) %>
+              <% periods = MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, best_bridge_day) %>
+              <% max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods) %>
+              <% percentage = round((max_days - best_bridge_day.number_days) / best_bridge_day.number_days * 100) %>
+              Der beste Brückentag ist <%= ViewHelpers.format_date_range(best_bridge_day.starts_on, best_bridge_day.ends_on) %>. Mit nur <%= best_bridge_day.number_days %> Urlaubstag(en) können Sie <%= max_days %> Tage frei machen - das sind <%= percentage %>% mehr Urlaub!
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage" %>. Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "überlangen Brückentag", else: "überlange Brückentage" %>."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Was ist der beste Brückentag <%= @year %> in <%= @federal_state.name %>?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Der beste Brückentag ist <%= ViewHelpers.format_date_range(best_bridge_day.starts_on, best_bridge_day.ends_on) %>. Mit nur <%= best_bridge_day.number_days %> Urlaubstag(en) können Sie <%= max_days %> Tage frei machen - das sind <%= percentage %>% mehr Urlaub!"
+        }
+      }
+      ]
+    }
+    </script>
+  <% end %>
+</div> 

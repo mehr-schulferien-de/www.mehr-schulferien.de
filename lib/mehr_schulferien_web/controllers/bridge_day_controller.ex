@@ -39,7 +39,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         [country: country, federal_state: federal_state, year: year] ++
           list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
 
-      render(conn, "show_within_federal_state.html", assigns)
+      render(conn, "show_within_federal_state.html", assigns ++ [css_framework: :tailwind_new])
     else
       # No bridge days for this year
       false ->

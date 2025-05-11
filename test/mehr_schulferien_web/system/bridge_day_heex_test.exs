@@ -36,22 +36,22 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
       assert html_response(conn, 200) =~ "Die "
       assert html_response(conn, 200) =~ "besten Tipps für"
 
-      # Check breadcrumbs
-      assert html_response(conn, 200) =~ ~s(<ol class="breadcrumb hidden-xs">)
-      assert html_response(conn, 200) =~ ~s(<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">)
+      # Check navigation breadcrumbs
+      assert html_response(conn, 200) =~ ~s(nav class="text-gray-500 text-sm mb-4")
+      assert html_response(conn, 200) =~ ~s(class="hover:text-blue-600")
       
       # Check flag image is properly formatted with HEEx syntax
       if code = federal_state.code do
         if MehrSchulferien.Locations.Flag.get_flag(code) do
           html = html_response(conn, 200)
-          assert html =~ ~s(class="img-thumbnail")
+          assert html =~ ~s(class="rounded shadow-sm")
           # Test for the complete alt attribute which confirms HEEx conversion
           assert html =~ ~s(alt="Landesflage #{federal_state.name}")
         end
       end
       
-      # Test the lead paragraph
-      assert html_response(conn, 200) =~ ~s(<p class="lead">)
+      # Test the intro paragraph
+      assert html_response(conn, 200) =~ ~s(<p class="text-gray-700 mb-8">)
       assert html_response(conn, 200) =~ "Unser Spezial-Algorithmus findet"
       
       # Verify bridge day sections are rendered
@@ -79,8 +79,8 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
       
       # Check for FAQ content
       if html =~ "Brückentag-FAQ" do
-        assert html =~ ~s(<dt class="col-sm-5">Wie viele Brückentage)
-        assert html =~ ~s(<dd class="col-sm-7">)
+        assert html =~ ~s(<dt class="text-lg font-medium text-gray-800">Wie viele Brückentage)
+        assert html =~ ~s(<dd class="mt-2 text-gray-700">)
         
         # Check for Schema.org JSON-LD
         assert html =~ ~s(<script type="application/ld+json">)
