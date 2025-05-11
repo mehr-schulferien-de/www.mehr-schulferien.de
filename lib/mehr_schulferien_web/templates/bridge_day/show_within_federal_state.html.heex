@@ -27,7 +27,7 @@ end) |> Enum.sum() %>
   <div class="row">
     <div class="col-md-12">
       <%= if flag_src = MehrSchulferien.Locations.Flag.get_flag(@federal_state.code) do %>
-        <img align="right" class="img-thumbnail" src="<%= flag_src %>" width="64" heigth="38" alt="Landesflage <%= @federal_state.name %>">
+        <img align="right" class="img-thumbnail" src={flag_src} width="64" height="38" alt={"Landesflage #{@federal_state.name}"}>
       <% end %>
       <h1>
         Brückentage <%= @year %> in <%= @federal_state.name %>
@@ -131,4 +131,4 @@ end) %>
   ]
 }
 </script>
-<% end %>
+<% end %> 
