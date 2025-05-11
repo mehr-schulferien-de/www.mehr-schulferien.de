@@ -4,14 +4,6 @@
 %>
 
 <div class="mt-4 sm:mt-8">
-  <nav class="text-gray-500 text-sm mb-4">
-    <%= link "Start", to: Routes.page_path(@conn, :new), class: "hover:text-blue-600" %> &gt;
-    <%= link @country.name, to: Routes.country_path(@conn, :show, @country.slug), class: "hover:text-blue-600" %> &gt;
-    <%= link @federal_state.name, to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "hover:text-blue-600" %> &gt; 
-    <%= link "Brückentage", to: Routes.bridge_day_path(@conn, :index_within_federal_state, @country.slug, @federal_state.slug), class: "hover:text-blue-600" %> &gt;
-    <span class="text-gray-700 font-medium"><%= @year %></span>
-  </nav>
-
   <% # Dynamic Teaser Calculation %>
   <% all_bridge_days = Enum.flat_map(@bridge_day_map, fn {_k, v} -> v || [] end) %>
   <% min_leave = Enum.map(all_bridge_days, & &1.number_days) |> Enum.sum() %>

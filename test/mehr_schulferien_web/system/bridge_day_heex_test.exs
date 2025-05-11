@@ -36,9 +36,6 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
       assert html_response(conn, 200) =~ "Die "
       assert html_response(conn, 200) =~ "besten Tipps für"
 
-      # Check navigation breadcrumbs
-      assert html_response(conn, 200) =~ ~s(nav class="text-gray-500 text-sm mb-4")
-      assert html_response(conn, 200) =~ ~s(class="hover:text-blue-600")
       
       # Check flag image is properly formatted with HEEx syntax
       if code = federal_state.code do
