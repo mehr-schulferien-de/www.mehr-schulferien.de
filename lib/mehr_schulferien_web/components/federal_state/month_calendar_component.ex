@@ -30,7 +30,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
     first_day_of_month = Date.new!(assigns.year, assigns.month, 1)
     first_weekday = Date.day_of_week(first_day_of_month)
     days_in_month = Date.days_in_month(first_day_of_month)
-    month_id = "month-#{assigns.month}"
+    month_id = "#{String.downcase(month_name)}#{assigns.year}"
     last_day_of_month = Date.new!(assigns.year, assigns.month, days_in_month)
 
     # Use the more accurate function to determine if this month should be crossed out

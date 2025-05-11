@@ -2,7 +2,7 @@
 <nav class="bg-white shadow-sm mb-6">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center space-x-2 py-3 text-sm">
-      <%= link to: Routes.page_path(@conn, :new), class: "text-gray-500 hover:text-gray-700" do %>
+      <%= link to: Routes.page_path(@conn, :new), class: "text-gray-500 hover:text-gray-700 transition-colors duration-200" do %>
         <span>Start</span>
       <% end %>
       <span class="text-gray-400">/</span>
@@ -11,18 +11,14 @@
   </div>
 </nav>
 
-<div class="page-header">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>
-        Schulferien <%= @current_year %>
-      </h1>
-    </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
+      Schulferien <%= @current_year %>
+    </h1>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-xs-12">
+  <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
     <%= render MehrSchulferienWeb.PartialView, "_country_periods_table.html", assigns %>
   </div>
 </div> 

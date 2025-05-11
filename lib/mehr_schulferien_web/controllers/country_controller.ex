@@ -24,7 +24,8 @@ defmodule MehrSchulferienWeb.CountryController do
       current_year: current_year,
       federal_states: federal_states,
       months: months,
-      periods: periods
+      periods: periods,
+      css_framework: :tailwind_new
     )
   end
 
