@@ -28,12 +28,18 @@
     
     <%!-- Cities --%>
     <%= for city <- cities do %>
-      <%= city_entry(@conn, country, city, find_most_recent_period(city)) %>
+      <% current_year = @today.year %>
+      <% next_year = current_year + 1 %>
+      <%= city_entry(@conn, country, city, current_year) %>
+      <%= city_entry(@conn, country, city, next_year) %>
     <% end %>
     
     <%!-- Schools --%>
     <%= for school <- schools do %>
-      <%= school_entry(@conn, country, school, find_most_recent_period(school)) %>
+      <% current_year = @today.year %>
+      <% next_year = current_year + 1 %>
+      <%= school_entry(@conn, country, school, current_year) %>
+      <%= school_entry(@conn, country, school, next_year) %>
     <% end %>
   <% end %>
 </urlset>

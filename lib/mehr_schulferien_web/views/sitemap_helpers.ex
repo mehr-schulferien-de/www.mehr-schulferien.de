@@ -97,15 +97,23 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   @doc """
   Renders a URL entry for a city.
   """
-  def city_entry(_conn, country, city, most_recent_period) do
+  def city_entry(_conn, country, city, year) do
     base_url = MehrSchulferienWeb.Endpoint.url()
-    location = "#{base_url}/ferien/#{country.slug}/stadt/#{city.slug}"
+    location = "#{base_url}/ferien/#{country.slug}/stadt/#{city.slug}/#{year}"
 
     lastmod =
-      if most_recent_period do
-        Date.add(most_recent_period.ends_on, 1)
-      else
-        nil
+      cond do
+        # When year is an integer
+        is_integer(year) ->
+          {:ok, date} = Date.new(year, 12, 31)
+          date
+
+        # When most_recent_period is a map with ends_on key
+        year && Map.has_key?(year, :ends_on) ->
+          Date.add(year.ends_on, 1)
+
+        true ->
+          nil
       end
 
     url_entry(location, "monthly", "0.5", lastmod)
@@ -114,15 +122,23 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   @doc """
   Renders a URL entry for a school.
   """
-  def school_entry(conn, country, school, most_recent_period) do
-    location =
-      MehrSchulferienWeb.Router.Helpers.school_url(conn, :show, country.slug, school.slug)
+  def school_entry(_conn, country, school, year) do
+    base_url = MehrSchulferienWeb.Endpoint.url()
+    location = "#{base_url}/ferien/#{country.slug}/schule/#{school.slug}/#{year}"
 
     lastmod =
-      if most_recent_period do
-        Date.add(most_recent_period.ends_on, 1)
-      else
-        nil
+      cond do
+        # When year is an integer
+        is_integer(year) ->
+          {:ok, date} = Date.new(year, 12, 31)
+          date
+
+        # When year is a map with ends_on key (period)
+        year && Map.has_key?(year, :ends_on) ->
+          Date.add(year.ends_on, 1)
+
+        true ->
+          nil
       end
 
     url_entry(location, "monthly", "0.5", lastmod)
