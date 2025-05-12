@@ -80,6 +80,7 @@ defmodule MehrSchulferienWeb.RobotsController do
 
     # Old no longer active routes
     Disallow: /land/*/bundesland/*/kategorie/*
+    Disallow: /land/*/bundesland/*/feiertage/*
 
     # Allow only current year (#{current_year}) and next year (#{next_year}) for city and school pages
     """

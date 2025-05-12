@@ -92,21 +92,7 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
     |> Enum.filter(fn year -> has_bridge_days?(location_ids, year) end)
   end
 
-  @doc """
-  Renders a URL entry for a holiday or vacation type within a federal state.
-  """
-  def holiday_type_entry(conn, country, federal_state, vacation_type) do
-    location =
-      MehrSchulferienWeb.Router.Helpers.public_holiday_url(
-        conn,
-        :show_within_federal_state,
-        country.slug,
-        federal_state.slug,
-        vacation_type.slug
-      )
-
-    url_entry(location, "monthly", "0.4")
-  end
+  # Removed holiday_type_entry function that was used for public holidays
 
   @doc """
   Renders a URL entry for a city.

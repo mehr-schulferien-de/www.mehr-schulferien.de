@@ -124,11 +124,6 @@ defmodule MehrSchulferienWeb.Router do
     # Legacy vCard path for backward compatibility
     get "/schule/:school_slug/vcard", SchoolVCardController, :download_legacy
 
-    # Public holidays (consistent pattern)
-    get "/land/:country_slug/bundesland/:federal_state_slug/feiertage/:holiday_or_vacation_type_slug",
-        PublicHolidayController,
-        :show_within_federal_state
-
     # Bridge days (consistent pattern)
     get "/land/:country_slug/bundesland/:federal_state_slug/brueckentage",
         BridgeDayController,

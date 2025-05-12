@@ -74,34 +74,18 @@ defmodule MehrSchulferienWeb.RouteHelpers do
   end
 
   @doc """
-  Returns the proper public holiday path with the new route structure.
+  Returns the federal state path for old public holiday routes.
+  This is for backward compatibility with old templates that may still use this helper.
   """
   def public_holiday_path(
         conn,
-        action,
+        _action,
         country_slug,
         federal_state_slug,
-        holiday_or_vacation_type_slug
+        _holiday_or_vacation_type_slug
       ) do
-    case action do
-      :show_within_federal_state ->
-        Routes.public_holiday_path(
-          conn,
-          :show_within_federal_state,
-          country_slug,
-          federal_state_slug,
-          holiday_or_vacation_type_slug
-        )
-
-      _ ->
-        Routes.public_holiday_path(
-          conn,
-          action,
-          country_slug,
-          federal_state_slug,
-          holiday_or_vacation_type_slug
-        )
-    end
+    # Redirect to federal state page for all public holiday related actions
+    Routes.federal_state_path(conn, :show, country_slug, federal_state_slug)
   end
 
   @doc """

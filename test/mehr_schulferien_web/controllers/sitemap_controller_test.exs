@@ -8,10 +8,10 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
   describe "GET /sitemap.xml" do
     setup [:add_federal_state_with_bridge_days]
 
-    test "access the sitemap in format xml", %{conn: conn, federal_state: federal_state} do
+    test "access the sitemap in format xml", %{conn: conn, country: country} do
       conn = get(conn, "/sitemap.xml")
       assert response_content_type(conn, :xml)
-      assert response(conn, 200) =~ ~r/<loc>.*\/bundesland\/#{federal_state.slug}.*<\/loc>/
+      assert response(conn, 200) =~ ~r/<loc>.*\/land\/#{country.slug}.*<\/loc>/
     end
   end
 

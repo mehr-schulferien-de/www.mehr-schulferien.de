@@ -71,23 +71,14 @@ defmodule MehrSchulferienWeb.RedirectController do
     |> redirect(to: Routes.school_path(conn, :show, country_slug, school_slug))
   end
 
-  # Public holiday redirects
+  # Public holiday redirects - now redirects to federal state page
   def redirect_public_holiday(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug,
-        "holiday_or_vacation_type_slug" => holiday_or_vacation_type_slug
+        "holiday_or_vacation_type_slug" => _holiday_or_vacation_type_slug
       }) do
     conn
-    |> redirect(
-      to:
-        Routes.public_holiday_path(
-          conn,
-          :show_within_federal_state,
-          country_slug,
-          federal_state_slug,
-          holiday_or_vacation_type_slug
-        )
-    )
+    |> redirect(to: Routes.federal_state_path(conn, :show, country_slug, federal_state_slug))
   end
 
   # Bridge day redirects

@@ -7,7 +7,6 @@
     <% country = place[:country] %>
     <% federal_states = place[:federal_states] %>
     <% cities = place[:cities] %>
-    <% is_school_vacation_types = place[:is_school_vacation_types] %>
     <% schools = place[:schools] %>
     
     <%= url_entry(Routes.country_url(@conn, :show, country.slug), "daily", "0.6", @today) %>
@@ -25,16 +24,7 @@
       <% end %>
     <% end %>
     
-    <%!-- Holiday types within federal states --%>
-    <%= for federal_state <- federal_states do %>
-      <% holiday_or_vacation_type_ids = Enum.map(federal_state.periods, & &1.holiday_or_vacation_type_id) %>
-      
-      <%= for vacation_type <- is_school_vacation_types do %>
-        <%= if vacation_type.id in holiday_or_vacation_type_ids do %>
-          <%= holiday_type_entry(@conn, country, federal_state, vacation_type) %>
-        <% end %>
-      <% end %>
-    <% end %>
+    <%!-- Holiday types within federal states section removed --%>
     
     <%!-- Cities --%>
     <%= for city <- cities do %>
