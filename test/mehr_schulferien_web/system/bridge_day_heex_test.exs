@@ -48,7 +48,9 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
 
       # Test the intro paragraph
       assert html_response(conn, 200) =~ ~s(<p class="text-gray-700 mb-8">)
-      assert html_response(conn, 200) =~ "Unser Spezial-Algorithmus findet"
+
+      assert html_response(conn, 200) =~
+               "Nicht nur klassische Brückentage, sondern auch Super-Brückentage, bei denen Sie noch mehr freie Tage herausholen können."
 
       # Verify bridge day sections are rendered
       assert html_response(conn, 200) =~ "Brückentag"
