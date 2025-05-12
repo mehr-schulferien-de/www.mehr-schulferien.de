@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferienWeb.BridgeDayView
 
   def index_within_federal_state(conn, %{
         "country_slug" => country_slug,
@@ -60,17 +61,30 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
     bridge_day_map = Periods.group_by_interval(public_periods)
 
+    # Filter the bridge days to only include those that meet the minimum gain requirements
+    filtered_bridge_day_map =
+      for {num, bridge_days} <- bridge_day_map, into: %{} do
+        filtered_bridge_days =
+          bridge_days
+          |> Enum.filter(fn bridge_day ->
+            all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
+            BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+          end)
+
+        {num, filtered_bridge_days}
+      end
+
     bridge_day_proposal_count =
       for num <- 2..5 do
-        if bridge_day_map[num] do
-          Enum.count(bridge_day_map[num])
+        if filtered_bridge_day_map[num] do
+          Enum.count(filtered_bridge_day_map[num])
         end
       end
       |> Enum.filter(&(!is_nil(&1)))
       |> Enum.sum()
 
     [
-      bridge_day_map: bridge_day_map,
+      bridge_day_map: filtered_bridge_day_map,
       bridge_day_proposal_count: bridge_day_proposal_count,
       public_periods: public_periods
     ]
@@ -101,8 +115,17 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
     bridge_day_map = Periods.group_by_interval(public_periods)
 
+    # Check for at least one bridge day that meets the minimum gain requirement
     Enum.any?(2..5, fn num ->
-      if bridge_day_map[num], do: Enum.count(bridge_day_map[num]) > 0, else: false
+      if bridge_day_map[num] do
+        bridge_day_map[num]
+        |> Enum.any?(fn bridge_day ->
+          all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
+          BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+        end)
+      else
+        false
+      end
     end)
   end
 end

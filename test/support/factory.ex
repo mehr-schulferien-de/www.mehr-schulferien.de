@@ -195,10 +195,22 @@ defmodule MehrSchulferien.Factory do
   end
 
   defp create_bridge_day_periods(location_id, year) do
-    holiday_type = insert(:holiday_or_vacation_type, %{name: "Test Holiday"})
+    holiday_type =
+      insert(:holiday_or_vacation_type, %{
+        name: "Test Holiday",
+        slug: "test-holiday-#{year}-#{System.unique_integer([:positive])}"
+      })
 
-    # Create a bridge day scenario - two holidays with one day in between
-    # First holiday
+    weekend_type =
+      insert(:holiday_or_vacation_type, %{
+        name: "Wochenende",
+        slug: "wochenende-#{year}-#{System.unique_integer([:positive])}"
+      })
+
+    # Create a bridge day scenario that meets minimum gain requirements:
+    # 1 day off should result in at least 4 free days
+
+    # Thursday holiday (May 1st)
     create_period(%{
       is_public_holiday: true,
       location_id: location_id,
@@ -209,14 +221,25 @@ defmodule MehrSchulferien.Factory do
       created_by_email_address: "test@example.com"
     })
 
-    # Second holiday
+    # Sunday holiday (May 4th)
     create_period(%{
       is_public_holiday: true,
       location_id: location_id,
       holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(year, 5, 3),
-      ends_on: Date.new!(year, 5, 3),
+      starts_on: Date.new!(year, 5, 4),
+      ends_on: Date.new!(year, 5, 4),
       display_priority: 2,
+      created_by_email_address: "test@example.com"
+    })
+
+    # Weekend days (Saturday and Sunday)
+    create_period(%{
+      is_public_holiday: false,
+      location_id: location_id,
+      holiday_or_vacation_type_id: weekend_type.id,
+      starts_on: Date.new!(year, 5, 3),
+      ends_on: Date.new!(year, 5, 4),
+      display_priority: 3,
       created_by_email_address: "test@example.com"
     })
   end

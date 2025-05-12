@@ -2,20 +2,31 @@
   alias MehrSchulferien.Calendars.DateHelpers
   reference_date = MehrSchulferienWeb.BridgeDayView.get_reference_date(@conn)
 
-  # Function to find adjacent holidays (holidays that are next to each other or overlapping)
+  # Function to find adjacent holidays (holidays that are near each other or part of the same holiday period)
   find_adjacent_holidays = fn periods, holiday ->
-    # First identify all holidays that are adjacent to the input holiday
+    # First identify all holidays that are adjacent to or related to the input holiday
     adjacent = Enum.filter(periods, fn period ->
       if period.is_public_holiday && period != holiday do
-        # Check if within 1 day of each other or overlapping
+        # Get the holiday name for grouping related holidays
+        holiday_name = holiday.holiday_or_vacation_type && holiday.holiday_or_vacation_type.name
+        period_name = period.holiday_or_vacation_type && period.holiday_or_vacation_type.name
+        
+        # Same holiday group by name (e.g., both contain "Ostern" or "Weihnacht")
+        same_holiday_group = 
+          holiday_name && period_name && 
+          (String.contains?(holiday_name, "Ostern") && String.contains?(period_name, "Ostern") ||
+           String.contains?(holiday_name, "Weihnacht") && String.contains?(period_name, "Weihnacht") ||
+           String.contains?(holiday_name, "Pfingst") && String.contains?(period_name, "Pfingst"))
+        
+        # Check if within 3 days of each other or overlapping to catch more related holidays
         adjacent_before = Date.compare(period.ends_on, holiday.starts_on) == :lt && 
-                         Date.diff(holiday.starts_on, period.ends_on) <= 1
+                         Date.diff(holiday.starts_on, period.ends_on) <= 3
         adjacent_after = Date.compare(period.starts_on, holiday.ends_on) == :gt && 
-                        Date.diff(period.starts_on, holiday.ends_on) <= 1
+                        Date.diff(period.starts_on, holiday.ends_on) <= 3
         overlapping = Date.compare(period.starts_on, holiday.ends_on) != :gt && 
                      Date.compare(period.ends_on, holiday.starts_on) != :lt
                     
-        adjacent_before || adjacent_after || overlapping
+        same_holiday_group || adjacent_before || adjacent_after || overlapping
       else
         false
       end
