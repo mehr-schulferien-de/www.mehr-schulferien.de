@@ -53,7 +53,7 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   @doc """
   Renders a URL entry for a bridge day within a federal state for a specific year.
   """
-  def yearly_bridge_day_entry(conn, country, federal_state, year) do
+  def yearly_bridge_day_entry(conn, country, federal_state, year, changefreq \\ "daily") do
     location =
       MehrSchulferienWeb.Router.Helpers.bridge_day_url(
         conn,
@@ -63,7 +63,7 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
         year
       )
 
-    url_entry(location, "daily", "0.5")
+    url_entry(location, changefreq, "0.5")
   end
 
   @doc """
@@ -97,9 +97,9 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   """
   def holiday_type_entry(conn, country, federal_state, vacation_type) do
     location =
-      MehrSchulferienWeb.Router.Helpers.federal_state_url(
+      MehrSchulferienWeb.Router.Helpers.public_holiday_url(
         conn,
-        :show_holiday_or_vacation_type,
+        :show_within_federal_state,
         country.slug,
         federal_state.slug,
         vacation_type.slug
