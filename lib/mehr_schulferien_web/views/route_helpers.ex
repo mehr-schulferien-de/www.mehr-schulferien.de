@@ -58,15 +58,6 @@ defmodule MehrSchulferienWeb.RouteHelpers do
           year_or_type
         )
 
-      :show_holiday_or_vacation_type when is_binary(year_or_type) ->
-        Routes.federal_state_path(
-          conn,
-          :show_holiday_or_vacation_type,
-          country_slug,
-          federal_state_slug,
-          year_or_type
-        )
-
       :county_show ->
         Routes.federal_state_path(conn, :county_show, country_slug, federal_state_slug)
 

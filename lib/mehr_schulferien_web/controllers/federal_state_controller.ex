@@ -1,36 +1,11 @@
 defmodule MehrSchulferienWeb.FederalStateController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars, Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.{Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.FederalStateView
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
-  def show_holiday_or_vacation_type(conn, %{
-        "country_slug" => country_slug,
-        "federal_state_slug" => federal_state_slug,
-        "holiday_or_vacation_type_slug" => holiday_or_vacation_type_slug
-      }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-
-    holiday_or_vacation_type =
-      Calendars.get_holiday_or_vacation_type_by_slug!(holiday_or_vacation_type_slug)
-
-    today = DateHelpers.get_today_or_custom_date(conn)
-    location_ids = [country.id, federal_state.id]
-
-    assigns =
-      [
-        country: country,
-        federal_state: federal_state,
-        holiday_or_vacation_type: holiday_or_vacation_type
-      ] ++
-        CH.list_period_data(location_ids, today)
-
-    render(conn, "show_holiday_or_vacation_type.html", assigns)
-  end
 
   def show(_conn, %{"modus" => _}) do
     raise MehrSchulferien.InvalidQueryParamsError

@@ -78,6 +78,9 @@ defmodule MehrSchulferienWeb.RobotsController do
     Disallow: /password_resets
     Disallow: /admin
 
+    # Old no longer active routes
+    Disallow: /land/*/bundesland/*/kategorie/*
+
     # Allow only current year (#{current_year}) and next year (#{next_year}) for city and school pages
     """
 

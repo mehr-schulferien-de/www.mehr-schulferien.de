@@ -105,10 +105,6 @@ defmodule MehrSchulferienWeb.Router do
         :show_year,
         constraints: [year: [format: ~r/20[2-3][0-9]/]]
 
-    get "/land/:country_slug/bundesland/:federal_state_slug/kategorie/:holiday_or_vacation_type_slug",
-        FederalStateController,
-        :show_holiday_or_vacation_type
-
     # City routes (consistent pattern)
     get "/land/:country_slug/stadt/:city_slug", CityController, :show
 
