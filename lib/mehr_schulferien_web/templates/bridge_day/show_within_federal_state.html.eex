@@ -47,15 +47,15 @@
     MehrSchulferienWeb.BridgeDayView.get_number_max_days(periods)
   end) |> Enum.sum() %>
 
-  <div class="flex items-start justify-between mb-6">
-    <div>
+  <div class="flex flex-col items-start mb-6 sm:flex-row sm:justify-between">
+    <div class="mb-4 sm:mb-0">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">Brückentage <%= @year %> in <%= @federal_state.name %></h1>
       <h2 class="text-xl text-gray-700">
         Die <%= @bridge_day_proposal_count %> besten Tipps für <%= if min_leave > 0 and max_free > 0 do %><%= round((max_free - min_leave) / min_leave * 100) %>%<% end %> mehr Urlaub.
       </h2>
     </div>
 
-    <div class="flex items-center space-x-4">
+    <div class="w-full sm:w-auto">
       <% prev_year = @year - 1 %>
       <% next_year = @year + 1 %>
       <% show_prev = MehrSchulferienWeb.BridgeDayController.has_bridge_days?([@country.id, @federal_state.id], prev_year) %>
@@ -65,66 +65,68 @@
       <% prev_link = if show_prev, do: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, prev_year), else: nil %>
       <% next_link = if show_next, do: Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, next_year), else: nil %>
       
-      <div class="hidden sm:block">
-        <%= if flag_src = MehrSchulferien.Locations.Flag.get_flag(@federal_state.code) do %>
-          <img class="rounded shadow-sm" src="<%= flag_src %>" width="64" height="38" alt="Landesflage <%= @federal_state.name %>">
-        <% end %>
-      </div>
-      
-      <div class="flex items-center w-full sm:w-auto">
-        <div class="inline-flex rounded-md shadow-sm w-full" role="group">
-                      <div class="flex w-full">
-             <%= if show_prev do %>
-             <a class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg flex items-center" href="<%= prev_link %>">
-               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-               </svg>
-             </a>
-             <% else %>
-             <div class="px-4 py-2 text-sm font-medium bg-gray-50 text-gray-400 border border-gray-200 rounded-l-lg flex items-center cursor-not-allowed">
-               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-               </svg>
-             </div>
-             <% end %>
-
-            <div class="flex flex-grow">
-              <% 
-                # Determine which years to show (max 3)
-                years_to_show = []
-                years_to_show = if show_prev, do: years_to_show ++ [prev_year], else: years_to_show
-                years_to_show = years_to_show ++ [@year]
-                years_to_show = if show_next && length(years_to_show) < 3, do: years_to_show ++ [next_year], else: years_to_show
-                years_to_show = if show_next_next && length(years_to_show) < 3, do: years_to_show ++ [next_year + 1], else: years_to_show
-              %>
-              
-              <%= for year <- years_to_show do %>
-                <%= if year == @year do %>
-                  <span class="px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600 flex-1 text-center">
-                    <%= year %>
-                  </span>
-                <% else %>
-                  <a class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center" 
-                     href="<%= Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year) %>">
-                    <%= year %>
-                  </a>
-                <% end %>
+      <div class="sm:flex sm:items-center sm:space-x-4">
+        <div class="hidden sm:block">
+          <%= if flag_src = MehrSchulferien.Locations.Flag.get_flag(@federal_state.code) do %>
+            <img class="rounded shadow-sm" src="<%= flag_src %>" width="64" height="38" alt="Landesflage <%= @federal_state.name %>">
+          <% end %>
+        </div>
+        
+        <div class="w-full">
+          <div class="inline-flex rounded-md shadow-sm w-full" role="group">
+            <div class="flex w-full">
+              <%= if show_prev do %>
+              <a class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg flex items-center" href="<%= prev_link %>">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </a>
+              <% else %>
+              <div class="px-4 py-2 text-sm font-medium bg-gray-50 text-gray-400 border border-gray-200 rounded-l-lg flex items-center cursor-not-allowed">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </div>
               <% end %>
-            </div>
+
+              <div class="flex flex-grow">
+                <% 
+                  # Determine which years to show (max 3)
+                  years_to_show = []
+                  years_to_show = if show_prev, do: years_to_show ++ [prev_year], else: years_to_show
+                  years_to_show = years_to_show ++ [@year]
+                  years_to_show = if show_next && length(years_to_show) < 3, do: years_to_show ++ [next_year], else: years_to_show
+                  years_to_show = if show_next_next && length(years_to_show) < 3, do: years_to_show ++ [next_year + 1], else: years_to_show
+                %>
+                
+                <%= for year <- years_to_show do %>
+                  <%= if year == @year do %>
+                    <span class="px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600 flex-1 text-center">
+                      <%= year %>
+                    </span>
+                  <% else %>
+                    <a class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center" 
+                       href="<%= Routes.bridge_day_path(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, year) %>">
+                      <%= year %>
+                    </a>
+                  <% end %>
+                <% end %>
+              </div>
 
                                       <%= if show_next do %>
-             <a class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg flex items-center" href="<%= next_link %>">
-               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-               </svg>
-             </a>
-             <% else %>
-             <div class="px-4 py-2 text-sm font-medium bg-gray-50 text-gray-400 border border-gray-200 rounded-r-lg flex items-center cursor-not-allowed">
-               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-               </svg>
-             </div>
-             <% end %>
+               <a class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg flex items-center" href="<%= next_link %>">
+                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                 </svg>
+               </a>
+               <% else %>
+               <div class="px-4 py-2 text-sm font-medium bg-gray-50 text-gray-400 border border-gray-200 rounded-r-lg flex items-center cursor-not-allowed">
+                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                 </svg>
+               </div>
+               <% end %>
+            </div>
           </div>
         </div>
       </div>
