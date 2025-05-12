@@ -76,13 +76,15 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     ]
   end
 
-  defp check_year(conn, year) do
+  defp check_year(_conn, year) do
     case Integer.parse(year) do
       {year, ""} ->
-        today = DateHelpers.get_today_or_custom_date(conn)
-        current_year = today.year
+        # Use the actual now date for validation range, not the custom date
+        # This allows viewing any reasonable year regardless of the custom reference date
+        current_year = Date.utc_today().year
 
-        if year in [current_year, current_year + 1, current_year + 2] do
+        # Allow viewing a wider range of years, regardless of the custom date
+        if year in (current_year - 1)..(current_year + 3) do
           {:ok, year}
         else
           {:error, :invalid_year}
