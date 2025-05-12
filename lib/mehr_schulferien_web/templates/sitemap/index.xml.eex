@@ -15,7 +15,6 @@
     <%!-- Federal states and bridge days --%>
     <%= for federal_state <- federal_states do %>
       <%= federal_state_entry(@conn, country, federal_state, @today) %>
-      <%= bridge_day_entry(@conn, country, federal_state) %>
       
       <% location_ids = [country.id, federal_state.id] %>
       <% bridge_day_years = years_with_bridge_days(location_ids) %>

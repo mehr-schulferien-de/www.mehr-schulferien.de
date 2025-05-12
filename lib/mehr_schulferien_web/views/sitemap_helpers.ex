@@ -63,7 +63,7 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
         year
       )
 
-    url_entry(location, "monthly", "0.5")
+    url_entry(location, "daily", "0.5")
   end
 
   @doc """
