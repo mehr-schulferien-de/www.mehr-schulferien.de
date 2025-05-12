@@ -1,6 +1,7 @@
 <%
   alias MehrSchulferien.Calendars.DateHelpers
   reference_date = MehrSchulferienWeb.BridgeDayView.get_reference_date(@conn)
+  today = Date.utc_today()  # Get today's date for comparison
 
   # Function to find adjacent holidays (holidays that are near each other or part of the same holiday period)
   find_adjacent_holidays = fn periods, holiday ->
@@ -212,20 +213,23 @@
               Date.diff(period.starts_on, bridge_day.ends_on) <= 3
             end)
             
-                          related_holiday = holiday_before || holiday_after
+            related_holiday = holiday_before || holiday_after
             
             # Check if there are adjacent holidays
             adjacent_holidays = if related_holiday, do: find_adjacent_holidays.(relevant_periods, related_holiday), else: []
             
             max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(all_periods)
             efficiency_percentage = round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
+            
+            # Check if this bridge day is in the past (only when the current year matches the URL year)
+            is_past_bridge_day = @year == today.year && Date.compare(bridge_day.ends_on, today) == :lt
           %>
           
-          <section class="bg-white rounded shadow p-6 h-full">
-            <h3 class="text-xl font-semibold mb-4">
+          <section class="<%= if is_past_bridge_day, do: "bg-gray-100 text-gray-500", else: "bg-white" %> rounded shadow p-6 h-full">
+            <h3 class="text-xl font-semibold mb-4 <%= if is_past_bridge_day, do: "text-gray-500", else: "" %>">
               <%= MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on) %> 
               <%= if bridge_day.starts_on.year == bridge_day.ends_on.year && !String.contains?(MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on), Integer.to_string(bridge_day.starts_on.year)) do %>
-                <span class="text-gray-500"><%= bridge_day.starts_on.year %></span>
+                <span class="<%= if is_past_bridge_day, do: "text-gray-400", else: "text-gray-500" %>"><%= bridge_day.starts_on.year %></span>
               <% end %>
             </h3>
             
@@ -235,7 +239,8 @@
               reference_date: reference_date,
               vacation_days: bridge_day.number_days,
               total_free_days: max_days,
-              efficiency_percentage: efficiency_percentage
+              efficiency_percentage: efficiency_percentage,
+              is_past: is_past_bridge_day
             }) %>
           </section>
         <% end %>
@@ -477,14 +482,14 @@
               end
               
               # Format date range
-              date_string = if Date.compare(bd.starts_on, bd.ends_on) == :eq do
-                Calendar.strftime(bd.starts_on, "%d.%m.%Y")
-              else
-                Calendar.strftime(bd.starts_on, "%d.%m.") <> " - " <> Calendar.strftime(bd.ends_on, "%d.%m.%Y")
-              end
-              
-              # Create display string
-              holiday_text = if holiday_name, do: " (#{holiday_name})", else: ""
+                              date_string = if Date.compare(bd.starts_on, bd.ends_on) == :eq do
+                  Calendar.strftime(bd.starts_on, "%d.%m.%Y")
+                else
+                  Calendar.strftime(bd.starts_on, "%d.%m.") <> " - " <> Calendar.strftime(bd.ends_on, "%d.%m.%Y")
+                end
+                
+                # Create display string
+                holiday_text = if holiday_name, do: " (#{holiday_name})", else: ""
               "#{date_string}: #{type_name}#{holiday_text}"
             end) |> Enum.join(", ")
           %><%= bridgeday_list %>."
