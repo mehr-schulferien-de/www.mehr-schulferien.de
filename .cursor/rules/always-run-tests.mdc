@@ -3,4 +3,4 @@ description:
 globs: 
 alwaysApply: true
 ---
-When done run `mix test`, fix occoring problems and rerun `mix test` until all the tests are green. Do not lie about having run a test! Always run the tests. After everything is green run a `mix format`
+When done run `mix test`, fix occoring problems and rerun `mix test` until all the tests are green. Do not lie about having run a test! Always run the tests. And fix the warnings too. After everything is green run a `mix format`

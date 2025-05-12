@@ -36,7 +36,11 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         name:
           if(Map.get(assigns, :is_super_bridge_day, false),
             do: "Superbrückentag",
-            else: "Brückentag"
+            else:
+              if(Date.diff(assigns.bridge_day.ends_on, assigns.bridge_day.starts_on) > 0,
+                do: "Super-Brückentage",
+                else: "Brückentag"
+              )
           )
       }
     }
@@ -98,15 +102,19 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       """
       <p class="text-sm text-gray-600 mt-2 mb-3">
         #{if !assigns.is_future_reference && assigns.days_until > 0 do
-        "Noch #{assigns.days_until} Tage bis zum nächsten Brückentag."
+        bridge_day_term = if Date.diff(assigns.bridge_day.ends_on, assigns.bridge_day.starts_on) > 0, do: "nächsten Super-Brückentagen", else: "nächsten Brückentag"
+        "Noch #{assigns.days_until} Tage bis zum #{bridge_day_term}."
       else
         if assigns.days_until == 0 do
-          "Brückentag ist heute."
+          bridge_day_term = if Date.diff(assigns.bridge_day.ends_on, assigns.bridge_day.starts_on) > 0, do: "Super-Brückentage sind", else: "Brückentag ist"
+          "#{bridge_day_term} heute."
         else
           if assigns.is_future_reference do
-            "Diesen Brückentag gab es am #{Calendar.strftime(assigns.bridge_day.starts_on, "%d.%m.%Y")}."
+            bridge_day_term = if Date.diff(assigns.bridge_day.ends_on, assigns.bridge_day.starts_on) > 0, do: "Diese Super-Brückentage gab es", else: "Diesen Brückentag gab es"
+            "#{bridge_day_term} am #{Calendar.strftime(assigns.bridge_day.starts_on, "%d.%m.%Y")}."
           else
-            "Brückentag ist schon vorbei."
+            bridge_day_term = if Date.diff(assigns.bridge_day.ends_on, assigns.bridge_day.starts_on) > 0, do: "Super-Brückentage sind", else: "Brückentag ist"
+            "#{bridge_day_term} schon vorbei."
           end
         end
       end}
@@ -268,7 +276,9 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     # Check if both have same start and end dates, or if they overlap significantly
     (Date.compare(period1.starts_on, period2.starts_on) == :eq &&
        Date.compare(period1.ends_on, period2.ends_on) == :eq) ||
-      (period1.holiday_or_vacation_type.name == "Brückentag" &&
+      ((period1.holiday_or_vacation_type.name == "Brückentag" ||
+          period1.holiday_or_vacation_type.name == "Brückentage" ||
+          period1.holiday_or_vacation_type.name == "Super-Brückentage") &&
          period2.holiday_or_vacation_type.name == "Superbrückentag" &&
          Date.compare(period1.starts_on, period2.starts_on) == :eq)
   end
