@@ -102,7 +102,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
           marker_color =
             if is_school_vacation,
-              do: StyleConfig.get_class(:vacation, :tailwind),
+              do: "bg-green-600",
               else: StyleConfig.get_class(:holiday, :tailwind) %>
           <li class="flex items-center space-x-2 mb-1">
             <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
@@ -209,7 +209,8 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
       # Period is a school vacation
       Map.get(period, :is_school_vacation, false) ->
-        StyleConfig.get_class(:vacation, :tailwind)
+        # Force green color for school vacations
+        "bg-green-600"
 
       # Period is a public holiday  
       Map.get(period, :is_public_holiday, false) ->
