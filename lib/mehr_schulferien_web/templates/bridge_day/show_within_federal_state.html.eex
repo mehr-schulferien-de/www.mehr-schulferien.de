@@ -224,7 +224,7 @@
             "organizer" => %{
               "@type" => "Organization",
               "name" => "MehrSchulferien.de",
-              "url" => Routes.page_url(@conn, :new)
+              "url" => Routes.page_url(@conn, :home)
             }
           }
         end)

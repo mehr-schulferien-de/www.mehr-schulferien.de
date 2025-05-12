@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.PageView do
   use MehrSchulferienWeb, :view
 
   alias MehrSchulferien.{Locations, BridgeDays, PeriodDisplay}
+  alias MehrSchulferien.Calendars.DateHelpers
 
   def count_schools() do
     Locations.count_schools()

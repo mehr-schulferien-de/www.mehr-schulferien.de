@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <%= url_entry(Routes.page_url(@conn, :new), "daily", "0.6", @today) %>
+  <%= url_entry(Routes.page_url(@conn, :home), "daily", "0.6", @today) %>
   <%= url_entry(Routes.page_url(@conn, :developers), "monthly", "0.4") %>
   
   <%= for place <- @countries do %>

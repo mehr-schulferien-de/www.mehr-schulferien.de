@@ -1,7 +1,7 @@
 <nav class="flex py-3" aria-label="Breadcrumb">
   <ol class="inline-flex items-center space-x-1 md:space-x-3">
     <li class="inline-flex items-center">
-      <%= link "Start", to: Routes.page_path(@conn, :new), class: "text-blue-600 hover:text-blue-800" %>
+      <%= link "Start", to: Routes.page_path(@conn, :home), class: "text-blue-600 hover:text-blue-800" %>
     </li>
   </ol>
 </nav>

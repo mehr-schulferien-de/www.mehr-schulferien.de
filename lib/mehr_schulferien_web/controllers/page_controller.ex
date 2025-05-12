@@ -96,7 +96,7 @@ defmodule MehrSchulferienWeb.PageController do
     render(conn, "impressum.html")
   end
 
-  def new(conn, params) do
+  def home(conn, params) do
     # Parse days parameter
     days_to_display = parse_days_count(params["days"])
 
@@ -120,7 +120,7 @@ defmodule MehrSchulferienWeb.PageController do
     # Fetch countries data
     countries = fetch_countries_with_periods(today, ends_on, current_year)
 
-    render(conn, "new.html",
+    render(conn, "home.html",
       countries: countries,
       days: days,
       day_names: day_names,

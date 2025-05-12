@@ -72,7 +72,7 @@ defmodule MehrSchulferienWeb.Router do
   scope "/", MehrSchulferienWeb do
     pipe_through :browser
 
-    get "/", PageController, :new
+    get "/", PageController, :home
     get "/sommerferien", PageController, :summer_vacations
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum

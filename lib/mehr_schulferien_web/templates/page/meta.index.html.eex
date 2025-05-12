@@ -1,6 +1,6 @@
 <meta name="description" content="Ferien und Feiertage der nächsten <%= @number_of_days %> Tage auf einen Blick<%= if @custom_start_date && Date.compare(@custom_start_date, Date.utc_today()) != :eq do %> (ab <%= Calendar.strftime(@custom_start_date, "%d.%m.%Y") %>)<% end %>.">
 <title>Schulferien in Deutschland - Übersicht</title>
-<link rel="canonical" href="<%= Routes.page_url(@conn, :new) %>">
+<link rel="canonical" href="<%= Routes.page_url(@conn, :home) %>">
 <%= if @noindex do %>
 <meta name="robots" content="noindex">
 <% end %>
