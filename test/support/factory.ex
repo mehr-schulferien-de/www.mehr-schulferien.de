@@ -140,6 +140,17 @@ defmodule MehrSchulferien.Factory do
     }
   end
 
+  def bridge_day_proposal_factory(attrs) do
+    bridge_day = %MehrSchulferien.Periods.BridgeDayPeriod{
+      starts_on: Date.new!(2026, 5, 1),
+      ends_on: Date.new!(2026, 5, 4),
+      number_days: 2,
+      last_period_id: attrs[:last_period_id] || insert(:period).id
+    }
+
+    merge_attributes(bridge_day, attrs)
+  end
+
   def add_school_periods(%{location: location}) do
     oster = insert(:holiday_or_vacation_type, %{name: "Oster"})
     herbst = insert(:holiday_or_vacation_type, %{name: "Herbst"})

@@ -45,11 +45,11 @@ defmodule MehrSchulferienWeb.PublicHolidaySystemTest do
       # Check that holiday table exists
       assert html_response(conn, 200) =~ "Feiertag"
       assert html_response(conn, 200) =~ "Datum"
-      
+
       # Check that FAQ section exists
       assert html_response(conn, 200) =~ "FAQ"
       assert html_response(conn, 200) =~ "Wann ist #{holiday_type.name} in #{federal_state.name}?"
-      
+
       # Check that schema.org JSON-LD markup exists
       assert html_response(conn, 200) =~ "application/ld+json"
       assert html_response(conn, 200) =~ "FAQPage"
@@ -103,4 +103,4 @@ defmodule MehrSchulferienWeb.PublicHolidaySystemTest do
     {:ok, period} = MehrSchulferien.Periods.create_period(attrs)
     period
   end
-end 
+end

@@ -180,7 +180,9 @@
           <section class="bg-white rounded shadow p-6 h-full">
             <h3 class="text-xl font-semibold mb-4">
               <%= MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on) %> 
-              <span class="text-gray-500"><%= @year %></span>
+              <%= if bridge_day.starts_on.year == bridge_day.ends_on.year && !String.contains?(MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on), Integer.to_string(bridge_day.starts_on.year)) do %>
+                <span class="text-gray-500"><%= bridge_day.starts_on.year %></span>
+              <% end %>
             </h3>
             
             <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{

@@ -36,7 +36,6 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
       assert html_response(conn, 200) =~ "Die "
       assert html_response(conn, 200) =~ "besten Tipps für"
 
-      
       # Check flag image is properly formatted with HEEx syntax
       if code = federal_state.code do
         if MehrSchulferien.Locations.Flag.get_flag(code) do
@@ -46,11 +45,11 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
           assert html =~ ~s(alt="Landesflage #{federal_state.name}")
         end
       end
-      
+
       # Test the intro paragraph
       assert html_response(conn, 200) =~ ~s(<p class="text-gray-700 mb-8">)
       assert html_response(conn, 200) =~ "Unser Spezial-Algorithmus findet"
-      
+
       # Verify bridge day sections are rendered
       assert html_response(conn, 200) =~ "Brückentag"
     end
@@ -71,14 +70,14 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
             @future_year
           )
         )
-      
+
       html = html_response(conn, 200)
-      
+
       # Check for FAQ content
       if html =~ "Brückentag-FAQ" do
         assert html =~ ~s(<dt class="text-lg font-medium text-gray-800">Wie viele Brückentage)
         assert html =~ ~s(<dd class="mt-2 text-gray-700">)
-        
+
         # Check for Schema.org JSON-LD
         assert html =~ ~s(<script type="application/ld+json">)
         assert html =~ ~s("@context": "https://schema.org")
@@ -105,4 +104,4 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
     _public_periods = add_public_periods(%{location: federal_state})
     {:ok, %{federal_state: federal_state}}
   end
-end 
+end

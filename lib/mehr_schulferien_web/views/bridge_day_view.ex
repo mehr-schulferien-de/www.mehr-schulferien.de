@@ -7,11 +7,23 @@ defmodule MehrSchulferienWeb.BridgeDayView do
     months_map = DateHelpers.get_months_map()
     first_month = start_date.month
     last_month = end_date.month
+    first_year = start_date.year
+    last_year = end_date.year
 
-    if first_month == last_month do
-      months_map[first_month]
-    else
-      "#{String.slice(months_map[first_month], 0, 3)}-#{String.slice(months_map[last_month], 0, 3)}"
+    cond do
+      # Same month
+      first_month == last_month ->
+        months_map[first_month]
+
+      # Multiple months, different years
+      first_year != last_year ->
+        first_month_abbr = String.at(months_map[first_month], 0) <> "."
+        "#{first_month_abbr} #{first_year} #{months_map[last_month]} #{last_year}"
+
+      # Multiple months, same year (use abbreviated format for first month)
+      true ->
+        first_month_abbr = String.at(months_map[first_month], 0) <> "."
+        "#{first_month_abbr} #{months_map[last_month]}"
     end
   end
 
@@ -42,7 +54,7 @@ defmodule MehrSchulferienWeb.BridgeDayView do
       acc + Date.diff(period.ends_on, period.starts_on) + 1
     end)
   end
-  
+
   def get_reference_date(conn) do
     DateHelpers.get_today_or_custom_date(conn)
   end

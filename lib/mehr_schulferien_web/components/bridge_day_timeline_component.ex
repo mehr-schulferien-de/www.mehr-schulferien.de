@@ -141,11 +141,43 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     sorted_month_groups = Enum.sort(month_groups)
     months_map = DateHelpers.get_months_map()
 
+    # Determine if we have multiple months
+    has_multiple_months = length(sorted_month_groups) > 1
+
+    # Check if we have multiple years
+    years = sorted_month_groups |> Enum.map(fn {{year, _month}, _days} -> year end) |> Enum.uniq()
+    has_multiple_years = length(years) > 1
+
     month_headers =
-      Enum.map(sorted_month_groups, fn {{year, month}, month_days} ->
+      sorted_month_groups
+      |> Enum.with_index()
+      |> Enum.map(fn {{{year, month}, month_days}, index} ->
+        # Only abbreviate months that show 3 or fewer days
+        use_abbreviation =
+          has_multiple_months &&
+            index < length(sorted_month_groups) - 1 &&
+            length(month_days) <= 3
+
+        month_name =
+          if use_abbreviation do
+            # For months with 3 or fewer days, use abbreviated format
+            String.at(months_map[month], 0) <> "."
+          else
+            # Otherwise use full month name
+            months_map[month]
+          end
+
+        # Only show the year when there are multiple years and at year changes
+        show_year =
+          has_multiple_years &&
+            (index == 0 ||
+               index == length(sorted_month_groups) - 1 ||
+               elem(Enum.at(sorted_month_groups, index), 0) |> elem(0) !=
+                 elem(Enum.at(sorted_month_groups, index - 1), 0) |> elem(0))
+
         """
         <th class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 bg-gray-50" colspan="#{length(month_days)}">
-          #{months_map[month]} #{year}
+          #{month_name}#{if show_year, do: " #{year}", else: ""}
         </th>
         """
       end)

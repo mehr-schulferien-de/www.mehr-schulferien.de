@@ -36,20 +36,21 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
                 Date.compare(@today, period.ends_on) != :gt %>
             <% is_past =
               Date.compare(@today, period.ends_on) == :gt && period.starts_on.year == @today.year %>
-            <% month_name = case period.starts_on.month do
-              1 -> "januar"
-              2 -> "februar"
-              3 -> "märz"
-              4 -> "april"
-              5 -> "mai"
-              6 -> "juni"
-              7 -> "juli"
-              8 -> "august"
-              9 -> "september"
-              10 -> "oktober"
-              11 -> "november"
-              12 -> "dezember"
-            end %>
+            <% month_name =
+              case period.starts_on.month do
+                1 -> "januar"
+                2 -> "februar"
+                3 -> "märz"
+                4 -> "april"
+                5 -> "mai"
+                6 -> "juni"
+                7 -> "juli"
+                8 -> "august"
+                9 -> "september"
+                10 -> "oktober"
+                11 -> "november"
+                12 -> "dezember"
+              end %>
             <tr
               class={"hover:bg-gray-50 cursor-pointer #{if is_current, do: "bg-yellow-100"} #{if is_past, do: "text-gray-400"}"}
               onclick={"window.location.href='##{month_name}#{period.starts_on.year}'"}
