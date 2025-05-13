@@ -81,4 +81,40 @@ defmodule MehrSchulferienWeb.SchoolComponents do
     <% end %>
     """
   end
+
+  def schema_org_school(assigns) do
+    ~H"""
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "School",
+        "name": "<%= @school.name %>",
+        <%= if @school.address do %>
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "<%= @school.address.street %>",
+          "addressLocality": "<%= @city.name %>",
+          "postalCode": "<%= @school.address.zip_code %>",
+          "addressRegion": "<%= @federal_state.name %>",
+          "addressCountry": "<%= @country.code %>"
+        },
+        <%= if @school.address.phone_number do %>
+        "telephone": "<%= @school.address.phone_number %>",
+        <% end %>
+        <%= if @school.address.email_address do %>
+        "email": "<%= @school.address.email_address %>",
+        <% end %>
+        <%= if @school.address.homepage_url do %>
+        "url": "<%= @school.address.homepage_url %>",
+        <% end %>
+        <% end %>
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "<%= Map.get(@school, :latitude, "") %>",
+          "longitude": "<%= Map.get(@school, :longitude, "") %>"
+        }
+      }
+    </script>
+    """
+  end
 end

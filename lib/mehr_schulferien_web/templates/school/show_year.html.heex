@@ -83,6 +83,41 @@
               ) %>
             </address>
 
+            <div class="mt-2">
+              <% map_query =
+                URI.encode(
+                  "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}"
+                ) %>
+              <a
+                href={"https://www.google.com/maps?q=#{map_query}"}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-600 hover:text-blue-800 inline-flex items-center text-sm cursor-pointer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                Auf Google Maps anzeigen
+              </a>
+            </div>
+
             <%= if @school.address.homepage_url do %>
               <div class="mt-3">
                 <p class="text-sm font-semibold text-gray-700">Homepage:</p>
@@ -107,8 +142,22 @@
                   <% email = @school.address.email_address %>
                   <a
                     href={"mailto:" <> email}
-                    class="text-blue-600 hover:text-blue-800 break-words cursor-pointer"
+                    class="text-blue-600 hover:text-blue-800 break-words cursor-pointer flex items-center"
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
                     <%= email %>
                   </a>
                 </p>
@@ -307,6 +356,13 @@
         />
       <% end %>
     <% end %>
+
+    <.schema_org_school
+      school={@school}
+      city={@city}
+      federal_state={@federal_state}
+      country={@country}
+    />
 
     <.schema_org_event
       periods={@periods}
