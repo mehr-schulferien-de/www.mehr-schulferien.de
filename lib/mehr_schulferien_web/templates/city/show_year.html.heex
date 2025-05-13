@@ -2,7 +2,17 @@
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
-        Schulferien <%= @city.name %>, <%= @federal_state.name %>
+        Schulferien <%= @city.name %>, <%= link(@federal_state.name,
+          to:
+            Routes.federal_state_path(
+              @conn,
+              :show_year,
+              @country.slug,
+              @federal_state.slug,
+              @year
+            ),
+          class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+        ) %>
       </h1>
 
       <.pagination
