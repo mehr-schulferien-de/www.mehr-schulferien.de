@@ -41,6 +41,16 @@
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
         </sitemap>
+        
+        <%!-- Bridge days URLs for federal states --%>
+        <sitemap>
+          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/land/<%= country.slug %>/bundesland/<%= federal_state.slug %>/brueckentage/<%= year %></loc>
+          <lastmod><%= cond do
+            year < @today.year -> Date.new!(year + 1, 1, 1)
+            year == @today.year -> @today
+            true -> Date.new!(@today.year, 1, 1)
+          end %></lastmod>
+        </sitemap>
       <% end %>
     <% end %>
 
