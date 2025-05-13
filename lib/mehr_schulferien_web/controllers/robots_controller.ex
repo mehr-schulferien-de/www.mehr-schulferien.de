@@ -81,7 +81,7 @@ defmodule MehrSchulferienWeb.RobotsController do
     Disallow: /land/*/bundesland/*/kategorie/*
     Disallow: /land/*/bundesland/*/feiertage/*
 
-    # Allow only current year (#{current_year}) and next year (#{next_year}) for city and school pages
+    # Allow only current year (#{current_year}) and next year (#{next_year}) for city, school, and bridge days pages
     """
 
     # Generate Disallow rules for all years except current and next
@@ -91,7 +91,8 @@ defmodule MehrSchulferienWeb.RobotsController do
       |> Enum.flat_map(fn year ->
         [
           "Disallow: /land/*/stadt/*/#{year}$",
-          "Disallow: /land/*/schule/*/#{year}$"
+          "Disallow: /land/*/schule/*/#{year}$",
+          "Disallow: /land/*/brueckentage/*/#{year}$"
         ]
       end)
       |> Enum.join("\n")
