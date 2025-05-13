@@ -70,6 +70,29 @@
             </li>
           </ul>
         </div>
+
+        <div class="bg-white p-4 rounded-lg shadow-sm mt-4">
+          <p class="text-sm font-semibold text-gray-700">Kartenansicht:</p>
+          <p class="text-sm">
+            <%= link to: "https://www.google.com/maps/search/?api=1&query=#{URI.encode("#{if Enum.any?(@city.zip_codes), do: hd(@city.zip_codes).value, else: ""} #{@city.name}, #{@federal_state.name}, #{@country.name}")}", target: "_blank", class: "text-blue-600 hover:text-blue-800 flex items-center" do %>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+              Google Maps: <%= @city.name %>
+            <% end %>
+          </p>
+        </div>
       </div>
     </div>
 
