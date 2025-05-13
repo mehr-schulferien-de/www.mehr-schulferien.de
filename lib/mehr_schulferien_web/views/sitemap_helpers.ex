@@ -101,8 +101,13 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
     base_url = MehrSchulferienWeb.Endpoint.url()
     location = "#{base_url}/ferien/#{country.slug}/stadt/#{city.slug}/#{year}"
 
+    # Use last_modified date if available, otherwise fall back to previous logic
     lastmod =
       cond do
+        # Use new last_modified metadata field if available
+        Map.has_key?(city, :last_modified) ->
+          city.last_modified
+
         # When year is an integer
         is_integer(year) ->
           {:ok, date} = Date.new(year, 12, 31)
@@ -126,8 +131,13 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
     base_url = MehrSchulferienWeb.Endpoint.url()
     location = "#{base_url}/ferien/#{country.slug}/schule/#{school.slug}/#{year}"
 
+    # Use last_modified date if available, otherwise fall back to previous logic
     lastmod =
       cond do
+        # Use new last_modified metadata field if available
+        Map.has_key?(school, :last_modified) ->
+          school.last_modified
+
         # When year is an integer
         is_integer(year) ->
           {:ok, date} = Date.new(year, 12, 31)

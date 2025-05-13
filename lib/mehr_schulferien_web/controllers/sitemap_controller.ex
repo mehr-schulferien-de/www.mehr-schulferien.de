@@ -7,77 +7,259 @@ defmodule MehrSchulferienWeb.SitemapController do
   alias MehrSchulferien.Repo
   import Ecto.Query
 
-  def index(conn, _params) do
+  def sitemap(conn, _params) do
     today = Calendars.DateHelpers.today_berlin()
-    countries = Locations.list_countries()
-
-    # Limit data in development environment
-    countries =
-      if Mix.env() == :dev do
-        Enum.take(countries, 20)
-      else
-        countries
-      end
-
-    countries = Enum.map(countries, &build_country(&1))
+    countries_with_locations = fetch_all_locations_with_periods()
 
     conn
     |> put_resp_content_type("text/xml")
-    |> render("index.xml", countries: countries, today: today)
+    |> render("sitemap.xml", countries: countries_with_locations, today: today)
   end
 
-  defp build_country(country) do
-    federal_states = country |> Locations.list_federal_states() |> Locations.with_periods()
+  defp fetch_all_locations_with_periods do
+    alias MehrSchulferien.Locations.Location
+    alias MehrSchulferien.Periods.Period
 
-    # Limit data in development environment
-    federal_states = if Mix.env() == :dev, do: Enum.take(federal_states, 20), else: federal_states
+    # Get all countries
+    countries = Locations.list_countries()
 
-    # Get cities with at least one school in a single query
-    federal_state_ids = Enum.map(federal_states, & &1.id)
+    # Get all relevant location IDs in a single query
+    countries
+    |> Enum.map(fn country ->
+      # For development environment, limit the number of entries
+      limit_count = if Mix.env() == :dev, do: 20, else: 10000
 
-    cities_with_schools_query =
-      from city in MehrSchulferien.Locations.Location,
-        join: county in MehrSchulferien.Locations.Location,
-        on: city.parent_location_id == county.id,
-        join: school in MehrSchulferien.Locations.Location,
-        on: school.parent_location_id == city.id and school.is_school == true,
-        where: county.parent_location_id in ^federal_state_ids and city.is_city == true,
-        distinct: city.id,
-        select: city
+      # Get federal states
+      federal_states_query =
+        from l in Location,
+          where: l.parent_location_id == ^country.id and l.is_federal_state == true,
+          limit: ^limit_count
 
-    cities = Repo.all(cities_with_schools_query) |> Locations.with_periods()
+      federal_states = Repo.all(federal_states_query)
+      federal_state_ids = Enum.map(federal_states, & &1.id)
 
-    # Limit data in development environment
-    cities = if Mix.env() == :dev, do: Enum.take(cities, 20), else: cities
+      # Get counties for all federal states in one query
+      counties_query =
+        from l in Location,
+          where: l.parent_location_id in ^federal_state_ids and l.is_county == true,
+          limit: ^limit_count
 
-    is_school_vacation_types = Calendars.list_is_school_vacation_types(country)
+      counties = Repo.all(counties_query)
+      county_ids = Enum.map(counties, & &1.id)
 
-    # Limit data in development environment
-    is_school_vacation_types =
-      if Mix.env() == :dev,
-        do: Enum.take(is_school_vacation_types, 20),
-        else: is_school_vacation_types
+      # Get cities with schools in one query
+      cities_with_schools_query =
+        from city in Location,
+          where: city.parent_location_id in ^county_ids and city.is_city == true,
+          join: school in Location,
+          on: school.parent_location_id == city.id and school.is_school == true,
+          distinct: city.id,
+          select: city,
+          limit: ^limit_count
 
-    # Get all city IDs after limiting
-    city_ids = Enum.map(cities, & &1.id)
+      cities = Repo.all(cities_with_schools_query)
+      city_ids = Enum.map(cities, & &1.id)
 
-    # Only get schools that belong to the cities we kept
-    schools =
-      country
-      |> Locations.list_schools_of_country()
-      |> Enum.filter(fn school -> Enum.member?(city_ids, school.parent_location_id) end)
-      |> Locations.with_periods()
-      |> Locations.combine_school_periods(cities)
+      # Get schools in one query
+      schools_query =
+        from l in Location,
+          where: l.parent_location_id in ^city_ids and l.is_school == true,
+          limit: ^limit_count
 
-    # Limit data in development environment
-    schools = if Mix.env() == :dev, do: Enum.take(schools, 20), else: schools
+      schools = Repo.all(schools_query)
 
-    %{
-      country: country,
-      federal_states: federal_states,
-      cities: cities,
-      is_school_vacation_types: is_school_vacation_types,
-      schools: schools
-    }
+      # Collect all location IDs
+      all_location_ids =
+        [country.id] ++ federal_state_ids ++ city_ids ++ Enum.map(schools, & &1.id) ++ county_ids
+
+      # Fetch all periods for these locations in a single query
+      periods_query =
+        from p in Period,
+          where: p.location_id in ^all_location_ids,
+          preload: [:holiday_or_vacation_type]
+
+      all_periods = Repo.all(periods_query)
+
+      # Group periods by location ID
+      periods_by_location_id = Enum.group_by(all_periods, & &1.location_id)
+
+      # Get vacation types for country
+      is_school_vacation_types = Calendars.list_is_school_vacation_types(country)
+
+      is_school_vacation_types =
+        if Mix.env() == :dev,
+          do: Enum.take(is_school_vacation_types, 20),
+          else: is_school_vacation_types
+
+      # Add periods and metadata to each location
+      federal_states_with_meta = add_periods_to_locations(federal_states, periods_by_location_id)
+      counties_with_meta = add_periods_to_locations(counties, periods_by_location_id)
+      cities_with_meta = add_periods_to_locations(cities, periods_by_location_id)
+      schools_with_meta = add_periods_to_locations(schools, periods_by_location_id)
+
+      # Map of federal_state_id -> federal_state for easier lookup
+      federal_states_by_id =
+        Enum.reduce(federal_states_with_meta, %{}, fn state, acc ->
+          Map.put(acc, state.id, state)
+        end)
+
+      # Map of county_id -> county for easier lookup
+      counties_by_id =
+        Enum.reduce(counties_with_meta, %{}, fn county, acc ->
+          Map.put(acc, county.id, county)
+        end)
+
+      # Add federal_state and county periods to each city
+      cities_with_meta =
+        Enum.map(cities_with_meta, fn city ->
+          # Get the county and federal state for this city
+          county = Map.get(counties_by_id, city.parent_location_id)
+
+          if county do
+            federal_state = Map.get(federal_states_by_id, county.parent_location_id)
+
+            # Get all periods
+            city_periods = Map.get(city, :periods, [])
+            county_periods = Map.get(county, :periods, [])
+
+            federal_state_periods =
+              if federal_state, do: Map.get(federal_state, :periods, []), else: []
+
+            country_periods = Map.get(periods_by_location_id, country.id, [])
+
+            # Combine all periods
+            combined_periods =
+              city_periods ++ county_periods ++ federal_state_periods ++ country_periods
+
+            # Recalculate metadata with combined periods
+            period_years =
+              combined_periods
+              |> Enum.flat_map(fn period ->
+                start_year = period.starts_on.year
+                end_year = period.ends_on.year
+                start_year..end_year
+              end)
+              |> Enum.uniq()
+              |> Enum.sort()
+
+            # Update the city with combined periods
+            %{city | periods: combined_periods, period_years: period_years}
+          else
+            city
+          end
+        end)
+
+      # For schools, also add the city periods
+      schools_with_meta =
+        Enum.map(schools_with_meta, fn school ->
+          city = Enum.find(cities_with_meta, fn city -> city.id == school.parent_location_id end)
+
+          if city do
+            city_periods = Map.get(city, :periods, [])
+            school_periods = Map.get(school, :periods, [])
+            combined_periods = school_periods ++ city_periods
+
+            # Recalculate metadata with combined periods
+            period_years =
+              combined_periods
+              |> Enum.flat_map(fn period ->
+                start_year = period.starts_on.year
+                end_year = period.ends_on.year
+                start_year..end_year
+              end)
+              |> Enum.uniq()
+              |> Enum.sort()
+
+            %{school | periods: combined_periods, period_years: period_years}
+          else
+            school
+          end
+        end)
+
+      # Add metadata to country
+      country_with_meta =
+        country
+        |> Map.put(:periods, Map.get(periods_by_location_id, country.id, []))
+        |> add_last_modified_metadata()
+
+      %{
+        country: country_with_meta,
+        federal_states: federal_states_with_meta,
+        cities: cities_with_meta,
+        is_school_vacation_types: is_school_vacation_types,
+        schools: schools_with_meta
+      }
+    end)
+  end
+
+  defp add_periods_to_locations(locations, periods_by_location_id) do
+    Enum.map(locations, fn location ->
+      location
+      |> Map.put(:periods, Map.get(periods_by_location_id, location.id, []))
+      |> add_last_modified_metadata()
+    end)
+  end
+
+  # Add metadata to a location including last_modified date and period years
+  defp add_last_modified_metadata(location) do
+    periods = Map.get(location, :periods, [])
+
+    # Find the most recent update timestamp from periods
+    last_period_update =
+      case periods do
+        [] ->
+          nil
+
+        periods ->
+          periods
+          |> Enum.map(& &1.updated_at)
+          |> Enum.max_by(
+            fn
+              # Convert NaiveDateTime to comparable integer
+              %NaiveDateTime{} = dt ->
+                NaiveDateTime.to_erl(dt) |> :calendar.datetime_to_gregorian_seconds()
+
+              dt ->
+                dt |> DateTime.to_unix()
+            end,
+            fn -> nil end
+          )
+      end
+
+    # Extract unique years from periods
+    period_years =
+      case periods do
+        [] ->
+          []
+
+        periods ->
+          periods
+          |> Enum.flat_map(fn period ->
+            # Generate list of years that this period spans
+            start_year = period.starts_on.year
+            end_year = period.ends_on.year
+            start_year..end_year
+          end)
+          |> Enum.uniq()
+          |> Enum.sort()
+      end
+
+    # Determine last modified date from period update
+    last_modified =
+      if last_period_update do
+        # Handle both NaiveDateTime and DateTime
+        case last_period_update do
+          %NaiveDateTime{} -> NaiveDateTime.to_date(last_period_update)
+          %DateTime{} -> DateTime.to_date(last_period_update)
+          # Fallback in case of unexpected type
+          _ -> nil
+        end
+      else
+        nil
+      end
+
+    location
+    |> Map.put(:last_modified, last_modified)
+    |> Map.put(:period_years, period_years)
   end
 end

@@ -85,7 +85,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/ferien", PageController, :full_year
 
     # Sitemap and robots
-    get "/sitemap.xml", SitemapController, :index
+    get "/sitemap.xml", SitemapController, :sitemap
     get "/robots.txt", RobotsController, :index
 
     # Country routes (consistent pattern)

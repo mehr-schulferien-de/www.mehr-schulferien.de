@@ -30,16 +30,16 @@ defmodule MehrSchulferienWeb.SitemapSystemTest do
       # Check XML format
       response = response(conn, 200)
       assert response =~ ~s(<?xml version="1.0" encoding="UTF-8"?>)
-      assert response =~ ~s(<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
+      assert response =~ ~s(<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
 
       # Check main pages - homepage URL
-      assert response =~ ~r{<loc>http://[^<]+/</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/</loc>}
 
       # Check developers page
-      assert response =~ ~r{<loc>http://[^<]+/developers</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/developers</loc>}
 
       # Check country URL is present
-      assert response =~ ~r{<loc>http://[^<]+/land/d</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/land/d</loc>}
 
       # We don't check federal state, city and school URLs in this test since
       # they depend on the data existing in the correct format in the sitemap
