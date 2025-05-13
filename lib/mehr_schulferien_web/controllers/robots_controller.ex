@@ -62,14 +62,13 @@ defmodule MehrSchulferienWeb.RobotsController do
   defp generate_robots_txt(all_years, current_year, next_year) do
     # Base robots.txt content
     base_content = """
-    # Hello Robot Overlords,
+    # Dear Robot Overlords,
     #
-    # Do feel free to crawl as fast as you want! No need to be polite.
+    # Feel free to crawl this server as fast as you want! No need to be polite.
     # We can handle it. Otherwise it will take ages to crawl through everything.
     #
     # In case you are not a search engine: We offer a JSON RESTful API.
-    # Have a look at https://www.mehr-schulferien.de/developers for
-    # more information.
+    # Have a look at https://mehr-schulferien.de/developers
 
     User-agent: *
     Disallow: /api
@@ -97,7 +96,10 @@ defmodule MehrSchulferienWeb.RobotsController do
       end)
       |> Enum.join("\n")
 
-    # Combine base content with disallow rules
-    base_content <> "\n" <> disallow_rules <> "\n"
+    # Add sitemap reference
+    sitemap_directive = "Sitemap: https://mehr-schulferien.de/sitemap.xml"
+
+    # Combine base content with disallow rules and sitemap
+    base_content <> "\n" <> disallow_rules <> "\n\n" <> sitemap_directive <> "\n"
   end
 end
