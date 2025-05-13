@@ -2,7 +2,22 @@
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
-        Schulferien <%= @school.name %>, <%= @city.name %>
+        Schulferien
+        <%= if String.contains?(@school.name, @city.name) do %>
+          <%= # Safe way to handle replacing part of a string with a link
+          [
+            String.replace(@school.name, @city.name, ""),
+            link(@city.name,
+              to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+              class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+            )
+          ] %>
+        <% else %>
+          <%= @school.name %>, <%= link(@city.name,
+            to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+            class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+          ) %>
+        <% end %>
       </h1>
 
       <.pagination
@@ -39,17 +54,17 @@
           </p>
           <ul class="space-y-2 list-disc pl-5 text-sm">
             <li>
-              <%= link to: Routes.api_i_cal_path(@conn, :show, @school.slug, vacation_types: "school", year: @year, calendar_year: true), class: "text-blue-600 hover:text-blue-800" do %>
+              <%= link to: Routes.api_i_cal_path(@conn, :show, @school.slug, vacation_types: "school", year: @year, calendar_year: true), class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
                 iCal Schulferien <%= @school.name %> <%= @year %>
               <% end %>
             </li>
             <li>
-              <%= link to: Routes.api_i_cal_path(@conn, :show, @school.slug, vacation_types: "school", year: @year - 1), class: "text-blue-600 hover:text-blue-800" do %>
+              <%= link to: Routes.api_i_cal_path(@conn, :show, @school.slug, vacation_types: "school", year: @year - 1), class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
                 iCal Schuljahr <%= @year - 1 %>/<%= @year %> <%= @school.name %>
               <% end %>
             </li>
             <li>
-              <%= link to: Routes.api_i_cal_path(@conn, :show, @school.slug, vacation_types: "school", year: @year), class: "text-blue-600 hover:text-blue-800" do %>
+              <%= link to: Routes.api_i_cal_path(@conn, :show, @school.slug, vacation_types: "school", year: @year), class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
                 iCal Schuljahr <%= @year %>/<%= @year + 1 %> <%= @school.name %>
               <% end %>
             </li>
@@ -62,7 +77,10 @@
             <address class="text-sm text-gray-700 not-italic">
               <%= @school.name %><br />
               <%= @school.address.street %><br />
-              <%= @school.address.zip_code %> <%= @school.address.city %>
+              <%= @school.address.zip_code %> <%= link(@school.address.city,
+                to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+                class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+              ) %>
             </address>
 
             <%= if @school.address.homepage_url do %>
@@ -74,7 +92,7 @@
                     href={homepage_url}
                     target="_blank"
                     rel="noopener"
-                    class="text-blue-600 hover:text-blue-800 break-words"
+                    class="text-blue-600 hover:text-blue-800 break-words cursor-pointer"
                   >
                     <%= homepage_url %>
                   </a>
@@ -89,7 +107,7 @@
                   <% email = @school.address.email_address %>
                   <a
                     href={"mailto:" <> email}
-                    class="text-blue-600 hover:text-blue-800 break-words"
+                    class="text-blue-600 hover:text-blue-800 break-words cursor-pointer"
                   >
                     <%= email %>
                   </a>
@@ -103,7 +121,7 @@
                 <p class="text-sm">
                   <% phone = @school.address.phone_number %>
                   <% tel_link = "tel:" <> String.replace(phone, " ", "") %>
-                  <a href={tel_link} class="text-blue-600 hover:text-blue-800">
+                  <a href={tel_link} class="text-blue-600 hover:text-blue-800 cursor-pointer">
                     <%= phone %>
                   </a>
                 </p>
@@ -113,7 +131,7 @@
             <div class="mt-3">
               <p class="text-sm font-semibold text-gray-700">Kontaktdaten-Download:</p>
               <p class="text-sm">
-                <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), class: "text-blue-600 hover:text-blue-800 flex items-center" do %>
+                <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), class: "text-blue-600 hover:text-blue-800 flex items-center cursor-pointer" do %>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-4 w-4 mr-1"
