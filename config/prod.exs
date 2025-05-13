@@ -10,7 +10,7 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
-  url: [host: "www.mehr-schulferien.de", port: 443, scheme: "https"],
+  url: [host: "mehr-schulferien.de", port: 443, scheme: "https"],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
