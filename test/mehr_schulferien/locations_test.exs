@@ -152,4 +152,103 @@ defmodule MehrSchulferien.LocationsTest do
     counties = Enum.map(federal_states, &insert(:county, %{parent_location_id: &1.id}))
     Enum.map(counties, &insert(:city, %{parent_location_id: &1.id}))
   end
+
+  describe "list_counties_with_cities_having_schools/1" do
+    setup do
+      country = insert(:country, name: "Testland", slug: "testland")
+      federal_state = insert(:federal_state, name: "Test State", slug: "test-state", parent_location_id: country.id)
+
+      county1 = insert(:county, name: "County One", parent_location_id: federal_state.id)
+      county2 = insert(:county, name: "County Two", parent_location_id: federal_state.id)
+      county3 = insert(:county, name: "County Three (No Cities with Schools)", parent_location_id: federal_state.id)
+      county4 = insert(:county, name: "County Four (No Cities)", parent_location_id: federal_state.id)
+
+
+      city1_c1 = insert(:city, name: "City A (County One)", parent_location_id: county1.id)
+      insert(:zip_code, value: "12345", city_id: city1_c1.id)
+      insert_list(2, :school, parent_location_id: city1_c1.id) # 2 schools
+
+      city2_c1 = insert(:city, name: "City B (County One, No Schools)", parent_location_id: county1.id)
+      insert(:zip_code, value: "54321", city_id: city2_c1.id)
+      # No schools in City B
+
+      city1_c2 = insert(:city, name: "City C (County Two)", parent_location_id: county2.id)
+      insert_list(1, :school, parent_location_id: city1_c2.id) # 1 school
+
+      # County Three has a city, but that city has no schools
+      city1_c3 = insert(:city, name: "City D (County Three, No Schools)", parent_location_id: county3.id)
+
+      %{
+        federal_state: federal_state,
+        county1: county1,
+        county2: county2,
+        county3: county3,
+        county4: county4,
+        city1_c1: city1_c1,
+        city2_c1: city2_c1,
+        city1_c2: city1_c2,
+        city1_c3: city1_c3
+      }
+    end
+
+    test "returns counties with cities that have schools, including school count and zip codes", %{
+      federal_state: federal_state,
+      county1: county1,
+      county2: county2,
+      city1_c1: city1_c1,
+      city1_c2: city1_c2
+    } do
+      result = Locations.list_counties_with_cities_having_schools(federal_state)
+
+      # Expected: County One with City A (2 schools)
+      #           County Two with City C (1 school)
+      # County Three and Four should be filtered out.
+      # City B (County One) should not be listed as it has no schools.
+
+      assert length(result) == 2 # County One and County Two
+
+      # Check County One
+      {res_county1, cities_c1} = Enum.find(result, fn {c, _cs} -> c.id == county1.id end)
+      assert res_county1.name == "County One"
+      assert length(cities_c1) == 1 # Only City A
+
+      city_a_data = Enum.find(cities_c1, fn c_data -> c_data.city_data.id == city1_c1.id end)
+      assert city_a_data.city_data.name == "City A (County One)"
+      assert city_a_data.school_count == 2
+      assert city_a_data.city_data.zip_codes != [] # Check zip_codes are preloaded
+      assert Enum.any?(city_a_data.city_data.zip_codes, &(&1.value == "12345"))
+
+      # Check County Two
+      {res_county2, cities_c2} = Enum.find(result, fn {c, _cs} -> c.id == county2.id end)
+      assert res_county2.name == "County Two"
+      assert length(cities_c2) == 1 # Only City C
+
+      city_c_data = Enum.find(cities_c2, fn c_data -> c_data.city_data.id == city1_c2.id end)
+      assert city_c_data.city_data.name == "City C (County Two)"
+      assert city_c_data.school_count == 1
+      assert city_c_data.city_data.zip_codes != nil # Can be empty list if no zips, but preloaded
+    end
+
+    test "returns empty list if federal state has no counties", %{} do
+      country = insert(:country)
+      federal_state_no_counties = insert(:federal_state, parent_location_id: country.id)
+      result = Locations.list_counties_with_cities_having_schools(federal_state_no_counties)
+      assert result == []
+    end
+
+    test "returns empty list if counties have no cities with schools", %{county4: county4, federal_state: federal_state} do
+      # County4 has no cities at all.
+      # County3 has a city, but that city has no schools.
+      # We need to ensure that list_counties_with_cities_having_schools correctly filters these.
+      # To isolate this test, let's imagine a federal state with only such counties.
+      temp_country = insert(:country, name: "Temp Country")
+      temp_fs = insert(:federal_state, name: "Temp FS", parent_location_id: temp_country.id)
+      c_no_cities = insert(:county, name: "No Cities County", parent_location_id: temp_fs.id)
+      c_city_no_schools = insert(:county, name: "City No Schools County", parent_location_id: temp_fs.id)
+      insert(:city, name: "City With No Schools", parent_location_id: c_city_no_schools.id) # No schools here
+
+      result = Locations.list_counties_with_cities_having_schools(temp_fs)
+      assert result == []
+    end
+  end
 end

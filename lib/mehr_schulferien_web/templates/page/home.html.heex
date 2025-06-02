@@ -8,36 +8,40 @@
   </p>
 
   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+    <%# Loop through each country and its federal states to display vacation timelines %>
     <%= for {%{country: _country, federal_states: federal_states, periods: periods}, country_index} <- Enum.with_index(@countries) do %>
       <%= for {federal_state, fs_index} <- Enum.with_index(federal_states) do %>
-        <% # Get federal state periods and filter them
-        federal_state_periods =
-          Enum.find(periods, fn {state, _} -> state.id == federal_state.id end) |> elem(1)
+        <%
+          # Get periods for the current federal state and filter for vacations and public holidays
+          federal_state_periods =
+            Enum.find(periods, fn {state, _} -> state.id == federal_state.id end) |> elem(1)
 
-        filtered_periods =
-          Enum.filter(federal_state_periods, fn period ->
-            period.is_school_vacation || period.is_public_holiday
-          end)
+          filtered_periods =
+            Enum.filter(federal_state_periods, fn period ->
+              period.is_school_vacation || period.is_public_holiday
+            end)
 
-        component_id = "timeline-#{country_index}-#{fs_index}"
+          component_id = "timeline-#{country_index}-#{fs_index}"
 
-        # Set up variables for year links
-        current_year =
-          if @custom_start_date, do: @custom_start_date.year, else: Date.utc_today().year
+          # Determine current and next year for link generation
+          current_year =
+            if @custom_start_date, do: @custom_start_date.year, else: Date.utc_today().year
 
-        next_year = current_year + 1 %>
+          next_year = current_year + 1
+        %>
         <!-- Card for each federal state -->
         <section class="bg-white rounded shadow p-6 h-full">
           <h2 class="text-xl font-semibold mb-6"><%= federal_state.name %></h2>
           <!-- Timeline visualization -->
           <div id={"#{component_id}"}>
+            <%# Render the vacation timeline component %>
             <%= MehrSchulferienWeb.VacationTimelineComponent.render(
-              days_to_show: @days,
-              months: @months,
-              all_periods: filtered_periods,
-              days_count: @days_to_display,
-              months_with_days: @months_with_days
-            ) %>
+                  days_to_show: @days,
+                  months: @months,
+                  all_periods: filtered_periods,
+                  days_count: @days_to_display,
+                  months_with_days: @months_with_days
+                ) %>
             <!-- Fallback text for test environment -->
             <div class="hidden" aria-hidden="true">
               Ferien und Feiertage im angezeigten Zeitraum
@@ -65,89 +69,97 @@
 <div class="mt-12">
   <h2 class="text-2xl font-bold text-gray-900 mb-6">Brückentage</h2>
   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+    <%# Loop through each country and its federal states to display bridge day information %>
     <%= for {%{country: _country, federal_states: federal_states}, _country_index} <- Enum.with_index(@countries) do %>
       <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
-        <% # Find next bridge day for the federal state
-        reference_date = @custom_start_date || DateHelpers.today_berlin()
+        <%
+          # Determine the reference date for bridge day calculations (custom start date or today)
+          reference_date = @custom_start_date || DateHelpers.today_berlin()
 
-        next_bridge_day =
-          MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
+          # Find the next bridge day for the federal state
+          next_bridge_day =
+            MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
 
-        # Set up variables for year links
-        current_year =
-          if @custom_start_date, do: @custom_start_date.year, else: Date.utc_today().year
-
-        next_year = current_year + 1 %>
+          # Determine current and next year for link generation
+          current_year =
+            if @custom_start_date, do: @custom_start_date.year, else: Date.utc_today().year
+          next_year = current_year + 1
+        %>
         <section class="bg-white rounded shadow p-6 h-full">
           <h3 class="text-xl font-semibold mb-4"><%= federal_state.name %></h3>
 
+          <%# Display next bridge day information if available %>
           <%= if next_bridge_day do %>
-            <% # Get related periods to find the public holiday
-            country = Locations.get_location!(federal_state.parent_location_id)
-            location_ids = [country.id, federal_state.id]
+            <%
+              # Fetch related public holidays to display alongside the bridge day
+              country = Locations.get_location!(federal_state.parent_location_id)
+              location_ids = [country.id, federal_state.id]
 
-            # Fetch public periods for this window to find the holiday that creates the bridge day
-            window_start = Date.add(next_bridge_day.starts_on, -5)
-            window_end = Date.add(next_bridge_day.starts_on, 5)
+              # Define a window around the bridge day to search for related public holidays
+              window_start = Date.add(next_bridge_day.starts_on, -5)
+              window_end = Date.add(next_bridge_day.starts_on, 5)
 
-            public_periods =
-              MehrSchulferien.Periods.Query.list_public_everybody_periods(
-                location_ids,
-                window_start,
-                window_end
-              )
+              public_periods =
+                MehrSchulferien.Periods.Query.list_public_everybody_periods(
+                  location_ids,
+                  window_start,
+                  window_end
+                )
 
-            # Find the public holiday that creates this bridge day
-            holiday_before =
-              Enum.find(public_periods, fn period ->
-                Date.compare(period.ends_on, next_bridge_day.starts_on) == :lt &&
-                  Date.diff(next_bridge_day.starts_on, period.ends_on) <= 3 &&
-                  period.is_public_holiday
-              end)
+              # Find the public holiday that is adjacent to the bridge day
+              holiday_before =
+                Enum.find(public_periods, fn period ->
+                  Date.compare(period.ends_on, next_bridge_day.starts_on) == :lt &&
+                    Date.diff(next_bridge_day.starts_on, period.ends_on) <= 3 &&
+                    period.is_public_holiday
+                end)
 
-            holiday_after =
-              Enum.find(public_periods, fn period ->
-                Date.compare(period.starts_on, next_bridge_day.ends_on) == :gt &&
-                  Date.diff(period.starts_on, next_bridge_day.ends_on) <= 3 &&
-                  period.is_public_holiday
-              end)
+              holiday_after =
+                Enum.find(public_periods, fn period ->
+                  Date.compare(period.starts_on, next_bridge_day.ends_on) == :gt &&
+                    Date.diff(period.starts_on, next_bridge_day.ends_on) <= 3 &&
+                    period.is_public_holiday
+                end)
 
-            related_holiday = holiday_before || holiday_after
-            related_periods = if related_holiday, do: [related_holiday], else: []
+              related_holiday = holiday_before || holiday_after
+              related_periods = if related_holiday, do: [related_holiday], else: []
 
-            # Calculate the efficiency using SQL
-            efficiency_data = MehrSchulferien.BridgeDays.calculate_bridge_day_efficiency() %>
+              # Calculate bridge day efficiency (example data, consider moving to controller or context)
+              # This is a simplified example; actual efficiency might be pre-calculated or passed in
+              efficiency_data = MehrSchulferien.BridgeDays.calculate_bridge_day_efficiency()
+            %>
             <!-- Bridge day timeline component -->
             <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
-              bridge_day: next_bridge_day,
-              periods: related_periods,
-              reference_date: reference_date,
-              vacation_days: efficiency_data.vacation_days,
-              total_free_days: efficiency_data.total_free_days,
-              efficiency_percentage: efficiency_data.efficiency_percentage
-            }) %>
+                  bridge_day: next_bridge_day,
+                  periods: related_periods,
+                  reference_date: reference_date,
+                  vacation_days: efficiency_data.vacation_days,
+                  total_free_days: efficiency_data.total_free_days,
+                  efficiency_percentage: efficiency_data.efficiency_percentage
+                }) %>
           <% else %>
             <p class="text-gray-700 mb-4">Kein Brückentag in den nächsten Monaten</p>
           <% end %>
           <hr class="mt-4" />
           <div class="mt-4 mb-2 text-base font-medium">Superbrückentag</div>
 
-          <% # Find the best bridge day opportunity for the federal state
-          best_bridge_day_result =
-            MehrSchulferien.BridgeDays.find_best_bridge_day(federal_state, reference_date) %>
-
+          <%
+            # Find the best bridge day opportunity (Superbrückentag) for the federal state
+            best_bridge_day_result =
+              MehrSchulferien.BridgeDays.find_best_bridge_day(federal_state, reference_date)
+          %>
           <%= if best_bridge_day_result do %>
             <!-- Super bridge day timeline component -->
             <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
-              bridge_day: best_bridge_day_result.bridge_day,
-              periods: best_bridge_day_result.adjacent_periods,
-              reference_date: reference_date,
-              vacation_days: best_bridge_day_result.vacation_days,
-              total_free_days: best_bridge_day_result.total_free_days,
-              efficiency_percentage: best_bridge_day_result.efficiency_percentage,
-              is_super_bridge_day: true,
-              title: "Der optimale Brückentag der nächsten 12 Monate:"
-            }) %>
+                  bridge_day: best_bridge_day_result.bridge_day,
+                  periods: best_bridge_day_result.adjacent_periods,
+                  reference_date: reference_date,
+                  vacation_days: best_bridge_day_result.vacation_days,
+                  total_free_days: best_bridge_day_result.total_free_days,
+                  efficiency_percentage: best_bridge_day_result.efficiency_percentage,
+                  is_super_bridge_day: true,
+                  title: "Der optimale Brückentag der nächsten 12 Monate:"
+                }) %>
           <% else %>
             <p class="text-gray-700 mb-2">
               Keine optimalen Brückentage in den nächsten 12 Monaten gefunden.

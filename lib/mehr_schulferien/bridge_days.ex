@@ -9,13 +9,23 @@ defmodule MehrSchulferien.BridgeDays do
 
   @doc """
   Returns whether a location has bridge days for a specific year.
+  NOTE: This function currently delegates to a function within the Web context
+  (`MehrSchulferienWeb.BridgeDayController.has_bridge_days?/2`).
+  This creates a dependency from the core logic to the web interface, which is
+  generally discouraged. Consider refactoring to move the underlying logic
+  into this context or a shared utility if appropriate.
   """
   def has_bridge_days?(location_ids, year) do
     MehrSchulferienWeb.BridgeDayController.has_bridge_days?(location_ids, year)
   end
 
   @doc """
-  Calculates bridge day efficiency metrics using SQL.
+  Calculates bridge day efficiency metrics.
+  NOTE: This function currently returns hardcoded values.
+  It's a placeholder and would need to be implemented with actual calculation
+  logic, possibly involving database queries or more complex computations based on
+  real bridge day data, to be meaningful.
+
   Returns a map with vacation_days, total_free_days, and efficiency_percentage.
 
   ## Examples
@@ -30,55 +40,113 @@ defmodule MehrSchulferien.BridgeDays do
 
     result = Repo.query!(query, [])
 
-    [vacation_days, total_free_days, efficiency_percentage] = result.rows |> List.first()
-
-    %{
-      vacation_days: vacation_days,
-      total_free_days: total_free_days,
-      efficiency_percentage: efficiency_percentage
-    }
+    # The result structure from Repo.query! is %Postgrex.Result{rows: [[val1, val2, ...]], ...}
+    # or %Mariaex.Result for MySQL. We expect one row with three values.
+    case result.rows do
+      [[vacation_days, total_free_days, efficiency_percentage]] ->
+        %{
+          vacation_days: vacation_days,
+          total_free_days: total_free_days,
+          efficiency_percentage: efficiency_percentage
+        }
+      _ ->
+        # Handle unexpected query result, e.g., by logging or raising
+        # For now, returning a default or error map might be suitable
+        Logger.error("Failed to calculate bridge day efficiency from DB query, unexpected result: #{inspect(result)}")
+        %{vacation_days: 0, total_free_days: 0, efficiency_percentage: 0} # Default/error state
+    end
   end
 
   @doc """
   Calculates the best bridge day deal for teaser purposes.
-  Uses NRW (largest state) as the example.
+  It specifically targets North Rhine-Westphalia ("nordrhein-westfalen") in Germany ("d")
+  for the current year.
+
+  The function attempts to find the bridge day opportunity (gap between fixed holidays)
+  that yields the highest percentage gain in terms of total free days versus vacation days taken.
+
+  Returns a tuple: `{percent_gain, vacation_days_taken, total_free_days_achieved, year, gap_start_date, gap_end_date}`
+  or `nil` if no suitable bridge day is found or an error occurs.
+
+  NOTE: The generic `rescue _ -> nil` can hide errors. Consider more specific error handling
+  or logging for robustness in a production environment.
+  The dependency on `BridgeDayView.get_number_max_days/1` also introduces coupling
+  with the web layer.
   """
   def best_bridge_day_teaser do
     try do
       today = DateHelpers.today_berlin()
       current_year = today.year
-      country = Locations.get_country_by_slug!("d")
-      federal_states = Locations.list_federal_states(country)
-      north_rhine_westphalia = Enum.find(federal_states, &(&1.slug == "nordrhein-westfalen"))
+
+      # Hardcoded to Germany and North Rhine-Westphalia for the teaser.
+      country_slug = "d"
+      federal_state_slug = "nordrhein-westfalen"
+
+      country = Locations.get_country_by_slug!(country_slug)
+      # Fetch federal state within the context of the country to ensure it's the correct one.
+      # Assuming get_federal_state_by_slug! takes country struct or ID.
+      # Based on Locations.ex, it takes (slug, country_struct).
+      north_rhine_westphalia = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+
       location_ids = [country.id, north_rhine_westphalia.id]
-      {:ok, start_date} = Date.new(current_year, 1, 1)
-      {:ok, end_date} = Date.new(current_year, 12, 31)
-      public_periods = Query.list_public_everybody_periods(location_ids, start_date, end_date)
+
+      # Define the period for which to search for public holidays.
+      {:ok, start_date_of_year} = Date.new(current_year, 1, 1)
+      {:ok, end_date_of_year} = Date.new(current_year, 12, 31)
+
+      # Get all public holidays and general "valid for everybody" periods (like weekends).
+      public_periods =
+        Query.list_public_everybody_periods(location_ids, start_date_of_year, end_date_of_year)
+
+      # Identify potential bridge day gaps between these periods.
       bridge_day_map = Grouping.group_by_interval(public_periods)
 
+      # Flatten all identified bridge day gaps into a single list.
+      all_potential_gaps = List.flatten(Enum.map(bridge_day_map, fn {_gap_size, gaps_list} -> gaps_list || [] end))
+
+      # Find the "best" deal among these gaps.
       best_deal =
-        List.flatten(Enum.map(bridge_day_map, fn {_k, v} -> v || [] end))
+        all_potential_gaps
         |> Enum.max_by(
-          fn bridge_day ->
-            periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
-            max_days = BridgeDayView.get_number_max_days(periods)
-            percent = round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
-            percent
+          # Calculation logic to determine "best":
+          # It reconstructs the sequence of periods including the bridge day (gap)
+          # then uses BridgeDayView to calculate total free days.
+          # The score is the percentage increase of free days over vacation days.
+          fn bridge_day_gap ->
+            # `bridge_day_gap` is a BridgeDayPeriod struct.
+            # `list_periods_with_bridge_day` expects the gap itself as the second argument.
+            # It then finds consecutive fixed holidays around this gap.
+            periods_sequence = Grouping.list_periods_with_bridge_day(public_periods, bridge_day_gap)
+            total_free_days_achieved = BridgeDayView.get_number_max_days(periods_sequence)
+            # `bridge_day_gap.number_days` is the number of work days taken for vacation.
+            vacation_days_taken = bridge_day_gap.number_days
+            if vacation_days_taken > 0 do
+              round((total_free_days_achieved - vacation_days_taken) / vacation_days_taken * 100)
+            else
+              0 # Avoid division by zero if a gap somehow has 0 days (should not happen for 2..5 diffs)
+            end
           end,
-          fn -> nil end
+          fn -> nil end # Default if all_potential_gaps is empty or all scores are 0.
         )
 
+      # If a best deal is found, format and return its details.
       if best_deal do
-        periods = Grouping.list_periods_with_bridge_day(public_periods, best_deal)
-        max_days = BridgeDayView.get_number_max_days(periods)
-        min_leave = best_deal.number_days
-        percent = round((max_days - min_leave) / min_leave * 100)
-        {percent, min_leave, max_days, current_year, best_deal.starts_on, best_deal.ends_on}
+        periods_sequence = Grouping.list_periods_with_bridge_day(public_periods, best_deal)
+        total_free_days_achieved = BridgeDayView.get_number_max_days(periods_sequence)
+        vacation_days_taken = best_deal.number_days
+        percent_gain = if vacation_days_taken > 0, do: round((total_free_days_achieved - vacation_days_taken) / vacation_days_taken * 100), else: 0
+
+        {percent_gain, vacation_days_taken, total_free_days_achieved, current_year, best_deal.starts_on, best_deal.ends_on}
       else
-        nil
+        nil # No bridge day opportunity found.
       end
     rescue
-      _ -> nil
+      # Catch any error during the process and return nil.
+      # It's better to log the error for debugging purposes.
+      # e.g., Logger.error("Error in best_bridge_day_teaser: #{inspect(exception)}")
+      exception ->
+        Logger.error("Error in best_bridge_day_teaser: #{inspect(exception)} Stacktrace: #{inspect(__STACKTRACE__)}")
+        nil
     end
   end
 
@@ -173,7 +241,7 @@ defmodule MehrSchulferien.BridgeDays do
 
       iex> find_best_bridge_day(federal_state, ~D[2023-01-01])
       %{
-        best_opportunity: %BridgeDayPeriod{...},
+        bridge_day: %BridgeDayPeriod{...}, # Changed from best_opportunity to bridge_day for consistency
         vacation_days: 1,
         total_free_days: 4,
         efficiency_percentage: 300,

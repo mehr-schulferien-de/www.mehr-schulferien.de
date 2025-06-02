@@ -128,6 +128,285 @@ defmodule MehrSchulferien.PeriodsTest do
     end
   end
 
+  describe "Query.list_years_with_periods/0" do
+    test "returns empty list when there are no periods" do
+      assert Periods.list_years_with_periods() == []
+    end
+
+    test "returns unique years from period start and end dates" do
+      insert(:period, starts_on: ~D[2020-12-01], ends_on: ~D[2021-01-15]) # 2020, 2021
+      insert(:period, starts_on: ~D[2021-05-10], ends_on: ~D[2021-05-20]) # 2021
+      insert(:period, starts_on: ~D[2022-03-01], ends_on: ~D[2022-03-10]) # 2022
+      insert(:period, starts_on: ~D[2020-06-01], ends_on: ~D[2020-06-05]) # 2020
+
+      assert Periods.list_years_with_periods() == [2020, 2021, 2022]
+    end
+
+    test "returns sorted list of years" do
+      insert(:period, starts_on: ~D[2023-01-01], ends_on: ~D[2023-01-05])
+      insert(:period, starts_on: ~D[2021-01-01], ends_on: ~D[2021-01-05])
+      insert(:period, starts_on: ~D[2022-01-01], ends_on: ~D[2022-01-05])
+      assert Periods.list_years_with_periods() == [2021, 2022, 2023]
+    end
+  end
+
+  describe "DateOperations.find_next_schoolday/2" do
+    # Helper to create a simple holiday period
+    defp holiday(start_date_str, end_date_str \\ nil) do
+      start_date = Date.from_iso8601!(start_date_str)
+      end_date = if end_date_str, do: Date.from_iso8601!(end_date_str), else: start_date
+      %MehrSchulferien.Periods.Period{starts_on: start_date, ends_on: end_date, name: "Holiday"}
+    end
+
+    @sorted_holidays [
+      holiday("2023-10-28", "2023-10-29"), # Sat, Sun
+      holiday("2023-10-30"),              # Mon Holiday
+      holiday("2023-11-01")               # Wed Holiday
+    ] |> Enum.sort_by(& &1.starts_on)
+
+    test "next day is a schoolday" do
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-24]) == ~D[2023-10-24]
+    end
+
+    test "skips a single holiday" do
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-30]) == ~D[2023-10-31]
+    end
+
+    test "skips a sequence of holidays (weekend + holiday)" do
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-28]) == ~D[2023-10-31]
+    end
+    
+    test "current date is a schoolday before next holiday period" do
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-27]) == ~D[2023-10-27]
+    end
+
+    test "skips multiple separate holidays" do
+      assert Periods.find_next_schoolday([holiday("2023-11-01")], ~D[2023-11-01]) == ~D[2023-11-02]
+    end
+
+    test "no subsequent schoolday if all remaining days are holidays (within list)" do
+      limited_holidays = [holiday("2023-12-20"), holiday("2023-12-21")]
+      assert Periods.find_next_schoolday(limited_holidays, ~D[2023-12-20]) == ~D[2023-12-22]
+    end
+
+    test "empty list of holidays means date is a schoolday" do
+      assert Periods.find_next_schoolday([], ~D[2023-10-25]) == ~D[2023-10-25]
+    end
+  end
+
+  describe "DateOperations.find_periods_by_month/2 additional tests" do
+    test "returns periods with various month overlap scenarios" do
+        p1 = insert(:period, %{starts_on: ~D[2023-02-25], ends_on: ~D[2023-03-05], name: "P1"})
+        p2 = insert(:period, %{starts_on: ~D[2023-03-10], ends_on: ~D[2023-03-15], name: "P2"})
+        p3 = insert(:period, %{starts_on: ~D[2023-03-25], ends_on: ~D[2023-04-05], name: "P3"})
+        p4 = insert(:period, %{starts_on: ~D[2023-02-15], ends_on: ~D[2023-04-15], name: "P4"})
+        _p5 = insert(:period, %{starts_on: ~D[2023-02-01], ends_on: ~D[2023-02-05], name: "P5"})
+        _p6 = insert(:period, %{starts_on: ~D[2023-04-10], ends_on: ~D[2023-04-15], name: "P6"})
+        p7 = insert(:period, %{starts_on: ~D[2023-03-20], ends_on: ~D[2023-03-20], name: "P7"})
+
+        all_periods = [p1, p2, p3, p4, _p5, _p6, p7] |> Enum.sort_by(& &1.starts_on)
+        
+        march_periods = Periods.find_periods_by_month(~D[2023-03-01], all_periods)
+        march_period_ids = Enum.map(march_periods, & &1.id) |> Enum.sort()
+        expected_ids = Enum.map([p1, p2, p3, p4, p7], & &1.id) |> Enum.sort()
+
+        assert march_period_ids == expected_ids
+    end
+  end
+
+  describe "Query.list_years_with_periods/0" do
+    test "returns empty list when there are no periods" do
+      assert Periods.list_years_with_periods() == []
+    end
+
+    test "returns unique years from period start and end dates" do
+      insert(:period, starts_on: ~D[2020-12-01], ends_on: ~D[2021-01-15]) # 2020, 2021
+      insert(:period, starts_on: ~D[2021-05-10], ends_on: ~D[2021-05-20]) # 2021
+      insert(:period, starts_on: ~D[2022-03-01], ends_on: ~D[2022-03-10]) # 2022
+      insert(:period, starts_on: ~D[2020-06-01], ends_on: ~D[2020-06-05]) # 2020
+
+      assert Periods.list_years_with_periods() == [2020, 2021, 2022]
+    end
+
+    test "returns sorted list of years" do
+      insert(:period, starts_on: ~D[2023-01-01], ends_on: ~D[2023-01-05])
+      insert(:period, starts_on: ~D[2021-01-01], ends_on: ~D[2021-01-05])
+      insert(:period, starts_on: ~D[2022-01-01], ends_on: ~D[2022-01-05])
+      assert Periods.list_years_with_periods() == [2021, 2022, 2023]
+    end
+  end
+
+  describe "DateOperations.find_next_schoolday/2" do
+    # Helper to create a simple holiday period
+    defp holiday(start_date_str, end_date_str \\ nil) do
+      start_date = Date.from_iso8601!(start_date_str)
+      end_date = if end_date_str, do: Date.from_iso8601!(end_date_str), else: start_date
+      # The Period struct requires more fields, but for the logic of find_next_schoolday,
+      # only starts_on and ends_on are strictly necessary via is_holiday?
+      %MehrSchulferien.Periods.Period{starts_on: start_date, ends_on: end_date, name: "Holiday"}
+    end
+
+    # Define a fixed set of holidays for these tests
+    @sorted_holidays [
+      holiday("2023-10-28", "2023-10-29"), # Sat, Sun (Weekend as holiday period)
+      holiday("2023-10-30"),              # Monday Holiday
+      holiday("2023-11-01")               # Wednesday Holiday
+    ] |> Enum.sort_by(& &1.starts_on)
+
+
+    test "next day is a schoolday" do
+      # Tuesday, Oct 24th, 2023. No holidays immediately following.
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-24]) == ~D[2023-10-24]
+    end
+
+    test "skips a single holiday" do
+      # Monday, Oct 30th is a holiday. Next schoolday is Oct 31st.
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-30]) == ~D[2023-10-31]
+    end
+
+    test "skips a sequence of holidays (weekend + holiday)" do
+       # Start on Saturday, Oct 28th (part of weekend holiday)
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-28]) == ~D[2023-10-31]
+    end
+    
+    test "current date is a schoolday before next holiday period" do
+      assert Periods.find_next_schoolday(@sorted_holidays, ~D[2023-10-27]) == ~D[2023-10-27]
+    end
+
+    test "skips multiple separate holidays" do
+      # Current date is Nov 1st (holiday)
+      assert Periods.find_next_schoolday([holiday("2023-11-01")], ~D[2023-11-01]) == ~D[2023-11-02]
+    end
+
+    test "no subsequent schoolday if all remaining days are holidays (within list)" do
+      limited_holidays = [holiday("2023-12-20"), holiday("2023-12-21")]
+      assert Periods.find_next_schoolday(limited_holidays, ~D[2023-12-20]) == ~D[2023-12-22]
+    end
+
+    test "empty list of holidays means date is a schoolday" do
+      assert Periods.find_next_schoolday([], ~D[2023-10-25]) == ~D[2023-10-25]
+    end
+  end
+  
+  describe "DateOperations.find_periods_by_month/2 additional tests" do
+    test "returns periods with various month overlap scenarios" do
+        p1 = insert(:period, %{starts_on: ~D[2023-02-25], ends_on: ~D[2023-03-05], name: "P1"})
+        p2 = insert(:period, %{starts_on: ~D[2023-03-10], ends_on: ~D[2023-03-15], name: "P2"})
+        p3 = insert(:period, %{starts_on: ~D[2023-03-25], ends_on: ~D[2023-04-05], name: "P3"})
+        p4 = insert(:period, %{starts_on: ~D[2023-02-15], ends_on: ~D[2023-04-15], name: "P4"})
+        _p5 = insert(:period, %{starts_on: ~D[2023-02-01], ends_on: ~D[2023-02-05], name: "P5"})
+        _p6 = insert(:period, %{starts_on: ~D[2023-04-10], ends_on: ~D[2023-04-15], name: "P6"})
+        p7 = insert(:period, %{starts_on: ~D[2023-03-20], ends_on: ~D[2023-03-20], name: "P7"})
+
+        all_periods = [p1, p2, p3, p4, _p5, _p6, p7] |> Enum.sort_by(& &1.starts_on)
+        
+        march_periods = Periods.find_periods_by_month(~D[2023-03-01], all_periods)
+        march_period_ids = Enum.map(march_periods, & &1.id) |> Enum.sort()
+        expected_ids = Enum.map([p1, p2, p3, p4, p7], & &1.id) |> Enum.sort()
+
+        assert march_period_ids == expected_ids
+    end
+
+    test "returns empty list when no periods match the month (additional test)" do
+        _p1 = insert(:period, %{starts_on: ~D[2023-01-01], ends_on: ~D[2023-01-05]})
+        _p2 = insert(:period, %{starts_on: ~D[2023-05-01], ends_on: ~D[2023-05-05]})
+        all_periods = Periods.list_periods() # Gets all periods including those from other tests if run concurrently
+        
+        # Filter to only use p1 and p2 for this specific test context
+        current_test_periods = Enum.filter(all_periods, fn p -> p.name == "P1" or p.name == "P2" end)
+        # This filtering is problematic, names are not set for these. Better to delete all before test.
+        # For now, assuming a clean slate or that list_periods only gets these two.
+        # A better way: Repo.delete_all(Period) before inserting.
+        # However, I cannot run Repo.delete_all here.
+        # The test will rely on the list_periods() call inside find_periods_by_month to be correct or the broader set.
+        # The original test `find_periods_by_month/2` creates its own scope of periods. I'll follow that.
+
+        p_before = insert(:period, %{starts_on: ~D[2023-01-01], ends_on: ~D[2023-01-05]})
+        p_after = insert(:period, %{starts_on: ~D[2023-05-01], ends_on: ~D[2023-05-05]})
+        relevant_periods = [p_before, p_after]
+
+        assert Periods.find_periods_by_month(~D[2023-03-01], relevant_periods) == []
+    end
+  end
+
+  describe "Grouping.group_by_interval/1" do
+    alias MehrSchulferien.Periods.BridgeDayPeriod
+
+    test "correctly groups periods by gap intervals" do
+      p1 = insert(:period, starts_on: ~D[2023-03-10], ends_on: ~D[2023-03-12]) # Ends Sun
+      p2 = insert(:period, starts_on: ~D[2023-03-15], ends_on: ~D[2023-03-17]) # Starts Wed (Gap Mon, Tue = 2 days, diff=3)
+      p3 = insert(:period, starts_on: ~D[2023-03-20], ends_on: ~D[2023-03-22]) # Starts Mon (Gap Sat, Sun = 2 days, diff=3)
+      p4 = insert(:period, starts_on: ~D[2023-03-28], ends_on: ~D[2023-03-30]) # Starts Tue (Gap Wed,Thu,Fri,Sat,Sun = 5 days, diff=6 - too large)
+      p5 = insert(:period, starts_on: ~D[2023-04-03], ends_on: ~D[2023-04-05]) # Starts Mon (Gap Fri,Sat,Sun = 3 days, diff=4)
+      
+      all_periods = Enum.sort_by([p1, p2, p3, p4, p5], & &1.starts_on)
+      
+      result = Periods.group_by_interval(all_periods)
+
+      assert Map.has_key?(result, 3)
+      assert length(result[3]) == 2
+      assert Enum.any?(result[3], fn bd -> bd.last_period_id == p1.id && bd.next_period_id == p2.id && bd.diff == 3 end)
+      assert Enum.any?(result[3], fn bd -> bd.last_period_id == p2.id && bd.next_period_id == p3.id && bd.diff == 3 end)
+      
+      assert Map.has_key?(result, 4)
+      assert length(result[4]) == 1
+      assert Enum.any?(result[4], fn bd -> bd.last_period_id == p4.id && bd.next_period_id == p5.id && bd.diff == 4 end)
+
+      refute Map.has_key?(result, 2)
+      refute Map.has_key?(result, 5)
+      refute Map.has_key?(result, 6)
+    end
+
+    test "returns empty map for no qualifying gaps" do
+      p1 = insert(:period, starts_on: ~D[2023-03-10], ends_on: ~D[2023-03-12])
+      p2 = insert(:period, starts_on: ~D[2023-03-13], ends_on: ~D[2023-03-15]) # Consecutive (diff=1)
+      p3 = insert(:period, starts_on: ~D[2023-03-25], ends_on: ~D[2023-03-30]) # Large gap (diff=10)
+      all_periods = Enum.sort_by([p1, p2, p3], & &1.starts_on)
+      assert Periods.group_by_interval(all_periods) == %{}
+    end
+
+    test "handles empty list of periods" do
+      assert Periods.group_by_interval([]) == %{}
+    end
+  end
+
+  describe "Grouping.list_periods_with_bridge_day/2" do
+    alias MehrSchulferien.Periods.BridgeDayPeriod
+
+    setup do
+      p1_before = insert(:period, name: "Way Before", starts_on: ~D[2023-04-01], ends_on: ~D[2023-04-02])
+      p2_consecutive_before = insert(:period, name: "Consecutive Before", starts_on: ~D[2023-04-07], ends_on: ~D[2023-04-08]) # Fri, Sat
+      p3_fixed_before_gap = insert(:period, name: "Fixed Before Gap", starts_on: ~D[2023-04-09], ends_on: ~D[2023-04-10])   # Sun, Mon
+      
+      p4_fixed_after_gap = insert(:period, name: "Fixed After Gap", starts_on: ~D[2023-04-14], ends_on: ~D[2023-04-15])    # Fri, Sat
+      p5_consecutive_after = insert(:period, name: "Consecutive After", starts_on: ~D[2023-04-16], ends_on: ~D[2023-04-17])  # Sun, Mon
+      p6_way_after = insert(:period, name: "Way After", starts_on: ~D[2023-04-25], ends_on: ~D[2023-04-26])
+
+      all_db_periods = Enum.sort_by([p1_before, p2_consecutive_before, p3_fixed_before_gap, p4_fixed_after_gap, p5_consecutive_after, p6_way_after], & &1.starts_on)
+      
+      user_vacation_as_gap = %BridgeDayPeriod{
+        name: "My Bridging Vacation",
+        starts_on: ~D[2023-04-11], ends_on: ~D[2023-04-13],
+        last_period_id: p3_fixed_before_gap.id,
+        next_period_id: p4_fixed_after_gap.id,
+        html_class: "user-vacation-gap"
+      }
+
+      %{
+        all_db_periods: all_db_periods,
+        p2: p2_consecutive_before, p3: p3_fixed_before_gap,
+        p4: p4_fixed_after_gap, p5: p5_consecutive_after,
+        user_vacation_as_gap: user_vacation_as_gap
+      }
+    end
+
+    test "constructs list with consecutive periods around the gap", %{all_db_periods: all_db_periods, p2: p2, p3: p3, p4: p4, p5: p5, user_vacation_as_gap: gap} do
+      result = Periods.list_periods_with_bridge_day(all_db_periods, gap)
+      result_items = Enum.map(result, fn item -> if item.__struct__ == Period, do: item.id, else: item.name end)
+      assert result_items == [p2.id, p3.id, "My Bridging Vacation", p4.id, p5.id]
+    end
+  end
+
   describe "periods for certain time frame" do
     setup [:add_federal_state, :add_periods]
 
@@ -171,6 +450,89 @@ defmodule MehrSchulferien.PeriodsTest do
       assert length(school_periods) == 9
       grouped_periods = Periods.group_periods_single_year(school_periods, today)
       assert length(grouped_periods) == 4
+    end
+  end
+
+  describe "Grouping.group_by_interval/1" do
+    alias MehrSchulferien.Periods.BridgeDayPeriod
+
+    test "correctly groups periods by gap intervals" do
+      p1 = insert(:period, starts_on: ~D[2023-03-10], ends_on: ~D[2023-03-12]) # Ends Sun
+      p2 = insert(:period, starts_on: ~D[2023-03-15], ends_on: ~D[2023-03-17]) # Starts Wed (Gap Mon, Tue = 2 days, diff=3)
+      p3 = insert(:period, starts_on: ~D[2023-03-20], ends_on: ~D[2023-03-22]) # Starts Mon (Gap Sat, Sun = 2 days, diff=3)
+      p4 = insert(:period, starts_on: ~D[2023-03-28], ends_on: ~D[2023-03-30]) # Starts Tue (Gap Wed,Thu,Fri,Sat,Sun = 5 days, diff=6 - too large)
+      p5 = insert(:period, starts_on: ~D[2023-04-03], ends_on: ~D[2023-04-05]) # Starts Mon (Gap Fri,Sat,Sun = 3 days, diff=4)
+      
+      all_periods = Enum.sort_by([p1, p2, p3, p4, p5], & &1.starts_on)
+      
+      result = Periods.group_by_interval(all_periods)
+
+      assert Map.has_key?(result, 3)
+      assert length(result[3]) == 2
+      assert Enum.any?(result[3], fn bd -> bd.last_period_id == p1.id && bd.next_period_id == p2.id && bd.diff == 3 end)
+      assert Enum.any?(result[3], fn bd -> bd.last_period_id == p2.id && bd.next_period_id == p3.id && bd.diff == 3 end)
+      
+      assert Map.has_key?(result, 4)
+      assert length(result[4]) == 1
+      assert Enum.any?(result[4], fn bd -> bd.last_period_id == p4.id && bd.next_period_id == p5.id && bd.diff == 4 end)
+
+      refute Map.has_key?(result, 2)
+      refute Map.has_key?(result, 5)
+      refute Map.has_key?(result, 6)
+    end
+
+    test "returns empty map for no qualifying gaps" do
+      p1 = insert(:period, starts_on: ~D[2023-03-10], ends_on: ~D[2023-03-12])
+      p2 = insert(:period, starts_on: ~D[2023-03-13], ends_on: ~D[2023-03-15]) # Consecutive (diff=1)
+      p3 = insert(:period, starts_on: ~D[2023-03-25], ends_on: ~D[2023-03-30]) # Large gap (diff=10)
+      all_periods = Enum.sort_by([p1, p2, p3], & &1.starts_on)
+      assert Periods.group_by_interval(all_periods) == %{}
+    end
+
+    test "handles empty list of periods" do
+      assert Periods.group_by_interval([]) == %{}
+    end
+  end
+
+  describe "Grouping.list_periods_with_bridge_day/2" do
+    alias MehrSchulferien.Periods.BridgeDayPeriod
+
+    setup do
+      p1_before = insert(:period, name: "Way Before", starts_on: ~D[2023-04-01], ends_on: ~D[2023-04-02])
+      p2_consecutive_before = insert(:period, name: "Consecutive Before", starts_on: ~D[2023-04-07], ends_on: ~D[2023-04-08]) # Fri, Sat
+      p3_fixed_before_gap = insert(:period, name: "Fixed Before Gap", starts_on: ~D[2023-04-09], ends_on: ~D[2023-04-10])   # Sun, Mon
+      
+      # The "gap" or user's vacation would be Apr 11, 12, 13 (Tue, Wed, Thu)
+      
+      p4_fixed_after_gap = insert(:period, name: "Fixed After Gap", starts_on: ~D[2023-04-14], ends_on: ~D[2023-04-15])    # Fri, Sat
+      p5_consecutive_after = insert(:period, name: "Consecutive After", starts_on: ~D[2023-04-16], ends_on: ~D[2023-04-17])  # Sun, Mon
+      p6_way_after = insert(:period, name: "Way After", starts_on: ~D[2023-04-25], ends_on: ~D[2023-04-26])
+
+      all_db_periods = Enum.sort_by([p1_before, p2_consecutive_before, p3_fixed_before_gap, p4_fixed_after_gap, p5_consecutive_after, p6_way_after], & &1.starts_on)
+      
+      user_vacation_as_gap = %BridgeDayPeriod{
+        name: "My Bridging Vacation",
+        starts_on: ~D[2023-04-11], ends_on: ~D[2023-04-13],
+        last_period_id: p3_fixed_before_gap.id,
+        next_period_id: p4_fixed_after_gap.id,
+        html_class: "user-vacation-gap"
+      }
+
+      %{
+        all_db_periods: all_db_periods,
+        p2: p2_consecutive_before, p3: p3_fixed_before_gap,
+        p4: p4_fixed_after_gap, p5: p5_consecutive_after,
+        user_vacation_as_gap: user_vacation_as_gap
+      }
+    end
+
+    test "constructs list with consecutive periods around the gap", %{all_db_periods: all_db_periods, p2: p2, p3: p3, p4: p4, p5: p5, user_vacation_as_gap: gap} do
+      result = Periods.list_periods_with_bridge_day(all_db_periods, gap)
+      
+      result_items = Enum.map(result, fn item -> if item.__struct__ == Period, do: item.id, else: item.name end)
+      
+      # Expected: [p2.id, p3.id, "My Bridging Vacation", p4.id, p5.id]
+      assert result_items == [p2.id, p3.id, "My Bridging Vacation", p4.id, p5.id]
     end
   end
 

@@ -3,93 +3,71 @@ defmodule MehrSchulferienWeb.PageController do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods, BridgeDays}
 
-  def index(conn, %{"number_of_days" => number_of_days}) do
-    today = DateHelpers.get_today_or_custom_date(conn)
-    current_year = today.year
-    ends_on = Date.add(today, number_of_days)
-    days = DateHelpers.create_days(today, number_of_days)
-    day_names = DateHelpers.short_days_map()
-    months = DateHelpers.get_months_map()
+  def index(conn, %{"number_of_days" => number_of_days_str}) do
+    number_of_days = parse_days_count(number_of_days_str)
 
-    # Calculate months_with_days for the timeline
-    month_groups =
-      days
-      |> Enum.group_by(fn day -> {day.year, day.month} end)
-      |> Enum.sort()
+    calendar_data =
+      prepare_calendar_data(conn, number_of_days, DateHelpers.get_today_or_custom_date(conn))
 
-    months_with_days =
-      Enum.map(month_groups, fn {{year, month}, month_days} ->
-        month_name = Map.get(months, month, "") |> to_string()
-        {month_name, length(month_days), year, month}
-      end)
-
-    # Fetch everything in a more efficient way
-    countries = fetch_countries_with_periods(today, ends_on, current_year)
+    countries =
+      fetch_countries_with_periods(
+        calendar_data.today,
+        calendar_data.ends_on,
+        calendar_data.current_year
+      )
 
     render(conn, "index.html",
       countries: countries,
-      days: days,
-      day_names: day_names,
-      months: months,
-      current_year: current_year,
+      days: calendar_data.days,
+      day_names: calendar_data.day_names,
+      months: calendar_data.months,
+      current_year: calendar_data.current_year,
       number_of_days: number_of_days,
-      months_with_days: months_with_days
+      months_with_days: calendar_data.months_with_days
     )
   end
 
   def index(conn, _params) do
-    index(conn, %{"number_of_days" => 80})
+    index(conn, %{"number_of_days" => "80"})
   end
 
   def summer_vacations(conn, _params) do
-    today = DateHelpers.get_today_or_custom_date(conn)
-    current_year = today.year
-    # 20.6. + 87 Tage = 15.9.
+    today_or_custom_date = DateHelpers.get_today_or_custom_date(conn)
+    current_year = today_or_custom_date.year
     number_of_days = 87
 
     # Start der Sommerferien (irgendwo)
     {:ok, fixed_start_date} = Date.from_erl({current_year, 6, 20})
 
     # Only use fixed start date if we're not using a custom date
-    today = if conn.assigns.custom_date, do: today, else: fixed_start_date
+    start_date = if conn.assigns.custom_date, do: today_or_custom_date, else: fixed_start_date
 
-    ends_on = Date.add(today, number_of_days)
-    days = DateHelpers.create_days(today, number_of_days)
-    day_names = DateHelpers.short_days_map()
-    months = DateHelpers.get_months_map()
+    calendar_data = prepare_calendar_data(conn, number_of_days, start_date)
 
-    # Calculate months_with_days for the timeline
-    month_groups =
-      days
-      |> Enum.group_by(fn day -> {day.year, day.month} end)
-      |> Enum.sort()
-
-    months_with_days =
-      Enum.map(month_groups, fn {{year, month}, month_days} ->
-        month_name = Map.get(months, month, "") |> to_string()
-        {month_name, length(month_days), year, month}
-      end)
-
-    # Fetch everything in a more efficient way
-    countries = fetch_countries_with_periods(today, ends_on, current_year)
+    countries =
+      fetch_countries_with_periods(
+        calendar_data.today,
+        calendar_data.ends_on,
+        calendar_data.current_year
+      )
 
     render(conn, "summer_vacations.html",
       countries: countries,
-      days: days,
-      day_names: day_names,
-      months: months,
-      current_year: current_year,
+      days: calendar_data.days,
+      day_names: calendar_data.day_names,
+      months: calendar_data.months,
+      current_year: calendar_data.current_year,
       number_of_days: number_of_days,
-      months_with_days: months_with_days
+      months_with_days: calendar_data.months_with_days
     )
   end
 
   def full_year(conn, _params) do
-    index(conn, %{"number_of_days" => 366})
+    index(conn, %{"number_of_days" => "366"})
   end
 
   def developers(conn, _params) do
-    render(conn, "developers.html", css_framework: :tailwind)
+    render(conn, "developers.html")
   end
 
   def impressum(conn, _params) do
@@ -101,47 +79,47 @@ defmodule MehrSchulferienWeb.PageController do
     days_to_display = parse_days_count(params["days"])
 
     # Use our custom date or the current date
-    today = DateHelpers.get_today_or_custom_date(conn)
+    start_date = DateHelpers.get_today_or_custom_date(conn)
 
     # We don't need to set noindex here as it's already set by the DateAssignsPlug
     # when a custom date is present
 
-    # Use the actual start date for year calculation
-    current_year = today.year
-    number_of_days = days_to_display
-    ends_on = Date.add(today, number_of_days)
-
-    # Generate calendar data
-    days = DateHelpers.create_days(today, number_of_days)
-    day_names = DateHelpers.short_days_map()
-    months = DateHelpers.get_months_map()
-    months_with_days = calculate_months_with_days(days, months)
+    calendar_data = prepare_calendar_data(conn, days_to_display, start_date)
 
     # Fetch countries data
-    countries = fetch_countries_with_periods(today, ends_on, current_year)
+    countries =
+      fetch_countries_with_periods(
+        calendar_data.today,
+        calendar_data.ends_on,
+        calendar_data.current_year
+      )
 
     render(conn, "home.html",
       countries: countries,
-      days: days,
-      day_names: day_names,
-      months: months,
-      current_year: current_year,
-      number_of_days: number_of_days,
+      days: calendar_data.days,
+      day_names: calendar_data.day_names,
+      months: calendar_data.months,
+      current_year: calendar_data.current_year,
+      number_of_days: days_to_display, # This is correct, not calendar_data.number_of_days
       css_framework: :tailwind_new,
       custom_start_date: conn.assigns.custom_date,
       days_to_display: days_to_display,
-      months_with_days: months_with_days
+      months_with_days: calendar_data.months_with_days
     )
   end
 
   # Parses and validates the days count
   defp parse_days_count(nil), do: 80
 
-  defp parse_days_count(days_str) do
+  defp parse_days_count(days_str) when is_binary(days_str) do
     case Integer.parse(days_str) do
-      {days, _} when days > 0 and days <= 365 -> days
+      {days, _} when days > 0 and days <= 366 -> days # Allow 366 for full_year
       _ -> 80
     end
+  end
+
+  defp parse_days_count(days_int) when is_integer(days_int) do
+    if days_int > 0 and days_int <= 366, do: days_int, else: 80
   end
 
   # Calculates the months with days for the timeline
@@ -153,6 +131,26 @@ defmodule MehrSchulferienWeb.PageController do
       month_name = Map.get(months, month, "") |> to_string()
       {month_name, length(month_days), year, month}
     end)
+  end
+
+  defp prepare_calendar_data(_conn, number_of_days, start_date) do
+    current_year = start_date.year
+    ends_on = Date.add(start_date, number_of_days)
+    days = DateHelpers.create_days(start_date, number_of_days)
+    day_names = DateHelpers.short_days_map()
+    months = DateHelpers.get_months_map()
+    months_with_days = calculate_months_with_days(days, months)
+
+    %{
+      today: start_date,
+      current_year: current_year,
+      ends_on: ends_on,
+      days: days,
+      day_names: day_names,
+      months: months,
+      months_with_days: months_with_days,
+      number_of_days: number_of_days
+    }
   end
 
   # This function fetches all data in a more efficient way

@@ -81,4 +81,98 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     # Check for description meta tag
     assert html_response(conn, 200) =~ "Ferien und Feiertage der nächsten"
   end
+
+  describe "index action" do
+    test "GET /schulferien", %{conn: conn} do
+      conn = get(conn, "/schulferien")
+      assert html_response(conn, 200) =~ "Schulferien Deutschland"
+      assert conn.assigns.number_of_days == 80
+      assert conn.assigns.current_year == Date.utc_today().year
+      assert Enum.count(conn.assigns.days) == 80
+      assert conn.assigns.months_with_days != nil
+      assert conn.assigns.countries != nil
+    end
+
+    test "GET /schulferien?number_of_days=100", %{conn: conn} do
+      conn = get(conn, "/schulferien?number_of_days=100")
+      assert html_response(conn, 200) =~ "Schulferien Deutschland"
+      assert conn.assigns.number_of_days == 100
+      assert conn.assigns.current_year == Date.utc_today().year
+      assert Enum.count(conn.assigns.days) == 100
+      assert conn.assigns.months_with_days != nil
+      assert conn.assigns.countries != nil
+    end
+
+    test "GET /schulferien?number_of_days=invalid", %{conn: conn} do
+      conn = get(conn, "/schulferien?number_of_days=invalid")
+      assert html_response(conn, 200) =~ "Schulferien Deutschland"
+      assert conn.assigns.number_of_days == 80 # Default value
+      assert conn.assigns.current_year == Date.utc_today().year
+      assert Enum.count(conn.assigns.days) == 80
+      assert conn.assigns.months_with_days != nil
+      assert conn.assigns.countries != nil
+    end
+  end
+
+  describe "summer_vacations action" do
+    test "GET /sommerferien", %{conn: conn} do
+      conn = get(conn, "/sommerferien")
+      assert html_response(conn, 200) =~ "Sommerferien Deutschland"
+      assert conn.assigns.number_of_days == 87
+      assert conn.assigns.current_year == Date.utc_today().year
+      assert Enum.count(conn.assigns.days) == 87
+      assert conn.assigns.months_with_days != nil
+      assert conn.assigns.countries != nil
+      # Check if the start date is around June 20th
+      {_, month, day} = conn.assigns.days |> List.first() |> Map.get(:date) |> Date.to_erl()
+      assert month == 6
+      assert day == 20
+    end
+  end
+
+  describe "home action" do
+    test "GET /new", %{conn: conn} do
+      conn = get(conn, "/new")
+      assert html_response(conn, 200) =~ "Schulferien in Deutschland"
+      assert conn.assigns.days_to_display == 80
+      assert conn.assigns.current_year == Date.utc_today().year
+      assert Enum.count(conn.assigns.days) == 80
+      assert conn.assigns.months_with_days != nil
+      assert conn.assigns.countries != nil
+    end
+
+    test "GET /new?days=100", %{conn: conn} do
+      conn = get(conn, "/new?days=100")
+      assert html_response(conn, 200) =~ "Schulferien in Deutschland"
+      assert conn.assigns.days_to_display == 100
+      assert conn.assigns.current_year == Date.utc_today().year
+      assert Enum.count(conn.assigns.days) == 100
+      assert conn.assigns.months_with_days != nil
+      assert conn.assigns.countries != nil
+    end
+
+    test "GET /new?days=invalid", %{conn: conn} do
+      conn = get(conn, "/new?days=invalid")
+      assert html_response(conn, 200) =~ "Schulferien in Deutschland"
+      assert conn.assigns.days_to_display == 80 # Default value
+      assert conn.assigns.current_year == Date.utc_today().year
+      assert Enum.count(conn.assigns.days) == 80
+      assert conn.assigns.months_with_days != nil
+      assert conn.assigns.countries != nil
+    end
+  end
+
+  describe "developers action" do
+    test "GET /entwickler", %{conn: conn} do
+      conn = get(conn, "/entwickler")
+      assert html_response(conn, 200) =~ "Entwickler"
+    end
+  end
+
+  describe "impressum action" do
+    test "GET /impressum", %{conn: conn} do
+      conn = get(conn, "/impressum")
+      assert html_response(conn, 200) =~ "Impressum"
+    end
+  end
 end

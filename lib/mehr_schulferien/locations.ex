@@ -200,48 +200,6 @@ defmodule MehrSchulferien.Locations do
     |> Enum.sort(&(&1.name >= &2.name))
   end
 
-  @doc """
-  Returns the list of cities for a certain federal_state.
-  """
-  def list_cities_of_federal_state(federal_state) do
-    counties =
-      from(l in Location,
-        where: l.is_county == true and l.parent_location_id == ^federal_state.id
-      )
-      |> Repo.all()
-      |> Repo.preload([:periods])
-
-    county_ids = Enum.map(counties, & &1.id)
-
-    from(l in Location, where: l.is_city == true and l.parent_location_id in ^county_ids)
-    |> Repo.all()
-    |> Repo.preload([:periods])
-    |> Enum.map(&combine_city_periods(federal_state, counties, &1))
-  end
-
-  defp combine_city_periods(federal_state, counties, city) do
-    county = Enum.find(counties, &(&1.id == city.parent_location_id))
-    periods = federal_state.periods ++ county.periods ++ city.periods
-    %Location{city | periods: periods}
-  end
-
-  @doc """
-  Returns the list of cities for a certain country.
-  """
-  def list_cities_of_country(country) do
-    federal_state_ids = country |> list_federal_states() |> Enum.map(& &1.id)
-
-    county_ids =
-      from(l in Location,
-        where: l.is_county == true and l.parent_location_id in ^federal_state_ids,
-        select: l.id
-      )
-      |> Repo.all()
-
-    from(l in Location, where: l.is_city == true and l.parent_location_id in ^county_ids)
-    |> Repo.all()
-  end
-
   #
   # School queries
   #
@@ -255,39 +213,21 @@ defmodule MehrSchulferien.Locations do
     |> Repo.preload([:address])
   end
 
-  def combine_school_periods(schools, cities) do
-    Enum.map(schools, fn school ->
-      city = Enum.find(cities, &(&1.id == school.parent_location_id))
-      %Location{school | periods: school.periods ++ city.periods}
-    end)
-  end
-
   @doc """
   Returns the list of schools for a certain country.
   """
-  def list_schools_of_country(country) do
-    city_ids = country |> list_cities_of_country() |> Enum.map(& &1.id)
-
-    from(l in Location, where: l.is_school == true and l.parent_location_id in ^city_ids)
-    |> Repo.all()
-  end
+  # def list_schools_of_country(country) do
+  #   city_ids = country |> list_cities_of_country() |> Enum.map(& &1.id)
+  #
+  #   from(l in Location, where: l.is_school == true and l.parent_location_id in ^city_ids)
+  #   |> Repo.all()
+  # end
 
   @doc """
   Returns the total count of schools in the database.
   """
   def count_schools do
     Repo.aggregate(from(l in Location, where: l.is_school == true), :count, :id)
-  end
-
-  @doc """
-  Returns the number of schools for a specific city.
-  """
-  def count_schools(city) do
-    Repo.aggregate(
-      from(l in Location, where: l.is_school == true and l.parent_location_id == ^city.id),
-      :count,
-      :id
-    )
   end
 
   @doc """
@@ -349,24 +289,16 @@ defmodule MehrSchulferien.Locations do
 
   Raises `Ecto.NoResultsError` if the county does not exist.
   """
-  def get_county_by_slug!(county_slug, federal_state) do
-    Repo.get_by!(Location,
-      slug: county_slug,
-      is_county: true,
-      parent_location_id: federal_state.id
-    )
-  end
-
   @doc """
   Gets a single city by querying for the slug.
 
   Raises `Ecto.NoResultsError` if the city does not exist.
   """
-  def get_city_by_slug!(city_slug) do
-    Location
-    |> Repo.get_by!(slug: city_slug, is_city: true)
-    |> Repo.preload([:zip_codes])
-  end
+  # def get_city_by_slug!(city_slug) do
+  #   Location
+  #   |> Repo.get_by!(slug: city_slug, is_city: true)
+  #   |> Repo.preload([:zip_codes])
+  # end
 
   @doc """
   Gets a single school by querying for the slug.
@@ -412,61 +344,77 @@ defmodule MehrSchulferien.Locations do
     %{country: country, federal_state: federal_state, county: county, city: city, school: school}
   end
 
-  def with_periods(locations) do
-    Repo.preload(locations, [:periods])
-  end
-
   @doc """
   Returns counties with their cities that have at least one school, including the school count.
   This is an optimized query that avoids the N+1 problem by fetching all required data in just
   a few queries instead of querying separately for each city.
   """
   def list_counties_with_cities_having_schools(federal_state) do
-    # First, get all counties for this federal state
+    # Step 1: Fetch all counties for the given federal_state.
+    # This provides the primary entities around which cities will be grouped.
     counties = list_counties(federal_state)
     county_ids = Enum.map(counties, & &1.id)
 
-    # Get cities with school counts in a single query
-    cities_with_school_counts_query =
-      from city in Location,
-        join: school in Location,
-        on: school.parent_location_id == city.id and school.is_school == true,
-        where: city.parent_location_id in ^county_ids and city.is_city == true,
-        group_by: [city.id, city.name, city.slug, city.parent_location_id],
-        select: %{
-          city_data: city,
-          school_count: count(school.id)
-        },
-        order_by: [desc: city.name]
+    # If there are no counties, no further processing is needed.
+    if Enum.empty?(county_ids) do
+      []
+    else
+      # Step 2: Fetch cities that belong to these counties and have at least one school.
+      # This is done in a single query that joins cities with schools,
+      # groups by city, and counts the schools for each city.
+      # It also orders cities by name descendingly.
+      cities_with_school_counts_query =
+        from city in Location,
+          join: school in Location,
+          on: school.parent_location_id == city.id and school.is_school == true,
+          where: city.parent_location_id in ^county_ids and city.is_city == true,
+          group_by: [city.id, city.name, city.slug, city.parent_location_id],
+          select: %{
+            city_data: city, # Contains the Location struct for the city
+            school_count: count(school.id) # Number of schools in this city
+          },
+          order_by: [desc: city.name]
 
-    cities_with_school_counts = Repo.all(cities_with_school_counts_query)
+      cities_with_school_counts = Repo.all(cities_with_school_counts_query)
 
-    # Preload zip_codes for all cities at once
-    city_ids = Enum.map(cities_with_school_counts, & &1.city_data.id)
+      # Step 3: Preload zip_codes for all identified cities efficiently.
+      # This avoids N+1 queries when accessing zip codes later.
+      city_ids_for_zip_preload = Enum.map(cities_with_school_counts, & &1.city_data.id)
 
-    cities_with_zip_codes =
-      from(c in Location,
-        where: c.id in ^city_ids,
-        preload: [:zip_codes]
-      )
-      |> Repo.all()
-      |> Map.new(fn city -> {city.id, city} end)
+      # Create a map of city_id -> city_with_zip_codes for easy lookup.
+      cities_by_id_with_zip_codes =
+        if Enum.empty?(city_ids_for_zip_preload) do
+          %{}
+        else
+          from(c in Location,
+            where: c.id in ^city_ids_for_zip_preload,
+            preload: [:zip_codes]
+          )
+          |> Repo.all()
+          |> Map.new(fn city -> {city.id, city} end)
+        end
 
-    # Add zip_codes to each city in cities_with_school_counts
-    cities_with_school_counts =
-      Enum.map(cities_with_school_counts, fn %{city_data: city_data} = city_item ->
-        city_with_zip_codes = Map.get(cities_with_zip_codes, city_data.id)
-        %{city_item | city_data: %{city_data | zip_codes: city_with_zip_codes.zip_codes}}
+      # Step 4: Merge the zip_code data back into the cities_with_school_counts list.
+      # Each city_data entry is updated with its preloaded zip_codes.
+      cities_with_school_counts_and_zips =
+        Enum.map(cities_with_school_counts, fn %{city_data: city_data} = city_item ->
+          city_with_zip_codes = Map.get(cities_by_id_with_zip_codes, city_data.id)
+          updated_city_data = %{city_data | zip_codes: city_with_zip_codes.zip_codes}
+          %{city_item | city_data: updated_city_data}
+        end)
+
+      # Step 5: Group the enriched city data by their parent county ID.
+      cities_by_county_id =
+        Enum.group_by(cities_with_school_counts_and_zips, & &1.city_data.parent_location_id)
+
+      # Step 6: Construct the final result.
+      # Map over the initial list of counties, attaching their respective cities (which now include school counts and zip codes).
+      # Finally, filter out any counties that do not have any cities with schools.
+      Enum.map(counties, fn county ->
+        cities_for_county = Map.get(cities_by_county_id, county.id, [])
+        {county, cities_for_county}
       end)
-
-    # Group cities by county
-    cities_by_county = Enum.group_by(cities_with_school_counts, & &1.city_data.parent_location_id)
-
-    # Create the final result by mapping counties to their cities
-    Enum.map(counties, fn county ->
-      cities = Map.get(cities_by_county, county.id, [])
-      {county, cities}
-    end)
-    |> Enum.filter(fn {_county, cities} -> length(cities) > 0 end)
+      |> Enum.filter(fn {_county, cities} -> Enum.any?(cities) end)
+    end
   end
 end

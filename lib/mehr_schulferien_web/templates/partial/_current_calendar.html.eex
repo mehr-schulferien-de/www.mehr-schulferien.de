@@ -1,92 +1,150 @@
-<% breakpoint_days = Enum.filter(@days, fn(x) -> x == Enum.at(@days, 0) or x.day == 1 or x == Enum.at(@days, -1) end) %>
+<%# This partial renders a calendar table displaying school vacations and holidays for various federal states. %>
+<%# It's designed to be responsive and uses Tailwind CSS for styling. %>
 
-<div class="table-responsive">
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th rowspan="3"></th>
-        <%= for {day, counter} <- Enum.with_index(breakpoint_days) do %>
-          <%= if day != Enum.at(breakpoint_days, -1) do %>
-            <%= if day == Enum.at(breakpoint_days, -2) do %>
-              <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1 }" %>"><%= @months[day.month] %> <%= day.year%></th>
-            <% else %>
-              <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) }" %>"><%= @months[day.month] %> <%= day.year%></th>
-            <% end %>
-          <% end %>
-        <% end %>
-        <%= if Enum.count(@days) < 360 do %><th rowspan="3"></th><% end  %>
-      </tr>
-      <tr>
-        <%= for day <- @days do %>
-          <% day_of_week = Date.day_of_week(day) %>
-          <td class="text-right <%= if day_of_week > 5, do: "active", else: "" %>"><small><%= @day_names[day_of_week] %><span class="hidden-xs hidden-sm hidden-md">.</span></small></td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= for day <- @days do %>
-          <% day_of_week = Date.day_of_week(day) %>
-          <td class="text-right <%= if day_of_week > 5, do: "active", else: "" %>"><small><%= day.day %><span class="hidden-xs hidden-sm hidden-md">.</span></small></td>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-      <%= for place <- @countries do %>
-        <% country = place[:country] %>
-        <% periods = place[:periods] %>
-        <%= for {federal_state, periods} <- periods do %>
-          <tr>
-            <th rowspan="2">
-              <%= if country.slug && federal_state.slug do %>
-                <span class="hidden-xs "><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
-                <span class="hidden-sm hidden-md hidden-lg hidden-xl"><%= link "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
-              <% else %>
-                <span class="hidden-xs "><%= federal_state.name %></span>
-                <span class="hidden-sm hidden-md hidden-lg hidden-xl"><%= "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})" %></span>
-              <% end %>
-            </th>
-            <%= for day <- @days do %>
-              <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
-              <td class="text-center <%= td_html_class %>">
-                <%= if td_html_class != "" and td_html_class != "active" do %>
-                  <%= if country.slug && federal_state.slug do %>
-                    <%= link title: "Termin anzeigen", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}" do %>
-                      <i class="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>
-                      </i>
-                    <% end %>
-                  <% else %>
-                    <i class="icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12-5.4 12-12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>
-                    </i>
-                  <% end %>
-                <% end %>
-              </td>
-            <% end %>
-            <%= if Enum.count(@days) < 360 do %><td><%= link "➡️", to: Routes.page_path(@conn, :full_year) %></td><% end %>
-          </tr>
+<%
+  # Calculate breakpoint_days: these are the days that will start a new month/year header column.
+  # These are the first day, the first of any month, and the last day.
+  breakpoint_days =
+    Enum.filter(@days, fn day ->
+      day == Enum.at(@days, 0) || day.day == 1 || day == Enum.at(@days, -1)
+    end)
+%>
 
-          <tr>
-            <%= for day <- @days do %>
-              <% current_day_periods = MehrSchulferien.Periods.find_all_periods(periods, day) %>
-              <%= if current_day_periods != [] do %>
-                <% school_period = MehrSchulferien.PeriodDisplay.get_school_period(current_day_periods) %>
-                <%= if MehrSchulferien.PeriodDisplay.display_period_info?(day, @days, school_period) do %>
-                  <% colspan = MehrSchulferien.PeriodDisplay.get_period_colspan(day, List.last(@days), school_period) %>
-                  <td class="<%= school_period.html_class %>" colspan="<%= colspan %>">
-                    <%= link MehrSchulferien.PeriodDisplay.show_period_info(school_period, colspan), title: "#{school_period.holiday_or_vacation_type.colloquial} #{day.year} in #{federal_state.name}", to: (if country.slug && federal_state.slug, do: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}", else: "#") %>
-                  </td>
-                <% else %>
-                  <%= if non_school_period = MehrSchulferien.PeriodDisplay.get_non_school_period(day, school_period, current_day_periods) do %>
-                    <td class="<%= non_school_period.html_class %>"></td>
-                  <% end %>
-                <% end %>
-              <% else %>
-                <td></td>
-              <% end %>
-            <% end %>
-          </tr>
+<%# The outer div is handled by the parent template for overflow scrolling if needed %>
+<table class="min-w-full border-collapse border border-gray-300">
+  <thead class="bg-gray-100">
+    <tr>
+      <%# Empty cell for the fixed column of federal state names %>
+      <th class="sticky left-0 z-10 bg-gray-100 border border-gray-300 p-1 md:p-2 text-xs md:text-sm" rowspan="3">Länder</th>
+
+      <%# Month/Year Headers: Spanning across multiple day columns %>
+      <%= for {day, counter} <- Enum.with_index(breakpoint_days) do %>
+        <%= if day != Enum.at(breakpoint_days, -1) do %>
+          <%
+            # Calculate colspan for the month/year header
+            # If it's the second to last breakpoint, colspan includes the last day.
+            # Otherwise, it's the difference to the next breakpoint.
+            colspan =
+              if day == Enum.at(breakpoint_days, -2) do
+                Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1
+              else
+                Date.diff(Enum.at(breakpoint_days, counter + 1), day)
+              end
+          %>
+          <th class="whitespace-nowrap border border-gray-300 p-1 md:p-2 text-xs md:text-sm" colspan="<%= colspan %>">
+            <%= @months[day.month] %> <%= day.year %>
+          </th>
         <% end %>
       <% end %>
-    </tbody>
-  </table>
-</div>
+      <%# Link to full year view if not already showing a full year %>
+      <%= if Enum.count(@days) < 360 do %>
+        <th class="sticky right-0 z-10 bg-gray-100 border border-gray-300 p-1 md:p-2" rowspan="3">
+          <%= link "🗓️", to: Routes.page_path(@conn, :full_year), title: "Ganzes Jahr anzeigen", class: "text-sm md:text-base" %>
+        </th>
+      <% end %>
+    </tr>
+    <tr>
+      <%# Day Name Headers (Mo, Di, etc.) %>
+      <%= for day <- @days do %>
+        <% day_of_week = Date.day_of_week(day) %>
+        <td class="text-right border border-gray-300 p-1 text-xs <%= if day_of_week > 5, do: "bg-gray-200 font-semibold", else: "" %>">
+          <span class="sm:hidden"><%= String.at(@day_names[day_of_week], 0) %></span>
+          <span class="hidden sm:inline"><%= @day_names[day_of_week] %></span>
+          <span class="hidden md:inline">.</span>
+        </td>
+      <% end %>
+    </tr>
+    <tr>
+      <%# Day Number Headers (1, 2, etc.) %>
+      <%= for day <- @days do %>
+        <% day_of_week = Date.day_of_week(day) %>
+        <td class="text-right border border-gray-300 p-1 text-xs <%= if day_of_week > 5, do: "bg-gray-200 font-semibold", else: "" %>">
+          <%= day.day %><span class="hidden md:inline">.</span>
+        </td>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody class="bg-white">
+    <%= for place <- @countries do %>
+      <% country = place[:country] %>
+      <% periods_by_state = place[:periods] # This is a list of {state, periods_for_state} tuples %>
+      <%= for {federal_state, state_specific_periods} <- periods_by_state do %>
+        <%# Row for Federal State Name and Day Cells (icons/links) %>
+        <tr class="border-t border-gray-300">
+          <th class="sticky left-0 z-10 bg-white border border-gray-300 p-1 md:p-2 text-left align-top text-xs md:text-sm">
+            <%= if country.slug && federal_state.slug do %>
+              <%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug), class: "text-blue-600 hover:underline" %>
+              <span class="block text-gray-500 text-xs md:hidden"><%= federal_state.code %></span>
+            <% else %>
+              <%= federal_state.name %>
+              <span class="block text-gray-500 text-xs md:hidden"><%= federal_state.code %></span>
+            <% end %>
+          </th>
+          <%# Day cells with icons for periods %>
+          <%= for day <- @days do %>
+            <% td_html_class = ViewHelpers.get_html_class(day, state_specific_periods) %>
+            <td class="text-center border border-gray-300 h-6 md:h-8 <%= td_html_class %> <%# Ensure ViewHelpers.get_html_class returns Tailwind compatible classes or adapt here %>">
+              <%= if td_html_class != "" && td_html_class != "active" && td_html_class != "weekend" do %>
+                <%# Create a link if it's a special period (vacation/holiday) %>
+                <%= if country.slug && federal_state.slug do %>
+                  <%= link title: "Termin anzeigen",
+                       to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{@current_year}" do %>
+                    <div class="w-full h-full flex items-center justify-center">
+                      <%# Using a simple dot or small icon can be less intrusive than a full SVG here if space is tight %>
+                      <span class="text-xs leading-none" aria-label="Termin">●</span>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <div class="w-full h-full flex items-center justify-center">
+                    <span class="text-xs leading-none" aria-label="Termin">●</span>
+                  </div>
+                <% end %>
+              <% end %>
+            </td>
+          <% end %>
+          <%# Empty cell for the "Full Year" link column, if present %>
+          <%= if Enum.count(@days) < 360 do %><td class="sticky right-0 z-10 bg-white border-l border-gray-300"></td><% end %>
+        </tr>
+        <%# Row for Period Names (colspan) %>
+        <tr class="border-b border-gray-300">
+          <%# This cell is intentionally left empty as it's under the sticky federal_state name header %>
+          <th class="sticky left-0 z-10 bg-white border-r border-gray-300"></th>
+
+          <%= for day <- @days do %>
+            <% current_day_periods = MehrSchulferien.Periods.find_all_periods(state_specific_periods, day) %>
+            <%= if current_day_periods != [] do %>
+              <% school_period = MehrSchulferien.PeriodDisplay.get_school_period(current_day_periods) %>
+              <%= if MehrSchulferien.PeriodDisplay.display_period_info?(day, @days, school_period) do %>
+                <% colspan = MehrSchulferien.PeriodDisplay.get_period_colspan(day, List.last(@days), school_period) %>
+                <td class="<%= school_period.html_class %> text-white text-xs p-1 overflow-hidden whitespace-nowrap text-center" colspan="<%= colspan %>">
+                  <%= link MehrSchulferien.PeriodDisplay.show_period_info(school_period, colspan),
+                       title: "#{school_period.holiday_or_vacation_type.colloquial} #{@current_year} in #{federal_state.name}",
+                       to: (if country.slug && federal_state.slug, do: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{@current_year}", else: "#"),
+                       class: "hover:underline" %>
+                </td>
+              <% else %>
+                <%# This case handles days that are part of a period but not the start of it for display purposes %>
+                <%# We might need a placeholder or an empty td if the colspan logic doesn't perfectly align, %>
+                <%# or ensure the previous colspan covers this. If display_period_info? is false, %>
+                <%# it means this day is covered by a previous period's colspan or it's a non-school period to be specially marked. %>
+                <%= if non_school_period = MehrSchulferien.PeriodDisplay.get_non_school_period(day, school_period, current_day_periods) do %>
+                  <td class="<%= non_school_period.html_class %> h-6 md:h-8"></td>
+                <% else %>
+                  <%# This cell should ideally not be rendered if a colspan from a previous cell covers it. %>
+                  <%# If it's rendered, it means it's an empty day within the period range not starting a new label. %>
+                  <%# Add appropriate styling if it needs to be visually distinct or just empty. %>
+                  <td></td>
+                <% end %>
+              <% end %>
+            <% else %>
+              <%# Empty cell for days with no periods %>
+              <td class="h-6 md:h-8"></td>
+            <% end %>
+          <% end %>
+          <%# Empty cell for the "Full Year" link column, if present %>
+          <%= if Enum.count(@days) < 360 do %><td class="sticky right-0 z-10 bg-white"></td><% end %>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

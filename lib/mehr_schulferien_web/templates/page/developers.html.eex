@@ -61,6 +61,7 @@
     <h2 class="text-2xl font-semibold mb-3">Die API</h2>
     <p class="mb-4">Alle Daten können per RESTful JSON-API abgerufen werden. Stück für Stück werden wir hierzu die Dokumentation erweitern. Hier schon mal die Basics.</p>
 
+    <%# API Section: locations %>
     <h3 class="text-xl font-semibold mb-2">locations</h3>
     <p class="mb-4">Das Model Locations wird für die Speicherung von Ländern (countries), Bundesländern (federal_states), Landkreisen (counties),
     Städten (cities) und Schulen (schools) benutzt. Die Dabei werden die einzelnen Ebenen mit einander verknüpft.</p>
@@ -72,6 +73,7 @@
     <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/locations</pre></li>
     </ul>
 
+    <%# API Section: periods %>
     <h3 class="text-xl font-semibold mb-2">periods</h3>
     <p class="mb-4">Das Model Period wird zur Speicherung der einzelnen Ferien und Feiertage benutzt.</p>
     <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
@@ -82,6 +84,7 @@
     <pre class="bg-gray-100 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/periods</pre></li>
     </ul>
 
+    <%# API Section: holiday_or_vacation_types %>
     <h3 class="text-xl font-semibold mb-2">holiday_or_vacation_types</h3>
     <p class="mb-4">Das Model HolidayOrVacationType wird zur Speicherung der einzelnen Arten von Ferien und Feiertage benutzt.</p>
     <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
