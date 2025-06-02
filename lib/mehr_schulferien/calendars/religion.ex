@@ -26,6 +26,7 @@ defmodule MehrSchulferien.Calendars.Religion do
     religion
     |> cast(attrs, [:name, :slug, :wikipedia_url])
     |> validate_required([:name])
+    |> unique_constraint(:name)
     |> NameSlug.maybe_generate_slug()
     |> NameSlug.unique_constraint()
   end
