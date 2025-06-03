@@ -388,7 +388,7 @@ defmodule MehrSchulferien.Locations do
     county = get_location!(city.parent_location_id)
     federal_state = get_location!(county.parent_location_id)
 
-    unless country.id == federal_state.parent_location_id do
+    if country.id != federal_state.parent_location_id do
       raise MehrSchulferien.CountryNotParentError
     end
 
@@ -405,7 +405,7 @@ defmodule MehrSchulferien.Locations do
     county = get_location!(city.parent_location_id)
     federal_state = get_location!(county.parent_location_id)
 
-    unless country.id == federal_state.parent_location_id do
+    if country.id != federal_state.parent_location_id do
       raise MehrSchulferien.CountryNotParentError
     end
 

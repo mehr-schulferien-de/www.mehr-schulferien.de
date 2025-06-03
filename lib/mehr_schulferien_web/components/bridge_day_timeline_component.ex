@@ -129,7 +129,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       <p class="text-sm text-gray-800 mt-3">
         #{assigns.vacation_days} #{if assigns.vacation_days == 1, do: "eingereichten Urlaubstag", else: "eingereichte Urlaubstage"} = 
         <span class="font-medium">#{assigns.total_free_days} freie Tage #{if is_super_bridge_day, do: "🎉", else: ""}</span>
-        #{unless is_super_bridge_day do
+        #{if !is_super_bridge_day do
       "(#{assigns.efficiency_percentage}% Gewinn)"
     else
       ""
