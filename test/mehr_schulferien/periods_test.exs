@@ -203,6 +203,84 @@ defmodule MehrSchulferien.PeriodsTest do
     end
   end
 
+  describe "query delegation" do
+    setup [:add_federal_state, :add_periods]
+
+    test "delegated functions work correctly through main Periods module", %{
+      country: country,
+      federal_state: federal_state
+    } do
+      location_ids = [country.id, federal_state.id]
+      start_date = ~D[2020-01-01]
+      end_date = ~D[2020-12-31]
+
+      # Test list_school_vacation_periods delegation
+      vacation_periods = Periods.list_school_vacation_periods(location_ids, start_date, end_date)
+      assert is_list(vacation_periods)
+      assert length(vacation_periods) > 0
+
+      # Test list_public_periods delegation
+      public_periods = Periods.list_public_periods(location_ids, start_date, end_date)
+      assert is_list(public_periods)
+
+      # Test list_public_everybody_periods delegation
+      public_everybody_periods =
+        Periods.list_public_everybody_periods(location_ids, start_date, end_date)
+
+      assert is_list(public_everybody_periods)
+
+      # Test list_school_free_periods delegation
+      school_free_periods = Periods.list_school_free_periods(location_ids, start_date, end_date)
+      assert is_list(school_free_periods)
+    end
+
+    test "delegated functions are accessible without direct Query module import", %{
+      country: country,
+      federal_state: federal_state
+    } do
+      location_ids = [country.id, federal_state.id]
+      start_date = ~D[2020-01-01]
+      end_date = ~D[2020-12-31]
+
+      # Verify that functions can be called without importing MehrSchulferien.Periods.Query
+      # This ensures the delegation works properly and avoids compilation order issues
+      vacation_periods =
+        apply(Periods, :list_school_vacation_periods, [location_ids, start_date, end_date])
+
+      assert is_list(vacation_periods)
+
+      public_periods = apply(Periods, :list_public_periods, [location_ids, start_date, end_date])
+      assert is_list(public_periods)
+
+      public_everybody_periods =
+        apply(Periods, :list_public_everybody_periods, [location_ids, start_date, end_date])
+
+      assert is_list(public_everybody_periods)
+    end
+
+    test "Query module functions work directly when needed" do
+      # This test ensures that the Query module itself is still functional
+      # and that delegated functions return the same results as direct calls
+      country = insert(:country)
+      federal_state = insert(:federal_state, %{parent_location_id: country.id})
+      location_ids = [country.id, federal_state.id]
+      start_date = ~D[2020-01-01]
+      end_date = ~D[2020-12-31]
+
+      # Compare delegated vs direct calls
+      delegated_periods = Periods.list_school_vacation_periods(location_ids, start_date, end_date)
+
+      direct_periods =
+        MehrSchulferien.Periods.Query.list_school_vacation_periods(
+          location_ids,
+          start_date,
+          end_date
+        )
+
+      assert delegated_periods == direct_periods
+    end
+  end
+
   describe "icalendar" do
     test "period_to_event/1 converts period to an ICalendar event" do
       federal_state = insert(:federal_state)

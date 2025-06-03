@@ -67,7 +67,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     location_ids = [country.id, federal_state.id]
 
     all_periods =
-      MehrSchulferien.Periods.Query.list_school_vacation_periods(
+      MehrSchulferien.Periods.list_school_vacation_periods(
         location_ids,
         range_start,
         range_end
@@ -100,7 +100,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     {:ok, year_end} = Date.new(year, 12, 31)
 
     public_periods =
-      MehrSchulferien.Periods.Query.list_public_periods(
+      MehrSchulferien.Periods.list_public_periods(
         location_ids,
         year_start,
         year_end

@@ -87,6 +87,87 @@ defmodule MehrSchulferien.BridgeDaysTest do
     end
   end
 
+  describe "periods integration" do
+    test "BridgeDays module works correctly with delegated Periods functions" do
+      # Create a test setup with a known federal state
+      country = insert(:country, %{name: "Deutschland", code: "DE"})
+
+      hamburg =
+        insert(:federal_state, %{
+          name: "Hamburg",
+          code: "HH",
+          parent_location_id: country.id
+        })
+
+      # Create holidays and weekends for the test
+      create_test_periods(country.id, hamburg.id)
+
+      # Test that bridge days functions work with updated Periods module references
+      current_date = ~D[2025-04-04]
+
+      # This call uses Periods.list_public_everybody_periods internally (was Query.list_public_everybody_periods)
+      result = BridgeDays.find_next_bridge_day(hamburg, current_date)
+      assert result != nil
+      assert result.starts_on == ~D[2025-05-02]
+
+      # This call also uses Periods.list_public_everybody_periods internally
+      best_result = BridgeDays.find_best_bridge_day(hamburg, current_date)
+      assert best_result != nil
+      assert best_result.bridge_day != nil
+      assert best_result.vacation_days > 0
+      assert best_result.total_free_days > 0
+    end
+
+    test "best_bridge_day_teaser works with delegated functions" do
+      # Create a minimal test setup for NRW
+      country = insert(:country, %{name: "Deutschland", code: "DE", slug: "d"})
+
+      nrw =
+        insert(:federal_state, %{
+          name: "Nordrhein-Westfalen",
+          code: "NW",
+          slug: "nordrhein-westfalen",
+          parent_location_id: country.id
+        })
+
+      # Create basic holiday data for current year
+      {:ok, holiday_type} =
+        MehrSchulferien.Calendars.create_holiday_or_vacation_type(%{
+          name: "Feiertag",
+          colloquial: "Feiertag",
+          default_display_priority: 3,
+          default_html_class: "danger",
+          default_is_listed_below_month: true,
+          default_is_public_holiday: true,
+          default_is_valid_for_everybody: true,
+          slug: "feiertag",
+          wikipedia_url: "https://de.wikipedia.org/wiki/Feiertag",
+          country_location_id: country.id
+        })
+
+      current_year = Date.utc_today().year
+
+      # Create a holiday to enable bridge day calculation
+      Periods.create_period(%{
+        is_public_holiday: true,
+        is_valid_for_everybody: true,
+        location_id: nrw.id,
+        holiday_or_vacation_type_id: holiday_type.id,
+        starts_on: Date.from_erl!({current_year, 5, 1}),
+        ends_on: Date.from_erl!({current_year, 5, 1}),
+        created_by_email_address: "test@example.com",
+        display_priority: 10
+      })
+
+      # This function uses Periods.list_public_everybody_periods internally
+      result = BridgeDays.best_bridge_day_teaser()
+
+      # The function should either return a valid result or nil (depending on data availability)
+      # The important thing is that it doesn't raise an exception due to missing Query module
+      assert is_nil(result) or is_tuple(result)
+    end
+  end
+
   describe "best_bridge_day" do
     test "find_best_bridge_day/3 finds the most efficient bridge day opportunity" do
       # Create a test setup with a known federal state

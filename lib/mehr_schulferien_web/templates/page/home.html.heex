@@ -91,7 +91,7 @@
             window_end = Date.add(next_bridge_day.starts_on, 5)
 
             public_periods =
-              MehrSchulferien.Periods.Query.list_public_everybody_periods(
+              MehrSchulferien.Periods.list_public_everybody_periods(
                 location_ids,
                 window_start,
                 window_end

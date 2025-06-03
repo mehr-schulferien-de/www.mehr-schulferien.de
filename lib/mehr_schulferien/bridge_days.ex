@@ -3,8 +3,8 @@ defmodule MehrSchulferien.BridgeDays do
   Functions for calculating and handling bridge days.
   """
 
-  alias MehrSchulferien.{Locations, Calendars.DateHelpers, Repo}
-  alias MehrSchulferien.Periods.{Query, Grouping}
+  alias MehrSchulferien.{Locations, Calendars.DateHelpers, Repo, Periods}
+  alias MehrSchulferien.Periods.Grouping
   alias MehrSchulferienWeb.BridgeDayView
 
   @doc """
@@ -53,7 +53,7 @@ defmodule MehrSchulferien.BridgeDays do
       location_ids = [country.id, north_rhine_westphalia.id]
       {:ok, start_date} = Date.new(current_year, 1, 1)
       {:ok, end_date} = Date.new(current_year, 12, 31)
-      public_periods = Query.list_public_everybody_periods(location_ids, start_date, end_date)
+      public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
       bridge_day_map = Grouping.group_by_interval(public_periods)
 
       best_deal =
@@ -131,7 +131,7 @@ defmodule MehrSchulferien.BridgeDays do
     end_date = Date.add(current_date, months * 30)
 
     # Fetch public periods only within this window
-    public_periods = Query.list_public_everybody_periods(location_ids, current_date, end_date)
+    public_periods = Periods.list_public_everybody_periods(location_ids, current_date, end_date)
 
     # Early return if we don't have enough periods to form bridge days
     if length(public_periods) < 2 do
@@ -189,7 +189,7 @@ defmodule MehrSchulferien.BridgeDays do
     end_date = Date.add(start_date, months_ahead * 30)
 
     # Fetch all public periods in the specified time window
-    public_periods = Query.list_public_everybody_periods(location_ids, start_date, end_date)
+    public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
 
     # Early return if we don't have enough periods
     if length(public_periods) < 2 do
