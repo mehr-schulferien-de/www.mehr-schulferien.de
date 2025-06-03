@@ -1,4 +1,4 @@
-defmodule MehrSchulferien.Periods.Query do
+defmodule MehrSchulferien.PeriodFetcher do
   @moduledoc """
   Period query operations.
 

@@ -12,7 +12,8 @@ defmodule MehrSchulferien.Periods do
 
   alias MehrSchulferien.Calendars
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType}
-  alias MehrSchulferien.Periods.{Period, Query, DateOperations, Grouping}
+  alias MehrSchulferien.Periods.{Period, DateOperations, Grouping}
+  alias MehrSchulferien.PeriodFetcher
   alias MehrSchulferien.Repo
 
   #
@@ -111,18 +112,18 @@ defmodule MehrSchulferien.Periods do
   end
 
   #
-  # Period queries by time - delegated to Query module
+  # Period queries by time - delegated to PeriodFetcher module
   #
 
-  defdelegate list_previous_periods(federal_state, holiday_or_vacation_type), to: Query
-  defdelegate list_current_and_future_periods(federal_state, holiday_or_vacation_type), to: Query
-  defdelegate list_school_vacation_periods(location_ids, starts_on, ends_on), to: Query
-  defdelegate list_public_everybody_periods(location_ids, starts_on, ends_on), to: Query
-  defdelegate list_public_periods(location_ids, starts_on, ends_on), to: Query
-  defdelegate list_school_free_periods(location_ids, starts_on, ends_on), to: Query
-  defdelegate list_school_free_periods_for_countries(countries, starts_on, ends_on), to: Query
-  defdelegate list_school_free_periods_with_preload(location_ids, starts_on, ends_on), to: Query
-  defdelegate list_years_with_periods(), to: Query
+  defdelegate list_previous_periods(federal_state, holiday_or_vacation_type), to: PeriodFetcher
+  defdelegate list_current_and_future_periods(federal_state, holiday_or_vacation_type), to: PeriodFetcher
+  defdelegate list_school_vacation_periods(location_ids, starts_on, ends_on), to: PeriodFetcher
+  defdelegate list_public_everybody_periods(location_ids, starts_on, ends_on), to: PeriodFetcher
+  defdelegate list_public_periods(location_ids, starts_on, ends_on), to: PeriodFetcher
+  defdelegate list_school_free_periods(location_ids, starts_on, ends_on), to: PeriodFetcher
+  defdelegate list_school_free_periods_for_countries(countries, starts_on, ends_on), to: PeriodFetcher
+  defdelegate list_school_free_periods_with_preload(location_ids, starts_on, ends_on), to: PeriodFetcher
+  defdelegate list_years_with_periods(), to: PeriodFetcher
 
   #
   # Period filtering and finding by date - delegated to DateOperations module
