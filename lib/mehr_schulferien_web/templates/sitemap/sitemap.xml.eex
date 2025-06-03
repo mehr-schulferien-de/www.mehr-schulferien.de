@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <%!-- DAILY UPDATES: Updated every day --%>
   <sitemap>
     <loc><%= MehrSchulferienWeb.Endpoint.url() %>/</loc>
     <lastmod><%= @today %></lastmod>
@@ -8,6 +10,8 @@
     <loc><%= MehrSchulferienWeb.Endpoint.url() %>/sitemap.xml</loc>
     <lastmod><%= @today %></lastmod>
   </sitemap>
+
+  <%!-- MONTHLY UPDATES: Updated on the 1st of each month --%>
   <sitemap>
     <loc><%= MehrSchulferienWeb.Endpoint.url() %>/developers</loc>
     <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
@@ -23,12 +27,18 @@
     <% cities = place[:cities] %>
     <% schools = place[:schools] %>
 
+    <%!-- YEARLY UPDATES: Updated on January 1st each year --%>
     <%!-- Country URLs --%>
     <sitemap>
       <loc><%= MehrSchulferienWeb.Endpoint.url() %>/land/<%= country.slug %></loc>
       <lastmod><%= Date.new!(@today.year, 1, 1) %></lastmod>
     </sitemap>
 
+    <%!-- CONDITIONAL UPDATES: Update frequency depends on the year --%>
+    <%!-- Past years: Static (updated once on Jan 1st of following year) --%>
+    <%!-- Current year: Daily updates --%>
+    <%!-- Future years: Yearly updates (Jan 1st of current year) --%>
+    
     <%!-- Federal States URLs --%>
     <%= for federal_state <- federal_states do %>
       <%!-- Years for federal state --%>
@@ -66,7 +76,6 @@
           end %></lastmod>
         </sitemap>
       <% end %>
-      
     <% end %>
 
     <%!-- Schools URLs --%>
