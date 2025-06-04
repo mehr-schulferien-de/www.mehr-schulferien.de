@@ -37,6 +37,11 @@ defmodule MehrSchulferienWeb.Endpoint do
     plug Phoenix.CodeReloader
   end
 
+  # Tidewave MCP server should only run in development
+  if Mix.env() == :dev do
+    plug Tidewave
+  end
+
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
@@ -56,6 +61,5 @@ defmodule MehrSchulferienWeb.Endpoint do
     key: "_mehr_schulferien_key",
     signing_salt: "ld6G7jfc"
 
-  plug Tidewave
   plug MehrSchulferienWeb.Router
 end
