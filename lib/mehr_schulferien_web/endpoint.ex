@@ -27,7 +27,7 @@ defmodule MehrSchulferienWeb.Endpoint do
     at: "/",
     from: :mehr_schulferien,
     gzip: true,
-    only: ~w(assets fonts images favicon.ico robots.txt css js)
+    only: ~w(assets fonts images favicon.ico robots.txt ads.txt css js)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
