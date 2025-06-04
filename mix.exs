@@ -4,7 +4,7 @@ defmodule MehrSchulferien.MixProject do
   def project do
     [
       app: :mehr_schulferien,
-      version: "4.0.0",
+      version: "4.1.9",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
@@ -54,7 +54,7 @@ defmodule MehrSchulferien.MixProject do
       {:icalendar, "~> 1.1.0"},
       {:slugger, "~> 0.3"},
       {:req, "~> 0.5.10"},
-      {:tidewave, "~> 0.1.6"},
+      {:tidewave, "~> 0.1.6", only: :dev},
       {:ex_phone_number, "~> 0.4.5"}
     ]
   end
