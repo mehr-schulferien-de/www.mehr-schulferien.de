@@ -10,7 +10,7 @@ import Config
 config :mehr_schulferien,
   ecto_repos: [MehrSchulferien.Repo],
   # Set to :bootstrap for legacy CSS or :tailwind for new CSS implementation
-  css_framework: :tailwind
+  css_framework: :bootstrap
 
 # Configures the endpoint
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
