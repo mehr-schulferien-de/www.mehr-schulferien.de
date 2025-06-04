@@ -7,6 +7,23 @@ defmodule MehrSchulferien.ReleaseTasks do
     end
   end
 
+  def migrate_if_pending do
+    for repo <- repos() do
+      {:ok, _, _} =
+        Ecto.Migrator.with_repo(repo, fn repo ->
+          pending_migrations = Ecto.Migrator.migrations(repo, :up)
+
+          if length(pending_migrations) > 0 do
+            IO.puts("Running #{length(pending_migrations)} pending migrations...")
+            Ecto.Migrator.run(repo, :up, all: true)
+          else
+            IO.puts("No pending migrations.")
+            []
+          end
+        end)
+    end
+  end
+
   def rollback(repo, version) do
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
   end
