@@ -9,7 +9,7 @@
     <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
   </style>
 <% else %>
-  <link rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
+  <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
 <% end %>
 
 <script
