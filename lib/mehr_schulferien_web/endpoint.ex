@@ -56,9 +56,6 @@ defmodule MehrSchulferienWeb.Endpoint do
     key: "_mehr_schulferien_key",
     signing_salt: "ld6G7jfc"
 
-  if Mix.env() in [:dev, :test] do
-    plug Tidewave
-  end
-
+  plug Tidewave
   plug MehrSchulferienWeb.Router
 end
