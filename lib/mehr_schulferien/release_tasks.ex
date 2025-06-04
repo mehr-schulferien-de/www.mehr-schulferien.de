@@ -11,8 +11,7 @@ defmodule MehrSchulferien.ReleaseTasks do
     for repo <- repos() do
       {:ok, _, _} =
         Ecto.Migrator.with_repo(repo, fn repo ->
-          migrations = Ecto.Migrator.migrations(repo)
-          pending_migrations = Enum.filter(migrations, fn {status, _, _} -> status == :down end)
+          pending_migrations = Ecto.Migrator.migrations(repo, :up)
 
           if length(pending_migrations) > 0 do
             IO.puts("Running #{length(pending_migrations)} pending migrations...")
