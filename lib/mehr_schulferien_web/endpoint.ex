@@ -26,8 +26,8 @@ defmodule MehrSchulferienWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :mehr_schulferien,
-    gzip: true,
-    only: ~w(assets fonts images favicon.ico robots.txt ads.txt css js)
+    gzip: false,
+    only: ~w(assets fonts images favicon.ico robots.txt ads.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
