@@ -33,6 +33,8 @@
       </div>
     </div>
     
-    <p class="mt-10 text-center text-sm/6 text-gray-600">&copy; 2025 <a href="https://wintermeyer-consulting.de">Wintermeyer Consulting</a>. All rights reserved.</p>
+    <p class="mt-10 text-center text-sm/6 text-gray-600">
+      Version <%= ViewHelpers.version() %> &mdash; &copy; 2025 <a href="https://wintermeyer-consulting.de" class="text-blue-600 hover:underline">Wintermeyer Consulting</a>. All rights reserved.
+    </p>
   </div>
 </footer> 
