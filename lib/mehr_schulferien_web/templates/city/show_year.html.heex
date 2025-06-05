@@ -72,9 +72,25 @@
         </div>
 
         <div class="bg-white p-4 rounded-lg shadow-sm mt-4">
-          <p class="text-sm font-semibold text-gray-700">Kartenansicht:</p>
-          <p class="text-sm">
-            <%= link to: "https://www.google.com/maps/search/?api=1&query=#{URI.encode("#{if Enum.any?(@city.zip_codes), do: hd(@city.zip_codes).value, else: ""} #{@city.name}, #{@federal_state.name}, #{@country.name}")}", target: "_blank", class: "text-blue-600 hover:text-blue-800 flex items-center" do %>
+          <h2 class="text-xl font-bold text-gray-900 mb-3">Kartenansicht</h2>
+          <address class="text-sm text-gray-700 not-italic">
+            <%= if Enum.any?(@city.zip_codes) do %>
+              <%= hd(@city.zip_codes).value %> <%= @city.name %><br />
+            <% end %>
+            <%= @federal_state.name %>, <%= @country.name %>
+          </address>
+
+          <div class="mt-2">
+            <% map_query =
+              URI.encode(
+                "#{if Enum.any?(@city.zip_codes), do: hd(@city.zip_codes).value <> " ", else: ""}#{@city.name}, #{@federal_state.name}, #{@country.name}"
+              ) %>
+            <a
+              href={"https://www.google.com/maps?q=#{map_query}"}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:text-blue-800 inline-flex items-center text-sm cursor-pointer"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 mr-1"
@@ -86,12 +102,88 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              Google Maps: <%= @city.name %>
-            <% end %>
-          </p>
+              Auf Google Maps anzeigen
+            </a>
+          </div>
+
+          <div class="mt-1">
+            <% osm_query =
+              URI.encode(
+                "#{if Enum.any?(@city.zip_codes), do: hd(@city.zip_codes).value <> " ", else: ""}#{@city.name}, #{@federal_state.name}, #{@country.name}"
+              ) %>
+            <a
+              href={"https://www.openstreetmap.org/search?query=#{osm_query}"}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:text-blue-800 inline-flex items-center text-sm cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              Auf OpenStreetMap anzeigen
+            </a>
+          </div>
+
+          <div class="mt-1">
+            <% apple_query =
+              URI.encode(
+                "#{if Enum.any?(@city.zip_codes), do: hd(@city.zip_codes).value <> " ", else: ""}#{@city.name}, #{@federal_state.name}, #{@country.name}"
+              ) %>
+            <a
+              href={"https://maps.apple.com/?q=#{apple_query}"}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:text-blue-800 inline-flex items-center text-sm cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              Auf Apple Maps anzeigen
+            </a>
+          </div>
         </div>
       </div>
     </div>
