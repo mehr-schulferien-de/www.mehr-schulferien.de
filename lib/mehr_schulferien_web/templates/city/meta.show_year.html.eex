@@ -1,0 +1,41 @@
+<title>Schulferien <%= @city.name %> <%= @year %> - Alle Ferientermine (<%= @federal_state.name %>)</title>
+<meta name="description" content="Schulferien <%= @year %> für <%= @city.name %> in <%= @federal_state.name %>: Oster-, Sommer-, Herbst- und Weihnachtsferien. Alle Termine, iCal-Export und Kalenderansicht.">
+<meta name="keywords" content="Schulferien, <%= @city.name %>, <%= @federal_state.name %>, <%= @year %>, Ferientermine, Osterferien, Sommerferien, Herbstferien, Weihnachtsferien">
+<%= if assigns[:noindex] do %>
+<meta name="robots" content="noindex,nofollow">
+<% end %>
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="<%= Routes.city_url(@conn, :show_year, @country.slug, @city.slug, @year) %>">
+<meta property="og:title" content="Schulferien <%= @city.name %> <%= @year %> - Alle Ferientermine (<%= @federal_state.name %>)">
+<meta property="og:description" content="Schulferien <%= @year %> für <%= @city.name %> in <%= @federal_state.name %>: Oster-, Sommer-, Herbst- und Weihnachtsferien. Alle Termine, iCal-Export und Kalenderansicht.">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary">
+<meta property="twitter:url" content="<%= Routes.city_url(@conn, :show_year, @country.slug, @city.slug, @year) %>">
+<meta property="twitter:title" content="Schulferien <%= @city.name %> <%= @year %> - Alle Ferientermine (<%= @federal_state.name %>)">
+<meta property="twitter:description" content="Schulferien <%= @year %> für <%= @city.name %> in <%= @federal_state.name %>: Oster-, Sommer-, Herbst- und Weihnachtsferien. Alle Termine, iCal-Export und Kalenderansicht.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "name": "<%= @country.name %>",
+    "item": "https://www.mehr-schulferien.de<%= Routes.country_path(@conn, :show, @country.slug) %>"
+  },{
+    "@type": "ListItem",
+    "position": 2,
+    "name": "Ferientermine <%= @federal_state.name %>",
+    "item": "https://www.mehr-schulferien.de<%= Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug) %>"
+  },{
+    "@type": "ListItem",
+    "position": 3,
+    "name": "Schulferien <%= @city.name %> <%= @year %>",
+    "item": "https://www.mehr-schulferien.de<%= Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year) %>"
+  }]
+}
+</script> 
