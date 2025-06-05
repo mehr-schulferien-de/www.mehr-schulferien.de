@@ -6,6 +6,9 @@
 
 import Config
 
+# Set environment
+config :mehr_schulferien, :env, :test
+
 # Configure your database
 config :mehr_schulferien, MehrSchulferien.Repo,
   username: "postgres",

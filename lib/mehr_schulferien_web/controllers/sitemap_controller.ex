@@ -27,7 +27,7 @@ defmodule MehrSchulferienWeb.SitemapController do
     countries
     |> Enum.map(fn country ->
       # For development environment, limit the number of entries
-      limit_count = if Mix.env() == :dev, do: 20, else: 10000
+      limit_count = if Application.get_env(:mehr_schulferien, :env) == :dev, do: 20, else: 10000
 
       # Get federal states
       federal_states_query =
@@ -87,7 +87,7 @@ defmodule MehrSchulferienWeb.SitemapController do
       is_school_vacation_types = Calendars.list_is_school_vacation_types(country)
 
       is_school_vacation_types =
-        if Mix.env() == :dev,
+        if Application.get_env(:mehr_schulferien, :env) == :dev,
           do: Enum.take(is_school_vacation_types, 20),
           else: is_school_vacation_types
 

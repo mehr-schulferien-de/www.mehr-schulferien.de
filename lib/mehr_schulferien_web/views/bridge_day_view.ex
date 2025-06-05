@@ -35,34 +35,32 @@ defmodule MehrSchulferienWeb.BridgeDayView do
 
   @doc """
   Checks if a bridge day meets the minimum gain requirements:
-  - 1 day off → at least 4 free days
-  - 2 days off → at least 5 free days
-  - 3 days off → at least 7 free days
-  - 4 days off → at least 10 free days
+  - 1 day off → at least 3 free days (more reasonable)
+  - 2 days off → at least 4 free days
+  - 3 days off → at least 5 free days
+  - 4 days off → at least 6 free days
 
   Returns true if the bridge day meets the minimum gain requirements, false otherwise.
   """
   def meets_minimum_gain?(bridge_day, periods) do
-    # For tests - temporarily always return true
-    # In a real production environment, we would apply the full logic
-    if Mix.env() == :test do
-      true
-    else
-      vacation_days = bridge_day.number_days
-      total_free_days = get_number_max_days(periods)
+    vacation_days = bridge_day.number_days
+    total_free_days = get_number_max_days(periods)
 
-      minimum_free_days =
-        case vacation_days do
-          1 -> 4
-          2 -> 5
-          3 -> 7
-          4 -> 10
-          # Fallback for other values
-          _ -> vacation_days * 2
-        end
+    minimum_free_days =
+      case vacation_days do
+        # 1 day off → at least 3 free days (more reasonable)
+        1 -> 3
+        # 2 days off → at least 4 free days
+        2 -> 4
+        # 3 days off → at least 5 free days
+        3 -> 5
+        # 4 days off → at least 6 free days
+        4 -> 6
+        # Fallback for other values
+        _ -> vacation_days + 2
+      end
 
-      total_free_days >= minimum_free_days
-    end
+    total_free_days >= minimum_free_days
   end
 
   # NOTE: riverrun (2020-05-27)
