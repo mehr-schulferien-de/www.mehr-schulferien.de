@@ -118,23 +118,23 @@ defmodule MehrSchulferienWeb.Router do
     get "/ferien/:country_slug/bundesland/:federal_state_slug/:year",
         FederalStateController,
         :show_year,
-        constraints: [year: [format: ~r/20[2-3][0-9]/]]
+        constraints: [year: ~r/20[2-3][0-9]/]
 
     # City routes (SEO-friendly pattern)
     get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
 
     get "/ferien/:country_slug/stadt/:city_slug/:year", CityController, :show_year,
-      constraints: [year: [format: ~r/20[2-3][0-9]/]]
+      constraints: [year: ~r/20[2-3][0-9]/]
 
     # School routes (SEO-friendly pattern)
     get "/ferien/:country_slug/schule/:school_slug", SchoolController, :show
 
-    get "/ferien/:country_slug/schule/:school_slug/:year", SchoolController, :show_year,
-      constraints: [year: [format: ~r/20[2-3][0-9]/]]
-
-    # School vCard download - consistent with school routes
+    # School vCard download - must come before the year route to avoid conflicts
     get "/ferien/:country_slug/schule/:school_slug/vcard", SchoolVCardController, :download,
       as: :school_vcard
+
+    get "/ferien/:country_slug/schule/:school_slug/:year", SchoolController, :show_year,
+      constraints: [year: ~r/20[2-3][0-9]/]
 
     # Legacy vCard path for backward compatibility
     get "/schule/:school_slug/vcard", SchoolVCardController, :download_legacy
@@ -147,7 +147,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/brueckentage/:country_slug/bundesland/:federal_state_slug/:year",
         BridgeDayController,
         :show_within_federal_state,
-        constraints: [year: [format: ~r/20[2-3][0-9]/]]
+        constraints: [year: ~r/20[2-3][0-9]/]
   end
 
   scope "/api/v2.0", MehrSchulferienWeb.Api.V2, as: :api do
