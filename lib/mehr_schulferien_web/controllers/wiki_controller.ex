@@ -90,8 +90,16 @@ defmodule MehrSchulferienWeb.WikiController do
           # Get country slug for redirect to school vacation page
           country_slug = get_country_slug_from_school(school)
 
+          # Show different message based on whether changes were made
+          flash_message =
+            if version do
+              "Adressdaten wurden erfolgreich aktualisiert."
+            else
+              "Keine Änderungen vorgenommen - die Daten waren bereits aktuell."
+            end
+
           conn
-          |> put_flash(:info, "Adressdaten wurden erfolgreich aktualisiert.")
+          |> put_flash(:info, flash_message)
           |> redirect(to: Routes.school_path(conn, :show, country_slug, school_slug))
 
         {:error, changeset} ->

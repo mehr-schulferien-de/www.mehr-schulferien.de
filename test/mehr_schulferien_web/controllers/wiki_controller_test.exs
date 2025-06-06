@@ -78,6 +78,10 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       # PaperTrail 1.0.0 stores only the new values in item_changes, not [old, new] arrays
       assert latest_version.item_changes["street"] == "Neue Straße 123"
       assert latest_version.item_changes["phone_number"] == "+49 30 98765432"
+
+      # Verify the correct success flash message was set
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
+               "Adressdaten wurden erfolgreich aktualisiert."
     end
 
     test "updates school address successfully via PUT", %{
@@ -325,6 +329,10 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       versions = PaperTrail.get_versions(school_after.address)
       # Only the original insert version
       assert length(versions) == 1
+
+      # Verify the correct flash message was set for no changes
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
+               "Keine Änderungen vorgenommen - die Daten waren bereits aktuell."
     end
 
     test "normalizes German phone numbers to international format when updating", %{
@@ -485,9 +493,10 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
   end
 
   defp create_school_with_address(_context) do
-    country = insert(:country, %{slug: "test-country-main"})
+    country = insert(:country, %{slug: "d"})
     federal_state = insert(:federal_state, %{parent_location_id: country.id})
-    city = insert(:city, %{parent_location_id: federal_state.id})
+    county = insert(:county, %{parent_location_id: federal_state.id})
+    city = insert(:city, %{parent_location_id: county.id})
     school = insert(:school, %{parent_location_id: city.id, slug: "test-gymnasium-main"})
 
     # Create an address for the school using insert! directly 
@@ -528,6 +537,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
        address: address,
        country: country,
        federal_state: federal_state,
+       county: county,
        city: city
      }}
   end
