@@ -22,6 +22,17 @@ config :logger, level: :info
 # Set stacktrace depth to match development for detailed error reporting
 config :phoenix, :stacktrace_depth, 20
 
+# Configure Swoosh mailer for local Postfix SMTP
+config :mehr_schulferien, MehrSchulferien.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: "127.0.0.1",
+  port: 25,
+  username: "",
+  password: "",
+  tls: :if_available,
+  ssl: false,
+  retries: 3
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
