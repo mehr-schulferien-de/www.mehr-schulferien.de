@@ -142,122 +142,8 @@
                 <% end %>
               </div>
             </div>
-            <!-- Links Section - More Compact -->
-            <div class="grid grid-cols-2 gap-3 mb-3">
-              <!-- Maps Column -->
-              <div>
-                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  Karten
-                </h3>
-                <% map_query =
-                  URI.encode(
-                    "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}"
-                  ) %>
-                <ul class="space-y-1 list-disc pl-6 text-sm">
-                  <li>
-                    <a
-                      href={"https://www.google.com/maps?q=#{map_query}"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                    >
-                      Google Maps
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={"https://www.openstreetmap.org/search?query=#{map_query}"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                    >
-                      OpenStreetMap
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={"https://maps.apple.com/?q=#{map_query}"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                    >
-                      Apple Maps
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <!-- External Links Column -->
-              <%= if @school.address.homepage_url || @school.address.wikipedia_url do %>
-                <div>
-                  <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 mr-1"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                      />
-                    </svg>
-                    Links
-                  </h3>
-                  <ul class="space-y-1 list-disc pl-6 text-sm">
-                    <%= if @school.address.homepage_url do %>
-                      <li>
-                        <% homepage_url = @school.address.homepage_url %>
-                        <a
-                          href={homepage_url}
-                          target="_blank"
-                          rel="noopener"
-                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                        >
-                          Homepage der Schule
-                        </a>
-                      </li>
-                    <% end %>
-                    <%= if @school.address.wikipedia_url do %>
-                      <li>
-                        <a
-                          href={@school.address.wikipedia_url}
-                          target="_blank"
-                          rel="noopener"
-                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                        >
-                          Wikipedia-Artikel
-                        </a>
-                      </li>
-                    <% end %>
-                  </ul>
-                </div>
-              <% end %>
-            </div>
-            <!-- Compact Action Buttons -->
-            <div class="flex space-x-2 pt-3 border-t">
+            <!-- Compact Action Buttons - moved closer to contact info -->
+            <div class="flex space-x-2 pt-3 mb-4">
               <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), 
                    class: "flex-1 flex items-center justify-center px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer" do %>
                 <svg
@@ -294,6 +180,110 @@
                   />
                 </svg>
                 Bearbeiten
+              <% end %>
+            </div>
+            <!-- Links Section - More Compact -->
+            <div class="grid grid-cols-2 gap-3">
+              <!-- Maps Column -->
+              <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  Karten
+                </h3>
+                <% map_query =
+                  URI.encode(
+                    "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}"
+                  ) %>
+                <ul class="space-y-1 list-disc pl-6 text-sm">
+                  <li>
+                    <a
+                      href={"https://www.google.com/maps?q=#{map_query}"}
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      Google Maps
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={"https://www.openstreetmap.org/search?query=#{map_query}"}
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      OpenStreetMap
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={"https://maps.apple.com/?q=#{map_query}"}
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      Apple Maps
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <!-- External Links Column -->
+              <%= if @school.address.homepage_url || @school.address.wikipedia_url do %>
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                      />
+                    </svg>
+                    Links
+                  </h3>
+                  <ul class="space-y-1 list-disc pl-6 text-sm">
+                    <%= if @school.address.homepage_url do %>
+                      <li>
+                        <% homepage_url = @school.address.homepage_url %>
+                        <a
+                          href={homepage_url}
+                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          Homepage der Schule
+                        </a>
+                      </li>
+                    <% end %>
+                    <%= if @school.address.wikipedia_url do %>
+                      <li>
+                        <a
+                          href={@school.address.wikipedia_url}
+                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          Wikipedia-Artikel
+                        </a>
+                      </li>
+                    <% end %>
+                  </ul>
+                </div>
               <% end %>
             </div>
           <% else %>
