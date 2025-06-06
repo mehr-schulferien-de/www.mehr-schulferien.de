@@ -81,19 +81,25 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
 
-    # Country routes (SEO-friendly pattern) - must come before year constraint routes
-    get "/ferien/:country_slug", CountryController, :show
-
-    # SEO Optimized URLs for yearly views - after country route
-    get "/ferien/:year", PageController, :full_year,
-      constraints: [year: [format: ~r/20[2-3][0-9]/]]
-
-    # Shows current year - generic fallback
+    # Shows current year - generic fallback (most specific path)
     get "/ferien", PageController, :full_year
+
+    # SEO Optimized URLs for yearly views - with year constraint
+    get "/ferien/:year", PageController, :full_year, constraints: [year: ~r/^20[2-3][0-9]$/]
+
+    # Country routes (SEO-friendly pattern) - with non-year constraint
+    get "/ferien/:country_slug", CountryController, :show,
+      constraints: [country_slug: ~r/^(?!20[2-3][0-9]$)[a-zA-Z][a-zA-Z0-9_-]*$/]
 
     # Sitemap and robots
     get "/sitemap.xml", SitemapController, :sitemap
     get "/robots.txt", RobotsController, :index
+
+    # Wiki section for collaborative school address editing
+    get "/wiki/schools/:slug", WikiController, :show_school
+    post "/wiki/schools/:slug", WikiController, :update_school
+    put "/wiki/schools/:slug", WikiController, :update_school
+    post "/wiki/schools/:slug/rollback/:version_id", WikiController, :rollback_school
 
     # Federal state routes (SEO-friendly pattern)
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show

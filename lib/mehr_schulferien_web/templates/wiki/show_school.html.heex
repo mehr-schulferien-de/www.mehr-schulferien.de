@@ -1,0 +1,264 @@
+<div class="max-w-4xl mx-auto py-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+      Schul-Wiki: <%= @school.name %>
+    </h1>
+    <p class="text-gray-600">
+      Bearbeiten Sie die Adressdaten dieser Schule. Alle Änderungen werden protokolliert und können rückgängig gemacht werden.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Edit Form -->
+    <div class="space-y-6">
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Adressdaten bearbeiten
+        </h2>
+
+        <%= if @limit_reached do %>
+          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-800 text-sm">
+              <strong>Tageslimit erreicht:</strong>
+              Es können heute keine weiteren Änderungen vorgenommen werden.
+              Versuchen Sie es morgen erneut.
+            </p>
+          </div>
+        <% end %>
+
+        <%= form_for @changeset, Routes.wiki_path(@conn, :update_school, @school.slug), [class: "space-y-4"], fn f -> %>
+          <div>
+            <%= label(f, :street, "Straße", class: "block text-sm font-medium text-gray-700 mb-1") %>
+            <%= text_input(f, :street,
+              class:
+                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
+              disabled: @limit_reached,
+              placeholder: "z.B. Musterstraße 123",
+              value: input_value(f, :street) || (@school.address && @school.address.street) || "",
+              autofocus: true
+            ) %>
+            <%= error_tag(f, :street, class: "mt-1 text-sm text-red-600") %>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <%= label(f, :zip_code, "PLZ",
+                class: "block text-sm font-medium text-gray-700 mb-1"
+              ) %>
+              <%= text_input(f, :zip_code,
+                class:
+                  "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
+                disabled: @limit_reached,
+                placeholder: "z.B. 12345",
+                value:
+                  input_value(f, :zip_code) || (@school.address && @school.address.zip_code) || ""
+              ) %>
+              <%= error_tag(f, :zip_code, class: "mt-1 text-sm text-red-600") %>
+            </div>
+
+            <div>
+              <%= label(f, :city, "Stadt", class: "block text-sm font-medium text-gray-700 mb-1") %>
+              <%= text_input(f, :city,
+                class:
+                  "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
+                disabled: @limit_reached,
+                placeholder: "z.B. Berlin",
+                value: input_value(f, :city) || (@school.address && @school.address.city) || ""
+              ) %>
+              <%= error_tag(f, :city, class: "mt-1 text-sm text-red-600") %>
+            </div>
+          </div>
+
+          <div>
+            <%= label(f, :email_address, "E-Mail",
+              class: "block text-sm font-medium text-gray-700 mb-1"
+            ) %>
+            <%= email_input(f, :email_address,
+              class:
+                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
+              disabled: @limit_reached,
+              placeholder: "z.B. info@schule.de",
+              value:
+                input_value(f, :email_address) ||
+                  (@school.address && @school.address.email_address) || ""
+            ) %>
+            <%= error_tag(f, :email_address, class: "mt-1 text-sm text-red-600") %>
+          </div>
+
+          <div>
+            <%= label(f, :phone_number, "Telefon",
+              class: "block text-sm font-medium text-gray-700 mb-1"
+            ) %>
+            <%= text_input(f, :phone_number,
+              class:
+                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
+              disabled: @limit_reached,
+              placeholder: "z.B. +49 30 123456789",
+              value:
+                input_value(f, :phone_number) || (@school.address && @school.address.phone_number) ||
+                  ""
+            ) %>
+            <%= error_tag(f, :phone_number, class: "mt-1 text-sm text-red-600") %>
+          </div>
+
+          <div>
+            <%= label(f, :homepage_url, "Homepage",
+              class: "block text-sm font-medium text-gray-700 mb-1"
+            ) %>
+            <%= url_input(f, :homepage_url,
+              class:
+                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
+              disabled: @limit_reached,
+              placeholder: "z.B. https://www.schule.de",
+              value:
+                input_value(f, :homepage_url) || (@school.address && @school.address.homepage_url) ||
+                  ""
+            ) %>
+            <%= error_tag(f, :homepage_url, class: "mt-1 text-sm text-red-600") %>
+          </div>
+
+          <div class="pt-4">
+            <%= submit("Änderungen speichern",
+              class:
+                "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed",
+              disabled: @limit_reached
+            ) %>
+          </div>
+        <% end %>
+      </div>
+      <!-- Current Data Display -->
+      <%= if @school.address do %>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-3">Aktuelle Daten</h3>
+          <dl class="space-y-2 text-sm">
+            <div>
+              <dt class="font-bold text-gray-700">Straße:</dt>
+              <dd class="text-gray-900">
+                <%= @school.address.street || "Nicht angegeben" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-bold text-gray-700">PLZ:</dt>
+              <dd class="text-gray-900">
+                <%= @school.address.zip_code || "Nicht angegeben" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-bold text-gray-700">Stadt:</dt>
+              <dd class="text-gray-900">
+                <%= @school.address.city || "Nicht angegeben" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-bold text-gray-700">E-Mail:</dt>
+              <dd class="text-gray-900">
+                <%= @school.address.email_address || "Nicht angegeben" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-bold text-gray-700">Telefon:</dt>
+              <dd class="text-gray-900">
+                <%= @school.address.phone_number || "Nicht angegeben" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-bold text-gray-700">Homepage:</dt>
+              <dd class="text-gray-900">
+                <%= if @school.address.homepage_url do %>
+                  <a
+                    href={@school.address.homepage_url}
+                    target="_blank"
+                    class="text-blue-600 hover:text-blue-800"
+                  >
+                    <%= @school.address.homepage_url %>
+                  </a>
+                <% else %>
+                  Nicht angegeben
+                <% end %>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Help Text -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="text-lg font-medium text-blue-900 mb-3">Wiki-Hilfe</h3>
+        <div class="text-sm text-blue-800 space-y-2">
+          <p>• Alle Änderungen werden gespeichert und protokolliert</p>
+          <p>
+            • Bei jeder Änderung wird eine E-Mail mit den neuen Daten an den Administrator gesendet
+          </p>
+          <p>• Sie können jederzeit zu einer früheren Version zurückkehren</p>
+          <p>• Ihre IP-Adresse wird bei der Änderung zu Dokumentationszwecken gespeichert</p>
+        </div>
+      </div>
+      <!-- Version History -->
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Versionshistorie
+        </h2>
+
+        <%= if length(@versions) == 0 do %>
+          <p class="text-gray-500 text-sm">Noch keine Änderungen vorgenommen.</p>
+        <% else %>
+          <div class="space-y-3">
+            <%= for version <- @versions do %>
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <div class="text-sm font-medium text-gray-900">
+                      Version #<%= version.id %>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-1">
+                      <%= format_version_date(version) %>
+                    </div>
+                    <div class="text-sm text-gray-500 mt-1">
+                      <%= format_originator(version) %>
+                    </div>
+                    <div class="text-sm text-gray-700 mt-2">
+                      <%= version_summary(version, @versions) %>
+                    </div>
+                  </div>
+
+                  <div class="ml-4">
+                    <%= if not @limit_reached do %>
+                      <%= form_for %{}, Routes.wiki_path(@conn, :rollback_school, @school.slug, version.id), [method: :post, class: "inline"], fn _f -> %>
+                        <%= submit("Wiederherstellen",
+                          class:
+                            "text-xs px-3 py-1 bg-yellow-100 text-yellow-800 rounded-md hover:bg-yellow-200 border border-yellow-300",
+                          onclick:
+                            "return confirm('Sind Sie sicher, dass Sie zu dieser Version zurückkehren möchten?')"
+                        ) %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <!-- Back to School Link -->
+  <div class="mt-8 text-center">
+    <a
+      href={"/ferien/d/schule/#{@school.slug}"}
+      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
+      </svg>
+      Zurück zur Schulseite
+    </a>
+  </div>
+</div>

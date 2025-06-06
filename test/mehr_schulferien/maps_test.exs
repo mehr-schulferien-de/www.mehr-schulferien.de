@@ -2,6 +2,7 @@ defmodule MehrSchulferien.MapsTest do
   use MehrSchulferien.DataCase
 
   import MehrSchulferien.Factory
+  import Ecto.Changeset, only: [get_change: 2]
 
   alias MehrSchulferien.Maps
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
@@ -65,6 +66,115 @@ defmodule MehrSchulferien.MapsTest do
     test "change_address/1 returns a address changeset" do
       address = insert(:address)
       assert %Ecto.Changeset{} = Maps.change_address(address)
+    end
+
+    test "normalizes German phone numbers to international format" do
+      school = insert(:school)
+
+      # Test various German phone number formats
+      test_cases = [
+        # German landline with area code
+        {"030 12345678", "+49 30 12345678"},
+        {"0711 123456", "+49 711 123456"},
+        {"089 12345678", "+49 89 12345678"},
+
+        # German mobile numbers (format varies by prefix)
+        # 017x keeps space
+        {"0171 1234567", "+49 171 1234567"},
+        # 016x keeps space
+        {"0160 1234567", "+49 160 1234567"},
+        # 015x removes space
+        {"0151 1234567", "+49 1511234567"},
+
+        # With different separators
+        {"030-12345678", "+49 30 12345678"},
+        {"030/12345678", "+49 30 12345678"},
+        {"030 (12345678)", "+49 30 12345678"},
+        {"(030) 12345678", "+49 30 12345678"},
+
+        # Already international format (should remain unchanged)
+        {"+49 30 12345678", "+49 30 12345678"},
+        {"+49 171 1234567", "+49 171 1234567"},
+
+        # Invalid numbers (should remain unchanged) - using truly invalid formats
+        {"invalid-phone", "invalid-phone"},
+        {"not a number", "not a number"},
+        {"xyz", "xyz"}
+      ]
+
+      for {input, expected} <- test_cases do
+        attrs =
+          Map.merge(@valid_attrs, %{
+            "school_location_id" => school.id,
+            "phone_number" => input
+          })
+
+        assert {:ok, %Address{} = address} = Maps.create_address(attrs)
+
+        assert address.phone_number == expected,
+               "Expected '#{input}' to normalize to '#{expected}', but got '#{address.phone_number}'"
+      end
+    end
+
+    test "handles empty phone numbers correctly" do
+      school = insert(:school)
+
+      # Test empty string - Ecto will filter this out, so result should be nil
+      attrs_empty =
+        Map.merge(@valid_attrs, %{
+          "school_location_id" => school.id,
+          "phone_number" => ""
+        })
+
+      assert {:ok, %Address{} = address} = Maps.create_address(attrs_empty)
+      # Empty string gets filtered by Ecto, so phone_number should be nil
+      assert is_nil(address.phone_number),
+             "Expected empty string to result in nil, but got '#{address.phone_number}'"
+
+      # Test with explicit nil
+      attrs_nil =
+        Map.merge(@valid_attrs, %{
+          "school_location_id" => school.id,
+          "phone_number" => nil
+        })
+
+      assert {:ok, %Address{} = address_nil} = Maps.create_address(attrs_nil)
+
+      assert is_nil(address_nil.phone_number),
+             "Expected nil to remain nil, but got '#{address_nil.phone_number}'"
+    end
+
+    test "phone number normalization works with update_address/2" do
+      school = insert(:school)
+
+      # Create address with international number
+      attrs =
+        Map.merge(@valid_attrs, %{
+          "school_location_id" => school.id,
+          "phone_number" => "+49 30 12345678"
+        })
+
+      {:ok, address} = Maps.create_address(attrs)
+
+      # Update with German format number
+      update_attrs = %{"phone_number" => "0711 987654"}
+      {:ok, updated_address} = Maps.update_address(address, update_attrs)
+
+      assert updated_address.phone_number == "+49 711 987654"
+    end
+
+    test "phone number normalization in changeset works correctly" do
+      school = insert(:school)
+
+      # Test the changeset directly
+      changeset =
+        Address.changeset(%Address{}, %{
+          "school_location_id" => school.id,
+          "phone_number" => "030 12345678"
+        })
+
+      assert changeset.valid?
+      assert get_change(changeset, :phone_number) == "+49 30 12345678"
     end
   end
 

@@ -76,6 +76,7 @@ defmodule MehrSchulferienWeb.RobotsController do
     Disallow: /sessions
     Disallow: /password_resets
     Disallow: /admin
+    Disallow: /wiki
 
     # Old no longer active routes (redirected to /ferien/)
     Disallow: /land/*

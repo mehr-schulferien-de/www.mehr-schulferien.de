@@ -28,6 +28,9 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Configure paper_trail
+config :paper_trail, repo: MehrSchulferien.Repo
+
 # Configure websocket adapter
 config :phoenix, :socket_handlers, [Phoenix.Transports.WebSocket]
 

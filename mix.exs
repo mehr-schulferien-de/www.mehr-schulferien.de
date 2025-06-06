@@ -55,7 +55,8 @@ defmodule MehrSchulferien.MixProject do
       {:slugger, "~> 0.3"},
       {:req, "~> 0.5.10"},
       {:tidewave, "~> 0.1.6", only: :dev},
-      {:ex_phone_number, "~> 0.4.5"}
+      {:ex_phone_number, "~> 0.4.5"},
+      {:paper_trail, "~> 1.0.0"}
     ]
   end
 
