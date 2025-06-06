@@ -93,7 +93,7 @@ defmodule MehrSchulferienWeb.WikiController do
           # Show different message based on whether changes were made
           flash_message =
             if version do
-              "Adressdaten wurden erfolgreich aktualisiert."
+              "Adressdaten wurden erfolgreich aktualisiert. Danke für Ihre Hilfe!"
             else
               "Keine Änderungen vorgenommen - die Daten waren bereits aktuell."
             end

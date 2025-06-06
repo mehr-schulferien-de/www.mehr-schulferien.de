@@ -81,7 +81,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
 
       # Verify the correct success flash message was set
       assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
-               "Adressdaten wurden erfolgreich aktualisiert."
+               "Adressdaten wurden erfolgreich aktualisiert. Danke für Ihre Hilfe!"
     end
 
     test "updates school address with wikipedia_url and tracks changes", %{
