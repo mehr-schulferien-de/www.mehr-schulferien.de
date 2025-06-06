@@ -52,7 +52,7 @@
           <p class="text-gray-700 mb-3 text-sm">
             Importieren Sie die Schulferiendaten in Ihren eigenen Terminkalender:
           </p>
-          <ul class="space-y-2 list-disc pl-5 text-sm">
+          <ul class="space-y-2 list-disc pl-6 text-sm">
             <li>
               <%= link to: Routes.api_i_cal_path(@conn, :show, @school.slug, vacation_types: "school", year: @year, calendar_year: true), class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
                 iCal Schulferien <%= @school.name %> <%= @year %>
@@ -74,67 +74,23 @@
         <div class="bg-white p-4 rounded-lg shadow-sm mt-6">
           <h2 class="text-xl font-bold text-gray-900 mb-3">Kontaktdaten</h2>
           <%= if @school.address do %>
-            <address class="text-sm text-gray-700 not-italic">
-              <%= @school.name %><br />
-              <%= @school.address.street %><br />
-              <%= @school.address.zip_code %> <%= link(@school.address.city,
-                to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
-                class: "text-blue-600 hover:text-blue-800 cursor-pointer"
-              ) %>
-            </address>
-
-            <div class="mt-2">
-              <p class="text-sm font-semibold text-gray-700">Auf Karten anzeigen:</p>
-              <% map_query =
-                URI.encode(
-                  "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}"
+            <!-- Address & Contact Info -->
+            <div class="bg-gray-50 p-3 rounded-md border-l-4 border-blue-500 mb-3">
+              <div class="font-semibold text-gray-900 text-sm mb-1"><%= @school.name %></div>
+              <div class="text-sm text-gray-700 mb-2">
+                <%= @school.address.street %><br />
+                <%= @school.address.zip_code %> <%= link(@school.address.city,
+                  to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+                  class: "text-blue-600 hover:text-blue-800 cursor-pointer font-medium"
                 ) %>
-              <ul class="text-sm space-y-1 list-disc pl-5">
-                <li>
-                  <a
-                    href={"https://www.google.com/maps?q=#{map_query}"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-blue-600 hover:text-blue-800 cursor-pointer"
-                  >
-                    Google Maps
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={"https://www.openstreetmap.org/search?query=#{map_query}"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-blue-600 hover:text-blue-800 cursor-pointer"
-                  >
-                    OpenStreetMap
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={"https://maps.apple.com/?q=#{map_query}"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-blue-600 hover:text-blue-800 cursor-pointer"
-                  >
-                    Apple Maps
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <%= if @school.address.email_address do %>
-              <div class="mt-3">
-                <p class="text-sm font-semibold text-gray-700">E-Mail:</p>
-                <p class="text-sm">
-                  <% email = @school.address.email_address %>
-                  <a
-                    href={"mailto:" <> email}
-                    class="text-blue-600 hover:text-blue-800 break-words cursor-pointer flex items-center"
-                  >
+              </div>
+              <!-- Compact Contact Info -->
+              <div class="space-y-1">
+                <%= if @school.address.email_address do %>
+                  <div class="flex items-center text-sm">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 mr-1"
+                      class="h-3 w-3 text-blue-600 mr-2"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -146,30 +102,21 @@
                         d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                       />
                     </svg>
-                    <%= email %>
-                  </a>
-                </p>
-              </div>
-            <% end %>
+                    <% email = @school.address.email_address %>
+                    <a
+                      href={"mailto:" <> email}
+                      class="text-blue-600 hover:text-blue-800 cursor-pointer break-words"
+                    >
+                      <%= email %>
+                    </a>
+                  </div>
+                <% end %>
 
-            <%= if @school.address.phone_number do %>
-              <div class="mt-3">
-                <p class="text-sm font-semibold text-gray-700">Telefon:</p>
-                <p class="text-sm">
-                  <% phone = @school.address.phone_number %>
-                  <% tel_link = "tel:" <> String.replace(phone, " ", "") %>
-                  <% formatted_phone =
-                    case ExPhoneNumber.parse(phone, "DE") do
-                      {:ok, parsed_number} -> ExPhoneNumber.format(parsed_number, :national)
-                      _ -> phone
-                    end %>
-                  <a
-                    href={tel_link}
-                    class="text-blue-600 hover:text-blue-800 flex items-center cursor-pointer"
-                  >
+                <%= if @school.address.phone_number do %>
+                  <div class="flex items-center text-sm">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 mr-1"
+                      class="h-3 w-3 text-green-600 mr-2"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -181,114 +128,218 @@
                         d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                       />
                     </svg>
-                    <%= formatted_phone %>
-                  </a>
-                </p>
+                    <% phone = @school.address.phone_number %>
+                    <% tel_link = "tel:" <> String.replace(phone, " ", "") %>
+                    <% formatted_phone =
+                      case ExPhoneNumber.parse(phone, "DE") do
+                        {:ok, parsed_number} -> ExPhoneNumber.format(parsed_number, :national)
+                        _ -> phone
+                      end %>
+                    <a href={tel_link} class="text-blue-600 hover:text-blue-800 cursor-pointer">
+                      <%= formatted_phone %>
+                    </a>
+                  </div>
+                <% end %>
               </div>
-            <% end %>
-
-            <%= if @school.address.homepage_url || @school.address.wikipedia_url do %>
-              <div class="mt-3">
-                <p class="text-sm font-semibold text-gray-700">Links:</p>
-                <ul class="text-sm space-y-1 list-disc pl-5">
-                  <%= if @school.address.homepage_url do %>
-                    <li>
-                      <% homepage_url = @school.address.homepage_url %>
-                      <a
-                        href={homepage_url}
-                        target="_blank"
-                        rel="noopener"
-                        class="text-blue-600 hover:text-blue-800 break-words cursor-pointer"
-                      >
-                        Homepage der Schule
-                      </a>
-                    </li>
-                  <% end %>
-                  <%= if @school.address.wikipedia_url do %>
-                    <li>
-                      <a
-                        href={@school.address.wikipedia_url}
-                        target="_blank"
-                        rel="noopener"
-                        class="text-blue-600 hover:text-blue-800 break-words cursor-pointer flex items-center"
-                      >
-                        Wikipedia-Artikel
-                      </a>
-                    </li>
-                  <% end %>
+            </div>
+            <!-- Links Section - More Compact -->
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <!-- Maps Column -->
+              <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  Karten
+                </h3>
+                <% map_query =
+                  URI.encode(
+                    "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}"
+                  ) %>
+                <ul class="space-y-1 list-disc pl-6 text-sm">
+                  <li>
+                    <a
+                      href={"https://www.google.com/maps?q=#{map_query}"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      Google Maps
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={"https://www.openstreetmap.org/search?query=#{map_query}"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      OpenStreetMap
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={"https://maps.apple.com/?q=#{map_query}"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                    >
+                      Apple Maps
+                    </a>
+                  </li>
                 </ul>
               </div>
-            <% end %>
-
-            <div class="mt-3">
-              <p class="text-sm font-semibold text-gray-700">Kontaktdaten-Download:</p>
-              <p class="text-sm">
-                <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), class: "text-blue-600 hover:text-blue-800 flex items-center cursor-pointer" do %>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  vCard herunterladen
-                <% end %>
-              </p>
+              <!-- External Links Column -->
+              <%= if @school.address.homepage_url || @school.address.wikipedia_url do %>
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                      />
+                    </svg>
+                    Links
+                  </h3>
+                  <ul class="space-y-1 list-disc pl-6 text-sm">
+                    <%= if @school.address.homepage_url do %>
+                      <li>
+                        <% homepage_url = @school.address.homepage_url %>
+                        <a
+                          href={homepage_url}
+                          target="_blank"
+                          rel="noopener"
+                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          Homepage der Schule
+                        </a>
+                      </li>
+                    <% end %>
+                    <%= if @school.address.wikipedia_url do %>
+                      <li>
+                        <a
+                          href={@school.address.wikipedia_url}
+                          target="_blank"
+                          rel="noopener"
+                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          Wikipedia-Artikel
+                        </a>
+                      </li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
             </div>
+            <!-- Compact Action Buttons -->
+            <div class="flex space-x-2 pt-3 border-t">
+              <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), 
+                   class: "flex-1 flex items-center justify-center px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer" do %>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3 w-3 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                vCard
+              <% end %>
 
-            <div class="mt-3">
-              <p class="text-sm font-semibold text-gray-700">Kontaktdaten bearbeiten:</p>
-              <p class="text-sm">
-                <%= link to: Routes.wiki_path(@conn, :show_school, @school.slug), class: "text-blue-600 hover:text-blue-800 flex items-center cursor-pointer" do %>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                  Adressdaten hinzufügen/aktualisieren
-                <% end %>
-              </p>
+              <%= link to: Routes.wiki_path(@conn, :show_school, @school.slug), 
+                   class: "flex-1 flex items-center justify-center px-3 py-2 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded transition-colors cursor-pointer" do %>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3 w-3 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                Bearbeiten
+              <% end %>
             </div>
           <% else %>
-            <p class="text-sm text-gray-500 mb-3">Keine Kontaktdaten verfügbar.</p>
-
-            <div class="mt-3">
-              <p class="text-sm font-semibold text-gray-700">Kontaktdaten hinzufügen:</p>
-              <p class="text-sm">
-                <%= link to: Routes.wiki_path(@conn, :show_school, @school.slug), class: "text-blue-600 hover:text-blue-800 flex items-center cursor-pointer" do %>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                  Kontaktdaten hinzufügen
-                <% end %>
-              </p>
+            <!-- Compact No Contact Data -->
+            <div class="text-center py-4">
+              <div class="w-8 h-8 mx-auto mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </div>
+              <p class="text-xs text-gray-500 mb-3">Keine Kontaktdaten verfügbar</p>
+              <%= link to: Routes.wiki_path(@conn, :show_school, @school.slug), 
+                   class: "inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer" do %>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3 w-3 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                Hinzufügen
+              <% end %>
             </div>
           <% end %>
         </div>
