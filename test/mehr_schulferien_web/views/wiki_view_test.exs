@@ -52,6 +52,36 @@ defmodule MehrSchulferienWeb.WikiViewTest do
                "Geändert: Straße: \"Alte Straße 123\" → \"Neue Straße 456\", Telefon: \"+49 30 11111111\" → \"+49 30 22222222\""
     end
 
+    test "shows wikipedia_url changes in version history" do
+      version = %{
+        item_changes: %{
+          "wikipedia_url" => [nil, "https://de.wikipedia.org/wiki/Beispiel-Schule"]
+        }
+      }
+
+      result = WikiView.version_summary(version)
+
+      assert result ==
+               "Geändert: Wikipedia: leer → \"https://de.wikipedia.org/wiki/Beispiel-Schule\""
+    end
+
+    test "shows multiple changes including wikipedia_url" do
+      version = %{
+        item_changes: %{
+          "street" => ["Alte Straße 123", "Neue Straße 456"],
+          "wikipedia_url" => [
+            "https://de.wikipedia.org/wiki/alte-schule",
+            "https://de.wikipedia.org/wiki/neue-schule"
+          ]
+        }
+      }
+
+      result = WikiView.version_summary(version)
+
+      assert result ==
+               "Geändert: Straße: \"Alte Straße 123\" → \"Neue Straße 456\", Wikipedia: \"https://de.wikipedia.org/wiki/alte-schule\" → \"https://de.wikipedia.org/wiki/neue-schule\""
+    end
+
     test "handles nil old values" do
       version = %{
         item_changes: %{

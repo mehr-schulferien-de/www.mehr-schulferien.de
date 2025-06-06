@@ -84,6 +84,41 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
                "Adressdaten wurden erfolgreich aktualisiert."
     end
 
+    test "updates school address with wikipedia_url and tracks changes", %{
+      conn: conn,
+      school: school,
+      address: address
+    } do
+      updated_params = %{
+        "street" => address.street,
+        "phone_number" => address.phone_number,
+        "zip_code" => address.zip_code,
+        "city" => address.city,
+        "email_address" => address.email_address,
+        "homepage_url" => address.homepage_url,
+        "wikipedia_url" => "https://de.wikipedia.org/wiki/Test-Schule"
+      }
+
+      conn =
+        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+
+      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+
+      # Verify the address was updated with wikipedia_url
+      updated_school = Locations.get_school_by_slug!(school.slug)
+      assert updated_school.address != nil
+      assert updated_school.address.wikipedia_url == "https://de.wikipedia.org/wiki/Test-Schule"
+
+      # Verify version was created with wikipedia_url in item_changes
+      versions = PaperTrail.get_versions(updated_school.address)
+      # Original insert + update
+      assert length(versions) == 2
+      latest_version = Enum.max_by(versions, & &1.id)
+
+      assert latest_version.item_changes["wikipedia_url"] ==
+               "https://de.wikipedia.org/wiki/Test-Schule"
+    end
+
     test "updates school address successfully via PUT", %{
       conn: conn,
       school: school,

@@ -52,6 +52,7 @@ defmodule MehrSchulferien.Maps.Address do
     field :phone_number, :string
     field :fax_number, :string
     field :homepage_url, :string
+    field :wikipedia_url, :string
     field :school_type, :string
     field :official_id, :string
     field :lon, :float
@@ -76,6 +77,7 @@ defmodule MehrSchulferien.Maps.Address do
       :phone_number,
       :fax_number,
       :homepage_url,
+      :wikipedia_url,
       :school_type,
       :official_id,
       :lon,

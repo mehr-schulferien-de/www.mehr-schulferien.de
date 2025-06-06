@@ -137,6 +137,7 @@ defmodule MehrSchulferien.Wiki do
     E-Mail: #{old_address.email_address || ""}
     Telefon: #{old_address.phone_number || ""}
     Homepage: #{old_address.homepage_url || ""}
+    Wikipedia: #{old_address.wikipedia_url || ""}
 
     === NEUE DATEN ===
     Straße: #{new_address.street || ""}
@@ -145,6 +146,7 @@ defmodule MehrSchulferien.Wiki do
     E-Mail: #{new_address.email_address || ""}
     Telefon: #{new_address.phone_number || ""}
     Homepage: #{new_address.homepage_url || ""}
+    Wikipedia: #{new_address.wikipedia_url || ""}
 
     Link zur Schule: https://www.mehr-schulferien.de/wiki/schools/#{school.slug}
     """
@@ -174,6 +176,7 @@ defmodule MehrSchulferien.Wiki do
     E-Mail: #{address.email_address || ""}
     Telefon: #{address.phone_number || ""}
     Homepage: #{address.homepage_url || ""}
+    Wikipedia: #{address.wikipedia_url || ""}
 
     Link zur Schule: https://www.mehr-schulferien.de/wiki/schools/#{school.slug}
     """

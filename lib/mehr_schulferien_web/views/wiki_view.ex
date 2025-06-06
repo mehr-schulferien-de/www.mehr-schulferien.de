@@ -25,7 +25,15 @@ defmodule MehrSchulferienWeb.WikiView do
     changes = Map.get(version, :item_changes, %{})
 
     # Define order for consistent output
-    field_order = ["street", "zip_code", "city", "email_address", "phone_number", "homepage_url"]
+    field_order = [
+      "street",
+      "zip_code",
+      "city",
+      "email_address",
+      "phone_number",
+      "homepage_url",
+      "wikipedia_url"
+    ]
 
     case Map.get(version, :event) do
       "insert" ->
@@ -160,6 +168,7 @@ defmodule MehrSchulferienWeb.WikiView do
   def field_label("email_address"), do: "E-Mail"
   def field_label("phone_number"), do: "Telefon"
   def field_label("homepage_url"), do: "Homepage"
+  def field_label("wikipedia_url"), do: "Wikipedia"
   def field_label(field), do: field
 
   # Formats values for display, handling nil and empty strings
