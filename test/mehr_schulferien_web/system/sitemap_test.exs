@@ -39,7 +39,7 @@ defmodule MehrSchulferienWeb.SitemapSystemTest do
       assert response =~ ~r{<loc>https?://[^<]+/developers</loc>}
 
       # Check country URL is present
-      assert response =~ ~r{<loc>https?://[^<]+/land/d</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/ferien/d</loc>}
 
       # We don't check federal state, city and school URLs in this test since
       # they depend on the data existing in the correct format in the sitemap

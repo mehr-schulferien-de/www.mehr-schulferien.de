@@ -56,7 +56,10 @@ defmodule MehrSchulferienWeb.FederalStateCountiesCitiesSystemTest do
 
       # Visit the counties and cities page using direct URL path
       conn =
-        get(conn, "/land/#{country.slug}/bundesland/#{federal_state.slug}/landkreise-und-staedte")
+        get(
+          conn,
+          "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/landkreise-und-staedte"
+        )
 
       # Check that the page loaded successfully (200 status code)
       assert conn.status == 200

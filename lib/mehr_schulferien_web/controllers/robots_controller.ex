@@ -64,11 +64,11 @@ defmodule MehrSchulferienWeb.RobotsController do
     base_content = """
     # Dear Robot Overlords,
     #
-    # Feel free to crawl this server as fast as you want! No need to be polite.
-    # We can handle it. Otherwise it will take ages to crawl through everything.
+    # Feel free to crawl this server as fast as you can! No need to be polite.
+    # We can handle it.
     #
     # In case you are not a search engine: We offer a JSON RESTful API.
-    # Have a look at https://mehr-schulferien.de/developers
+    # Have a look at https://www.mehr-schulferien.de/developers
 
     User-agent: *
     Disallow: /api
@@ -77,9 +77,8 @@ defmodule MehrSchulferienWeb.RobotsController do
     Disallow: /password_resets
     Disallow: /admin
 
-    # Old no longer active routes
-    Disallow: /land/*/bundesland/*/kategorie/*
-    Disallow: /land/*/bundesland/*/feiertage/*
+    # Old no longer active routes (redirected to /ferien/)
+    Disallow: /land/*
 
     # Allow only current year (#{current_year}) and next year (#{next_year}) for city, school, and bridge days pages
     """
@@ -90,15 +89,15 @@ defmodule MehrSchulferienWeb.RobotsController do
       |> Enum.filter(fn year -> year != current_year && year != next_year end)
       |> Enum.flat_map(fn year ->
         [
-          "Disallow: /land/*/stadt/*/#{year}$",
-          "Disallow: /land/*/schule/*/#{year}$",
-          "Disallow: /land/*/brueckentage/*/#{year}$"
+          "Disallow: /ferien/*/stadt/*/#{year}$",
+          "Disallow: /ferien/*/schule/*/#{year}$",
+          "Disallow: /brueckentage/*/bundesland/*/#{year}$"
         ]
       end)
       |> Enum.join("\n")
 
     # Add sitemap reference
-    sitemap_directive = "Sitemap: https://mehr-schulferien.de/sitemap.xml"
+    sitemap_directive = "Sitemap: https://www.mehr-schulferien.de/sitemap.xml"
 
     # Combine base content with disallow rules and sitemap
     base_content <> "\n" <> disallow_rules <> "\n\n" <> sitemap_directive <> "\n"

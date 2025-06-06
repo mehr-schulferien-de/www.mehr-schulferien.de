@@ -31,19 +31,19 @@ defmodule MehrSchulferienWeb.RobotsSystemTest do
       assert response =~
                "Allow only current year (#{@current_year}) and next year (#{@next_year})"
 
-      # Check it has disallow rules for specific years for city pages
-      assert response =~ "Disallow: /land/*/stadt/*/#{@past_year}$"
+      # Check that past year URLs are disallowed
+      assert response =~ "Disallow: /ferien/*/stadt/*/#{@past_year}$"
 
-      # Should NOT disallow current and next year for city pages
-      refute response =~ "Disallow: /land/*/stadt/*/#{@current_year}$"
-      refute response =~ "Disallow: /land/*/stadt/*/#{@next_year}$"
+      # Check that current and future year URLs are NOT disallowed
+      refute response =~ "Disallow: /ferien/*/stadt/*/#{@current_year}$"
+      refute response =~ "Disallow: /ferien/*/stadt/*/#{@next_year}$"
 
-      # Check it has disallow rules for specific years for school pages
-      assert response =~ "Disallow: /land/*/schule/*/#{@past_year}$"
+      # Check school past year disallow
+      assert response =~ "Disallow: /ferien/*/schule/*/#{@past_year}$"
 
-      # Should NOT disallow current and next year for school pages
-      refute response =~ "Disallow: /land/*/schule/*/#{@current_year}$"
-      refute response =~ "Disallow: /land/*/schule/*/#{@next_year}$"
+      # Check school current and future year are NOT disallowed
+      refute response =~ "Disallow: /ferien/*/schule/*/#{@current_year}$"
+      refute response =~ "Disallow: /ferien/*/schule/*/#{@next_year}$"
     end
   end
 

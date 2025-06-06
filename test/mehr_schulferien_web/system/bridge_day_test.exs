@@ -63,14 +63,7 @@ defmodule MehrSchulferienWeb.BridgeDaySystemTest do
     } do
       conn = get(conn, "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/foobar")
 
-      # We expect a redirect first
-      assert conn.status == 302
-
-      # Follow the redirect
-      redirected_path = redirected_to(conn, 302)
-      conn = get(recycle(conn), redirected_path)
-
-      # Now we should get a 404
+      # We expect a 404 directly since the route should not exist
       assert conn.status == 404
     end
   end

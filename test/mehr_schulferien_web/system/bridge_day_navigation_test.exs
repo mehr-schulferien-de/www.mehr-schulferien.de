@@ -36,13 +36,13 @@ defmodule MehrSchulferienWeb.BridgeDayNavigationSystemTest do
 
       # Check if future year (which has bridge days) is shown in navigation
       assert html_response(conn, 200) =~
-               ~s(href="/land/#{country.slug}/bundesland/#{federal_state.slug}/brueckentage/#{@future_year}")
+               ~s(href="/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@future_year}")
 
       # Past year (which doesn't have bridge days) should not be linked
       past_year = @current_year - 1
 
       refute html_response(conn, 200) =~
-               ~s(href="/land/#{country.slug}/bundesland/#{federal_state.slug}/brueckentage/#{past_year}")
+               ~s(href="/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{past_year}")
 
       # The left arrow should be disabled (not a link) since past_year has no bridge days
       assert html_response(conn, 200) =~
@@ -72,7 +72,7 @@ defmodule MehrSchulferienWeb.BridgeDayNavigationSystemTest do
 
       # Previous year (which has bridge days) should be linked
       assert html_response(conn, 200) =~
-               ~s(href="/land/#{country.slug}/bundesland/#{federal_state.slug}/brueckentage/#{@current_year}")
+               ~s(href="/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@current_year}")
 
       # Future+1 year doesn't have bridge days, so right arrow should be disabled
       assert html_response(conn, 200) =~

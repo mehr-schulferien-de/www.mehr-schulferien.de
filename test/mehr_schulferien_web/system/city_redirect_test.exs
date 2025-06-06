@@ -22,7 +22,7 @@ defmodule MehrSchulferienWeb.CityRedirectSystemTest do
 
       # Assert that we get a 302 redirect to the current year URL
       assert redirected_to(conn, 302) ==
-               "/land/#{country.slug}/stadt/#{city.slug}"
+               "/ferien/#{country.slug}/stadt/#{city.slug}/#{@current_year}"
     end
   end
 

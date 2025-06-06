@@ -11,7 +11,7 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
     test "access the sitemap in format xml", %{conn: conn, country: country} do
       conn = get(conn, "/sitemap.xml")
       assert response_content_type(conn, :xml)
-      assert response(conn, 200) =~ ~r/<loc>.*\/land\/#{country.slug}.*<\/loc>/
+      assert response(conn, 200) =~ ~r/<loc>.*\/ferien\/#{country.slug}.*<\/loc>/
     end
   end
 

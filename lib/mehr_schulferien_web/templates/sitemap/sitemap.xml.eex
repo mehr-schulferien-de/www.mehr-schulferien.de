@@ -30,7 +30,7 @@
     <%!-- YEARLY UPDATES: Updated on January 1st each year --%>
     <%!-- Country URLs --%>
     <sitemap>
-      <loc><%= MehrSchulferienWeb.Endpoint.url() %>/land/<%= country.slug %></loc>
+      <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %></loc>
       <lastmod><%= Date.new!(@today.year, 1, 1) %></lastmod>
     </sitemap>
 
@@ -44,7 +44,7 @@
       <%!-- Years for federal state --%>
       <%= for year <- Map.get(federal_state, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/land/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
+          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
@@ -54,7 +54,7 @@
         
         <%!-- Bridge days URLs for federal states --%>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/land/<%= country.slug %>/bundesland/<%= federal_state.slug %>/brueckentage/<%= year %></loc>
+          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
@@ -68,7 +68,7 @@
     <%= for city <- cities do %>
       <%= for year <- Map.get(city, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/land/<%= country.slug %>/stadt/<%= city.slug %>/<%= year %></loc>
+          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %>/stadt/<%= city.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
@@ -83,7 +83,7 @@
       <%!-- Years for school --%>
       <%= for year <- Map.get(school, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/land/<%= country.slug %>/schule/<%= school.slug %>/<%= year %></loc>
+          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %>/schule/<%= school.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
