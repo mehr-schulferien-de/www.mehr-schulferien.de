@@ -1,0 +1,1 @@
+<title>Adresse bearbeiten: <%= @school.name %> | Schul-Wiki</title> 

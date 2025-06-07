@@ -13,7 +13,7 @@ defmodule MehrSchulferienWeb.WikiController do
     # Get daily change count
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
-    limit_reached = daily_changes >= 150
+    limit_reached = daily_changes >= 20
 
     # Create a combined changeset for both school and address fields
     changeset =
@@ -45,11 +45,11 @@ defmodule MehrSchulferienWeb.WikiController do
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
 
-    if daily_changes >= 150 do
+    if daily_changes >= 20 do
       conn
       |> put_flash(
         :error,
-        "Das tägliche Limit von 150 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+        "Das tägliche Limit von 20 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
       )
       |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
     else
@@ -192,11 +192,11 @@ defmodule MehrSchulferienWeb.WikiController do
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
 
-    if daily_changes >= 150 do
+    if daily_changes >= 20 do
       conn
       |> put_flash(
         :error,
-        "Das tägliche Limit von 150 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+        "Das tägliche Limit von 20 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
       )
       |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
     else

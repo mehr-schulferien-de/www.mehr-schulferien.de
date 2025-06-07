@@ -182,7 +182,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       {:ok, _} =
         MehrSchulferien.Repo.insert(%MehrSchulferien.Wiki.DailyChangeCount{
           date: today,
-          count: 150
+          count: 20
         })
 
       updated_params = %{
