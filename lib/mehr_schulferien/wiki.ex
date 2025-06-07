@@ -39,20 +39,20 @@ defmodule MehrSchulferien.Wiki do
   end
 
   @doc """
-  Rolls back an address to a specific version.
+  Rolls back a school or address to a specific version.
   """
-  def rollback_to_version(address, version_id, ip_address) do
+  def rollback_to_version(model, version_id, ip_address) do
     with {version_id_int, ""} <- Integer.parse(version_id),
          version when not is_nil(version) <- Repo.get(PaperTrail.Version, version_id_int),
-         true <- version.item_type == "Address" and version.item_id == address.id do
-      # Get all versions for this address
-      all_versions = PaperTrail.get_versions(address) |> Enum.sort_by(& &1.id)
+         true <- version_matches_model?(version, model) do
+      # Get all versions for this model
+      all_versions = PaperTrail.get_versions(model) |> Enum.sort_by(& &1.id)
 
       # Get the state before the target version
       state_before_target = get_state_before_version(version, all_versions)
 
       # Create changeset with the reconstructed state
-      changeset = Ecto.Changeset.change(address, state_before_target)
+      changeset = Ecto.Changeset.change(model, state_before_target)
       PaperTrail.update(changeset, meta: %{ip_address: ip_address})
     else
       :error -> {:error, :invalid_version_id}
@@ -116,21 +116,22 @@ defmodule MehrSchulferien.Wiki do
   end
 
   @doc """
-  Sends an email notification when address data is changed.
+  Sends an email notification when school or address data is changed.
   """
-  def send_change_notification(school, old_address, new_address, ip_address) do
+  def send_change_notification(updated_school, old_school, old_address, new_address, ip_address) do
     # Build email content
-    subject = "Schuladresse geändert: #{school.name}"
+    subject = "Schuldaten geändert: #{updated_school.name}"
 
     body = """
-    Eine Schuladresse wurde im Wiki geändert:
+    Schuldaten wurden im Wiki geändert:
 
-    Schule: #{school.name}
-    Slug: #{school.slug}
+    Schule: #{updated_school.name}
+    Slug: #{updated_school.slug}
     IP-Adresse: #{ip_address}
     Zeitpunkt: #{DateTime.utc_now() |> DateTime.to_string()}
 
     === ALTE DATEN ===
+    Schulname: #{old_school.name || ""}
     Straße: #{old_address.street || ""}
     PLZ: #{old_address.zip_code || ""}
     Stadt: #{old_address.city || ""}
@@ -140,6 +141,7 @@ defmodule MehrSchulferien.Wiki do
     Wikipedia: #{old_address.wikipedia_url || ""}
 
     === NEUE DATEN ===
+    Schulname: #{updated_school.name || ""}
     Straße: #{new_address.street || ""}
     PLZ: #{new_address.zip_code || ""}
     Stadt: #{new_address.city || ""}
@@ -148,7 +150,7 @@ defmodule MehrSchulferien.Wiki do
     Homepage: #{new_address.homepage_url || ""}
     Wikipedia: #{new_address.wikipedia_url || ""}
 
-    Link zur Schule: https://www.mehr-schulferien.de/wiki/schools/#{school.slug}
+    Link zur Schule: https://www.mehr-schulferien.de/wiki/schools/#{updated_school.slug}
     """
 
     send_notification_email(subject, body)
@@ -157,11 +159,26 @@ defmodule MehrSchulferien.Wiki do
   @doc """
   Sends an email notification when a rollback is performed.
   """
-  def send_rollback_notification(school, address, version_id, ip_address) do
-    subject = "Schuladresse zurückgesetzt: #{school.name}"
+  def send_rollback_notification(school, model, version_id, ip_address) do
+    subject = "Schuldaten zurückgesetzt: #{school.name}"
+
+    {model_type, current_data} =
+      case model do
+        %{__struct__: MehrSchulferien.Locations.Location} = location ->
+          {"Schulname", "Schulname: #{location.name || ""}"}
+
+        %{__struct__: MehrSchulferien.Maps.Address} = address ->
+          address_info =
+            "Straße: #{address.street || ""}\nPLZ: #{address.zip_code || ""}\nStadt: #{address.city || ""}\nE-Mail: #{address.email_address || ""}\nTelefon: #{address.phone_number || ""}\nHomepage: #{address.homepage_url || ""}\nWikipedia: #{address.wikipedia_url || ""}"
+
+          {"Adressdaten", address_info}
+
+        _ ->
+          {"Unbekannt", "Unbekannte Daten"}
+      end
 
     body = """
-    Eine Schuladresse wurde im Wiki zurückgesetzt:
+    #{model_type} wurden im Wiki zurückgesetzt:
 
     Schule: #{school.name}
     Slug: #{school.slug}
@@ -170,19 +187,23 @@ defmodule MehrSchulferien.Wiki do
     Zeitpunkt: #{DateTime.utc_now() |> DateTime.to_string()}
 
     === AKTUELLE DATEN NACH ROLLBACK ===
-    Straße: #{address.street || ""}
-    PLZ: #{address.zip_code || ""}
-    Stadt: #{address.city || ""}
-    E-Mail: #{address.email_address || ""}
-    Telefon: #{address.phone_number || ""}
-    Homepage: #{address.homepage_url || ""}
-    Wikipedia: #{address.wikipedia_url || ""}
+    #{current_data}
 
     Link zur Schule: https://www.mehr-schulferien.de/wiki/schools/#{school.slug}
     """
 
     send_notification_email(subject, body)
   end
+
+  defp version_matches_model?(version, %{__struct__: MehrSchulferien.Maps.Address, id: id}) do
+    version.item_type == "Address" and version.item_id == id
+  end
+
+  defp version_matches_model?(version, %{__struct__: MehrSchulferien.Locations.Location, id: id}) do
+    version.item_type == "Location" and version.item_id == id
+  end
+
+  defp version_matches_model?(_, _), do: false
 
   defp send_notification_email(subject, body) do
     try do

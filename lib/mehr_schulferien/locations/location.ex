@@ -10,6 +10,32 @@ defmodule MehrSchulferien.Locations.Location do
   - Schools
 
   Locations form a hierarchical structure with parent-child relationships.
+
+  ## PaperTrail Integration
+
+  This model is configured to work with PaperTrail for audit logging.
+  To track changes, use PaperTrail functions instead of direct Repo calls:
+
+      # Instead of: Repo.insert(changeset)
+      PaperTrail.insert(changeset)
+
+      # Instead of: Repo.update(changeset)  
+      PaperTrail.update(changeset)
+
+      # Instead of: Repo.delete(location)
+      PaperTrail.delete(location)
+
+  ## Examples
+
+      # Update a school location with tracking
+      changeset = Location.changeset(school, %{name: "New School Name"})
+      {:ok, %{model: updated_school, version: version}} = PaperTrail.update(changeset)
+
+      # Get version history
+      versions = PaperTrail.get_versions(school)
+
+      # Get the latest version
+      latest_version = PaperTrail.get_version(school)
   """
 
   use Ecto.Schema
@@ -80,12 +106,28 @@ defmodule MehrSchulferien.Locations.Location do
       :cachable_calendar_location_id
     ])
     |> validate_required([:name])
+    |> validate_name_not_empty()
     |> validate_one_is_present([:is_country, :is_federal_state, :is_county, :is_city, :is_school])
     |> validate_length(:code, max: 3)
     |> validate_presence_of_parent()
     |> validate_cachable_calendar_location()
     |> LocationNameSlug.maybe_generate_slug()
     |> LocationNameSlug.unique_constraint()
+  end
+
+  # Validates that the name field is not an empty string.
+  defp validate_name_not_empty(changeset) do
+    case get_field(changeset, :name) do
+      name when is_binary(name) ->
+        if String.trim(name) == "" do
+          add_error(changeset, :name, "darf nicht leer sein")
+        else
+          changeset
+        end
+
+      _ ->
+        changeset
+    end
   end
 
   @doc """

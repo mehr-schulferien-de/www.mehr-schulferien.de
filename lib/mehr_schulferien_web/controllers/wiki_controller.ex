@@ -7,31 +7,30 @@ defmodule MehrSchulferienWeb.WikiController do
   def show_school(conn, %{"slug" => school_slug}) do
     school = Locations.get_school_by_slug!(school_slug)
 
-    # Get version history for the school's address (limit to last 4 entries)
-    versions =
-      if school.address do
-        PaperTrail.get_versions(school.address)
-        |> Enum.sort_by(& &1.inserted_at, :desc)
-        |> Enum.take(4)
-      else
-        []
-      end
+    # Get combined version history for both school and address (limit to last 4 entries)
+    versions = get_combined_versions(school)
 
     # Get daily change count
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
     limit_reached = daily_changes >= 150
 
+    # Create a combined changeset for both school and address fields
     changeset =
       if school.address do
-        Maps.change_address(school.address)
+        # Merge school and address changesets into one form
+        address_changeset = Maps.change_address(school.address)
+        %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
       else
-        Maps.change_address(%Address{school_location_id: school.id})
+        # Create address changeset with school name
+        address_changeset = Maps.change_address(%Address{school_location_id: school.id})
+        %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
       end
 
     render(conn, "show_school.html", %{
       school: school,
       versions: versions,
+      display_versions: Enum.take(versions, 5),
       changeset: changeset,
       daily_changes: daily_changes,
       limit_reached: limit_reached,
@@ -39,7 +38,7 @@ defmodule MehrSchulferienWeb.WikiController do
     })
   end
 
-  def update_school(conn, %{"slug" => school_slug, "address" => address_params}) do
+  def update_school(conn, %{"slug" => school_slug} = params) do
     school = Locations.get_school_by_slug!(school_slug)
 
     # Check daily limit
@@ -54,46 +53,79 @@ defmodule MehrSchulferienWeb.WikiController do
       )
       |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
     else
-      # Prepare address params with school_location_id
-      address_params = Map.put(address_params, "school_location_id", school.id)
+      # Extract school and address params
+      school_params = Map.take(params, ["name"])
+      address_params = Map.get(params, "address", %{})
 
-      result =
-        if school.address do
-          # Update existing address
-          old_address = school.address
-          changeset = Address.changeset(old_address, address_params)
-
-          case changeset.changes do
-            changes when map_size(changes) == 0 ->
-              {:ok, %{model: old_address, version: nil}}
-
-            _ ->
-              PaperTrail.update(changeset, meta: %{ip_address: get_client_ip(conn)})
-          end
+      # Update school name if provided
+      school_result =
+        if Map.has_key?(school_params, "name") and school_params["name"] != school.name do
+          # Prepare updated name for both school location and address line1
+          name = school_params["name"]
+          location_changeset = MehrSchulferien.Locations.Location.changeset(school, %{name: name})
+          PaperTrail.update(location_changeset, meta: %{ip_address: get_client_ip(conn)})
         else
-          # Create new address
-          changeset = Address.changeset(%Address{}, address_params)
-          PaperTrail.insert(changeset, meta: %{ip_address: get_client_ip(conn)})
+          {:ok, %{model: school, version: nil}}
         end
 
-      case result do
-        {:ok, %{model: address, version: version}} ->
+      # Handle address update/creation
+      address_result =
+        case school_result do
+          {:ok, %{model: updated_school, version: _school_version}} ->
+            # Prepare address params with school_location_id and line1
+            address_params =
+              address_params
+              |> Map.put("school_location_id", updated_school.id)
+              |> maybe_update_line1(school_params["name"])
+
+            if updated_school.address do
+              # Update existing address
+              old_address = updated_school.address
+              changeset = Address.changeset(old_address, address_params)
+
+              case changeset.changes do
+                changes when map_size(changes) == 0 ->
+                  {:ok, %{model: old_address, version: nil}}
+
+                _ ->
+                  PaperTrail.update(changeset, meta: %{ip_address: get_client_ip(conn)})
+              end
+            else
+              # Create new address
+              changeset = Address.changeset(%Address{}, address_params)
+              PaperTrail.insert(changeset, meta: %{ip_address: get_client_ip(conn)})
+            end
+
+          error ->
+            error
+        end
+
+      case {school_result, address_result} do
+        {{:ok, %{model: updated_school, version: school_version}},
+         {:ok, %{model: address, version: address_version}}} ->
           # Send email notification if there were changes
-          if version do
+          if school_version || address_version do
             old_data = if school.address, do: school.address, else: %Address{}
-            Wiki.send_change_notification(school, old_data, address, get_client_ip(conn))
+
+            Wiki.send_change_notification(
+              updated_school,
+              school,
+              old_data,
+              address,
+              get_client_ip(conn)
+            )
 
             # Increment daily change count
             Wiki.increment_daily_change_count(today)
           end
 
           # Get country slug for redirect to school vacation page
-          country_slug = get_country_slug_from_school(school)
+          country_slug = get_country_slug_from_school(updated_school)
 
           # Show different message based on whether changes were made
           flash_message =
-            if version do
-              "Adressdaten wurden erfolgreich aktualisiert. Danke für Ihre Hilfe!"
+            if school_version || address_version do
+              "Schuldaten wurden erfolgreich aktualisiert. Danke für Ihre Hilfe!"
             else
               "Keine Änderungen vorgenommen - die Daten waren bereits aktuell."
             end
@@ -102,19 +134,28 @@ defmodule MehrSchulferienWeb.WikiController do
           |> put_flash(:info, flash_message)
           |> redirect(to: Routes.school_path(conn, :show, country_slug, school_slug))
 
-        {:error, changeset} ->
-          versions =
-            if school.address do
-              PaperTrail.get_versions(school.address)
-              |> Enum.sort_by(& &1.inserted_at, :desc)
-              |> Enum.take(4)
-            else
-              []
-            end
+        {{:error, changeset}, _} ->
+          # School update failed
+          versions = get_combined_versions(school)
 
           render(conn, "show_school.html", %{
             school: school,
             versions: versions,
+            display_versions: Enum.take(versions, 5),
+            changeset: changeset,
+            daily_changes: daily_changes,
+            limit_reached: false,
+            css_framework: :tailwind_new
+          })
+
+        {_, {:error, changeset}} ->
+          # Address update failed
+          versions = get_combined_versions(school)
+
+          render(conn, "show_school.html", %{
+            school: school,
+            versions: versions,
+            display_versions: Enum.take(versions, 5),
             changeset: changeset,
             daily_changes: daily_changes,
             limit_reached: false,
@@ -122,6 +163,26 @@ defmodule MehrSchulferienWeb.WikiController do
           })
       end
     end
+  end
+
+  defp maybe_update_line1(address_params, nil), do: address_params
+
+  defp maybe_update_line1(address_params, name) when is_binary(name) do
+    Map.put(address_params, "line1", name)
+  end
+
+  defp get_combined_versions(school) do
+    address_versions =
+      if school.address do
+        PaperTrail.get_versions(school.address)
+      else
+        []
+      end
+
+    school_versions = PaperTrail.get_versions(school)
+
+    (address_versions ++ school_versions)
+    |> Enum.sort_by(& &1.inserted_at, :desc)
   end
 
   def rollback_school(conn, %{"slug" => school_slug, "version_id" => version_id}) do
@@ -139,11 +200,60 @@ defmodule MehrSchulferienWeb.WikiController do
       )
       |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
     else
-      if school.address do
-        case Wiki.rollback_to_version(school.address, version_id, get_client_ip(conn)) do
-          {:ok, %{model: address, version: _version}} ->
+      # Determine which model the version belongs to
+      with {version_id_int, ""} <- Integer.parse(version_id),
+           version when not is_nil(version) <-
+             MehrSchulferien.Repo.get(PaperTrail.Version, version_id_int) do
+        rollback_result =
+          case version.item_type do
+            "Location" when version.item_id == school.id ->
+              # Rollback school name
+              case Wiki.rollback_to_version(school, version_id, get_client_ip(conn)) do
+                {:ok, %{model: updated_school, version: _version}} ->
+                  # If there's an address, update its line1 to match the new school name
+                  if updated_school.address do
+                    address_changeset =
+                      Address.changeset(updated_school.address, %{line1: updated_school.name})
+
+                    case PaperTrail.update(address_changeset,
+                           meta: %{ip_address: get_client_ip(conn)}
+                         ) do
+                      {:ok, %{model: _address, version: _addr_version}} ->
+                        {:ok, updated_school}
+
+                      {:error, _} ->
+                        # Continue even if address update fails
+                        {:ok, updated_school}
+                    end
+                  else
+                    {:ok, updated_school}
+                  end
+
+                error ->
+                  error
+              end
+
+            "Address" ->
+              # Rollback address
+              if school.address && version.item_id == school.address.id do
+                Wiki.rollback_to_version(school.address, version_id, get_client_ip(conn))
+              else
+                {:error, :version_not_found}
+              end
+
+            _ ->
+              {:error, :version_not_found}
+          end
+
+        case rollback_result do
+          {:ok, updated_model} ->
             # Send email notification
-            Wiki.send_rollback_notification(school, address, version_id, get_client_ip(conn))
+            Wiki.send_rollback_notification(
+              school,
+              updated_model,
+              version_id,
+              get_client_ip(conn)
+            )
 
             # Increment daily change count
             Wiki.increment_daily_change_count(today)
@@ -161,9 +271,10 @@ defmodule MehrSchulferienWeb.WikiController do
             |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
         end
       else
-        conn
-        |> put_flash(:error, "Keine Adressdaten zum Zurücksetzen vorhanden.")
-        |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+        _ ->
+          conn
+          |> put_flash(:error, "Ungültige Versions-ID.")
+          |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
       end
     end
   end

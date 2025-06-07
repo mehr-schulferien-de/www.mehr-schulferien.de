@@ -217,4 +217,168 @@ defmodule MehrSchulferienWeb.WikiView do
   end
 
   defp obfuscate_ip(_), do: "*"
+
+  @doc """
+  Gets a specific field value from a version, taking into account the version structure
+  """
+  def get_version_field(version, field) do
+    changes = Map.get(version, :item_changes, %{})
+
+    case Map.get(version, :event) do
+      "insert" ->
+        # For insert events, get the initial value of the field
+        Map.get(changes, field)
+
+      "update" ->
+        # For update events, get the new value of the field
+        Map.get(changes, field)
+
+      nil ->
+        # Legacy format - might contain [old, new] pairs or direct values
+        case Map.get(changes, field) do
+          [_old_value, new_value] -> new_value
+          other_value -> other_value
+        end
+
+      _ ->
+        # For other event types, try to get the field value directly
+        Map.get(changes, field)
+    end
+  end
+
+  @doc """
+  Reconstructs the complete data state that you would get if you rollback to this version.
+  This shows the state BEFORE this version was applied, which is what "Wiederherstellen" will restore.
+  Enhanced version that includes current state as fallback for missing historical data.
+  """
+  def get_version_data(version, all_versions, current_school \\ nil) do
+    # Get base historical data
+    base_data = get_version_data_historical(version, all_versions)
+
+    # If no current school provided, return just historical data
+    if is_nil(current_school) do
+      base_data
+    else
+      # Determine which fields changed in this version
+      changed_fields = Map.keys(Map.get(version, :item_changes, %{}))
+
+      # Use current school/address data as fallback ONLY for fields that were NOT changed in this version
+      fallback_data = %{
+        "name" => current_school.name,
+        "street" => current_school.address && current_school.address.street,
+        "zip_code" => current_school.address && current_school.address.zip_code,
+        "city" => current_school.address && current_school.address.city,
+        "email_address" => current_school.address && current_school.address.email_address,
+        "phone_number" => current_school.address && current_school.address.phone_number,
+        "homepage_url" => current_school.address && current_school.address.homepage_url,
+        "wikipedia_url" => current_school.address && current_school.address.wikipedia_url
+      }
+
+      # Merge with preference for historical data.
+      # If historical value is nil/empty we only fallback when the field was NOT changed in this version.
+      Map.merge(fallback_data, base_data, fn key, fallback, historical ->
+        cond do
+          historical not in [nil, ""] -> historical
+          key in changed_fields -> nil
+          true -> fallback
+        end
+      end)
+    end
+  end
+
+  # Internal function that does the actual historical reconstruction
+  defp get_version_data_historical(version, all_versions) do
+    # Sort all versions by ID to ensure correct order  
+    sorted_versions = Enum.sort_by(all_versions, & &1.id)
+
+    # Find the current version index
+    current_index = Enum.find_index(sorted_versions, fn v -> v.id == version.id end)
+
+    if current_index && current_index > 0 do
+      # Get all versions BEFORE the current one (this is what rollback restores to)
+      versions_before_current = Enum.take(sorted_versions, current_index)
+
+      # Separate school versions from address versions
+      {school_versions, address_versions} =
+        Enum.split_with(versions_before_current, fn v ->
+          v.item_type == "Location"
+        end)
+
+      # Reconstruct school fields (name) from school versions
+      school_data = reconstruct_school_fields(school_versions)
+
+      # Reconstruct address fields from address versions  
+      address_data = reconstruct_address_fields(address_versions)
+
+      # Combine school and address data
+      Map.merge(address_data, school_data)
+    else
+      # For the very first version, there's no previous state to rollback to
+      # Return empty map so fields show as "—"
+      %{}
+    end
+  end
+
+  # Reconstruct school-specific fields (like name) from Location versions
+  defp reconstruct_school_fields(school_versions) do
+    school_versions
+    |> Enum.sort_by(& &1.id)
+    |> Enum.reduce(%{}, fn version, acc ->
+      changes = Map.get(version, :item_changes, %{})
+
+      # Handle school name changes
+      if Map.has_key?(changes, "name") do
+        Map.put(acc, "name", changes["name"])
+      else
+        acc
+      end
+    end)
+  end
+
+  # Reconstruct address fields from Address versions
+  defp reconstruct_address_fields(address_versions) do
+    address_field_names = [
+      "street",
+      "zip_code",
+      "city",
+      "email_address",
+      "phone_number",
+      "homepage_url",
+      "wikipedia_url"
+    ]
+
+    # Build the state by applying all address versions chronologically
+    address_field_names
+    |> Enum.reduce(%{}, fn field, acc ->
+      value = reconstruct_field_value_improved(field, address_versions)
+      Map.put(acc, field, value)
+    end)
+  end
+
+  # Improved field reconstruction that handles PaperTrail's structure better
+  defp reconstruct_field_value_improved(field, versions) do
+    # Apply versions in chronological order (by ID) to build up the field value
+    versions
+    |> Enum.sort_by(& &1.id)
+    |> Enum.reduce(nil, fn version, current_value ->
+      changes = Map.get(version, :item_changes, %{})
+
+      # Check if this field was changed in this version
+      if Map.has_key?(changes, field) do
+        # Use the value from this version
+        Map.get(changes, field)
+      else
+        # Keep the current value (carry forward from previous versions)
+        current_value
+      end
+    end)
+  end
+
+  @doc """
+  Gets the list of fields that were changed in a specific version
+  """
+  def get_changed_fields(version) do
+    changes = Map.get(version, :item_changes, %{})
+    Map.keys(changes)
+  end
 end
