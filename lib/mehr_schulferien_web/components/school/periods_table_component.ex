@@ -37,9 +37,6 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                   <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                     Termin
                   </th>
-                  <th class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Wochentage
-                  </th>
                   <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                     Tage*
                   </th>
@@ -78,23 +75,12 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                         </span>
                       </span>
                     </td>
-                    <td class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-sm whitespace-nowrap">
-                      <% start_day = Date.day_of_week(period.starts_on)
-                      end_day = Date.day_of_week(period.ends_on)
-
-                      start_day_german = DateHelpers.weekday(start_day, :short_with_dot)
-                      end_day_german = DateHelpers.weekday(end_day, :short_with_dot) %>
-                      <%= start_day_german %> - <%= end_day_german %>
-                    </td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                       <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
                       <% effective_duration = calculate_effective_duration(period, @all_periods) %>
                       <% difference = effective_duration - days %>
 
-                      <%= days %>
-                      <%= if difference != 0 do %>
-                        / <%= days + difference %>
-                      <% end %>
+                      <%= days + difference %>
                     </td>
                   </tr>
                 <% end %>
@@ -112,7 +98,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
 
         <%= if has_differences do %>
           <div class="text-xs text-gray-500 mt-2">
-            * Die effektive Dauer (der zweite Wert) enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
+            * Die effektive Dauer in Tagen enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
           </div>
         <% end %>
       </div>
