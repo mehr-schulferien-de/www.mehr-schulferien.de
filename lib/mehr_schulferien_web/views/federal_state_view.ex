@@ -12,6 +12,7 @@ defmodule MehrSchulferienWeb.FederalStateView do
   import MehrSchulferienWeb.FederalState.PartialDataComponent
   import MehrSchulferienWeb.FederalStateComponents
   import MehrSchulferienWeb.FaqComponent
+  import MehrSchulferienWeb.Shared.IcalPanelComponent
 
   def format_zip_codes(city) do
     "#{Enum.map(city.zip_codes, & &1.value) |> Enum.sort() |> MehrSchulferienWeb.ViewHelpers.comma_join_with_a_final_und()}"
