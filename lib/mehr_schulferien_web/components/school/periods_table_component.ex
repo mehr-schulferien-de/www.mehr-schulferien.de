@@ -3,7 +3,6 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
 
   import MehrSchulferienWeb.FederalState.Helpers
   import MehrSchulferienWeb.FederalState.PeriodNameComponent
-  alias MehrSchulferien.Calendars.DateHelpers
 
   attr :periods, :list, required: true
   attr :all_periods, :list, required: true
@@ -98,7 +97,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
 
         <%= if has_differences do %>
           <div class="text-xs text-gray-500 mt-2">
-            * Die effektive Dauer in Tagen enthält angrenzende Wochenenden oder andere Feiertage, die zusätzlich freie Tage ergeben.
+            * Die effektive Dauer in Tagen enthält an die Ferien angrenzende Wochenenden und Feiertage.
           </div>
         <% end %>
       </div>

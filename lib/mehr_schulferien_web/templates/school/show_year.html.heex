@@ -76,7 +76,16 @@
           <%= if @school.address do %>
             <!-- Address & Contact Info -->
             <div class="bg-gray-50 p-3 rounded-md border-l-4 border-blue-500 mb-3">
-              <div class="font-semibold text-gray-900 text-sm mb-1"><%= @school.name %></div>
+              <div class="font-semibold text-gray-900 text-sm mb-1">
+                <%= if @school.address.homepage_url do %>
+                  <%= link(@school.name,
+                    to: @school.address.homepage_url,
+                    class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+                  ) %>
+                <% else %>
+                  <%= @school.name %>
+                <% end %>
+              </div>
               <div class="text-sm text-gray-700 mb-2">
                 <%= @school.address.street %><br />
                 <%= @school.address.zip_code %> <%= link(@school.address.city,
