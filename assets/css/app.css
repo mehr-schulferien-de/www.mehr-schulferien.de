@@ -272,3 +272,10 @@ body {
 .bridge-day-table {
   margin-top: 1em;
 }
+
+/* Utility: Worttrennung und Zeilenumbruch überall ermöglichen */
+.break-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
