@@ -49,10 +49,26 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
 
                   is_past =
                     Date.compare(@today, period.ends_on) == :gt &&
-                      period.starts_on.year == @today.year %>
+                      period.starts_on.year == @today.year
+
+                  month_name =
+                    case period.starts_on.month do
+                      1 -> "januar"
+                      2 -> "februar"
+                      3 -> "märz"
+                      4 -> "april"
+                      5 -> "mai"
+                      6 -> "juni"
+                      7 -> "juli"
+                      8 -> "august"
+                      9 -> "september"
+                      10 -> "oktober"
+                      11 -> "november"
+                      12 -> "dezember"
+                    end %>
                   <tr
                     class={"hover:bg-gray-50 cursor-pointer #{if is_current, do: "bg-yellow-100"} #{if is_past, do: "text-gray-400"}"}
-                    onclick={"window.location.href='#month-#{period.starts_on.month}'"}
+                    onclick={"window.location.href='##{month_name}#{period.starts_on.year}'"}
                   >
                     <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium">
                       <.period_name period={period} />
