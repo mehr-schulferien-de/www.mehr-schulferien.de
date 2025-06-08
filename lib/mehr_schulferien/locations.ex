@@ -273,6 +273,40 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns a list of schools within a given distance from a school.
+  """
+  def list_nearby_schools(school, distance_in_meters) do
+    if school.address && school.address.lon && school.address.lat do
+      from(l in Location,
+        join: a in assoc(l, :address),
+        where:
+          l.is_school == true and l.id != ^school.id and
+            fragment(
+              "ST_DWithin(ST_MakePoint(?, ?)::geography, ST_MakePoint(?, ?)::geography, ?)",
+              a.lon,
+              a.lat,
+              ^school.address.lon,
+              ^school.address.lat,
+              ^distance_in_meters
+            ),
+        select:
+          {l,
+           fragment(
+             "ST_Distance(ST_MakePoint(?, ?)::geography, ST_MakePoint(?, ?)::geography)",
+             a.lon,
+             a.lat,
+             ^school.address.lon,
+             ^school.address.lat
+           )},
+        preload: [address: :school_location]
+      )
+      |> Repo.all()
+    else
+      []
+    end
+  end
+
+  @doc """
   Returns the total count of schools in the database.
   """
   def count_schools do

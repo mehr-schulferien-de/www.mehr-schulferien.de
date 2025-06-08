@@ -103,6 +103,9 @@ defmodule MehrSchulferienWeb.SchoolController do
     # Get FAQ data
     faq_data = CH.list_faq_data(location_ids, today)
 
+    # Get nearby schools
+    nearby_schools = Locations.list_nearby_schools(school, 3000)
+
     # Calculate next_schulferien_periods (up to 3 periods) for the FAQ
     sorted_periods =
       Enum.sort(
@@ -148,7 +151,8 @@ defmodule MehrSchulferienWeb.SchoolController do
         today: today,
         school_periods: extended_periods,
         next_schulferien_periods: next_schulferien_periods,
-        months: months
+        months: months,
+        nearby_schools: nearby_schools
       }
       |> Map.merge(Map.new(faq_data))
     )

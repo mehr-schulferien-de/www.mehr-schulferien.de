@@ -99,7 +99,7 @@
                       href={"mailto:" <> email}
                       class="text-blue-600 hover:text-blue-800 cursor-pointer break-words"
                     >
-                      <%= String.slice(email, 0, 30) <> if String.length(email) > 30, do: "...", else: "" %>
+                      <%= email %>
                     </a>
                   </div>
                 <% end %>
@@ -453,6 +453,7 @@
           todays_public_holiday_periods={todays_public_holiday_periods}
           tomorrows_public_holiday_periods={tomorrows_public_holiday_periods}
           day_after_tomorrows_public_holiday_periods={day_after_tomorrows_public_holiday_periods}
+          nearby_schools={@nearby_schools}
         />
       <% end %>
     <% end %>

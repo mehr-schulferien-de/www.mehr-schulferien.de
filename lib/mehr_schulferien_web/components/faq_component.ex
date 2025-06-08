@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
   alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Router.Helpers, as: Routes
   import Phoenix.HTML.Link
+  import Phoenix.HTML, only: [raw: 1]
 
   attr :conn, :any, required: true
   attr :country, :any, required: true
@@ -28,6 +29,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
   attr :day_after_tomorrows_public_holiday_periods, :list, required: true
   attr :city, :any, default: nil
   attr :schools, :list, default: []
+  attr :nearby_schools, :list, default: []
 
   def faq(assigns) do
     # Process all FAQ data once
@@ -70,6 +72,15 @@ defmodule MehrSchulferienWeb.FaqComponent do
                 conn={@conn}
                 country={@country}
                 schools_question={@faq_data.schools_question}
+              />
+            <% end %>
+
+            <%= if @nearby_schools && length(@nearby_schools) > 0 do %>
+              <.nearby_schools
+                conn={@conn}
+                country={@country}
+                nearby_schools={@nearby_schools}
+                nearby_schools_question={@faq_data.nearby_schools_question}
               />
             <% end %>
 
@@ -260,11 +271,23 @@ defmodule MehrSchulferienWeb.FaqComponent do
         nil
       end
 
+    # Nearby schools question (if applicable)
+    nearby_schools_question =
+      if assigns.nearby_schools && length(assigns.nearby_schools) > 0 do
+        %{
+          title: "Welche weiteren Schulen sind im Umkreis von 3km?",
+          answer: ""
+        }
+      else
+        nil
+      end
+
     # Collect all questions for schema.org
     all_questions =
       [next_vacation_question] ++
         school_free_questions ++
         if(schools_question, do: [schools_question], else: []) ++
+        if(nearby_schools_question, do: [nearby_schools_question], else: []) ++
         [schulferien_question] ++
         yearly_periods_questions ++
         holiday_questions ++
@@ -282,6 +305,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
       schulferien_question: schulferien_question,
       next_holiday_question: next_holiday_question,
       schools_question: schools_question,
+      nearby_schools_question: nearby_schools_question,
       all_questions: all_questions
     }
   end
@@ -294,7 +318,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
         <%= @question.title %>
       </dt>
       <dd class="mt-2 text-sm text-gray-600">
-        <%= @question.answer %>
+        <%= raw(@question.answer) %>
       </dd>
     </div>
     """
@@ -345,6 +369,48 @@ defmodule MehrSchulferienWeb.FaqComponent do
     """
   end
 
+  defp nearby_schools(assigns) do
+    sorted_schools =
+      Enum.sort_by(assigns.nearby_schools, fn {school, _distance} -> school.name end)
+
+    assigns = assign(assigns, :sorted_schools, sorted_schools)
+
+    ~H"""
+    <div>
+      <dt class="text-base font-semibold text-gray-900">
+        <%= @nearby_schools_question.title %>
+      </dt>
+      <dd class="mt-2 text-sm text-gray-600">
+        <%= if length(@sorted_schools) == 1 do %>
+          <% {school, distance} = hd(@sorted_schools) %>
+          <%= link(school.name,
+            to: Routes.school_path(@conn, :show, @country.slug, school.slug),
+            class: "text-blue-600 hover:text-blue-500"
+          ) %> (<%= format_distance(distance) %>)
+        <% else %>
+          <% {schools_except_last, [last_school_tuple]} = Enum.split(@sorted_schools, -1) %>
+          <%= for {{school, distance}, index} <- Enum.with_index(schools_except_last) do %>
+            <%= link(school.name,
+              to: Routes.school_path(@conn, :show, @country.slug, school.slug),
+              class: "text-blue-600 hover:text-blue-500"
+            ) %> (<%= format_distance(distance) %>)<%= if index < length(schools_except_last) - 1,
+              do: ", ",
+              else: "" %>
+          <% end %>
+          <%= if length(schools_except_last) > 0 do %>
+            und
+          <% end %>
+          <% {last_school, last_distance} = last_school_tuple %>
+          <%= link(last_school.name,
+            to: Routes.school_path(@conn, :show, @country.slug, last_school.slug),
+            class: "text-blue-600 hover:text-blue-500"
+          ) %> (<%= format_distance(last_distance) %>)
+        <% end %>
+      </dd>
+    </div>
+    """
+  end
+
   defp cities_in_federal_state(assigns) do
     ~H"""
     <div>
@@ -359,6 +425,14 @@ defmodule MehrSchulferienWeb.FaqComponent do
       </dd>
     </div>
     """
+  end
+
+  defp format_distance(distance) when distance < 1000 do
+    "#{round(distance)} m"
+  end
+
+  defp format_distance(distance) do
+    "#{Float.round(distance / 1000, 1)} km"
   end
 
   # Helper to format periods for answer text
@@ -400,7 +474,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
               "name": "<%= question.title %>",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "<%= question.answer %>"
+                "text": "<%= raw(question.answer) %>"
               }
             }<%= if index < length(@filtered_questions) - 1, do: ",", else: "" %>
           <% end %>
