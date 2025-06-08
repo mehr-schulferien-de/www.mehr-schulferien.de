@@ -282,21 +282,45 @@ defmodule MehrSchulferien.Locations do
         where:
           l.is_school == true and l.id != ^school.id and
             fragment(
-              "ST_DWithin(ST_MakePoint(?, ?)::geography, ST_MakePoint(?, ?)::geography, ?)",
-              a.lon,
+              """
+              (
+                6371000 * acos(
+                  cos(radians(?)) * 
+                  cos(radians(?)) * 
+                  cos(radians(?) - radians(?)) + 
+                  sin(radians(?)) * 
+                  sin(radians(?))
+                )
+              ) <= ?
+              """,
+              ^school.address.lat,
               a.lat,
               ^school.address.lon,
+              a.lon,
               ^school.address.lat,
+              a.lat,
               ^distance_in_meters
             ),
         select:
           {l,
            fragment(
-             "ST_Distance(ST_MakePoint(?, ?)::geography, ST_MakePoint(?, ?)::geography)",
-             a.lon,
+             """
+             (
+               6371000 * acos(
+                 cos(radians(?)) * 
+                 cos(radians(?)) * 
+                 cos(radians(?) - radians(?)) + 
+                 sin(radians(?)) * 
+                 sin(radians(?))
+               )
+             )
+             """,
+             ^school.address.lat,
              a.lat,
              ^school.address.lon,
-             ^school.address.lat
+             a.lon,
+             ^school.address.lat,
+             a.lat
            )},
         preload: [address: :school_location]
       )
