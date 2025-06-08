@@ -99,7 +99,7 @@
                       href={"mailto:" <> email}
                       class="text-blue-600 hover:text-blue-800 cursor-pointer break-words"
                     >
-                      <%= email %>
+                      <%= String.slice(email, 0, 30) <> if String.length(email) > 30, do: "...", else: "" %>
                     </a>
                   </div>
                 <% end %>
