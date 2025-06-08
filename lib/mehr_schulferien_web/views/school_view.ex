@@ -10,7 +10,6 @@ defmodule MehrSchulferienWeb.SchoolView do
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.SchoolComponents
   import MehrSchulferienWeb.FaqComponent
-  import MehrSchulferienWeb.Shared.IcalPanelComponent
 
   def calculate_effective_duration(period, periods) do
     # Get official duration
