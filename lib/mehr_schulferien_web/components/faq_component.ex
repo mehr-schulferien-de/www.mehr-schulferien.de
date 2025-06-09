@@ -274,9 +274,49 @@ defmodule MehrSchulferienWeb.FaqComponent do
     # Nearby schools question (if applicable)
     nearby_schools_question =
       if assigns.nearby_schools && length(assigns.nearby_schools) > 0 do
+        # Generate text answer for nearby schools
+        sorted_schools =
+          Enum.sort_by(assigns.nearby_schools, fn {school, _distance} -> school.name end)
+
+        nearby_schools_answer =
+          if length(sorted_schools) == 1 do
+            {school, distance} = hd(sorted_schools)
+
+            distance_text =
+              if distance < 1000,
+                do: "#{round(distance)} m",
+                else: "#{Float.round(distance / 1000, 1)} km"
+
+            "#{school.name} (#{distance_text})"
+          else
+            {schools_except_last, [last_school_tuple]} = Enum.split(sorted_schools, -1)
+            {last_school, last_distance} = last_school_tuple
+
+            last_distance_text =
+              if last_distance < 1000,
+                do: "#{round(last_distance)} m",
+                else: "#{Float.round(last_distance / 1000, 1)} km"
+
+            schools_text =
+              Enum.map_join(schools_except_last, ", ", fn {school, distance} ->
+                distance_text =
+                  if distance < 1000,
+                    do: "#{round(distance)} m",
+                    else: "#{Float.round(distance / 1000, 1)} km"
+
+                "#{school.name} (#{distance_text})"
+              end)
+
+            if length(schools_except_last) > 0 do
+              "#{schools_text} und #{last_school.name} (#{last_distance_text})"
+            else
+              "#{last_school.name} (#{last_distance_text})"
+            end
+          end
+
         %{
           title: "Welche weiteren Schulen sind im Umkreis von 3km?",
-          answer: ""
+          answer: nearby_schools_answer
         }
       else
         nil
@@ -460,7 +500,30 @@ defmodule MehrSchulferienWeb.FaqComponent do
         assigns.faq_data.all_questions
       end
 
-    assigns = assign(assigns, :filtered_questions, filtered_questions)
+    # Filter out questions with empty answers and escape JSON properly
+    valid_questions =
+      Enum.filter(filtered_questions, fn question ->
+        question && question.answer && String.trim(question.answer) != ""
+      end)
+      |> Enum.map(fn question ->
+        # Clean HTML tags and escape JSON properly
+        clean_answer =
+          question.answer
+          # Remove HTML tags
+          |> String.replace(~r/<[^>]*>/, "")
+          # Escape quotes
+          |> String.replace("\"", "\\\"")
+          # Replace newlines with spaces
+          |> String.replace("\n", " ")
+          # Remove carriage returns
+          |> String.replace("\r", "")
+          # Trim whitespace
+          |> String.trim()
+
+        %{question | answer: clean_answer}
+      end)
+
+    assigns = assign(assigns, :valid_questions, valid_questions)
 
     ~H"""
     <script type="application/ld+json">
@@ -468,15 +531,15 @@ defmodule MehrSchulferienWeb.FaqComponent do
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
-          <%= for {question, index} <- Enum.with_index(@filtered_questions) do %>
+          <%= for {question, index} <- Enum.with_index(@valid_questions) do %>
             {
               "@type": "Question",
               "name": "<%= question.title %>",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "<%= raw(question.answer) %>"
+                "text": "<%= question.answer %>"
               }
-            }<%= if index < length(@filtered_questions) - 1, do: ",", else: "" %>
+            }<%= if index < length(@valid_questions) - 1, do: ",", else: "" %>
           <% end %>
         ]
       }
