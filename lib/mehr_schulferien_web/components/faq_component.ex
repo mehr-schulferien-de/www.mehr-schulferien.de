@@ -511,40 +511,58 @@ defmodule MehrSchulferienWeb.FaqComponent do
           question.answer
           # Remove HTML tags
           |> String.replace(~r/<[^>]*>/, "")
+          # Properly escape JSON special characters
+          # Escape backslashes first
+          |> String.replace("\\", "\\\\")
           # Escape quotes
           |> String.replace("\"", "\\\"")
-          # Replace newlines with spaces
-          |> String.replace("\n", " ")
-          # Remove carriage returns
-          |> String.replace("\r", "")
-          # Trim whitespace
+          # Escape newlines
+          |> String.replace("\n", "\\n")
+          # Escape carriage returns
+          |> String.replace("\r", "\\r")
+          # Escape tabs
+          |> String.replace("\t", "\\t")
           |> String.trim()
 
-        %{question | answer: clean_answer}
+        clean_title =
+          question.title
+          # Escape backslashes first
+          |> String.replace("\\", "\\\\")
+          # Escape quotes
+          |> String.replace("\"", "\\\"")
+          # Escape newlines
+          |> String.replace("\n", "\\n")
+          # Escape carriage returns
+          |> String.replace("\r", "\\r")
+          # Escape tabs
+          |> String.replace("\t", "\\t")
+
+        %{question | answer: clean_answer, title: clean_title}
       end)
 
-    assigns = assign(assigns, :valid_questions, valid_questions)
+    # Only render if we have valid questions
+    if length(valid_questions) > 0 do
+      assigns = assign(assigns, :valid_questions, valid_questions)
 
-    ~H"""
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          <%= for {question, index} <- Enum.with_index(@valid_questions) do %>
-            {
-              "@type": "Question",
-              "name": "<%= question.title %>",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "<%= question.answer %>"
-              }
-            }<%= if index < length(@valid_questions) - 1, do: ",", else: "" %>
-          <% end %>
-        ]
-      }
-    </script>
-    """
+      ~H"""
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [<%= for {question, index} <- Enum.with_index(@valid_questions) do %>{
+            "@type": "Question",
+            "name": "<%= question.title %>",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "<%= question.answer %>"
+            }
+          }<%= if index < length(@valid_questions) - 1, do: ",", else: "" %><% end %>]
+        }
+      </script>
+      """
+    else
+      ~H""
+    end
   end
 
   # Helper to convert day labels to question form
