@@ -37,8 +37,6 @@ defmodule MehrSchulferien.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.2"},
-      {:swoosh, "~> 1.15"},
-      {:gen_smtp, "~> 1.2"},
       {:finch, "~> 0.18"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},

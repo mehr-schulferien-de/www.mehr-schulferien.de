@@ -76,11 +76,6 @@ defmodule MehrSchulferienWeb.Router do
   scope "/", MehrSchulferienWeb do
     pipe_through :browser
 
-    # Development-only: Swoosh mailbox to view emails
-    if Mix.env() == :dev do
-      forward "/dev/mailbox", Plug.Swoosh.MailboxPreview, base_path: "/dev/mailbox"
-    end
-
     get "/", PageController, :home
     get "/sommerferien", PageController, :summer_vacations
     get "/developers", PageController, :developers
