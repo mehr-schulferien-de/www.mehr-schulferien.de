@@ -81,12 +81,6 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
 
-    # Shows current year - generic fallback (most specific path)
-    get "/ferien", PageController, :full_year
-
-    # SEO Optimized URLs for yearly views - with year constraint
-    get "/ferien/:year", PageController, :full_year, constraints: [year: ~r/^20[2-3][0-9]$/]
-
     # Country routes (SEO-friendly pattern) - with non-year constraint
     get "/ferien/:country_slug", CountryController, :show,
       constraints: [country_slug: ~r/^(?!20[2-3][0-9]$)[a-zA-Z][a-zA-Z0-9_-]*$/]

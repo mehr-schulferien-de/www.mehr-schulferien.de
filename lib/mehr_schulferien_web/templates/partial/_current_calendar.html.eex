@@ -62,7 +62,6 @@
                 <% end %>
               </td>
             <% end %>
-            <%= if Enum.count(@days) < 360 do %><td><%= link "➡️", to: Routes.page_path(@conn, :full_year) %></td><% end %>
           </tr>
 
           <tr>
