@@ -28,8 +28,5 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warning
 
-# Configure Swoosh mailer for testing (captures emails instead of sending them)
-config :mehr_schulferien, MehrSchulferien.Mailer, adapter: Swoosh.Adapters.Test
-
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime

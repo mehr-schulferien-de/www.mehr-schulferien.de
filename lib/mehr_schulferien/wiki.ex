@@ -115,86 +115,6 @@ defmodule MehrSchulferien.Wiki do
     final_state
   end
 
-  @doc """
-  Sends an email notification when school or address data is changed.
-  """
-  def send_change_notification(updated_school, old_school, old_address, new_address, ip_address) do
-    # Build email content
-    subject = "Schuldaten geändert: #{updated_school.name}"
-
-    body = """
-    Schuldaten wurden im Wiki geändert:
-
-    Schule: #{updated_school.name}
-    Slug: #{updated_school.slug}
-    IP-Adresse: #{ip_address}
-    Zeitpunkt: #{DateTime.utc_now() |> DateTime.to_string()}
-
-    === ALTE DATEN ===
-    Schulname: #{old_school.name || ""}
-    Straße: #{old_address.street || ""}
-    PLZ: #{old_address.zip_code || ""}
-    Stadt: #{old_address.city || ""}
-    E-Mail: #{old_address.email_address || ""}
-    Telefon: #{old_address.phone_number || ""}
-    Homepage: #{old_address.homepage_url || ""}
-    Wikipedia: #{old_address.wikipedia_url || ""}
-
-    === NEUE DATEN ===
-    Schulname: #{updated_school.name || ""}
-    Straße: #{new_address.street || ""}
-    PLZ: #{new_address.zip_code || ""}
-    Stadt: #{new_address.city || ""}
-    E-Mail: #{new_address.email_address || ""}
-    Telefon: #{new_address.phone_number || ""}
-    Homepage: #{new_address.homepage_url || ""}
-    Wikipedia: #{new_address.wikipedia_url || ""}
-
-    Link zur Schule: https://www.mehr-schulferien.de/wiki/schools/#{updated_school.slug}
-    """
-
-    send_notification_email(subject, body)
-  end
-
-  @doc """
-  Sends an email notification when a rollback is performed.
-  """
-  def send_rollback_notification(school, model, version_id, ip_address) do
-    subject = "Schuldaten zurückgesetzt: #{school.name}"
-
-    {model_type, current_data} =
-      case model do
-        %{__struct__: MehrSchulferien.Locations.Location} = location ->
-          {"Schulname", "Schulname: #{location.name || ""}"}
-
-        %{__struct__: MehrSchulferien.Maps.Address} = address ->
-          address_info =
-            "Straße: #{address.street || ""}\nPLZ: #{address.zip_code || ""}\nStadt: #{address.city || ""}\nE-Mail: #{address.email_address || ""}\nTelefon: #{address.phone_number || ""}\nHomepage: #{address.homepage_url || ""}\nWikipedia: #{address.wikipedia_url || ""}"
-
-          {"Adressdaten", address_info}
-
-        _ ->
-          {"Unbekannt", "Unbekannte Daten"}
-      end
-
-    body = """
-    #{model_type} wurden im Wiki zurückgesetzt:
-
-    Schule: #{school.name}
-    Slug: #{school.slug}
-    Zurückgesetzt zu Version: #{version_id}
-    IP-Adresse: #{ip_address}
-    Zeitpunkt: #{DateTime.utc_now() |> DateTime.to_string()}
-
-    === AKTUELLE DATEN NACH ROLLBACK ===
-    #{current_data}
-
-    Link zur Schule: https://www.mehr-schulferien.de/wiki/schools/#{school.slug}
-    """
-
-    send_notification_email(subject, body)
-  end
-
   defp version_matches_model?(version, %{__struct__: MehrSchulferien.Maps.Address, id: id}) do
     version.item_type == "Address" and version.item_id == id
   end
@@ -204,26 +124,4 @@ defmodule MehrSchulferien.Wiki do
   end
 
   defp version_matches_model?(_, _), do: false
-
-  defp send_notification_email(subject, body) do
-    try do
-      alias Swoosh.Email
-      alias MehrSchulferien.Mailer
-
-      email =
-        Email.new()
-        |> Email.to("sw@wintermeyer-consulting.de")
-        |> Email.from({"Wiki System", "noreply@mehr-schulferien.de"})
-        |> Email.subject(subject)
-        |> Email.text_body(body)
-
-      Mailer.deliver(email)
-    rescue
-      e ->
-        # Log the error but don't fail the operation
-        require Logger
-        Logger.error("Failed to send wiki notification email: #{inspect(e)}")
-        {:error, e}
-    end
-  end
 end

@@ -105,16 +105,6 @@ defmodule MehrSchulferienWeb.WikiController do
          {:ok, %{model: address, version: address_version}}} ->
           # Send email notification if there were changes
           if school_version || address_version do
-            old_data = if school.address, do: school.address, else: %Address{}
-
-            Wiki.send_change_notification(
-              updated_school,
-              school,
-              old_data,
-              address,
-              get_client_ip(conn)
-            )
-
             # Increment daily change count
             Wiki.increment_daily_change_count(today)
           end
@@ -246,15 +236,7 @@ defmodule MehrSchulferienWeb.WikiController do
           end
 
         case rollback_result do
-          {:ok, updated_model} ->
-            # Send email notification
-            Wiki.send_rollback_notification(
-              school,
-              updated_model,
-              version_id,
-              get_client_ip(conn)
-            )
-
+          {:ok, _updated_model} ->
             # Increment daily change count
             Wiki.increment_daily_change_count(today)
 
