@@ -102,7 +102,7 @@ defmodule MehrSchulferienWeb.WikiController do
 
       case {school_result, address_result} do
         {{:ok, %{model: updated_school, version: school_version}},
-         {:ok, %{model: address, version: address_version}}} ->
+         {:ok, %{model: _address, version: address_version}}} ->
           # Send email notification if there were changes
           if school_version || address_version do
             # Increment daily change count
