@@ -18,37 +18,35 @@
 <meta property="twitter:description" content="Entdecken Sie die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> im Jahr <%= @year %>. Maximieren Sie Ihren Urlaub mit cleverer Planung.">
 
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Brückentage <%= @federal_state.name %> <%= @year %>",
-  "description": "Entdecken Sie die <%= @bridge_day_proposal_count %> besten Brückentage für <%= @federal_state.name %> im Jahr <%= @year %>. Maximieren Sie Ihren Urlaub mit cleverer Planung.",
-  "url": "<%= Routes.bridge_day_url(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year) %>",
-  "mainEntity": {
-    "@type": "ItemList",
-    "itemListElement": [
-      <%= for {bridge_day, index} <- Enum.with_index(@bridge_day_map[2] || []) do %>
-      {
-        "@type": "ListItem",
-        "position": <%= index + 1 %>,
-        "item": {
-          "@type": "Event",
-          "name": "Brückentag <%= ViewHelpers.format_date(bridge_day.starts_on) %>",
-          "startDate": "<%= bridge_day.starts_on %>",
-          "endDate": "<%= bridge_day.ends_on %>",
-          "location": {
-            "@type": "Place",
-            "name": "<%= @federal_state.name %>",
-            "address": {
-              "@type": "PostalAddress",
-              "addressRegion": "<%= @federal_state.name %>",
-              "addressCountry": "<%= @country.code %>"
+<%= Jason.encode!(%{
+  "@context" => "https://schema.org",
+  "@type" => "WebPage",
+  "name" => "Brückentage #{@federal_state.name} #{@year}",
+  "description" => "Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung.",
+  "url" => Routes.bridge_day_url(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year),
+  "mainEntity" => %{
+    "@type" => "ItemList",
+    "itemListElement" => Enum.map(Enum.with_index(@bridge_day_map[2] || []), fn {bridge_day, index} ->
+      %{
+        "@type" => "ListItem",
+        "position" => index + 1,
+        "item" => %{
+          "@type" => "Event",
+          "name" => "Brückentag #{ViewHelpers.format_date(bridge_day.starts_on)}",
+          "startDate" => bridge_day.starts_on,
+          "endDate" => bridge_day.ends_on,
+          "location" => %{
+            "@type" => "Place",
+            "name" => @federal_state.name,
+            "address" => %{
+              "@type" => "PostalAddress",
+              "addressRegion" => @federal_state.name,
+              "addressCountry" => @country.code
             }
           }
         }
-      }<%= if index < length(@bridge_day_map[2] || []) - 1 do %>,<% end %>
-      <% end %>
-    ]
+      }
+    end)
   }
-}
+}) %>
 </script>

@@ -546,18 +546,20 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
       ~H"""
       <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [<%= for {question, index} <- Enum.with_index(@valid_questions) do %>{
-            "@type": "Question",
-            "name": "<%= question.title %>",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "<%= question.answer %>"
+        <%= Jason.encode!(%{
+          "@context" => "https://schema.org",
+          "@type" => "FAQPage",
+          "mainEntity" => Enum.map(@valid_questions, fn question ->
+            %{
+              "@type" => "Question",
+              "name" => question.title,
+              "acceptedAnswer" => %{
+                "@type" => "Answer",
+                "text" => question.answer
+              }
             }
-          }<%= if index < length(@valid_questions) - 1, do: ",", else: "" %><% end %>]
-        }
+          end)
+        }) %>
       </script>
       """
     else

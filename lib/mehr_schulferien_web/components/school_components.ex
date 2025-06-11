@@ -56,64 +56,94 @@ defmodule MehrSchulferienWeb.SchoolComponents do
     ~H"""
     <%= for period <- @periods do %>
       <script type="application/ld+json">
-        {
-          "@context": "http://schema.org",
-          "@type": "Event",
-          "name": "<%= period.holiday_or_vacation_type.colloquial %>",
-          "startDate": "<%= period.starts_on %>",
-          "endDate": "<%= period.ends_on %>",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-          "eventStatus": "https://schema.org/EventScheduled",
-          "location": {
-            "@type": "Place",
-            "name": "<%= @school.name %>",
-            "address":{
-              "@type": "PostalAddress",
-              "streetAddress": "<%= if @school.address, do: @school.address.street, else: "" %>",
-              "addressLocality": "<%= @city.name %>",
-              "postalCode": "<%= if @school.address, do: @school.address.zip_code, else: "" %>",
-              "addressRegion": "<%= @federal_state.name %>",
-              "addressCountry": "<%= @country.code %>"
+        <%= Jason.encode!(%{
+          "@context" => "http://schema.org",
+          "@type" => "Event",
+          "name" => period.holiday_or_vacation_type.colloquial,
+          "startDate" => period.starts_on,
+          "endDate" => period.ends_on,
+          "eventAttendanceMode" => "https://schema.org/OfflineEventAttendanceMode",
+          "eventStatus" => "https://schema.org/EventScheduled",
+          "location" => %{
+            "@type" => "Place",
+            "name" => @school.name,
+            "address" => %{
+              "@type" => "PostalAddress",
+              "streetAddress" => if(@school.address, do: @school.address.street, else: ""),
+              "addressLocality" => @city.name,
+              "postalCode" => if(@school.address, do: @school.address.zip_code, else: ""),
+              "addressRegion" => @federal_state.name,
+              "addressCountry" => @country.code
             }
           }
-        }
+        }) %>
       </script>
     <% end %>
     """
   end
 
   def schema_org_school(assigns) do
+    school = assigns.school
+    city = assigns.city
+    federal_state = assigns.federal_state
+    country = assigns.country
+    optional_fields = []
+
+    optional_fields =
+      if school.address do
+        optional_fields ++
+          [
+            {"address",
+             %{
+               "@type" => "PostalAddress",
+               "streetAddress" => school.address.street,
+               "addressLocality" => city.name,
+               "postalCode" => school.address.zip_code,
+               "addressRegion" => federal_state.name,
+               "addressCountry" => country.code
+             }}
+          ]
+      else
+        optional_fields
+      end
+
+    optional_fields =
+      if school.address && school.address.phone_number do
+        optional_fields ++ [{"telephone", school.address.phone_number}]
+      else
+        optional_fields
+      end
+
+    optional_fields =
+      if school.address && school.address.email_address do
+        optional_fields ++ [{"email", school.address.email_address}]
+      else
+        optional_fields
+      end
+
+    optional_fields =
+      if school.address && school.address.homepage_url do
+        optional_fields ++ [{"url", school.address.homepage_url}]
+      else
+        optional_fields
+      end
+
+    optional_fields = Map.new(optional_fields)
+
     ~H"""
     <script type="application/ld+json">
-      {
-        "@context": "http://schema.org",
-        "@type": "School",
-        "name": "<%= @school.name %>",
-        <%= if @school.address do %>
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "<%= @school.address.street %>",
-          "addressLocality": "<%= @city.name %>",
-          "postalCode": "<%= @school.address.zip_code %>",
-          "addressRegion": "<%= @federal_state.name %>",
-          "addressCountry": "<%= @country.code %>"
-        },
-        <%= if @school.address.phone_number do %>
-        "telephone": "<%= @school.address.phone_number %>",
-        <% end %>
-        <%= if @school.address.email_address do %>
-        "email": "<%= @school.address.email_address %>",
-        <% end %>
-        <%= if @school.address.homepage_url do %>
-        "url": "<%= @school.address.homepage_url %>",
-        <% end %>
-        <% end %>
-        "geo": {
-          "@type": "GeoCoordinates",
-          "latitude": "<%= Map.get(@school, :latitude, "") %>",
-          "longitude": "<%= Map.get(@school, :longitude, "") %>"
-        }
-      }
+      <%= Jason.encode!(
+        Map.merge(%{
+          "@context" => "http://schema.org",
+          "@type" => "School",
+          "name" => @school.name,
+          "geo" => %{
+            "@type" => "GeoCoordinates",
+            "latitude" => Map.get(@school, :latitude, ""),
+            "longitude" => Map.get(@school, :longitude, "")
+          }
+        }, optional_fields)
+      ) %>
     </script>
     """
   end

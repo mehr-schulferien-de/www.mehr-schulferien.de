@@ -5,27 +5,27 @@ defmodule MehrSchulferienWeb.CityComponents do
     ~H"""
     <%= for period <- @periods do %>
       <script type="application/ld+json">
-        {
-          "@context": "http://schema.org",
-          "@type": "Event",
-          "name": "<%= period.holiday_or_vacation_type.colloquial %>",
-          "startDate": "<%= period.starts_on %>",
-          "endDate": "<%= period.ends_on %>",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-          "eventStatus": "https://schema.org/EventScheduled",
-          "location": {
-            "@type": "Place",
-            "name": "<%= @city.name %>",
-            "address":{
-              "@type": "PostalAddress",
-              "streetAddress": "",
-              "addressLocality": "<%= @city.name %>",
-              "postalCode": "",
-              "addressRegion": "<%= @federal_state.name %>",
-              "addressCountry": "<%= @country.code %>"
+        <%= Jason.encode!(%{
+          "@context" => "http://schema.org",
+          "@type" => "Event",
+          "name" => period.holiday_or_vacation_type.colloquial,
+          "startDate" => period.starts_on,
+          "endDate" => period.ends_on,
+          "eventAttendanceMode" => "https://schema.org/OfflineEventAttendanceMode",
+          "eventStatus" => "https://schema.org/EventScheduled",
+          "location" => %{
+            "@type" => "Place",
+            "name" => @city.name,
+            "address" => %{
+              "@type" => "PostalAddress",
+              "streetAddress" => "",
+              "addressLocality" => @city.name,
+              "postalCode" => "",
+              "addressRegion" => @federal_state.name,
+              "addressCountry" => @country.code
             }
           }
-        }
+        }) %>
       </script>
     <% end %>
     """

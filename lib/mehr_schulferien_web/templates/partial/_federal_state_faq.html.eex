@@ -160,126 +160,57 @@
   </div>
 </div>
 
+<% main_entity = [] %>
+<% main_entity = main_entity ++ [
+  %{"@type" => "Question", "name" => "War gestern schulfrei in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{off_school_yesterday_answer}"}},
+  %{"@type" => "Question", "name" => "Ist heute schulfrei in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{off_school_today_answer}"}},
+  %{"@type" => "Question", "name" => "Ist morgen schulfrei in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{off_school_tomorrow_answer}"}},
+  %{"@type" => "Question", "name" => "Ist übermorgen schulfrei in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{off_school_day_after_tomorrow_answer}"}},
+  %{"@type" => "Question", "name" => "Wann sind die nächsten Schulferien in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{next_school_vacation_answer}"}},
+  %{"@type" => "Question", "name" => "Schulferien #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{Enum.map_join(next_schulferien_periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})")}"}}
+] %>
+<% main_entity = main_entity ++ Enum.map(grouped_periods, fn periods ->
+  first_period = Enum.at(periods, 0)
+  %{"@type" => "Question", "name" => "Schulferien #{@location.name} #{first_period.starts_on.year}", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{Enum.map_join(periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})")}"}}
+end) %>
+<% main_entity = main_entity ++ [
+  %{"@type" => "Question", "name" => "War gestern ein Feiertag in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{public_holiday_yesterday_answer}"}},
+  %{"@type" => "Question", "name" => "Ist heute ein Feiertag in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{public_holiday_today_answer}"}},
+  %{"@type" => "Question", "name" => "Ist morgen ein Feiertag in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{public_holiday_tomorrow_answer}"}},
+  %{"@type" => "Question", "name" => "Ist übermorgen ein Feiertag in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{public_holiday_day_after_tomorrow_answer}"}}
+] %>
+<% main_entity = main_entity ++ Enum.flat_map(year_school_periods, fn year_periods ->
+  periods_groups = year_periods |> Enum.group_by(& &1.holiday_or_vacation_type.name) |> Map.values()
+  Enum.flat_map(periods_groups, fn periods ->
+    period = Enum.at(periods, 0)
+    if period.starts_on.year == @current_year do
+      periods = Enum.filter(periods, & Date.compare(&1.starts_on, @today) == :gt)
+      Enum.map(periods, fn period ->
+        %{"@type" => "Question", "name" => "#{period.holiday_or_vacation_type.colloquial} #{@location.name}", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{ViewHelpers.format_date_range(period.starts_on, period.ends_on)}"}}
+      end)
+    else
+      []
+    end
+  end)
+end) %>
+<% main_entity = main_entity ++ Enum.flat_map(year_school_periods, fn year_periods ->
+  periods_groups = year_periods |> Enum.group_by(& &1.holiday_or_vacation_type.name) |> Map.values()
+  Enum.flat_map(periods_groups, fn periods ->
+    Enum.flat_map(periods, fn period ->
+      [
+        %{"@type" => "Question", "name" => "#{period.holiday_or_vacation_type.colloquial} #{period.starts_on.year} #{@location.name}", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{ViewHelpers.format_date_range(period.starts_on, period.ends_on)}"}},
+        %{"@type" => "Question", "name" => "#{period.holiday_or_vacation_type.colloquial} #{@location.name} #{period.starts_on.year}", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{ViewHelpers.format_date_range(period.starts_on, period.ends_on)}"}}
+      ]
+    end)
+  end)
+end) %>
+<% main_entity = main_entity ++ [
+  %{"@type" => "Question", "name" => "Wann ist der nächste Feiertag in #{@location.name}?", "acceptedAnswer" => %{"@type" => "Answer", "text" => "#{next_public_holiday_answer}"}}
+] %>
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [{
-    "@type": "Question",
-    "name": "War gestern schulfrei in <%= @location.name %>?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "<%= off_school_yesterday_answer %> "
-    }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist heute schulfrei in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= off_school_today_answer %>"
-      }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist morgen schulfrei in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= off_school_tomorrow_answer %>"
-      }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist übermorgen schulfrei in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= off_school_day_after_tomorrow_answer %>"
-      }
-  },
-  {
-      "@type": "Question",
-      "name": "Wann sind die nächsten Schulferien in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= next_school_vacation_answer %>"
-      }
-  },
-  {
-      "@type": "Question",
-      "name": "Schulferien <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= Enum.map_join(next_schulferien_periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>"
-      }
-  },
-  <%= for periods <- grouped_periods do %>
-    <% first_period = Enum.at(periods, 0) %>
-    {
-        "@type": "Question",
-        "name": "Schulferien <%= @location.name %> <%= first_period.starts_on.year %>",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= Enum.map_join(periods, " ", &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})") %>"
-        }
-    },
-  <% end %>
-  {
-      "@type": "Question",
-      "name": "War gestern ein Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= public_holiday_yesterday_answer %>"
-      }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist heute ein Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= public_holiday_today_answer %>"
-      }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist morgen ein Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= public_holiday_tomorrow_answer %>"
-      }
-  },
-  {
-      "@type": "Question",
-      "name": "Ist übermorgen ein Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= public_holiday_day_after_tomorrow_answer %>"
-      }
-  },
-  <% year_school_periods = Enum.chunk_by(@school_periods, & &1.starts_on.year) %>
-  <%= for year_periods <- year_school_periods do %>
-    <% periods_groups = year_periods |> Enum.group_by(& &1.holiday_or_vacation_type.name) |> Map.values() %>
-    <%= for periods <- periods_groups do %>
-      <% period = Enum.at(periods, 0) %>
-      <%= if period.starts_on.year == @current_year do %>
-        <% periods = Enum.filter(periods, & Date.compare(&1.starts_on, @today) == :gt) %>
-        <%= for period <- periods do %>
-          <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-        <% end %>
-      <% end %>
-      <%= for period <- periods do %>
-        <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{period.starts_on.year} #{@location.name}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-        <%= render MehrSchulferienWeb.PartialView, "_faq_entry.html", %{question: "#{period.holiday_or_vacation_type.colloquial} #{@location.name} #{period.starts_on.year}", answer: ViewHelpers.format_date_range(period.starts_on, period.ends_on)} %>
-      <% end %>
-    <% end %>
-  <% end %>
-      {
-      "@type": "Question",
-      "name": "Wann ist der nächste Feiertag in <%= @location.name %>?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "<%= next_public_holiday_answer %>"
-      }
-  }
-  ]
-}
+<%= Jason.encode!(%{
+  "@context" => "https://schema.org",
+  "@type" => "FAQPage",
+  "mainEntity" => main_entity
+}) %>
 </script>

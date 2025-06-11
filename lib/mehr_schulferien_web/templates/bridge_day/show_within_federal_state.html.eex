@@ -235,13 +235,13 @@
   %>
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "itemListElement": <%= Jason.encode!(Enum.with_index(json_ld_bridge_days, 1) |> Enum.map(fn {event, position} -> 
+  <%= Jason.encode!(%{
+    "@context" => "https://schema.org",
+    "@type" => "ItemList",
+    "itemListElement" => Enum.with_index(json_ld_bridge_days, 1) |> Enum.map(fn {event, position} -> 
       Map.merge(%{"@type" => "ListItem", "position" => position}, %{"item" => event}) 
-    end)) %>
-  }
+    end)
+  }) %>
   </script>
 
   <%= for num <- 2..5 do %>
@@ -319,6 +319,9 @@
       </div>
     <% end %>
   <% end %>
+
+  <% next_bridge_day = assigns[:next_bridge_day] || nil %>
+  <% bridgeday_list = assigns[:bridgeday_list] || "" %>
 
   <%= if @bridge_day_map[2] && Enum.count(@bridge_day_map[2]) > 0 do %>
     <div class="mt-12 mb-8">
@@ -485,143 +488,33 @@
     </div>
 
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [{
-        "@type": "Question",
-        "name": "Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(@bridge_day_map[2]) %> <%= if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage" %>. Zusätzlich gibt es noch <%= @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "Super-Brückentag", else: "Super-Brückentage" %>.<% 
-            # Gather and process bridge days for JSON output
-            all_bridge_days = Enum.flat_map(@bridge_day_map, fn {k, v} -> 
-              Enum.map(v || [], fn bd -> {k, bd} end) 
-            end)
-
-            # Sort bridge days by date
-            sorted_bridge_days = Enum.sort_by(all_bridge_days, fn {_, bd} -> Date.to_erl(bd.starts_on) end)
-            
-            # Filter out Super-Brückentage if normal Brückentag exists for same holiday
-            filtered_bridge_days = Enum.reduce(sorted_bridge_days, [], fn {k, bd}, acc ->
-              # Get related holiday
-              window_start = Date.add(bd.starts_on, -5)
-              window_end = Date.add(bd.ends_on, 5)
-              relevant_periods = Enum.filter(@public_periods, fn period ->
-                Date.compare(period.ends_on, window_start) != :lt &&
-                Date.compare(period.starts_on, window_end) != :gt &&
-                period.is_public_holiday
-              end)
-              holiday_before = Enum.find(relevant_periods, fn period -> 
-                Date.compare(period.ends_on, bd.starts_on) == :lt && 
-                Date.diff(bd.starts_on, period.ends_on) <= 3
-              end)
-              holiday_after = Enum.find(relevant_periods, fn period -> 
-                Date.compare(period.starts_on, bd.ends_on) == :gt && 
-                Date.diff(period.starts_on, bd.ends_on) <= 3
-              end)
-              related_holiday = holiday_before || holiday_after
-              holiday_name = if related_holiday && related_holiday.holiday_or_vacation_type, 
-                do: related_holiday.holiday_or_vacation_type.name, 
-                else: nil
-              
-              # Check if we already have a bridge day for this holiday
-              duplicate = Enum.find(acc, fn {_, _bd, hol_name} -> 
-                hol_name == holiday_name && hol_name != nil
-              end)
-              
-              # Only add if not a duplicate, or if this is a normal bridge day and duplicate is a super
-              if duplicate == nil || (k == 2 && elem(duplicate, 0) > 2) do
-                # If this is a normal bridge day and there's a duplicate super bridge day, replace it
-                if k == 2 && duplicate != nil do
-                  List.delete(acc, duplicate) ++ [{k, bd, holiday_name}]
-                else
-                  acc ++ [{k, bd, holiday_name}]
-                end
-              else
-                acc
-              end
-            end)
-            
-            # Format filtered bridge days for JSON output
-            bridgeday_list = filtered_bridge_days |> Enum.map(fn {k, bd, holiday_name} ->
-              # Format type name with "3er" prefix
-              type_name = cond do
-                k > 2 && Date.diff(bd.ends_on, bd.starts_on) > 0 -> "#{k-1}er Super-Brückentage"
-                k > 2 -> "#{k-1}er Super-Brückentag"
-                Date.diff(bd.ends_on, bd.starts_on) > 0 -> "Brückentage"
-                true -> "Brückentag"
-              end
-              
-              # Format date range
-                              date_string = if Date.compare(bd.starts_on, bd.ends_on) == :eq do
-                  Calendar.strftime(bd.starts_on, "%d.%m.%Y")
-                else
-                  Calendar.strftime(bd.starts_on, "%d.%m.") <> " - " <> Calendar.strftime(bd.ends_on, "%d.%m.%Y")
-                end
-                
-                # Create display string
-                holiday_text = if holiday_name, do: " (#{holiday_name})", else: ""
-              "#{date_string}: #{type_name}#{holiday_text}"
-            end) |> Enum.join(", ")
-          %><%= bridgeday_list %>."
+    <%= Jason.encode!(%{
+      "@context" => "https://schema.org",
+      "@type" => "FAQPage",
+      "mainEntity" => [
+        %{
+          "@type" => "Question",
+          "name" => "Brückentage #{@federal_state.name} #{@year}",
+          "acceptedAnswer" => %{
+            "@type" => "Answer",
+            "text" => "In #{@year} gibt es in #{@federal_state.name} #{Enum.count(@bridge_day_map[2])} #{if Enum.count(@bridge_day_map[2]) == 1, do: "normalen Brückentag", else: "normale Brückentage"}. Zusätzlich gibt es noch #{@bridge_day_proposal_count - Enum.count(@bridge_day_map[2])} #{if @bridge_day_proposal_count - Enum.count(@bridge_day_map[2]) == 1, do: "Super-Brückentag", else: "Super-Brückentage"}.#{bridgeday_list}."
+          }
+        },
+        %{
+          "@type" => "Question",
+          "name" => "Nächster Brückentag #{@federal_state.name}",
+          "acceptedAnswer" => %{
+            "@type" => "Answer",
+            "text" => if next_bridge_day do
+              date_str = ViewHelpers.format_date_range(next_bridge_day.starts_on, next_bridge_day.ends_on)
+              "Der nächste Brückentag in #{@federal_state.name} ist #{date_str}."
+            else
+              "Es gibt aktuell keinen nächsten Brückentag in #{@federal_state.name}."
+            end
+          }
         }
-      },
-      {
-        "@type": "Question",
-        "name": "Was ist der beste Brückentag <%= @year %> in <%= @federal_state.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Der beste Brückentag ist <%= ViewHelpers.format_date_range(best_bridge_day.starts_on, best_bridge_day.ends_on) %>. Mit nur <%= best_bridge_day.number_days %> Urlaubstag(en) können Sie <%= max_days %> Tage frei machen - das sind <%= percentage %>% mehr Urlaub!"
-        }
-      }
-      <%= if show_next_bridge_day do %>
-      ,{
-        "@type": "Question",
-        "name": "Wann ist der nächste Brückentag in <%= @federal_state.name %>?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "<%= 
-                    next_bridge_day = Enum.flat_map(@bridge_day_map, fn {_k, v} -> v || [] end)
-                    |> Enum.filter(fn bd -> Date.compare(bd.starts_on, reference_date) == :gt end)
-                    |> Enum.sort_by(fn bd -> bd.starts_on end)
-                    |> List.first 
-                    
-                    output = if next_bridge_day do 
-                      window_start = Date.add(next_bridge_day.starts_on, -5)
-                      window_end = Date.add(next_bridge_day.ends_on, 5)
-                      relevant_periods = Enum.filter(@public_periods, fn period ->
-                        Date.compare(period.ends_on, window_start) != :lt &&
-                        Date.compare(period.starts_on, window_end) != :gt &&
-                        period.is_public_holiday
-                      end)
-                      holiday_before = Enum.find(relevant_periods, fn period -> 
-                        Date.compare(period.ends_on, next_bridge_day.starts_on) == :lt && 
-                        Date.diff(next_bridge_day.starts_on, period.ends_on) <= 3
-                      end)
-                      holiday_after = Enum.find(relevant_periods, fn period -> 
-                        Date.compare(period.starts_on, next_bridge_day.ends_on) == :gt && 
-                        Date.diff(period.starts_on, next_bridge_day.ends_on) <= 3
-                      end)
-                      related_holiday = holiday_before || holiday_after
-                      holiday_name = if related_holiday && related_holiday.holiday_or_vacation_type, 
-                        do: related_holiday.holiday_or_vacation_type.name, 
-                        else: nil
-                        
-                      date_str = ViewHelpers.format_date_range(next_bridge_day.starts_on, next_bridge_day.ends_on)
-                      holiday_str = if holiday_name, do: " (#{holiday_name})", else: ""
-                      "Der nächste Brückentag in #{@federal_state.name} ist am #{date_str}#{holiday_str}."
-                    else
-                      "Für dieses Jahr sind keine weiteren Brückentage in #{@federal_state.name} geplant."
-                    end
-                    
-                    output
-                  %>"
-        }
-      }
-      <% end %>
       ]
-    }
+    }) %>
     </script>
   <% end %>
 </div> 

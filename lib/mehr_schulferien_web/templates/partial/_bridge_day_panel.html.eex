@@ -210,29 +210,29 @@
 </style>
 
 <script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "Event",
-    "name": "<%= max_days %> Tage frei für <%= bridge_days_number %> <%= if bridge_days_number == 1 do %>Brückentag<% else %>Brückentage<% end %>.",
-    "startDate" : "<%= @bridge_day.starts_on %>",
-    "endDate" : "<%= @bridge_day.ends_on %>",
-    "location": {
-      "@type": "Place",
-      "name": "<%= @federal_state.name %>",
-      "address":{
-        "@type": "PostalAddress",
-        "streetAddress": "",
-        "addressLocality": "",
-        "postalCode": "",
-        "addressRegion": "<%= @federal_state.name %>",
-        "addressCountry": "<%= @country.code %>"
-      }
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "<%= bridge_days_number %>",
-      "priceCurrency": "DAYS",
-      "description": "<%= if bridge_days_number == 1 do %>Urlaubstag<% else %>Urlaubstage<% end %>"
+<%= Jason.encode!(%{
+  "@context" => "http://schema.org",
+  "@type" => "Event",
+  "name" => "#{max_days} Tage frei für #{bridge_days_number} #{if bridge_days_number == 1, do: "Brückentag", else: "Brückentage"}.",
+  "startDate" => "#{@bridge_day.starts_on}",
+  "endDate" => "#{@bridge_day.ends_on}",
+  "location" => %{
+    "@type" => "Place",
+    "name" => "#{@federal_state.name}",
+    "address" => %{
+      "@type" => "PostalAddress",
+      "streetAddress" => "",
+      "addressLocality" => "",
+      "postalCode" => "",
+      "addressRegion" => "#{@federal_state.name}",
+      "addressCountry" => "#{@country.code}"
     }
+  },
+  "offers" => %{
+    "@type" => "Offer",
+    "price" => "#{bridge_days_number}",
+    "priceCurrency" => "DAYS",
+    "description" => "#{if bridge_days_number == 1, do: "Urlaubstag", else: "Urlaubstage"}"
   }
+}) %>
 </script>
