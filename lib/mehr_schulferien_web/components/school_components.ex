@@ -129,6 +129,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
       end
 
     optional_fields = Map.new(optional_fields)
+    assigns = assign(assigns, :optional_fields, optional_fields)
 
     ~H"""
     <script type="application/ld+json">
@@ -142,7 +143,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
             "latitude" => Map.get(@school, :latitude, ""),
             "longitude" => Map.get(@school, :longitude, "")
           }
-        }, optional_fields)
+        }, @optional_fields)
       ) %>
     </script>
     """

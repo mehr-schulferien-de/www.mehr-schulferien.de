@@ -48,8 +48,6 @@ then
   fi
   
   echo "Assets built successfully, cache manifest exists"
-  echo "Asset files found:"
-  ls -la priv/static/assets/ | head -10
 
   # Create release
   echo "Creating release..."
