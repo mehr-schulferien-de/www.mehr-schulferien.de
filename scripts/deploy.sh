@@ -53,18 +53,18 @@ then
 
   # Create release
   echo "Creating release..."
-  MIX_ENV=prod mix release --overwrite --path "$RELEASE_DIR"
+  MIX_ENV=prod mix release --overwrite
 
   # Verify release was created and contains static assets
-  if [ ! -d "$RELEASE_DIR" ]; then
+  if [ ! -d "_build/prod/rel/mehr_schulferien" ]; then
     echo "ERROR: Release directory was not created"
     exit 1
   fi
   
-  if [ ! -f "$RELEASE_DIR/lib/mehr_schulferien-${new_version}/priv/static/cache_manifest.json" ]; then
+  if [ ! -f "_build/prod/rel/mehr_schulferien/lib/mehr_schulferien-${new_version}/priv/static/cache_manifest.json" ]; then
     echo "ERROR: Static assets not found in release"
     echo "Checking release structure:"
-    find "$RELEASE_DIR" -name "cache_manifest.json" -o -name "*.css" -o -name "*.js" | head -10
+    find "_build/prod/rel/mehr_schulferien" -name "cache_manifest.json" -o -name "*.css" -o -name "*.js" | head -10
     exit 1
   fi
   
@@ -79,7 +79,7 @@ then
   fi
   
   # Move new release to final location
-  mv "$REPO_DIR/release" "$RELEASE_DIR"
+  mv "_build/prod/rel/mehr_schulferien" "$RELEASE_DIR"
 
   # Verify the moved release has assets
   if [ ! -f "$RELEASE_DIR/lib/mehr_schulferien-${new_version}/priv/static/cache_manifest.json" ]; then
