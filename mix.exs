@@ -4,7 +4,7 @@ defmodule MehrSchulferien.MixProject do
   def project do
     [
       app: :mehr_schulferien,
-      version: "4.2.17",
+      version: "4.2.18",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
@@ -27,7 +27,7 @@ defmodule MehrSchulferien.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.7.21"},
-      {:phoenix_ecto, "~> 4.4"},
+      {:phoenix_ecto, "~> 4.6.4"},
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
@@ -35,7 +35,7 @@ defmodule MehrSchulferien.MixProject do
       {:phoenix_live_view, "~> 0.20.5"},
       {:phoenix_view, "~> 2.0"},
       {:floki, ">= 0.30.0", only: :test},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.2"},
       {:finch, "~> 0.18"},
       {:telemetry_metrics, "~> 0.6"},
@@ -45,10 +45,10 @@ defmodule MehrSchulferien.MixProject do
       {:plug_cowboy, "~> 2.6"},
       {:ex_machina, "~> 2.7.0", only: :test},
       {:faker, "~> 0.17", only: :test},
-      {:timex, "~> 3.7.11"},
+      {:timex, "~> 3.7.12"},
       {:ex_ical, "~> 0.2.0"},
       {:sitemap, "~> 1.0"},
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.38", only: :dev, runtime: false},
       {:ecto_autoslug_field, "~> 3.0"},
       {:icalendar, "~> 1.1.0"},
       {:slugger, "~> 0.3"},
