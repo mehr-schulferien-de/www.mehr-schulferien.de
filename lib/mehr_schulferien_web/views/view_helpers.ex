@@ -213,4 +213,33 @@ defmodule MehrSchulferienWeb.ViewHelpers do
         "#{String.slice(text, 0, length_with_omission)}#{omission}"
     end
   end
+
+  @doc """
+  Generates a JSON-LD BreadcrumbList string for use in meta templates.
+  Takes a list of breadcrumb items (each a map with :name and :item keys, and optionally :position).
+  Skips items with missing or empty name/item.
+  """
+  def jsonld_breadcrumb(items) when is_list(items) do
+    filtered =
+      items
+      |> Enum.with_index(1)
+      |> Enum.filter(fn {item, _pos} ->
+        Map.get(item, :name) not in [nil, ""] and Map.get(item, :item) not in [nil, ""]
+      end)
+      |> Enum.map(fn {item, pos} ->
+        %{
+          "@type" => "ListItem",
+          "position" => Map.get(item, :position, pos),
+          "name" => item[:name],
+          "item" => item[:item]
+        }
+      end)
+
+    %{
+      "@context" => "https://schema.org",
+      "@type" => "BreadcrumbList",
+      "itemListElement" => filtered
+    }
+    |> Jason.encode!()
+  end
 end

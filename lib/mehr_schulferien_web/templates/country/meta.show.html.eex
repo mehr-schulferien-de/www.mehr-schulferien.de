@@ -4,16 +4,7 @@ Schulferien <%= @current_year %>
 <meta name="description" content="Aufstellung aller Schulferientermine <%= @current_year %> für alle Bundesländer in <%= @country.name %>.">
 
 <script type="application/ld+json">
-<%= Jason.encode!(%{
-  "@context" => "https://schema.org",
-  "@type" => "BreadcrumbList",
-  "itemListElement" => [
-    %{
-      "@type" => "ListItem",
-      "position" => 1,
-      "name" => @country.name,
-      "item" => "https://www.mehr-schulferien.de#{Routes.country_path(@conn, :show, @country.slug)}"
-    }
-  ]
-}) %>
+<%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+  %{name: @country.name, item: "https://www.mehr-schulferien.de" <> Routes.country_path(@conn, :show, @country.slug)}
+]) %>
 </script>

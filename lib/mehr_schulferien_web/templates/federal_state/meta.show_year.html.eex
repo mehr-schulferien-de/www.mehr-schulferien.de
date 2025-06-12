@@ -5,23 +5,9 @@
 <% end %>
 
 <script type="application/ld+json">
-<%= Jason.encode!(%{
-  "@context" => "https://schema.org",
-  "@type" => "BreadcrumbList",
-  "itemListElement" => [
-    %{
-      "@type" => "ListItem",
-      "position" => 1,
-      "name" => @country.name,
-      "item" => "https://www.mehr-schulferien.de#{Routes.country_path(@conn, :show, @country.slug)}"
-    },
-    %{
-      "@type" => "ListItem",
-      "position" => 2,
-      "name" => "Ferientermine #{@federal_state.name} #{@year}",
-      "item" => "https://www.mehr-schulferien.de#{Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, @year)}"
-    }
-  ]
-}) %>
+<%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+  %{name: @country.name, item: "https://www.mehr-schulferien.de" <> Routes.country_path(@conn, :show, @country.slug)},
+  %{name: "Ferientermine #{@federal_state.name} #{@year}", item: "https://www.mehr-schulferien.de" <> Routes.federal_state_path(@conn, :show_year, @country.slug, @federal_state.slug, @year)}
+]) %>
 </script> 
 
