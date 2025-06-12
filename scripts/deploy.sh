@@ -2,6 +2,21 @@
 #
 # This script is used to deploy this application to the production server.
 
+# Lock file mechanism to prevent multiple instances
+LOCK_FILE="/tmp/mehr-schulferien-deploy.lock"
+
+# Check if lock file exists
+if [ -f "$LOCK_FILE" ]; then
+    echo "Deployment already in progress. Lock file exists at $LOCK_FILE"
+    exit 1
+fi
+
+# Create lock file
+touch "$LOCK_FILE"
+
+# Ensure lock file is removed when script exits
+trap 'rm -f "$LOCK_FILE"; exit' EXIT INT TERM
+
 # Define persistent directories
 BUILD_DIR="$HOME/app/build"
 RELEASE_DIR="$HOME/app/release"
