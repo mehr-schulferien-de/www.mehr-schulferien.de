@@ -18,7 +18,7 @@ else
     echo "Updating repository..."
     cd "$REPO_DIR" || exit
     git fetch origin
-    git reset --hard origin/main
+    git reset --hard origin/master
 fi
 
 # Get the new version
