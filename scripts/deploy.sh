@@ -32,7 +32,7 @@ if [ ! -d "$REPO_DIR" ]; then
 else
     echo "Updating repository..."
     cd "$REPO_DIR" || exit
-    git fetch origin
+    git fetch origin master
     git reset --hard origin/master
 fi
 
