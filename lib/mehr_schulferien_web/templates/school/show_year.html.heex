@@ -4,14 +4,17 @@
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
         Schulferien
         <%= if String.contains?(@school.name, @city.name) do %>
-          <%= # Safe way to handle replacing part of a string with a link
-          [
-            String.replace(@school.name, @city.name, ""),
-            link(@city.name,
-              to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
-              class: "text-blue-600 hover:text-blue-800 cursor-pointer"
-            )
-          ] %>
+          <% # Remove city name from school name and trim
+          school_name_without_city = String.trim(String.replace(@school.name, @city.name, ""))
+          # Determine if we need a comma
+          needs_comma =
+            school_name_without_city != "" and
+              not String.ends_with?(school_name_without_city, ",") %>
+          <%= school_name_without_city %><%= if needs_comma, do: ",", else: "" %> <%= link(
+            @city.name,
+            to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+            class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+          ) %>
         <% else %>
           <%= @school.name %>, <%= link(@city.name,
             to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
