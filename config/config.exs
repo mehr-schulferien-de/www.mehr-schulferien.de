@@ -10,7 +10,9 @@ import Config
 config :mehr_schulferien,
   ecto_repos: [MehrSchulferien.Repo],
   # Set to :bootstrap for legacy CSS or :tailwind for new CSS implementation
-  css_framework: :bootstrap
+  css_framework: :bootstrap,
+  # Configure pdflatex path (can be overridden in environment configs)
+  pdflatex_path: "pdflatex"
 
 # Configures the endpoint
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,

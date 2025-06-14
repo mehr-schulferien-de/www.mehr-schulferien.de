@@ -45,7 +45,7 @@ defmodule MehrSchulferien.PdfGenerator do
 
       # Compile LaTeX to PDF
       case System.cmd(
-             "pdflatex",
+             Application.get_env(:mehr_schulferien, :pdflatex_path, "pdflatex"),
              [
                "-interaction=nonstopmode",
                "-output-directory=#{@temp_dir}",

@@ -1,4 +1,4 @@
-<title>Schulferien, Feiertage, Brückentage und bewegliche Ferientage</title>
+<title><%= assigns[:page_title] || "Schulferien, Feiertage, Brückentage und bewegliche Ferientage" %></title>
 <%= if assigns[:noindex] do %>
 <meta name="robots" content="noindex,nofollow">
 <% end %>
