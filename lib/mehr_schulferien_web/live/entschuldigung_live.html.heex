@@ -2,15 +2,15 @@
   <div class="bg-white rounded-lg shadow-md p-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-6">Entschuldigung erstellen</h1>
 
-    <%= if live_flash(@flash, :info) do %>
+    <%= if Phoenix.Flash.get(@flash, :info) do %>
       <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700">
-        <p><%= live_flash(@flash, :info) %></p>
+        <p><%= Phoenix.Flash.get(@flash, :info) %></p>
       </div>
     <% end %>
 
-    <%= if live_flash(@flash, :error) do %>
+    <%= if Phoenix.Flash.get(@flash, :error) do %>
       <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-        <p><%= live_flash(@flash, :error) %></p>
+        <p><%= Phoenix.Flash.get(@flash, :error) %></p>
       </div>
     <% end %>
     <!-- Introduction Section -->
@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <form phx-change="validate" phx-submit="save" id="entschuldigung-form">
+    <form phx-change="validate" phx-submit="save" id="entschuldigung-form" autocomplete="off">
       <div class="space-y-8">
         <!-- Absender (Sender) Section -->
         <div class="bg-blue-50 rounded-lg p-6">
@@ -115,6 +115,9 @@
                 type="text"
                 name="form[first_name]"
                 id="form_first_name"
+                tabindex="1"
+                autofocus
+                autocomplete="new-first-name"
                 value={@form_data.first_name}
                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
@@ -129,6 +132,8 @@
                 type="text"
                 name="form[last_name]"
                 id="form_last_name"
+                tabindex="2"
+                autocomplete="new-last-name"
                 value={@form_data.last_name}
                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
@@ -146,6 +151,8 @@
                 type="text"
                 name="form[title]"
                 id="form_title"
+                tabindex="3"
+                autocomplete="new-title"
                 value={@form_data.title}
                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="z.B. Dr., Prof."
@@ -163,6 +170,8 @@
                 type="text"
                 name="form[street]"
                 id="form_street"
+                tabindex="4"
+                autocomplete="new-street"
                 value={@form_data.street}
                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
@@ -179,6 +188,8 @@
                   type="text"
                   name="form[zip_code]"
                   id="form_zip_code"
+                  tabindex="5"
+                  autocomplete="new-postal-code"
                   value={@form_data.zip_code}
                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   pattern="[0-9]{5}"
@@ -194,6 +205,8 @@
                   type="text"
                   name="form[city]"
                   id="form_city"
+                  tabindex="6"
+                  autocomplete="new-city"
                   value={@form_data.city}
                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -229,6 +242,7 @@
               <select
                 name="form[teacher_salutation]"
                 id="form_teacher_salutation"
+                tabindex="7"
                 value={@form_data.teacher_salutation}
                 class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 style="height: 40px; min-height: 40px; max-height: 40px;"
@@ -252,6 +266,8 @@
               type="text"
               name="form[teacher_name]"
               id="form_teacher_name"
+              tabindex="8"
+              autocomplete="new-teacher-name"
               value={@form_data.teacher_name}
               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Name des Klassenlehrers/der Klassenlehrerin"
@@ -267,6 +283,8 @@
               type="text"
               name="form[name_of_student]"
               id="form_name_of_student"
+              tabindex="9"
+              autocomplete="new-student-name"
               value={@form_data.name_of_student}
               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -277,7 +295,8 @@
                   type="radio"
                   name="form[child_type]"
                   value="sohn"
-                  checked={@form_data.child_type == nil or @form_data.child_type == "sohn"}
+                  tabindex="10"
+                  checked={@form_data.child_type == "sohn" or @form_data.child_type == nil}
                   class="form-radio text-blue-600"
                 />
                 <span class="ml-2">Sohn</span>
@@ -287,6 +306,7 @@
                   type="radio"
                   name="form[child_type]"
                   value="tochter"
+                  tabindex="11"
                   checked={@form_data.child_type == "tochter"}
                   class="form-radio text-blue-600"
                 />
@@ -297,7 +317,8 @@
                   type="radio"
                   name="form[child_type]"
                   value="sonstiges"
-                  checked={@form_data.child_type == nil or @form_data.child_type == "sonstiges"}
+                  tabindex="12"
+                  checked={@form_data.child_type == "sonstiges"}
                   class="form-radio text-blue-600"
                 />
                 <span class="ml-2">Sonstiges</span>
@@ -313,6 +334,8 @@
               type="text"
               name="form[class_name]"
               id="form_class_name"
+              tabindex="13"
+              autocomplete="new-class-name"
               value={@form_data.class_name}
               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="z.B. 5a, 10b"
@@ -350,6 +373,7 @@
             <select
               name="form[reason]"
               id="form_reason"
+              tabindex="14"
               value={@form_data.reason}
               class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -380,7 +404,7 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v12a2 2 0 002 2z"
                 />
               </svg>
               Zeitraum
@@ -395,6 +419,7 @@
                   type="date"
                   name="form[start_date]"
                   id="form_start_date"
+                  tabindex="15"
                   value={Date.to_iso8601(@form_data.start_date)}
                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -409,6 +434,7 @@
                   type="date"
                   name="form[end_date]"
                   id="form_end_date"
+                  tabindex="16"
                   value={Date.to_iso8601(@form_data.end_date)}
                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -422,6 +448,7 @@
       <div class="mt-8 flex justify-center">
         <button
           type="submit"
+          tabindex="17"
           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 flex items-center"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

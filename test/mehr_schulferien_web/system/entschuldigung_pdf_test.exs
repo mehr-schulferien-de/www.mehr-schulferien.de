@@ -156,6 +156,31 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
       end
     end
 
+    test "generates correct filename with date range for multi-day absence", %{
+      conn: conn,
+      school: school
+    } do
+      params = %{
+        "first_name" => "Hans",
+        "last_name" => "Schmidt",
+        "street" => "Teststraße 1",
+        "zip_code" => "12345",
+        "city" => "Teststadt",
+        "name_of_student" => "Max Schmidt",
+        "class_name" => "8a",
+        "reason" => "krankheit",
+        "start_date" => "2025-06-15",
+        "end_date" => "2025-06-17"
+      }
+
+      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
+
+      if conn.status == 200 do
+        content_disposition = get_resp_header(conn, "content-disposition") |> List.first()
+        assert content_disposition =~ "Entschuldigung_Max_Schmidt_2025-06-15_bis_2025-06-17.pdf"
+      end
+    end
+
     test "handles different excuse reasons correctly", %{
       conn: conn,
       school: school

@@ -86,7 +86,12 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfController do
       |> String.replace(~r/[^a-zA-ZäöüÄÖÜß0-9\s-]/, "")
       |> String.replace(~r/\s+/, "_")
 
-    date_str = Date.to_iso8601(form_data.start_date)
+    date_str =
+      if form_data.start_date == form_data.end_date do
+        Date.to_iso8601(form_data.start_date)
+      else
+        "#{Date.to_iso8601(form_data.start_date)}_bis_#{Date.to_iso8601(form_data.end_date)}"
+      end
 
     "Entschuldigung_#{student_name}_#{date_str}.pdf"
   end
