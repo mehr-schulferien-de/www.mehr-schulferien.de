@@ -105,19 +105,34 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
           "name_of_student" => "Anna Musterfrau",
           "class_name" => "7b",
           "reason" => "arzttermin",
-          "start_date" => "2025-06-20"
+          "start_date" => "2025-06-20",
+          "end_date" => "2025-06-20"
         }
       }
 
-      # Submit the form
-      view
-      |> form("#entschuldigung-form", form_data)
-      |> render_submit()
+      # Submit the form - should redirect to PDF download
+      result =
+        view
+        |> form("#entschuldigung-form", form_data)
+        |> render_submit()
 
-      # Check for success message (based on the current implementation)
-      assert has_element?(view, "[role='alert']") or
-               render(view) =~ "Entschuldigung-Daten erfasst" or
-               render(view) =~ "PDF-Erstellung folgt"
+      # Check that we got a redirect response to PDF download
+      case result do
+        {:error, {:redirect, %{to: redirect_url}}} ->
+          assert redirect_url =~ "/briefe/#{school.slug}/entschuldigung/pdf"
+          assert redirect_url =~ "first_name=Maria"
+          assert redirect_url =~ "last_name=Musterfrau"
+
+        html when is_binary(html) ->
+          if html =~ "Pflichtfelder" do
+            flunk("Form validation failed: #{html}")
+          else
+            flunk("Expected redirect but got HTML response: #{html}")
+          end
+
+        other ->
+          flunk("Unexpected response: #{inspect(other)}")
+      end
     end
 
     test "displays both date fields always", %{

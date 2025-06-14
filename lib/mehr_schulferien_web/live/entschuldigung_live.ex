@@ -52,12 +52,23 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
       |> Map.merge(atomize_keys(params))
       |> maybe_parse_dates()
 
-    # For now, just show a success message
-    # TODO: Generate PDF here
-    {:noreply,
-     socket
-     |> assign(form_data: form_data)
-     |> put_flash(:info, "Entschuldigung-Daten erfasst. PDF-Erstellung folgt in Kürze.")}
+    # Validate required fields
+    case validate_form_data(form_data) do
+      :ok ->
+        # Generate PDF download URL with form data as query parameters
+        pdf_url = build_pdf_url(socket.assigns.school.slug, form_data)
+
+        {:noreply,
+         socket
+         |> assign(form_data: form_data)
+         |> redirect(to: pdf_url)}
+
+      {:error, message} ->
+        {:noreply,
+         socket
+         |> assign(form_data: form_data)
+         |> put_flash(:error, message)}
+    end
   end
 
   # Helper functions
@@ -83,6 +94,49 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         form_data
     end
   end
+
+  # Form validation
+  defp validate_form_data(form_data) do
+    required_fields = [
+      {:first_name, "Vorname"},
+      {:last_name, "Nachname"},
+      {:street, "Straße"},
+      {:zip_code, "PLZ"},
+      {:city, "Stadt"},
+      {:name_of_student, "Name des Schülers/der Schülerin"},
+      {:class_name, "Klasse"}
+    ]
+
+    missing_fields =
+      required_fields
+      |> Enum.filter(fn {field, _label} ->
+        value = Map.get(form_data, field)
+        is_nil(value) or value == ""
+      end)
+      |> Enum.map(fn {_field, label} -> label end)
+
+    if Enum.empty?(missing_fields) do
+      :ok
+    else
+      {:error, "Bitte füllen Sie alle Pflichtfelder aus: #{Enum.join(missing_fields, ", ")}"}
+    end
+  end
+
+  # Build PDF download URL with form data
+  defp build_pdf_url(school_slug, form_data) do
+    query_params =
+      form_data
+      |> Map.new(fn {key, value} ->
+        {to_string(key), format_param_value(value)}
+      end)
+      |> URI.encode_query()
+
+    "/briefe/#{school_slug}/entschuldigung/pdf?#{query_params}"
+  end
+
+  defp format_param_value(%Date{} = date), do: Date.to_iso8601(date)
+  defp format_param_value(value) when is_binary(value), do: value
+  defp format_param_value(value), do: to_string(value)
 
   # Get available reasons for the dropdown
   defp reasons do

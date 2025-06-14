@@ -1,0 +1,79 @@
+% Entschuldigungsschreiben für Schüler
+% Basiert auf KOMA-Scripts scrlttr2
+% Template für mehr-schulferien.de
+
+\documentclass[
+	% Schriftgröße
+	fontsize=12pt,
+	%
+	% zwischen Absätzen eine leere Zeile einfügen, statt lediglich Einrückung
+	parskip=full,
+	%
+	% Papierformat auf DIN-A4
+	paper=A4,
+	%
+	% Briefkopf (ganz oben) rechts ausrichten, standardmäßig links
+	fromalign=right,
+	%
+	% Telefonnummer im Briefkopf anzeigen (optional)
+	fromphone=false,
+	%
+	% E-Mail-Adresse im Briefkopf anzeigen (optional)
+	fromemail=false,
+	%
+	% Faltmarkierungen anzeigen
+	foldmarks=true,
+	%
+	% Die neuste Version von scrlettr2 verwenden
+	version=last,
+]{scrlttr2}
+
+% Zeichenkodierung des Dokuments ist in UTF-8
+\usepackage[utf8]{inputenc}
+
+% Deutsche Sprache
+\usepackage[ngerman]{babel}
+
+% Eurosymbol-Unterstützung
+\usepackage{eurosym}
+\DeclareUnicodeCharacter{20AC}{\euro}
+
+% Absendername unter Schlussformel entfernen
+\setkomavar{signature}{}
+
+% Für Schlussformel Linksbündigkeit erzwingen
+\renewcommand*{\raggedsignature}{\raggedright}
+
+\begin{document}
+
+% Absendername
+\setkomavar{fromname}{<%= MehrSchulferien.PdfGenerator.format_full_name(@form_data) %>}
+
+% Absenderadresse
+\setkomavar{fromaddress}{<%= @form_data.street %>\\<%= @form_data.zip_code %> <%= @form_data.city %>}
+
+% Datum
+\setkomavar{date}{\today}
+
+% Betreff
+\setkomavar{subject}{Entschuldigung für <%= @form_data.name_of_student %>}
+
+\begin{letter}{<%= MehrSchulferien.PdfGenerator.format_school_address(@school) %>}
+
+\opening{Sehr geehrte Damen und Herren,}
+
+hiermit entschuldige ich <%= MehrSchulferien.PdfGenerator.format_absence_reason(@form_data.reason) %> <%= MehrSchulferien.PdfGenerator.format_absence_timeframe(@form_data) %> das Fehlen <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %>.
+
+<%= MehrSchulferien.PdfGenerator.format_detailed_reason(@form_data.reason) %>
+
+<%= if @form_data.reason == "arzttermin" do %>
+Bei Bedarf kann ich Ihnen gerne eine entsprechende Bescheinigung nachreichen.
+<% end %>
+
+Vielen Dank für Ihr Verständnis.
+
+\closing{Mit freundlichen Grüßen}
+
+\end{letter}
+
+\end{document} 
