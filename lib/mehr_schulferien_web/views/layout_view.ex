@@ -37,9 +37,9 @@ defmodule MehrSchulferienWeb.LayoutView do
   """
   def select_layout_template(conn, assigns) do
     cond do
-      Map.get(assigns, :css_framework) == :tailwind_new -> "app_tailwind_new.html"
+      Map.get(assigns, :css_framework) == :tailwind_new -> "app_tailwind_full.html"
       use_bootstrap?(conn, assigns) -> "app_bootstrap.html"
-      true -> "app_tailwind.html"
+      true -> "app_tailwind_minimal.html"
     end
   end
 
