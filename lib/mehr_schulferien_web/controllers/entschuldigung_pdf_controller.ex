@@ -61,6 +61,8 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfController do
       city: params["city"] || "",
       name_of_student: params["name_of_student"] || "",
       class_name: params["class_name"] || "",
+      teacher_name: teacher_name,
+      teacher_salutation: teacher_salutation,
       greeting: greeting,
       reason: params["reason"] || "krankheit",
       start_date: parse_date(params["start_date"]),

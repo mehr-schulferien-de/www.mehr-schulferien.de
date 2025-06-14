@@ -94,11 +94,33 @@ defmodule MehrSchulferien.PdfGenerator do
     "#{title}#{form_data.first_name} #{form_data.last_name}"
   end
 
-  def format_school_address(school) do
+  def format_school_address(school, form_data) do
     if school.address do
-      "#{school.name}\\\\#{school.address.street}\\\\#{school.address.zip_code} #{school.address.city}"
+      base_address = [school.name]
+
+      # Add teacher information if available
+      teacher_line = format_teacher_attention_line(form_data)
+      base_address = if teacher_line, do: base_address ++ [teacher_line], else: base_address
+
+      # Add street and then empty line (with non-breaking space) before city
+      address_parts =
+        base_address ++
+          [school.address.street, "~", "#{school.address.zip_code} #{school.address.city}"]
+
+      Enum.join(address_parts, "\\\\")
     else
       school.name
+    end
+  end
+
+  defp format_teacher_attention_line(form_data) do
+    teacher_name = Map.get(form_data, :teacher_name, "")
+    teacher_salutation = Map.get(form_data, :teacher_salutation, "")
+
+    if teacher_name && teacher_name != "" do
+      "z.Hd. #{teacher_salutation} #{teacher_name}"
+    else
+      nil
     end
   end
 

@@ -58,7 +58,7 @@
 % Betreff
 \setkomavar{subject}{Entschuldigung für <%= @form_data.name_of_student %>}
 
-\begin{letter}{<%= MehrSchulferien.PdfGenerator.format_school_address(@school) %>}
+\begin{letter}{<%= MehrSchulferien.PdfGenerator.format_school_address(@school, @form_data) %>}
 
 \opening{<%= @form_data.greeting %>}
 
