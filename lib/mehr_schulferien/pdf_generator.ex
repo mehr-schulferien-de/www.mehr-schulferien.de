@@ -89,16 +89,9 @@ defmodule MehrSchulferien.PdfGenerator do
 
   # Template helper functions
   def format_full_name(form_data) do
-    gender_title =
-      case form_data.gender do
-        "herr" -> "Herr"
-        "frau" -> "Frau"
-        _ -> ""
-      end
+    title = if form_data.title && form_data.title != "", do: "#{form_data.title} ", else: ""
 
-    title = if form_data.title && form_data.title != "", do: " #{form_data.title}", else: ""
-
-    "#{gender_title}#{title} #{form_data.first_name} #{form_data.last_name}"
+    "#{title}#{form_data.first_name} #{form_data.last_name}"
   end
 
   def format_school_address(school) do
@@ -132,13 +125,29 @@ defmodule MehrSchulferien.PdfGenerator do
   end
 
   def format_student_details(form_data) do
-    "meines Kindes #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
+    case form_data.child_type do
+      "sohn" ->
+        "meines Sohnes #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
+
+      "tochter" ->
+        "meiner Tochter #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
+
+      _ ->
+        "meines Kindes #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
+    end
   end
 
-  def format_detailed_reason(reason) do
-    case reason do
+  def format_detailed_reason(form_data) do
+    prefix =
+      case form_data.child_type do
+        "sohn" -> "Mein Sohn"
+        "tochter" -> "Meine Tochter"
+        _ -> "Mein Kind"
+      end
+
+    case form_data.reason do
       "krankheit" ->
-        "Mein Kind war aufgrund einer Erkrankung nicht in der Lage, am Unterricht teilzunehmen."
+        "#{prefix} war aufgrund einer Erkrankung nicht in der Lage, am Unterricht teilzunehmen."
 
       "arzttermin" ->
         "Der Arzttermin konnte leider nicht außerhalb der Schulzeit vereinbart werden."
@@ -147,10 +156,10 @@ defmodule MehrSchulferien.PdfGenerator do
         "Aufgrund wichtiger familiärer Angelegenheiten war eine Teilnahme am Unterricht nicht möglich."
 
       "beerdigung" ->
-        "Aufgrund einer Beerdigung in der Familie war mein Kind verhindert."
+        "Aufgrund einer Beerdigung in der Familie war #{String.downcase(prefix)} verhindert."
 
       "religioser_feiertag" ->
-        "Aufgrund eines religiösen Feiertags war mein Kind verhindert."
+        "Aufgrund eines religiösen Feiertags war #{String.downcase(prefix)} verhindert."
 
       _ ->
         ""

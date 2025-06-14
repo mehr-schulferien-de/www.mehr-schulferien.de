@@ -39,7 +39,7 @@
 \DeclareUnicodeCharacter{20AC}{\euro}
 
 % Absendername unter Schlussformel entfernen
-\setkomavar{signature}{}
+\setkomavar{signature}{<%= MehrSchulferien.PdfGenerator.format_full_name(@form_data) %>}
 
 % Für Schlussformel Linksbündigkeit erzwingen
 \renewcommand*{\raggedsignature}{\raggedright}
@@ -60,11 +60,11 @@
 
 \begin{letter}{<%= MehrSchulferien.PdfGenerator.format_school_address(@school) %>}
 
-\opening{Sehr geehrte Damen und Herren,}
+\opening{<%= @form_data.greeting %>}
 
-hiermit entschuldige ich <%= MehrSchulferien.PdfGenerator.format_absence_reason(@form_data.reason) %> <%= MehrSchulferien.PdfGenerator.format_absence_timeframe(@form_data) %> das Fehlen <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %>.
+hiermit bitte ich Sie <%= MehrSchulferien.PdfGenerator.format_absence_reason(@form_data.reason) %> <%= MehrSchulferien.PdfGenerator.format_absence_timeframe(@form_data) %>, das Fehlen <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %> zu entschuldigen.
 
-<%= MehrSchulferien.PdfGenerator.format_detailed_reason(@form_data.reason) %>
+<%= MehrSchulferien.PdfGenerator.format_detailed_reason(@form_data) %>
 
 <%= if @form_data.reason == "arzttermin" do %>
 Bei Bedarf kann ich Ihnen gerne eine entsprechende Bescheinigung nachreichen.

@@ -18,7 +18,6 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
       # Fill in complete valid form data
       form_data = %{
         "form" => %{
-          "gender" => "frau",
           "title" => "Dr.",
           "first_name" => "Maria",
           "last_name" => "Musterfrau",
@@ -89,7 +88,6 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
     } do
       # Simulate the PDF download request with query parameters
       params = %{
-        "gender" => "herr",
         "first_name" => "Max",
         "last_name" => "Mustermann",
         "street" => "Teststraße 1",
@@ -128,7 +126,6 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
 
     test "PDF download endpoint handles missing school gracefully", %{conn: conn} do
       params = %{
-        "gender" => "herr",
         "first_name" => "Max",
         "last_name" => "Mustermann",
         "street" => "Teststraße 1",
@@ -150,7 +147,6 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
       school: school
     } do
       params = %{
-        "gender" => "frau",
         "first_name" => "Maria",
         "last_name" => "Musterfrau",
         "street" => "Beispielstraße 42",
@@ -176,7 +172,6 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
       school: school
     } do
       base_params = %{
-        "gender" => "herr",
         "first_name" => "Test",
         "last_name" => "Parent",
         "street" => "Teststraße 1",
@@ -210,7 +205,6 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
       school: school
     } do
       base_params = %{
-        "gender" => "frau",
         "first_name" => "Test",
         "last_name" => "Parent",
         "street" => "Teststraße 1",

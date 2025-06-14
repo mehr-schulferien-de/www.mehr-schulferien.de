@@ -93,39 +93,7 @@
             Absender
           </h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Gender -->
-            <div>
-              <label for="form_gender" class="block text-sm font-medium text-gray-700 mb-1">
-                Anrede <span class="text-red-500">*</span>
-              </label>
-              <select
-                name="form[gender]"
-                id="form_gender"
-                value={@form_data.gender}
-                class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="herr">Herr</option>
-                <option value="frau">Frau</option>
-              </select>
-            </div>
-            <!-- Title -->
-            <div>
-              <label for="form_title" class="block text-sm font-medium text-gray-700 mb-1">
-                Titel
-              </label>
-              <input
-                type="text"
-                name="form[title]"
-                id="form_title"
-                value={@form_data.title}
-                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="z.B. Dr., Prof."
-              />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
             <!-- First Name -->
             <div>
               <label for="form_first_name" class="block text-sm font-medium text-gray-700 mb-1">
@@ -155,30 +123,25 @@
               />
             </div>
           </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 mt-4">
+            <!-- Title -->
+            <div>
+              <label for="form_title" class="block text-sm font-medium text-gray-700 mb-1">
+                Titel
+              </label>
+              <input
+                type="text"
+                name="form[title]"
+                id="form_title"
+                value={@form_data.title}
+                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="z.B. Dr., Prof."
+              />
+            </div>
+          </div>
           <!-- Address Group -->
           <div class="mt-6">
-            <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
-              <svg
-                class="w-4 h-4 mr-2 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              Anschrift
-            </h3>
             <!-- Street -->
             <div class="mb-4">
               <label for="form_street" class="block text-sm font-medium text-gray-700 mb-1">
@@ -194,7 +157,7 @@
               />
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
               <!-- ZIP Code -->
               <div>
                 <label for="form_zip_code" class="block text-sm font-medium text-gray-700 mb-1">
@@ -227,7 +190,7 @@
             </div>
           </div>
         </div>
-        <!-- Student Information Section -->
+        <!-- Student & Teacher Information Section -->
         <div class="bg-green-50 rounded-lg p-6">
           <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
             <svg
@@ -243,8 +206,46 @@
                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
               />
             </svg>
-            Schüler/in
+            Schülerdaten
           </h2>
+          <!-- Teacher Salutation and Name -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Klassenlehrer/in
+            </label>
+            <div class="mb-2">
+              <select
+                name="form[teacher_salutation]"
+                id="form_teacher_salutation"
+                value={@form_data.teacher_salutation}
+                class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style="height: 40px; min-height: 40px; max-height: 40px;"
+                phx-change="teacher_fields_changed"
+              >
+                <option
+                  value="Herr"
+                  selected={
+                    @form_data.teacher_salutation == nil or
+                      @form_data.teacher_salutation == "Herr"
+                  }
+                >
+                  Herr
+                </option>
+                <option value="Frau" selected={@form_data.teacher_salutation == "Frau"}>
+                  Frau
+                </option>
+              </select>
+            </div>
+            <input
+              type="text"
+              name="form[teacher_name]"
+              id="form_teacher_name"
+              value={@form_data.teacher_name}
+              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Name des Klassenlehrers/der Klassenlehrerin"
+              phx-blur="teacher_fields_changed"
+            />
+          </div>
           <!-- Student Name -->
           <div class="mb-4">
             <label for="form_name_of_student" class="block text-sm font-medium text-gray-700 mb-1">
@@ -258,9 +259,41 @@
               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            <div class="mt-2 flex gap-6">
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="form[child_type]"
+                  value="sohn"
+                  checked={@form_data.child_type == nil or @form_data.child_type == "sohn"}
+                  class="form-radio text-blue-600"
+                />
+                <span class="ml-2">Sohn</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="form[child_type]"
+                  value="tochter"
+                  checked={@form_data.child_type == "tochter"}
+                  class="form-radio text-blue-600"
+                />
+                <span class="ml-2">Tochter</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="form[child_type]"
+                  value="sonstiges"
+                  checked={@form_data.child_type == nil or @form_data.child_type == "sonstiges"}
+                  class="form-radio text-blue-600"
+                />
+                <span class="ml-2">Sonstiges</span>
+              </label>
+            </div>
           </div>
           <!-- Class Name -->
-          <div>
+          <div class="mb-4">
             <label for="form_class_name" class="block text-sm font-medium text-gray-700 mb-1">
               Klasse <span class="text-red-500">*</span>
             </label>
@@ -293,6 +326,10 @@
             </svg>
             Entschuldigungsdetails
           </h2>
+          <!-- Greeting -->
+          <div class="mb-6">
+            <!-- Removed greeting input field and description -->
+          </div>
           <!-- Reason -->
           <div class="mb-6">
             <label for="form_reason" class="block text-sm font-medium text-gray-700 mb-1">

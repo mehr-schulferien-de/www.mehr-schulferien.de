@@ -17,7 +17,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       assert html =~ "Entschuldigung erstellen"
       assert html =~ school.name
       assert html =~ "Absender"
-      assert html =~ "Schüler/in"
+      assert html =~ "Name des Schülers/der Schülerin"
       assert html =~ "Entschuldigungsdetails"
     end
 
@@ -28,7 +28,6 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       {:ok, view, _html} = live(conn, "/briefe/#{school.slug}/entschuldigung")
 
       # Check personal information fields
-      assert has_element?(view, "#form_gender")
       assert has_element?(view, "#form_title")
       assert has_element?(view, "#form_first_name")
       assert has_element?(view, "#form_last_name")
@@ -42,6 +41,10 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       assert has_element?(view, "#form_reason")
       assert has_element?(view, "#form_start_date")
       assert has_element?(view, "#form_end_date")
+
+      # Check Klassenlehrer/in fields
+      assert has_element?(view, "#form_teacher_salutation")
+      assert has_element?(view, "#form_teacher_name")
 
       # Check submit button
       assert has_element?(view, "button[type='submit']")
@@ -62,7 +65,6 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       # Fill in some form data
       form_data = %{
         "form" => %{
-          "gender" => "herr",
           "first_name" => "Max",
           "last_name" => "Mustermann",
           "street" => "Musterstraße 1",
@@ -81,7 +83,6 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       # The form should update without errors
       # Check that some values are reflected in the form
       html = render(view)
-      assert html =~ "value=\"herr\""
       assert html =~ "value=\"Max\""
       assert html =~ "value=\"Mustermann\""
     end
@@ -95,7 +96,6 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       # Fill in complete valid form data
       form_data = %{
         "form" => %{
-          "gender" => "frau",
           "title" => "Dr.",
           "first_name" => "Maria",
           "last_name" => "Musterfrau",
@@ -106,7 +106,9 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
           "class_name" => "7b",
           "reason" => "arzttermin",
           "start_date" => "2025-06-20",
-          "end_date" => "2025-06-20"
+          "end_date" => "2025-06-20",
+          "teacher_salutation" => "Herr",
+          "teacher_name" => "Schulze"
         }
       }
 
@@ -122,6 +124,8 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
           assert redirect_url =~ "/briefe/#{school.slug}/entschuldigung/pdf"
           assert redirect_url =~ "first_name=Maria"
           assert redirect_url =~ "last_name=Musterfrau"
+          assert redirect_url =~ "teacher_salutation=Herr"
+          assert redirect_url =~ "teacher_name=Schulze"
 
         html when is_binary(html) ->
           if html =~ "Pflichtfelder" do

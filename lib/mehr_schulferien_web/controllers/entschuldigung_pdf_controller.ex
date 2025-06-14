@@ -34,8 +34,24 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfController do
   end
 
   defp extract_form_data(params) do
+    teacher_name = params["teacher_name"] || ""
+    teacher_salutation = params["teacher_salutation"] || "Herr"
+
+    greeting =
+      if teacher_name != "" do
+        salutation =
+          case teacher_salutation do
+            "Herr" -> "Sehr geehrter Herr"
+            "Frau" -> "Sehr geehrte Frau"
+            _ -> "Sehr geehrte(r)"
+          end
+
+        salutation <> " " <> teacher_name <> ","
+      else
+        "Sehr geehrte Damen und Herren,"
+      end
+
     %{
-      gender: params["gender"] || "",
       title: params["title"] || "",
       first_name: params["first_name"] || "",
       last_name: params["last_name"] || "",
@@ -44,9 +60,11 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfController do
       city: params["city"] || "",
       name_of_student: params["name_of_student"] || "",
       class_name: params["class_name"] || "",
+      greeting: greeting,
       reason: params["reason"] || "krankheit",
       start_date: parse_date(params["start_date"]),
-      end_date: parse_date(params["end_date"])
+      end_date: parse_date(params["end_date"]),
+      child_type: params["child_type"] || "sonstiges"
     }
   end
 

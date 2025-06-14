@@ -8,12 +8,8 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
     # Get school information
     school = Locations.get_school_by_slug!(school_slug)
 
-    # Get yesterday's date for prepopulation
-    yesterday = Date.add(Date.utc_today(), -1)
-
     # Initialize form with default values
     form_data = %{
-      gender: "",
       title: "",
       first_name: "",
       last_name: "",
@@ -22,9 +18,12 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
       city: "",
       name_of_student: "",
       class_name: "",
-      reason: "",
-      start_date: yesterday,
-      end_date: yesterday
+      reason: "krankheit",
+      start_date: Date.utc_today(),
+      end_date: Date.utc_today(),
+      teacher_salutation: "Herr",
+      teacher_name: "",
+      child_type: "sonstiges"
     }
 
     {:ok,
@@ -73,7 +72,8 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
 
   # Helper functions
   defp atomize_keys(params) do
-    Enum.into(params, %{}, fn {k, v} -> {String.to_atom(k), v} end)
+    params = Enum.into(params, %{}, fn {k, v} -> {String.to_atom(k), v} end)
+    params
   end
 
   defp maybe_parse_dates(form_data) do
