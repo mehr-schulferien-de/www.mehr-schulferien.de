@@ -43,7 +43,7 @@ defmodule MehrSchulferien.MixProject do
       {:gettext, "~> 0.24"},
       {:jason, "~> 1.4.0"},
       {:plug_cowboy, "~> 2.6"},
-      {:ex_machina, "~> 2.7.0", only: :test},
+      {:ex_machina, "~> 2.8.0", only: :test},
       {:faker, "~> 0.17", only: :test},
       {:timex, "~> 3.7.12"},
       {:ex_ical, "~> 0.2.0"},
