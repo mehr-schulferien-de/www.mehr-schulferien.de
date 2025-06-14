@@ -162,9 +162,10 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
 
       html = render(view)
 
-      # Check that the reason dropdown exists
+      # Check that the reason dropdown exists with expected options
       assert html =~ "name=\"form[reason]\""
-      assert html =~ "Bitte wählen..."
+      assert html =~ "Krankheit"
+      assert html =~ "Arzttermin"
     end
 
     test "handles date validation", %{
