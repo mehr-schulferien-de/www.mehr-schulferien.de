@@ -60,7 +60,11 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         {:noreply,
          socket
          |> assign(form_data: form_data)
-         |> redirect(to: pdf_url)}
+         |> put_flash(
+           :info,
+           "PDF wurde erfolgreich erstellt. Sie können das Formular erneut ausfüllen oder die Daten anpassen."
+         )
+         |> push_redirect(to: pdf_url)}
 
       {:error, message} ->
         {:noreply,

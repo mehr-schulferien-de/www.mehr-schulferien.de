@@ -62,13 +62,7 @@
 
 \opening{<%= @form_data.greeting %>}
 
-hiermit bitte ich Sie <%= MehrSchulferien.PdfGenerator.format_absence_reason(@form_data.reason) %> <%= MehrSchulferien.PdfGenerator.format_absence_timeframe(@form_data) %>, das Fehlen <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %> zu entschuldigen.
-
-<%= MehrSchulferien.PdfGenerator.format_detailed_reason(@form_data) %>
-
-<%= if @form_data.reason == "arzttermin" do %>
-Bei Bedarf kann ich Ihnen gerne eine entsprechende Bescheinigung nachreichen.
-<% end %>
+hiermit bitte ich darum, das Fehlen <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %> <%= MehrSchulferien.PdfGenerator.format_absence_timeframe(@form_data) %> <%= MehrSchulferien.PdfGenerator.format_absence_reason(@form_data.reason) %> zu entschuldigen.
 
 Vielen Dank für Ihr Verständnis.
 

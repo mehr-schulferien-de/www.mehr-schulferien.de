@@ -15,9 +15,7 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfController do
           filename = generate_filename(form_data)
 
           conn
-          |> put_resp_content_type("application/pdf")
-          |> put_resp_header("content-disposition", "attachment; filename=\"#{filename}\"")
-          |> send_resp(200, pdf_binary)
+          |> send_download({:binary, pdf_binary}, filename: filename, content_type: "application/pdf")
 
         {:error, reason} ->
           conn

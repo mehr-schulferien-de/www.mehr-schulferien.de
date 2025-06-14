@@ -1,6 +1,18 @@
 <div class="max-w-4xl mx-auto p-6">
   <div class="bg-white rounded-lg shadow-md p-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-6">Entschuldigung erstellen</h1>
+
+    <%= if live_flash(@flash, :info) do %>
+      <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700">
+        <p><%= live_flash(@flash, :info) %></p>
+      </div>
+    <% end %>
+
+    <%= if live_flash(@flash, :error) do %>
+      <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+        <p><%= live_flash(@flash, :error) %></p>
+      </div>
+    <% end %>
     <!-- Introduction Section -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-8 border-l-4 border-blue-500">
       <div class="flex items-start">

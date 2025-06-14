@@ -166,7 +166,7 @@ defmodule MehrSchulferien.PdfGenerator do
     end
   end
 
-  defp format_german_date(date) do
+  def format_german_date(date) do
     case date do
       %Date{} = d ->
         day = String.pad_leading("#{d.day}", 2, "0")

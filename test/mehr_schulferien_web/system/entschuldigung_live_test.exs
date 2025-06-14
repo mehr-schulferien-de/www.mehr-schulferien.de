@@ -127,6 +127,13 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
           assert redirect_url =~ "teacher_salutation=Herr"
           assert redirect_url =~ "teacher_name=Schulze"
 
+        {:error, {:live_redirect, %{to: redirect_url}}} ->
+          assert redirect_url =~ "/briefe/#{school.slug}/entschuldigung/pdf"
+          assert redirect_url =~ "first_name=Maria"
+          assert redirect_url =~ "last_name=Musterfrau"
+          assert redirect_url =~ "teacher_salutation=Herr"
+          assert redirect_url =~ "teacher_name=Schulze"
+
         html when is_binary(html) ->
           if html =~ "Pflichtfelder" do
             flunk("Form validation failed: #{html}")
