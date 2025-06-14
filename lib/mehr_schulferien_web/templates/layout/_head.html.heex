@@ -2,14 +2,19 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<%= render_existing(view_module(@conn), "meta." <> view_template(@conn), assigns) ||
-  render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
-<%= if use_bootstrap?(@conn, assigns) do %>
+<%= if assigns[:conn] do %>
+  <%= render_existing(view_module(@conn), "meta." <> view_template(@conn), assigns) ||
+    render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
+<% else %>
+  <%= render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
+<% end %>
+<%= if assigns[:conn] && use_bootstrap?(@conn, assigns) do %>
   <style>
     <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
   </style>
 <% else %>
-  <link rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
+  <% conn_or_socket = assigns[:conn] || assigns[:socket] %>
+  <link rel="stylesheet" href={Routes.static_path(conn_or_socket, "/assets/app.css")} />
 <% end %>
 
 <script

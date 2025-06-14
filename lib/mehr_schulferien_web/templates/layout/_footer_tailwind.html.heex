@@ -4,7 +4,8 @@
       class="-mb-6 flex flex-wrap justify-center gap-x-12 gap-y-3 text-sm/6"
       aria-label="Footer"
     >
-      <%= link to: Routes.page_path(@conn, :impressum), class: "text-gray-600 hover:text-gray-900" do %>
+      <% conn_or_socket = assigns[:conn] || assigns[:socket] %>
+      <%= link to: Routes.page_path(conn_or_socket, :impressum), class: "text-gray-600 hover:text-gray-900" do %>
         Impressum und Datenschutzerklärung
       <% end %>
     </nav>

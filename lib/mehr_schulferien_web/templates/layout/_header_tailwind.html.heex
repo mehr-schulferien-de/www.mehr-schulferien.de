@@ -94,7 +94,7 @@
                   "thueringen" => "Thüringen"
                 }[federal_state] %>
 
-              <%= if is_current_page_for_federal_state?(@conn, federal_state, 2025) do %>
+              <%= if assigns[:conn] && is_current_page_for_federal_state?(@conn, federal_state, 2025) do %>
                 <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400">
                   <%= display_name %>
                 </span>
@@ -163,7 +163,7 @@
                   "thueringen" => "Thüringen"
                 }[federal_state] %>
 
-              <%= if is_current_page_for_federal_state?(@conn, federal_state, 2026) do %>
+              <%= if assigns[:conn] && is_current_page_for_federal_state?(@conn, federal_state, 2026) do %>
                 <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400">
                   <%= display_name %>
                 </span>
@@ -533,7 +533,7 @@
                       "thueringen" => "Thüringen"
                     }[federal_state] %>
 
-                  <%= if is_current_page_for_federal_state?(@conn, federal_state, 2025) do %>
+                  <%= if assigns[:conn] && is_current_page_for_federal_state?(@conn, federal_state, 2025) do %>
                     <span class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-400">
                       <%= display_name %>
                     </span>
@@ -599,7 +599,7 @@
                       "thueringen" => "Thüringen"
                     }[federal_state] %>
 
-                  <%= if is_current_page_for_federal_state?(@conn, federal_state, 2026) do %>
+                  <%= if assigns[:conn] && is_current_page_for_federal_state?(@conn, federal_state, 2026) do %>
                     <span class="block rounded-lg py-1 pr-3 pl-6 text-sm font-semibold text-gray-400">
                       <%= display_name %>
                     </span>

@@ -138,9 +138,9 @@
               </div>
             </div>
             <!-- Compact Action Buttons - moved closer to contact info -->
-            <div class="flex space-x-2 pt-3 mb-4">
+            <div class="grid grid-cols-2 gap-2 pt-3 mb-4">
               <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), 
-                   class: "flex-1 flex items-center justify-center px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer" do %>
+                   class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-3 w-3 mr-1"
@@ -159,7 +159,7 @@
               <% end %>
 
               <%= link to: Routes.wiki_path(@conn, :show_school, @school.slug), 
-                   class: "flex-1 flex items-center justify-center px-3 py-2 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded transition-colors cursor-pointer" do %>
+                   class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded transition-colors cursor-pointer" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-3 w-3 mr-1"
@@ -175,6 +175,25 @@
                   />
                 </svg>
                 Bearbeiten
+              <% end %>
+
+              <%= link to: "/briefe/#{@school.slug}/entschuldigung", 
+                   class: "col-span-2 flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-green-600 hover:bg-green-700 border border-green-600 rounded transition-colors cursor-pointer" do %>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3 w-3 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                Entschuldigung erstellen
               <% end %>
             </div>
             <!-- Links Section - More Compact -->

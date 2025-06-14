@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <%= render("_head.html", assigns) %>
+    <title><%= assigns[:page_title] || "mehr-schulferien.de" %></title>
+    <script
+      defer
+      phx-track-static
+      type="text/javascript"
+      src={Routes.static_path(@socket, "/assets/app.js")}
+    >
+    </script>
+  </head>
+
+  <body class="min-h-screen bg-gray-100">
+    <%= render("_header_tailwind.html", assigns) %>
+
+    <%= if Phoenix.Flash.get(@flash, :info) do %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mx-4 rounded my-4">
+        <%= Phoenix.Flash.get(@flash, :info) %>
+      </div>
+    <% end %>
+
+    <%= if Phoenix.Flash.get(@flash, :error) do %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mx-4 rounded my-4">
+        <%= Phoenix.Flash.get(@flash, :error) %>
+      </div>
+    <% end %>
+
+    <main role="main" class="container mx-auto py-8">
+      <%= @inner_content %>
+    </main>
+
+    <%= render("_footer_tailwind.html", assigns) %>
+  </body>
+</html>

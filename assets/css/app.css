@@ -5,6 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Alpine.js x-cloak directive to hide elements before Alpine initializes */
+[x-cloak] {
+  display: none !important;
+}
+
 /* Custom project-specific styles can follow below. Remove legacy bootstrap imports. */
 
 /* Footer styling (legacy) retained for now */

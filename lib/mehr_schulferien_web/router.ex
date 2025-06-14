@@ -1,5 +1,6 @@
 defmodule MehrSchulferienWeb.Router do
   use MehrSchulferienWeb, :router
+  import Phoenix.LiveView.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -124,6 +125,9 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/ferien/:country_slug/schule/:school_slug/:year", SchoolController, :show_year,
       constraints: [year: ~r/20[2-3][0-9]/]
+
+    # Entschuldigung LiveView
+    live "/briefe/:school_slug/entschuldigung", EntschuldigungLive
 
     # Legacy vCard path for backward compatibility
     get "/schule/:school_slug/vcard", SchoolVCardController, :download_legacy
