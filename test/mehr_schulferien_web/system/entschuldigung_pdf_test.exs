@@ -32,35 +32,18 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
         }
       }
 
-      # Submit the form - this should redirect to PDF download
-      result =
+      # Submit the form - this should stay on same page and show success message
+      html =
         view
         |> form("#entschuldigung-form", form_data)
         |> render_submit()
 
-      # Check that we got a redirect response
-      case result do
-        {:error, {:redirect, %{to: redirect_url}}} ->
-          assert redirect_url =~ "/briefe/#{school.slug}/entschuldigung/pdf"
-          assert redirect_url =~ "first_name=Maria"
-          assert redirect_url =~ "last_name=Musterfrau"
+      # Check that form submission was successful
+      assert html =~ "PDF wurde erfolgreich erstellt"
+      assert html =~ "Sie können das Formular erneut ausfüllen"
 
-        # Accept push_navigate/live_redirect as well
-        {:error, {:live_redirect, %{to: redirect_url}}} ->
-          assert redirect_url =~ "/briefe/#{school.slug}/entschuldigung/pdf"
-          assert redirect_url =~ "first_name=Maria"
-          assert redirect_url =~ "last_name=Musterfrau"
-
-        html when is_binary(html) ->
-          if html =~ "Pflichtfelder" do
-            flunk("Form validation failed: #{html}")
-          else
-            flunk("Expected redirect but got HTML response: #{html}")
-          end
-
-        other ->
-          flunk("Unexpected response: #{inspect(other)}")
-      end
+      # Check that form was reset
+      assert html =~ "value=\"\""
     end
 
     test "shows validation error when required fields are missing", %{

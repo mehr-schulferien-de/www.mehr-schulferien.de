@@ -57,6 +57,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         # Generate PDF download URL with form data as query parameters
         pdf_url = build_pdf_url(socket.assigns.school.slug, form_data)
 
+        # Keep form data instead of resetting it so user can reuse or modify
         {:noreply,
          socket
          |> assign(form_data: form_data)
@@ -64,7 +65,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
            :info,
            "PDF wurde erfolgreich erstellt. Sie können das Formular erneut ausfüllen oder die Daten anpassen."
          )
-         |> push_redirect(to: pdf_url)}
+         |> push_event("open_pdf", %{url: pdf_url})}
 
       {:error, message} ->
         {:noreply,

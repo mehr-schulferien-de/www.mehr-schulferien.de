@@ -438,3 +438,15 @@
     </form>
   </div>
 </div>
+
+<script>
+  window.addEventListener("phx:open_pdf", (e) => {
+    // Create a temporary link element to trigger download without popup blockers
+    const link = document.createElement('a');
+    link.href = e.detail.url;
+    link.download = ''; // This suggests to browser that it should download the file
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+</script>

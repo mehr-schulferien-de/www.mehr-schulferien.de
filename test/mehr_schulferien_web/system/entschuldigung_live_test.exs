@@ -112,38 +112,30 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
         }
       }
 
-      # Submit the form - should redirect to PDF download
-      result =
+      # Submit the form - should stay on same page and show success message
+      html =
         view
         |> form("#entschuldigung-form", form_data)
         |> render_submit()
 
-      # Check that we got a redirect response to PDF download
-      case result do
-        {:error, {:redirect, %{to: redirect_url}}} ->
-          assert redirect_url =~ "/briefe/#{school.slug}/entschuldigung/pdf"
-          assert redirect_url =~ "first_name=Maria"
-          assert redirect_url =~ "last_name=Musterfrau"
-          assert redirect_url =~ "teacher_salutation=Herr"
-          assert redirect_url =~ "teacher_name=Schulze"
+      # Check that form was successful and shows success message
+      assert html =~ "PDF wurde erfolgreich erstellt"
+      assert html =~ "Sie können das Formular erneut ausfüllen"
 
-        {:error, {:live_redirect, %{to: redirect_url}}} ->
-          assert redirect_url =~ "/briefe/#{school.slug}/entschuldigung/pdf"
-          assert redirect_url =~ "first_name=Maria"
-          assert redirect_url =~ "last_name=Musterfrau"
-          assert redirect_url =~ "teacher_salutation=Herr"
-          assert redirect_url =~ "teacher_name=Schulze"
-
-        html when is_binary(html) ->
-          if html =~ "Pflichtfelder" do
-            flunk("Form validation failed: #{html}")
-          else
-            flunk("Expected redirect but got HTML response: #{html}")
-          end
-
-        other ->
-          flunk("Unexpected response: #{inspect(other)}")
-      end
+      # Check that form data is preserved - input fields should contain the submitted values
+      assert html =~ "value=\"Maria\""
+      assert html =~ "value=\"Musterfrau\""
+      assert html =~ "value=\"Dr.\""
+      assert html =~ "value=\"Beispielstraße 42\""
+      assert html =~ "value=\"54321\""
+      assert html =~ "value=\"Beispielstadt\""
+      assert html =~ "value=\"Anna Musterfrau\""
+      assert html =~ "value=\"7b\""
+      # teacher salutation and name should be preserved
+      assert html =~ "Herr"
+      assert html =~ "value=\"Schulze\""
+      # selected reason should be preserved
+      assert html =~ "arzttermin"
     end
 
     test "displays both date fields always", %{
@@ -282,6 +274,81 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       refute has_element?(view, "[x-show='desktopDropdown2026Open'][style*='display: block']")
       refute has_element?(view, "[x-show='brueckenDropdown2025Open'][style*='display: block']")
       refute has_element?(view, "[x-show='brueckenDropdown2026Open'][style*='display: block']")
+    end
+
+    test "can reuse form after PDF generation", %{
+      conn: conn,
+      school: school
+    } do
+      {:ok, view, _html} = live(conn, "/briefe/#{school.slug}/entschuldigung")
+
+      # Fill in initial form data
+      initial_form_data = %{
+        "form" => %{
+          "title" => "Dr.",
+          "first_name" => "Maria",
+          "last_name" => "Musterfrau",
+          "street" => "Beispielstraße 42",
+          "zip_code" => "54321",
+          "city" => "Beispielstadt",
+          "name_of_student" => "Anna Musterfrau",
+          "class_name" => "7b",
+          "reason" => "krankheit",
+          "start_date" => "2025-06-20",
+          "end_date" => "2025-06-20",
+          "teacher_salutation" => "Herr",
+          "teacher_name" => "Schulze"
+        }
+      }
+
+      # Submit the form - should stay on same page and show success message
+      html = view |> form("#entschuldigung-form", initial_form_data) |> render_submit()
+
+      # Verify success message and form data is preserved
+      assert html =~ "PDF wurde erfolgreich erstellt"
+      assert html =~ "Sie können das Formular erneut ausfüllen"
+
+      # Verify form data is preserved and ready for reuse/modification
+      assert html =~ "Entschuldigung erstellen"
+      assert html =~ "value=\"Maria\""
+      assert html =~ "value=\"Musterfrau\""
+      assert html =~ "value=\"Dr.\""
+      assert html =~ "value=\"Anna Musterfrau\""
+      assert html =~ "value=\"7b\""
+      assert html =~ "PDF erstellen"
+
+      # Fill in new form data with different dates
+      new_form_data = %{
+        "form" => %{
+          "title" => "Prof.",
+          "first_name" => "Hans",
+          "last_name" => "Müller",
+          "street" => "Neue Straße 1",
+          "zip_code" => "12345",
+          "city" => "Berlin",
+          "name_of_student" => "Max Müller",
+          "class_name" => "8a",
+          "reason" => "arzttermin",
+          "start_date" => "2025-06-25",
+          "end_date" => "2025-06-25",
+          "teacher_salutation" => "Frau",
+          "teacher_name" => "Schmidt"
+        }
+      }
+
+      # Submit the form again - should work and show success message again
+      html = view |> form("#entschuldigung-form", new_form_data) |> render_submit()
+
+      # Verify second submission also works
+      assert html =~ "PDF wurde erfolgreich erstellt"
+      assert html =~ "Sie können das Formular erneut ausfüllen"
+
+      # Verify form data from second submission is preserved
+      assert html =~ "value=\"Hans\""
+      assert html =~ "value=\"Müller\""
+      assert html =~ "value=\"Prof.\""
+      assert html =~ "value=\"Max Müller\""
+      assert html =~ "value=\"8a\""
     end
   end
 
