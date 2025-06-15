@@ -28,6 +28,14 @@
 	version=last,
 ]{scrlttr2}
 
+% Footer with website URL
+\setkomavar{firstfoot}{%
+  \parbox{\useplength{firstfootwidth}}{%
+    \centering
+    {\footnotesize Erstellt von https://www.mehr-schulferien.de}
+  }
+}
+
 % Zeichenkodierung des Dokuments ist in UTF-8
 \usepackage[utf8]{inputenc}
 
