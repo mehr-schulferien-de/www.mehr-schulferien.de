@@ -156,8 +156,10 @@ defmodule MehrSchulferien.PdfGenerator do
     case form_data.child_type do
       "mein_sohn" ->
         "meines Sohnes #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
+
       "meine_tochter" ->
         "meiner Tochter #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
+
       _ ->
         "von #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
     end

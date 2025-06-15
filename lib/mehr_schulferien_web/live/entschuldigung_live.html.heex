@@ -292,7 +292,7 @@
               <span class="block text-sm font-medium text-gray-700 mb-1">
                 Beziehung zum Kind:
               </span>
-              <div class="flex gap-6">
+              <div class="flex flex-col space-y-2 items-start">
                 <label class="inline-flex items-center">
                   <input
                     type="radio"
@@ -322,9 +322,11 @@
                     value="weder_sohn_noch_tochter"
                     tabindex="12"
                     checked={@form_data.child_type == "weder_sohn_noch_tochter"}
-                    class="form-radio text-blue-600"
+                    class="form-radio text-blue-600 mt-1"
                   />
-                  <span class="ml-2">weder Sohn, noch Tochter, aber ich bin sorgeberechtigt</span>
+                  <span class="ml-2 break-words max-w-xs leading-tight">
+                    weder Sohn, noch Tochter, aber ich bin sorgeberechtigt
+                  </span>
                 </label>
               </div>
             </div>
