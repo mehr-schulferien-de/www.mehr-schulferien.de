@@ -154,22 +154,20 @@ defmodule MehrSchulferien.PdfGenerator do
 
   def format_student_details(form_data) do
     case form_data.child_type do
-      "sohn" ->
+      "mein_sohn" ->
         "meines Sohnes #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
-
-      "tochter" ->
+      "meine_tochter" ->
         "meiner Tochter #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
-
       _ ->
-        "meines Kindes #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
+        "von #{form_data.name_of_student} aus der Klasse #{form_data.class_name}"
     end
   end
 
   def format_detailed_reason(form_data) do
     prefix =
       case form_data.child_type do
-        "sohn" -> "Mein Sohn"
-        "tochter" -> "Meine Tochter"
+        "mein_sohn" -> "Mein Sohn"
+        "meine_tochter" -> "Meine Tochter"
         _ -> "Mein Kind"
       end
 
@@ -209,11 +207,14 @@ defmodule MehrSchulferien.PdfGenerator do
   # Formats the sender address line for the PDF (street, zip/city) without double commas if street is empty
   def format_sender_address(form_data) do
     street = form_data.street
-    zip_city = Enum.join(Enum.filter([form_data.zip_code, form_data.city], &(&1 && &1 != "")), " ")
+
+    zip_city =
+      Enum.join(Enum.filter([form_data.zip_code, form_data.city], &(&1 && &1 != "")), " ")
 
     cond do
       street && street != "" ->
         Enum.join([street, zip_city], ", ")
+
       true ->
         zip_city
     end
