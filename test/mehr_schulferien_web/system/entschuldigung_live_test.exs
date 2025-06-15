@@ -315,7 +315,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       assert html =~ "value=\"Dr.\""
       assert html =~ "value=\"Anna Musterfrau\""
       assert html =~ "value=\"7b\""
-      assert html =~ "PDF erstellen"
+      assert html =~ "PDF downloaden"
 
       # Fill in new form data with different dates
       new_form_data = %{

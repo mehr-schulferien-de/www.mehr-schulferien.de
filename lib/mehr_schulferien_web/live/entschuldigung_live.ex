@@ -23,7 +23,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
       end_date: Date.utc_today(),
       teacher_salutation: "Herr",
       teacher_name: "",
-      child_type: "sonstiges"
+      child_type: "mein_sohn"
     }
 
     {:ok,

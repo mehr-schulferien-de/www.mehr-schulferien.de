@@ -1,259 +1,165 @@
-<div class="max-w-4xl mx-auto p-6">
-  <div class="bg-white rounded-lg shadow-md p-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Entschuldigung erstellen</h1>
-
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-6 bg-blue-50 rounded-lg p-6 shadow-sm">
+      <h1 class="text-2xl font-bold text-blue-800">Entschuldigung schreiben</h1>
+      <p class="mt-1 text-sm text-blue-700">
+        Entschuldigungen für die Schule zu erstellen ist mit diesem Formular ganz einfach. Als Ergebnis bekommen Sie ein gratis PDF, das Sie entweder ausdrucken oder direkt auf dem Handy unterschreiben und per E-Mail versenden können.
+      </p>
+    </div>
+    <!-- Flash Messages -->
     <%= if Phoenix.Flash.get(@flash, :info) do %>
-      <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700">
+      <div class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-700 text-sm rounded-r">
         <p><%= Phoenix.Flash.get(@flash, :info) %></p>
       </div>
     <% end %>
 
     <%= if Phoenix.Flash.get(@flash, :error) do %>
-      <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+      <div class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-r">
         <p><%= Phoenix.Flash.get(@flash, :error) %></p>
       </div>
     <% end %>
-    <!-- Introduction Section -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-8 border-l-4 border-blue-500">
-      <div class="flex items-start">
-        <div class="flex-shrink-0">
-          <svg
-            class="w-8 h-8 text-blue-600 mt-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+    <!-- School Info -->
+    <div class="mb-6 bg-yellow-50 rounded-lg shadow p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-medium text-blue-800"><%= @school.name %></h2>
+          <%= if @school.address do %>
+            <p class="text-sm text-blue-700"><%= @school.address.street %></p>
+            <p class="text-sm text-blue-700">
+              <%= @school.address.zip_code %> <%= @school.address.city %>
+            </p>
+          <% end %>
+        </div>
+        <div class="text-blue-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
             />
           </svg>
         </div>
-        <div class="ml-4">
-          <h2 class="text-lg font-semibold text-gray-900 mb-2">So funktioniert's</h2>
-          <p class="text-gray-700 leading-relaxed">
-            Auf dieser Seite können Sie <span class="font-semibold text-blue-700">kostenlos</span>
-            ein professionelles
-            Entschuldigungsschreiben mit Ihren Daten für Ihr Kind als PDF generieren.
-            Das fertige Dokument können Sie dann:
-          </p>
-          <ul class="mt-3 space-y-2 text-gray-700">
-            <li class="flex items-center">
-              <svg
-                class="w-4 h-4 text-green-500 mr-2 flex-shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Ausdrucken und handschriftlich unterschreiben
-            </li>
-            <li class="flex items-center">
-              <svg
-                class="w-4 h-4 text-green-500 mr-2 flex-shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Digital unterschreiben (z.B. auf Ihrem Handy) und per E-Mail versenden
-            </li>
-          </ul>
+      </div>
+    </div>
+
+    <form
+      phx-change="validate"
+      phx-submit="save"
+      id="entschuldigung-form"
+      autocomplete="off"
+      class="space-y-6"
+    >
+      <!-- Sender Information -->
+      <div class="bg-green-50 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-4 py-3 bg-green-100 border-b border-green-200">
+          <h2 class="text-base font-medium text-blue-800">Absender</h2>
         </div>
-      </div>
-    </div>
-    <!-- School Information -->
-    <div class="bg-gray-50 rounded-lg p-4 mb-6">
-      <h2 class="text-lg font-semibold text-gray-800 mb-2">Schule</h2>
-      <div class="text-gray-700">
-        <p class="font-medium"><%= @school.name %></p>
-        <%= if @school.address do %>
-          <p><%= @school.address.street %></p>
-          <p><%= @school.address.zip_code %> <%= @school.address.city %></p>
-        <% end %>
-      </div>
-    </div>
-
-    <form phx-change="validate" phx-submit="save" id="entschuldigung-form" autocomplete="off">
-      <div class="space-y-8">
-        <!-- Absender (Sender) Section -->
-        <div class="bg-blue-50 rounded-lg p-6">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <svg
-              class="w-5 h-5 mr-2 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-            Absender
-          </h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
-            <!-- First Name -->
+        <div class="p-4 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="form_first_name" class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="form_first_name" class="block text-sm font-medium text-blue-700">
                 Vorname <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 name="form[first_name]"
                 id="form_first_name"
-                tabindex="1"
-                autofocus
-                autocomplete="new-first-name"
                 value={@form_data.first_name}
-                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                autofocus
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
               />
             </div>
-            <!-- Last Name -->
             <div>
-              <label for="form_last_name" class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="form_last_name" class="block text-sm font-medium text-blue-700">
                 Nachname <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 name="form[last_name]"
                 id="form_last_name"
-                tabindex="2"
-                autocomplete="new-last-name"
                 value={@form_data.last_name}
-                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
               />
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 mt-4">
-            <!-- Title -->
+          <div>
+            <label for="form_title" class="block text-sm font-medium text-blue-700">Titel</label>
+            <input
+              type="text"
+              name="form[title]"
+              id="form_title"
+              value={@form_data.title}
+              placeholder="z.B. Dr., Prof."
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
+
+          <div>
+            <label for="form_street" class="block text-sm font-medium text-blue-700">
+              Straße und Hausnummer
+            </label>
+            <input
+              type="text"
+              name="form[street]"
+              id="form_street"
+              value={@form_data.street}
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label for="form_title" class="block text-sm font-medium text-gray-700 mb-1">
-                Titel
+              <label for="form_zip_code" class="block text-sm font-medium text-blue-700">
+                PLZ <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                name="form[title]"
-                id="form_title"
-                tabindex="3"
-                autocomplete="new-title"
-                value={@form_data.title}
-                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="z.B. Dr., Prof."
+                name="form[zip_code]"
+                id="form_zip_code"
+                value={@form_data.zip_code}
+                required
+                pattern="[0-9]{5}"
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
               />
             </div>
-          </div>
-          <!-- Address Group -->
-          <div class="mt-6">
-            <!-- Street -->
-            <div class="mb-4">
-              <label for="form_street" class="block text-sm font-medium text-gray-700 mb-1">
-                Straße und Hausnummer
+            <div class="sm:col-span-2">
+              <label for="form_city" class="block text-sm font-medium text-blue-700">
+                Stadt <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                name="form[street]"
-                id="form_street"
-                tabindex="4"
-                autocomplete="new-street"
-                value={@form_data.street}
-                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                name="form[city]"
+                id="form_city"
+                value={@form_data.city}
+                required
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
               />
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
-              <!-- ZIP Code -->
-              <div>
-                <label for="form_zip_code" class="block text-sm font-medium text-gray-700 mb-1">
-                  PLZ <span class="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="form[zip_code]"
-                  id="form_zip_code"
-                  tabindex="5"
-                  autocomplete="new-postal-code"
-                  value={@form_data.zip_code}
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  pattern="[0-9]{5}"
-                  required
-                />
-              </div>
-              <!-- City -->
-              <div class="md:col-span-2">
-                <label for="form_city" class="block text-sm font-medium text-gray-700 mb-1">
-                  Stadt <span class="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="form[city]"
-                  id="form_city"
-                  tabindex="6"
-                  autocomplete="new-city"
-                  value={@form_data.city}
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
             </div>
           </div>
         </div>
-        <!-- Student & Teacher Information Section -->
-        <div class="bg-green-50 rounded-lg p-6">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <svg
-              class="w-5 h-5 mr-2 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
-            Schülerdaten
-          </h2>
-          <!-- Teacher Salutation and Name -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              Klassenlehrer/in
-            </label>
-            <div class="mb-2">
+      </div>
+      <!-- Student Information -->
+      <div class="bg-teal-50 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-4 py-3 bg-teal-100 border-b border-teal-200">
+          <h2 class="text-base font-medium text-blue-800">Schülerdaten</h2>
+        </div>
+        <div class="p-4 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-blue-700">Anrede</label>
               <select
                 name="form[teacher_salutation]"
                 id="form_teacher_salutation"
-                tabindex="7"
                 value={@form_data.teacher_salutation}
-                class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                style="height: 40px; min-height: 40px; max-height: 40px;"
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
                 phx-change="teacher_fields_changed"
               >
-                <option
-                  value="Herr"
-                  selected={
-                    @form_data.teacher_salutation == nil or
-                      @form_data.teacher_salutation == "Herr"
-                  }
-                >
+                <option value="Herr" selected={@form_data.teacher_salutation == "Herr"}>
                   Herr
                 </option>
                 <option value="Frau" selected={@form_data.teacher_salutation == "Frau"}>
@@ -261,128 +167,105 @@
                 </option>
               </select>
             </div>
-            <input
-              type="text"
-              name="form[teacher_name]"
-              id="form_teacher_name"
-              tabindex="8"
-              autocomplete="new-teacher-name"
-              value={@form_data.teacher_name}
-              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Name des Klassenlehrers/der Klassenlehrerin"
-              phx-blur="teacher_fields_changed"
-            />
+            <div>
+              <label for="form_teacher_name" class="block text-sm font-medium text-blue-700">
+                Name des Klassenlehrers/der Klassenlehrerin
+              </label>
+              <input
+                type="text"
+                name="form[teacher_name]"
+                id="form_teacher_name"
+                value={@form_data.teacher_name}
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
+                phx-blur="teacher_fields_changed"
+              />
+            </div>
           </div>
-          <!-- Student Name -->
-          <div class="mb-4">
-            <label for="form_name_of_student" class="block text-sm font-medium text-gray-700 mb-1">
+
+          <div>
+            <label for="form_name_of_student" class="block text-sm font-medium text-blue-700">
               Name des Schülers/der Schülerin <span class="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="form[name_of_student]"
               id="form_name_of_student"
-              tabindex="9"
-              autocomplete="new-student-name"
               value={@form_data.name_of_student}
-              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
             />
-            <div class="mt-2">
-              <span class="block text-sm font-medium text-gray-700 mb-1">
-                Beziehung zum Kind:
-              </span>
-              <div class="flex flex-col space-y-2 items-start">
-                <label class="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="form[child_type]"
-                    value="mein_sohn"
-                    tabindex="10"
-                    checked={@form_data.child_type == "mein_sohn" or @form_data.child_type == nil}
-                    class="form-radio text-blue-600"
-                  />
-                  <span class="ml-2">mein Sohn</span>
-                </label>
-                <label class="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="form[child_type]"
-                    value="meine_tochter"
-                    tabindex="11"
-                    checked={@form_data.child_type == "meine_tochter"}
-                    class="form-radio text-blue-600"
-                  />
-                  <span class="ml-2">meine Tochter</span>
-                </label>
-                <label class="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="form[child_type]"
-                    value="weder_sohn_noch_tochter"
-                    tabindex="12"
-                    checked={@form_data.child_type == "weder_sohn_noch_tochter"}
-                    class="form-radio text-blue-600 mt-1"
-                  />
-                  <span class="ml-2 break-words max-w-xs leading-tight">
-                    weder Sohn, noch Tochter, aber ich bin sorgeberechtigt
-                  </span>
-                </label>
-              </div>
-            </div>
           </div>
-          <!-- Class Name -->
-          <div class="mb-4">
-            <label for="form_class_name" class="block text-sm font-medium text-gray-700 mb-1">
+
+          <div>
+            <label for="form_class_name" class="block text-sm font-medium text-blue-700">
               Klasse <span class="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="form[class_name]"
               id="form_class_name"
-              tabindex="13"
-              autocomplete="new-class-name"
               value={@form_data.class_name}
-              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="z.B. 5a, 10b"
               required
+              placeholder="z.B. 5a, 10b"
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
             />
           </div>
-        </div>
-        <!-- Reason and Timeframe Section -->
-        <div class="bg-orange-50 rounded-lg p-6">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <svg
-              class="w-5 h-5 mr-2 text-orange-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Entschuldigungsdetails
-          </h2>
-          <!-- Greeting -->
-          <div class="mb-6">
-            <!-- Removed greeting input field and description -->
+
+          <div>
+            <span class="block text-sm font-medium text-blue-700 mb-2">Beziehung zum Kind:</span>
+            <div class="space-y-2">
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="form[child_type]"
+                  value="mein_sohn"
+                  checked={@form_data.child_type == "mein_sohn" or @form_data.child_type == nil}
+                  class="form-radio text-blue-600"
+                />
+                <span class="ml-2 text-sm text-blue-700">mein Sohn</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="form[child_type]"
+                  value="meine_tochter"
+                  checked={@form_data.child_type == "meine_tochter"}
+                  class="form-radio text-blue-600"
+                />
+                <span class="ml-2 text-sm text-blue-700">meine Tochter</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="form[child_type]"
+                  value="weder_sohn_noch_tochter"
+                  checked={@form_data.child_type == "weder_sohn_noch_tochter"}
+                  class="form-radio text-blue-600"
+                />
+                <span class="ml-2 text-sm text-blue-700">
+                  weder Sohn, noch Tochter, aber ich bin sorgeberechtigt
+                </span>
+              </label>
+            </div>
           </div>
-          <!-- Reason -->
-          <div class="mb-6">
-            <label for="form_reason" class="block text-sm font-medium text-gray-700 mb-1">
+        </div>
+      </div>
+      <!-- Excuse Details -->
+      <div class="bg-purple-50 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-4 py-3 bg-purple-100 border-b border-purple-200">
+          <h2 class="text-base font-medium text-blue-800">Entschuldigungsdetails</h2>
+        </div>
+        <div class="p-4 space-y-4">
+          <div>
+            <label for="form_reason" class="block text-sm font-medium text-blue-700">
               Grund der Entschuldigung <span class="text-red-500">*</span>
             </label>
             <select
               name="form[reason]"
               id="form_reason"
-              tabindex="14"
               value={@form_data.reason}
-              class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
             >
               <%= for {label, value} <- reasons() do %>
                 <option
@@ -397,65 +280,42 @@
               <% end %>
             </select>
           </div>
-          <!-- Timeframe Group -->
-          <div>
-            <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
-              <svg
-                class="w-4 h-4 mr-2 text-orange-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              Zeitraum
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Start Date -->
-              <div>
-                <label for="form_start_date" class="block text-sm font-medium text-gray-700 mb-1">
-                  Startdatum <span class="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="form[start_date]"
-                  id="form_start_date"
-                  tabindex="15"
-                  value={Date.to_iso8601(@form_data.start_date)}
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <!-- End Date -->
-              <div>
-                <label for="form_end_date" class="block text-sm font-medium text-gray-700 mb-1">
-                  Enddatum <span class="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="form[end_date]"
-                  id="form_end_date"
-                  tabindex="16"
-                  value={Date.to_iso8601(@form_data.end_date)}
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="form_start_date" class="block text-sm font-medium text-blue-700">
+                Startdatum <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="form[start_date]"
+                id="form_start_date"
+                value={Date.to_iso8601(@form_data.start_date)}
+                required
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label for="form_end_date" class="block text-sm font-medium text-blue-700">
+                Enddatum <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="form[end_date]"
+                id="form_end_date"
+                value={Date.to_iso8601(@form_data.end_date)}
+                required
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
+              />
             </div>
           </div>
         </div>
       </div>
       <!-- Submit Button -->
-      <div class="mt-8 flex justify-center">
+      <div class="flex justify-center">
         <button
           type="submit"
-          tabindex="17"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 flex items-center"
+          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -465,7 +325,7 @@
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          PDF erstellen
+          PDF downloaden
         </button>
       </div>
     </form>
@@ -474,10 +334,9 @@
 
 <script>
   window.addEventListener("phx:open_pdf", (e) => {
-    // Create a temporary link element to trigger download without popup blockers
     const link = document.createElement('a');
     link.href = e.detail.url;
-    link.download = ''; // This suggests to browser that it should download the file
+    link.download = '';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
