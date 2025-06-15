@@ -46,11 +46,9 @@
 
 \begin{document}
 
-% Absendername
-\setkomavar{fromname}{<%= MehrSchulferien.PdfGenerator.format_full_name(@form_data) %>}
-
-% Absenderadresse
-\setkomavar{fromaddress}{<%= @form_data.street %>\\<%= @form_data.zip_code %> <%= @form_data.city %>}
+% Absendername und Adresse (drei Zeilen, immer oben rechts)
+\setkomavar{fromname}{}
+\setkomavar{fromaddress}{<%= [MehrSchulferien.PdfGenerator.format_full_name(@form_data), @form_data.street, Enum.join(Enum.filter([@form_data.zip_code, @form_data.city], &(&1 && &1 != "")), " ")] |> Enum.filter(&(&1 && &1 != "")) |> Enum.join("\\\\") %>}
 
 % Datum
 \setkomavar{date}{\today}

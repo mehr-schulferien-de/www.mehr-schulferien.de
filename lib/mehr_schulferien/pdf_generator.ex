@@ -118,7 +118,13 @@ defmodule MehrSchulferien.PdfGenerator do
     teacher_salutation = Map.get(form_data, :teacher_salutation, "")
 
     if teacher_name && teacher_name != "" do
-      "z.Hd. #{teacher_salutation} #{teacher_name}"
+      salutation =
+        case teacher_salutation do
+          "Herr" -> "Herrn"
+          _ -> teacher_salutation
+        end
+
+      "z.Hd. #{salutation} #{teacher_name}"
     else
       nil
     end
@@ -197,6 +203,19 @@ defmodule MehrSchulferien.PdfGenerator do
 
       _ ->
         "#{date}"
+    end
+  end
+
+  # Formats the sender address line for the PDF (street, zip/city) without double commas if street is empty
+  def format_sender_address(form_data) do
+    street = form_data.street
+    zip_city = Enum.join(Enum.filter([form_data.zip_code, form_data.city], &(&1 && &1 != "")), " ")
+
+    cond do
+      street && street != "" ->
+        Enum.join([street, zip_city], ", ")
+      true ->
+        zip_city
     end
   end
 end

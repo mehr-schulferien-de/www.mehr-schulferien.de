@@ -105,7 +105,6 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
     required_fields = [
       {:first_name, "Vorname"},
       {:last_name, "Nachname"},
-      {:street, "Straße"},
       {:zip_code, "PLZ"},
       {:city, "Stadt"},
       {:name_of_student, "Name des Schülers/der Schülerin"},
