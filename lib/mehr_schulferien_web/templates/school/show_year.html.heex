@@ -57,20 +57,32 @@
           year={@year}
         />
 
-        <div class="bg-white p-4 rounded-lg shadow-sm mt-6">
+        <div class="bg-white p-4 rounded-lg shadow-sm mt-6 relative">
           <h2 class="text-xl font-bold text-gray-900 mb-3">Kontaktdaten</h2>
           <%= if @school.address do %>
+            <!-- Bearbeiten Button (top-right) -->
+            <%= link to: Routes.wiki_path(@conn, :show_school, @school.slug),
+                  class: "absolute top-4 right-4 p-2 rounded-full text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors",
+                  title: "Bearbeiten" do %>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            <% end %>
             <!-- Address & Contact Info -->
             <div class="bg-gray-50 p-3 rounded-md border-l-4 border-blue-500 mb-3">
               <div class="font-semibold text-gray-900 text-sm mb-1">
-                <%= if @school.address.homepage_url do %>
-                  <%= link(@school.name,
-                    to: @school.address.homepage_url,
-                    class: "text-blue-600 hover:text-blue-800 cursor-pointer"
-                  ) %>
-                <% else %>
-                  <%= @school.name %>
-                <% end %>
+                <%= @school.name %>
               </div>
               <div class="text-sm text-gray-700 mb-2">
                 <%= @school.address.street %><br />
@@ -106,7 +118,6 @@
                     </a>
                   </div>
                 <% end %>
-
                 <%= if @school.address.phone_number do %>
                   <div class="flex items-center text-sm">
                     <svg
@@ -135,69 +146,60 @@
                     </a>
                   </div>
                 <% end %>
+                <%= if @school.address.homepage_url do %>
+                  <div class="flex items-center text-sm">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-3 w-3 text-blue-500 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <% homepage_url = @school.address.homepage_url %>
+                    <a
+                      href={homepage_url}
+                      class="text-blue-600 hover:text-blue-800 cursor-pointer break-all"
+                      title={homepage_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <%= homepage_url %>
+                    </a>
+                  </div>
+                <% end %>
+                <!-- vCard Download Button as a small icon in the bottom-right corner -->
+              </div>
+              <div class="flex justify-end mt-1">
+                <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug),
+                      class: "inline-flex items-center gap-1 p-1 rounded-full text-blue-500 hover:text-blue-700 hover:bg-blue-100 transition-colors text-xs font-medium",
+                      title: "vCard herunterladen" do %>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  vCard
+                <% end %>
               </div>
             </div>
-            <!-- Compact Action Buttons - moved closer to contact info -->
-            <div class="grid grid-cols-2 gap-2 pt-3 mb-4">
-              <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug), 
-                   class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer" do %>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-3 w-3 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                vCard
-              <% end %>
-
-              <%= link to: Routes.wiki_path(@conn, :show_school, @school.slug), 
-                   class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded transition-colors cursor-pointer" do %>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-3 w-3 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-                Bearbeiten
-              <% end %>
-
-              <%= link to: "/briefe/#{@school.slug}/entschuldigung", 
-                   class: "col-span-2 flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-green-600 hover:bg-green-700 border border-green-600 rounded transition-colors cursor-pointer" do %>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-3 w-3 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                Entschuldigung erstellen
-              <% end %>
-            </div>
-            <!-- Links Section - More Compact -->
-            <div class="grid grid-cols-2 gap-3">
+            <!-- Links Section: Only Wikipedia if present -->
+            <div class="grid grid-cols-2 gap-3 mt-4">
               <!-- Maps Column -->
               <div>
                 <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
@@ -254,8 +256,8 @@
                   </li>
                 </ul>
               </div>
-              <!-- External Links Column -->
-              <%= if @school.address.homepage_url || @school.address.wikipedia_url do %>
+              <!-- Wikipedia Link Only if present -->
+              <%= if @school.address.wikipedia_url do %>
                 <div>
                   <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
                     <svg
@@ -275,27 +277,16 @@
                     Links
                   </h3>
                   <ul class="space-y-1 list-disc pl-6 text-sm">
-                    <%= if @school.address.homepage_url do %>
-                      <li>
-                        <% homepage_url = @school.address.homepage_url %>
-                        <a
-                          href={homepage_url}
-                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                        >
-                          Homepage der Schule
-                        </a>
-                      </li>
-                    <% end %>
-                    <%= if @school.address.wikipedia_url do %>
-                      <li>
-                        <a
-                          href={@school.address.wikipedia_url}
-                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                        >
-                          Wikipedia-Artikel
-                        </a>
-                      </li>
-                    <% end %>
+                    <li>
+                      <a
+                        href={@school.address.wikipedia_url}
+                        class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Wikipedia-Artikel
+                      </a>
+                    </li>
                   </ul>
                 </div>
               <% end %>
@@ -346,6 +337,42 @@
               <% end %>
             </div>
           <% end %>
+        </div>
+        <!-- Own Card for Entschuldigung schreiben and future links -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mt-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 3.5a2.121 2.121 0 013 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
+            </svg>
+            Formulare & Bescheinigungen
+          </h3>
+          <div class="flex flex-col gap-2">
+            <%= link to: "/briefe/#{@school.slug}/entschuldigung",
+                 class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 border border-teal-600 rounded transition-colors cursor-pointer shadow-sm w-full sm:w-auto" do %>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 20h9"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16.5 3.5a2.121 2.121 0 013 3L7 19.5 3 21l1.5-4L16.5 3.5z"
+                />
+              </svg>
+              Entschuldigung schreiben
+            <% end %>
+            <!-- Placeholder for future similar links -->
+          </div>
         </div>
       </div>
     </div>

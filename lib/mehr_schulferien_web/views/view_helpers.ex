@@ -242,4 +242,19 @@ defmodule MehrSchulferienWeb.ViewHelpers do
     }
     |> Jason.encode!()
   end
+
+  @doc """
+  Extracts the domain from a URL string (e.g., https://www.example.com/foo -> example.com).
+  Returns nil if the URL is invalid.
+  """
+  def extract_domain(url) when is_binary(url) do
+    case URI.parse(url) do
+      %URI{host: host} when is_binary(host) ->
+        # Remove www. prefix if present
+        Regex.replace(~r/^www\./, host, "")
+
+      _ ->
+        nil
+    end
+  end
 end
