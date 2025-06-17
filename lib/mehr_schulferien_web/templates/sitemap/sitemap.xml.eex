@@ -3,21 +3,21 @@
   
   <%!-- DAILY UPDATES: Updated every day --%>
   <sitemap>
-    <loc><%= MehrSchulferienWeb.Endpoint.url() %>/</loc>
+    <loc>https://www.mehr-schulferien.de/</loc>
     <lastmod><%= @today %></lastmod>
   </sitemap>
   <sitemap>
-    <loc><%= MehrSchulferienWeb.Endpoint.url() %>/sitemap.xml</loc>
+    <loc>https://www.mehr-schulferien.de/sitemap.xml</loc>
     <lastmod><%= @today %></lastmod>
   </sitemap>
 
   <%!-- MONTHLY UPDATES: Updated on the 1st of each month --%>
   <sitemap>
-    <loc><%= MehrSchulferienWeb.Endpoint.url() %>/developers</loc>
+    <loc>https://www.mehr-schulferien.de/developers</loc>
     <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
   </sitemap>
   <sitemap>
-    <loc><%= MehrSchulferienWeb.Endpoint.url() %>/impressum</loc>
+    <loc>https://www.mehr-schulferien.de/impressum</loc>
     <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
   </sitemap>
 
@@ -30,7 +30,7 @@
     <%!-- YEARLY UPDATES: Updated on January 1st each year --%>
     <%!-- Country URLs --%>
     <sitemap>
-      <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %></loc>
+      <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %></loc>
       <lastmod><%= Date.new!(@today.year, 1, 1) %></lastmod>
     </sitemap>
 
@@ -44,7 +44,7 @@
       <%!-- Years for federal state --%>
       <%= for year <- Map.get(federal_state, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
+          <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
@@ -54,7 +54,7 @@
         
         <%!-- Bridge days URLs for federal states --%>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
+          <loc>https://www.mehr-schulferien.de/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
@@ -68,7 +68,7 @@
     <%= for city <- cities do %>
       <%= for year <- Map.get(city, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %>/stadt/<%= city.slug %>/<%= year %></loc>
+          <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/stadt/<%= city.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
@@ -82,14 +82,14 @@
     <%= for school <- schools do %>
       <%!-- Static school pages --%>
       <sitemap>
-        <loc><%= MehrSchulferienWeb.Endpoint.url() %>/briefe/<%= school.slug %>/entschuldigung</loc>
+        <loc>https://www.mehr-schulferien.de/briefe/<%= school.slug %>/entschuldigung</loc>
         <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
       </sitemap>
 
       <%!-- Years for school --%>
       <%= for year <- Map.get(school, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <sitemap>
-          <loc><%= MehrSchulferienWeb.Endpoint.url() %>/ferien/<%= country.slug %>/schule/<%= school.slug %>/<%= year %></loc>
+          <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/schule/<%= school.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
