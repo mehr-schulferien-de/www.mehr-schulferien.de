@@ -151,7 +151,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
   defp format_param_value(value), do: to_string(value)
 
   # Get available reasons for the dropdown
-  defp reasons do
+  def reasons do
     [
       {"Krankheit", "krankheit"},
       {"Arzttermin", "arzttermin"},
