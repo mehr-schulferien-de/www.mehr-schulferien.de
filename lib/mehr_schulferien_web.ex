@@ -91,6 +91,7 @@ defmodule MehrSchulferienWeb do
 
       import MehrSchulferienWeb.ErrorHelpers
       import MehrSchulferienWeb.Gettext
+      import MehrSchulferienWeb.NavigationComponent
       alias MehrSchulferienWeb.Router.Helpers, as: Routes
     end
   end

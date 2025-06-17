@@ -1,6 +1,7 @@
 defmodule MehrSchulferienWeb.LayoutView do
   use MehrSchulferienWeb, :view
   import Phoenix.HTML.Link
+  import MehrSchulferienWeb.NavigationComponent
 
   @doc """
   Determines whether to use Bootstrap CSS (legacy) or Tailwind CSS (new).

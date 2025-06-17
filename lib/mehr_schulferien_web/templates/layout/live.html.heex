@@ -12,7 +12,7 @@
   </head>
 
   <body class="min-h-screen bg-gray-100">
-    <%= render("_header_tailwind.html", assigns) %>
+    <.navigation socket={@socket} />
 
     <main role="main" class="container mx-auto py-8">
       <%= @inner_content %>

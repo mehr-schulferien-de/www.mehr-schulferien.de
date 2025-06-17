@@ -257,22 +257,56 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       end
     end
 
-    test "navigation dropdowns are collapsed by default", %{
+    test "new navigation component loads and functions correctly", %{
       conn: conn,
       school: school
     } do
       {:ok, view, _html} = live(conn, "/briefe/#{school.slug}/entschuldigung")
 
-      # Check that navigation dropdown elements have x-cloak attribute
-      # This ensures Alpine.js will hide them before initialization
       html = render(view)
-      assert html =~ "x-cloak"
 
-      # The dropdowns should not be visible initially (due to x-cloak and Alpine.js)
-      refute has_element?(view, "[x-show='desktopDropdown2025Open'][style*='display: block']")
-      refute has_element?(view, "[x-show='desktopDropdown2026Open'][style*='display: block']")
-      refute has_element?(view, "[x-show='brueckenDropdown2025Open'][style*='display: block']")
-      refute has_element?(view, "[x-show='brueckenDropdown2026Open'][style*='display: block']")
+      # Check that the new navigation header is present
+      assert html =~ "MEHR!"
+      assert html =~ "Schulferien"
+      assert html =~ "bg-white border-b border-slate-200"
+
+      # Check that all dropdown sections are present
+      assert html =~ "Schulferien 2025"
+      assert html =~ "Schulferien 2026"
+      assert html =~ "Brückentage 2025"
+      assert html =~ "Brückentage 2026"
+
+      # Check that dropdown containers use CSS-only approach (no Alpine.js)
+      assert html =~ "dropdown-container"
+      assert html =~ "dropdown-menu"
+      refute html =~ "x-data"
+      refute html =~ "x-show"
+
+      # Check that major federal states are in navigation
+      assert html =~ "Baden-Württemberg"
+      assert html =~ "Bayern"
+      assert html =~ "Berlin"
+      assert html =~ "Nordrhein-Westfalen"
+
+      # Check that links are properly formatted
+      assert html =~ ~r/href="\/ferien\/d\/bundesland\/baden-wuerttemberg\/2025"/
+      assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/bayern\/2026"/
+
+      # Check mobile menu structure
+      assert html =~ "mobile-menu-toggle"
+      assert html =~ "mobile-menu"
+      assert html =~ "<details"
+      assert html =~ "<summary"
+
+      # Check that CSS hover behavior is included
+      assert html =~ ".dropdown-container:hover .dropdown-menu"
+      assert html =~ "opacity: 1"
+      assert html =~ "visibility: visible"
+
+      # Check that vanilla JavaScript is included for mobile menu
+      assert html =~ "document.addEventListener('DOMContentLoaded'"
+      assert html =~ "mobile-menu-toggle"
+      assert html =~ "classList.remove('hidden')"
     end
 
     test "can reuse form after PDF generation", %{
