@@ -130,6 +130,24 @@ defmodule MehrSchulferien.PdfGenerator do
     end
   end
 
+  def format_personal_greeting(form_data) do
+    teacher_name = Map.get(form_data, :teacher_name, "")
+    teacher_salutation = Map.get(form_data, :teacher_salutation, "")
+
+    if teacher_name && teacher_name != "" do
+      salutation =
+        case teacher_salutation do
+          "Herr" -> "Sehr geehrter Herr"
+          "Frau" -> "Sehr geehrte Frau"
+          _ -> "Sehr geehrte(r)"
+        end
+
+      "#{salutation} #{teacher_name},"
+    else
+      "Sehr geehrte Damen und Herren,"
+    end
+  end
+
   def format_absence_reason(reason) do
     case reason do
       "krankheit" -> "wegen Krankheit"

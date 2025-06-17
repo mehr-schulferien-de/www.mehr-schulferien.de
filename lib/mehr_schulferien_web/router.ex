@@ -21,6 +21,14 @@ defmodule MehrSchulferienWeb.Router do
     plug :put_status, 302
   end
 
+  pipeline :pdf do
+    plug :accepts, ["pdf"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
   # ========== Old Route Redirects (now redirecting /land/ to /ferien/) ==========
   scope "/", MehrSchulferienWeb do
     pipe_through :redirects
@@ -132,9 +140,6 @@ defmodule MehrSchulferienWeb.Router do
     # Entschuldigung LiveView
     live "/briefe/:school_slug/entschuldigung", EntschuldigungLive
 
-    # Entschuldigung PDF download
-    get "/briefe/:school_slug/entschuldigung/pdf", EntschuldigungPdfController, :download
-
     # Legacy vCard path for backward compatibility
     get "/schule/:school_slug/vcard", SchoolVCardController, :download_legacy
 
@@ -147,6 +152,14 @@ defmodule MehrSchulferienWeb.Router do
         BridgeDayController,
         :show_within_federal_state,
         constraints: [year: ~r/20[2-3][0-9]/]
+  end
+
+  # PDF download routes
+  scope "/", MehrSchulferienWeb do
+    pipe_through :pdf
+
+    # Entschuldigung PDF download
+    get "/briefe/:school_slug/entschuldigung/pdf", EntschuldigungPdfController, :download
   end
 
   scope "/api/v2.0", MehrSchulferienWeb.Api.V2, as: :api do

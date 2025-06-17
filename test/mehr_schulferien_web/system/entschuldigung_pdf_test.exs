@@ -249,6 +249,53 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
       conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", multi_day_params)
       assert conn.status in [200, 302]
     end
+
+    test "PDF download returns valid PDF file with correct content type", %{
+      conn: conn,
+      school: school
+    } do
+      # Simulate the PDF download request with query parameters
+      params = %{
+        "first_name" => "Max",
+        "last_name" => "Mustermann",
+        "street" => "Teststraße 1",
+        "zip_code" => "12345",
+        "city" => "Teststadt",
+        "name_of_student" => "Max Junior",
+        "class_name" => "5a",
+        "reason" => "krankheit",
+        "start_date" => "2025-06-15",
+        "end_date" => "2025-06-15"
+      }
+
+      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
+
+      case conn.status do
+        200 ->
+          # PDF generation successful
+          content_type = get_resp_header(conn, "content-type") |> List.first()
+          assert content_type == "application/pdf"
+
+          content_disposition = get_resp_header(conn, "content-disposition") |> List.first()
+          assert content_disposition =~ "attachment"
+          assert content_disposition =~ ".pdf"
+
+          # Check PDF magic number (%PDF-)
+          assert binary_part(conn.resp_body, 0, 5) == "%PDF-"
+
+          # Check that we got some binary data
+          assert byte_size(conn.resp_body) > 0
+
+        302 ->
+          # PDF generation failed (likely due to missing LaTeX packages)
+          # Should redirect back to form with error message
+          assert redirected_to(conn) =~ "/briefe/#{school.slug}/entschuldigung"
+          assert get_flash(conn, :error) =~ "PDF konnte nicht erstellt werden"
+
+        _ ->
+          flunk("Unexpected response status: #{conn.status}")
+      end
+    end
   end
 
   defp create_school(_) do

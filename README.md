@@ -12,6 +12,34 @@ See the [contributing guide](https://github.com/mehr-schulferien-de/www.mehr-sch
 for more information about setting up your development environment and opening pull
 requests.
 
+## Required Dependencies
+
+### LaTeX Packages for PDF Generation
+
+The application uses LaTeX to generate PDF documents (excuse letters). The following packages need to be installed:
+
+#### macOS
+```bash
+# Install MacTeX (if not already installed)
+brew install --cask mactex
+
+# Install required LaTeX packages
+sudo tlmgr install pst-barcode
+```
+
+#### Ubuntu/Debian
+```bash
+# Install TeX Live and required packages
+sudo apt-get install texlive-latex-base texlive-latex-extra texlive-latex-recommended
+sudo apt-get install texlive-pstricks
+```
+
+#### Windows
+1. Install MiKTeX from https://miktex.org/download
+2. Open MiKTeX Console
+3. Go to Packages
+4. Search for and install `pst-barcode`
+
 ## Documentation
 
 - [URL Parameters](docs/url_parameters.md) - Information about available URL parameters for customizing views

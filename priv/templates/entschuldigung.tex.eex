@@ -28,14 +28,6 @@
 	version=last,
 ]{scrlttr2}
 
-% Footer with website URL
-\setkomavar{firstfoot}{%
-  \parbox{\useplength{firstfootwidth}}{%
-    \centering
-    {\footnotesize Erstellt von https://www.mehr-schulferien.de}
-  }
-}
-
 % Zeichenkodierung des Dokuments ist in UTF-8
 \usepackage[utf8]{inputenc}
 
@@ -46,34 +38,46 @@
 \usepackage{eurosym}
 \DeclareUnicodeCharacter{20AC}{\euro}
 
+% QR Code Support
+\usepackage{qrcode}
+
+% Footer with website URL and QR code
+\setkomavar{firstfoot}{%
+  \parbox{\useplength{firstfootwidth}}{%
+    \centering
+    {\footnotesize https://www.mehr-schulferien.de} \hspace{1em} \qrcode[height=0.4in]{https://www.mehr-schulferien.de/briefe/<%= @school.slug %>/entschuldigung}
+  }
+}
+
 % Absendername unter Schlussformel entfernen
 \setkomavar{signature}{<%= MehrSchulferien.PdfGenerator.format_full_name(@form_data) %>}
 
 % Für Schlussformel Linksbündigkeit erzwingen
 \renewcommand*{\raggedsignature}{\raggedright}
 
-\begin{document}
+\usepackage{graphicx}
+\usepackage{url}
 
-% Absendername und Adresse (drei Zeilen, immer oben rechts)
-\setkomavar{fromname}{}
-\setkomavar{fromaddress}{<%= [MehrSchulferien.PdfGenerator.format_full_name(@form_data), @form_data.street, Enum.join(Enum.filter([@form_data.zip_code, @form_data.city], &(&1 && &1 != "")), " ")] |> Enum.filter(&(&1 && &1 != "")) |> Enum.join("\\\\") %>}
+\setkomavar{fromname}{<%= @form_data.first_name %> <%= @form_data.last_name %>}
+\setkomavar{fromaddress}{<%= @form_data.street %>\\<%= @form_data.zip_code %> <%= @form_data.city %>}
+\setkomavar{fromphone}{<%= @form_data[:phone] %>}
+\setkomavar{fromemail}{<%= @form_data[:email] %>}
 
-% Datum
-\setkomavar{date}{\today}
-
-% Betreff
 \setkomavar{subject}{Entschuldigung für <%= @form_data.name_of_student %>}
 
+\setkomavar{place}{<%= @form_data.city %>}
+\setkomavar{date}{\today}
+
+\begin{document}
 \begin{letter}{<%= MehrSchulferien.PdfGenerator.format_school_address(@school, @form_data) %>}
 
-\opening{<%= @form_data.greeting %>}
+\opening{<%= MehrSchulferien.PdfGenerator.format_personal_greeting(@form_data) %>}
 
-hiermit bitte ich darum, das Fehlen <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %> <%= MehrSchulferien.PdfGenerator.format_absence_timeframe(@form_data) %> <%= MehrSchulferien.PdfGenerator.format_absence_reason(@form_data.reason) %> zu entschuldigen.
+ich bitte Sie, das Fehlen <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %> <%= MehrSchulferien.PdfGenerator.format_absence_timeframe(@form_data) %> <%= MehrSchulferien.PdfGenerator.format_absence_reason(@form_data.reason) %> zu entschuldigen.
 
 Vielen Dank für Ihr Verständnis.
 
 \closing{Mit freundlichen Grüßen}
 
 \end{letter}
-
 \end{document} 

@@ -66,16 +66,27 @@
                 <%= if path do %>
                   <%= link(label,
                     to: path,
-                    class: [
-                      "ml-1 text-gray-700 hover:text-blue-600 md:ml-2",
-                      (label == @school.name) && "truncate max-w-[8rem] sm:max-w-none overflow-hidden whitespace-nowrap"
-                    ] |> Enum.filter(& &1) |> Enum.join(" ")
+                    class:
+                      [
+                        "ml-1 text-gray-700 hover:text-blue-600 md:ml-2",
+                        label == @school.name &&
+                          "truncate max-w-[8rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                      ]
+                      |> Enum.filter(& &1)
+                      |> Enum.join(" ")
                   ) %>
                 <% else %>
-                  <span class={[
-                    "ml-1 text-gray-500 md:ml-2",
-                    (label == @school.name) && "truncate max-w-[8rem] sm:max-w-none overflow-hidden whitespace-nowrap"
-                  ] |> Enum.filter(& &1) |> Enum.join(" ")}><%= label %></span>
+                  <span class={
+                    [
+                      "ml-1 text-gray-500 md:ml-2",
+                      label == @school.name &&
+                        "truncate max-w-[8rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                    ]
+                    |> Enum.filter(& &1)
+                    |> Enum.join(" ")
+                  }>
+                    <%= label %>
+                  </span>
                 <% end %>
               </div>
             </li>
@@ -250,7 +261,6 @@
                   id="form_teacher_salutation"
                   value={@form_data.teacher_salutation}
                   class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
-                  phx-change="teacher_fields_changed"
                 >
                   <option value="Herr" selected={@form_data.teacher_salutation == "Herr"}>
                     Herr
@@ -270,7 +280,6 @@
                   id="form_teacher_name"
                   value={@form_data.teacher_name}
                   class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
-                  phx-blur="teacher_fields_changed"
                 />
               </div>
             </div>
@@ -432,7 +441,8 @@
   window.addEventListener("phx:open_pdf", (e) => {
     const link = document.createElement('a');
     link.href = e.detail.url;
-    link.download = '';
+    link.setAttribute('download', '');
+    link.setAttribute('target', '_blank');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
