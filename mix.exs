@@ -67,7 +67,13 @@ defmodule MehrSchulferien.MixProject do
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default", "esbuild default --minify", "phx.digest"]
+      "assets.deploy": [
+        "tailwind default",
+        "esbuild default --minify",
+        "assets.copy",
+        "phx.digest"
+      ],
+      "assets.copy": ["cmd cp -r assets/static/* priv/static/"]
     ]
   end
 end

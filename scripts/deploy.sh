@@ -62,7 +62,18 @@ then
     exit 1
   fi
   
-  echo "Assets built successfully, cache manifest exists"
+  # Verify static assets were copied
+  if [ ! -f "priv/static/images/entschuldigung-vorschau.webp" ]; then
+    echo "ERROR: Static assets not copied - entschuldigung-vorschau.webp not found"
+    echo "Manually copying static assets..."
+    cp -r assets/static/* priv/static/
+    if [ ! -f "priv/static/images/entschuldigung-vorschau.webp" ]; then
+      echo "ERROR: Failed to copy static assets"
+      exit 1
+    fi
+  fi
+  
+  echo "Assets built successfully, cache manifest and static assets exist"
 
   # Create release
   echo "Creating release..."
@@ -97,6 +108,12 @@ then
   # Verify the moved release has assets
   if [ ! -f "$RELEASE_DIR/lib/mehr_schulferien-${new_version}/priv/static/cache_manifest.json" ]; then
     echo "ERROR: Assets not found after moving release"
+    exit 1
+  fi
+  
+  # Verify static images exist in release
+  if [ ! -f "$RELEASE_DIR/lib/mehr_schulferien-${new_version}/priv/static/images/entschuldigung-vorschau.webp" ]; then
+    echo "ERROR: Static image not found in release"
     exit 1
   fi
 
