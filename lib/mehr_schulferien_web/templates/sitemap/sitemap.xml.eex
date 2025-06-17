@@ -80,6 +80,12 @@
 
     <%!-- Schools URLs --%>
     <%= for school <- schools do %>
+      <%!-- Static school pages --%>
+      <sitemap>
+        <loc><%= MehrSchulferienWeb.Endpoint.url() %>/briefe/<%= school.slug %>/entschuldigung</loc>
+        <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
+      </sitemap>
+
       <%!-- Years for school --%>
       <%= for year <- Map.get(school, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <sitemap>
