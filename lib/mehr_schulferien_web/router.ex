@@ -126,6 +126,9 @@ defmodule MehrSchulferienWeb.Router do
     get "/ferien/:country_slug/schule/:school_slug/:year", SchoolController, :show_year,
       constraints: [year: ~r/20[2-3][0-9]/]
 
+    # School documents index page
+    get "/briefe/:school_slug", SchoolController, :documents_index
+
     # Entschuldigung LiveView
     live "/briefe/:school_slug/entschuldigung", EntschuldigungLive
 

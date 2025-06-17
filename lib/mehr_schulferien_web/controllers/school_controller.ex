@@ -173,4 +173,25 @@ defmodule MehrSchulferienWeb.SchoolController do
         )
     )
   end
+
+  def documents_index(conn, %{"school_slug" => school_slug}) do
+    # Get school information
+    school = Locations.get_school_by_slug!(school_slug)
+    city = Locations.get_location!(school.parent_location_id)
+    county = Locations.get_location!(city.parent_location_id)
+    federal_state = Locations.get_location!(county.parent_location_id)
+    country = Locations.get_location!(federal_state.parent_location_id)
+
+    # Get current year for reference
+    current_year = Date.utc_today().year
+
+    render(conn, "documents_index.html",
+      school: school,
+      city: city,
+      county: county,
+      federal_state: federal_state,
+      country: country,
+      current_year: current_year
+    )
+  end
 end

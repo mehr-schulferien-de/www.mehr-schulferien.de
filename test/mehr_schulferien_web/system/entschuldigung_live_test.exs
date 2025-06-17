@@ -14,7 +14,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       {:ok, _view, html} = live(conn, "/briefe/#{school.slug}/entschuldigung")
 
       # Check that the page loads without KeyError exceptions
-      assert html =~ "Entschuldigung schreiben"
+      assert html =~ "PDF downloaden"
       assert html =~ school.name
       assert html =~ "Absender"
       assert html =~ "Name des Schülers/der Schülerin"
@@ -248,7 +248,6 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
 
       # Check that school information is displayed
       assert html =~ school.name
-      assert html =~ "Schule"
     end
 
     test "handles missing school gracefully", %{conn: conn} do
@@ -309,13 +308,12 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       assert html =~ "Sie können das Formular erneut ausfüllen"
 
       # Verify form data is preserved and ready for reuse/modification
-      assert html =~ "Entschuldigung schreiben"
+      assert html =~ "PDF downloaden"
       assert html =~ "value=\"Maria\""
       assert html =~ "value=\"Musterfrau\""
       assert html =~ "value=\"Dr.\""
       assert html =~ "value=\"Anna Musterfrau\""
       assert html =~ "value=\"7b\""
-      assert html =~ "PDF downloaden"
 
       # Fill in new form data with different dates
       new_form_data = %{

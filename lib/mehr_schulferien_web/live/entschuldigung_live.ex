@@ -7,6 +7,10 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
   def mount(%{"school_slug" => school_slug}, _session, socket) do
     # Get school information
     school = Locations.get_school_by_slug!(school_slug)
+    city = Locations.get_location!(school.parent_location_id)
+    county = Locations.get_location!(city.parent_location_id)
+    federal_state = Locations.get_location!(county.parent_location_id)
+    country = Locations.get_location!(federal_state.parent_location_id)
 
     # Initialize form with default values
     form_data = %{
@@ -29,6 +33,10 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
     {:ok,
      assign(socket,
        school: school,
+       city: city,
+       county: county,
+       federal_state: federal_state,
+       country: country,
        form_data: form_data,
        page_title: "Entschuldigung - #{school.name}"
      )}
