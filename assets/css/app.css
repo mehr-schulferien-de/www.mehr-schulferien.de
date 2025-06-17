@@ -277,3 +277,9 @@ body {
 .bridge-day-table {
   margin-top: 1em;
 }
+
+html {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}

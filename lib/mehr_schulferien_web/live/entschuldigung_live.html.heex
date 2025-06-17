@@ -70,7 +70,7 @@
                       [
                         "text-slate-600 hover:text-blue-600 transition-colors",
                         label == @school.name &&
-                          "truncate max-w-[10rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                          "truncate max-w-[6rem] sm:max-w-none overflow-hidden whitespace-nowrap"
                       ]
                       |> Enum.filter(& &1)
                       |> Enum.join(" ")
@@ -80,7 +80,7 @@
                     [
                       "text-slate-800 font-medium",
                       label == @school.name &&
-                        "truncate max-w-[10rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                        "truncate max-w-[6rem] sm:max-w-none overflow-hidden whitespace-nowrap"
                     ]
                     |> Enum.filter(& &1)
                     |> Enum.join(" ")
@@ -110,7 +110,7 @@
           <div class="flex-1 space-y-4">
             <div>
               <h2 class="text-xl font-semibold text-slate-900 mb-3">
-                Einfach als PDF erstellen
+                Einfach als PDF downloaden
               </h2>
               <p class="text-slate-600 leading-relaxed">
                 Generieren Sie kostenlos eine Entschuldigung nach <a
@@ -134,10 +134,10 @@
 
           <div class="w-full lg:w-40 flex-shrink-0">
             <div class="bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 p-4 text-center">
-              <div class="w-full h-24 bg-slate-200 rounded mb-2 flex items-center justify-center">
+              <div class="w-full aspect-[210/297] bg-white rounded mb-2 flex items-center justify-center">
                 <img src="/images/entschuldigung-vorschau.webp" alt="Entschuldigung Vorschau" class="w-full h-full object-contain" />
               </div>
-              <p class="text-xs text-slate-500">PDF Vorschau</p>
+              <p class="text-xs text-slate-500">PDF Beispiel Vorschau</p>
             </div>
           </div>
         </div>
