@@ -230,7 +230,7 @@
                   value={@form_data.first_name}
                   required
                   autofocus
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
               <div>
@@ -243,7 +243,7 @@
                   id="form_last_name"
                   value={@form_data.last_name}
                   required
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
             </div>
@@ -258,7 +258,7 @@
                 id="form_title"
                 value={@form_data.title}
                 placeholder="z.B. Dr., Prof."
-                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
               />
             </div>
 
@@ -272,7 +272,7 @@
                 id="form_street"
                 value={@form_data.street}
                 placeholder="Musterstraße 123"
-                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
               />
             </div>
 
@@ -289,7 +289,7 @@
                   required
                   pattern="[0-9]{5}"
                   placeholder="12345"
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
               <div class="sm:col-span-2">
@@ -303,7 +303,7 @@
                   value={@form_data.city}
                   required
                   placeholder="Musterstadt"
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
             </div>
@@ -345,7 +345,7 @@
                   name="form[teacher_salutation]"
                   id="form_teacher_salutation"
                   value={@form_data.teacher_salutation}
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 >
                   <option value="Herr" selected={@form_data.teacher_salutation == "Herr"}>
                     Herr
@@ -368,7 +368,7 @@
                   id="form_teacher_name"
                   value={@form_data.teacher_name}
                   placeholder="Müller"
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
             </div>
@@ -387,7 +387,7 @@
                 value={@form_data.name_of_student}
                 required
                 placeholder="Max Mustermann"
-                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
               />
             </div>
 
@@ -402,13 +402,13 @@
                 value={@form_data.class_name}
                 required
                 placeholder="z.B. 5a, 10b"
-                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
               />
             </div>
 
             <div>
               <span class="block text-sm font-medium text-slate-700 mb-3">
-                Beziehung zum Kind:
+                Meine Beziehung zum Schüler:
               </span>
               <div class="space-y-3">
                 <label class="flex items-center">
@@ -481,7 +481,7 @@
                 id="form_reason"
                 value={@form_data.reason}
                 required
-                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
               >
                 <%= for {label, value} <- reasons() do %>
                   <option
@@ -508,7 +508,7 @@
                   id="form_start_date"
                   value={Date.to_iso8601(@form_data.start_date)}
                   required
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
               <div>
@@ -521,7 +521,7 @@
                   id="form_end_date"
                   value={Date.to_iso8601(@form_data.end_date)}
                   required
-                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
             </div>
