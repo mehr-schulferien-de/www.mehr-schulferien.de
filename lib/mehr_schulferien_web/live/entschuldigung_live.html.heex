@@ -25,7 +25,7 @@
                @school.slug,
                Date.utc_today().year
              )},
-            {"Formulare", Routes.school_path(@socket, :documents_index, @school.slug)},
+            {"Briefe", Routes.school_path(@socket, :documents_index, @school.slug)},
             {"Entschuldigung", nil}
           ] %>
           <% visible_breadcrumbs = Enum.slice(breadcrumbs, max(length(breadcrumbs) - 4, 0), 4) %>
@@ -66,10 +66,16 @@
                 <%= if path do %>
                   <%= link(label,
                     to: path,
-                    class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2"
+                    class: [
+                      "ml-1 text-gray-700 hover:text-blue-600 md:ml-2",
+                      (label == @school.name) && "truncate max-w-[8rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                    ] |> Enum.filter(& &1) |> Enum.join(" ")
                   ) %>
                 <% else %>
-                  <span class="ml-1 text-gray-500 md:ml-2"><%= label %></span>
+                  <span class={[
+                    "ml-1 text-gray-500 md:ml-2",
+                    (label == @school.name) && "truncate max-w-[8rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                  ] |> Enum.filter(& &1) |> Enum.join(" ")}><%= label %></span>
                 <% end %>
               </div>
             </li>
