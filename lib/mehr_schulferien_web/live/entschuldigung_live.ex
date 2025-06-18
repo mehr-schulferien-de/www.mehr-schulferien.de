@@ -33,8 +33,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
 
     # Get locale from URL params, session, socket assigns, or default to "de"
     locale = params["locale"] || Map.get(session, "locale") || socket.assigns[:locale] || "de"
-    
-    
+
     # Set the Gettext locale for this process
     Gettext.put_locale(MehrSchulferienWeb.Gettext, locale)
 
@@ -97,10 +96,10 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
   def handle_info({:change_locale, locale}, socket) do
     # Set Gettext locale
     Gettext.put_locale(MehrSchulferienWeb.Gettext, locale)
-    
+
     # Update socket with new locale and force a full page reload to trigger LocalePlug
-    {:noreply, 
-     socket 
+    {:noreply,
+     socket
      |> assign(locale: locale)
      |> push_navigate(to: "/briefe/#{socket.assigns.school.slug}/entschuldigung?locale=#{locale}")}
   end
@@ -177,7 +176,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
     translations = %{
       "Create Excuse Letter" => %{
         "de" => "Entschuldigung erstellen",
-        "en" => "Create Excuse Letter", 
+        "en" => "Create Excuse Letter",
         "ru" => "Создать справку об отсутствии",
         "ar" => "إنشاء رسالة عذر",
         "tr" => "Mazeret Mektubu Oluştur",
@@ -465,16 +464,25 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         "fr" => "Date de fin",
         "uk" => "Дата закінчення"
       },
-      "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email." => %{
-        "de" => "Generieren Sie kostenlos eine Entschuldigung nach %{standard}. Das PDF können Sie ausdrucken oder digital unterschreiben und per E-Mail an die Schule senden.",
-        "en" => "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
-        "ru" => "Сгенерируйте бесплатную справку об отсутствии согласно %{standard}. Вы можете распечатать PDF или подписать его цифровой подписью и отправить в школу по электронной почте.",
-        "ar" => "قم بإنشاء رسالة عذر مجانية وفقاً لـ %{standard}. يمكنك طباعة ملف PDF أو توقيعه رقمياً وإرساله إلى المدرسة عبر البريد الإلكتروني.",
-        "tr" => "%{standard}'a göre ücretsiz bir mazeret mektubu oluşturun. PDF'yi yazdırabilir veya dijital olarak imzalayıp okula e-posta ile gönderebilirsiniz.",
-        "pl" => "Wygeneruj bezpłatne usprawiedliwienie zgodnie z %{standard}. Możesz wydrukować PDF lub podpisać go cyfrowo i wysłać do szkoły e-mailem.",
-        "fr" => "Générez gratuitement une lettre d'excuse selon %{standard}. Vous pouvez imprimer le PDF ou le signer numériquement et l'envoyer à l'école par e-mail.",
-        "uk" => "Згенеруйте безкоштовний виправдальний лист відповідно до %{standard}. Ви можете роздрукувати PDF або підписати його цифровим підписом і надіслати до школи електронною поштою."
-      },
+      "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email." =>
+        %{
+          "de" =>
+            "Generieren Sie kostenlos eine Entschuldigung nach %{standard}. Das PDF können Sie ausdrucken oder digital unterschreiben und per E-Mail an die Schule senden.",
+          "en" =>
+            "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
+          "ru" =>
+            "Сгенерируйте бесплатную справку об отсутствии согласно %{standard}. Вы можете распечатать PDF или подписать его цифровой подписью и отправить в школу по электронной почте.",
+          "ar" =>
+            "قم بإنشاء رسالة عذر مجانية وفقاً لـ %{standard}. يمكنك طباعة ملف PDF أو توقيعه رقمياً وإرساله إلى المدرسة عبر البريد الإلكتروني.",
+          "tr" =>
+            "%{standard}'a göre ücretsiz bir mazeret mektubu oluşturun. PDF'yi yazdırabilir veya dijital olarak imzalayıp okula e-posta ile gönderebilirsiniz.",
+          "pl" =>
+            "Wygeneruj bezpłatne usprawiedliwienie zgodnie z %{standard}. Możesz wydrukować PDF lub podpisać go cyfrowo i wysłać do szkoły e-mailem.",
+          "fr" =>
+            "Générez gratuitement une lettre d'excuse selon %{standard}. Vous pouvez imprimer le PDF ou le signer numériquement et l'envoyer à l'école par e-mail.",
+          "uk" =>
+            "Згенеруйте безкоштовний виправдальний лист відповідно до %{standard}. Ви можете роздрукувати PDF або підписати його цифровим підписом і надіслати до школи електронною поштою."
+        },
       "Preview Example" => %{
         "de" => "Beispiel Vorschau",
         "en" => "Preview Example",
@@ -495,16 +503,25 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         "fr" => "Open Source et participation",
         "uk" => "Відкритий код та участь"
       },
-      "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!" => %{
-        "de" => "Dieses Projekt ist Open Source und lebt von der Beteiligung der Community. Haben Sie Feedback oder Feature-Wünsche (andere Formulare oder Briefe)? Besuchen Sie uns auf GitHub und erstellen Sie ein Issue!",
-        "en" => "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!",
-        "ru" => "Этот проект с открытым исходным кодом процветает благодаря участию сообщества. У вас есть отзывы или запросы функций (другие формы или письма)? Посетите нас на GitHub и создайте issue!",
-        "ar" => "هذا المشروع مفتوح المصدر ويزدهر بمشاركة المجتمع. هل لديك ملاحظات أو طلبات ميزات (نماذج أو رسائل أخرى)؟ قم بزيارتنا على GitHub وأنشئ issue!",
-        "tr" => "Bu proje açık kaynaklıdır ve topluluk katılımıyla gelişir. Geri bildiriminiz veya özellik istekleriniz (diğer formlar veya mektuplar) var mı? GitHub'da bizi ziyaret edin ve bir issue oluşturun!",
-        "pl" => "Ten projekt jest open source i rozwija się dzięki udziału społeczności. Masz opinię lub prośby o funkcje (inne formularze lub listy)? Odwiedź nas na GitHub i utwórz issue!",
-        "fr" => "Ce projet est open source et prospère grâce à la participation de la communauté. Avez-vous des commentaires ou des demandes de fonctionnalités (autres formulaires ou lettres) ? Visitez-nous sur GitHub et créez un issue !",
-        "uk" => "Цей проект з відкритим вихідним кодом процвітає завдяки участі спільноти. У вас є відгуки або запити функцій (інші форми або листи)? Відвідайте нас на GitHub і створіть issue!"
-      },
+      "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!" =>
+        %{
+          "de" =>
+            "Dieses Projekt ist Open Source und lebt von der Beteiligung der Community. Haben Sie Feedback oder Feature-Wünsche (andere Formulare oder Briefe)? Besuchen Sie uns auf GitHub und erstellen Sie ein Issue!",
+          "en" =>
+            "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!",
+          "ru" =>
+            "Этот проект с открытым исходным кодом процветает благодаря участию сообщества. У вас есть отзывы или запросы функций (другие формы или письма)? Посетите нас на GitHub и создайте issue!",
+          "ar" =>
+            "هذا المشروع مفتوح المصدر ويزدهر بمشاركة المجتمع. هل لديك ملاحظات أو طلبات ميزات (نماذج أو رسائل أخرى)؟ قم بزيارتنا على GitHub وأنشئ issue!",
+          "tr" =>
+            "Bu proje açık kaynaklıdır ve topluluk katılımıyla gelişir. Geri bildiriminiz veya özellik istekleriniz (diğer formlar veya mektuplar) var mı? GitHub'da bizi ziyaret edin ve bir issue oluşturun!",
+          "pl" =>
+            "Ten projekt jest open source i rozwija się dzięki udziału społeczności. Masz opinię lub prośby o funkcje (inne formularze lub listy)? Odwiedź nas na GitHub i utwórz issue!",
+          "fr" =>
+            "Ce projet est open source et prospère grâce à la participation de la communauté. Avez-vous des commentaires ou des demandes de fonctionnalités (autres formulaires ou lettres) ? Visitez-nous sur GitHub et créez un issue !",
+          "uk" =>
+            "Цей проект з відкритим вихідним кодом процвітає завдяки участі спільноти. У вас є відгуки або запити функцій (інші форми або листи)? Відвідайте нас на GitHub і створіть issue!"
+        },
       "Visit GitHub Project" => %{
         "de" => "GitHub Projekt besuchen",
         "en" => "Visit GitHub Project",
@@ -566,25 +583,30 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         "uk" => "Релігійне свято"
       }
     }
-    
+
     case translations[key] do
-      %{} = translation_map -> 
+      %{} = translation_map ->
         translation_map[locale] || translation_map["en"] || key
-      nil -> 
+
+      nil ->
         key
     end
   end
-  
+
   defp translate(key, locale, bindings) when is_map(bindings) do
     translated = translate(key, locale)
-    result = Enum.reduce(bindings, translated, fn {k, v}, acc ->
-      value_string = case v do
-        {:safe, content} -> content
-        _ -> to_string(v)
-      end
-      String.replace(acc, "%{#{k}}", value_string)
-    end)
-    
+
+    result =
+      Enum.reduce(bindings, translated, fn {k, v}, acc ->
+        value_string =
+          case v do
+            {:safe, content} -> content
+            _ -> to_string(v)
+          end
+
+        String.replace(acc, "%{#{k}}", value_string)
+      end)
+
     # If any of the bindings contain HTML (safe content), mark the result as safe
     if Enum.any?(bindings, fn {_, v} -> match?({:safe, _}, v) end) do
       raw(result)

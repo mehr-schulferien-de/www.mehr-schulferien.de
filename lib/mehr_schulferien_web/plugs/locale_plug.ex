@@ -13,15 +13,15 @@ defmodule MehrSchulferienWeb.LocalePlug do
   def call(conn, _opts) do
     locale = get_locale(conn)
     Gettext.put_locale(MehrSchulferienWeb.Gettext, locale)
-    
-    
+
     # Store locale in session if it came from URL parameter
-    conn = if conn.params["locale"] && validate_locale(conn.params["locale"]) do
-      put_session(conn, :locale, locale)
-    else
-      conn
-    end
-    
+    conn =
+      if conn.params["locale"] && validate_locale(conn.params["locale"]) do
+        put_session(conn, :locale, locale)
+      else
+        conn
+      end
+
     assign(conn, :locale, locale)
   end
 
@@ -31,20 +31,20 @@ defmodule MehrSchulferienWeb.LocalePlug do
     # 2. Session "locale" 
     # 3. Browser Accept-Language header
     # 4. Default locale
-    
+
     cond do
       # Check URL parameter
       locale = conn.params["locale"] && validate_locale(conn.params["locale"]) ->
         locale
-      
+
       # Check session
       locale = get_session(conn, :locale) && validate_locale(get_session(conn, :locale)) ->
         locale
-      
+
       # Check browser Accept-Language header
       locale = get_browser_locale(conn) ->
         locale
-      
+
       # Fallback to default
       true ->
         @default_locale
@@ -64,7 +64,7 @@ defmodule MehrSchulferienWeb.LocalePlug do
         |> Enum.find_value(fn {lang, _weight} ->
           find_supported_locale(lang)
         end)
-      
+
       _ ->
         nil
     end
@@ -74,14 +74,14 @@ defmodule MehrSchulferienWeb.LocalePlug do
     case String.split(tag, ";") do
       [lang] ->
         {String.trim(lang), 1.0}
-      
+
       [lang, quality] ->
-        weight = 
+        weight =
           quality
           |> String.trim()
           |> String.replace("q=", "")
           |> String.to_float()
-        
+
         {String.trim(lang), weight}
     end
   rescue
@@ -95,7 +95,7 @@ defmodule MehrSchulferienWeb.LocalePlug do
     else
       # Try language part only (e.g., "en-US" -> "en")
       lang_part = browser_lang |> String.split("-") |> hd()
-      
+
       if lang_part in @supported_locales do
         lang_part
       else

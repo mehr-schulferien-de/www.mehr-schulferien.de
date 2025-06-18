@@ -290,7 +290,9 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
           # PDF generation failed (likely due to missing LaTeX packages)
           # Should redirect back to form with error message
           assert redirected_to(conn) =~ "/briefe/#{school.slug}/entschuldigung"
-          assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "PDF konnte nicht erstellt werden"
+
+          assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+                   "PDF konnte nicht erstellt werden"
 
         _ ->
           flunk("Unexpected response status: #{conn.status}")
