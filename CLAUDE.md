@@ -83,6 +83,7 @@ The application supports both Bootstrap (legacy) and Tailwind CSS through a cent
 - Pre-commit hooks enforce: tests, formatting, compilation, and various file checks
 - Use simple solutions with onboard tools/packages when possible
 - Focus only on assigned tasks (DRY principle, but avoid scope creep)
+- Always run `mix format` after you did your work.
 
 ### Testing Strategy
 - System tests for full user workflows
