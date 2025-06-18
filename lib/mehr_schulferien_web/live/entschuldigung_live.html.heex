@@ -1,5 +1,14 @@
 <div class="min-h-screen">
   <div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <!-- Language Switcher -->
+    <div class="flex justify-end mb-4">
+      <.live_component 
+        module={MehrSchulferienWeb.LanguageSwitcherComponent} 
+        id="language-switcher"
+        current_locale={assigns[:locale] || "de"}
+        available_locales={["de", "en", "ru", "ar", "tr", "pl", "fr", "uk"]}
+      />
+    </div>
     <!-- Breadcrumbs -->
     <div class="mt-0 mb-8">
       <nav class="flex" aria-label="Breadcrumb">
@@ -29,7 +38,7 @@
             {"Entschuldigung", nil}
           ] %>
           <% visible_breadcrumbs = Enum.slice(breadcrumbs, max(length(breadcrumbs) - 4, 0), 4) %>
-          <% if length(breadcrumbs) > 4 do %>
+          <%= if length(breadcrumbs) > 4 do %>
             <li class="inline-flex items-center">
               <%= link to: breadcrumbs |> hd() |> elem(1), class: "text-slate-600 hover:text-blue-600 transition-colors" do %>
                 <svg
@@ -97,10 +106,10 @@
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">
-        Entschuldigung erstellen
+        <%= translate("Create Excuse Letter", @locale) %>
       </h1>
       <p class="text-lg text-slate-600">
-        Für <%= @school.name %>
+        <%= translate("For %{school_name}", @locale, %{school_name: @school.name}) %>
       </p>
     </div>
     <!-- Info card -->
@@ -110,14 +119,10 @@
           <div class="flex-1 space-y-4">
             <div>
               <h2 class="text-xl font-semibold text-slate-900 mb-3">
-                Einfach als PDF downloaden
+                <%= translate("Simply download as PDF", @locale) %>
               </h2>
               <p class="text-slate-600 leading-relaxed">
-                Generieren Sie kostenlos eine Entschuldigung nach <a
-                  href="https://de.wikipedia.org/wiki/DIN_5008"
-                  class="text-blue-600 hover:text-blue-800 underline"
-                >DIN 5008</a>.
-                Das PDF können Sie ausdrucken oder digital unterschreiben und per E-Mail an die Schule senden.
+                <%= translate("Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.", @locale, %{standard: raw("<a href=\"https://de.wikipedia.org/wiki/DIN_5008\" class=\"text-blue-600 hover:text-blue-800 underline\">DIN 5008</a>")}) %>
               </p>
             </div>
 
@@ -141,7 +146,7 @@
                   class="w-full h-full object-contain"
                 />
               </div>
-              <p class="text-xs text-slate-500">Beispiel Vorschau</p>
+              <p class="text-xs text-slate-500"><%= translate("Preview Example", @locale) %></p>
             </div>
           </div>
         </div>
@@ -205,10 +210,10 @@
                   />
                 </svg>
               </div>
-              Absender
+              <%= translate("Sender", @locale) %>
             </h2>
             <p class="text-sm text-slate-600 mt-1 ml-11">
-              Ihre persönlichen Daten für die Entschuldigung
+              <%= translate("Your personal information for the excuse letter", @locale) %>
             </p>
           </div>
 
@@ -216,7 +221,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label for="form_first_name" class="block text-sm font-medium text-slate-700 mb-2">
-                  Vorname <span class="text-red-500">*</span>
+                  <%= translate("First Name", @locale) %> <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -224,13 +229,12 @@
                   id="form_first_name"
                   value={@form_data.first_name}
                   required
-                  autofocus
                   class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 />
               </div>
               <div>
                 <label for="form_last_name" class="block text-sm font-medium text-slate-700 mb-2">
-                  Nachname <span class="text-red-500">*</span>
+                  <%= translate("Last Name", @locale) %> <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -245,7 +249,7 @@
 
             <div>
               <label for="form_title" class="block text-sm font-medium text-slate-700 mb-2">
-                Titel (optional)
+                <%= translate("Title (optional)", @locale) %>
               </label>
               <input
                 type="text"
@@ -259,7 +263,7 @@
 
             <div>
               <label for="form_street" class="block text-sm font-medium text-slate-700 mb-2">
-                Straße und Hausnummer (optional)
+                <%= translate("Street and House Number (optional)", @locale) %>
               </label>
               <input
                 type="text"
@@ -274,7 +278,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <div>
                 <label for="form_zip_code" class="block text-sm font-medium text-slate-700 mb-2">
-                  PLZ <span class="text-red-500">*</span>
+                  <%= translate("ZIP Code", @locale) %> <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -289,7 +293,7 @@
               </div>
               <div class="sm:col-span-2">
                 <label for="form_city" class="block text-sm font-medium text-slate-700 mb-2">
-                  Stadt <span class="text-red-500">*</span>
+                  <%= translate("City", @locale) %> <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -323,10 +327,10 @@
                   />
                 </svg>
               </div>
-              Schul- und Schülerdaten
+              <%= translate("School and Student Information", @locale) %>
             </h2>
             <p class="text-sm text-slate-600 mt-1 ml-11">
-              Informationen über die Schule und den Schüler
+              <%= translate("Information about the school and student", @locale) %>
             </p>
           </div>
 
@@ -334,7 +338,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">
-                  Anrede Klassenlehrer(in)
+                  <%= translate("Class Teacher Salutation", @locale) %>
                 </label>
                 <select
                   name="form[teacher_salutation]"
@@ -343,10 +347,10 @@
                   class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 >
                   <option value="Herr" selected={@form_data.teacher_salutation == "Herr"}>
-                    Herr
+                    <%= translate("Mr.", @locale) %>
                   </option>
                   <option value="Frau" selected={@form_data.teacher_salutation == "Frau"}>
-                    Frau
+                    <%= translate("Ms.", @locale) %>
                   </option>
                 </select>
               </div>
@@ -355,7 +359,7 @@
                   for="form_teacher_name"
                   class="block text-sm font-medium text-slate-700 mb-2"
                 >
-                  Name Klassenlehrer(in)
+                  <%= translate("Class Teacher Name", @locale) %>
                 </label>
                 <input
                   type="text"
@@ -373,7 +377,7 @@
                 for="form_name_of_student"
                 class="block text-sm font-medium text-slate-700 mb-2"
               >
-                Name des Schülers/der Schülerin <span class="text-red-500">*</span>
+                <%= translate("Student Name", @locale) %> <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -388,7 +392,7 @@
 
             <div>
               <label for="form_class_name" class="block text-sm font-medium text-slate-700 mb-2">
-                Klasse <span class="text-red-500">*</span>
+                <%= translate("Class", @locale) %> <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -403,7 +407,7 @@
 
             <div>
               <span class="block text-sm font-medium text-slate-700 mb-3">
-                Meine Beziehung zum Schüler:
+                <%= translate("My relationship to the student:", @locale) %>
               </span>
               <div class="space-y-3">
                 <label class="flex items-center">
@@ -414,7 +418,7 @@
                     checked={@form_data.child_type == "mein_sohn" or @form_data.child_type == nil}
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
-                  <span class="ml-3 text-sm text-slate-700">mein Sohn</span>
+                  <span class="ml-3 text-sm text-slate-700"><%= translate("my son", @locale) %></span>
                 </label>
                 <label class="flex items-center">
                   <input
@@ -424,7 +428,7 @@
                     checked={@form_data.child_type == "meine_tochter"}
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
-                  <span class="ml-3 text-sm text-slate-700">meine Tochter</span>
+                  <span class="ml-3 text-sm text-slate-700"><%= translate("my daughter", @locale) %></span>
                 </label>
                 <label class="flex items-center">
                   <input
@@ -435,7 +439,7 @@
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
                   <span class="ml-3 text-sm text-slate-700">
-                    weder Sohn, noch Tochter, aber ich bin sorgeberechtigt
+                    <%= translate("neither son nor daughter, but I have custody", @locale) %>
                   </span>
                 </label>
               </div>
@@ -461,15 +465,15 @@
                   />
                 </svg>
               </div>
-              Entschuldigungsdetails
+              <%= translate("Excuse Details", @locale) %>
             </h2>
-            <p class="text-sm text-slate-600 mt-1 ml-11">Grund und Zeitraum der Abwesenheit</p>
+            <p class="text-sm text-slate-600 mt-1 ml-11"><%= translate("Reason and period of absence", @locale) %></p>
           </div>
 
           <div class="space-y-6">
             <div>
               <label for="form_reason" class="block text-sm font-medium text-slate-700 mb-2">
-                Grund der Entschuldigung <span class="text-red-500">*</span>
+                <%= translate("Reason for Excuse", @locale) %> <span class="text-red-500">*</span>
               </label>
               <select
                 name="form[reason]"
@@ -478,7 +482,7 @@
                 required
                 class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
               >
-                <%= for {label, value} <- reasons() do %>
+                <%= for {label, value} <- reasons(@locale) do %>
                   <option
                     value={value}
                     selected={
@@ -495,7 +499,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label for="form_start_date" class="block text-sm font-medium text-slate-700 mb-2">
-                  Startdatum <span class="text-red-500">*</span>
+                  <%= translate("Start Date", @locale) %> <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -508,7 +512,7 @@
               </div>
               <div>
                 <label for="form_end_date" class="block text-sm font-medium text-slate-700 mb-2">
-                  Enddatum <span class="text-red-500">*</span>
+                  <%= translate("End Date", @locale) %> <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -537,7 +541,7 @@
                   d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              PDF downloaden
+              <%= translate("Download PDF", @locale) %>
             </button>
           </div>
         </div>
@@ -550,10 +554,9 @@
                 <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-slate-900 mb-2">Open Source & Mitmachen</h3>
+            <h3 class="text-lg font-semibold text-slate-900 mb-2"><%= translate("Open Source & Participation", @locale) %></h3>
             <p class="text-slate-600 mb-4">
-              Dieses Projekt ist Open Source und lebt von der Beteiligung der Community. 
-              Haben Sie Feedback oder Feature-Wünsche (andere Formulare oder Briefe)? Besuchen Sie uns auf GitHub und erstellen Sie ein Issue!
+              <%= translate("This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!", @locale) %>
             </p>
             <a
               href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de"
@@ -563,7 +566,7 @@
               <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                 <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
               </svg>
-              GitHub Projekt besuchen
+              <%= translate("Visit GitHub Project", @locale) %>
             </a>
           </div>
         </div>

@@ -1,0 +1,211 @@
+## This file is a PO Template file.
+##
+## This file contains all the messages used in the application.
+## To update the po files, use `mix gettext.extract --merge`.
+
+msgid ""
+msgstr ""
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:8
+msgid "Home"
+msgstr "Ana Sayfa"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:100
+msgid "Create Excuse Letter"
+msgstr "Mazeret Mektubu Oluştur"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:103
+msgid "For %{school_name}"
+msgstr "%{school_name} için"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:113
+msgid "Simply download as PDF"
+msgstr "PDF olarak indirin"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:117
+msgid "Generate a free excuse letter according to %{din_link}. You can print the PDF or digitally sign it and send it to the school via email."
+msgstr "%{din_link}'e göre ücretsiz bir mazeret mektubu oluşturun. PDF'yi yazdırabilir veya dijital olarak imzalayıp okula e-posta ile gönderebilirsiniz."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:144
+msgid "Example Preview"
+msgstr "Örnek Önizleme"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:208
+msgid "Sender"
+msgstr "Gönderen"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:211
+msgid "Your personal data for the excuse letter"
+msgstr "Mazeret mektubu için kişisel bilgileriniz"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:219
+msgid "First Name"
+msgstr "Ad"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:233
+msgid "Last Name"
+msgstr "Soyad"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:247
+msgid "Title (optional)"
+msgstr "Unvan (isteğe bağlı)"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:255
+msgid "e.g. Dr., Prof."
+msgstr "örn. Dr., Prof."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:262
+msgid "Street and House Number (optional)"
+msgstr "Sokak ve Kapı Numarası (isteğe bağlı)"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:269
+msgid "Example Street 123"
+msgstr "Örnek Sokak 123"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:277
+msgid "Postal Code"
+msgstr "Posta Kodu"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:286
+msgid "12345"
+msgstr "12345"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:292
+msgid "City"
+msgstr "Şehir"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:300
+msgid "Example City"
+msgstr "Örnek Şehir"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:326
+msgid "School and Student Data"
+msgstr "Okul ve Öğrenci Bilgileri"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:329
+msgid "Information about the school and the student"
+msgstr "Okul ve öğrenci hakkında bilgiler"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:337
+msgid "Teacher Salutation"
+msgstr "Öğretmen Hitabı"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:346
+msgid "Mr."
+msgstr "Bay"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:349
+msgid "Ms."
+msgstr "Bayan"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:358
+msgid "Teacher Name"
+msgstr "Öğretmen Adı"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:365
+msgid "Miller"
+msgstr "Miller"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:376
+msgid "Student Name"
+msgstr "Öğrenci Adı"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:384
+msgid "Max Example"
+msgstr "Max Örnek"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:391
+msgid "Class"
+msgstr "Sınıf"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:399
+msgid "e.g. 5a, 10b"
+msgstr "örn. 5a, 10b"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:406
+msgid "My relationship to the student:"
+msgstr "Öğrenci ile ilişkim:"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:417
+msgid "my son"
+msgstr "oğlum"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:427
+msgid "my daughter"
+msgstr "kızım"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:438
+msgid "neither son nor daughter, but I have custody"
+msgstr "ne oğlum ne kızım, ama veliyim"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:464
+msgid "Excuse Details"
+msgstr "Mazeret Detayları"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:466
+msgid "Reason and period of absence"
+msgstr "Devamsızlık nedeni ve süresi"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:472
+msgid "Reason for Excuse"
+msgstr "Mazeret Nedeni"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:498
+msgid "Start Date"
+msgstr "Başlangıç Tarihi"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:511
+msgid "End Date"
+msgstr "Bitiş Tarihi"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:540
+msgid "Download PDF"
+msgstr "PDF İndir"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:553
+msgid "Open Source & Participate"
+msgstr "Açık Kaynak ve Katılım"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:555
+msgid "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!"
+msgstr "Bu proje açık kaynak kodludur ve topluluk katılımıyla gelişir. Geri bildiriminiz veya özellik istekleriniz (diğer formlar veya mektuplar) var mı? GitHub'da bizi ziyaret edin ve bir issue oluşturun!"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:566
+msgid "Visit GitHub Project"
+msgstr "GitHub Projesini Ziyaret Et"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:155
+msgid "Illness"
+msgstr "Hastalık"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:156
+msgid "Medical Appointment"
+msgstr "Doktor Randevusu"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:157
+msgid "Family Matters"
+msgstr "Aile İşleri"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:158
+msgid "Funeral"
+msgstr "Cenaze"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:159
+msgid "Religious Holiday"
+msgstr "Dini Bayram"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:73
+msgid "PDF was successfully created. You can fill out the form again or adjust the data."
+msgstr "PDF başarıyla oluşturuldu. Formu tekrar doldurabilir veya verileri ayarlayabilirsiniz."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:133
+msgid "Please fill out all required fields: %{fields}"
+msgstr "Lütfen tüm gerekli alanları doldurun: %{fields}"
+
+msgid "Language"
+msgstr "Dil"
+
+msgid "Change Language"
+msgstr "Dil Değiştir"

@@ -1,0 +1,211 @@
+## This file is a PO Template file.
+##
+## This file contains all the messages used in the application.
+## To update the po files, use `mix gettext.extract --merge`.
+
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:8
+msgid "Home"
+msgstr "Home"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:100
+msgid "Create Excuse Letter"
+msgstr "Create Excuse Letter"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:103
+msgid "For %{school_name}"
+msgstr "For %{school_name}"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:113
+msgid "Simply download as PDF"
+msgstr "Simply download as PDF"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:117
+msgid "Generate a free excuse letter according to %{din_link}. You can print the PDF or digitally sign it and send it to the school via email."
+msgstr "Generate a free excuse letter according to %{din_link}. You can print the PDF or digitally sign it and send it to the school via email."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:144
+msgid "Example Preview"
+msgstr "Example Preview"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:208
+msgid "Sender"
+msgstr "Sender"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:211
+msgid "Your personal data for the excuse letter"
+msgstr "Your personal data for the excuse letter"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:219
+msgid "First Name"
+msgstr "First Name"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:233
+msgid "Last Name"
+msgstr "Last Name"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:247
+msgid "Title (optional)"
+msgstr "Title (optional)"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:255
+msgid "e.g. Dr., Prof."
+msgstr "e.g. Dr., Prof."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:262
+msgid "Street and House Number (optional)"
+msgstr "Street and House Number (optional)"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:269
+msgid "Example Street 123"
+msgstr "Example Street 123"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:277
+msgid "Postal Code"
+msgstr "Postal Code"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:286
+msgid "12345"
+msgstr "12345"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:292
+msgid "City"
+msgstr "City"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:300
+msgid "Example City"
+msgstr "Example City"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:326
+msgid "School and Student Data"
+msgstr "School and Student Data"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:329
+msgid "Information about the school and the student"
+msgstr "Information about the school and the student"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:337
+msgid "Teacher Salutation"
+msgstr "Teacher Salutation"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:346
+msgid "Mr."
+msgstr "Mr."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:349
+msgid "Ms."
+msgstr "Ms."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:358
+msgid "Teacher Name"
+msgstr "Teacher Name"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:365
+msgid "Miller"
+msgstr "Miller"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:376
+msgid "Student Name"
+msgstr "Student Name"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:384
+msgid "Max Example"
+msgstr "Max Example"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:391
+msgid "Class"
+msgstr "Class"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:399
+msgid "e.g. 5a, 10b"
+msgstr "e.g. 5a, 10b"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:406
+msgid "My relationship to the student:"
+msgstr "My relationship to the student:"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:417
+msgid "my son"
+msgstr "my son"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:427
+msgid "my daughter"
+msgstr "my daughter"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:438
+msgid "neither son nor daughter, but I have custody"
+msgstr "neither son nor daughter, but I have custody"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:464
+msgid "Excuse Details"
+msgstr "Excuse Details"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:466
+msgid "Reason and period of absence"
+msgstr "Reason and period of absence"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:472
+msgid "Reason for Excuse"
+msgstr "Reason for Excuse"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:498
+msgid "Start Date"
+msgstr "Start Date"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:511
+msgid "End Date"
+msgstr "End Date"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:540
+msgid "Download PDF"
+msgstr "Download PDF"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:553
+msgid "Open Source & Participate"
+msgstr "Open Source & Participate"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:555
+msgid "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!"
+msgstr "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.html.heex:566
+msgid "Visit GitHub Project"
+msgstr "Visit GitHub Project"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:155
+msgid "Illness"
+msgstr "Illness"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:156
+msgid "Medical Appointment"
+msgstr "Medical Appointment"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:157
+msgid "Family Matters"
+msgstr "Family Matters"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:158
+msgid "Funeral"
+msgstr "Funeral"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:159
+msgid "Religious Holiday"
+msgstr "Religious Holiday"
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:73
+msgid "PDF was successfully created. You can fill out the form again or adjust the data."
+msgstr "PDF was successfully created. You can fill out the form again or adjust the data."
+
+#: lib/mehr_schulferien_web/live/entschuldigung_live.ex:133
+msgid "Please fill out all required fields: %{fields}"
+msgstr "Please fill out all required fields: %{fields}"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Change Language"
+msgstr "Change Language"

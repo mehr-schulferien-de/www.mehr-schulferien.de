@@ -1,10 +1,11 @@
 defmodule MehrSchulferienWeb.EntschuldigungLive do
   use MehrSchulferienWeb, :live_view
+  import Phoenix.HTML
 
   alias MehrSchulferien.Locations
 
   @impl true
-  def mount(%{"school_slug" => school_slug}, _session, socket) do
+  def mount(%{"school_slug" => school_slug} = params, session, socket) do
     # Get school information
     school = Locations.get_school_by_slug!(school_slug)
     city = Locations.get_location!(school.parent_location_id)
@@ -30,6 +31,13 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
       child_type: "mein_sohn"
     }
 
+    # Get locale from URL params, session, socket assigns, or default to "de"
+    locale = params["locale"] || Map.get(session, "locale") || socket.assigns[:locale] || "de"
+    
+    
+    # Set the Gettext locale for this process
+    Gettext.put_locale(MehrSchulferienWeb.Gettext, locale)
+
     {:ok,
      assign(socket,
        school: school,
@@ -38,7 +46,8 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
        federal_state: federal_state,
        country: country,
        form_data: form_data,
-       page_title: "Entschuldigung - #{school.name}"
+       page_title: "Entschuldigung - #{school.name}",
+       locale: locale
      )}
   end
 
@@ -81,6 +90,19 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
          |> assign(form_data: form_data)
          |> put_flash(:error, message)}
     end
+  end
+
+  # Handle locale changes from LanguageSwitcherComponent
+  @impl true
+  def handle_info({:change_locale, locale}, socket) do
+    # Set Gettext locale
+    Gettext.put_locale(MehrSchulferienWeb.Gettext, locale)
+    
+    # Update socket with new locale and force a full page reload to trigger LocalePlug
+    {:noreply, 
+     socket 
+     |> assign(locale: locale)
+     |> push_navigate(to: "/briefe/#{socket.assigns.school.slug}/entschuldigung?locale=#{locale}")}
   end
 
   # Helper functions
@@ -150,14 +172,435 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
   defp format_param_value(value) when is_binary(value), do: value
   defp format_param_value(value), do: to_string(value)
 
+  # Translation helper functions
+  defp translate(key, locale) do
+    translations = %{
+      "Create Excuse Letter" => %{
+        "de" => "Entschuldigung erstellen",
+        "en" => "Create Excuse Letter", 
+        "ru" => "Создать справку об отсутствии",
+        "ar" => "إنشاء رسالة عذر",
+        "tr" => "Mazeret Mektubu Oluştur",
+        "pl" => "Utwórz usprawiedliwienie",
+        "fr" => "Créer une lettre d'excuse",
+        "uk" => "Створити виправдальний лист"
+      },
+      "For %{school_name}" => %{
+        "de" => "Für %{school_name}",
+        "en" => "For %{school_name}",
+        "ru" => "Для %{school_name}",
+        "ar" => "لـ %{school_name}",
+        "tr" => "%{school_name} için",
+        "pl" => "Dla %{school_name}",
+        "fr" => "Pour %{school_name}",
+        "uk" => "Для %{school_name}"
+      },
+      "Simply download as PDF" => %{
+        "de" => "Einfach als PDF downloaden",
+        "en" => "Simply download as PDF",
+        "ru" => "Просто скачать как PDF",
+        "ar" => "ببساطة تحميل كـ PDF",
+        "tr" => "Sadece PDF olarak indir",
+        "pl" => "Po prostu pobierz jako PDF",
+        "fr" => "Simplement télécharger en PDF",
+        "uk" => "Просто завантажити як PDF"
+      },
+      "Download PDF" => %{
+        "de" => "PDF downloaden",
+        "en" => "Download PDF",
+        "ru" => "Скачать PDF",
+        "ar" => "تحميل PDF",
+        "tr" => "PDF İndir",
+        "pl" => "Pobierz PDF",
+        "fr" => "Télécharger PDF",
+        "uk" => "Завантажити PDF"
+      },
+      "Sender" => %{
+        "de" => "Absender",
+        "en" => "Sender",
+        "ru" => "Отправитель",
+        "ar" => "المرسل",
+        "tr" => "Gönderen",
+        "pl" => "Nadawca",
+        "fr" => "Expéditeur",
+        "uk" => "Відправник"
+      },
+      "Your personal information for the excuse letter" => %{
+        "de" => "Ihre persönlichen Daten für die Entschuldigung",
+        "en" => "Your personal information for the excuse letter",
+        "ru" => "Ваша личная информация для справки",
+        "ar" => "معلوماتك الشخصية لرسالة العذر",
+        "tr" => "Mazeret mektubu için kişisel bilgileriniz",
+        "pl" => "Twoje dane osobowe do usprawiedliwienia",
+        "fr" => "Vos informations personnelles pour la lettre d'excuse",
+        "uk" => "Ваша особиста інформація для виправдального листа"
+      },
+      "First Name" => %{
+        "de" => "Vorname",
+        "en" => "First Name",
+        "ru" => "Имя",
+        "ar" => "الاسم الأول",
+        "tr" => "Ad",
+        "pl" => "Imię",
+        "fr" => "Prénom",
+        "uk" => "Ім'я"
+      },
+      "Last Name" => %{
+        "de" => "Nachname",
+        "en" => "Last Name",
+        "ru" => "Фамилия",
+        "ar" => "اسم العائلة",
+        "tr" => "Soyad",
+        "pl" => "Nazwisko",
+        "fr" => "Nom de famille",
+        "uk" => "Прізвище"
+      },
+      "School and Student Information" => %{
+        "de" => "Schul- und Schülerdaten",
+        "en" => "School and Student Information",
+        "ru" => "Информация о школе и ученике",
+        "ar" => "معلومات المدرسة والطالب",
+        "tr" => "Okul ve Öğrenci Bilgileri",
+        "pl" => "Informacje o szkole i uczniu",
+        "fr" => "Informations sur l'école et l'élève",
+        "uk" => "Інформація про школу та учня"
+      },
+      "Title (optional)" => %{
+        "de" => "Titel (optional)",
+        "en" => "Title (optional)",
+        "ru" => "Титул (необязательно)",
+        "ar" => "اللقب (اختياري)",
+        "tr" => "Unvan (isteğe bağlı)",
+        "pl" => "Tytuł (opcjonalnie)",
+        "fr" => "Titre (optionnel)",
+        "uk" => "Титул (необов'язково)"
+      },
+      "Street and House Number (optional)" => %{
+        "de" => "Straße und Hausnummer (optional)",
+        "en" => "Street and House Number (optional)",
+        "ru" => "Улица и номер дома (необязательно)",
+        "ar" => "الشارع ورقم المنزل (اختياري)",
+        "tr" => "Sokak ve Kapı Numarası (isteğe bağlı)",
+        "pl" => "Ulica i numer domu (opcjonalnie)",
+        "fr" => "Rue et numéro de maison (optionnel)",
+        "uk" => "Вулиця та номер будинку (необов'язково)"
+      },
+      "ZIP Code" => %{
+        "de" => "PLZ",
+        "en" => "ZIP Code",
+        "ru" => "Почтовый индекс",
+        "ar" => "الرمز البريدي",
+        "tr" => "Posta Kodu",
+        "pl" => "Kod pocztowy",
+        "fr" => "Code postal",
+        "uk" => "Поштовий індекс"
+      },
+      "City" => %{
+        "de" => "Stadt",
+        "en" => "City",
+        "ru" => "Город",
+        "ar" => "المدينة",
+        "tr" => "Şehir",
+        "pl" => "Miasto",
+        "fr" => "Ville",
+        "uk" => "Місто"
+      },
+      "Information about the school and student" => %{
+        "de" => "Informationen über die Schule und den Schüler",
+        "en" => "Information about the school and student",
+        "ru" => "Информация о школе и ученике",
+        "ar" => "معلومات حول المدرسة والطالب",
+        "tr" => "Okul ve öğrenci hakkında bilgiler",
+        "pl" => "Informacje o szkole i uczniu",
+        "fr" => "Informations sur l'école et l'élève",
+        "uk" => "Інформація про школу та учня"
+      },
+      "Class Teacher Salutation" => %{
+        "de" => "Anrede Klassenlehrer(in)",
+        "en" => "Class Teacher Salutation",
+        "ru" => "Обращение к классному руководителю",
+        "ar" => "مخاطبة المعلم الأساسي",
+        "tr" => "Sınıf Öğretmeni Hitap Şekli",
+        "pl" => "Forma zwrotu do wychowawcy",
+        "fr" => "Salutation du professeur principal",
+        "uk" => "Звернення до класного керівника"
+      },
+      "Mr." => %{
+        "de" => "Herr",
+        "en" => "Mr.",
+        "ru" => "Г-н",
+        "ar" => "السيد",
+        "tr" => "Bay",
+        "pl" => "Pan",
+        "fr" => "M.",
+        "uk" => "Пан"
+      },
+      "Ms." => %{
+        "de" => "Frau",
+        "en" => "Ms.",
+        "ru" => "Г-жа",
+        "ar" => "السيدة",
+        "tr" => "Bayan",
+        "pl" => "Pani",
+        "fr" => "Mme",
+        "uk" => "Пані"
+      },
+      "Class Teacher Name" => %{
+        "de" => "Name Klassenlehrer(in)",
+        "en" => "Class Teacher Name",
+        "ru" => "Имя классного руководителя",
+        "ar" => "اسم المعلم الأساسي",
+        "tr" => "Sınıf Öğretmeni Adı",
+        "pl" => "Nazwisko wychowawcy",
+        "fr" => "Nom du professeur principal",
+        "uk" => "Ім'я класного керівника"
+      },
+      "Student Name" => %{
+        "de" => "Name des Schülers/der Schülerin",
+        "en" => "Student Name",
+        "ru" => "Имя ученика",
+        "ar" => "اسم الطالب",
+        "tr" => "Öğrenci Adı",
+        "pl" => "Imię i nazwisko ucznia",
+        "fr" => "Nom de l'élève",
+        "uk" => "Ім'я учня"
+      },
+      "Class" => %{
+        "de" => "Klasse",
+        "en" => "Class",
+        "ru" => "Класс",
+        "ar" => "الصف",
+        "tr" => "Sınıf",
+        "pl" => "Klasa",
+        "fr" => "Classe",
+        "uk" => "Клас"
+      },
+      "My relationship to the student:" => %{
+        "de" => "Meine Beziehung zum Schüler:",
+        "en" => "My relationship to the student:",
+        "ru" => "Мое отношение к ученику:",
+        "ar" => "علاقتي بالطالب:",
+        "tr" => "Öğrenci ile ilişkim:",
+        "pl" => "Mój stosunek do ucznia:",
+        "fr" => "Ma relation avec l'élève:",
+        "uk" => "Мої стосунки з учнем:"
+      },
+      "my son" => %{
+        "de" => "mein Sohn",
+        "en" => "my son",
+        "ru" => "мой сын",
+        "ar" => "ابني",
+        "tr" => "oğlum",
+        "pl" => "mój syn",
+        "fr" => "mon fils",
+        "uk" => "мій син"
+      },
+      "my daughter" => %{
+        "de" => "meine Tochter",
+        "en" => "my daughter",
+        "ru" => "моя дочь",
+        "ar" => "ابنتي",
+        "tr" => "kızım",
+        "pl" => "moja córka",
+        "fr" => "ma fille",
+        "uk" => "моя дочка"
+      },
+      "neither son nor daughter, but I have custody" => %{
+        "de" => "weder Sohn, noch Tochter, aber ich bin sorgeberechtigt",
+        "en" => "neither son nor daughter, but I have custody",
+        "ru" => "ни сын, ни дочь, но у меня есть опека",
+        "ar" => "لا ابن ولا ابنة، لكن لدي حضانة",
+        "tr" => "ne oğul ne kız, ama velayetim var",
+        "pl" => "ani syn, ani córka, ale mam opiekę prawną",
+        "fr" => "ni fils ni fille, mais j'ai la garde",
+        "uk" => "ні син, ні дочка, але я маю опіку"
+      },
+      "Excuse Details" => %{
+        "de" => "Entschuldigungsdetails",
+        "en" => "Excuse Details",
+        "ru" => "Детали оправдания",
+        "ar" => "تفاصيل العذر",
+        "tr" => "Mazeret Detayları",
+        "pl" => "Szczegóły usprawiedliwienia",
+        "fr" => "Détails de l'excuse",
+        "uk" => "Деталі виправдання"
+      },
+      "Reason and period of absence" => %{
+        "de" => "Grund und Zeitraum der Abwesenheit",
+        "en" => "Reason and period of absence",
+        "ru" => "Причина и период отсутствия",
+        "ar" => "سبب وفترة الغياب",
+        "tr" => "Devamsızlık nedeni ve süresi",
+        "pl" => "Powód i okres nieobecności",
+        "fr" => "Motif et période d'absence",
+        "uk" => "Причина та період відсутності"
+      },
+      "Reason for Excuse" => %{
+        "de" => "Grund der Entschuldigung",
+        "en" => "Reason for Excuse",
+        "ru" => "Причина оправдания",
+        "ar" => "سبب العذر",
+        "tr" => "Mazeret Nedeni",
+        "pl" => "Powód usprawiedliwienia",
+        "fr" => "Motif de l'excuse",
+        "uk" => "Причина виправдання"
+      },
+      "Start Date" => %{
+        "de" => "Startdatum",
+        "en" => "Start Date",
+        "ru" => "Дата начала",
+        "ar" => "تاريخ البداية",
+        "tr" => "Başlangıç Tarihi",
+        "pl" => "Data rozpoczęcia",
+        "fr" => "Date de début",
+        "uk" => "Дата початку"
+      },
+      "End Date" => %{
+        "de" => "Enddatum",
+        "en" => "End Date",
+        "ru" => "Дата окончания",
+        "ar" => "تاريخ النهاية",
+        "tr" => "Bitiş Tarihi",
+        "pl" => "Data zakończenia",
+        "fr" => "Date de fin",
+        "uk" => "Дата закінчення"
+      },
+      "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email." => %{
+        "de" => "Generieren Sie kostenlos eine Entschuldigung nach %{standard}. Das PDF können Sie ausdrucken oder digital unterschreiben und per E-Mail an die Schule senden.",
+        "en" => "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
+        "ru" => "Сгенерируйте бесплатную справку об отсутствии согласно %{standard}. Вы можете распечатать PDF или подписать его цифровой подписью и отправить в школу по электронной почте.",
+        "ar" => "قم بإنشاء رسالة عذر مجانية وفقاً لـ %{standard}. يمكنك طباعة ملف PDF أو توقيعه رقمياً وإرساله إلى المدرسة عبر البريد الإلكتروني.",
+        "tr" => "%{standard}'a göre ücretsiz bir mazeret mektubu oluşturun. PDF'yi yazdırabilir veya dijital olarak imzalayıp okula e-posta ile gönderebilirsiniz.",
+        "pl" => "Wygeneruj bezpłatne usprawiedliwienie zgodnie z %{standard}. Możesz wydrukować PDF lub podpisać go cyfrowo i wysłać do szkoły e-mailem.",
+        "fr" => "Générez gratuitement une lettre d'excuse selon %{standard}. Vous pouvez imprimer le PDF ou le signer numériquement et l'envoyer à l'école par e-mail.",
+        "uk" => "Згенеруйте безкоштовний виправдальний лист відповідно до %{standard}. Ви можете роздрукувати PDF або підписати його цифровим підписом і надіслати до школи електронною поштою."
+      },
+      "Preview Example" => %{
+        "de" => "Beispiel Vorschau",
+        "en" => "Preview Example",
+        "ru" => "Пример предварительного просмотра",
+        "ar" => "مثال للمعاينة",
+        "tr" => "Önizleme Örneği",
+        "pl" => "Przykład podglądu",
+        "fr" => "Exemple d'aperçu",
+        "uk" => "Приклад попереднього перегляду"
+      },
+      "Open Source & Participation" => %{
+        "de" => "Open Source & Mitmachen",
+        "en" => "Open Source & Participation",
+        "ru" => "Открытый исходный код и участие",
+        "ar" => "المصدر المفتوح والمشاركة",
+        "tr" => "Açık Kaynak ve Katılım",
+        "pl" => "Open Source i udział",
+        "fr" => "Open Source et participation",
+        "uk" => "Відкритий код та участь"
+      },
+      "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!" => %{
+        "de" => "Dieses Projekt ist Open Source und lebt von der Beteiligung der Community. Haben Sie Feedback oder Feature-Wünsche (andere Formulare oder Briefe)? Besuchen Sie uns auf GitHub und erstellen Sie ein Issue!",
+        "en" => "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!",
+        "ru" => "Этот проект с открытым исходным кодом процветает благодаря участию сообщества. У вас есть отзывы или запросы функций (другие формы или письма)? Посетите нас на GitHub и создайте issue!",
+        "ar" => "هذا المشروع مفتوح المصدر ويزدهر بمشاركة المجتمع. هل لديك ملاحظات أو طلبات ميزات (نماذج أو رسائل أخرى)؟ قم بزيارتنا على GitHub وأنشئ issue!",
+        "tr" => "Bu proje açık kaynaklıdır ve topluluk katılımıyla gelişir. Geri bildiriminiz veya özellik istekleriniz (diğer formlar veya mektuplar) var mı? GitHub'da bizi ziyaret edin ve bir issue oluşturun!",
+        "pl" => "Ten projekt jest open source i rozwija się dzięki udziału społeczności. Masz opinię lub prośby o funkcje (inne formularze lub listy)? Odwiedź nas na GitHub i utwórz issue!",
+        "fr" => "Ce projet est open source et prospère grâce à la participation de la communauté. Avez-vous des commentaires ou des demandes de fonctionnalités (autres formulaires ou lettres) ? Visitez-nous sur GitHub et créez un issue !",
+        "uk" => "Цей проект з відкритим вихідним кодом процвітає завдяки участі спільноти. У вас є відгуки або запити функцій (інші форми або листи)? Відвідайте нас на GitHub і створіть issue!"
+      },
+      "Visit GitHub Project" => %{
+        "de" => "GitHub Projekt besuchen",
+        "en" => "Visit GitHub Project",
+        "ru" => "Посетить проект на GitHub",
+        "ar" => "زيارة مشروع GitHub",
+        "tr" => "GitHub Projesini Ziyaret Et",
+        "pl" => "Odwiedź projekt GitHub",
+        "fr" => "Visiter le projet GitHub",
+        "uk" => "Відвідати проект на GitHub"
+      },
+      "Illness" => %{
+        "de" => "Krankheit",
+        "en" => "Illness",
+        "ru" => "Болезнь",
+        "ar" => "مرض",
+        "tr" => "Hastalık",
+        "pl" => "Choroba",
+        "fr" => "Maladie",
+        "uk" => "Хвороба"
+      },
+      "Doctor Appointment" => %{
+        "de" => "Arzttermin",
+        "en" => "Doctor Appointment",
+        "ru" => "Прием у врача",
+        "ar" => "موعد طبي",
+        "tr" => "Doktor Randevusu",
+        "pl" => "Wizyta u lekarza",
+        "fr" => "Rendez-vous médical",
+        "uk" => "Прийом у лікаря"
+      },
+      "Family Matters" => %{
+        "de" => "Familiäre Angelegenheiten",
+        "en" => "Family Matters",
+        "ru" => "Семейные дела",
+        "ar" => "أمور عائلية",
+        "tr" => "Aile İşleri",
+        "pl" => "Sprawy rodzinne",
+        "fr" => "Affaires familiales",
+        "uk" => "Сімейні справи"
+      },
+      "Funeral" => %{
+        "de" => "Beerdigung",
+        "en" => "Funeral",
+        "ru" => "Похороны",
+        "ar" => "جنازة",
+        "tr" => "Cenaze",
+        "pl" => "Pogrzeb",
+        "fr" => "Funérailles",
+        "uk" => "Похорон"
+      },
+      "Religious Holiday" => %{
+        "de" => "Religiöser Feiertag",
+        "en" => "Religious Holiday",
+        "ru" => "Религиозный праздник",
+        "ar" => "عطلة دينية",
+        "tr" => "Dini Tatil",
+        "pl" => "Święto religijne",
+        "fr" => "Fête religieuse",
+        "uk" => "Релігійне свято"
+      }
+    }
+    
+    case translations[key] do
+      %{} = translation_map -> 
+        translation_map[locale] || translation_map["en"] || key
+      nil -> 
+        key
+    end
+  end
+  
+  defp translate(key, locale, bindings) when is_map(bindings) do
+    translated = translate(key, locale)
+    result = Enum.reduce(bindings, translated, fn {k, v}, acc ->
+      value_string = case v do
+        {:safe, content} -> content
+        _ -> to_string(v)
+      end
+      String.replace(acc, "%{#{k}}", value_string)
+    end)
+    
+    # If any of the bindings contain HTML (safe content), mark the result as safe
+    if Enum.any?(bindings, fn {_, v} -> match?({:safe, _}, v) end) do
+      raw(result)
+    else
+      result
+    end
+  end
+
   # Get available reasons for the dropdown
-  def reasons do
+  def reasons(locale \\ "de") do
     [
-      {"Krankheit", "krankheit"},
-      {"Arzttermin", "arzttermin"},
-      {"Familiäre Angelegenheiten", "familiaere_angelegenheiten"},
-      {"Beerdigung", "beerdigung"},
-      {"Religiöser Feiertag", "religioser_feiertag"}
+      {translate("Illness", locale), "krankheit"},
+      {translate("Doctor Appointment", locale), "arzttermin"},
+      {translate("Family Matters", locale), "familiaere_angelegenheiten"},
+      {translate("Funeral", locale), "beerdigung"},
+      {translate("Religious Holiday", locale), "religioser_feiertag"}
     ]
   end
 end
