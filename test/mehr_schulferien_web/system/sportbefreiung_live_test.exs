@@ -307,7 +307,7 @@ defmodule MehrSchulferienWeb.SportbefreiungLiveSystemTest do
       # Check breadcrumb structure - school name and current page should be visible
       assert html =~ school.name
       # This is the link text for documents index
-      assert html =~ "Formulare"
+      assert html =~ "Briefe"
       assert html =~ "Sportbefreiung"
     end
   end

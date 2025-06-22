@@ -356,45 +356,6 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         "fr" => "Exemple d'aperçu",
         "uk" => "Приклад попереднього перегляду"
       },
-      "Open Source & Participation" => %{
-        "de" => "Open Source & Mitmachen",
-        "en" => "Open Source & Participation",
-        "ru" => "Открытый исходный код и участие",
-        "ar" => "المصدر المفتوح والمشاركة",
-        "tr" => "Açık Kaynak ve Katılım",
-        "pl" => "Open Source i udział",
-        "fr" => "Open Source et participation",
-        "uk" => "Відкритий код та участь"
-      },
-      "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!" =>
-        %{
-          "de" =>
-            "Dieses Projekt ist Open Source und lebt von der Beteiligung der Community. Haben Sie Feedback oder Feature-Wünsche (andere Formulare oder Briefe)? Besuchen Sie uns auf GitHub und erstellen Sie ein Issue!",
-          "en" =>
-            "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!",
-          "ru" =>
-            "Этот проект с открытым исходным кодом процветает благодаря участию сообщества. У вас есть отзывы или запросы функций (другие формы или письма)? Посетите нас на GitHub и создайте issue!",
-          "ar" =>
-            "هذا المشروع مفتوح المصدر ويزدهر بمشاركة المجتمع. هل لديك ملاحظات أو طلبات ميزات (نماذج أو رسائل أخرى)؟ قم بزيارتنا على GitHub وأنشئ issue!",
-          "tr" =>
-            "Bu proje açık kaynaklıdır ve topluluk katılımıyla gelişir. Geri bildiriminiz veya özellik istekleriniz (diğer formlar veya mektuplar) var mı? GitHub'da bizi ziyaret edin ve bir issue oluşturun!",
-          "pl" =>
-            "Ten projekt jest open source i rozwija się dzięki udziału społeczności. Masz opinię lub prośby o funkcje (inne formularze lub listy)? Odwiedź nas na GitHub i utwórz issue!",
-          "fr" =>
-            "Ce projet est open source et prospère grâce à la participation de la communauté. Avez-vous des commentaires ou des demandes de fonctionnalités (autres formulaires ou lettres) ? Visitez-nous sur GitHub et créez un issue !",
-          "uk" =>
-            "Цей проект з відкритим вихідним кодом процвітає завдяки участі спільноти. У вас є відгуки або запити функцій (інші форми або листи)? Відвідайте нас на GitHub і створіть issue!"
-        },
-      "Visit GitHub Project" => %{
-        "de" => "GitHub Projekt besuchen",
-        "en" => "Visit GitHub Project",
-        "ru" => "Посетить проект на GitHub",
-        "ar" => "زيارة مشروع GitHub",
-        "tr" => "GitHub Projesini Ziyaret Et",
-        "pl" => "Odwiedź projekt GitHub",
-        "fr" => "Visiter le projet GitHub",
-        "uk" => "Відвідати проект на GitHub"
-      },
       "Illness" => %{
         "de" => "Krankheit",
         "en" => "Illness",
