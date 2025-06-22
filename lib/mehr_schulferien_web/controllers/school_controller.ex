@@ -191,7 +191,8 @@ defmodule MehrSchulferienWeb.SchoolController do
       county: county,
       federal_state: federal_state,
       country: country,
-      current_year: current_year
+      current_year: current_year,
+      css_framework: :tailwind_new
     )
   end
 end
