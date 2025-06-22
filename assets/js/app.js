@@ -8,9 +8,33 @@ import {LiveSocket} from "phoenix_live_view"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
+// Define hooks for cookie management
+let Hooks = {}
+
+Hooks.FormCookie = {
+  mounted() {
+    // Handle cookie save event from server
+    this.handleEvent("save_form_cookie", ({data}) => {
+      document.cookie = `briefe_form_data=${encodeURIComponent(data)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+    })
+  }
+}
+
+// Function to get cookie value by name
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+  return null;
+}
+
 // Enable debugging for LiveSocket
 let liveSocket = new LiveSocket("/live", Socket, {
-  params: {_csrf_token: csrfToken},
+  params: {
+    _csrf_token: csrfToken,
+    briefe_form_data: getCookie('briefe_form_data') || ""
+  },
+  hooks: Hooks,
   dom: {
     onBeforeElUpdated(from, to){
       if(from._x_dataStack){ to._x_dataStack = from._x_dataStack; }

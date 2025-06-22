@@ -27,6 +27,32 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
         # Initialize form with default values
         form_data = get_default_form_data()
 
+        # Try to load saved data from cookies if available (passed via connect params)
+        form_data =
+          case get_connect_params(socket)["briefe_form_data"] do
+            nil ->
+              form_data
+
+            "" ->
+              form_data
+
+            saved_data when is_binary(saved_data) ->
+              case Jason.decode(saved_data) do
+                {:ok, decoded} ->
+                  # Merge saved data with defaults, preserving date fields and document-specific fields
+                  form_data
+                  |> Map.merge(atomize_cookie_keys(decoded))
+                  # Enable checkbox if we loaded from cookie
+                  |> Map.put(:save_in_cookie, true)
+
+                {:error, _} ->
+                  form_data
+              end
+
+            _ ->
+              form_data
+          end
+
         # Get page title
         page_title = get_page_title(school_data.school.name)
 
@@ -39,6 +65,12 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
            locale: locale,
            document_type: @document_type
          )}
+      end
+
+      defp atomize_cookie_keys(map) do
+        Map.new(map, fn {k, v} -> {String.to_existing_atom(k), v} end)
+      rescue
+        _ -> %{}
       end
 
       @impl true
@@ -65,11 +97,41 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
             pdf_url =
               BriefeHelpers.build_pdf_url(socket.assigns.school.slug, form_data, @document_type)
 
-            {:noreply,
-             socket
-             |> assign(form_data: form_data)
-             |> put_flash(:info, BriefeHelpers.pdf_success_message())
-             |> push_event("open_pdf", %{url: pdf_url})}
+            socket =
+              socket
+              |> assign(form_data: form_data)
+              |> put_flash(:info, BriefeHelpers.pdf_success_message())
+              |> push_event("open_pdf", %{url: pdf_url})
+
+            # Save to cookie if requested
+            socket =
+              if Map.get(form_data, :save_in_cookie, false) do
+                # Select fields to save in cookie
+                fields_to_save = [
+                  :title,
+                  :first_name,
+                  :last_name,
+                  :street,
+                  :zip_code,
+                  :city,
+                  :teacher_salutation,
+                  :teacher_name,
+                  :name_of_student,
+                  :class_name,
+                  :child_type
+                ]
+
+                data_to_save =
+                  form_data
+                  |> Map.take(fields_to_save)
+                  |> Jason.encode!()
+
+                push_event(socket, "save_form_cookie", %{data: data_to_save})
+              else
+                socket
+              end
+
+            {:noreply, socket}
 
           {:error, message} ->
             {:noreply,
@@ -360,6 +422,31 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
             "pl" => "Szczegółowy powód",
             "fr" => "Raison détaillée",
             "uk" => "Детальна причина"
+          },
+          "Save data in cookie" => %{
+            "de" => "Daten in Cookie speichern",
+            "en" => "Save data in cookie",
+            "ru" => "Сохранить данные в куки",
+            "ar" => "حفظ البيانات في ملف تعريف الارتباط",
+            "tr" => "Verileri çerezde sakla",
+            "pl" => "Zapisz dane w ciasteczku",
+            "fr" => "Enregistrer les données dans un cookie",
+            "uk" => "Зберегти дані в куки"
+          },
+          "Your address and student information will be saved locally for future use" => %{
+            "de" =>
+              "Ihre Adresse und Schülerdaten werden lokal für zukünftige Verwendung gespeichert",
+            "en" => "Your address and student information will be saved locally for future use",
+            "ru" =>
+              "Ваш адрес и информация об ученике будут сохранены локально для будущего использования",
+            "ar" => "سيتم حفظ عنوانك ومعلومات الطالب محليًا للاستخدام في المستقبل",
+            "tr" =>
+              "Adresiniz ve öğrenci bilgileriniz gelecekte kullanılmak üzere yerel olarak kaydedilecektir",
+            "pl" => "Twój adres i dane ucznia zostaną zapisane lokalnie do przyszłego użytku",
+            "fr" =>
+              "Votre adresse et les informations de l'élève seront enregistrées localement pour une utilisation future",
+            "uk" =>
+              "Ваша адреса та інформація про учня будуть збережені локально для майбутнього використання"
           }
         }
       end

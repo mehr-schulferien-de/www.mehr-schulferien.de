@@ -197,6 +197,7 @@
         phx-change="validate"
         phx-submit="save"
         id="entschuldigung-form"
+        phx-hook="FormCookie"
         autocomplete="off"
         class="divide-y divide-slate-200"
       >
@@ -541,8 +542,33 @@
             </div>
           </div>
         </div>
+        <!-- Cookie Consent -->
+        <div class="p-6 sm:p-8">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input
+                id="form_save_in_cookie"
+                name="form[save_in_cookie]"
+                type="checkbox"
+                checked={Map.get(@form_data, :save_in_cookie, false)}
+                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+            </div>
+            <div class="ml-3">
+              <label for="form_save_in_cookie" class="text-sm text-gray-700">
+                <%= translate("Save data in cookie", @locale) %>
+              </label>
+              <p class="text-xs text-gray-500 mt-1">
+                <%= translate(
+                  "Your address and student information will be saved locally for future use",
+                  @locale
+                ) %>
+              </p>
+            </div>
+          </div>
+        </div>
         <!-- Submit Button -->
-        <div class="px-6 py-8 sm:px-8 bg-slate-50">
+        <div class="px-6 py-8 sm:px-8 bg-slate-50 pt-0">
           <div class="flex justify-center">
             <button
               type="submit"
