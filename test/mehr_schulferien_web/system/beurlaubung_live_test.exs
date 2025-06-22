@@ -220,6 +220,24 @@ defmodule MehrSchulferienWeb.BeurlaubungLiveSystemTest do
       assert html =~ "2025-12-25"
     end
 
+    test "displays religious holidays dropdown", %{
+      conn: conn,
+      school: school
+    } do
+      {:ok, view, _html} = live(conn, "/briefe/#{school.slug}/beurlaubung")
+
+      html = render(view)
+
+      # Check that the religious holidays dropdown exists
+      assert html =~ "religious_holidays"
+      assert html =~ "Religiöse Feiertage (Optional)"
+
+      # Check for some holiday options
+      assert html =~ "Eid al-Fitr"
+      assert html =~ "Jom Kippur"
+      assert html =~ "Orthodoxes Weihnachten"
+    end
+
     test "preserves form data across validation events", %{
       conn: conn,
       school: school

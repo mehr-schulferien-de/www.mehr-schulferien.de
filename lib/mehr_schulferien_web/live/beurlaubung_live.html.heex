@@ -517,6 +517,31 @@
 
             <div>
               <label
+                for="religious_holidays"
+                class="block text-sm font-medium text-slate-700 mb-2"
+              >
+                <%= translate("Religious Holidays (Optional)", @locale) %>
+              </label>
+              <select
+                id="religious_holidays"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+              >
+                <option value="">
+                  <%= translate("-- Select holiday --", @locale) %>
+                </option>
+                <%= for {name, reason} <- religious_holidays(@locale) do %>
+                  <option value={reason}>
+                    <%= name %>
+                  </option>
+                <% end %>
+              </select>
+              <p class="mt-1 text-sm text-slate-500">
+                <%= translate("Select a religious holiday to auto-fill the reason", @locale) %>
+              </p>
+            </div>
+
+            <div>
+              <label
                 for="form_detailed_reason"
                 class="block text-sm font-medium text-slate-700 mb-2"
               >
@@ -607,5 +632,21 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  });
+
+  // Auto-fill detailed reason when religious holiday is selected
+  document.addEventListener('DOMContentLoaded', function() {
+    const holidaySelect = document.getElementById('religious_holidays');
+    const detailedReasonTextarea = document.getElementById('form_detailed_reason');
+    
+    if (holidaySelect && detailedReasonTextarea) {
+      holidaySelect.addEventListener('change', function() {
+        if (this.value) {
+          detailedReasonTextarea.value = this.value;
+          // Trigger a change event to update LiveView
+          detailedReasonTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+    }
   });
 </script>
