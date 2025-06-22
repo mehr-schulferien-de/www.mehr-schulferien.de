@@ -185,6 +185,8 @@ defmodule MehrSchulferienWeb.SchoolController do
     # Get current year for reference
     current_year = Date.utc_today().year
 
+    page_title = "Entschuldigungsschreiben und Beurlaubungen - #{school.name}"
+
     render(conn, "documents_index.html",
       school: school,
       city: city,
@@ -192,6 +194,7 @@ defmodule MehrSchulferienWeb.SchoolController do
       federal_state: federal_state,
       country: country,
       current_year: current_year,
+      page_title: page_title,
       css_framework: :tailwind_new
     )
   end
