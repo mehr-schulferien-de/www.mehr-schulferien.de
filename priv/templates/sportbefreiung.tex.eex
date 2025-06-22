@@ -1,0 +1,90 @@
+% Sportbefreiung für Schüler
+% Basiert auf KOMA-Scripts scrlttr2
+% Template für mehr-schulferien.de
+
+\documentclass[
+	% Schriftgröße
+	fontsize=12pt,
+	%
+	% zwischen Absätzen eine leere Zeile einfügen, statt lediglich Einrückung
+	parskip=full,
+	%
+	% Papierformat auf DIN-A4
+	paper=A4,
+	%
+	% Briefkopf (ganz oben) rechts ausrichten, standardmäßig links
+	fromalign=right,
+	%
+	% Telefonnummer im Briefkopf anzeigen (optional)
+	fromphone=false,
+	%
+	% E-Mail-Adresse im Briefkopf anzeigen (optional)
+	fromemail=false,
+	%
+	% Faltmarkierungen anzeigen
+	foldmarks=true,
+	%
+	% Die neuste Version von scrlettr2 verwenden
+	version=last,
+]{scrlttr2}
+
+% Zeichenkodierung des Dokuments ist in UTF-8
+\usepackage[utf8]{inputenc}
+
+% Deutsche Sprache
+\usepackage[ngerman]{babel}
+
+% Eurosymbol-Unterstützung
+\usepackage{eurosym}
+\DeclareUnicodeCharacter{20AC}{\euro}
+
+% QR Code Support
+\usepackage{qrcode}
+
+% Footer with website URL and QR code
+\setkomavar{firstfoot}{%
+  \parbox{\useplength{firstfootwidth}}{%
+    \centering
+    {\footnotesize https://www.mehr-schulferien.de} \hspace{1em} \qrcode[height=0.4in]{https://www.mehr-schulferien.de/briefe/<%= @school.slug %>/sportbefreiung}
+  }
+}
+
+% Absendername unter Schlussformel entfernen
+\setkomavar{signature}{<%= MehrSchulferien.PdfGenerator.format_full_name(@form_data) %>}
+
+% Für Schlussformel Linksbündigkeit erzwingen
+\renewcommand*{\raggedsignature}{\raggedright}
+
+\usepackage{graphicx}
+\usepackage{url}
+
+\setkomavar{fromname}{<%= @form_data.first_name %> <%= @form_data.last_name %>}
+\setkomavar{fromaddress}{<%= @form_data.street %>\\<%= @form_data.zip_code %> <%= @form_data.city %>}
+\setkomavar{fromphone}{<%= @form_data[:phone] %>}
+\setkomavar{fromemail}{<%= @form_data[:email] %>}
+
+\setkomavar{subject}{Antrag auf Sportbefreiung für <%= @form_data.name_of_student %>}
+
+\setkomavar{place}{<%= @form_data.city %>}
+\setkomavar{date}{\today}
+
+\begin{document}
+\begin{letter}{<%= MehrSchulferien.PdfGenerator.format_school_address(@school, @form_data) %>}
+
+\opening{<%= MehrSchulferien.PdfGenerator.format_personal_greeting(@form_data) %>}
+
+hiermit beantrage ich die Befreiung <%= MehrSchulferien.PdfGenerator.format_student_details(@form_data) %> vom Sportunterricht <%= MehrSchulferien.PdfGenerator.format_sports_exemption_timeframe(@form_data) %>.
+
+\textbf{Begründung:}
+<%= @form_data.detailed_reason %>
+
+<%= if @form_data.medical_certificate do %>Ein ärztliches Attest liegt diesem Schreiben bei.<% end %>
+
+Ich bitte Sie, diesem Antrag stattzugeben. Für Rückfragen stehe ich Ihnen gerne zur Verfügung.
+
+\closing{Mit freundlichen Grüßen}
+
+<%= if @form_data.medical_certificate do %>\encl{Ärztliches Attest}<% end %>
+
+\end{letter}
+\end{document}

@@ -144,6 +144,9 @@ defmodule MehrSchulferienWeb.Router do
     # Beurlaubung LiveView
     live "/briefe/:school_slug/beurlaubung", BeurlaubungLive
 
+    # Sportbefreiung LiveView
+    live "/briefe/:school_slug/sportbefreiung", SportbefreiungLive
+
     # Legacy vCard path for backward compatibility
     get "/schule/:school_slug/vcard", SchoolVCardController, :download_legacy
 
@@ -167,6 +170,9 @@ defmodule MehrSchulferienWeb.Router do
 
     # Beurlaubung PDF download
     get "/briefe/:school_slug/beurlaubung/pdf", BeurlaubungPdfController, :download
+
+    # Sportbefreiung PDF download
+    get "/briefe/:school_slug/sportbefreiung/pdf", SportbefreiungPdfController, :download
   end
 
   scope "/api/v2.0", MehrSchulferienWeb.Api.V2, as: :api do

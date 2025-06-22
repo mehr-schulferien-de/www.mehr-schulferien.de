@@ -57,6 +57,31 @@ defmodule MehrSchulferien.PdfGenerator do
     end
   end
 
+  @doc """
+  Generates a sports exemption PDF from form data and school information.
+
+  Returns {:ok, pdf_binary} on success or {:error, reason} on failure.
+  """
+  def generate_sportbefreiung_pdf(form_data, school) do
+    template_path =
+      Path.join(:code.priv_dir(:mehr_schulferien), "templates/sportbefreiung.tex.eex")
+
+    case File.read(template_path) do
+      {:ok, template_content} ->
+        latex_content =
+          EEx.eval_string(template_content,
+            assigns: [form_data: form_data, school: school],
+            engine: EEx.SmartEngine
+          )
+
+        compile_latex_to_pdf(latex_content, "sportbefreiung")
+
+      {:error, reason} ->
+        Logger.error("Failed to read LaTeX template: #{inspect(reason)}")
+        {:error, "Template not found"}
+    end
+  end
+
   defp compile_latex_to_pdf(latex_content, base_filename) do
     # Create a unique filename to avoid conflicts
     timestamp = System.system_time(:microsecond)
@@ -209,28 +234,24 @@ defmodule MehrSchulferien.PdfGenerator do
   end
 
   def format_detailed_reason(form_data) do
-    prefix =
-      case form_data.child_type do
-        "mein_sohn" -> "Mein Sohn"
-        "meine_tochter" -> "Meine Tochter"
-        _ -> "Mein Kind"
-      end
+    # Use the child's name instead of "Mein Kind/Sohn/Tochter"
+    child_name = form_data.name_of_student || "das Kind"
 
     case form_data.reason do
       "krankheit" ->
-        "#{prefix} war aufgrund einer Erkrankung nicht in der Lage, am Unterricht teilzunehmen."
+        "#{child_name} war aufgrund einer Erkrankung nicht in der Lage, am Unterricht teilzunehmen."
 
       "arzttermin" ->
-        "Der Arzttermin konnte leider nicht außerhalb der Schulzeit vereinbart werden."
+        "Der Arzttermin für #{child_name} konnte leider nicht außerhalb der Schulzeit vereinbart werden."
 
       "familiaere_angelegenheiten" ->
-        "Aufgrund wichtiger familiärer Angelegenheiten war eine Teilnahme am Unterricht nicht möglich."
+        "Aufgrund wichtiger familiärer Angelegenheiten war eine Teilnahme am Unterricht für #{child_name} nicht möglich."
 
       "beerdigung" ->
-        "Aufgrund einer Beerdigung in der Familie war #{String.downcase(prefix)} verhindert."
+        "Aufgrund einer Beerdigung in der Familie war #{child_name} verhindert."
 
       "religioser_feiertag" ->
-        "Aufgrund eines religiösen Feiertags war #{String.downcase(prefix)} verhindert."
+        "Aufgrund eines religiösen Feiertags war #{child_name} verhindert."
 
       _ ->
         ""
@@ -246,6 +267,21 @@ defmodule MehrSchulferien.PdfGenerator do
 
       _ ->
         "#{date}"
+    end
+  end
+
+  def format_sports_exemption_timeframe(form_data) do
+    if form_data.duration_type == "single_lesson" do
+      "am #{format_german_date(form_data.single_date)}"
+    else
+      start_date = format_german_date(form_data.start_date)
+      end_date = format_german_date(form_data.end_date)
+
+      if form_data.start_date == form_data.end_date do
+        "am #{start_date}"
+      else
+        "vom #{start_date} bis #{end_date}"
+      end
     end
   end
 

@@ -355,7 +355,7 @@
                 d="M16.5 3.5a2.121 2.121 0 013 3L7 19.5 3 21l1.5-4L16.5 3.5z"
               />
             </svg>
-            Formulare & Bescheinigungen
+            Schreiben & Bescheinigungen
           </h3>
           <div class="flex flex-col gap-2">
             <%= link to: "/briefe/#{@school.slug}/entschuldigung",
@@ -383,7 +383,7 @@
               Entschuldigung schreiben
             <% end %>
             <%= link to: "/briefe/#{@school.slug}/beurlaubung",
-                 class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 border border-teal-600 rounded transition-colors cursor-pointer shadow-sm w-full sm:w-auto" do %>
+                 class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 rounded transition-colors cursor-pointer shadow-sm w-full sm:w-auto" do %>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-3 w-3 mr-1"
@@ -399,6 +399,24 @@
                 />
               </svg>
               Beurlaubung beantragen
+            <% end %>
+            <%= link to: "/briefe/#{@school.slug}/sportbefreiung",
+                 class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 border border-purple-600 rounded transition-colors cursor-pointer shadow-sm w-full sm:w-auto" do %>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              Sportbefreiung beantragen
             <% end %>
           </div>
         </div>

@@ -1,0 +1,779 @@
+<div class="min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <!-- Language Switcher -->
+    <div class="flex justify-end mb-4">
+      <.live_component
+        module={MehrSchulferienWeb.LanguageSwitcherComponent}
+        id="language-switcher"
+        current_locale={assigns[:locale] || "de"}
+        available_locales={["de", "en", "ru", "ar", "tr", "pl", "fr", "uk"]}
+      />
+    </div>
+    <!-- Breadcrumbs -->
+    <div class="mt-0 mb-8">
+      <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <% breadcrumbs = [
+            {"Startseite", "/"},
+            {@country.name, Routes.country_path(@socket, :show, @country.slug)},
+            {@federal_state.name,
+             Routes.federal_state_path(@socket, :show, @country.slug, @federal_state.slug)},
+            {@city.name,
+             Routes.city_path(
+               @socket,
+               :show_year,
+               @country.slug,
+               @city.slug,
+               Date.utc_today().year
+             )},
+            {@school.name,
+             Routes.school_path(
+               @socket,
+               :show_year,
+               @country.slug,
+               @school.slug,
+               Date.utc_today().year
+             )},
+            {"Briefe", Routes.school_path(@socket, :documents_index, @school.slug)},
+            {"Sportbefreiung", nil}
+          ] %>
+          <% visible_breadcrumbs = Enum.slice(breadcrumbs, max(length(breadcrumbs) - 4, 0), 4) %>
+          <%= if length(breadcrumbs) > 4 do %>
+            <li class="inline-flex items-center">
+              <%= link to: breadcrumbs |> hd() |> elem(1), class: "text-slate-600 hover:text-blue-600 transition-colors" do %>
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                  </path>
+                </svg>
+              <% end %>
+            </li>
+            <li class="text-slate-400">...</li>
+          <% end %>
+          <%= for {{label, path}, index} <- visible_breadcrumbs |> Enum.drop(if(length(breadcrumbs) > 4, do: 1, else: 0)) |> Enum.with_index() do %>
+            <li class="inline-flex items-center">
+              <div class="flex items-center">
+                <%= if index > 0 do %>
+                  <svg
+                    class="w-5 h-5 text-slate-400 mx-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"
+                    >
+                    </path>
+                  </svg>
+                <% end %>
+                <%= if path do %>
+                  <%= link(label,
+                    to: path,
+                    class:
+                      [
+                        "text-slate-600 hover:text-blue-600 transition-colors",
+                        label == @school.name &&
+                          "truncate max-w-[6rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                      ]
+                      |> Enum.filter(& &1)
+                      |> Enum.join(" ")
+                  ) %>
+                <% else %>
+                  <span class={
+                    [
+                      "text-slate-800 font-medium",
+                      label == @school.name &&
+                        "truncate max-w-[6rem] sm:max-w-none overflow-hidden whitespace-nowrap"
+                    ]
+                    |> Enum.filter(& &1)
+                    |> Enum.join(" ")
+                  }>
+                    <%= label %>
+                  </span>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </nav>
+    </div>
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">
+        <%= translate("Sports Exemption Request", @locale) %>
+      </h1>
+      <p class="text-lg text-slate-600">
+        <%= translate("For %{school_name}", @locale, %{school_name: @school.name}) %>
+      </p>
+    </div>
+    <!-- Info card -->
+    <div class="mb-8 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="p-6 sm:p-8">
+        <div class="flex flex-col lg:flex-row items-start gap-6">
+          <div class="flex-1 space-y-4">
+            <div>
+              <h2 class="text-xl font-semibold text-slate-900 mb-3">
+                <%= translate("Request sports exemption", @locale) %>
+              </h2>
+              <p class="text-slate-600 leading-relaxed">
+                <%= translate(
+                  "Generate a free sports exemption request according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
+                  @locale,
+                  %{
+                    standard:
+                      raw(
+                        "<a href=\"https://de.wikipedia.org/wiki/DIN_5008\" class=\"text-blue-600 hover:text-blue-800 underline\">DIN 5008</a>"
+                      )
+                  }
+                ) %>
+              </p>
+            </div>
+
+            <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <h3 class="font-semibold text-slate-900 mb-2"><%= @school.name %></h3>
+              <%= if @school.address do %>
+                <div class="text-sm text-slate-600 space-y-1">
+                  <p><%= @school.address.street %></p>
+                  <p><%= @school.address.zip_code %> <%= @school.address.city %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="w-full lg:w-40 flex-shrink-0">
+            <div class="bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 p-4 text-center">
+              <div class="w-full aspect-[210/297] bg-white rounded mb-2 flex items-center justify-center">
+                <img
+                  src="/images/sportbefreiung-vorschau.webp"
+                  alt="Sportbefreiung Vorschau"
+                  class="w-full h-full object-contain"
+                />
+              </div>
+              <p class="text-xs text-slate-500"><%= translate("Preview Example", @locale) %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Flash Messages -->
+    <%= if Phoenix.Flash.get(@flash, :info) do %>
+      <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-lg">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <p><%= Phoenix.Flash.get(@flash, :info) %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <%= if Phoenix.Flash.get(@flash, :error) do %>
+      <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 text-sm rounded-lg">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <p><%= Phoenix.Flash.get(@flash, :error) %></p>
+        </div>
+      </div>
+    <% end %>
+    <!-- Form -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <form
+        phx-change="validate"
+        phx-submit="save"
+        id="sportbefreiung-form"
+        autocomplete="off"
+        class="divide-y divide-slate-200"
+      >
+        <!-- Sender Information -->
+        <div class="p-6 sm:p-8">
+          <div class="mb-6">
+            <h2 class="text-lg font-semibold text-slate-900 flex items-center">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <svg
+                  class="w-4 h-4 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+              <%= translate("Sender", @locale) %>
+            </h2>
+            <p class="text-sm text-slate-600 mt-1 ml-11">
+              <%= translate("Your personal information for the sports exemption request", @locale) %>
+            </p>
+          </div>
+
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div>
+                <label for="form_first_name" class="block text-sm font-medium text-slate-700 mb-2">
+                  <%= translate("First Name", @locale) %> <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="form[first_name]"
+                  id="form_first_name"
+                  value={@form_data.first_name}
+                  required
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                />
+              </div>
+              <div>
+                <label for="form_last_name" class="block text-sm font-medium text-slate-700 mb-2">
+                  <%= translate("Last Name", @locale) %> <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="form[last_name]"
+                  id="form_last_name"
+                  value={@form_data.last_name}
+                  required
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="form_title" class="block text-sm font-medium text-slate-700 mb-2">
+                <%= translate("Title (optional)", @locale) %>
+              </label>
+              <input
+                type="text"
+                name="form[title]"
+                id="form_title"
+                value={@form_data.title}
+                placeholder="z.B. Dr., Prof."
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+              />
+            </div>
+
+            <div>
+              <label for="form_street" class="block text-sm font-medium text-slate-700 mb-2">
+                <%= translate("Street and House Number (optional)", @locale) %>
+              </label>
+              <input
+                type="text"
+                name="form[street]"
+                id="form_street"
+                value={@form_data.street}
+                placeholder="Musterstraße 123"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div>
+                <label for="form_zip_code" class="block text-sm font-medium text-slate-700 mb-2">
+                  <%= translate("ZIP Code", @locale) %> <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="form[zip_code]"
+                  id="form_zip_code"
+                  value={@form_data.zip_code}
+                  required
+                  pattern="[0-9]{5}"
+                  placeholder="12345"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="form_city" class="block text-sm font-medium text-slate-700 mb-2">
+                  <%= translate("City", @locale) %> <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="form[city]"
+                  id="form_city"
+                  value={@form_data.city}
+                  required
+                  placeholder="Musterstadt"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Student Information -->
+        <div class="p-6 sm:p-8">
+          <div class="mb-6">
+            <h2 class="text-lg font-semibold text-slate-900 flex items-center">
+              <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                <svg
+                  class="w-4 h-4 text-emerald-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+              </div>
+              <%= translate("School and Student Information", @locale) %>
+            </h2>
+            <p class="text-sm text-slate-600 mt-1 ml-11">
+              <%= translate("Information about the school and student", @locale) %>
+            </p>
+          </div>
+
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  <%= translate("Sports Teacher Salutation", @locale) %>
+                </label>
+                <select
+                  name="form[teacher_salutation]"
+                  id="form_teacher_salutation"
+                  value={@form_data.teacher_salutation}
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                >
+                  <option value="Herr" selected={@form_data.teacher_salutation == "Herr"}>
+                    <%= translate("Mr.", @locale) %>
+                  </option>
+                  <option value="Frau" selected={@form_data.teacher_salutation == "Frau"}>
+                    <%= translate("Ms.", @locale) %>
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="form_teacher_name"
+                  class="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  <%= translate("Sports Teacher Name", @locale) %>
+                </label>
+                <input
+                  type="text"
+                  name="form[teacher_name]"
+                  id="form_teacher_name"
+                  value={@form_data.teacher_name}
+                  placeholder="Müller"
+                  class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="form_name_of_student"
+                class="block text-sm font-medium text-slate-700 mb-2"
+              >
+                <%= translate("Student Name", @locale) %> <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="form[name_of_student]"
+                id="form_name_of_student"
+                value={@form_data.name_of_student}
+                required
+                placeholder="Max Mustermann"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+              />
+            </div>
+
+            <div>
+              <label for="form_class_name" class="block text-sm font-medium text-slate-700 mb-2">
+                <%= translate("Class", @locale) %> <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="form[class_name]"
+                id="form_class_name"
+                value={@form_data.class_name}
+                required
+                placeholder="z.B. 5a, 10b"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+              />
+            </div>
+
+            <div>
+              <span class="block text-sm font-medium text-slate-700 mb-3">
+                <%= translate("My relationship to the student:", @locale) %>
+              </span>
+              <div class="space-y-3">
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    name="form[child_type]"
+                    value="mein_sohn"
+                    checked={@form_data.child_type == "mein_sohn" or @form_data.child_type == nil}
+                    class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span class="ml-3 text-sm text-slate-700">
+                    <%= translate("my son", @locale) %>
+                  </span>
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    name="form[child_type]"
+                    value="meine_tochter"
+                    checked={@form_data.child_type == "meine_tochter"}
+                    class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span class="ml-3 text-sm text-slate-700">
+                    <%= translate("my daughter", @locale) %>
+                  </span>
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    name="form[child_type]"
+                    value="weder_sohn_noch_tochter"
+                    checked={@form_data.child_type == "weder_sohn_noch_tochter"}
+                    class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span class="ml-3 text-sm text-slate-700">
+                    <%= translate("neither son nor daughter, but I have custody", @locale) %>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Sports Exemption Details -->
+        <div class="p-6 sm:p-8">
+          <div class="mb-6">
+            <h2 class="text-lg font-semibold text-slate-900 flex items-center">
+              <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                <svg
+                  class="w-4 h-4 text-amber-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <%= translate("Sports Exemption Details", @locale) %>
+            </h2>
+            <p class="text-sm text-slate-600 mt-1 ml-11">
+              <%= translate("Duration and reason for sports exemption", @locale) %>
+            </p>
+          </div>
+
+          <div class="space-y-6">
+            <div>
+              <span class="block text-sm font-medium text-slate-700 mb-3">
+                <%= translate("Duration Type:", @locale) %>
+              </span>
+              <div class="space-y-3">
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    name="form[duration_type]"
+                    value="single_lesson"
+                    checked={
+                      @form_data.duration_type == "single_lesson" or
+                        @form_data.duration_type == nil
+                    }
+                    class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span class="ml-3 text-sm text-slate-700">
+                    <%= translate("Single sports lesson", @locale) %>
+                  </span>
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    name="form[duration_type]"
+                    value="period"
+                    checked={@form_data.duration_type == "period"}
+                    class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span class="ml-3 text-sm text-slate-700">
+                    <%= translate("Period of time", @locale) %>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div
+              id="single_date_field"
+              style={if @form_data.duration_type == "period", do: "display: none;", else: ""}
+            >
+              <label for="form_single_date" class="block text-sm font-medium text-slate-700 mb-2">
+                <%= translate("Date", @locale) %> <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="form[single_date]"
+                id="form_single_date"
+                value={Date.to_iso8601(@form_data.single_date)}
+                required={@form_data.duration_type != "period"}
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+              />
+            </div>
+
+            <div
+              id="period_fields"
+              style={if @form_data.duration_type != "period", do: "display: none;", else: ""}
+            >
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                  <label
+                    for="form_start_date"
+                    class="block text-sm font-medium text-slate-700 mb-2"
+                  >
+                    <%= translate("Start Date", @locale) %> <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="form[start_date]"
+                    id="form_start_date"
+                    value={Date.to_iso8601(@form_data.start_date)}
+                    required={@form_data.duration_type == "period"}
+                    class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                  />
+                </div>
+                <div>
+                  <label for="form_end_date" class="block text-sm font-medium text-slate-700 mb-2">
+                    <%= translate("End Date", @locale) %> <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="form[end_date]"
+                    id="form_end_date"
+                    value={Date.to_iso8601(@form_data.end_date)}
+                    required={@form_data.duration_type == "period"}
+                    class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label for="medical_reasons" class="block text-sm font-medium text-slate-700 mb-2">
+                <%= translate("Common Medical Reasons (Optional)", @locale) %>
+              </label>
+              <select
+                id="medical_reasons"
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
+              >
+                <option value="">
+                  <%= translate("-- Select reason --", @locale) %>
+                </option>
+                <%= for {name, reason} <- medical_reasons(@locale) do %>
+                  <option value={reason}>
+                    <%= name %>
+                  </option>
+                <% end %>
+              </select>
+              <p class="mt-1 text-sm text-slate-500">
+                <%= translate("Select a common reason to auto-fill", @locale) %>
+              </p>
+            </div>
+
+            <div>
+              <label class="flex items-center">
+                <input
+                  type="checkbox"
+                  name="form[medical_certificate]"
+                  value="true"
+                  checked={
+                    @form_data.medical_certificate == true ||
+                      @form_data.medical_certificate == "true"
+                  }
+                  class="w-4 h-4 text-blue-600 border-2 border-slate-300 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <span class="ml-3 text-sm text-slate-700">
+                  <%= translate("Medical certificate attached", @locale) %>
+                </span>
+              </label>
+            </div>
+
+            <div>
+              <label
+                for="form_detailed_reason"
+                class="block text-sm font-medium text-slate-700 mb-2"
+              >
+                <%= translate("Detailed Reason", @locale) %> <span class="text-red-500">*</span>
+              </label>
+              <textarea
+                name="form[detailed_reason]"
+                id="form_detailed_reason"
+                rows="4"
+                required
+                placeholder={
+                  translate(
+                    "Please provide a detailed explanation for the sports exemption request",
+                    @locale
+                  )
+                }
+                class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm"
+              ><%= @form_data.detailed_reason %></textarea>
+            </div>
+          </div>
+        </div>
+        <!-- Submit Button -->
+        <div class="px-6 py-8 sm:px-8 bg-slate-50">
+          <div class="flex justify-center">
+            <button
+              type="submit"
+              class="inline-flex items-center px-8 py-4 border border-transparent text-base font-semibold rounded-xl shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors min-w-[200px] justify-center"
+            >
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <%= translate("Download PDF", @locale) %>
+            </button>
+          </div>
+        </div>
+        <!-- GitHub Participation Section -->
+        <div class="px-6 py-8 sm:px-8 border-t border-slate-200">
+          <div class="max-w-2xl mx-auto text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 mb-4">
+              <svg class="w-6 h-6 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900 mb-2">
+              <%= translate("Open Source & Participation", @locale) %>
+            </h3>
+            <p class="text-slate-600 mb-4">
+              <%= translate(
+                "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!",
+                @locale
+              ) %>
+            </p>
+            <a
+              href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de"
+              class="inline-flex items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <%= translate("Visit GitHub Project", @locale) %>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener("phx:open_pdf", (e) => {
+    const link = document.createElement('a');
+    link.href = e.detail.url;
+    link.setAttribute('download', '');
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  // Auto-fill detailed reason when medical reason is selected
+  document.addEventListener('DOMContentLoaded', function() {
+    const reasonSelect = document.getElementById('medical_reasons');
+    const detailedReasonTextarea = document.getElementById('form_detailed_reason');
+    const studentNameInput = document.getElementById('form_name_of_student');
+    
+    if (reasonSelect && detailedReasonTextarea) {
+      reasonSelect.addEventListener('change', function() {
+        if (this.value) {
+          let reasonText = this.value;
+          
+          // Replace "mein Kind", "my child", etc. with student name if available
+          if (studentNameInput && studentNameInput.value) {
+            const studentName = studentNameInput.value;
+            // German
+            reasonText = reasonText.replace(/mein Kind/gi, studentName);
+            reasonText = reasonText.replace(/meinem Kind/gi, studentName);
+            // English
+            reasonText = reasonText.replace(/my child/gi, studentName);
+            // Russian
+            reasonText = reasonText.replace(/мой ребенок/gi, studentName);
+            reasonText = reasonText.replace(/моему ребенку/gi, studentName);
+            reasonText = reasonText.replace(/моя дитина/gi, studentName);
+            reasonText = reasonText.replace(/моїй дитині/gi, studentName);
+            // Arabic - handle RTL
+            reasonText = reasonText.replace(/طفلي/g, studentName);
+            // Turkish
+            reasonText = reasonText.replace(/çocuğum/gi, studentName);
+            // Polish
+            reasonText = reasonText.replace(/moje dziecko/gi, studentName);
+            reasonText = reasonText.replace(/mojemu dziecku/gi, studentName);
+            // French
+            reasonText = reasonText.replace(/mon enfant/gi, studentName);
+          }
+          
+          detailedReasonTextarea.value = reasonText;
+          // Trigger a change event to update LiveView
+          detailedReasonTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+    }
+  });
+
+  // Handle duration type switching
+  document.addEventListener('change', function(e) {
+    if (e.target.name === 'form[duration_type]') {
+      const singleDateField = document.getElementById('single_date_field');
+      const periodFields = document.getElementById('period_fields');
+      const singleDateInput = document.getElementById('form_single_date');
+      const startDateInput = document.getElementById('form_start_date');
+      const endDateInput = document.getElementById('form_end_date');
+      
+      if (e.target.value === 'single_lesson') {
+        singleDateField.style.display = '';
+        periodFields.style.display = 'none';
+        singleDateInput.required = true;
+        startDateInput.required = false;
+        endDateInput.required = false;
+      } else {
+        singleDateField.style.display = 'none';
+        periodFields.style.display = '';
+        singleDateInput.required = false;
+        startDateInput.required = true;
+        endDateInput.required = true;
+      }
+    }
+  });
+</script>
