@@ -165,14 +165,9 @@ defmodule MehrSchulferienWeb.Router do
   scope "/", MehrSchulferienWeb do
     pipe_through :pdf
 
-    # Entschuldigung PDF download
-    get "/briefe/:school_slug/entschuldigung/pdf", EntschuldigungPdfController, :download
-
-    # Beurlaubung PDF download
-    get "/briefe/:school_slug/beurlaubung/pdf", BeurlaubungPdfController, :download
-
-    # Sportbefreiung PDF download
-    get "/briefe/:school_slug/sportbefreiung/pdf", SportbefreiungPdfController, :download
+    # Document PDF downloads - consolidated
+    get "/briefe/:school_slug/:document_type/pdf", DocumentPdfController, :download,
+      constraints: [document_type: ~r/entschuldigung|beurlaubung|sportbefreiung/]
   end
 
   scope "/api/v2.0", MehrSchulferienWeb.Api.V2, as: :api do
