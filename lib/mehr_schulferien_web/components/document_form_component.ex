@@ -384,7 +384,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         ) %>
       </p>
       <a
-        href="https://github.com/wintermeyer/mehr-schulferien.de"
+        href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de"
         target="_blank"
         class="inline-flex items-center px-4 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 transition-colors"
       >
