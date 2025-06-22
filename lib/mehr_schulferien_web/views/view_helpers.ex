@@ -99,7 +99,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Uses the StyleConfig module to determine the appropriate class based on
   the current CSS framework (Bootstrap or Tailwind).
   """
-  def get_html_class(date, periods, css_framework \\ :bootstrap) do
+  def get_html_class(date, periods, css_framework \\ :tailwind) do
     case Periods.find_all_periods(periods, date) do
       [] -> ""
       [period] -> get_html_class_for_period(period, css_framework)

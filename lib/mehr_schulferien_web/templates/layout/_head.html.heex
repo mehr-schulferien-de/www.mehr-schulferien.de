@@ -9,14 +9,8 @@
 <% else %>
   <%= render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
 <% end %>
-<%= if assigns[:conn] && use_bootstrap?(@conn, assigns) do %>
-  <style>
-    <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
-  </style>
-<% else %>
-  <% conn_or_socket = assigns[:conn] || assigns[:socket] %>
-  <link rel="stylesheet" href={Routes.static_path(conn_or_socket, "/assets/app.css")} />
-<% end %>
+<% conn_or_socket = assigns[:conn] || assigns[:socket] %>
+<link rel="stylesheet" href={Routes.static_path(conn_or_socket, "/assets/app.css")} />
 
 <script
   data-ad-client="ca-pub-9538764634478220"

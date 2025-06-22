@@ -1,16 +1,16 @@
 <% breakpoint_days = Enum.filter(@days, fn(x) -> x == Enum.at(@days, 0) or x.day == 1 or x == Enum.at(@days, -1) end) %>
 
-<div class="table-responsive">
-  <table class="table table-bordered table-condensed">
+<div class="overflow-x-auto">
+  <table class="w-full border border-gray-300 text-sm">
     <thead>
       <tr>
         <th rowspan="3"></th>
         <%= for {day, counter} <- Enum.with_index(breakpoint_days) do %>
           <%= if day != Enum.at(breakpoint_days, -1) do %>
             <%= if day == Enum.at(breakpoint_days, -2) do %>
-              <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1 }" %>"><%= @months[day.month] %> <%= day.year%></th>
+              <th class="whitespace-nowrap border border-gray-300 p-1" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1 }" %>"><%= @months[day.month] %> <%= day.year%></th>
             <% else %>
-              <th class="text-nowrap" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) }" %>"><%= @months[day.month] %> <%= day.year%></th>
+              <th class="whitespace-nowrap border border-gray-300 p-1" colspan="<%= "#{Date.diff(Enum.at(breakpoint_days, counter + 1), day) }" %>"><%= @months[day.month] %> <%= day.year%></th>
             <% end %>
           <% end %>
         <% end %>
@@ -19,7 +19,7 @@
       <tr>
         <%= for day <- @days do %>
           <% day_of_week = Date.day_of_week(day) %>
-          <td class="text-right <%= if day_of_week > 5, do: "active", else: "" %>"><small><%= @day_names[day_of_week] %><span class="hidden-xs hidden-sm hidden-md">.</span></small></td>
+          <td class="text-right p-1 <%= if day_of_week > 5, do: "bg-gray-100", else: "" %>"><small><%= @day_names[day_of_week] %><span class="hidden sm:inline">.</span></small></td>
         <% end %>
       </tr>
       <tr>
@@ -35,19 +35,19 @@
         <% periods = place[:periods] %>
         <%= for {federal_state, periods} <- periods do %>
           <tr>
-            <th rowspan="2">
+            <th rowspan="2" class="p-2 border border-gray-300">
               <%= if country.slug && federal_state.slug do %>
-                <span class="hidden-xs "><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
-                <span class="hidden-sm hidden-md hidden-lg hidden-xl"><%= link "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) %></span>
+                <span class="hidden sm:inline"><%= link federal_state.name, to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug), class: "text-blue-600 hover:text-blue-800" %></span>
+                <span class="sm:hidden"><%= link "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug), class: "text-blue-600 hover:text-blue-800" %></span>
               <% else %>
-                <span class="hidden-xs "><%= federal_state.name %></span>
-                <span class="hidden-sm hidden-md hidden-lg hidden-xl"><%= "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})" %></span>
+                <span class="hidden sm:inline"><%= federal_state.name %></span>
+                <span class="sm:hidden"><%= "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})" %></span>
               <% end %>
             </th>
             <%= for day <- @days do %>
-              <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
-              <td class="text-center <%= td_html_class %>">
-                <%= if td_html_class != "" and td_html_class != "active" do %>
+              <% td_html_class = ViewHelpers.get_html_class(day, periods, :tailwind) %>
+              <td class="text-center p-1 border border-gray-300 <%= td_html_class %>">
+                <%= if td_html_class != "" and td_html_class != "bg-gray-100" do %>
                   <%= if country.slug && federal_state.slug do %>
                     <%= link title: "Termin anzeigen", to: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}" do %>
                       <i class="icon">
@@ -71,12 +71,12 @@
                 <% school_period = MehrSchulferien.PeriodDisplay.get_school_period(current_day_periods) %>
                 <%= if MehrSchulferien.PeriodDisplay.display_period_info?(day, @days, school_period) do %>
                   <% colspan = MehrSchulferien.PeriodDisplay.get_period_colspan(day, List.last(@days), school_period) %>
-                  <td class="<%= school_period.html_class %>" colspan="<%= colspan %>">
+                  <td class="<%= ViewHelpers.get_html_class(day, [school_period], :tailwind) %> border border-gray-300 p-1" colspan="<%= colspan %>">
                     <%= link MehrSchulferien.PeriodDisplay.show_period_info(school_period, colspan), title: "#{school_period.holiday_or_vacation_type.colloquial} #{day.year} in #{federal_state.name}", to: (if country.slug && federal_state.slug, do: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}", else: "#") %>
                   </td>
                 <% else %>
                   <%= if non_school_period = MehrSchulferien.PeriodDisplay.get_non_school_period(day, school_period, current_day_periods) do %>
-                    <td class="<%= non_school_period.html_class %>"></td>
+                    <td class="<%= ViewHelpers.get_html_class(day, [non_school_period], :tailwind) %> border border-gray-300"></td>
                   <% end %>
                 <% end %>
               <% else %>

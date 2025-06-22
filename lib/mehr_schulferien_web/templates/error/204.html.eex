@@ -1,7 +1,5 @@
-<div class="row">
-  <div class="col-md-12">
-    <h1>Keine Brückentage verfügbar</h1>
-    <p>Für <%= @federal_state.name %> im Jahr <%= @year %> sind aktuell keine Brückentage verfügbar.</p>
-    <p>Bitte versuchen Sie es mit einem anderen Jahr oder Bundesland.</p>
-  </div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Keine Brückentage verfügbar</h1>
+  <p class="text-lg text-gray-600 mb-2">Für <%= @federal_state.name %> im Jahr <%= @year %> sind aktuell keine Brückentage verfügbar.</p>
+  <p class="text-lg text-gray-600">Bitte versuchen Sie es mit einem anderen Jahr oder Bundesland.</p>
 </div> 

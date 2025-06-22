@@ -5,42 +5,22 @@ defmodule MehrSchulferienWeb.LayoutView do
 
   @doc """
   Determines whether to use Bootstrap CSS (legacy) or Tailwind CSS (new).
-
-  Checks in the following order:
-  1. View-specific preference in assigns[:css_framework]
-  2. Global application config
-  3. Defaults to Bootstrap (true) during migration
+  Now always returns false as Tailwind is the default.
+  Kept for backwards compatibility.
   """
-  def use_bootstrap?(_conn, assigns) do
-    cond do
-      # Check if the current view has explicitly specified which CSS framework to use
-      Map.has_key?(assigns, :css_framework) ->
-        case assigns.css_framework do
-          :bootstrap -> true
-          :tailwind -> false
-          :tailwind_new -> false
-          # Default to bootstrap for unknown values
-          _ -> true
-        end
-
-      # Fall back to application config
-      Application.get_env(:mehr_schulferien, :css_framework) ->
-        Application.get_env(:mehr_schulferien, :css_framework) == :bootstrap
-
-      # Default to Bootstrap during the migration period
-      true ->
-        true
-    end
+  def use_bootstrap?(_conn, _assigns) do
+    false
   end
 
   @doc """
   Returns the appropriate layout template file based on the current CSS framework.
+  Now always returns Tailwind layout.
   """
-  def select_layout_template(conn, assigns) do
-    cond do
-      Map.get(assigns, :css_framework) == :tailwind_new -> "app_tailwind_full.html"
-      use_bootstrap?(conn, assigns) -> "app_bootstrap.html"
-      true -> "app_tailwind_minimal.html"
+  def select_layout_template(_conn, assigns) do
+    if Map.get(assigns, :css_framework) == :tailwind_new do
+      "app_tailwind_full.html"
+    else
+      "app_tailwind_minimal.html"
     end
   end
 

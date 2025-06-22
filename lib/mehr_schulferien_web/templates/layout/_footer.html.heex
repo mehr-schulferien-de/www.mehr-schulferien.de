@@ -1,31 +1,47 @@
-<footer>
-  <div class="dsgvo text-center">
-    <div class="container">
-      <p class="text-center">Alle Angaben ohne Gewähr.</p>
-      <h5 class="text-center">DSGVO und Cookies</h5>
-      <p>
+<footer class="bg-gray-100 border-t border-gray-200 mt-16">
+  <div class="py-8">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p class="text-gray-600 mb-4">Alle Angaben ohne Gewähr.</p>
+      <h5 class="text-lg font-semibold text-gray-900 mb-3">DSGVO und Cookies</h5>
+      <p class="text-gray-600 mb-3">
         Wir weisen darauf hin, dass diese Seite Google Analytics einsetzt und verweisen hierzu auf die
-        <a href="https://policies.google.com/privacy">Datenschutzerklärung</a>
-        sowie auf die <a href="http://tools.google.com/dlpage/gaoptout?hl=de">Opt-Out-Möglichkeiten für Google-Analytics</a>.
+        <a
+          href="https://policies.google.com/privacy"
+          class="text-blue-600 hover:text-blue-800 underline"
+        >
+          Datenschutzerklärung
+        </a>
+        sowie auf die <a
+          href="http://tools.google.com/dlpage/gaoptout?hl=de"
+          class="text-blue-600 hover:text-blue-800 underline"
+        >Opt-Out-Möglichkeiten für Google-Analytics</a>.
       </p>
-      <p>
+      <p class="text-gray-600 mb-3">
         Diese Webseite verwendet Cookies, um Inhalte und Anzeigen zu personalisieren, Funktionen für soziale Medien anbieten zu können und die Zugriffe auf unsere Website zu analysieren. Außerdem geben wir Informationen zu Ihrer Verwendung unserer Website an unsere Partner für soziale Medien, Werbung und Analysen weiter. Unsere Partner führen diese Informationen möglicherweise mit weiteren Daten zusammen, die Sie ihnen bereitgestellt haben oder die sie im Rahmen Ihrer Nutzung der Dienste gesammelt haben. Sie geben Einwilligung zu unseren Cookies, wenn Sie unsere Webseite weiterhin nutzen.
       </p>
-      <p>
+      <p class="text-gray-600">
         Weiterhin behalten wir uns vor alle Daten an den Nikolaus (a.k.a. Weihnachtsmann) zu verkaufen. Je nachdem wie gut Sie sich im laufenden Jahr verhalten haben, wird der Nikolaus Ihnen dann pünklich zum 06.12. den vor die Haustür gestellten Stiefel füllen. Es hat sich in der Vergangenheit gezeigt, das es auch gut ist, wenn man zum Besuch des Nikolaus ein - möglichst schönes - Gedicht auswendig vortragen kann.
       </p>
     </div>
   </div>
-  <div class="copy">
-    <div class="container">
-      <p>
+  <div class="bg-gray-200 py-4">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p class="text-gray-600 mb-2">
         Version <%= ViewHelpers.version() %> - 2020 &copy; Stefan Wintermeyer
       </p>
-      <p>
-        <%= link("Impressum und Datenschutzerklärung", to: Routes.page_path(@conn, :impressum)) %>
+      <p class="mb-2">
+        <%= link("Impressum und Datenschutzerklärung",
+          to: Routes.page_path(@conn, :impressum),
+          class: "text-blue-600 hover:text-blue-800 underline"
+        ) %>
       </p>
       <p>
-        <a href="https://www.wintermeyer-consulting.de">Wintermeyer Consulting</a>
+        <a
+          href="https://www.wintermeyer-consulting.de"
+          class="text-blue-600 hover:text-blue-800 underline"
+        >
+          Wintermeyer Consulting
+        </a>
       </p>
     </div>
   </div>

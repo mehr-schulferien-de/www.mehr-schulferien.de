@@ -1,10 +1,11 @@
-<ol class="breadcrumb">
-  <li><%= link "Start", to: Routes.page_path(@conn, :home) %></li>
-</ol>
+<nav class="mb-6" aria-label="Breadcrumb">
+  <ol class="flex items-center space-x-2">
+    <li><%= link "Start", to: Routes.page_path(@conn, :home), class: "text-blue-600 hover:text-blue-800" %></li>
+  </ol>
+</nav>
 
-<div class="page-header">
-  <div class="row">
-    <div class="col-md-12">
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="prose prose-lg max-w-none">
       <h1>
         Impressum und Datenschutzerklärung
       </h1>

@@ -1,15 +1,13 @@
-<div class="row">
-  <div class="col-xs-12">
-    <h1>Sommerferien in Deutschland</h1>
-    <p>Eine Übersicht der Sommerferientermine aller Bundesländern im Jahr <%= @current_year %>. Mit diesem Kalender können Sie den günstigsten Termin für Ihren Sommerurlaub rausfinden.</p>
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Sommerferien in Deutschland</h1>
+  <p class="text-lg text-gray-700 mb-8">Eine Übersicht der Sommerferientermine aller Bundesländern im Jahr <%= @current_year %>. Mit diesem Kalender können Sie den günstigsten Termin für Ihren Sommerurlaub rausfinden.</p>
 
-    <div id="big_table">
+  <div id="big_table" class="mb-8">
     <%= render MehrSchulferienWeb.PartialView, "_current_calendar.html", conn: @conn, countries: @countries, days: @days, day_names: @day_names, months: @months %>
-    </div>
-
-    <h2>Hintergrundwissen</h2>
-    <p>
-    Die Sommerferien müssen sechs Wochen lang sein und zwischen dem 20. Juni und 15. September stattfinden. Die Termine werden von allen Bundesländern miteinander auf der <a href="https://www.kmk.org">Kultusministerkonferenz</a> koordiniert. Bayern bekommt dabei traditionell immer die letzten Sommerferien.
-    </p>
   </div>
+
+  <h2 class="text-2xl font-semibold text-gray-900 mb-4">Hintergrundwissen</h2>
+  <p class="text-gray-700">
+    Die Sommerferien müssen sechs Wochen lang sein und zwischen dem 20. Juni und 15. September stattfinden. Die Termine werden von allen Bundesländern miteinander auf der <a href="https://www.kmk.org" class="text-blue-600 hover:text-blue-800 underline">Kultusministerkonferenz</a> koordiniert. Bayern bekommt dabei traditionell immer die letzten Sommerferien.
+  </p>
 </div>

@@ -30,7 +30,6 @@
         <% end %>
       <% end %>
     </ul>
-  </div>
 </div>
 
 <%= if @bridge_day_proposal_count > 0 do %>

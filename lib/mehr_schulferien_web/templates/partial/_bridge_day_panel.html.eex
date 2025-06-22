@@ -4,19 +4,19 @@
 <% first_day = hd(@all_periods).starts_on %>
 <% last_day = List.last(@all_periods).ends_on %>
 
-<article class="col-xs-12 col-sm-6 col-md-4" itemscope itemtype="https://schema.org/Event">
-  <div class='panel panel-default bridge-day-panel'>
-    <div class="panel-body">
+<article class="w-full sm:w-1/2 md:w-1/3 px-2 mb-4" itemscope itemtype="https://schema.org/Event">
+  <div class='bg-white rounded-lg shadow-md bridge-day-panel'>
+    <div class="p-4">
       <header>
-        <h3 class="bridge-day-header" itemprop="name">
+        <h3 class="text-lg font-semibold mb-3" itemprop="name">
           <%= MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day) %> 
-          <small class="text-muted"><%= @year %></small>
+          <small class="text-gray-500"><%= @year %></small>
         </h3>
       </header>
       
       <!-- Mobile-friendly date range display -->
-      <div class="visible-xs">
-        <div class="date-range-mobile">
+      <div class="block sm:hidden">
+        <div class="mb-4 p-2 bg-gray-100 rounded text-center">
           <time datetime="<%= first_day %>" itemprop="startDate">
             <strong><%= ViewHelpers.format_date(first_day) %></strong>
           </time> bis 
@@ -27,8 +27,8 @@
       </div>
       
       <!-- Desktop calendar view -->
-      <div class="hidden-xs">
-        <table class="table table-condensed" role="presentation">
+      <div class="hidden sm:block">
+        <table class="w-full text-sm" role="presentation">
           <thead>
             <tr>
               <th scope="col">Mo</th>
@@ -36,8 +36,8 @@
               <th scope="col">Mi</th>
               <th scope="col">Do</th>
               <th scope="col">Fr</th>
-              <th scope="col" class="active">Sa</th>
-              <th scope="col" class="active">So</th>
+              <th scope="col" class="bg-gray-100">Sa</th>
+              <th scope="col" class="bg-gray-100">So</th>
             </tr>
           </thead>
           <tbody>
@@ -51,7 +51,7 @@
                   </tr>
                   <tr>
                 <% end %>
-                <td class="text-right <%= ViewHelpers.get_html_class(day, @all_periods) %><%= if Enum.any?(@all_periods, fn p -> Date.compare(day, p.starts_on) != :lt and Date.compare(day, p.ends_on) != :gt end), do: " bridge-free-day", else: "" %>">
+                <td class="text-right p-1 <%= ViewHelpers.get_html_class(day, @all_periods, :tailwind) %><%= if Enum.any?(@all_periods, fn p -> Date.compare(day, p.starts_on) != :lt and Date.compare(day, p.ends_on) != :gt end), do: " border-b-4 border-green-600", else: "" %>">
                   <time datetime="<%= day %>"><%= day.day %></time>
                 </td>
               <% end %>
@@ -84,25 +84,6 @@
 </article>
 
 <style>
-.bridge-day-panel {
-  margin-bottom: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.bridge-day-header {
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-.date-range-mobile {
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  text-align: center;
-}
 
 .vacation-joy-card {
   font-family: 'Quicksand', 'Nunito', Arial, sans-serif;
@@ -179,9 +160,6 @@
   color: #555;
   font-size: 0.95em;
   margin-top: 0.5em;
-}
-.bridge-free-day {
-  border-bottom: 4px solid #007E33 !important;
 }
 @media (max-width: 768px) {
   .bridge-day-panel {

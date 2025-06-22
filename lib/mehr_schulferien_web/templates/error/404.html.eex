@@ -1,9 +1,7 @@
-<div class="container">
-  <div class="row">
-    <div class="col-xs-12">
-      <h1>404 - Not Found</h1>
-      <p>Die angeforderte Seite wurde nicht gefunden.</p>
-      <p><a href="/">Zurück zur Startseite</a></p>
-    </div>
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">404 - Not Found</h1>
+    <p class="text-lg text-gray-600 mb-6">Die angeforderte Seite wurde nicht gefunden.</p>
+    <p><a href="/" class="text-blue-600 hover:text-blue-800 underline">Zurück zur Startseite</a></p>
   </div>
 </div> 
