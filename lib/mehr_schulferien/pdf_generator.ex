@@ -32,6 +32,31 @@ defmodule MehrSchulferien.PdfGenerator do
     end
   end
 
+  @doc """
+  Generates a leave of absence request PDF from form data and school information.
+
+  Returns {:ok, pdf_binary} on success or {:error, reason} on failure.
+  """
+  def generate_beurlaubung_pdf(form_data, school) do
+    template_path =
+      Path.join(:code.priv_dir(:mehr_schulferien), "templates/beurlaubung.tex.eex")
+
+    case File.read(template_path) do
+      {:ok, template_content} ->
+        latex_content =
+          EEx.eval_string(template_content,
+            assigns: [form_data: form_data, school: school],
+            engine: EEx.SmartEngine
+          )
+
+        compile_latex_to_pdf(latex_content, "beurlaubung")
+
+      {:error, reason} ->
+        Logger.error("Failed to read LaTeX template: #{inspect(reason)}")
+        {:error, "Template not found"}
+    end
+  end
+
   defp compile_latex_to_pdf(latex_content, base_filename) do
     # Create a unique filename to avoid conflicts
     timestamp = System.system_time(:microsecond)
