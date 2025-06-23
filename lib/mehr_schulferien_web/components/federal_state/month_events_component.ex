@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
   use Phoenix.Component
 
-  import MehrSchulferienWeb.FederalState.Helpers
+  alias MehrSchulferienWeb.ViewHelpers
   import MehrSchulferienWeb.FederalState.PeriodNameComponent
 
   attr :month_periods, :list, required: true
@@ -40,7 +40,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
             <span class="font-medium text-green-700 flex-1 pr-2">
               <.period_name period={period} />
               <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
-              <% effective_duration = calculate_effective_duration(period, @all_periods) %>
+              <% effective_duration = ViewHelpers.calculate_effective_duration(period, @all_periods) %>
               <% difference = effective_duration - days %>
               <span class="font-normal ml-1">
                 (<%= days %>

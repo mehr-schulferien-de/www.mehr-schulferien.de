@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.FederalStateViewTest do
   use MehrSchulferienWeb.ConnCase, async: true
 
-  alias MehrSchulferienWeb.FederalStateView
+  alias MehrSchulferienWeb.ViewHelpers
 
   describe "calculate_effective_duration/2" do
     test "correctly calculates the effective duration including adjacent days off" do
@@ -30,7 +30,7 @@ defmodule MehrSchulferienWeb.FederalStateViewTest do
       periods = [pfingstmontag, pfingstferien, fronleichnam]
 
       # Calculate effective duration of Pfingstferien
-      effective_duration = FederalStateView.calculate_effective_duration(pfingstferien, periods)
+      effective_duration = ViewHelpers.calculate_effective_duration(pfingstferien, periods)
 
       # Base duration calculation (10-20 June = 11 days)
       base_duration = Date.diff(pfingstferien.ends_on, pfingstferien.starts_on) + 1

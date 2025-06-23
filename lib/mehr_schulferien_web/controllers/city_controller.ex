@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.CityController do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
-  alias MehrSchulferienWeb.CityView
+  alias MehrSchulferienWeb.ViewHelpers
 
   def show_year(conn, %{
         "country_slug" => country_slug,
@@ -29,7 +29,7 @@ defmodule MehrSchulferienWeb.CityController do
     periods_with_duration =
       Enum.map(data.periods, fn period ->
         days = Date.diff(period.ends_on, period.starts_on) + 1
-        effective_duration = CityView.calculate_effective_duration(period, data.all_periods)
+        effective_duration = ViewHelpers.calculate_effective_duration(period, data.all_periods)
         difference = effective_duration - days
         Map.put(period, :adjoining_duration, difference)
       end)

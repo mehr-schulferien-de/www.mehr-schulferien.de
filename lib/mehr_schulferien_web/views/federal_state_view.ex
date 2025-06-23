@@ -15,7 +15,7 @@ defmodule MehrSchulferienWeb.FederalStateView do
   import MehrSchulferienWeb.ICalPanelComponent
 
   def format_zip_codes(city) do
-    "#{Enum.map(city.zip_codes, & &1.value) |> Enum.sort() |> MehrSchulferienWeb.ViewHelpers.comma_join_with_a_final_und()}"
+    MehrSchulferienWeb.ViewHelpers.format_zip_codes(city)
   end
 
   def get_vacation_type_days([period]), do: get_period_days(period)
@@ -53,9 +53,5 @@ defmodule MehrSchulferienWeb.FederalStateView do
     else
       DateHelpers.create_month(year, month)
     end
-  end
-
-  def calculate_effective_duration(period, periods) do
-    MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(period, periods)
   end
 end

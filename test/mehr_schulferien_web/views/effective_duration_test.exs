@@ -1,23 +1,18 @@
 defmodule MehrSchulferienWeb.Views.EffectiveDurationTest do
   use MehrSchulferienWeb.ConnCase, async: true
 
-  alias MehrSchulferienWeb.{FederalStateView, CityView, SchoolView, ViewHelpers}
+  alias MehrSchulferienWeb.ViewHelpers
 
   describe "calculate_effective_duration" do
-    test "all views delegate to ViewHelpers implementation" do
+    test "ViewHelpers implementation works correctly" do
       period = %{starts_on: ~D[2024-03-25], ends_on: ~D[2024-04-05]}
       periods = [period]
 
-      # All three views should return the same result and delegate to ViewHelpers
-      federal_state_duration = FederalStateView.calculate_effective_duration(period, periods)
-      city_duration = CityView.calculate_effective_duration(period, periods)
-      school_duration = SchoolView.calculate_effective_duration(period, periods)
+      # Direct call to ViewHelpers implementation
       direct_duration = ViewHelpers.calculate_effective_duration(period, periods)
 
-      # All should return the same result
-      assert federal_state_duration == direct_duration
-      assert city_duration == direct_duration
-      assert school_duration == direct_duration
+      # Should return at least the basic duration
+      assert direct_duration >= Date.diff(period.ends_on, period.starts_on) + 1
     end
 
     test "ViewHelpers implementation works correctly for various scenarios" do
@@ -45,7 +40,7 @@ defmodule MehrSchulferienWeb.Views.EffectiveDurationTest do
   end
 
   describe "algorithm consistency" do
-    test "all three views use the same core algorithm" do
+    test "ViewHelpers algorithm works correctly with various scenarios" do
       # Test with various period configurations
       test_cases = [
         # Simple case
@@ -59,17 +54,12 @@ defmodule MehrSchulferienWeb.Views.EffectiveDurationTest do
 
       for {period, other_periods} <- test_cases do
         all_periods = [period | other_periods]
+        result = ViewHelpers.calculate_effective_duration(period, all_periods)
+        basic_duration = Date.diff(period.ends_on, period.starts_on) + 1
 
-        federal_state_result = FederalStateView.calculate_effective_duration(period, all_periods)
-        city_result = CityView.calculate_effective_duration(period, all_periods)
-        school_result = SchoolView.calculate_effective_duration(period, all_periods)
-
-        # All should return the same result
-        assert federal_state_result == city_result,
-               "Federal state and city views differ for period #{inspect(period)}"
-
-        assert city_result == school_result,
-               "City and school views differ for period #{inspect(period)}"
+        # Result should be at least the basic duration
+        assert result >= basic_duration,
+               "Effective duration should be at least the basic duration for period #{inspect(period)}"
       end
     end
   end

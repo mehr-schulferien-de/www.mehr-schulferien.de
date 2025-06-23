@@ -1,7 +1,6 @@
 defmodule MehrSchulferienWeb.Controllers.ShowYearLogicTest do
   use MehrSchulferienWeb.ConnCase, async: true
 
-
   describe "show_year logic consistency" do
     setup do
       # Create test data using proper factory names

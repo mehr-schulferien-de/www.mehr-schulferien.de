@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
   use Phoenix.Component
 
-  import MehrSchulferienWeb.FederalState.Helpers
+  alias MehrSchulferienWeb.ViewHelpers
   import MehrSchulferienWeb.FederalState.PeriodNameComponent
 
   attr :periods, :list, required: true
@@ -73,7 +73,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
               </td>
               <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                 <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
-                <% effective_duration = calculate_effective_duration(period, @all_periods) %>
+                <% effective_duration = ViewHelpers.calculate_effective_duration(period, @all_periods) %>
                 <% difference = effective_duration - days %>
 
                 <%= days + difference %>
@@ -86,7 +86,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
       <% has_differences =
         Enum.any?(@periods, fn period ->
           days = Date.diff(period.ends_on, period.starts_on) + 1
-          effective_duration = calculate_effective_duration(period, @all_periods)
+          effective_duration = ViewHelpers.calculate_effective_duration(period, @all_periods)
           effective_duration != days
         end) %>
 

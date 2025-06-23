@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
-  alias MehrSchulferienWeb.FederalStateView
+  alias MehrSchulferienWeb.ViewHelpers
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
@@ -64,7 +64,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         days = Date.diff(period.ends_on, period.starts_on) + 1
 
         effective_duration =
-          FederalStateView.calculate_effective_duration(period, data.all_periods)
+          ViewHelpers.calculate_effective_duration(period, data.all_periods)
 
         difference = effective_duration - days
         Map.put(period, :adjoining_duration, difference)

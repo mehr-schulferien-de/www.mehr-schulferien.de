@@ -12,10 +12,6 @@ defmodule MehrSchulferienWeb.SchoolView do
   import MehrSchulferienWeb.FaqComponent
   import MehrSchulferienWeb.ICalPanelComponent
 
-  def calculate_effective_duration(period, periods) do
-    MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(period, periods)
-  end
-
   def format_date_range(period, short_format \\ false) do
     ViewHelpers.format_date_range(period.starts_on, period.ends_on, if(short_format, do: :short))
   end

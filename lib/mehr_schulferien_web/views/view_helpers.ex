@@ -259,6 +259,17 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   @doc """
+  Formats zip codes for a city as a comma-separated list with "und" before the last item.
+  This function was duplicated across FederalStateView and CityView.
+  """
+  def format_zip_codes(city) do
+    city.zip_codes
+    |> Enum.map(& &1.value)
+    |> Enum.sort()
+    |> comma_join_with_a_final_und()
+  end
+
+  @doc """
   Calculate effective duration for a period, including adjacent holidays/weekends.
   This is the shared implementation used by all view modules.
   """
