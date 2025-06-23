@@ -5,7 +5,9 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
-     assign(socket,
+     socket
+     |> assign(
+       page_title: "Schule suchen - Briefe erstellen",
        search_params: %{"zip_code" => "", "city" => "", "school_name" => ""},
        schools: [],
        searching: false,
