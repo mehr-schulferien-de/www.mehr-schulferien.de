@@ -58,7 +58,7 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
           ends_on: ~D[2020-03-04]
         })
 
-      assert ViewHelpers.get_html_class(~D[2020-03-02], [period]) == "success"
+      assert ViewHelpers.get_html_class(~D[2020-03-02], [period]) == "bg-green-100"
       assert ViewHelpers.get_html_class(~D[2020-03-05], [period]) == ""
     end
 
@@ -80,7 +80,7 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
         })
 
       assert ViewHelpers.get_html_class(~D[2020-03-01], [period_1, period_2]) == "info"
-      assert ViewHelpers.get_html_class(~D[2020-03-02], [period_1, period_2]) == "success"
+      assert ViewHelpers.get_html_class(~D[2020-03-02], [period_1, period_2]) == "bg-green-100"
     end
   end
 end

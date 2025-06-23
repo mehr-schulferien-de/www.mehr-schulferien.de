@@ -12,7 +12,6 @@ defmodule MehrSchulferien.Periods do
 
   alias MehrSchulferien.Calendars
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType}
-  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Periods.{Period, Query, DateOperations, Grouping}
   alias MehrSchulferien.Repo
 

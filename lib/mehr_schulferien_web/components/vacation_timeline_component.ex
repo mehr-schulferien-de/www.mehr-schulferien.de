@@ -61,7 +61,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
       <table class="w-full" role="presentation" style="table-layout: fixed;">
         <thead>
           <tr>
-            <%= for {{month_name, days_count, _year, _month}, index} <- Enum.with_index(@months_with_days) do %>
+            <%= for {{month_name, days_count, _year, _month}, _index} <- Enum.with_index(@months_with_days) do %>
               <% # Calculate percentage width for this month
               percentage_width = days_count / length(@days_to_show) * 100
 

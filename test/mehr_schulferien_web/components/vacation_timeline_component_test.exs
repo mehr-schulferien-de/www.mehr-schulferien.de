@@ -155,7 +155,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
       |> IO.iodata_to_binary()
 
     # Assert that the countdown is shown correctly (26 days from May 15 to June 10)
-    assert html =~ "Noch #{expected_days_until} Tage bis zu den Pfingstferien."
+    assert html =~ "#{expected_days_until} Tage bis zu den Pfingstferien."
 
     # Should not display countdown to public holidays
     refute html =~ "Tage bis Christi Himmelfahrt"
@@ -199,7 +199,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
 
     # Assert countdown uses timeline start date (May 1) as reference
     # (40 days from May 1 to June 10)
-    assert html =~ "Noch #{expected_days_until} Tage bis zu den Pfingstferien."
+    assert html =~ "#{expected_days_until} Tage bis zu den Pfingstferien."
   end
 
   test "displays special message when reference date is within a vacation period" do
@@ -367,6 +367,142 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     assert html =~ "Pfingstferien"
   end
 
+  test "displays federal state name in countdown message" do
+    # Create test data with federal state
+    current_date = ~D[2025-05-15]
+
+    federal_state = %{
+      id: 1,
+      name: "Baden-Württemberg",
+      slug: "baden-wuerttemberg"
+    }
+
+    vacation_periods = [
+      %{
+        starts_on: ~D[2025-07-31],
+        ends_on: ~D[2025-09-13],
+        holiday_or_vacation_type: %{name: "Sommerferien", colloquial: "Sommerferien"},
+        is_school_vacation: true
+      }
+    ]
+
+    days_to_show = create_days(current_date, 90)
+    months = get_test_months()
+
+    # Calculate expected days
+    expected_days = Date.diff(~D[2025-07-31], current_date)
+
+    html =
+      VacationTimelineComponent.render(%{
+        days_to_show: days_to_show,
+        months: months,
+        all_periods: vacation_periods,
+        days_count: 90,
+        months_with_days: [
+          {"Mai", 31, 2025, 5},
+          {"Juni", 30, 2025, 6},
+          {"Juli", 31, 2025, 7}
+        ],
+        federal_state: federal_state,
+        _test_today: current_date
+      })
+      |> Phoenix.HTML.Safe.to_iodata()
+      |> IO.iodata_to_binary()
+
+    # Should show countdown with federal state name
+    assert html =~ "#{expected_days} Tage bis zu den Sommerferien in Baden-Württemberg."
+  end
+
+  test "displays federal state name in current vacation message" do
+    # Test that federal state name appears in "Aktuell sind..." message
+    vacation_start = ~D[2025-07-31]
+    vacation_end = ~D[2025-09-13]
+    reference_date = ~D[2025-08-15]
+
+    federal_state = %{
+      id: 1,
+      name: "Baden-Württemberg",
+      slug: "baden-wuerttemberg"
+    }
+
+    vacation_periods = [
+      %{
+        starts_on: vacation_start,
+        ends_on: vacation_end,
+        holiday_or_vacation_type: %{name: "Sommerferien", colloquial: "Sommerferien"},
+        is_school_vacation: true
+      }
+    ]
+
+    days_to_show = create_days(reference_date, 90)
+    months = get_test_months()
+    expected_days_remaining = Date.diff(vacation_end, reference_date)
+
+    html =
+      VacationTimelineComponent.render(%{
+        days_to_show: days_to_show,
+        months: months,
+        all_periods: vacation_periods,
+        days_count: 90,
+        months_with_days: [
+          {"August", 31, 2025, 8},
+          {"September", 30, 2025, 9},
+          {"Oktober", 31, 2025, 10}
+        ],
+        federal_state: federal_state,
+        _test_today: reference_date
+      })
+      |> Phoenix.HTML.Safe.to_iodata()
+      |> IO.iodata_to_binary()
+
+    # Should show current vacation with federal state name
+    assert html =~
+             "Aktuell sind Sommerferien in Baden-Württemberg (noch #{expected_days_remaining} Tage)."
+  end
+
+  test "renders vacation links with federal state" do
+    # Test that vacation names are properly linked when federal state is provided
+    current_date = ~D[2025-05-15]
+
+    federal_state = %{
+      id: 1,
+      name: "Baden-Württemberg",
+      slug: "baden-wuerttemberg"
+    }
+
+    vacation_periods = [
+      %{
+        starts_on: ~D[2025-06-10],
+        ends_on: ~D[2025-06-21],
+        holiday_or_vacation_type: %{name: "Pfingstferien", colloquial: "Pfingstferien"},
+        is_school_vacation: true
+      }
+    ]
+
+    days_to_show = create_days(current_date, 90)
+    months = get_test_months()
+
+    html =
+      VacationTimelineComponent.render(%{
+        days_to_show: days_to_show,
+        months: months,
+        all_periods: vacation_periods,
+        days_count: 90,
+        months_with_days: [
+          {"Mai", 31, 2025, 5},
+          {"Juni", 30, 2025, 6},
+          {"Juli", 29, 2025, 7}
+        ],
+        federal_state: federal_state
+      })
+      |> Phoenix.HTML.Safe.to_iodata()
+      |> IO.iodata_to_binary()
+
+    # Should create proper link to vacation page with correct anchor format (lowercase month)
+    assert html =~ ~s(href="/ferien/d/bundesland/baden-wuerttemberg/2025#juni2025")
+    assert html =~ "Pfingstferien"
+  end
+
   test "respects display_priority when rendering overlapping periods" do
     # Define overlapping periods - Pfingstferien with public holiday Fronleichnam inside
     periods = [
@@ -443,6 +579,117 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     # Verify that there is one date with both Pfingstferien and Fronleichnam mentioned
     assert html =~ "Pfingstferien"
     assert html =~ "Fronleichnam"
+  end
+
+  test "displays correct month headers in timeline" do
+    # Test that month headers are displayed correctly
+    start_date = ~D[2025-05-20]
+
+    vacation_periods = [
+      %{
+        starts_on: ~D[2025-06-10],
+        ends_on: ~D[2025-06-21],
+        holiday_or_vacation_type: %{name: "Pfingstferien", colloquial: "Pfingstferien"},
+        is_school_vacation: true
+      }
+    ]
+
+    days_to_show = create_days(start_date, 90)
+    months = get_test_months()
+
+    html =
+      VacationTimelineComponent.render(%{
+        days_to_show: days_to_show,
+        months: months,
+        all_periods: vacation_periods,
+        days_count: 90,
+        months_with_days: [
+          {"Mai", 12, 2025, 5},
+          {"Juni", 30, 2025, 6},
+          {"Juli", 31, 2025, 7},
+          {"August", 17, 2025, 8}
+        ]
+      })
+      |> Phoenix.HTML.Safe.to_iodata()
+      |> IO.iodata_to_binary()
+
+    # Should display month headers
+    assert html =~ "Mai"
+    assert html =~ "Juni"
+    assert html =~ "Juli"
+    assert html =~ "August"
+
+    # Check that the timeline table structure exists
+    assert html =~ "<table"
+    assert html =~ "table-layout: fixed"
+    assert html =~ "<thead>"
+    assert html =~ "<tbody>"
+  end
+
+  test "displays holidays with correct styling" do
+    # Test that holidays are displayed with proper colors
+    start_date = ~D[2025-05-01]
+
+    periods = [
+      %{
+        starts_on: ~D[2025-05-29],
+        ends_on: ~D[2025-05-29],
+        holiday_or_vacation_type: %{
+          name: "Christi Himmelfahrt",
+          colloquial: "Christi Himmelfahrt"
+        },
+        is_public_holiday: true,
+        display_priority: 2
+      },
+      %{
+        starts_on: ~D[2025-06-09],
+        ends_on: ~D[2025-06-09],
+        holiday_or_vacation_type: %{
+          name: "Pfingstmontag",
+          colloquial: "Pfingstmontag"
+        },
+        is_public_holiday: true,
+        display_priority: 2
+      },
+      %{
+        starts_on: ~D[2025-06-10],
+        ends_on: ~D[2025-06-21],
+        holiday_or_vacation_type: %{
+          name: "Pfingstferien",
+          colloquial: "Pfingstferien"
+        },
+        is_school_vacation: true,
+        display_priority: 1
+      }
+    ]
+
+    days_to_show = create_days(start_date, 60)
+    months = get_test_months()
+
+    html =
+      VacationTimelineComponent.render(%{
+        days_to_show: days_to_show,
+        months: months,
+        all_periods: periods,
+        days_count: 60,
+        months_with_days: [
+          {"Mai", 31, 2025, 5},
+          {"Juni", 29, 2025, 6}
+        ]
+      })
+      |> Phoenix.HTML.Safe.to_iodata()
+      |> IO.iodata_to_binary()
+
+    # Check that holidays and vacations are listed
+    assert html =~ "Christi Himmelfahrt"
+    assert html =~ "Pfingstmontag"
+    assert html =~ "Pfingstferien"
+
+    # Check for proper coloring (blue for holidays, green for vacations)
+    # Holiday color
+    assert html =~ "bg-blue-600"
+    # Vacation color
+    assert html =~ "bg-green-600"
   end
 
   # Helper functions

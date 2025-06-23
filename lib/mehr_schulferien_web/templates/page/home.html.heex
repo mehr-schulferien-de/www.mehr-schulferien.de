@@ -131,7 +131,7 @@
             # Get timeline days for the bridge day
             timeline_start = Date.add(next_bridge_day.starts_on, -10)
             timeline_end = Date.add(next_bridge_day.ends_on, 10)
-            timeline_days = Date.diff(timeline_end, timeline_start) + 1
+            _timeline_days = Date.diff(timeline_end, timeline_start) + 1
 
             days_range = Date.range(timeline_start, timeline_end)
 
@@ -147,7 +147,7 @@
               |> Enum.map(fn {{month_name, _year, _month}, days} -> {month_name, days} end)
 
             # Create month groups with correct day counts
-            months_with_days =
+            _months_with_days =
               Enum.map(timeline_months, fn {month_name, days} ->
                 days_count = length(days)
                 {year, month} = {List.first(days).year, List.first(days).month}

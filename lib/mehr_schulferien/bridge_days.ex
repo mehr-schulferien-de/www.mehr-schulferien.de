@@ -160,25 +160,30 @@ defmodule MehrSchulferien.BridgeDays do
       %BridgeDayPeriod{...}
   """
   def find_next_bridge_day(federal_state, current_date, days_count \\ 1) do
-    # Get the country of the federal state
-    country = Locations.get_location!(federal_state.parent_location_id)
-    location_ids = [country.id, federal_state.id]
-
-    # Use progressive search to minimize data retrieval
-    # First try a 6-month window, then expand if needed
-    result = find_next_bridge_day_in_window(location_ids, current_date, days_count, 6)
-
-    if result do
-      result
+    # Return nil if federal_state is nil or missing parent_location_id
+    if is_nil(federal_state) or is_nil(federal_state.parent_location_id) do
+      nil
     else
-      # Try a 1-year window if no results in 6 months
-      result = find_next_bridge_day_in_window(location_ids, current_date, days_count, 12)
+      # Get the country of the federal state
+      country = Locations.get_location!(federal_state.parent_location_id)
+      location_ids = [country.id, federal_state.id]
+
+      # Use progressive search to minimize data retrieval
+      # First try a 6-month window, then expand if needed
+      result = find_next_bridge_day_in_window(location_ids, current_date, days_count, 6)
 
       if result do
         result
       else
-        # Finally try a 2-year window if still no results
-        find_next_bridge_day_in_window(location_ids, current_date, days_count, 24)
+        # Try a 1-year window if no results in 6 months
+        result = find_next_bridge_day_in_window(location_ids, current_date, days_count, 12)
+
+        if result do
+          result
+        else
+          # Finally try a 2-year window if still no results
+          find_next_bridge_day_in_window(location_ids, current_date, days_count, 24)
+        end
       end
     end
   end

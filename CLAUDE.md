@@ -78,14 +78,19 @@ The application uses **Tailwind CSS** as the primary styling framework. Bootstra
 
 ## Development Guidelines
 
-### Code Quality Requirements
-- **ALWAYS run `mix test` after changing or adding code** - fix all failures before considering work complete
-- **ALWAYS fix all errors and warnings** - run `mix compile --warnings-as-errors` to ensure clean compilation
-- Run `mix format` after making changes
+### CRITICAL CODE QUALITY REQUIREMENTS - MUST FOLLOW
+**⚠️ IMPORTANT: These are MANDATORY steps that MUST be completed after ANY code changes:**
+
+1. **RUN TESTS FIRST**: `mix test` - ALL tests MUST pass before any work is considered complete
+2. **FIX ALL WARNINGS**: `mix compile --warnings-as-errors` - NO warnings are acceptable
+3. **FORMAT CODE**: `mix format` - Code MUST be properly formatted
+
+**NEVER commit or consider work done without completing ALL three steps above.**
+
+### Additional Requirements
 - Pre-commit hooks enforce: tests, formatting, compilation, and various file checks
 - Use simple solutions with onboard tools/packages when possible
 - Focus only on assigned tasks (DRY principle, but avoid scope creep)
-- Always run `mix format` after you did your work
 
 ### Styling Guidelines
 - **ALWAYS use Tailwind CSS** for all styling needs
