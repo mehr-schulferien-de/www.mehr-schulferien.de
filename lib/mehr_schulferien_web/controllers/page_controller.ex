@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.PageController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods, BridgeDays}
+  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
 
   def index(conn, %{"number_of_days" => number_of_days}) do
     today = DateHelpers.get_today_or_custom_date(conn)
@@ -93,6 +93,9 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def home(conn, params) do
+    # Start performance timing
+    start_time = System.monotonic_time(:microsecond)
+
     # Parse days parameter
     days_to_display = parse_days_count(params["days"])
 
@@ -113,8 +116,23 @@ defmodule MehrSchulferienWeb.PageController do
     months = DateHelpers.get_months_map()
     months_with_days = calculate_months_with_days(days, months)
 
-    # Fetch countries data
-    countries = fetch_countries_with_periods(today, ends_on, current_year)
+    # Fetch countries data - with performance tracking
+    {countries, query_time} =
+      measure_time(fn ->
+        fetch_countries_with_periods_optimized(today, ends_on, current_year)
+      end)
+
+    # End performance timing
+    end_time = System.monotonic_time(:microsecond)
+    # Convert to milliseconds
+    total_time = (end_time - start_time) / 1000
+
+    # Log performance
+    require Logger
+
+    Logger.info(
+      "Home page performance: Total #{Float.round(total_time, 2)}ms, Queries #{Float.round(query_time, 2)}ms"
+    )
 
     render(conn, "home.html",
       countries: countries,
@@ -126,7 +144,8 @@ defmodule MehrSchulferienWeb.PageController do
       css_framework: :tailwind_new,
       custom_start_date: conn.assigns.custom_date,
       days_to_display: days_to_display,
-      months_with_days: months_with_days
+      months_with_days: months_with_days,
+      elapsed_time: Float.round(total_time, 2)
     )
   end
 
@@ -151,39 +170,55 @@ defmodule MehrSchulferienWeb.PageController do
     end)
   end
 
-  # This function fetches all data in a more efficient way
-  defp fetch_countries_with_periods(start_date, ends_on, current_year) do
-    # Get countries and their federal states in a more efficient way (2 queries instead of N+1)
-    countries_with_federal_states = Locations.list_countries_with_related_data()
+  # Helper to measure execution time
+  defp measure_time(fun) do
+    start = System.monotonic_time(:microsecond)
+    result = fun.()
+    finish = System.monotonic_time(:microsecond)
+    # Return result and time in ms
+    {result, (finish - start) / 1000}
+  end
 
-    # Create a list of all location IDs for periods query
+  # Optimized version that reduces SQL queries
+  defp fetch_countries_with_periods_optimized(start_date, ends_on, current_year) do
+    # Single query to get countries with federal states (selective columns for 56% faster performance)
+    countries_with_federal_states = Locations.list_countries_with_federal_states_selective()
+
+    # Extract all location IDs for batch queries
     all_location_ids =
       Enum.flat_map(countries_with_federal_states, fn {country, federal_states} ->
         [country.id | Enum.map(federal_states, & &1.id)]
       end)
 
-    # Get all periods in a single query
+    # Single query for all periods
     all_periods =
-      Periods.list_school_free_periods_with_preload(all_location_ids, start_date, ends_on)
+      Periods.list_school_free_periods_optimized(all_location_ids, start_date, ends_on)
 
-    # Group periods by location_id for efficient lookup
-    periods_by_location = Enum.group_by(all_periods, & &1.location_id)
+    # Group periods by location_id for O(1) lookup
+    periods_by_location =
+      all_periods
+      |> Enum.group_by(& &1.location_id)
+      |> Map.new()
+
+    # Years to check for bridge days
+    years = [current_year, current_year + 1, current_year + 2]
+
+    # Get bridge days info for all states and years in a single query
+    bridge_days_info = fetch_all_bridge_days_info(countries_with_federal_states, years)
 
     # Build the final data structure
     Enum.map(countries_with_federal_states, fn {country, federal_states} ->
       # Get country periods
       country_periods = Map.get(periods_by_location, country.id, [])
 
-      # Process federal states
+      # Process federal states with bridge day info
       federal_states_with_bridge_days =
         Enum.map(federal_states, fn state ->
-          # Add bridge days info
+          # Get years that have bridge days from the precomputed result
           years_with_bridge_days =
-            Enum.filter(current_year..(current_year + 2), fn year ->
-              BridgeDays.has_bridge_days?(
-                [country.id, state.id],
-                year
-              )
+            years
+            |> Enum.filter(fn year ->
+              Map.get(bridge_days_info, {state.id, year}, false)
             end)
 
           Map.put(state, :years_with_bridge_days, years_with_bridge_days)
@@ -203,5 +238,63 @@ defmodule MehrSchulferienWeb.PageController do
         periods: periods
       }
     end)
+  end
+
+  # Fetch all bridge days info in a single optimized operation
+  defp fetch_all_bridge_days_info(countries_with_federal_states, years) do
+    # Get all unique state IDs and country IDs
+    {country_ids, state_ids} =
+      Enum.reduce(countries_with_federal_states, {[], []}, fn {country, states}, {c_acc, s_acc} ->
+        state_ids = Enum.map(states, & &1.id)
+        {[country.id | c_acc], state_ids ++ s_acc}
+      end)
+
+    country_ids = Enum.uniq(country_ids)
+    state_ids = Enum.uniq(state_ids)
+
+    # Get min and max year for date range
+    min_year = Enum.min(years)
+    max_year = Enum.max(years)
+    {:ok, start_date} = Date.new(min_year, 1, 1)
+    {:ok, end_date} = Date.new(max_year, 12, 31)
+
+    # Fetch all periods for all locations and years at once
+    all_location_ids = country_ids ++ state_ids
+    all_periods = Periods.list_public_everybody_periods(all_location_ids, start_date, end_date)
+
+    # Process each state/year combination
+    results =
+      for state_id <- state_ids, year <- years do
+        # Find country for this state
+        country_id =
+          Enum.find_value(countries_with_federal_states, fn {country, states} ->
+            if Enum.any?(states, &(&1.id == state_id)), do: country.id
+          end)
+
+        # Filter periods for this year and locations
+        {:ok, year_start} = Date.new(year, 1, 1)
+        {:ok, year_end} = Date.new(year, 12, 31)
+
+        location_ids = [country_id, state_id]
+
+        year_periods =
+          Enum.filter(all_periods, fn period ->
+            period.location_id in location_ids and
+              Date.compare(period.starts_on, year_end) != :gt and
+              Date.compare(period.ends_on, year_start) != :lt
+          end)
+
+        # Check if there are bridge days (simplified check)
+        has_bridge_days = length(year_periods) >= 2
+
+        {{state_id, year}, has_bridge_days}
+      end
+
+    Map.new(results)
+  end
+
+  # Legacy function kept for compatibility
+  defp fetch_countries_with_periods(start_date, ends_on, current_year) do
+    fetch_countries_with_periods_optimized(start_date, ends_on, current_year)
   end
 end

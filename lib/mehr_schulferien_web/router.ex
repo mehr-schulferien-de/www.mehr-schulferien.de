@@ -90,6 +90,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/sommerferien", PageController, :summer_vacations
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
+    get "/benchmark", BenchmarkController, :benchmark
 
     # Country routes (SEO-friendly pattern) - with non-year constraint
     get "/ferien/:country_slug", CountryController, :show,

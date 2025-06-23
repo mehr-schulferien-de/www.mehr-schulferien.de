@@ -15,6 +15,64 @@ defmodule MehrSchulferien.BridgeDays do
   end
 
   @doc """
+  Bulk check for bridge days across multiple federal states and years.
+  Returns a map of {federal_state_id, year} => boolean
+
+  This is much more efficient than calling has_bridge_days? multiple times.
+  """
+  def bulk_has_bridge_days?(country, federal_states, years) do
+    # Prepare all location ID combinations
+    all_location_combos =
+      for state <- federal_states, year <- years do
+        {{state.id, year}, [country.id, state.id], year}
+      end
+
+    # Get min and max dates for the query
+    min_year = Enum.min(years)
+    max_year = Enum.max(years)
+    {:ok, start_date} = Date.new(min_year, 1, 1)
+    {:ok, end_date} = Date.new(max_year, 12, 31)
+
+    # Get all location IDs
+    all_location_ids = [country.id | Enum.map(federal_states, & &1.id)]
+
+    # Fetch all public periods for all locations and years at once
+    all_periods = Periods.list_public_everybody_periods(all_location_ids, start_date, end_date)
+
+    # Process each combination
+    Enum.reduce(all_location_combos, %{}, fn {{state_id, year}, location_ids, year}, acc ->
+      # Filter periods for this specific year and locations
+      {:ok, year_start} = Date.new(year, 1, 1)
+      {:ok, year_end} = Date.new(year, 12, 31)
+
+      year_periods =
+        Enum.filter(all_periods, fn period ->
+          period.location_id in location_ids and
+            Date.compare(period.starts_on, year_end) != :gt and
+            Date.compare(period.ends_on, year_start) != :lt
+        end)
+
+      # Check if there are bridge days
+      bridge_day_map = Grouping.group_by_interval(year_periods)
+
+      has_bridge_days =
+        Enum.any?(2..5, fn num ->
+          if bridge_day_map[num] do
+            bridge_day_map[num]
+            |> Enum.any?(fn bridge_day ->
+              all_periods = Grouping.list_periods_with_bridge_day(year_periods, bridge_day)
+              BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+            end)
+          else
+            false
+          end
+        end)
+
+      Map.put(acc, {state_id, year}, has_bridge_days)
+    end)
+  end
+
+  @doc """
   Calculates bridge day efficiency metrics using SQL.
   Returns a map with vacation_days, total_free_days, and efficiency_percentage.
 

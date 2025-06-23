@@ -57,48 +57,86 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
   defp render_timeline(assigns) do
     ~H"""
-    <table class="table-fixed border border-gray-300 text-center text-xs" role="presentation">
-      <thead>
-        <tr>
-          <%= for {month_name, days_count, _year, _month} <- @months_with_days do %>
-            <td
-              colspan={days_count}
-              class="border border-gray-200 whitespace-nowrap font-semibold text-left pl-1"
-            >
-              <%= month_name %>
-            </td>
-          <% end %>
-        </tr>
-      </thead>
+    <div class="w-full overflow-hidden">
+      <table class="w-full" role="presentation" style="table-layout: fixed;">
+        <thead>
+          <tr>
+            <%= for {{month_name, days_count, _year, _month}, index} <- Enum.with_index(@months_with_days) do %>
+              <% # Calculate percentage width for this month
+              percentage_width = days_count / length(@days_to_show) * 100
 
-      <tbody>
-        <!-- Tageszeile -->
-        <tr>
-          <%= for day <- @days_to_show do %>
-            <% is_weekend = is_weekend?(day)
-            highest_priority_period = get_highest_priority_period_for_day(@all_periods, day)
-            bg_class = get_background_class(highest_priority_period, is_weekend) %>
-            <td class={"w-6 h-5 border-t border-b border-l border-r border-gray-200 #{bg_class}"}>
-            </td>
-          <% end %>
-        </tr>
-      </tbody>
-    </table>
+              # Smart abbreviation based on available space
+              display_name = get_month_display_name(month_name, days_count, percentage_width) %>
+              <th
+                colspan={days_count}
+                class="border border-gray-200 text-xs font-semibold text-left pl-1 overflow-hidden whitespace-nowrap"
+                style={"width: #{percentage_width}%"}
+                title={month_name}
+              >
+                <%= display_name %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <%= for day <- @days_to_show do %>
+              <% is_weekend = is_weekend?(day)
+              highest_priority_period = get_highest_priority_period_for_day(@all_periods, day)
+              bg_class = get_background_class(highest_priority_period, is_weekend)
+              cell_width = 100.0 / length(@days_to_show)
+              federal_state = Map.get(assigns, :federal_state)
+
+              # Create link if there's a period and federal state
+              has_link = highest_priority_period != nil && federal_state != nil
+
+              link_url =
+                if has_link do
+                  vacation_year = day.year
+                  vacation_month = day.month
+                  month_name = get_german_month_name(vacation_month)
+                  anchor = "#{month_name}#{vacation_year}"
+                  "/ferien/d/bundesland/#{federal_state.slug}/#{vacation_year}##{anchor}"
+                end %>
+
+              <%= if has_link do %>
+                <td class={"border border-gray-200 #{bg_class} p-0"} style={"width: #{cell_width}%"}>
+                  <a
+                    href={link_url}
+                    class="block h-5 sm:h-5 min-h-[20px] w-full hover:opacity-80 focus:opacity-80 touch-manipulation"
+                    title={Calendar.strftime(day, "%d.%m.%Y")}
+                    aria-label={"#{Calendar.strftime(day, "%d.%m.%Y")} - Zum Kalender"}
+                  >
+                  </a>
+                </td>
+              <% else %>
+                <td
+                  class={"h-5 sm:h-5 min-h-[20px] border border-gray-200 #{bg_class}"}
+                  style={"width: #{cell_width}%"}
+                >
+                </td>
+              <% end %>
+            <% end %>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <%= render_vacation_status(
       @current_vacation,
       @days_remaining_in_vacation,
       @next_vacation,
-      @days_until_next_vacation
+      @days_until_next_vacation,
+      Map.get(assigns, :federal_state)
     ) %>
 
     <div class="mt-4">
-      <p class="text-sm font-medium mb-2">Ferien und Feiertage im angezeigten Zeitraum:</p>
       <ul class="text-sm">
         <%= for period <- @sorted_periods do %>
           <% holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
           is_school_vacation = Map.get(period, :is_school_vacation, false)
           display_name = get_display_name(holiday_type)
+          federal_state = Map.get(assigns, :federal_state)
 
           marker_color =
             if is_school_vacation,
@@ -106,10 +144,26 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
               else: StyleConfig.get_class(:holiday, :tailwind) %>
           <li class="flex items-center space-x-2 mb-1">
             <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
-            <span>
-              <%= display_name %>
-              <%= render_period_dates(period, @has_multiple_years) %>
-            </span>
+            <%= if federal_state do %>
+              <% # Create link to vacation page with month anchor for both vacations and holidays
+              period_year = period.starts_on.year
+              period_month = period.starts_on.month
+              month_name = get_german_month_name(period_month)
+              anchor = "#{month_name}#{period_year}"
+              link_url = "/ferien/d/bundesland/#{federal_state.slug}/#{period_year}##{anchor}" %>
+              <a
+                href={link_url}
+                class="hover:underline focus:underline active:underline inline-block py-1 -my-1"
+              >
+                <%= display_name %>
+                <%= render_period_dates(period, @has_multiple_years) %>
+              </a>
+            <% else %>
+              <span>
+                <%= display_name %>
+                <%= render_period_dates(period, @has_multiple_years) %>
+              </span>
+            <% end %>
           </li>
         <% end %>
       </ul>
@@ -226,7 +280,13 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     end
   end
 
-  defp render_vacation_status(current_vacation, days_remaining, next_vacation, days_until) do
+  defp render_vacation_status(
+         current_vacation,
+         days_remaining,
+         next_vacation,
+         days_until,
+         federal_state
+       ) do
     assigns = %{}
 
     cond do
@@ -234,10 +294,14 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         holiday_type = current_vacation.holiday_or_vacation_type
         display_name = get_display_name(holiday_type)
 
+        # Add location if federal state is provided
+        location_text = if federal_state, do: " in #{federal_state.name}", else: ""
+
         assigns =
           Map.merge(assigns, %{
             display_name: display_name,
-            days_remaining: days_remaining
+            days_remaining: days_remaining,
+            location_text: location_text
           })
 
         ~H"""
@@ -245,12 +309,14 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <div class="flex items-center">
             <span class="text-gray-500">
               <%= if @days_remaining == 0 do %>
-                Aktuell sind <%= @display_name %> (letzter Tag).
+                Aktuell sind <%= @display_name %><%= @location_text %> (letzter Tag).
               <% else %>
-                Aktuell sind <%= @display_name %> (noch <%= @days_remaining %> <%= if @days_remaining ==
-                                                                                        1,
-                                                                                      do: "Tag",
-                                                                                      else: "Tage" %>).
+                Aktuell sind <%= @display_name %><%= @location_text %> (noch <%= @days_remaining %> <%= if @days_remaining ==
+                                                                                                             1,
+                                                                                                           do:
+                                                                                                             "Tag",
+                                                                                                           else:
+                                                                                                             "Tage" %>).
               <% end %>
             </span>
           </div>
@@ -269,11 +335,15 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
             display_name
           end
 
+        # Add location if federal state is provided
+        location_text = if federal_state, do: " in #{federal_state.name}", else: ""
+
         assigns =
           Map.merge(assigns, %{
             display_name: display_name,
             display_format: display_format,
-            days_until: days_until
+            days_until: days_until,
+            location_text: location_text
           })
 
         ~H"""
@@ -281,9 +351,9 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <div class="flex items-center">
             <span class="text-gray-500">
               <%= if @days_until == 1 do %>
-                Noch 1 Tag bis <%= @display_format %>
+                1 Tag bis <%= @display_format %><%= @location_text %>.
               <% else %>
-                Noch <%= @days_until %> Tage bis <%= @display_format %>.
+                <%= @days_until %> Tage bis <%= @display_format %><%= @location_text %>.
               <% end %>
             </span>
           </div>
@@ -348,5 +418,64 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     end)
     |> Enum.sort_by(& &1.starts_on, Date)
     |> List.first()
+  end
+
+  # Get German month name for anchor links
+  defp get_german_month_name(month_number) do
+    case month_number do
+      1 -> "januar"
+      2 -> "februar"
+      3 -> "maerz"
+      4 -> "april"
+      5 -> "mai"
+      6 -> "juni"
+      7 -> "juli"
+      8 -> "august"
+      9 -> "september"
+      10 -> "oktober"
+      11 -> "november"
+      12 -> "dezember"
+      _ -> ""
+    end
+  end
+
+  # Smart month name display based on available space
+  defp get_month_display_name(month_name, days_count, _percentage_width) do
+    cond do
+      # 1-3 days: Just first letter
+      days_count <= 3 ->
+        String.at(month_name, 0) <> "."
+
+      # 4-6 days: Very short abbreviation (3 letters)
+      days_count <= 6 ->
+        case month_name do
+          "Januar" -> "Jan."
+          "Februar" -> "Feb."
+          "März" -> "Mär."
+          "April" -> "Apr."
+          "Mai" -> "Mai"
+          "Juni" -> "Jun."
+          "Juli" -> "Jul."
+          "August" -> "Aug."
+          "September" -> "Sep."
+          "Oktober" -> "Okt."
+          "November" -> "Nov."
+          "Dezember" -> "Dez."
+          _ -> String.slice(month_name, 0, 3) <> "."
+        end
+
+      # 7-10 days: 4-letter abbreviation where needed
+      days_count <= 10 ->
+        case month_name do
+          "September" -> "Sept."
+          "November" -> "Nov."
+          "Dezember" -> "Dez."
+          _ -> month_name
+        end
+
+      # More than 10 days: Full name
+      true ->
+        month_name
+    end
   end
 end
