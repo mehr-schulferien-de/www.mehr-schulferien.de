@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.17 (Homebrew)
--- Dumped by pg_dump version 14.17 (Homebrew)
+-- Dumped from database version 14.18 (Homebrew)
+-- Dumped by pg_dump version 14.18 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,6 +15,48 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: cube; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS cube WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION cube; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION cube IS 'data type for multidimensional cubes';
+
+
+--
+-- Name: earthdistance; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS earthdistance WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION earthdistance; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION earthdistance IS 'calculate great-circle distances on the surface of the Earth';
+
+
+--
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
+
 
 SET default_tablespace = '';
 
@@ -40,7 +82,8 @@ CREATE TABLE public.addresses (
     lat double precision,
     school_location_id bigint,
     inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    updated_at timestamp(0) without time zone NOT NULL,
+    wikipedia_url character varying(255)
 );
 
 
@@ -61,6 +104,38 @@ CREATE SEQUENCE public.addresses_id_seq
 --
 
 ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
+
+
+--
+-- Name: daily_change_counts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.daily_change_counts (
+    id bigint NOT NULL,
+    date date NOT NULL,
+    count integer DEFAULT 0 NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: daily_change_counts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.daily_change_counts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: daily_change_counts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.daily_change_counts_id_seq OWNED BY public.daily_change_counts.id;
 
 
 --
@@ -236,23 +311,27 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: sessions; Type: TABLE; Schema: public; Owner: -
+-- Name: versions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.sessions (
+CREATE TABLE public.versions (
     id bigint NOT NULL,
-    user_id bigint,
-    expires_at timestamp(0) without time zone,
-    inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    event character varying(10) NOT NULL,
+    item_type character varying(255) NOT NULL,
+    item_id integer,
+    item_changes jsonb,
+    originator_id integer,
+    origin character varying(50),
+    meta jsonb,
+    inserted_at timestamp(0) without time zone NOT NULL
 );
 
 
 --
--- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.sessions_id_seq
+CREATE SEQUENCE public.versions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -261,10 +340,10 @@ CREATE SEQUENCE public.sessions_id_seq
 
 
 --
--- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
+ALTER SEQUENCE public.versions_id_seq OWNED BY public.versions.id;
 
 
 --
@@ -342,6 +421,13 @@ ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.ad
 
 
 --
+-- Name: daily_change_counts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.daily_change_counts ALTER COLUMN id SET DEFAULT nextval('public.daily_change_counts_id_seq'::regclass);
+
+
+--
 -- Name: holiday_or_vacation_types id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -370,10 +456,10 @@ ALTER TABLE ONLY public.religions ALTER COLUMN id SET DEFAULT nextval('public.re
 
 
 --
--- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: versions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.sessions_id_seq'::regclass);
+ALTER TABLE ONLY public.versions ALTER COLUMN id SET DEFAULT nextval('public.versions_id_seq'::regclass);
 
 
 --
@@ -396,6 +482,14 @@ ALTER TABLE ONLY public.zip_codes ALTER COLUMN id SET DEFAULT nextval('public.zi
 
 ALTER TABLE ONLY public.addresses
     ADD CONSTRAINT addresses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: daily_change_counts daily_change_counts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.daily_change_counts
+    ADD CONSTRAINT daily_change_counts_pkey PRIMARY KEY (id);
 
 
 --
@@ -439,11 +533,11 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: versions versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.versions
+    ADD CONSTRAINT versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -460,6 +554,27 @@ ALTER TABLE ONLY public.zip_code_mappings
 
 ALTER TABLE ONLY public.zip_codes
     ADD CONSTRAINT zip_codes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: addresses_school_location_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX addresses_school_location_id_index ON public.addresses USING btree (school_location_id);
+
+
+--
+-- Name: addresses_zip_code_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX addresses_zip_code_index ON public.addresses USING btree (zip_code);
+
+
+--
+-- Name: daily_change_counts_date_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX daily_change_counts_date_index ON public.daily_change_counts USING btree (date);
 
 
 --
@@ -491,10 +606,94 @@ CREATE UNIQUE INDEX holiday_or_vacation_types_slug_country_location_id_index ON 
 
 
 --
+-- Name: locations_city_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_city_name_index ON public.locations USING btree (name) WHERE (is_city = true);
+
+
+--
+-- Name: locations_is_country_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_is_country_index ON public.locations USING btree (is_country) WHERE (is_country = true);
+
+
+--
+-- Name: locations_is_federal_state_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_is_federal_state_index ON public.locations USING btree (is_federal_state) WHERE (is_federal_state = true);
+
+
+--
+-- Name: locations_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_name_index ON public.locations USING btree (name);
+
+
+--
+-- Name: locations_parent_location_id_is_city_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_parent_location_id_is_city_index ON public.locations USING btree (parent_location_id, is_city);
+
+
+--
+-- Name: locations_parent_location_id_is_federal_state_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_parent_location_id_is_federal_state_index ON public.locations USING btree (parent_location_id, is_federal_state);
+
+
+--
+-- Name: locations_parent_location_id_is_school_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_parent_location_id_is_school_index ON public.locations USING btree (parent_location_id, is_school);
+
+
+--
+-- Name: locations_school_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_school_name_index ON public.locations USING btree (name) WHERE (is_school = true);
+
+
+--
+-- Name: locations_slug_is_city_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_slug_is_city_index ON public.locations USING btree (slug, is_city) WHERE (is_city = true);
+
+
+--
+-- Name: locations_slug_is_country_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_slug_is_country_index ON public.locations USING btree (slug, is_country) WHERE (is_country = true);
+
+
+--
 -- Name: locations_slug_is_country_is_federal_state_is_county_is_city_is; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX locations_slug_is_country_is_federal_state_is_county_is_city_is ON public.locations USING btree (slug, is_country, is_federal_state, is_county, is_city, is_school);
+
+
+--
+-- Name: locations_slug_is_federal_state_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_slug_is_federal_state_index ON public.locations USING btree (slug, is_federal_state) WHERE (is_federal_state = true);
+
+
+--
+-- Name: locations_slug_is_school_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX locations_slug_is_school_index ON public.locations USING btree (slug, is_school) WHERE (is_school = true);
 
 
 --
@@ -505,6 +704,13 @@ CREATE INDEX periods_holiday_or_vacation_type_id_index ON public.periods USING b
 
 
 --
+-- Name: periods_is_valid_for_students_is_valid_for_everybody_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX periods_is_valid_for_students_is_valid_for_everybody_index ON public.periods USING btree (is_valid_for_students, is_valid_for_everybody);
+
+
+--
 -- Name: periods_location_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -512,10 +718,31 @@ CREATE INDEX periods_location_id_index ON public.periods USING btree (location_i
 
 
 --
+-- Name: periods_location_id_starts_on_ends_on_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX periods_location_id_starts_on_ends_on_index ON public.periods USING btree (location_id, starts_on, ends_on);
+
+
+--
 -- Name: periods_religion_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX periods_religion_id_index ON public.periods USING btree (religion_id);
+
+
+--
+-- Name: periods_starts_on_display_priority_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX periods_starts_on_display_priority_index ON public.periods USING btree (starts_on, display_priority);
+
+
+--
+-- Name: periods_starts_on_ends_on_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX periods_starts_on_ends_on_index ON public.periods USING btree (starts_on, ends_on);
 
 
 --
@@ -537,6 +764,20 @@ CREATE UNIQUE INDEX religions_name_index ON public.religions USING btree (name);
 --
 
 CREATE UNIQUE INDEX religions_slug_index ON public.religions USING btree (slug);
+
+
+--
+-- Name: versions_item_id_item_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX versions_item_id_item_type_index ON public.versions USING btree (item_id, item_type);
+
+
+--
+-- Name: versions_originator_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX versions_originator_id_index ON public.versions USING btree (originator_id);
 
 
 --
@@ -572,6 +813,13 @@ CREATE INDEX zip_codes_country_location_id_index ON public.zip_codes USING btree
 --
 
 CREATE UNIQUE INDEX zip_codes_slug_country_location_id_index ON public.zip_codes USING btree (slug, country_location_id);
+
+
+--
+-- Name: zip_codes_value_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX zip_codes_value_index ON public.zip_codes USING btree (value);
 
 
 --
@@ -678,3 +926,12 @@ INSERT INTO public."schema_migrations" (version) VALUES (20200217052146);
 INSERT INTO public."schema_migrations" (version) VALUES (20200312060652);
 INSERT INTO public."schema_migrations" (version) VALUES (20200401043617);
 INSERT INTO public."schema_migrations" (version) VALUES (20200401043619);
+INSERT INTO public."schema_migrations" (version) VALUES (20240320000000);
+INSERT INTO public."schema_migrations" (version) VALUES (20240321000000);
+INSERT INTO public."schema_migrations" (version) VALUES (20240321000001);
+INSERT INTO public."schema_migrations" (version) VALUES (20250605202926);
+INSERT INTO public."schema_migrations" (version) VALUES (20250606070802);
+INSERT INTO public."schema_migrations" (version) VALUES (20250606144035);
+INSERT INTO public."schema_migrations" (version) VALUES (20250608165633);
+INSERT INTO public."schema_migrations" (version) VALUES (20250623073245);
+INSERT INTO public."schema_migrations" (version) VALUES (20250623145041);
