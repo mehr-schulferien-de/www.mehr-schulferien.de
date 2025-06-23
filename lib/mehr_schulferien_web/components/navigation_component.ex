@@ -1,16 +1,23 @@
 defmodule MehrSchulferienWeb.NavigationComponent do
   use Phoenix.Component
 
+  alias MehrSchulferienWeb.NavigationHelper
+
   @doc """
   Renders the main navigation header for LiveView pages.
 
   ## Example
-      <.navigation socket={@socket} conn={@conn} />
+      <.navigation socket={@socket} conn={@conn} today={~D[2025-06-23]} />
   """
   attr :socket, :any, default: nil
   attr :conn, :any, default: nil
+  attr :today, Date, required: true
 
   def navigation(assigns) do
+    {current_year, next_year} = NavigationHelper.get_navigation_years(assigns.today)
+
+    assigns = Map.merge(assigns, %{current_year: current_year, next_year: next_year})
+
     ~H"""
     <header class="bg-white border-b border-slate-200">
       <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
@@ -58,7 +65,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Schulferien 2025
+              Schulferien <%= @current_year %>
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -69,9 +76,9 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             </button>
             <div class="dropdown-menu absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 opacity-0 invisible transition-all duration-200">
               <div class="p-2">
-                <%= for {federal_state, display_name} <- federal_states() do %>
+                <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                   <a
-                    href={"/ferien/d/bundesland/#{federal_state}/2025"}
+                    href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
                     <%= display_name %>
@@ -86,7 +93,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Schulferien 2026
+              Schulferien <%= @next_year %>
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -97,9 +104,9 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             </button>
             <div class="dropdown-menu absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 opacity-0 invisible transition-all duration-200">
               <div class="p-2">
-                <%= for {federal_state, display_name} <- federal_states() do %>
+                <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                   <a
-                    href={"/ferien/d/bundesland/#{federal_state}/2026"}
+                    href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
                     <%= display_name %>
@@ -114,7 +121,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Brückentage 2025
+              Brückentage <%= @current_year %>
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -125,9 +132,9 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             </button>
             <div class="dropdown-menu absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 opacity-0 invisible transition-all duration-200">
               <div class="p-2">
-                <%= for {federal_state, display_name} <- federal_states() do %>
+                <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                   <a
-                    href={"/brueckentage/d/bundesland/#{federal_state}/2025"}
+                    href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
                     <%= display_name %>
@@ -142,7 +149,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Brückentage 2026
+              Brückentage <%= @next_year %>
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -153,9 +160,9 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             </button>
             <div class="dropdown-menu absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 opacity-0 invisible transition-all duration-200">
               <div class="p-2">
-                <%= for {federal_state, display_name} <- federal_states() do %>
+                <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                   <a
-                    href={"/brueckentage/d/bundesland/#{federal_state}/2026"}
+                    href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
                     <%= display_name %>
@@ -196,12 +203,12 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             <div class="mt-6 space-y-2">
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Schulferien 2025
+                  Schulferien <%= @current_year %>
                 </summary>
                 <div class="ml-4 space-y-1">
-                  <%= for {federal_state, display_name} <- federal_states() do %>
+                  <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                     <a
-                      href={"/ferien/d/bundesland/#{federal_state}/2025"}
+                      href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
                       <%= display_name %>
@@ -211,12 +218,12 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               </details>
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Schulferien 2026
+                  Schulferien <%= @next_year %>
                 </summary>
                 <div class="ml-4 space-y-1">
-                  <%= for {federal_state, display_name} <- federal_states() do %>
+                  <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                     <a
-                      href={"/ferien/d/bundesland/#{federal_state}/2026"}
+                      href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
                       <%= display_name %>
@@ -226,12 +233,12 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               </details>
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Brückentage 2025
+                  Brückentage <%= @current_year %>
                 </summary>
                 <div class="ml-4 space-y-1">
-                  <%= for {federal_state, display_name} <- federal_states() do %>
+                  <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                     <a
-                      href={"/brueckentage/d/bundesland/#{federal_state}/2025"}
+                      href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
                       <%= display_name %>
@@ -241,12 +248,12 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               </details>
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Brückentage 2026
+                  Brückentage <%= @next_year %>
                 </summary>
                 <div class="ml-4 space-y-1">
-                  <%= for {federal_state, display_name} <- federal_states() do %>
+                  <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
                     <a
-                      href={"/brueckentage/d/bundesland/#{federal_state}/2026"}
+                      href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
                       <%= display_name %>
@@ -294,27 +301,5 @@ defmodule MehrSchulferienWeb.NavigationComponent do
       });
     </script>
     """
-  end
-
-  # Helper function to get federal states and their display names
-  defp federal_states do
-    [
-      {"baden-wuerttemberg", "Baden-Württemberg"},
-      {"bayern", "Bayern"},
-      {"berlin", "Berlin"},
-      {"brandenburg", "Brandenburg"},
-      {"bremen", "Bremen"},
-      {"hamburg", "Hamburg"},
-      {"hessen", "Hessen"},
-      {"mecklenburg-vorpommern", "Mecklenburg-Vorpommern"},
-      {"niedersachsen", "Niedersachsen"},
-      {"nordrhein-westfalen", "Nordrhein-Westfalen"},
-      {"rheinland-pfalz", "Rheinland-Pfalz"},
-      {"saarland", "Saarland"},
-      {"sachsen", "Sachsen"},
-      {"sachsen-anhalt", "Sachsen-Anhalt"},
-      {"schleswig-holstein", "Schleswig-Holstein"},
-      {"thueringen", "Thüringen"}
-    ]
   end
 end

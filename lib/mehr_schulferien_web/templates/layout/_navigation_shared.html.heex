@@ -1,0 +1,357 @@
+<%!-- Shared navigation template that can be used by both traditional templates and LiveView --%>
+<%!-- Expects assigns: current_year, next_year, and optional conn for highlighting current page --%>
+
+<% federal_states = MehrSchulferienWeb.NavigationHelper.federal_states() %>
+
+<header
+  class="bg-white border-b border-slate-200"
+  x-data="{ 
+    mobileMenuOpen: false, 
+    desktopDropdown2025Open: false, 
+    desktopDropdown2026Open: false, 
+    brueckenDropdown2025Open: false, 
+    brueckenDropdown2026Open: false 
+  }"
+>
+  <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <div class="flex lg:flex-1">
+      <a href="/" class="-m-1.5 p-1.5 flex items-center">
+        <span class="sr-only">Mehr Schulferien</span>
+        <div class="flex items-center">
+          <div class="bg-blue-600 text-white font-bold px-3 py-1 rounded-md flex items-center">
+            <span class="text-lg tracking-wide">MEHR!</span>
+          </div>
+          <div class="ml-2 text-black font-black text-2xl">
+            <span class="italic">Schulferien</span>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="flex lg:hidden">
+      <button
+        type="button"
+        class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+        @click="mobileMenuOpen = true"
+      >
+        <span class="sr-only">Open main menu</span>
+        <svg
+          class="size-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+      </button>
+    </div>
+    <div class="hidden lg:flex lg:gap-x-12">
+      <!-- First dropdown - Current Year -->
+      <div class="relative">
+        <button
+          type="button"
+          class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
+          aria-expanded="false"
+          @click="desktopDropdown2025Open = !desktopDropdown2025Open"
+        >
+          Schulferien <%= @current_year %>
+          <svg
+            class="size-5 flex-none text-gray-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            data-slot="icon"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+
+        <div
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5"
+          x-show="desktopDropdown2025Open"
+          @click.away="desktopDropdown2025Open = false"
+          x-transition
+          x-cloak
+        >
+          <div class="p-2">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_page_for_federal_state?(@conn, federal_state, @current_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400">
+                  <%= display_name %>
+                </span>
+              <% else %>
+                <a
+                  href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                >
+                  <%= display_name %>
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <!-- Second dropdown - Next Year -->
+      <div class="relative">
+        <button
+          type="button"
+          class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
+          aria-expanded="false"
+          @click="desktopDropdown2026Open = !desktopDropdown2026Open"
+        >
+          Schulferien <%= @next_year %>
+          <svg
+            class="size-5 flex-none text-gray-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            data-slot="icon"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+
+        <div
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5"
+          x-show="desktopDropdown2026Open"
+          @click.away="desktopDropdown2026Open = false"
+          x-transition
+          x-cloak
+        >
+          <div class="p-2">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_page_for_federal_state?(@conn, federal_state, @next_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400">
+                  <%= display_name %>
+                </span>
+              <% else %>
+                <a
+                  href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                >
+                  <%= display_name %>
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <!-- Third dropdown - Bridge Days Current Year -->
+      <div class="relative">
+        <button
+          type="button"
+          class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
+          aria-expanded="false"
+          @click="brueckenDropdown2025Open = !brueckenDropdown2025Open"
+        >
+          Brückentage <%= @current_year %>
+          <svg
+            class="size-5 flex-none text-gray-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            data-slot="icon"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+
+        <div
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5"
+          x-show="brueckenDropdown2025Open"
+          @click.away="brueckenDropdown2025Open = false"
+          x-transition
+          x-cloak
+        >
+          <div class="p-2">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_bridge_days_page_for_federal_state?(@conn, federal_state, @current_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400">
+                  <%= display_name %>
+                </span>
+              <% else %>
+                <a
+                  href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                >
+                  <%= display_name %>
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <!-- Fourth dropdown - Bridge Days Next Year -->
+      <div class="relative">
+        <button
+          type="button"
+          class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
+          aria-expanded="false"
+          @click="brueckenDropdown2026Open = !brueckenDropdown2026Open"
+        >
+          Brückentage <%= @next_year %>
+          <svg
+            class="size-5 flex-none text-gray-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            data-slot="icon"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+
+        <div
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5"
+          x-show="brueckenDropdown2026Open"
+          @click.away="brueckenDropdown2026Open = false"
+          x-transition
+          x-cloak
+        >
+          <div class="p-2">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_bridge_days_page_for_federal_state?(@conn, federal_state, @next_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400">
+                  <%= display_name %>
+                </span>
+              <% else %>
+                <a
+                  href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                >
+                  <%= display_name %>
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- Mobile menu -->
+  <div
+    class="lg:hidden fixed inset-0 z-50 bg-white"
+    x-show="mobileMenuOpen"
+    @click.away="mobileMenuOpen = false"
+    x-transition
+    x-cloak
+  >
+    <div class="px-6 py-6">
+      <div class="flex items-center justify-between">
+        <a href="/" class="-m-1.5 p-1.5">
+          <span class="sr-only">Mehr Schulferien</span>
+          <div class="flex items-center">
+            <div class="bg-blue-600 text-white font-bold px-3 py-1 rounded-md flex items-center">
+              <span class="text-lg tracking-wide">MEHR!</span>
+            </div>
+            <div class="ml-2 text-black font-black text-2xl">
+              <span class="italic">Schulferien</span>
+            </div>
+          </div>
+        </a>
+        <button
+          type="button"
+          class="-m-2.5 rounded-md p-2.5 text-gray-700"
+          @click="mobileMenuOpen = false"
+        >
+          <span class="sr-only">Close menu</span>
+          <svg
+            class="size-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+            data-slot="icon"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="m6 18 12-12M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="mt-6 space-y-2">
+        <details>
+          <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
+            Schulferien <%= @current_year %>
+          </summary>
+          <div class="ml-4 space-y-1">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <a
+                href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
+                class="block py-1 text-gray-700 hover:text-gray-900"
+              >
+                <%= display_name %>
+              </a>
+            <% end %>
+          </div>
+        </details>
+        <details>
+          <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
+            Schulferien <%= @next_year %>
+          </summary>
+          <div class="ml-4 space-y-1">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <a
+                href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
+                class="block py-1 text-gray-700 hover:text-gray-900"
+              >
+                <%= display_name %>
+              </a>
+            <% end %>
+          </div>
+        </details>
+        <details>
+          <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
+            Brückentage <%= @current_year %>
+          </summary>
+          <div class="ml-4 space-y-1">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <a
+                href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
+                class="block py-1 text-gray-700 hover:text-gray-900"
+              >
+                <%= display_name %>
+              </a>
+            <% end %>
+          </div>
+        </details>
+        <details>
+          <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
+            Brückentage <%= @next_year %>
+          </summary>
+          <div class="ml-4 space-y-1">
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <a
+                href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
+                class="block py-1 text-gray-700 hover:text-gray-900"
+              >
+                <%= display_name %>
+              </a>
+            <% end %>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</header>

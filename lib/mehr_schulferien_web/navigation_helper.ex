@@ -1,0 +1,50 @@
+defmodule MehrSchulferienWeb.NavigationHelper do
+  @moduledoc """
+  Helper functions for navigation rendering.
+  """
+
+  @doc """
+  Gets the current and next year based on today's date.
+  """
+  def get_navigation_years(today) do
+    current_year = today.year
+    next_year = current_year + 1
+    {current_year, next_year}
+  end
+
+  @doc """
+  Returns a list of federal states with their slugs and display names.
+  """
+  def federal_states do
+    [
+      {"baden-wuerttemberg", "Baden-Württemberg"},
+      {"bayern", "Bayern"},
+      {"berlin", "Berlin"},
+      {"brandenburg", "Brandenburg"},
+      {"bremen", "Bremen"},
+      {"hamburg", "Hamburg"},
+      {"hessen", "Hessen"},
+      {"mecklenburg-vorpommern", "Mecklenburg-Vorpommern"},
+      {"niedersachsen", "Niedersachsen"},
+      {"nordrhein-westfalen", "Nordrhein-Westfalen"},
+      {"rheinland-pfalz", "Rheinland-Pfalz"},
+      {"saarland", "Saarland"},
+      {"sachsen", "Sachsen"},
+      {"sachsen-anhalt", "Sachsen-Anhalt"},
+      {"schleswig-holstein", "Schleswig-Holstein"},
+      {"thueringen", "Thüringen"}
+    ]
+  end
+
+  @doc """
+  Gets the display name for a federal state slug.
+  """
+  def federal_state_display_name(slug) do
+    federal_states()
+    |> Enum.find(fn {state_slug, _} -> state_slug == slug end)
+    |> case do
+      {_, display_name} -> display_name
+      nil -> slug
+    end
+  end
+end

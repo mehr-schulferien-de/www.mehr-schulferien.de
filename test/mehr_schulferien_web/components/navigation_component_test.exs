@@ -6,7 +6,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
 
   describe "navigation/1" do
     test "renders the main navigation header" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -16,7 +16,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "renders the logo and brand" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -28,11 +28,11 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "renders desktop navigation with all dropdowns" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
-      # Check that all dropdown buttons are present
+      # Check that all dropdown buttons are present with dynamic years
       assert html =~ "Schulferien 2025"
       assert html =~ "Schulferien 2026"
       assert html =~ "Brückentage 2025"
@@ -44,7 +44,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "renders all federal states in dropdowns" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -55,7 +55,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html =~ "Nordrhein-Westfalen"
       assert html =~ "Schleswig-Holstein"
 
-      # Check that links are properly formatted
+      # Check that links are properly formatted with dynamic years
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/baden-wuerttemberg\/2025"/
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2026"/
       assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/berlin\/2025"/
@@ -63,7 +63,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "renders mobile menu structure" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -82,7 +82,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "includes CSS for dropdown behavior" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -93,7 +93,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "includes JavaScript for mobile menu toggle" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -106,7 +106,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "renders proper accessibility attributes" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -117,7 +117,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "all federal state links are properly formatted" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
@@ -154,10 +154,34 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "component handles nil socket and conn gracefully" do
-      assigns = %{socket: nil, conn: nil}
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       result = NavigationComponent.navigation(assigns)
       assert %Phoenix.LiveView.Rendered{} = result
+    end
+
+    test "navigation uses dynamic years based on today parameter" do
+      # Test with 2024 as today
+      assigns_2024 = %{socket: nil, conn: nil, today: ~D[2024-03-15]}
+      html_2024 = render_component(&NavigationComponent.navigation/1, assigns_2024)
+
+      assert html_2024 =~ "Schulferien 2024"
+      assert html_2024 =~ "Schulferien 2025"
+      assert html_2024 =~ "Brückentage 2024"
+      assert html_2024 =~ "Brückentage 2025"
+      assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2024"/
+      assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2025"/
+
+      # Test with 2026 as today
+      assigns_2026 = %{socket: nil, conn: nil, today: ~D[2026-08-10]}
+      html_2026 = render_component(&NavigationComponent.navigation/1, assigns_2026)
+
+      assert html_2026 =~ "Schulferien 2026"
+      assert html_2026 =~ "Schulferien 2027"
+      assert html_2026 =~ "Brückentage 2026"
+      assert html_2026 =~ "Brückentage 2027"
+      assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2026"/
+      assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2027"/
     end
   end
 end

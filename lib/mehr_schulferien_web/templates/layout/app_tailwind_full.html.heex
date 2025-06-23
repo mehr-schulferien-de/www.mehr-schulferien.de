@@ -10,7 +10,11 @@
     </script>
   </head>
   <body class="bg-gray-50">
-    <%= MehrSchulferienWeb.LayoutView.render("_header_tailwind.html", assigns) %>
+    <% navigation_assigns = MehrSchulferienWeb.LayoutView.get_navigation_assigns(@conn) %>
+    <%= MehrSchulferienWeb.LayoutView.render(
+      "_navigation_shared.html",
+      Map.merge(assigns, navigation_assigns)
+    ) %>
     <main role="main">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0">
         <%= MehrSchulferienWeb.LayoutView.render("_flash.html", assigns) %>
