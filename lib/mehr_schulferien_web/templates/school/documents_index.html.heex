@@ -3,6 +3,7 @@
     <!-- Breadcrumbs -->
     <nav class="flex mb-4" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <!-- Home - Always visible -->
         <li class="inline-flex items-center">
           <%= link to: "/", class: "text-gray-700 hover:text-blue-600" do %>
             <svg
@@ -16,7 +17,8 @@
             </svg>
           <% end %>
         </li>
-        <li>
+        <!-- Country - Hidden on mobile -->
+        <li class="hidden md:inline-flex">
           <div class="flex items-center">
             <svg
               class="w-6 h-6 text-gray-400"
@@ -36,7 +38,8 @@
             <% end %>
           </div>
         </li>
-        <li>
+        <!-- Federal State - Hidden on mobile -->
+        <li class="hidden md:inline-flex">
           <div class="flex items-center">
             <svg
               class="w-6 h-6 text-gray-400"
@@ -56,7 +59,8 @@
             <% end %>
           </div>
         </li>
-        <li>
+        <!-- City - Hidden on mobile -->
+        <li class="hidden md:inline-flex">
           <div class="flex items-center">
             <svg
               class="w-6 h-6 text-gray-400"
@@ -76,6 +80,7 @@
             <% end %>
           </div>
         </li>
+        <!-- School - Always visible, truncated on mobile -->
         <li>
           <div class="flex items-center">
             <svg
@@ -91,11 +96,12 @@
               >
               </path>
             </svg>
-            <%= link to: Routes.school_path(@conn, :show_year, @country.slug, @school.slug, @current_year), class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
+            <%= link to: Routes.school_path(@conn, :show_year, @country.slug, @school.slug, @current_year), class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2 truncate max-w-[120px] md:max-w-none", title: @school.name do %>
               <%= @school.name %>
             <% end %>
           </div>
         </li>
+        <!-- Current page - Always visible -->
         <li aria-current="page">
           <div class="flex items-center">
             <svg

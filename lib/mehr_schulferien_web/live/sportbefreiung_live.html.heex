@@ -1,48 +1,77 @@
 <div class="min-h-screen">
-  <div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-    <!-- Language Switcher -->
-    <div class="flex justify-end mb-4">
-      <.live_component
-        module={MehrSchulferienWeb.LanguageSwitcherComponent}
-        id="language-switcher"
-        current_locale={assigns[:locale] || "de"}
-        available_locales={["de", "en", "ru", "ar", "tr", "pl", "fr", "uk"]}
-      />
-    </div>
-    <!-- Breadcrumbs -->
-    <div class="mt-0 mb-8">
-      <nav class="flex" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-          <% breadcrumbs = [
-            {"Startseite", "/"},
-            {@country.name, Routes.country_path(@socket, :show, @country.slug)},
-            {@federal_state.name,
-             Routes.federal_state_path(@socket, :show, @country.slug, @federal_state.slug)},
-            {@city.name,
-             Routes.city_path(
-               @socket,
-               :show_year,
-               @country.slug,
-               @city.slug,
-               Date.utc_today().year
-             )},
-            {@school.name,
-             Routes.school_path(
-               @socket,
-               :show_year,
-               @country.slug,
-               @school.slug,
-               Date.utc_today().year
-             )},
-            {"Briefe", Routes.school_path(@socket, :documents_index, @school.slug)},
-            {"Sportbefreiung", nil}
-          ] %>
-          <% visible_breadcrumbs = Enum.slice(breadcrumbs, max(length(breadcrumbs) - 4, 0), 4) %>
-          <%= if length(breadcrumbs) > 4 do %>
-            <li class="inline-flex items-center">
-              <%= link to: breadcrumbs |> hd() |> elem(1), class: "text-slate-600 hover:text-blue-600 transition-colors" do %>
+  <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumbs and Language Switcher -->
+    <div class="flex justify-between items-center mb-6 gap-4">
+      <nav aria-label="Breadcrumb" class="flex-1 min-w-0">
+        <% breadcrumbs = [
+          {"Startseite", "/"},
+          {@country.name, Routes.country_path(@socket, :show, @country.slug)},
+          {@federal_state.name,
+           Routes.federal_state_path(@socket, :show, @country.slug, @federal_state.slug)},
+          {@city.name,
+           Routes.city_path(
+             @socket,
+             :show_year,
+             @country.slug,
+             @city.slug,
+             Date.utc_today().year
+           )},
+          {@school.name,
+           Routes.school_path(
+             @socket,
+             :show_year,
+             @country.slug,
+             @school.slug,
+             Date.utc_today().year
+           )},
+          {"Briefe", Routes.school_path(@socket, :documents_index, @school.slug)},
+          {"Sportbefreiung", nil}
+        ] %>
+        <!-- Mobile breadcrumbs (show only last 2 items) -->
+        <ol class="flex items-center space-x-1 md:hidden">
+          <% visible_breadcrumbs_mobile =
+            Enum.slice(breadcrumbs, max(length(breadcrumbs) - 2, 0), 2) %>
+          <%= for {{label, path}, index} <- visible_breadcrumbs_mobile |> Enum.with_index() do %>
+            <%= if index > 0 do %>
+              <li>
                 <svg
-                  class="w-4 h-4 mr-2"
+                  class="w-5 h-5 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  >
+                  </path>
+                </svg>
+              </li>
+            <% end %>
+            <li>
+              <%= if path do %>
+                <%= link(label,
+                  to: path,
+                  class: "text-gray-600 hover:text-blue-600 text-sm"
+                ) %>
+              <% else %>
+                <span class="text-gray-700 font-medium text-sm">
+                  <%= label %>
+                </span>
+              <% end %>
+            </li>
+          <% end %>
+        </ol>
+        <!-- Desktop breadcrumbs (show last 4 items with ellipsis) -->
+        <ol class="hidden md:flex items-center space-x-1">
+          <% visible_breadcrumbs_desktop =
+            Enum.slice(breadcrumbs, max(length(breadcrumbs) - 4, 0), 4) %>
+          <%= if length(breadcrumbs) > 4 do %>
+            <li>
+              <%= link to: breadcrumbs |> hd() |> elem(1), class: "text-gray-600 hover:text-blue-600" do %>
+                <svg
+                  class="w-4 h-4"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -52,56 +81,64 @@
                 </svg>
               <% end %>
             </li>
-            <li class="text-slate-400">...</li>
+            <li>
+              <svg
+                class="w-5 h-5 text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                >
+                </path>
+              </svg>
+            </li>
+            <li class="text-gray-400">...</li>
           <% end %>
-          <%= for {{label, path}, index} <- visible_breadcrumbs |> Enum.drop(if(length(breadcrumbs) > 4, do: 1, else: 0)) |> Enum.with_index() do %>
-            <li class="inline-flex items-center">
-              <div class="flex items-center">
-                <%= if index > 0 do %>
-                  <svg
-                    class="w-5 h-5 text-slate-400 mx-2"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
+          <%= for {{label, path}, index} <- visible_breadcrumbs_desktop |> Enum.drop(if(length(breadcrumbs) > 4, do: 1, else: 0)) |> Enum.with_index() do %>
+            <%= if index > 0 do %>
+              <li>
+                <svg
+                  class="w-5 h-5 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                    >
-                    </path>
-                  </svg>
-                <% end %>
-                <%= if path do %>
-                  <%= link(label,
-                    to: path,
-                    class:
-                      [
-                        "text-slate-600 hover:text-blue-600 transition-colors",
-                        label == @school.name &&
-                          "truncate max-w-[6rem] sm:max-w-none overflow-hidden whitespace-nowrap"
-                      ]
-                      |> Enum.filter(& &1)
-                      |> Enum.join(" ")
-                  ) %>
-                <% else %>
-                  <span class={
-                    [
-                      "text-slate-800 font-medium",
-                      label == @school.name &&
-                        "truncate max-w-[6rem] sm:max-w-none overflow-hidden whitespace-nowrap"
-                    ]
-                    |> Enum.filter(& &1)
-                    |> Enum.join(" ")
-                  }>
-                    <%= label %>
-                  </span>
-                <% end %>
-              </div>
+                  </path>
+                </svg>
+              </li>
+            <% end %>
+            <li>
+              <%= if path do %>
+                <%= link(label,
+                  to: path,
+                  class: "text-gray-600 hover:text-blue-600"
+                ) %>
+              <% else %>
+                <span class="text-gray-700 font-medium">
+                  <%= label %>
+                </span>
+              <% end %>
             </li>
           <% end %>
         </ol>
       </nav>
+      <div class="flex-shrink-0">
+        <.live_component
+          module={MehrSchulferienWeb.LanguageSwitcherComponent}
+          id="language-switcher"
+          current_locale={assigns[:locale] || "de"}
+          available_locales={["de", "en", "ru", "ar", "tr", "pl", "fr", "uk"]}
+        />
+      </div>
     </div>
     <!-- Header -->
     <div class="mb-8">

@@ -138,6 +138,7 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
               placeholder="z.B. 10115"
               id="search_zip_code"
               phx-debounce="300"
+              autofocus
             />
           </div>
           <div>
