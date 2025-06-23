@@ -183,11 +183,11 @@
             </div>
           </div>
 
-          <div class="w-full lg:w-40 flex-shrink-0">
+          <div class="hidden lg:block w-full lg:w-40 flex-shrink-0">
             <div class="bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 p-4 text-center">
               <div class="w-full aspect-[210/297] bg-white rounded mb-2 flex items-center justify-center">
                 <img
-                  src="/images/entschuldigung-vorschau.webp"
+                  src="/images/beurlaubung-vorschau.webp"
                   alt="Beurlaubung Vorschau"
                   class="w-full h-full object-contain"
                 />
@@ -257,10 +257,10 @@
                   />
                 </svg>
               </div>
-              <%= translate("Sender", @locale) %>
+              Eltern/Erziehungsberechtigte
             </h2>
             <p class="text-sm text-slate-600 mt-1 ml-11">
-              <%= translate("Your personal information for the leave request", @locale) %>
+              Absenderanschrift für den Briefkopf
             </p>
           </div>
 
@@ -627,7 +627,7 @@
           </div>
         </div>
         <!-- Submit Button -->
-        <div class="px-6 py-8 sm:px-8 bg-slate-50 pt-0">
+        <div class="px-6 py-8 sm:px-8 bg-slate-50 pt-6">
           <div class="flex justify-center">
             <button
               type="submit"
