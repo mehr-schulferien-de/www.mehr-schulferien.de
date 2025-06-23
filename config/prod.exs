@@ -6,6 +6,24 @@ config :mehr_schulferien, :env, :prod
 # Configure pdflatex path for production
 config :mehr_schulferien, pdflatex_path: "/usr/bin/pdflatex"
 
+# Production database configuration
+config :mehr_schulferien, MehrSchulferien.Repo,
+  # Increased pool size for production load
+  pool_size: 20,
+  # Optimized connection pool settings
+  queue_target: 50,
+  queue_interval: 1000,
+  # Prepare statements for better query performance
+  prepare: :named,
+  # Connection timeout
+  timeout: 15_000,
+  # Pool timeout
+  pool_timeout: 5_000,
+  # Additional production optimizations
+  ssl: false,
+  # Enable migration locks
+  migration_lock: :pg_advisory_lock
+
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.

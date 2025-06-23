@@ -10,7 +10,7 @@ defmodule MehrSchulferien.Periods do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Calendars
+  alias MehrSchulferien.{Cache, Calendars}
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType}
   alias MehrSchulferien.Periods.{Period, Query, DateOperations, Grouping}
   alias MehrSchulferien.Repo
@@ -188,4 +188,46 @@ defmodule MehrSchulferien.Periods do
   # Default params for group_periods_single_year
   def group_periods_single_year(periods),
     do: Grouping.group_periods_single_year(periods, DateHelpers.today_berlin())
+
+  #
+  # Cached operations for improved performance
+  #
+
+  @doc """
+  Cached version of list_school_free_periods_optimized.
+  Caches results based on location IDs and date range for improved performance.
+  """
+  def list_school_free_periods_cached(location_ids, starts_on, ends_on) do
+    # Create cache key from location IDs and date range
+    location_key = location_ids |> Enum.sort() |> Enum.join(",")
+    cache_key = "periods_#{location_key}_#{starts_on}_#{ends_on}"
+
+    Cache.cached_query_operation(
+      cache_key,
+      fn ->
+        list_school_free_periods_optimized(location_ids, starts_on, ends_on)
+      end,
+      # 30 minutes TTL for periods
+      ttl: 1800
+    )
+  end
+
+  @doc """
+  Clears periods-related cache entries when data is modified.
+  Should be called after any period create/update/delete operations.
+  """
+  def clear_periods_caches do
+    # Since period cache keys are dynamic, we need to clear the entire query cache
+    # This is acceptable because periods change less frequently than they're queried
+    :ets.delete_all_objects(:mehr_schulferien_query_cache)
+  end
+
+  @doc """
+  Clears specific periods cache entries for given locations.
+  """
+  def clear_periods_cache_for_locations(_location_ids) do
+    # For now, clear all query cache when any location's periods change
+    # This could be optimized further by tracking which cache keys contain which locations
+    clear_periods_caches()
+  end
 end

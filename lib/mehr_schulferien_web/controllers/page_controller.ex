@@ -179,10 +179,10 @@ defmodule MehrSchulferienWeb.PageController do
     {result, (finish - start) / 1000}
   end
 
-  # Optimized version that reduces SQL queries
+  # Optimized version that reduces SQL queries with ETS caching
   defp fetch_countries_with_periods_optimized(start_date, ends_on, current_year) do
-    # Single query to get countries with federal states (selective columns for 56% faster performance)
-    countries_with_federal_states = Locations.list_countries_with_federal_states_selective()
+    # Cached query to get countries with federal states (selective columns for 56% faster performance)
+    countries_with_federal_states = Locations.list_countries_with_federal_states_cached()
 
     # Extract all location IDs for batch queries
     all_location_ids =
@@ -190,9 +190,9 @@ defmodule MehrSchulferienWeb.PageController do
         [country.id | Enum.map(federal_states, & &1.id)]
       end)
 
-    # Single query for all periods
+    # Cached query for all periods
     all_periods =
-      Periods.list_school_free_periods_optimized(all_location_ids, start_date, ends_on)
+      Periods.list_school_free_periods_cached(all_location_ids, start_date, ends_on)
 
     # Group periods by location_id for O(1) lookup
     periods_by_location =

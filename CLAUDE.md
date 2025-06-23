@@ -92,6 +92,9 @@ The application uses **Tailwind CSS** as the primary styling framework. Bootstra
 - Use simple solutions with onboard tools/packages when possible
 - Focus only on assigned tasks (DRY principle, but avoid scope creep)
 
+### Development Best Practices
+- **Always write a test before starting to refactor code**
+
 ### Styling Guidelines
 - **ALWAYS use Tailwind CSS** for all styling needs
 - **NEVER use Bootstrap classes** - the project has migrated away from Bootstrap

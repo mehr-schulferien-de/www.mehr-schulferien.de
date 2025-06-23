@@ -9,6 +9,7 @@ defmodule MehrSchulferien.Application do
     children = [
       {Phoenix.PubSub, name: MehrSchulferien.PubSub},
       MehrSchulferien.Repo,
+      MehrSchulferien.Cache,
       MehrSchulferienWeb.Endpoint
     ]
 

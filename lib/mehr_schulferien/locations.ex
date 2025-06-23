@@ -10,8 +10,7 @@ defmodule MehrSchulferien.Locations do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Locations.Location
-  alias MehrSchulferien.Repo
+  alias MehrSchulferien.{Cache, Locations.Location, Repo}
 
   #
   # Internal helpers
@@ -660,5 +659,112 @@ defmodule MehrSchulferien.Locations do
       {county, cities}
     end)
     |> Enum.filter(fn {_county, cities} -> length(cities) > 0 end)
+  end
+
+  #
+  # Cached operations for improved performance
+  #
+
+  @doc """
+  Cached version of list_countries_with_federal_states_selective.
+  Uses ETS cache with 1-hour TTL for optimal performance.
+  """
+  def list_countries_with_federal_states_cached do
+    Cache.cached_location_operation(
+      "countries_with_states",
+      fn ->
+        list_countries_with_federal_states_selective()
+      end,
+      ttl: 3600
+    )
+  end
+
+  @doc """
+  Cached version of list_countries.
+  Uses ETS cache with 2-hour TTL since countries rarely change.
+  """
+  def list_countries_cached do
+    Cache.cached_location_operation(
+      "countries_list",
+      fn ->
+        list_countries()
+      end,
+      ttl: 7200
+    )
+  end
+
+  @doc """
+  Cached federal states lookup for a specific country.
+  """
+  def list_federal_states_cached(country) do
+    cache_key = "federal_states_#{country.id}"
+
+    Cache.cached_location_operation(
+      cache_key,
+      fn ->
+        list_federal_states(country)
+      end,
+      ttl: 3600
+    )
+  end
+
+  @doc """
+  Cached counties with cities having schools for a specific federal state.
+  """
+  def list_counties_with_cities_having_schools_cached(federal_state) do
+    cache_key = "counties_cities_schools_#{federal_state.id}"
+
+    Cache.cached_location_operation(
+      cache_key,
+      fn ->
+        list_counties_with_cities_having_schools(federal_state)
+      end,
+      ttl: 1800
+    )
+  end
+
+  @doc """
+  Clears location-related cache entries when data is modified.
+  Should be called after any location create/update/delete operations.
+  """
+  def clear_location_caches do
+    Cache.clear_all_location_hierarchies()
+  end
+
+  @doc """
+  Clears specific location cache entries.
+  """
+  def clear_location_cache(location) do
+    # Clear relevant cache entries based on location type
+    if location.is_country do
+      Cache.clear_location_hierarchy("countries_list")
+      Cache.clear_location_hierarchy("countries_with_states")
+    end
+
+    if location.is_federal_state do
+      Cache.clear_location_hierarchy("countries_with_states")
+      Cache.clear_location_hierarchy("federal_states_#{location.parent_location_id}")
+      Cache.clear_location_hierarchy("counties_cities_schools_#{location.id}")
+    end
+
+    if location.is_county or location.is_city do
+      # Find federal state ID to clear cache
+      case get_federal_state_for_location(location) do
+        %{id: federal_state_id} ->
+          Cache.clear_location_hierarchy("counties_cities_schools_#{federal_state_id}")
+
+        _ ->
+          :ok
+      end
+    end
+  end
+
+  # Helper to find the federal state for any location
+  defp get_federal_state_for_location(%{is_federal_state: true} = location), do: location
+  defp get_federal_state_for_location(%{parent_location_id: nil}), do: nil
+
+  defp get_federal_state_for_location(%{parent_location_id: parent_id}) do
+    parent = Repo.get(Location, parent_id)
+    if parent, do: get_federal_state_for_location(parent), else: nil
   end
 end
