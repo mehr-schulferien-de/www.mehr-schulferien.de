@@ -69,21 +69,33 @@ All locations (countries, federal states, counties, cities, schools) are stored 
 
 ### CSS Framework Architecture
 
-The application supports both Bootstrap (legacy) and Tailwind CSS through a centralized style configuration system:
+The application uses **Tailwind CSS** as the primary styling framework. Bootstrap is legacy and should NOT be used for any new development.
 
-- **StyleConfig** (`lib/mehr_schulferien/style_config.ex`): Manages consistent colors/styles across frameworks
-- **Framework Selection**: Configurable per-view or globally via `config/config.exs`
+- **IMPORTANT**: Always use Tailwind CSS classes for styling. Never use Bootstrap classes (e.g., `container`, `row`, `col-*`, `btn`, `form-control`, etc.)
+- **StyleConfig** (`lib/mehr_schulferien/style_config.ex`): Manages consistent colors/styles
+- **Framework Selection**: Configurable per-view or globally via `config/config.exs` 
 - **Day Types**: Standardized styling for holidays, vacations, weekends, and bridge days
 
 ## Development Guidelines
 
 ### Code Quality Requirements
-- Always run `mix test` and fix all failures/warnings before considering work complete
+- **ALWAYS run `mix test` after changing or adding code** - fix all failures before considering work complete
+- **ALWAYS fix all errors and warnings** - run `mix compile --warnings-as-errors` to ensure clean compilation
 - Run `mix format` after making changes
 - Pre-commit hooks enforce: tests, formatting, compilation, and various file checks
 - Use simple solutions with onboard tools/packages when possible
 - Focus only on assigned tasks (DRY principle, but avoid scope creep)
-- Always run `mix format` after you did your work.
+- Always run `mix format` after you did your work
+
+### Styling Guidelines
+- **ALWAYS use Tailwind CSS** for all styling needs
+- **NEVER use Bootstrap classes** - the project has migrated away from Bootstrap
+- Common Tailwind patterns in this project:
+  - Layout: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
+  - Cards: `bg-white shadow-sm rounded-lg`
+  - Forms: `border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500`
+  - Buttons: `px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700`
+  - Tables: `min-w-full divide-y divide-gray-200`
 
 ### Testing Strategy
 - System tests for full user workflows

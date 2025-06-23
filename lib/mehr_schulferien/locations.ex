@@ -404,6 +404,74 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Searches for schools by zip code, city name, and school name.
+  Returns schools with their addresses and parent city information.
+  """
+  def search_schools(params) do
+    zip_code = Map.get(params, "zip_code", "") |> String.trim()
+    city_name = Map.get(params, "city", "") |> String.trim()
+    school_name = Map.get(params, "school_name", "") |> String.trim()
+
+    query =
+      from(school in Location,
+        join: city in Location,
+        on: school.parent_location_id == city.id,
+        left_join: address in assoc(school, :address),
+        left_join: zcm in MehrSchulferien.Maps.ZipCodeMapping,
+        on: zcm.location_id == city.id,
+        left_join: zc in MehrSchulferien.Maps.ZipCode,
+        on: zc.id == zcm.zip_code_id,
+        where: school.is_school == true,
+        preload: [:address, parent_location: :parent_location]
+      )
+
+    query =
+      if zip_code != "" do
+        zip_pattern = "#{zip_code}%"
+
+        from([school, city, address, zcm, zc] in query,
+          where: like(zc.value, ^zip_pattern) or like(address.zip_code, ^zip_pattern)
+        )
+      else
+        query
+      end
+
+    query =
+      if city_name != "" do
+        search_pattern = "%#{city_name}%"
+
+        from([school, city, address, zcm, zc] in query,
+          where: ilike(city.name, ^search_pattern)
+        )
+      else
+        query
+      end
+
+    query =
+      if school_name != "" do
+        search_pattern = "%#{school_name}%"
+
+        from([school, city, address, zcm, zc] in query,
+          where: ilike(school.name, ^search_pattern)
+        )
+      else
+        query
+      end
+
+    # Remove distinct to avoid PostgreSQL ORDER BY/DISTINCT conflict
+    # Instead, we'll get all results and then deduplicate in memory
+    results =
+      query
+      |> order_by([school, city, address, zcm, zc], asc: city.name, asc: school.name)
+      |> Repo.all()
+
+    # Deduplicate by school id to handle cases where a school appears multiple times
+    # due to multiple zip code mappings for the same city
+    results
+    |> Enum.uniq_by(& &1.id)
+  end
+
+  @doc """
   Returns the number of schools for a specific city.
   """
   def count_schools(city) do

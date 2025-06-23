@@ -26,6 +26,7 @@ defmodule MehrSchulferien.MixProject do
 
   defp deps do
     [
+      {:igniter, "~> 0.6", only: [:dev, :test]},
       {:phoenix, "~> 1.7.21"},
       {:phoenix_ecto, "~> 4.6.4"},
       {:ecto_sql, "~> 3.10"},
