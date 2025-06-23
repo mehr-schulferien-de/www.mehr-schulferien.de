@@ -66,7 +66,8 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     assert response
 
     # Check that it includes the Schulferien title
-    assert response =~ "Schulferien in Deutschland - Übersicht"
+    assert response =~
+             "Schulferien Deutschland 2025: Alle Bundesländer, Feiertage & Brückentage im Überblick"
 
     # Check for federal state content
     assert response =~ "Schulferien Deutschland"
