@@ -1,4 +1,8 @@
-defmodule MehrSchulferienWeb.School.PaginationComponent do
+defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
+  @moduledoc """
+  Generic pagination component that can be used for federal states, cities, and schools.
+  Replaces the duplicate pagination components with a single, reusable component.
+  """
   use Phoenix.Component
 
   import Phoenix.HTML.Link
@@ -6,8 +10,8 @@ defmodule MehrSchulferienWeb.School.PaginationComponent do
 
   attr :conn, :map, required: true
   attr :country, :map, required: true
-  attr :federal_state, :map, required: true
-  attr :school, :map, required: true
+  attr :location, :map, required: true
+  attr :location_type, :atom, required: true
   attr :years_with_data, :list, required: true
   attr :year, :integer, required: true
 
@@ -54,7 +58,7 @@ defmodule MehrSchulferienWeb.School.PaginationComponent do
           <% # Mobile pagination (3 years) %>
           <div class="flex w-full">
             <%= if prev_year do %>
-              <%= link to: Routes.school_path(@conn, :show_year, @country.slug, @school.slug, prev_year), 
+              <%= link to: build_route_path(@conn, @location_type, @country, @location, prev_year), 
                       class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg flex items-center" do %>
                 <svg
                   class="h-5 w-5"
@@ -99,7 +103,7 @@ defmodule MehrSchulferienWeb.School.PaginationComponent do
                     <%= year %>
                   </span>
                 <% else %>
-                  <%= link to: Routes.school_path(@conn, :show_year, @country.slug, @school.slug, year), 
+                  <%= link to: build_route_path(@conn, @location_type, @country, @location, year), 
                           class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center" do %>
                     <%= year %>
                   <% end %>
@@ -108,7 +112,7 @@ defmodule MehrSchulferienWeb.School.PaginationComponent do
             </div>
 
             <%= if next_year do %>
-              <%= link to: Routes.school_path(@conn, :show_year, @country.slug, @school.slug, next_year), 
+              <%= link to: build_route_path(@conn, @location_type, @country, @location, next_year), 
                       class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg flex items-center" do %>
                 <svg
                   class="h-5 w-5"
@@ -154,5 +158,17 @@ defmodule MehrSchulferienWeb.School.PaginationComponent do
       <% end %>
     </div>
     """
+  end
+
+  defp build_route_path(conn, :federal_state, country, federal_state, year) do
+    Routes.federal_state_path(conn, :show_year, country.slug, federal_state.slug, year)
+  end
+
+  defp build_route_path(conn, :city, country, city, year) do
+    Routes.city_path(conn, :show_year, country.slug, city.slug, year)
+  end
+
+  defp build_route_path(conn, :school, country, school, year) do
+    Routes.school_path(conn, :show_year, country.slug, school.slug, year)
   end
 end
