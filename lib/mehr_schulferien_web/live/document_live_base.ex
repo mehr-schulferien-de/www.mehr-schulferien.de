@@ -56,6 +56,9 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
         # Get page title
         page_title = get_page_title(school_data.school.name)
 
+        # Get meta data
+        meta_data = get_meta_data(school_data.school.name, @document_type)
+
         {:ok,
          socket
          |> assign(school_data)
@@ -64,7 +67,8 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
            page_title: page_title,
            locale: locale,
            document_type: @document_type
-         )}
+         )
+         |> assign(meta_data)}
       end
 
       defp atomize_cookie_keys(map) do
@@ -458,11 +462,40 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
       def get_page_title(_school_name), do: raise("get_page_title/1 must be implemented")
       def get_translations, do: raise("get_translations/0 must be implemented")
 
+      def get_meta_data(school_name, document_type) do
+        case document_type do
+          "entschuldigung" ->
+            %{
+              page_description:
+                "Erstellen Sie eine Entschuldigung für #{school_name}. Einfaches Formular, professionelles PDF zum Download.",
+              og_image: "/images/entschuldigung-dummy.png"
+            }
+
+          "beurlaubung" ->
+            %{
+              page_description:
+                "Erstellen Sie einen Beurlaubungsantrag für #{school_name}. Einfaches Formular, professionelles PDF zum Download.",
+              og_image: "/images/entschuldigung-dummy.png"
+            }
+
+          "sportbefreiung" ->
+            %{
+              page_description:
+                "Erstellen Sie eine Sportbefreiung für #{school_name}. Einfaches Formular, professionelles PDF zum Download.",
+              og_image: "/images/sportbefreiung-vorschau.webp"
+            }
+
+          _ ->
+            %{}
+        end
+      end
+
       defoverridable get_default_form_data: 0,
                      get_date_fields: 0,
                      get_required_fields: 0,
                      get_page_title: 1,
-                     get_translations: 0
+                     get_translations: 0,
+                     get_meta_data: 2
     end
   end
 end

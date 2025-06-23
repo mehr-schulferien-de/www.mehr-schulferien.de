@@ -8,6 +8,9 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
      socket
      |> assign(
        page_title: "Schule suchen - Briefe erstellen",
+       page_description:
+         "Erstellen Sie kostenlos Entschuldigungen, Beurlaubungen und Sportbefreiungen für die Schule. Einfache Formulare, professionelle PDFs zum Download.",
+       og_image: "/images/entschuldigung-dummy.png",
        search_params: %{"zip_code" => "", "city" => "", "school_name" => ""},
        schools: [],
        searching: false,

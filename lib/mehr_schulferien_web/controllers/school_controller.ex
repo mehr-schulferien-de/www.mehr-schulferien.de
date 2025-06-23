@@ -187,6 +187,9 @@ defmodule MehrSchulferienWeb.SchoolController do
 
     page_title = "Entschuldigungsschreiben und Beurlaubungen - #{school.name}"
 
+    page_description =
+      "Erstellen Sie kostenlos Entschuldigungsschreiben, Beurlaubungen und Sportbefreiungen für #{school.name}. Einfache Formulare, professionelle PDFs zum Download."
+
     render(conn, "documents_index.html",
       school: school,
       city: city,
@@ -195,6 +198,8 @@ defmodule MehrSchulferienWeb.SchoolController do
       country: country,
       current_year: current_year,
       page_title: page_title,
+      page_description: page_description,
+      og_image: "/images/entschuldigung-dummy.png",
       css_framework: :tailwind_new
     )
   end
