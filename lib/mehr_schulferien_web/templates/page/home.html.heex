@@ -59,17 +59,22 @@
             </div>
           </div>
 
-          <div class="mt-4 grid grid-cols-2 gap-3">
-            <%= link("Ferientermine #{current_year}",
-              to: "/ferien/d/bundesland/#{federal_state.slug}/#{current_year}",
-              class:
-                "px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium w-full text-center"
-            ) %>
-            <%= link("Ferientermine #{next_year}",
-              to: "/ferien/d/bundesland/#{federal_state.slug}/#{next_year}",
-              class:
-                "px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium w-full text-center"
-            ) %>
+          <div class="mt-4">
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600">Ferientermine:</span>
+              <div class="flex-1 grid grid-cols-2 gap-3">
+                <%= link("#{current_year}",
+                  to: "/ferien/d/bundesland/#{federal_state.slug}/#{current_year}",
+                  class:
+                    "px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium w-full text-center"
+                ) %>
+                <%= link("#{next_year}",
+                  to: "/ferien/d/bundesland/#{federal_state.slug}/#{next_year}",
+                  class:
+                    "px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium w-full text-center"
+                ) %>
+              </div>
+            </div>
           </div>
         </section>
       <% end %>
@@ -204,17 +209,22 @@
             </p>
           <% end %>
 
-          <div class="mt-4 grid grid-cols-2 gap-3">
-            <%= link("Brückentage #{current_year}",
-              to: "/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}",
-              class:
-                "px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium w-full text-center"
-            ) %>
-            <%= link("Brückentage #{next_year}",
-              to: "/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}",
-              class:
-                "px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium w-full text-center"
-            ) %>
+          <div class="mt-4">
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600">Brückentage:</span>
+              <div class="flex-1 grid grid-cols-2 gap-3">
+                <%= link("#{current_year}",
+                  to: "/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}",
+                  class:
+                    "px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium w-full text-center"
+                ) %>
+                <%= link("#{next_year}",
+                  to: "/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}",
+                  class:
+                    "px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium w-full text-center"
+                ) %>
+              </div>
+            </div>
           </div>
         </section>
       <% end %>
