@@ -127,3 +127,8 @@ The application uses **Tailwind CSS** as the primary styling framework. Bootstra
 - **Sitemap generation** for SEO
 - **LiveView** for interactive components
 - **Responsive design** with Bootstrap/Tailwind CSS flexibility
+
+## Repository Guidelines
+
+### Git and GitHub Workflow
+- **Don't git push anything to GitHub without the user asking for it.**
