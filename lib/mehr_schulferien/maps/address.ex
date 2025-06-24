@@ -90,14 +90,14 @@ defmodule MehrSchulferien.Maps.Address do
     |> validate_coordinates()
   end
 
-  # Validates homepage URL is present and well-formed
+  # Validates homepage URL is well-formed when present (optional field)
   defp validate_homepage_url(changeset) do
     case get_field(changeset, :homepage_url) do
       nil ->
-        add_error(changeset, :homepage_url, "muss angegeben werden")
+        changeset
 
       "" ->
-        add_error(changeset, :homepage_url, "muss angegeben werden")
+        changeset
 
       url when is_binary(url) ->
         if String.match?(url, ~r/^https?:\/\/.+\..+/) do

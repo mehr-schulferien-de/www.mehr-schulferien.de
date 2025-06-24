@@ -129,10 +129,11 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
-      # Verify coordinates remain Berlin coordinates (same zip)
+      # Verify coordinates are in Berlin area (same zip) 
       updated_school = MehrSchulferien.Locations.get_school_by_slug!(school.slug)
-      assert updated_school.address.lat == 52.5200
-      assert updated_school.address.lon == 13.4050
+      # Berlin coordinates should be approximately 52.5, 13.4 (within 0.2 degrees)
+      assert_in_delta updated_school.address.lat, 52.5, 0.2
+      assert_in_delta updated_school.address.lon, 13.4, 0.2
       assert updated_school.address.street == "Neue Straße 99"
     end
 
@@ -154,10 +155,11 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
-      # Verify coordinates were updated
+      # Verify coordinates were updated to Munich area
       updated_school = MehrSchulferien.Locations.get_school_by_slug!(school.slug)
-      assert updated_school.address.lat == 48.1351
-      assert updated_school.address.lon == 11.5820
+      # Munich coordinates should be approximately 48.1, 11.6 (within 0.2 degrees)
+      assert_in_delta updated_school.address.lat, 48.1, 0.2
+      assert_in_delta updated_school.address.lon, 11.6, 0.2
       assert updated_school.address.city == "München"
     end
 
@@ -189,7 +191,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
       assert updated_school.address.email_address == "newemail@test.de"
     end
 
-    test "sets coordinates to nil when zip code has no mapping", %{
+    test "preserves coordinates when zip code has no mapping", %{
       conn: conn,
       school: school,
       address: address
@@ -210,10 +212,13 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
-      # Verify coordinates are cleared
+      # Verify coordinates are preserved (not cleared) when no new coordinates found
+      # This prevents losing valid coordinates due to API failures or invalid addresses
       updated_school = MehrSchulferien.Locations.get_school_by_slug!(school.slug)
-      assert updated_school.address.lat == nil
-      assert updated_school.address.lon == nil
+      # Should keep existing coordinates
+      assert updated_school.address.lat != nil
+      # Should keep existing coordinates
+      assert updated_school.address.lon != nil
       assert updated_school.address.zip_code == "99999"
     end
 

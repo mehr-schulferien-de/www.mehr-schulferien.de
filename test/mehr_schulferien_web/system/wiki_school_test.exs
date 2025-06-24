@@ -76,10 +76,24 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
 
     test "user can update street when no existing address exists", %{conn: conn} do
       # Test the case where school has no address initially
-      country = insert(:country, %{slug: "test-country"})
+      # Use existing country or create if needed
+      country =
+        MehrSchulferien.Repo.get_by(MehrSchulferien.Locations.Location, slug: "d") ||
+          insert(:country, %{slug: "d"})
+
       federal_state = insert(:federal_state, %{parent_location_id: country.id})
       city = insert(:city, %{parent_location_id: federal_state.id})
       school = insert(:school, %{parent_location_id: city.id, slug: "test-no-address-school"})
+
+      # Create zip code mapping for test
+      zip_code = insert(:zip_code, %{value: "12345"})
+
+      insert(:zip_code_mapping, %{
+        location_id: city.id,
+        zip_code_id: zip_code.id,
+        lat: 52.5200,
+        lon: 13.4050
+      })
 
       # Visit wiki page
       conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
@@ -198,6 +212,16 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
         slug: "56068-max-von-laue-gymnasium",
         name: "Max-von-Laue-Gymnasium"
       })
+
+    # Create zip code mapping for München test data
+    zip_code = insert(:zip_code, %{value: "80331"})
+
+    insert(:zip_code_mapping, %{
+      location_id: city.id,
+      zip_code_id: zip_code.id,
+      lat: 48.1351,
+      lon: 11.5820
+    })
 
     # Create an address for the school using PaperTrail.insert to get proper version tracking
     address_changeset =

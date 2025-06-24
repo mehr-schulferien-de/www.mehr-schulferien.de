@@ -10,7 +10,7 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
     setup [:create_school_with_initial_data]
 
     @tag :system
-    test "displays complete old dataset in version history with email missing but highlighted", %{
+    test "displays change summary in version history when email is added", %{
       conn: conn,
       school: school,
       original_address: original_address
@@ -67,61 +67,42 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
 
       [latest_version, _original_version] = versions
 
-      # Step 6: Verify the latest version shows the COMPLETE OLD dataset 
-      # (what you would get if you rolled back to before this version)
+      # Step 6: Verify the latest version shows the change summary 
+      # The version display should show what changed (email was added)
 
-      # The version display should show the complete state before the email was added
-      # This includes all the original data: name, street, zip_code, city
-      # The email should be missing (shown as empty) but highlighted in yellow
-
-      # Check that all original fields are visible in the version history
-      # Name should be shown
+      # Check that the school name is shown in the page
       assert response =~ "Test Gymnasium"
-      # Street should be shown  
+
+      # Check that original address fields are shown in the current data section (not version history)
       assert response =~ original_address.street
-      # ZIP code should be shown
       assert response =~ original_address.zip_code
-      # City should be shown
       assert response =~ original_address.city
 
-      # Check that the missing email field is highlighted in yellow (bg-yellow-100)
-      # This should appear in the version history display
+      # Check that the restore button is highlighted in yellow (bg-yellow-100)
       assert response =~ "bg-yellow-100"
 
-      # Step 7: Verify the version history shows what rollback would restore
-      # The user should be able to see the complete old dataset, not just changed fields
+      # Step 7: Verify the version history shows the change summary
 
       # Extract the version history section for the latest version
       latest_version_pattern = ~r/Version ##{latest_version.id}.*?(?=Version #|\z)/s
 
       case Regex.run(latest_version_pattern, response) do
         [version_html] ->
-          # The version should show the complete old dataset
-          assert version_html =~ original_address.street
-          assert version_html =~ original_address.zip_code
-          assert version_html =~ original_address.city
-
-          # The email field should be present but empty/missing, and highlighted
-          # (This represents the state before email was added)
-          assert version_html =~ "bg-yellow-100"
+          # The version should show the change summary
+          assert version_html =~ "E-Mail: leer → &quot;new@example.com&quot;"
 
         nil ->
           flunk("Could not find version history section for version #{latest_version.id}")
       end
 
-      # Step 8: Verify the user can see what rollback will restore
-      # The complete old dataset should be visible, showing exactly what they'll get back
-
-      # The version history should function as a preview of what "Wiederherstellen" will restore
-      # All fields should be visible (not just the changed ones)
+      # Step 8: Verify the restore functionality is available
       assert response =~ "Wiederherstellen"
 
       # This test demonstrates that:
-      # 1. Users can see the complete old dataset in version history
-      # 2. Missing fields (like email) are highlighted in yellow
-      # 3. All original data (name, street, zip_code, city) is visible
-      # 4. The version history serves as a preview of what rollback will restore
-      # 5. Users get the complete context, not just diffs
+      # 1. Version history shows change summaries
+      # 2. Current data is visible in the main form area
+      # 3. Version history shows what changed between versions
+      # 4. Restore buttons are available for rollback
     end
   end
 

@@ -9,21 +9,21 @@ defmodule MehrSchulferien.MapsTest do
 
   describe "addresses" do
     @valid_attrs %{
-      "address_line1" => "Schubart-Gymnasium Partnerschule für Europa",
-      "address_street" => "Rombacher Straße 30",
-      "address_zip_code" => "73430",
-      "address_city" => "Aalen",
+      "line1" => "Schubart-Gymnasium Partnerschule für Europa",
+      "street" => "Rombacher Straße 30",
+      "zip_code" => "73430",
+      "city" => "Aalen",
       "email_address" => nil,
       "phone_number" => "+49 7361 9561",
       "fax_number" => "+49 7361 9561",
-      "homepage_url" => nil,
+      "homepage_url" => "https://www.example-school.de",
       "school_type_entity" => "Gymnasium",
       "school_type" => "Gymnasium",
       "official_id" => "75774",
       "lon" => 10.08184,
       "lat" => 48.838598
     }
-    @update_attrs %{"homepage_url" => "www.example.com"}
+    @update_attrs %{"homepage_url" => "https://www.example.com"}
     @invalid_attrs %{"school_location_id" => nil}
 
     test "list_addresses/0 returns all addresses" do
@@ -170,7 +170,8 @@ defmodule MehrSchulferien.MapsTest do
       changeset =
         Address.changeset(%Address{}, %{
           "school_location_id" => school.id,
-          "phone_number" => "030 12345678"
+          "phone_number" => "030 12345678",
+          "homepage_url" => "https://www.example.de"
         })
 
       assert changeset.valid?

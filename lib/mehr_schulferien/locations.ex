@@ -59,6 +59,13 @@ defmodule MehrSchulferien.Locations do
   @doc """
   Gets a single location.
 
+  Returns `nil` if the Location does not exist.
+  """
+  def get_location(id), do: Repo.get(Location, id)
+
+  @doc """
+  Gets a single location.
+
   Raises `Ecto.NoResultsError` if the Location does not exist.
   """
   def get_location!(id), do: Repo.get!(Location, id)

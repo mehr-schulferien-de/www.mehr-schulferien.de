@@ -213,11 +213,20 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
 
                 # Send email notification
                 Task.start(fn ->
-                  # Get country slug for the email
-                  country_slug = get_country_slug_from_school(school)
+                  try do
+                    # Get country slug for the email
+                    country_slug = get_country_slug_from_school(school)
 
-                  Email.school_created_notification(school, address, country_slug)
-                  |> Mailer.deliver()
+                    Email.school_created_notification(school, address, country_slug)
+                    |> Mailer.deliver()
+                  rescue
+                    error ->
+                      require Logger
+
+                      Logger.error(
+                        "Failed to send school creation notification: #{inspect(error)}"
+                      )
+                  end
                 end)
 
                 {:ok, school}
@@ -304,8 +313,10 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   defp traverse_to_country(%{parent_location_id: nil}), do: nil
 
   defp traverse_to_country(%{parent_location_id: parent_id}) do
-    parent = Locations.get_location!(parent_id)
-    traverse_to_country(parent)
+    case Locations.get_location(parent_id) do
+      nil -> nil
+      parent -> traverse_to_country(parent)
+    end
   end
 
   defp traverse_to_country(_), do: nil

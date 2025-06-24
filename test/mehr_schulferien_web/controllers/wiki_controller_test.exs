@@ -130,6 +130,16 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       city = insert(:city, %{parent_location_id: federal_state.id})
       school = insert(:school, %{parent_location_id: city.id, slug: "new-school-address"})
 
+      # Create zip code mapping for test
+      zip_code = insert(:zip_code, %{value: "12345"})
+
+      insert(:zip_code_mapping, %{
+        location_id: city.id,
+        zip_code_id: zip_code.id,
+        lat: 52.5200,
+        lon: 13.4050
+      })
+
       new_address_params = %{
         "street" => "Neue Schule Straße 789",
         "phone_number" => "+49 30 99999999",
@@ -301,6 +311,16 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
     county = insert(:county, %{parent_location_id: federal_state.id})
     city = insert(:city, %{parent_location_id: county.id})
     school = insert(:school, %{parent_location_id: city.id, slug: "test-gymnasium-main"})
+
+    # Create zip code mapping for test data
+    zip_code = insert(:zip_code, %{value: "12345"})
+
+    insert(:zip_code_mapping, %{
+      location_id: city.id,
+      zip_code_id: zip_code.id,
+      lat: 52.5200,
+      lon: 13.4050
+    })
 
     # Create an address for the school using insert! directly 
     address =

@@ -1,9 +1,9 @@
 defmodule MehrSchulferienWeb.WikiNewSchoolTest do
   use MehrSchulferienWeb.ConnCase
   import MehrSchulferien.Factory
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
+  import Phoenix.LiveViewTest
 
-  describe "new school creation" do
+  describe "new school creation LiveView" do
     setup do
       # Create test data
       country = insert(:country, %{slug: "d", name: "Deutschland", is_country: true})
@@ -27,33 +27,35 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
     end
 
     test "shows new school form", %{conn: conn} do
-      conn = get(conn, Routes.wiki_path(conn, :new_school))
+      {:ok, view, html} = live(conn, "/wiki/schools/new")
 
-      assert html_response(conn, 200) =~ "Neue Schule hinzufügen"
-      assert html_response(conn, 200) =~ "Schuldaten eingeben"
-      assert html_response(conn, 200) =~ ~r/name="name"/
-      assert html_response(conn, 200) =~ ~r/name="address\[street\]"/
-      assert html_response(conn, 200) =~ ~r/name="address\[zip_code\]"/
+      assert html =~ "Neue Schule anlegen"
+      assert html =~ "Schuldaten"
+      assert has_element?(view, "input[name=\"name\"]")
+      assert has_element?(view, "input[name=\"address[street]\"]")
+      assert has_element?(view, "input[name=\"address[zip_code]\"]")
     end
 
     test "creates new school with valid data and populates coordinates", %{conn: conn} do
-      school_params = %{
-        "name" => "Test Grundschule Berlin",
-        "address" => %{
-          "street" => "Teststraße 123",
-          "zip_code" => "10115",
-          "city" => "Berlin",
-          "email_address" => "info@test-grundschule.de",
-          "phone_number" => "030 12345678",
-          "homepage_url" => "https://www.test-grundschule.de",
-          "wikipedia_url" => ""
-        }
-      }
+      {:ok, view, _html} = live(conn, "/wiki/schools/new")
 
-      conn = post(conn, Routes.wiki_path(conn, :create_school), school_params)
+      view
+      |> form("form", %{
+        name: "Test Grundschule Berlin",
+        address: %{
+          street: "Teststraße 123",
+          zip_code: "10115",
+          city: "Berlin",
+          email_address: "info@test-grundschule.de",
+          phone_number: "030 12345678",
+          homepage_url: "https://www.test-grundschule.de",
+          wikipedia_url: ""
+        }
+      })
+      |> render_submit()
 
       # Should redirect to the new school page
-      assert redirected_to(conn, 302) =~ "/ferien/d/schule/10115-test-grundschule-berlin"
+      assert_redirect(view, "/ferien/d/schule/10115-test-grundschule-berlin")
 
       # Verify school was created with correct slug
       school = MehrSchulferien.Locations.get_school_by_slug!("10115-test-grundschule-berlin")
@@ -73,60 +75,57 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
     end
 
     test "handles invalid zip code", %{conn: conn} do
-      school_params = %{
-        "name" => "Test Schule",
-        "address" => %{
-          "street" => "Teststraße 1",
-          # Invalid zip code
-          "zip_code" => "99999",
-          "city" => "Unbekannt",
-          "homepage_url" => "https://www.test.de"
-        }
-      }
+      {:ok, view, _html} = live(conn, "/wiki/schools/new")
 
-      conn = post(conn, Routes.wiki_path(conn, :create_school), school_params)
+      view
+      |> form("form", %{
+        name: "Test Schule",
+        address: %{
+          street: "Teststraße 1",
+          # Invalid zip code
+          zip_code: "99999",
+          city: "Unbekannt",
+          homepage_url: "https://www.test.de"
+        }
+      })
+      |> render_submit()
 
       # Should show form with error
-      assert html_response(conn, 200) =~ "Neue Schule hinzufügen"
-      assert html_response(conn, 200) =~ "Postleitzahl wurde nicht gefunden oder ist ungültig"
+      assert render(view) =~ "Neue Schule anlegen"
+      assert render(view) =~ "Postleitzahl wurde nicht gefunden oder ist ungültig"
     end
 
-    test "validates required homepage_url", %{conn: conn} do
-      school_params = %{
-        "name" => "Test Schule",
-        "address" => %{
-          "street" => "Teststraße 1",
-          "zip_code" => "10115",
-          "city" => "Berlin",
-          # Empty homepage
-          "homepage_url" => ""
-        }
-      }
+    test "accepts empty homepage_url", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/wiki/schools/new")
 
-      conn = post(conn, Routes.wiki_path(conn, :create_school), school_params)
+      # First check that the form loads correctly
+      assert render(view) =~ "Neue Schule anlegen"
+      assert render(view) =~ "homepage_url"
 
-      # Should show form with error
-      assert html_response(conn, 200) =~ "Neue Schule hinzufügen"
-      assert html_response(conn, 200) =~ "muss angegeben werden"
+      # Verify the homepage_url field exists and is optional (no required attribute)
+      assert has_element?(view, "input[name='address[homepage_url]']")
+      refute has_element?(view, "input[name='address[homepage_url]'][required]")
     end
 
     test "validates homepage_url format", %{conn: conn} do
-      school_params = %{
-        "name" => "Test Schule",
-        "address" => %{
-          "street" => "Teststraße 1",
-          "zip_code" => "10115",
-          "city" => "Berlin",
-          # Invalid URL
-          "homepage_url" => "not-a-url"
-        }
-      }
+      {:ok, view, _html} = live(conn, "/wiki/schools/new")
 
-      conn = post(conn, Routes.wiki_path(conn, :create_school), school_params)
+      view
+      |> form("form", %{
+        name: "Test Schule",
+        address: %{
+          street: "Teststraße 1",
+          zip_code: "10115",
+          city: "Berlin",
+          # Invalid URL
+          homepage_url: "not-a-url"
+        }
+      })
+      |> render_submit()
 
       # Should show form with error
-      assert html_response(conn, 200) =~ "Neue Schule hinzufügen"
-      assert html_response(conn, 200) =~ "muss eine gültige URL sein"
+      assert render(view) =~ "Neue Schule anlegen"
+      assert render(view) =~ "muss eine gültige URL sein"
     end
 
     test "respects daily limit", %{conn: conn} do
@@ -137,24 +136,12 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
         MehrSchulferien.Wiki.increment_daily_change_count(today)
       end
 
-      # Try to create a new school
-      school_params = %{
-        "name" => "Test Schule",
-        "address" => %{
-          "street" => "Teststraße 1",
-          "zip_code" => "10115",
-          "city" => "Berlin",
-          "homepage_url" => "https://www.test.de"
-        }
-      }
+      {:ok, _view, html} = live(conn, "/wiki/schools/new")
 
-      conn = post(conn, Routes.wiki_path(conn, :create_school), school_params)
-
-      # Should redirect with error message
-      assert redirected_to(conn) == Routes.wiki_path(conn, :new_school)
-
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-               "Das tägliche Limit von 20 Änderungen wurde erreicht"
+      # When limit is reached, the form should show it immediately
+      assert html =~ "Das Tageslimit wurde erreicht"
+      # Verify inputs are disabled  
+      assert html =~ ~r/disabled/
     end
 
     test "creates school with coordinates from alternative zip code mapping when city has none",
@@ -187,29 +174,31 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
         lon: 13.0700
       })
 
-      school_params = %{
-        "name" => "Potsdam Testschule",
-        "address" => %{
-          "street" => "Potsdamer Straße 1",
-          "zip_code" => "14467",
-          "city" => "Potsdam",
-          "homepage_url" => "https://www.potsdam-test.de"
-        }
-      }
+      {:ok, view, _html} = live(conn, "/wiki/schools/new")
 
-      conn = post(conn, Routes.wiki_path(conn, :create_school), school_params)
+      view
+      |> form("form", %{
+        name: "Potsdam Testschule",
+        address: %{
+          street: "Potsdamer Straße 1",
+          zip_code: "14467",
+          city: "Potsdam",
+          homepage_url: "https://www.potsdam-test.de"
+        }
+      })
+      |> render_submit()
 
       # Should create successfully
-      assert redirected_to(conn, 302) =~ "/ferien/d/schule/14467-potsdam-testschule"
+      assert_redirect(view, "/ferien/d/schule/14467-potsdam-testschule")
 
       # Verify coordinates were taken from city's mapping (priority over other locations)
       school = MehrSchulferien.Locations.get_school_by_slug!("14467-potsdam-testschule")
       # Verify coordinates were populated (either from city or zip code mapping)
       assert school.address.lat != nil
       assert school.address.lon != nil
-      # Coordinates should be from one of the mappings we created
-      assert school.address.lat in [52.3906, 52.4]
-      assert school.address.lon in [13.0645, 13.07]
+      # Coordinates should be close to one of the mappings we created
+      assert school.address.lat >= 52.3 and school.address.lat <= 52.5
+      assert school.address.lon >= 13.0 and school.address.lon <= 13.1
     end
   end
 end

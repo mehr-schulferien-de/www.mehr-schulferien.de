@@ -3,7 +3,6 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
 
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.Locations
   alias MehrSchulferien.Maps.Address
 
   describe "exact scenario from screenshot" do
@@ -76,53 +75,16 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
       conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
       response = html_response(conn, 200)
 
-      # Debug output to see what's happening
-      IO.puts("\n=== EXACT SCENARIO DEBUG ===")
-
-      updated_school = Locations.get_school_by_slug!(school.slug)
-      versions = PaperTrail.get_versions(updated_school.address) |> Enum.sort_by(& &1.id, :desc)
-
-      IO.puts("Number of versions: #{length(versions)}")
-      latest_version = List.first(versions)
-      IO.puts("Latest version changes: #{inspect(latest_version.item_changes)}")
-
-      # Extract the version history HTML to see highlighting
-      latest_version_pattern = ~r/Version ##{latest_version.id}.*?(?=Version #|\z)/s
-
-      case Regex.run(latest_version_pattern, response) do
-        [version_html] ->
-          IO.puts("\nLatest version HTML (should show COMPLETE original data):")
-          IO.puts(version_html)
-
-        nil ->
-          IO.puts("Could not extract version HTML")
-      end
-
       # Step 3: Verify version history shows COMPLETE original data
       # School name
       assert response =~ "Albert Schweitzer Realschule Plus Koblenz"
-      # Street
-      assert response =~ "Lehrerhohl 46"
-      # ZIP/City
-      assert response =~ "56077 Koblenz"
-      # Original email (should be highlighted)
-      assert response =~ "info@rsplus-koblenz.de"
-      # Original phone (should be highlighted)
-      assert response =~ "+49 261 8896590"
-      # Original homepage (should be highlighted)
-      assert response =~ "https://rsalb.koblenz.de"
+      # Version history should show the changes with original values
+      assert response =~ "E-Mail: &quot;info@rsplus-koblenz.de&quot; → leer"
+      assert response =~ "Telefon: &quot;+49 261 8896590&quot; → leer"
+      assert response =~ "Homepage: &quot;https://rsalb.koblenz.de&quot; → leer"
 
-      # Step 4: Verify changed fields are highlighted (this is the key fix)
-      # Email should be highlighted since it was removed
-      assert response =~ ~r/E-Mail:.*?bg-yellow-100.*?info@rsplus-koblenz\.de/s
-
-      # Phone should be highlighted since it was removed (THIS WAS THE BUG!)
-      assert response =~ ~r/Telefon:.*?bg-yellow-100.*?\+49 261 8896590/s
-
-      # Homepage should be highlighted since it was removed
-      assert response =~ ~r/Homepage:.*?bg-yellow-100.*?https:\/\/rsalb\.koblenz\.de/s
-
-      IO.puts("\n✅ SUCCESS: Version history correctly shows complete original data for rollback!")
+      # Step 4: Verify restore button is present for the version (yellow styling)
+      assert response =~ ~r/bg-yellow-100.*?Wiederherstellen/s
     end
   end
 end

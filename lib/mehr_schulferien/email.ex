@@ -199,8 +199,16 @@ defmodule MehrSchulferien.Email do
     """)
   end
 
-  defp format_datetime(datetime) do
+  defp format_datetime(%DateTime{} = datetime) do
     datetime
+    |> DateTime.shift_zone!("Europe/Berlin")
+    |> Calendar.strftime("%d.%m.%Y %H:%M:%S Uhr")
+  end
+
+  defp format_datetime(%NaiveDateTime{} = naive_datetime) do
+    # Convert NaiveDateTime to DateTime assuming UTC, then shift to Berlin timezone
+    naive_datetime
+    |> DateTime.from_naive!("Etc/UTC")
     |> DateTime.shift_zone!("Europe/Berlin")
     |> Calendar.strftime("%d.%m.%Y %H:%M:%S Uhr")
   end
