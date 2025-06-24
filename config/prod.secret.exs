@@ -37,3 +37,41 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
+
+# Configure Swoosh for production
+# You can switch adapters based on environment variables
+mailer_adapter = System.get_env("MAILER_ADAPTER") || "smtp"
+
+case mailer_adapter do
+  "smtp" ->
+    config :mehr_schulferien, MehrSchulferien.Mailer,
+      adapter: Swoosh.Adapters.SMTP,
+      relay: System.get_env("SMTP_RELAY") || "localhost",
+      port: String.to_integer(System.get_env("SMTP_PORT") || "587"),
+      username: System.get_env("SMTP_USERNAME"),
+      password: System.get_env("SMTP_PASSWORD"),
+      tls: if(System.get_env("SMTP_TLS") == "false", do: :never, else: :always),
+      auth: :always
+
+  "sendgrid" ->
+    config :mehr_schulferien, MehrSchulferien.Mailer,
+      adapter: Swoosh.Adapters.Sendgrid,
+      api_key: System.get_env("SENDGRID_API_KEY") || raise("SENDGRID_API_KEY is required")
+
+  "mailgun" ->
+    config :mehr_schulferien, MehrSchulferien.Mailer,
+      adapter: Swoosh.Adapters.Mailgun,
+      api_key: System.get_env("MAILGUN_API_KEY") || raise("MAILGUN_API_KEY is required"),
+      domain: System.get_env("MAILGUN_DOMAIN") || raise("MAILGUN_DOMAIN is required")
+
+  "ses" ->
+    config :mehr_schulferien, MehrSchulferien.Mailer,
+      adapter: Swoosh.Adapters.AmazonSES,
+      region: System.get_env("AWS_REGION") || "us-east-1",
+      access_key: System.get_env("AWS_ACCESS_KEY") || raise("AWS_ACCESS_KEY is required"),
+      secret: System.get_env("AWS_SECRET") || raise("AWS_SECRET is required")
+
+  _ ->
+    # Default to local adapter if nothing is configured
+    config :mehr_schulferien, MehrSchulferien.Mailer, adapter: Swoosh.Adapters.Local
+end

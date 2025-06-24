@@ -30,6 +30,15 @@ defmodule MehrSchulferienWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  # Add Swoosh mailbox preview in development
+  if Mix.env() == :dev do
+    scope "/dev" do
+      pipe_through :browser
+
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+  end
+
   # ========== Old Route Redirects (now redirecting /land/ to /ferien/) ==========
   scope "/", MehrSchulferienWeb do
     pipe_through :redirects

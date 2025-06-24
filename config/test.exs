@@ -30,3 +30,9 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Configure Swoosh for test
+config :mehr_schulferien, MehrSchulferien.Mailer, adapter: Swoosh.Adapters.Test
+
+# Disable Swoosh mailbox in test
+config :swoosh, :serve_mailbox, false
