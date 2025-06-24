@@ -79,7 +79,20 @@ defmodule MehrSchulferienWeb.SchoolController do
     country = Locations.get_location!(federal_state.parent_location_id)
 
     # Get current year for reference
-    current_year = Date.utc_today().year
+    today = DateHelpers.get_today_or_custom_date(conn)
+    current_year = today.year
+
+    # Get vacation data
+    location_ids = [country.id, federal_state.id, county.id, city.id, school.id]
+    # Get vacations for next 6 months
+    starts_on = today
+    ends_on = Date.add(today, 180)
+
+    # Get only school vacation periods (not public holidays)
+    vacation_periods =
+      MehrSchulferien.Periods.Query.list_school_vacation_periods(location_ids, starts_on, ends_on)
+      # Show next 3 vacations
+      |> Enum.take(3)
 
     page_title = "Entschuldigungsschreiben und Beurlaubungen - #{school.name}"
 
@@ -93,6 +106,8 @@ defmodule MehrSchulferienWeb.SchoolController do
       federal_state: federal_state,
       country: country,
       current_year: current_year,
+      vacation_periods: vacation_periods,
+      today: today,
       page_title: page_title,
       page_description: page_description,
       og_image: "/images/entschuldigung-dummy.png",
