@@ -1,8 +1,9 @@
 defmodule MehrSchulferienWeb.WikiController do
   use MehrSchulferienWeb, :controller
   require Logger
+  import Ecto.Query
 
-  alias MehrSchulferien.{Locations, Maps, Wiki}
+  alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Repo}
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Geocoding.Nominatim
@@ -142,11 +143,27 @@ defmodule MehrSchulferienWeb.WikiController do
             address_changeset = Address.changeset(%Address{}, address_attrs)
 
             case PaperTrail.insert(address_changeset, meta: %{ip_address: get_client_ip(conn)}) do
-              {:ok, %{model: _address, version: _}} ->
+              {:ok, %{model: address, version: _}} ->
                 # Reload school with address and parent location chain
                 school =
                   Locations.get_location!(school.id)
                   |> MehrSchulferien.Repo.preload([:address, :parent_location])
+
+                # Send email notification
+                Task.start(fn ->
+                  Logger.info("Sending email notification for new school")
+                  Logger.info("School: #{inspect(school.name)}")
+                  Logger.info("Address: #{inspect(address)}")
+
+                  # Get country slug for the email
+                  country_slug = get_country_slug_from_school(school)
+
+                  result =
+                    Email.school_created_notification(school, address, country_slug)
+                    |> Mailer.deliver()
+
+                  Logger.info("Email send result: #{inspect(result)}")
+                end)
 
                 {:ok, school}
 
@@ -380,6 +397,32 @@ defmodule MehrSchulferienWeb.WikiController do
 
           # Reload school to get updated address
           updated_school = Locations.get_school_by_slug!(school_slug)
+
+          # Send email notification if there were any changes
+          if school_version || address_version do
+            Task.start(fn ->
+              # Gather change information
+              changes = gather_changes(school_version, address_version)
+
+              Logger.info("Sending email notification for school update")
+              Logger.info("School: #{inspect(updated_school.name)}")
+              Logger.info("Changes: #{inspect(changes)}")
+
+              # Get country slug for the email
+              country_slug = get_country_slug_from_school(updated_school)
+
+              result =
+                Email.school_updated_notification(
+                  updated_school,
+                  updated_school.address,
+                  changes,
+                  country_slug
+                )
+                |> Mailer.deliver()
+
+              Logger.info("Email send result: #{inspect(result)}")
+            end)
+          end
 
           # Get country slug for redirect to school vacation page
           country_slug = get_country_slug_from_school(updated_school)
@@ -620,6 +663,95 @@ defmodule MehrSchulferienWeb.WikiController do
       {:ok, daily_changes}
     end
   end
+
+  defp gather_changes(school_version, address_version) do
+    changes = %{}
+
+    changes =
+      if school_version do
+        # Get the previous value for the school
+        old_values = get_previous_values("Location", school_version.item_id, school_version)
+
+        school_changes =
+          case school_version.item_changes do
+            %{name: new_name} ->
+              old_name = Map.get(old_values, :name, "")
+              %{"Schulname" => {old_name, new_name}}
+
+            _ ->
+              %{}
+          end
+
+        Map.merge(changes, school_changes)
+      else
+        changes
+      end
+
+    if address_version do
+      # Get the previous values for the address
+      old_values = get_previous_values("Address", address_version.item_id, address_version)
+
+      address_changes =
+        address_version.item_changes
+        |> Enum.map(fn {field, new_value} ->
+          field_str = to_string(field)
+          field_atom = String.to_atom(field_str)
+          old_value = Map.get(old_values, field_atom, "")
+          {field_name(field_str), {old_value, new_value}}
+        end)
+        |> Enum.into(%{})
+
+      Map.merge(changes, address_changes)
+    else
+      changes
+    end
+  end
+
+  defp get_previous_values(item_type, item_id, current_version) do
+    # Get all versions for this item
+    versions =
+      from(v in PaperTrail.Version,
+        where: v.item_type == ^item_type and v.item_id == ^item_id,
+        order_by: [asc: v.id]
+      )
+      |> Repo.all()
+
+    # Find the index of the current version
+    current_index = Enum.find_index(versions, fn v -> v.id == current_version.id end)
+
+    if current_index && current_index > 0 do
+      # Get all versions before the current one
+      previous_versions = Enum.take(versions, current_index)
+
+      # Reconstruct the state from all previous versions
+      previous_versions
+      |> Enum.reduce(%{}, fn version, acc ->
+        changes = version.item_changes || %{}
+
+        # Convert keys to atoms and merge
+        atomized_changes =
+          changes
+          |> Enum.map(fn {k, v} ->
+            {if(is_atom(k), do: k, else: String.to_atom(k)), v}
+          end)
+          |> Enum.into(%{})
+
+        Map.merge(acc, atomized_changes)
+      end)
+    else
+      # No previous version, return empty map
+      %{}
+    end
+  end
+
+  defp field_name("street"), do: "Straße"
+  defp field_name("zip_code"), do: "PLZ"
+  defp field_name("city"), do: "Stadt"
+  defp field_name("email_address"), do: "E-Mail"
+  defp field_name("phone_number"), do: "Telefon"
+  defp field_name("homepage_url"), do: "Homepage"
+  defp field_name("line1"), do: "Adresszeile 1"
+  defp field_name(field), do: field
 
   defp render_form_with_error(
          conn,

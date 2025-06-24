@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   use MehrSchulferienWeb, :live_view
 
-  alias MehrSchulferien.{Maps, Wiki, Locations}
+  alias MehrSchulferien.{Maps, Wiki, Locations, Email, Mailer}
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Geocoding.Nominatim
@@ -70,7 +70,9 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
         data: %Address{
           street: address_params["street"] || "",
           zip_code: address_params["zip_code"] || "",
-          city: address_params["city"] || socket.assigns[:city_from_zip] && socket.assigns.city_from_zip.name || "",
+          city:
+            address_params["city"] ||
+              (socket.assigns[:city_from_zip] && socket.assigns.city_from_zip.name) || "",
           email_address: address_params["email_address"] || "",
           phone_number: address_params["phone_number"] || "",
           homepage_url: address_params["homepage_url"] || "",
@@ -203,11 +205,20 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
             address_changeset = Address.changeset(%Address{}, address_attrs)
 
             case PaperTrail.insert(address_changeset, meta: %{ip_address: get_client_ip(socket)}) do
-              {:ok, %{model: _address, version: _}} ->
+              {:ok, %{model: address, version: _}} ->
                 # Reload school with address and parent location chain
                 school =
                   Locations.get_location!(school.id)
                   |> MehrSchulferien.Repo.preload([:address, :parent_location])
+
+                # Send email notification
+                Task.start(fn ->
+                  # Get country slug for the email
+                  country_slug = get_country_slug_from_school(school)
+
+                  Email.school_created_notification(school, address, country_slug)
+                  |> Mailer.deliver()
+                end)
 
                 {:ok, school}
 

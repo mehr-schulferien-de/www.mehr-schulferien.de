@@ -66,4 +66,97 @@ defmodule MehrSchulferien.EmailTest do
       assert_email_sent(email)
     end
   end
+
+  describe "admin notification emails" do
+    test "school_created_notification/2 creates proper email" do
+      school = %{
+        id: 123,
+        name: "Test Grundschule",
+        slug: "12345-test-grundschule",
+        inserted_at: DateTime.utc_now()
+      }
+
+      address = %{
+        street: "Teststraße 123",
+        zip_code: "12345",
+        city: "Berlin",
+        email_address: "info@test-schule.de",
+        phone_number: "+49 30 12345678",
+        homepage_url: "https://www.test-schule.de"
+      }
+
+      email = Email.school_created_notification(school, address)
+
+      assert email.to == [{"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"}]
+      assert email.from == {"MehrSchulferien System", "noreply@mehr-schulferien.de"}
+      assert email.subject == "Neue Schule erstellt: Test Grundschule"
+      assert email.html_body =~ "Test Grundschule"
+      assert email.html_body =~ "Teststraße 123"
+      assert email.html_body =~ "12345"
+      assert email.html_body =~ "Berlin"
+    end
+
+    test "school_updated_notification/3 creates proper email" do
+      school = %{
+        id: 123,
+        name: "Test Grundschule",
+        slug: "12345-test-grundschule"
+      }
+
+      address = %{
+        street: "Neue Straße 456",
+        zip_code: "12345",
+        city: "Berlin",
+        email_address: "neu@test-schule.de",
+        phone_number: "+49 30 87654321",
+        homepage_url: "https://www.neue-test-schule.de"
+      }
+
+      changes = %{
+        "Straße" => {"Teststraße 123", "Neue Straße 456"},
+        "E-Mail" => {"info@test-schule.de", "neu@test-schule.de"}
+      }
+
+      email = Email.school_updated_notification(school, address, changes)
+
+      assert email.to == [{"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"}]
+      assert email.from == {"MehrSchulferien System", "noreply@mehr-schulferien.de"}
+      assert email.subject == "Schule bearbeitet: Test Grundschule"
+      assert email.html_body =~ "Test Grundschule"
+      assert email.html_body =~ "Neue Straße 456"
+      assert email.html_body =~ "Änderungen:"
+      assert email.html_body =~ "Straße:"
+      assert email.html_body =~ "Teststraße 123"
+      assert email.html_body =~ "Neue Straße 456"
+    end
+
+    test "school notification emails can be sent" do
+      school = %{
+        id: 123,
+        name: "Test Schule",
+        slug: "test-schule",
+        inserted_at: DateTime.utc_now()
+      }
+
+      address = %{
+        street: "Teststraße 1",
+        zip_code: "12345",
+        city: "Berlin",
+        email_address: nil,
+        phone_number: nil,
+        homepage_url: nil
+      }
+
+      # Test creation notification
+      email = Email.school_created_notification(school, address)
+      {:ok, _} = Mailer.deliver(email)
+      assert_email_sent(email)
+
+      # Test update notification
+      changes = %{"Straße" => {"Alt", "Neu"}}
+      email = Email.school_updated_notification(school, address, changes, "d")
+      {:ok, _} = Mailer.deliver(email)
+      assert_email_sent(email)
+    end
+  end
 end
