@@ -684,6 +684,21 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Gets all schools by zip code.
+  """
+  def get_schools_by_zip_code(zip_code) when is_binary(zip_code) do
+    query =
+      from s in Location,
+        join: a in MehrSchulferien.Maps.Address,
+        on: a.school_location_id == s.id,
+        where: s.is_school == true and a.zip_code == ^zip_code,
+        preload: [:address, :parent_location],
+        order_by: s.name
+
+    Repo.all(query)
+  end
+
+  @doc """
   Returns counties with their cities that have at least one school, including the school count.
   This is an optimized query that avoids the N+1 problem by fetching all required data in just
   a few queries instead of querying separately for each city.

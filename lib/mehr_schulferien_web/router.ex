@@ -101,6 +101,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/robots.txt", RobotsController, :index
 
     # Wiki section for collaborative school address editing
+    live "/wiki/schools/new", WikiSchoolNewLive
     get "/wiki/schools/:slug", WikiController, :show_school
     post "/wiki/schools/:slug", WikiController, :update_school
     put "/wiki/schools/:slug", WikiController, :update_school

@@ -2,6 +2,15 @@ defmodule MehrSchulferienWeb.WikiView do
   use MehrSchulferienWeb, :view
 
   @doc """
+  Helper to get field value from form or fallback to existing data
+  """
+  def get_field_value(form, field, fallback_struct) do
+    input_value(form, field) ||
+      (fallback_struct && Map.get(fallback_struct, field)) ||
+      ""
+  end
+
+  @doc """
   Formats a version timestamp for display
   """
   def format_version_date(version) do

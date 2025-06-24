@@ -86,6 +86,33 @@ defmodule MehrSchulferien.Maps.Address do
     ])
     |> validate_required([:school_location_id])
     |> normalize_phone_number()
+    |> validate_homepage_url()
+    |> validate_coordinates()
+  end
+
+  # Validates homepage URL is present and well-formed
+  defp validate_homepage_url(changeset) do
+    case get_field(changeset, :homepage_url) do
+      nil ->
+        add_error(changeset, :homepage_url, "muss angegeben werden")
+
+      "" ->
+        add_error(changeset, :homepage_url, "muss angegeben werden")
+
+      url when is_binary(url) ->
+        if String.match?(url, ~r/^https?:\/\/.+\..+/) do
+          changeset
+        else
+          add_error(
+            changeset,
+            :homepage_url,
+            "muss eine gültige URL sein (z.B. https://www.schule.de)"
+          )
+        end
+
+      _ ->
+        changeset
+    end
   end
 
   defp update_attrs(attrs) do
@@ -150,6 +177,42 @@ defmodule MehrSchulferien.Maps.Address do
             # If parsing fails, leave original unchanged to avoid data loss
             phone_number
         end
+    end
+  end
+
+  # Validates coordinates if present
+  defp validate_coordinates(changeset) do
+    changeset
+    |> validate_number(:lat,
+      greater_than_or_equal_to: -90,
+      less_than_or_equal_to: 90,
+      message: "muss zwischen -90 und 90 liegen"
+    )
+    |> validate_number(:lon,
+      greater_than_or_equal_to: -180,
+      less_than_or_equal_to: 180,
+      message: "muss zwischen -180 und 180 liegen"
+    )
+    |> validate_coordinate_pair()
+  end
+
+  # Ensures that if one coordinate is provided, both must be provided
+  defp validate_coordinate_pair(changeset) do
+    lat = get_field(changeset, :lat)
+    lon = get_field(changeset, :lon)
+
+    case {lat, lon} do
+      {nil, nil} ->
+        changeset
+
+      {nil, _} ->
+        add_error(changeset, :lat, "muss angegeben werden, wenn Längengrad vorhanden ist")
+
+      {_, nil} ->
+        add_error(changeset, :lon, "muss angegeben werden, wenn Breitengrad vorhanden ist")
+
+      {_, _} ->
+        changeset
     end
   end
 end

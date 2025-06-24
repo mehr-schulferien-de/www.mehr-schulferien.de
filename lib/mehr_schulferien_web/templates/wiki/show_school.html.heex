@@ -27,137 +27,18 @@
           </div>
         <% end %>
 
-        <%= form_for @changeset, Routes.wiki_path(@conn, :update_school, @school.slug), [class: "space-y-4"], fn f -> %>
-          <div>
-            <%= label(f, :name, "Schulname",
-              class: "block text-sm font-medium text-gray-700 mb-1"
-            ) %>
-            <%= text_input(f, :name,
-              class:
-                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-              disabled: @limit_reached,
-              placeholder: "z.B. Max-Mustermann-Gymnasium",
-              value: input_value(f, :name) || @school.name || "",
-              autofocus: true,
-              name: "name"
-            ) %>
-            <%= error_tag(f, :name, class: "mt-1 text-sm text-red-600") %>
-          </div>
-
-          <div>
-            <%= label(f, :street, "Straße", class: "block text-sm font-medium text-gray-700 mb-1") %>
-            <%= text_input(f, :street,
-              class:
-                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-              disabled: @limit_reached,
-              placeholder: "z.B. Musterstraße 123",
-              value: input_value(f, :street) || (@school.address && @school.address.street) || ""
-            ) %>
-            <%= error_tag(f, :street, class: "mt-1 text-sm text-red-600") %>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <%= label(f, :zip_code, "PLZ",
-                class: "block text-sm font-medium text-gray-700 mb-1"
-              ) %>
-              <%= text_input(f, :zip_code,
-                class:
-                  "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-                disabled: @limit_reached,
-                placeholder: "z.B. 12345",
-                value:
-                  input_value(f, :zip_code) || (@school.address && @school.address.zip_code) || ""
-              ) %>
-              <%= error_tag(f, :zip_code, class: "mt-1 text-sm text-red-600") %>
-            </div>
-
-            <div>
-              <%= label(f, :city, "Stadt", class: "block text-sm font-medium text-gray-700 mb-1") %>
-              <%= text_input(f, :city,
-                class:
-                  "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-                disabled: @limit_reached,
-                placeholder: "z.B. Berlin",
-                value: input_value(f, :city) || (@school.address && @school.address.city) || ""
-              ) %>
-              <%= error_tag(f, :city, class: "mt-1 text-sm text-red-600") %>
-            </div>
-          </div>
-
-          <div>
-            <%= label(f, :email_address, "E-Mail",
-              class: "block text-sm font-medium text-gray-700 mb-1"
-            ) %>
-            <%= email_input(f, :email_address,
-              class:
-                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-              disabled: @limit_reached,
-              placeholder: "z.B. info@schule.de",
-              value:
-                input_value(f, :email_address) ||
-                  (@school.address && @school.address.email_address) || ""
-            ) %>
-            <%= error_tag(f, :email_address, class: "mt-1 text-sm text-red-600") %>
-          </div>
-
-          <div>
-            <%= label(f, :phone_number, "Telefon",
-              class: "block text-sm font-medium text-gray-700 mb-1"
-            ) %>
-            <%= text_input(f, :phone_number,
-              class:
-                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-              disabled: @limit_reached,
-              placeholder: "z.B. +49 30 123456789",
-              value:
-                input_value(f, :phone_number) || (@school.address && @school.address.phone_number) ||
-                  ""
-            ) %>
-            <%= error_tag(f, :phone_number, class: "mt-1 text-sm text-red-600") %>
-          </div>
-
-          <div>
-            <%= label(f, :homepage_url, "Homepage",
-              class: "block text-sm font-medium text-gray-700 mb-1"
-            ) %>
-            <%= url_input(f, :homepage_url,
-              class:
-                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-              disabled: @limit_reached,
-              placeholder: "z.B. https://www.schule.de",
-              value:
-                input_value(f, :homepage_url) || (@school.address && @school.address.homepage_url) ||
-                  ""
-            ) %>
-            <%= error_tag(f, :homepage_url, class: "mt-1 text-sm text-red-600") %>
-          </div>
-
-          <div>
-            <%= label(f, :wikipedia_url, "Wikipedia",
-              class: "block text-sm font-medium text-gray-700 mb-1"
-            ) %>
-            <%= url_input(f, :wikipedia_url,
-              class:
-                "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
-              disabled: @limit_reached,
-              placeholder: "z.B. https://de.wikipedia.org/wiki/Beispiel-Schule",
-              value:
-                input_value(f, :wikipedia_url) ||
-                  (@school.address && @school.address.wikipedia_url) ||
-                  ""
-            ) %>
-            <%= error_tag(f, :wikipedia_url, class: "mt-1 text-sm text-red-600") %>
-          </div>
-
-          <div class="pt-4">
-            <%= submit("Änderungen speichern",
-              class:
-                "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed",
-              disabled: @limit_reached
-            ) %>
-          </div>
-        <% end %>
+        <%= render("_school_form.html",
+          changeset: @changeset,
+          action: Routes.wiki_path(@conn, :update_school, @school.slug),
+          method: :post,
+          limit_reached: @limit_reached,
+          school_name: Map.get(@changeset.data, :name) || @school.name || "",
+          address: @school.address,
+          disable_zip_code: false,
+          submit_text: "Änderungen speichern",
+          submit_class: "bg-blue-600 hover:bg-blue-700",
+          submit_focus_class: "focus:ring-blue-500"
+        ) %>
       </div>
       <!-- Current Data Display -->
       <%= if @school.address do %>
@@ -207,7 +88,7 @@
                   <a
                     href={@school.address.homepage_url}
                     target="_blank"
-                    class="text-blue-600 hover:text-blue-800"
+                    class="text-blue-600 hover:text-blue-800 underline"
                   >
                     <%= @school.address.homepage_url %>
                   </a>
@@ -223,7 +104,7 @@
                   <a
                     href={@school.address.wikipedia_url}
                     target="_blank"
-                    class="text-blue-600 hover:text-blue-800"
+                    class="text-blue-600 hover:text-blue-800 underline"
                   >
                     <%= @school.address.wikipedia_url %>
                   </a>
@@ -234,203 +115,73 @@
             </div>
           </dl>
         </div>
+      <% else %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-yellow-900 mb-2">Keine Adressdaten vorhanden</h3>
+          <p class="text-sm text-yellow-800">
+            Für diese Schule sind noch keine Adressdaten hinterlegt.
+            Bitte tragen Sie die bekannten Informationen ein.
+          </p>
+        </div>
       <% end %>
     </div>
-
+    <!-- Version History and Instructions -->
     <div class="space-y-6">
-      <!-- Help Text -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 class="text-lg font-medium text-blue-900 mb-3">Wiki-Hilfe</h3>
-        <div class="text-sm text-blue-800 space-y-2">
-          <p>• Alle Änderungen werden gespeichert und protokolliert</p>
-          <p>
-            • Bei jeder Änderung wird eine E-Mail mit den neuen Daten an den Administrator gesendet
-          </p>
-          <p>• Sie können jederzeit zu einer früheren Version zurückkehren</p>
-          <p>• Ihre IP-Adresse wird bei der Änderung zu Dokumentationszwecken gespeichert</p>
-        </div>
-      </div>
       <!-- Version History -->
-      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
-          Versionshistorie
-        </h2>
-
-        <%= if length(@versions) == 0 do %>
-          <p class="text-gray-500 text-sm">Noch keine Änderungen vorgenommen.</p>
-        <% else %>
-          <div class="space-y-4">
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
+        <div class="p-6 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center justify-between">
+            Versionshistorie
+            <span class="text-sm font-normal text-gray-500">
+              <%= length(@versions) %> Änderungen
+            </span>
+          </h2>
+        </div>
+        <div class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+          <%= if @versions == [] do %>
+            <div class="p-6 text-center text-gray-500">
+              Noch keine Änderungen vorhanden.
+            </div>
+          <% else %>
             <%= for version <- @display_versions do %>
-              <div class="border border-gray-200 rounded-lg overflow-hidden">
-                <!-- Version Header -->
-                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <h4 class="text-sm font-semibold text-gray-900">
-                        Version #<%= version.id %>
-                      </h4>
-                      <div class="text-xs text-gray-600 mt-1">
-                        <%= format_version_date(version) %>
-                      </div>
-                      <div class="text-xs text-gray-500">
-                        <%= format_originator(version) %>
-                      </div>
-                    </div>
-
-                    <%= if not @limit_reached do %>
-                      <%= form_for %{}, Routes.wiki_path(@conn, :rollback_school, @school.slug, version.id), [method: :post, class: "inline"], fn _f -> %>
-                        <%= submit("Wiederherstellen",
-                          class:
-                            "px-4 py-2 bg-yellow-100 text-yellow-800 rounded-md hover:bg-yellow-200 border border-yellow-300 text-sm font-medium transition-colors",
-                          onclick:
-                            "return confirm('Sind Sie sicher, dass Sie zu dieser Version zurückkehren möchten?')"
-                        ) %>
-                      <% end %>
+              <div class="p-4 hover:bg-gray-50">
+                <div class="flex justify-between items-start">
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">
+                      Version #<%= version.id %>
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      <%= format_version_date(version) %> • <%= format_originator(version) %>
+                    </p>
+                    <p class="text-sm text-gray-700 mt-2">
+                      <%= version_summary(version, @versions) %>
+                    </p>
+                  </div>
+                  <%= if version.id != List.first(@versions).id do %>
+                    <%= form_for %{}, Routes.wiki_path(@conn, :rollback_school, @school.slug, version.id), [method: :post, class: "inline"], fn _f -> %>
+                      <%= submit("Wiederherstellen",
+                        class:
+                          "ml-4 px-3 py-1 text-xs font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500",
+                        onclick:
+                          "return confirm('Sind Sie sicher, dass Sie zu dieser Version zurückkehren möchten?')"
+                      ) %>
                     <% end %>
-                  </div>
-                </div>
-                <!-- Version Data -->
-                <div class="p-3 bg-white">
-                  <% version_data = get_version_data(version, @versions, @school) %>
-                  <% changed_fields = get_changed_fields(version) %>
-
-                  <div class="space-y-1 text-sm">
-                    <div class="flex">
-                      <dt class="w-24 text-gray-600 text-xs font-medium">Schulname:</dt>
-                      <dd class={[
-                        "flex-1 px-2 py-0.5 rounded text-xs",
-                        if("name" in changed_fields,
-                          do: "bg-yellow-100 border border-yellow-300",
-                          else: "bg-gray-50"
-                        )
-                      ]}>
-                        <%= version_data["name"] || "—" %>
-                      </dd>
-                    </div>
-
-                    <div class="flex">
-                      <dt class="w-24 text-gray-600 text-xs font-medium">Straße:</dt>
-                      <dd class={[
-                        "flex-1 px-2 py-0.5 rounded text-xs",
-                        if("street" in changed_fields,
-                          do: "bg-yellow-100 border border-yellow-300",
-                          else: "bg-gray-50"
-                        )
-                      ]}>
-                        <%= version_data["street"] || "—" %>
-                      </dd>
-                    </div>
-
-                    <div class="flex">
-                      <dt class="w-24 text-gray-600 text-xs font-medium">PLZ/Stadt:</dt>
-                      <dd class={[
-                        "flex-1 px-2 py-0.5 rounded text-xs",
-                        if("zip_code" in changed_fields or "city" in changed_fields,
-                          do: "bg-yellow-100 border border-yellow-300",
-                          else: "bg-gray-50"
-                        )
-                      ]}>
-                        <%= [version_data["zip_code"], version_data["city"]]
-                        |> Enum.reject(&is_nil/1)
-                        |> Enum.join(" ")
-                        |> case do
-                          "" -> "—"
-                          value -> value
-                        end %>
-                      </dd>
-                    </div>
-
-                    <div class="flex">
-                      <dt class="w-24 text-gray-600 text-xs font-medium">E-Mail:</dt>
-                      <dd class={[
-                        "flex-1 px-2 py-0.5 rounded text-xs",
-                        if("email_address" in changed_fields,
-                          do: "bg-yellow-100 border border-yellow-300",
-                          else: "bg-gray-50"
-                        )
-                      ]}>
-                        <%= version_data["email_address"] || "—" %>
-                      </dd>
-                    </div>
-
-                    <div class="flex">
-                      <dt class="w-24 text-gray-600 text-xs font-medium">Telefon:</dt>
-                      <dd class={[
-                        "flex-1 px-2 py-0.5 rounded text-xs",
-                        if("phone_number" in changed_fields,
-                          do: "bg-yellow-100 border border-yellow-300",
-                          else: "bg-gray-50"
-                        )
-                      ]}>
-                        <%= version_data["phone_number"] || "—" %>
-                      </dd>
-                    </div>
-
-                    <div class="flex">
-                      <dt class="w-24 text-gray-600 text-xs font-medium">Homepage:</dt>
-                      <dd class={[
-                        "flex-1 px-2 py-0.5 rounded text-xs",
-                        if("homepage_url" in changed_fields,
-                          do: "bg-yellow-100 border border-yellow-300",
-                          else: "bg-gray-50"
-                        )
-                      ]}>
-                        <%= if version_data["homepage_url"] do %>
-                          <a
-                            href={version_data["homepage_url"]}
-                            target="_blank"
-                            class="text-blue-600 hover:text-blue-800 underline break-all"
-                          >
-                            <%= String.slice(version_data["homepage_url"], 0, 40) %><%= if String.length(
-                                                                                             version_data[
-                                                                                               "homepage_url"
-                                                                                             ]
-                                                                                           ) > 40,
-                                                                                           do:
-                                                                                             "..." %>
-                          </a>
-                        <% else %>
-                          —
-                        <% end %>
-                      </dd>
-                    </div>
-
-                    <div class="flex">
-                      <dt class="w-24 text-gray-600 text-xs font-medium">Wikipedia:</dt>
-                      <dd class={[
-                        "flex-1 px-2 py-0.5 rounded text-xs",
-                        if("wikipedia_url" in changed_fields,
-                          do: "bg-yellow-100 border border-yellow-300",
-                          else: "bg-gray-50"
-                        )
-                      ]}>
-                        <%= if version_data["wikipedia_url"] do %>
-                          <a
-                            href={version_data["wikipedia_url"]}
-                            target="_blank"
-                            class="text-blue-600 hover:text-blue-800 underline break-all"
-                          >
-                            <%= String.slice(version_data["wikipedia_url"], 0, 40) %><%= if String.length(
-                                                                                              version_data[
-                                                                                                "wikipedia_url"
-                                                                                              ]
-                                                                                            ) >
-                                                                                              40,
-                                                                                            do:
-                                                                                              "..." %>
-                          </a>
-                        <% else %>
-                          —
-                        <% end %>
-                      </dd>
-                    </div>
-                  </div>
+                  <% end %>
                 </div>
               </div>
             <% end %>
-          </div>
-        <% end %>
+            <%= if length(@versions) > 5 do %>
+              <div class="p-4 text-center">
+                <p class="text-sm text-gray-500">
+                  Zeige die letzten 5 von <%= length(@versions) %> Änderungen
+                </p>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
       </div>
+
+      <%= render("_daily_limit_info.html", daily_changes: @daily_changes) %>
     </div>
   </div>
   <!-- Back to School Link -->

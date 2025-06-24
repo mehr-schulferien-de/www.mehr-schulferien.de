@@ -125,7 +125,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
 
     test "creates new address for school without existing address", %{conn: conn} do
       # Create a school without an address
-      country = insert(:country, %{slug: "test-country-new"})
+      country = insert(:country, %{slug: "test-country-new", is_country: true})
       federal_state = insert(:federal_state, %{parent_location_id: country.id})
       city = insert(:city, %{parent_location_id: federal_state.id})
       school = insert(:school, %{parent_location_id: city.id, slug: "new-school-address"})
@@ -144,7 +144,8 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
           address: new_address_params
         )
 
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~
+               Routes.school_path(conn, :show, country.slug, school.slug)
 
       # Verify the address was created in the database
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -155,7 +156,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
     end
 
     test "handles validation errors correctly", %{conn: conn, school: school} do
-      # Try to submit invalid data (empty required fields)
+      # Try to submit invalid data
       invalid_params = %{
         "street" => "",
         "phone_number" => "",
@@ -168,9 +169,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       conn =
         post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: invalid_params)
 
-      # With no validations requiring these fields, this will redirect successfully
-      # The controller doesn't have validation errors for these fields
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      # Since homepage_url validation is now enforced, it should show form with errors
+      assert html_response(conn, 200) =~ "muss eine gültige URL sein"
+      assert html_response(conn, 200) =~ "Schul-Wiki"
     end
 
     test "daily limit prevents updates when reached", %{conn: conn, school: school} do

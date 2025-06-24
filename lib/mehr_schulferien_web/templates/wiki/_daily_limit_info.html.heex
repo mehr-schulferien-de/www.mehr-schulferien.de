@@ -1,0 +1,23 @@
+<div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+  <h3 class="text-lg font-medium text-gray-900 mb-3">Tageslimit</h3>
+  <div class="space-y-2 text-sm">
+    <p class="text-gray-700">
+      Zum Schutz vor Missbrauch gibt es ein Tageslimit von 20 Änderungen.
+    </p>
+    <div class="flex items-center justify-between">
+      <span class="text-gray-600">Heutige Änderungen:</span>
+      <span class={"font-semibold #{if @daily_changes >= 20, do: "text-red-600", else: "text-gray-900"}"}>
+        <%= @daily_changes %> / 20
+      </span>
+    </div>
+    <div class="mt-2">
+      <div class="bg-gray-200 rounded-full h-2">
+        <div
+          class={"h-2 rounded-full #{if @daily_changes >= 20, do: "bg-red-600", else: "bg-green-600"}"}
+          style={"width: #{min(@daily_changes * 5, 100)}%"}
+        >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
