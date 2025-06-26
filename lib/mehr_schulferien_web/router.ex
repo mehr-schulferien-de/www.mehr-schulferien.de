@@ -113,6 +113,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/wiki/schools/:slug", WikiController, :show_school
     post "/wiki/schools/:slug", WikiController, :update_school
     put "/wiki/schools/:slug", WikiController, :update_school
+    delete "/wiki/schools/:slug", WikiController, :delete_school
     post "/wiki/schools/:slug/rollback/:version_id", WikiController, :rollback_school
 
     # Federal state routes (SEO-friendly pattern)

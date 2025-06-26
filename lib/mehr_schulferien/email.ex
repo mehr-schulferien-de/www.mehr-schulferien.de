@@ -259,4 +259,83 @@ defmodule MehrSchulferien.Email do
     |> Enum.map(&String.capitalize/1)
     |> Enum.join(" ")
   end
+
+  def school_deleted_notification(school, address, country_slug \\ "d") do
+    school_url = "https://www.mehr-schulferien.de/ferien/#{country_slug}/schule/#{school.slug}"
+
+    new()
+    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
+    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> subject("Schule gelöscht: #{school.name}")
+    |> html_body("""
+    <h2>Schule wurde gelöscht</h2>
+    <p><strong>Schulname:</strong> #{school.name}</p>
+    <p><strong>Slug:</strong> #{school.slug}</p>
+    <p><strong>ID:</strong> #{school.id}</p>
+    <p><strong>Gelöschte URL:</strong> <span style="text-decoration: line-through;">#{school_url}</span></p>
+
+    #{if address do
+      """
+      <h3>Adressdaten (gesichert):</h3>
+      <p><strong>Straße:</strong> #{address.street || "N/A"}</p>
+      <p><strong>PLZ:</strong> #{address.zip_code || "N/A"}</p>
+      <p><strong>Stadt:</strong> #{address.city || "N/A"}</p>
+      <p><strong>E-Mail:</strong> #{address.email_address || "N/A"}</p>
+      <p><strong>Telefon:</strong> #{address.phone_number || "N/A"}</p>
+      <p><strong>Homepage:</strong> #{address.homepage_url || "N/A"}</p>
+      <p><strong>Schultyp:</strong> #{address.school_type || "N/A"}</p>
+      <p><strong>Amtliche ID:</strong> #{address.official_id || "N/A"}</p>
+      #{if address.lat && address.lon do
+        """
+        <p><strong>Koordinaten:</strong> #{address.lat}, #{address.lon}</p>
+        """
+      else
+        ""
+      end}
+      """
+    else
+      "<p><em>Keine Adressdaten vorhanden</em></p>"
+    end}
+
+    <p><strong>Gelöscht am:</strong> #{format_datetime(DateTime.utc_now())}</p>
+
+    <p style="margin-top: 20px; padding: 10px; background-color: #fee2e2; border-left: 4px solid #dc2626;">
+      <strong>Hinweis:</strong> Die Schule und alle zugehörigen Daten wurden in Backup-Tabellen gesichert (deleted_schools und deleted_periods).
+    </p>
+    """)
+    |> text_body("""
+    Schule wurde gelöscht
+
+    Schulname: #{school.name}
+    Slug: #{school.slug}
+    ID: #{school.id}
+
+    Gelöschte URL: #{school_url}
+
+    #{if address do
+      """
+      Adressdaten (gesichert):
+      Straße: #{address.street || "N/A"}
+      PLZ: #{address.zip_code || "N/A"}
+      Stadt: #{address.city || "N/A"}
+      E-Mail: #{address.email_address || "N/A"}
+      Telefon: #{address.phone_number || "N/A"}
+      Homepage: #{address.homepage_url || "N/A"}
+      Schultyp: #{address.school_type || "N/A"}
+      Amtliche ID: #{address.official_id || "N/A"}
+      #{if address.lat && address.lon do
+        "Koordinaten: #{address.lat}, #{address.lon}"
+      else
+        ""
+      end}
+      """
+    else
+      "Keine Adressdaten vorhanden"
+    end}
+
+    Gelöscht am: #{format_datetime(DateTime.utc_now())}
+
+    Hinweis: Die Schule und alle zugehörigen Daten wurden in Backup-Tabellen gesichert (deleted_schools und deleted_periods).
+    """)
+  end
 end

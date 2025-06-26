@@ -201,4 +201,38 @@
       Zurück zur Schulseite
     </a>
   </div>
+  <!-- Delete School Section -->
+  <div class="mt-12 border-t border-gray-200 pt-8">
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+      <h3 class="text-lg font-medium text-red-900 mb-2">
+        Gefahrenzone
+      </h3>
+      <p class="text-sm text-red-700 mb-4">
+        Das Löschen einer Schule kann nicht rückgängig gemacht werden. Alle zugehörigen Daten werden in eine Backup-Tabelle verschoben.
+      </p>
+      <%= form_for @conn, Routes.wiki_path(@conn, :delete_school, @school.slug), [method: :delete, class: "inline", id: "delete-school-form"], fn _f -> %>
+        <button
+          type="submit"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          onclick={"return confirmSchoolDeletion('#{@school.name}');"}
+        >
+          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+          Schule löschen
+        </button>
+      <% end %>
+    </div>
+  </div>
 </div>
+
+<script>
+  function confirmSchoolDeletion(schoolName) {
+    return confirm('Sind Sie sicher, dass Sie die Schule "' + schoolName + '" wirklich löschen wollen?\n\nDiese Aktion kann nicht rückgängig gemacht werden!');
+  }
+</script>

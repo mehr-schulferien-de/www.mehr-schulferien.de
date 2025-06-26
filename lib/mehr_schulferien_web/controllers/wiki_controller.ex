@@ -559,4 +559,77 @@ defmodule MehrSchulferienWeb.WikiController do
   defp field_name("homepage_url"), do: "Homepage"
   defp field_name("line1"), do: "Adresszeile 1"
   defp field_name(field), do: field
+
+  def delete_school(conn, %{"slug" => school_slug}) do
+    school = Locations.get_school_by_slug!(school_slug)
+
+    # Check daily limit
+    today = Date.utc_today()
+    daily_changes = Wiki.get_daily_change_count(today)
+
+    if daily_changes >= 20 do
+      conn
+      |> put_flash(
+        :error,
+        "Das tägliche Limit von 20 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+      )
+      |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+    else
+      # Get the school with address preloaded for email
+      school = Repo.preload(school, :address)
+
+      # Get city for redirect after deletion
+      city =
+        if school.parent_location_id do
+          Locations.get_location!(school.parent_location_id)
+        else
+          nil
+        end
+
+      # Get country slug for redirect after deletion
+      country_slug = get_country_slug_from_school(school)
+
+      case Locations.delete_school(school, deleted_by_user_id: nil) do
+        {:ok, %{school: _deleted_school, periods: _deleted_periods}} ->
+          # Increment daily change count
+          Wiki.increment_daily_change_count(today)
+
+          # Send email notification
+          Task.start(fn ->
+            Logger.info("Sending email notification for school deletion")
+            Logger.info("School: #{inspect(school.name)}")
+
+            result =
+              Email.school_deleted_notification(
+                school,
+                school.address,
+                country_slug
+              )
+              |> Mailer.deliver()
+
+            Logger.info("Email send result: #{inspect(result)}")
+          end)
+
+          # Redirect to city page if city exists, otherwise to country page
+          redirect_path =
+            if city && city.slug do
+              Routes.city_path(conn, :show, country_slug, city.slug)
+            else
+              Routes.country_path(conn, :show, country_slug)
+            end
+
+          conn
+          |> put_flash(
+            :info,
+            "Die Schule \"#{school.name}\" wurde erfolgreich gelöscht."
+          )
+          |> redirect(to: redirect_path)
+
+        {:error, reason} ->
+          conn
+          |> put_flash(:error, "Fehler beim Löschen der Schule: #{inspect(reason)}")
+          |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+      end
+    end
+  end
 end

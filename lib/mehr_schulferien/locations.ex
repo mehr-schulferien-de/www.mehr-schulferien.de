@@ -10,7 +10,9 @@ defmodule MehrSchulferien.Locations do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.{Cache, Locations.Location, Repo}
+  alias MehrSchulferien.{Cache, Locations.Location, Locations.DeletedSchool, Repo}
+  alias MehrSchulferien.Periods.DeletedPeriod
+  alias MehrSchulferien.Maps
 
   #
   # Internal helpers
@@ -102,6 +104,145 @@ defmodule MehrSchulferien.Locations do
   """
   def delete_location(%Location{} = location) do
     Repo.delete(location)
+  end
+
+  @doc """
+  Deletes a school and creates backup entries in deleted_schools and deleted_periods tables.
+
+  This function:
+  1. Creates a backup of the school in deleted_schools table
+  2. Creates backups of all associated periods in deleted_periods table
+  3. Deletes the periods from the periods table
+  4. Deletes the address from the addresses table (if exists)
+  5. Deletes the school from the locations table
+
+  ## Parameters
+    - school: The school location to delete
+    - opts: Options including:
+      - :deleted_by_user_id - ID of the user performing the deletion
+      - :deletion_reason - Reason for deletion
+
+  ## Returns
+    - {:ok, %{school: deleted_school, periods: deleted_periods}} on success
+    - {:error, reason} on failure
+  """
+  def delete_school(school, opts \\ [])
+
+  def delete_school(%Location{is_school: true} = school, opts) do
+    deleted_by_user_id = Keyword.get(opts, :deleted_by_user_id)
+    deletion_reason = Keyword.get(opts, :deletion_reason)
+
+    Repo.transaction(fn ->
+      # Get the school with address preloaded
+      school = Repo.preload(school, :address)
+
+      # Create backup in deleted_schools table
+      deleted_school_attrs = %{
+        original_id: school.id,
+        name: school.name,
+        slug: school.slug || "",
+        code: school.code,
+        parent_location_id: school.parent_location_id,
+        cachable_calendar_location_id: school.cachable_calendar_location_id,
+        is_country: school.is_country,
+        is_federal_state: school.is_federal_state,
+        is_county: school.is_county,
+        is_city: school.is_city,
+        is_school: school.is_school,
+        deleted_at: DateTime.utc_now(),
+        deleted_by_user_id: deleted_by_user_id,
+        deletion_reason: deletion_reason,
+        original_inserted_at: school.inserted_at,
+        original_updated_at: school.updated_at
+      }
+
+      # Add address fields if address exists
+      deleted_school_attrs =
+        if school.address do
+          Map.merge(deleted_school_attrs, %{
+            address_line1: school.address.line1,
+            address_street: school.address.street,
+            address_zip_code: school.address.zip_code,
+            address_city: school.address.city,
+            address_email_address: school.address.email_address,
+            address_phone_number: school.address.phone_number,
+            address_homepage_url: school.address.homepage_url,
+            address_school_type: school.address.school_type,
+            address_official_id: school.address.official_id,
+            address_lat: school.address.lat,
+            address_lon: school.address.lon
+          })
+        else
+          deleted_school_attrs
+        end
+
+      {:ok, deleted_school} =
+        %DeletedSchool{}
+        |> DeletedSchool.changeset(deleted_school_attrs)
+        |> Repo.insert()
+
+      # Get all periods for this school
+      periods =
+        Repo.all(from p in MehrSchulferien.Periods.Period, where: p.location_id == ^school.id)
+
+      # Create backups of periods
+      deleted_periods =
+        Enum.map(periods, fn period ->
+          attrs = %{
+            original_id: period.id,
+            holiday_or_vacation_type_id: period.holiday_or_vacation_type_id,
+            location_id: period.location_id,
+            starts_on: period.starts_on,
+            ends_on: period.ends_on,
+            created_by_email_address: period.created_by_email_address,
+            html_class: period.html_class,
+            is_listed_below_month: period.is_listed_below_month,
+            is_public_holiday: period.is_public_holiday,
+            is_school_vacation: period.is_school_vacation,
+            is_valid_for_students: period.is_valid_for_students,
+            is_valid_for_everybody: period.is_valid_for_everybody,
+            memo: period.memo,
+            display_priority: period.display_priority,
+            deleted_school_original_id: school.id,
+            deleted_at: DateTime.utc_now(),
+            deleted_by_user_id: deleted_by_user_id,
+            original_inserted_at: period.inserted_at,
+            original_updated_at: period.updated_at
+          }
+
+          {:ok, deleted_period} =
+            %DeletedPeriod{}
+            |> DeletedPeriod.changeset(attrs)
+            |> Repo.insert()
+
+          deleted_period
+        end)
+
+      # Delete the periods
+      Enum.each(periods, &Repo.delete/1)
+
+      # Delete the address if it exists
+      if school.address do
+        Maps.delete_address(school.address)
+      end
+
+      # Delete the school
+      case Repo.delete(school) do
+        {:ok, _} ->
+          # Clear any caches that might contain this school
+          Cache.clear_location_hierarchy("school_#{school.slug}")
+          Cache.clear_location_hierarchy("school_#{school.id}")
+
+          %{school: deleted_school, periods: deleted_periods}
+
+        {:error, reason} ->
+          Repo.rollback(reason)
+      end
+    end)
+  end
+
+  def delete_school(%Location{is_school: false}, _opts) do
+    {:error, :not_a_school}
   end
 
   @doc """

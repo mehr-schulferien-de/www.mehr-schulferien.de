@@ -37,13 +37,13 @@ defmodule MehrSchulferienWeb.SportbefreiungLive do
     ]
   end
 
-  def get_page_title(school_name), do: "Sportbefreiung - #{school_name}"
+  def get_page_title(school_name), do: "Sportbefreiungsvordruck - #{school_name}"
 
   def get_translations do
     %{
       "Sports Exemption Request" => %{
-        "de" => "Sportbefreiung beantragen",
-        "en" => "Sports Exemption Request",
+        "de" => "Sportbefreiungsvordruck erstellen",
+        "en" => "Create Sports Exemption Form Template",
         "ru" => "Заявление об освобождении от физкультуры",
         "ar" => "طلب إعفاء من الرياضة",
         "tr" => "Spor Muafiyeti Talebi",
@@ -62,8 +62,8 @@ defmodule MehrSchulferienWeb.SportbefreiungLive do
         "uk" => "Для %{school_name}"
       },
       "Request sports exemption" => %{
-        "de" => "Sportbefreiung beantragen",
-        "en" => "Request sports exemption",
+        "de" => "Sportbefreiungsvordruck erstellen",
+        "en" => "Create sports exemption form template",
         "ru" => "Запросить освобождение от физкультуры",
         "ar" => "طلب إعفاء من الرياضة",
         "tr" => "Spor muafiyeti talep et",
@@ -72,8 +72,8 @@ defmodule MehrSchulferienWeb.SportbefreiungLive do
         "uk" => "Запросити звільнення від фізкультури"
       },
       "Download PDF" => %{
-        "de" => "PDF downloaden",
-        "en" => "Download PDF",
+        "de" => "Vordruck als PDF downloaden",
+        "en" => "Download Form Template as PDF",
         "ru" => "Скачать PDF",
         "ar" => "تحميل PDF",
         "tr" => "PDF İndir",
@@ -405,9 +405,9 @@ defmodule MehrSchulferienWeb.SportbefreiungLive do
       "Generate a free sports exemption request according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email." =>
         %{
           "de" =>
-            "Generieren Sie kostenlos einen Antrag auf Sportbefreiung nach %{standard}. Das PDF können Sie ausdrucken oder digital unterschreiben und per E-Mail an die Schule senden.",
+            "Erstellen Sie kostenlos einen Sportbefreiungsvordruck nach %{standard}. Das PDF können Sie ausdrucken, ausfüllen, unterschreiben und selbst bei der Schule einreichen. Dies ist ein Service von mehr-schulferien.de.",
           "en" =>
-            "Generate a free sports exemption request according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
+            "Create a free sports exemption form template according to %{standard}. You can print the PDF, fill it out, sign it and submit it to the school. This is a service by mehr-schulferien.de.",
           "ru" =>
             "Сгенерируйте бесплатное заявление об освобождении от физкультуры согласно %{standard}. Вы можете распечатать PDF или подписать его цифровой подписью и отправить в школу по электронной почте.",
           "ar" =>

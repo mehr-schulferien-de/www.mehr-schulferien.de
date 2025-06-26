@@ -117,7 +117,7 @@
               >
               </path>
             </svg>
-            <span class="ml-1 text-gray-500 md:ml-2">Schreiben</span>
+            <span class="ml-1 text-gray-500 md:ml-2">Vordrucke</span>
           </div>
         </li>
       </ol>
@@ -125,8 +125,30 @@
 
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
       <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
-        Schreiben für <%= @school.name %>
+        Vordrucke für <%= @school.name %>
       </h1>
+    </div>
+    <!-- Disclaimer about unofficial service -->
+    <div class="mb-6 bg-amber-50 border-l-4 border-amber-400 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-amber-700">
+            <strong>Hinweis:</strong>
+            Dies ist ein kostenloser Service von mehr-schulferien.de zur Erstellung von Vordrucken.
+            Wir sind nicht die offizielle Schulwebseite. Die erstellten PDFs sind vorausgefüllte Formulare, die Sie
+            ausdrucken, unterschreiben und selbst bei der Schule einreichen können.
+          </p>
+        </div>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -317,7 +339,7 @@
       <!-- Available Documents -->
       <div class="lg:col-span-2">
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">Verfügbare Briefe</h2>
+          <h2 class="text-xl font-bold text-gray-900 mb-4">Verfügbare Vordrucke</h2>
           <div class="space-y-4">
             <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
               <div class="flex items-start justify-between">
@@ -338,9 +360,9 @@
                     </svg>
                   </div>
                   <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">Entschuldigung</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Entschuldigungsvordruck</h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Formular für die Entschuldigung von Fehlzeiten nach Krankheit oder anderen Gründen
+                      Vordruck zum Download für die Entschuldigung von Fehlzeiten nach Krankheit oder anderen Gründen
                     </p>
                   </div>
                 </div>
@@ -355,7 +377,7 @@
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                     />
                   </svg>
-                  Schreiben erstellen
+                  Vordruck erstellen
                 <% end %>
               </div>
             </div>
@@ -378,9 +400,9 @@
                     </svg>
                   </div>
                   <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">Beurlaubung</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Beurlaubungsvordruck</h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Antrag auf Beurlaubung vom Unterricht für besondere Anlässe (vorab einzureichen)
+                      Vordruck zum Download für den Antrag auf Beurlaubung vom Unterricht (vorab einzureichen)
                     </p>
                   </div>
                 </div>
@@ -395,7 +417,7 @@
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                     />
                   </svg>
-                  Schreiben erstellen
+                  Vordruck erstellen
                 <% end %>
               </div>
             </div>
@@ -418,9 +440,9 @@
                     </svg>
                   </div>
                   <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">Sportbefreiung</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Sportbefreiungsvordruck</h3>
                     <p class="mt-1 text-sm text-gray-500">
-                      Antrag auf Befreiung vom Sportunterricht aus gesundheitlichen Gründen
+                      Vordruck zum Download für den Antrag auf Befreiung vom Sportunterricht
                     </p>
                   </div>
                 </div>
@@ -435,7 +457,7 @@
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                     />
                   </svg>
-                  Schreiben erstellen
+                  Vordruck erstellen
                 <% end %>
               </div>
             </div>

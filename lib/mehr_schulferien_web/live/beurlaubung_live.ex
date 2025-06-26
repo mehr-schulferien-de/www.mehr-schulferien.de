@@ -34,13 +34,13 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
     ]
   end
 
-  def get_page_title(school_name), do: "Beurlaubung - #{school_name}"
+  def get_page_title(school_name), do: "Beurlaubungsvordruck - #{school_name}"
 
   def get_translations do
     %{
       "Create Leave of Absence Request" => %{
-        "de" => "Beurlaubung beantragen",
-        "en" => "Create Leave of Absence Request",
+        "de" => "Beurlaubungsvordruck erstellen",
+        "en" => "Create Leave of Absence Form Template",
         "ru" => "Создать заявление об отпуске",
         "ar" => "إنشاء طلب إجازة",
         "tr" => "İzin Talebi Oluştur",
@@ -59,8 +59,8 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "uk" => "Для %{school_name}"
       },
       "Request approval in advance" => %{
-        "de" => "Vorab um Genehmigung bitten",
-        "en" => "Request approval in advance",
+        "de" => "Vordruck für Antrag vorab erstellen",
+        "en" => "Create form template for advance approval request",
         "ru" => "Запросить одобрение заранее",
         "ar" => "طلب الموافقة مقدماً",
         "tr" => "Önceden onay isteyin",
@@ -69,8 +69,8 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "uk" => "Запросити схвалення заздалегідь"
       },
       "Download PDF" => %{
-        "de" => "PDF downloaden",
-        "en" => "Download PDF",
+        "de" => "Vordruck als PDF downloaden",
+        "en" => "Download Form Template as PDF",
         "ru" => "Скачать PDF",
         "ar" => "تحميل PDF",
         "tr" => "PDF İndir",
@@ -341,9 +341,9 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
       "Generate a free leave of absence request according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email." =>
         %{
           "de" =>
-            "Generieren Sie kostenlos einen Beurlaubungsantrag nach %{standard}. Das PDF können Sie ausdrucken oder digital unterschreiben und per E-Mail an die Schule senden.",
+            "Erstellen Sie kostenlos einen Beurlaubungsvordruck nach %{standard}. Das PDF können Sie ausdrucken, ausfüllen, unterschreiben und selbst bei der Schule einreichen. Dies ist ein Service von mehr-schulferien.de.",
           "en" =>
-            "Generate a free leave of absence request according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
+            "Create a free leave of absence form template according to %{standard}. You can print the PDF, fill it out, sign it and submit it to the school. This is a service by mehr-schulferien.de.",
           "ru" =>
             "Сгенерируйте бесплатное заявление об отпуске согласно %{standard}. Вы можете распечатать PDF или подписать его цифровой подписью и отправить в школу по электронной почте.",
           "ar" =>

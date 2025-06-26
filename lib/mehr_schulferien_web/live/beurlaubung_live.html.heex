@@ -24,8 +24,8 @@
              @school.slug,
              Date.utc_today().year
            )},
-          {"Briefe", Routes.school_path(@socket, :documents_index, @school.slug)},
-          {"Beurlaubung", nil}
+          {"Vordrucke", Routes.school_path(@socket, :documents_index, @school.slug)},
+          {"Beurlaubungsvordruck", nil}
         ] %>
         <!-- Mobile breadcrumbs (show only last 2 items) -->
         <ol class="flex items-center space-x-1 md:hidden">
@@ -148,6 +148,28 @@
       <p class="text-lg text-slate-600">
         <%= translate("For %{school_name}", @locale, %{school_name: @school.name}) %>
       </p>
+    </div>
+    <!-- Disclaimer -->
+    <div class="mb-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-amber-700">
+            <strong>Hinweis:</strong>
+            Dies ist ein Service von mehr-schulferien.de zur Erstellung von Vordrucken.
+            Wir sind nicht die offizielle Schulwebseite. Der erstellte PDF-Vordruck muss ausgedruckt,
+            unterschrieben und selbst bei der Schule eingereicht werden.
+          </p>
+        </div>
+      </div>
     </div>
     <!-- Info card -->
     <div class="mb-8 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">

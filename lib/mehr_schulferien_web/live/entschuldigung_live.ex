@@ -33,19 +33,19 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
     ]
   end
 
-  def get_page_title(school_name), do: "Entschuldigung - #{school_name}"
+  def get_page_title(school_name), do: "Entschuldigungsvordruck - #{school_name}"
 
   def get_translations do
     %{
       "Create Excuse Letter" => %{
-        "de" => "Entschuldigung erstellen",
-        "en" => "Create Excuse Letter",
-        "ru" => "Создать справку об отсутствии",
-        "ar" => "إنشاء رسالة عذر",
-        "tr" => "Mazeret Mektubu Oluştur",
-        "pl" => "Utwórz usprawiedliwienie",
-        "fr" => "Créer une lettre d'excuse",
-        "uk" => "Створити виправдальний лист"
+        "de" => "Entschuldigungsvordruck erstellen",
+        "en" => "Create Excuse Form Template",
+        "ru" => "Создать шаблон справки об отсутствии",
+        "ar" => "إنشاء نموذج رسالة عذر",
+        "tr" => "Mazeret Formu Şablonu Oluştur",
+        "pl" => "Utwórz szablon usprawiedliwienia",
+        "fr" => "Créer un modèle de lettre d'excuse",
+        "uk" => "Створити шаблон виправдального листа"
       },
       "For %{school_name}" => %{
         "de" => "Für %{school_name}",
@@ -58,24 +58,24 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
         "uk" => "Для %{school_name}"
       },
       "Simply download as PDF" => %{
-        "de" => "Einfach als PDF downloaden",
-        "en" => "Simply download as PDF",
-        "ru" => "Просто скачать как PDF",
-        "ar" => "ببساطة تحميل كـ PDF",
-        "tr" => "Sadece PDF olarak indir",
-        "pl" => "Po prostu pobierz jako PDF",
-        "fr" => "Simplement télécharger en PDF",
-        "uk" => "Просто завантажити як PDF"
+        "de" => "Vordruck als PDF downloaden",
+        "en" => "Download form template as PDF",
+        "ru" => "Скачать шаблон формы как PDF",
+        "ar" => "تحميل نموذج المستند كـ PDF",
+        "tr" => "Form şablonunu PDF olarak indir",
+        "pl" => "Pobierz szablon formularza jako PDF",
+        "fr" => "Télécharger le modèle de formulaire en PDF",
+        "uk" => "Завантажити шаблон форми як PDF"
       },
       "Download PDF" => %{
-        "de" => "PDF downloaden",
-        "en" => "Download PDF",
-        "ru" => "Скачать PDF",
-        "ar" => "تحميل PDF",
-        "tr" => "PDF İndir",
-        "pl" => "Pobierz PDF",
-        "fr" => "Télécharger PDF",
-        "uk" => "Завантажити PDF"
+        "de" => "Vordruck als PDF downloaden",
+        "en" => "Download Form Template as PDF",
+        "ru" => "Скачать шаблон формы PDF",
+        "ar" => "تحميل نموذج PDF",
+        "tr" => "Form Şablonunu PDF İndir",
+        "pl" => "Pobierz szablon PDF",
+        "fr" => "Télécharger le modèle PDF",
+        "uk" => "Завантажити шаблон PDF"
       },
       "Sender" => %{
         "de" => "Absender",
@@ -330,9 +330,9 @@ defmodule MehrSchulferienWeb.EntschuldigungLive do
       "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email." =>
         %{
           "de" =>
-            "Generieren Sie kostenlos eine Entschuldigung nach %{standard}. Das PDF können Sie ausdrucken oder digital unterschreiben und per E-Mail an die Schule senden.",
+            "Erstellen Sie kostenlos einen Entschuldigungsvordruck nach %{standard}. Das PDF können Sie ausdrucken, ausfüllen, unterschreiben und selbst bei der Schule einreichen. Dies ist ein Service von mehr-schulferien.de.",
           "en" =>
-            "Generate a free excuse letter according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
+            "Create a free excuse form template according to %{standard}. You can print the PDF, fill it out, sign it and submit it to the school. This is a service by mehr-schulferien.de.",
           "ru" =>
             "Сгенерируйте бесплатную справку об отсутствии согласно %{standard}. Вы можете распечатать PDF или подписать его цифровой подписью и отправить в школу по электронной почте.",
           "ar" =>

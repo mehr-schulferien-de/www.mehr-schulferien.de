@@ -4,6 +4,8 @@ defmodule MehrSchulferien.LocationsTest do
   import MehrSchulferien.Factory
 
   alias MehrSchulferien.{Locations, Locations.Flag, Locations.Location}
+  alias MehrSchulferien.Repo
+  import Ecto.Query
 
   describe "locations" do
     @valid_attrs %{
@@ -143,6 +145,161 @@ defmodule MehrSchulferien.LocationsTest do
 
     test "get_flag/1 returns nil if flag cannot be found" do
       refute Flag.get_flag("CC")
+    end
+  end
+
+  describe "delete_school/2" do
+    test "deletes a school and backs up data to deleted tables" do
+      # Create a school with address
+      country = insert(:country)
+      federal_state = insert(:federal_state, parent_location_id: country.id)
+      county = insert(:county, parent_location_id: federal_state.id)
+      city = insert(:city, parent_location_id: county.id)
+      school = insert(:school, parent_location_id: city.id)
+
+      # Create an address for the school
+      address = insert(:address, school_location_id: school.id)
+
+      # Create some periods for the school - use unique names to avoid conflicts
+      {:ok, vacation_type} =
+        Repo.insert(%MehrSchulferien.Calendars.HolidayOrVacationType{
+          country_location_id: country.id,
+          name: "Test Vacation #{System.unique_integer([:positive])}",
+          slug: "test-vacation-#{System.unique_integer([:positive])}",
+          colloquial: "Test Vacation",
+          default_display_priority: 3,
+          default_html_class: "green",
+          default_is_listed_below_month: true,
+          default_is_school_vacation: true,
+          default_is_valid_for_students: true
+        })
+
+      {:ok, holiday_type} =
+        Repo.insert(%MehrSchulferien.Calendars.HolidayOrVacationType{
+          country_location_id: country.id,
+          name: "Test Holiday #{System.unique_integer([:positive])}",
+          slug: "test-holiday-#{System.unique_integer([:positive])}",
+          colloquial: "Test Holiday",
+          default_display_priority: 3,
+          default_html_class: "green",
+          default_is_public_holiday: true,
+          default_is_valid_for_everybody: true
+        })
+
+      {:ok, period1} =
+        Repo.insert(%MehrSchulferien.Periods.Period{
+          location_id: school.id,
+          holiday_or_vacation_type_id: vacation_type.id,
+          starts_on: ~D[2024-07-01],
+          ends_on: ~D[2024-08-31],
+          is_school_vacation: true,
+          is_valid_for_students: true,
+          created_by_email_address: "test@example.com"
+        })
+
+      {:ok, period2} =
+        Repo.insert(%MehrSchulferien.Periods.Period{
+          location_id: school.id,
+          holiday_or_vacation_type_id: holiday_type.id,
+          starts_on: ~D[2024-12-25],
+          ends_on: ~D[2024-12-25],
+          is_public_holiday: true,
+          is_valid_for_everybody: true,
+          created_by_email_address: "test@example.com"
+        })
+
+      # Delete the school
+      assert {:ok, %{school: deleted_school, periods: deleted_periods}} =
+               Locations.delete_school(school,
+                 deleted_by_user_id: 123,
+                 deletion_reason: "Test deletion"
+               )
+
+      # Verify the school is deleted from the original table
+      assert_raise Ecto.NoResultsError, fn ->
+        Locations.get_location!(school.id)
+      end
+
+      # Verify the address is deleted
+      assert is_nil(Repo.get(MehrSchulferien.Maps.Address, address.id))
+
+      # Verify the periods are deleted from the original table
+      assert [] =
+               Repo.all(
+                 from p in MehrSchulferien.Periods.Period, where: p.location_id == ^school.id
+               )
+
+      # Verify the school is in the deleted_schools table
+      assert deleted_school.original_id == school.id
+      assert deleted_school.name == school.name
+      assert deleted_school.slug == school.slug
+      assert deleted_school.parent_location_id == school.parent_location_id
+      assert deleted_school.is_school == true
+      assert deleted_school.deleted_by_user_id == 123
+      assert deleted_school.deletion_reason == "Test deletion"
+      assert deleted_school.deleted_at != nil
+
+      # Verify address fields are backed up
+      assert deleted_school.address_street == address.street
+      assert deleted_school.address_zip_code == address.zip_code
+      assert deleted_school.address_city == address.city
+      assert deleted_school.address_email_address == address.email_address
+      assert deleted_school.address_phone_number == address.phone_number
+
+      # Verify the periods are in the deleted_periods table
+      assert length(deleted_periods) == 2
+
+      deleted_period1 = Enum.find(deleted_periods, &(&1.original_id == period1.id))
+      assert deleted_period1.starts_on == period1.starts_on
+      assert deleted_period1.ends_on == period1.ends_on
+      assert deleted_period1.holiday_or_vacation_type_id == period1.holiday_or_vacation_type_id
+      assert deleted_period1.is_school_vacation == true
+      assert deleted_period1.deleted_school_original_id == school.id
+      assert deleted_period1.deleted_by_user_id == 123
+      assert deleted_period1.deleted_at != nil
+
+      deleted_period2 = Enum.find(deleted_periods, &(&1.original_id == period2.id))
+      assert deleted_period2.starts_on == period2.starts_on
+      assert deleted_period2.ends_on == period2.ends_on
+      assert deleted_period2.holiday_or_vacation_type_id == period2.holiday_or_vacation_type_id
+      assert deleted_period2.is_public_holiday == true
+      assert deleted_period2.deleted_school_original_id == school.id
+    end
+
+    test "deletes a school without address" do
+      # Create a school without address
+      country = insert(:country)
+      federal_state = insert(:federal_state, parent_location_id: country.id)
+      county = insert(:county, parent_location_id: federal_state.id)
+      city = insert(:city, parent_location_id: county.id)
+      school = insert(:school, parent_location_id: city.id)
+
+      # Delete the school
+      assert {:ok, %{school: deleted_school, periods: _}} =
+               Locations.delete_school(school)
+
+      # Verify the school is deleted
+      assert_raise Ecto.NoResultsError, fn ->
+        Locations.get_location!(school.id)
+      end
+
+      # Verify the school is backed up
+      assert deleted_school.original_id == school.id
+      assert deleted_school.name == school.name
+
+      # Verify address fields are nil
+      assert is_nil(deleted_school.address_street)
+      assert is_nil(deleted_school.address_zip_code)
+      assert is_nil(deleted_school.address_city)
+    end
+
+    test "returns error when trying to delete non-school location" do
+      city = insert(:city)
+
+      assert {:error, :not_a_school} = Locations.delete_school(city)
+
+      # Verify the city still exists
+      assert Locations.get_location!(city.id)
     end
   end
 
