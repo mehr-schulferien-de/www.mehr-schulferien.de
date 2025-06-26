@@ -56,7 +56,7 @@ defmodule MehrSchulferien.MixProject do
       {:req, "~> 0.5.10"},
       {:tidewave, "~> 0.1.6", only: :dev},
       {:ex_phone_number, "~> 0.4.5"},
-      {:paper_trail, "~> 1.0.0"},
+      {:paper_trail, "~> 1.1.2"},
       {:swoosh, "~> 1.16"},
       {:gen_smtp, "~> 1.2"},
       {:hackney, "~> 1.9"}
