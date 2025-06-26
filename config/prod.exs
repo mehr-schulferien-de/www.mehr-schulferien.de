@@ -77,6 +77,20 @@ config :phoenix, :stacktrace_depth, 20
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
 
+# Configure Swoosh to use local Postfix via SMTP
+config :mehr_schulferien, MehrSchulferien.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: "localhost",
+  port: 25,
+  # No authentication needed for local Postfix
+  auth: :never,
+  # No TLS for local connection
+  tls: :never,
+  # Optional: set a timeout for SMTP operations (in milliseconds)
+  timeout: 30_000,
+  # Optional: number of retries on connection failure
+  retries: 2
+
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 import_config "prod.secret.exs"
