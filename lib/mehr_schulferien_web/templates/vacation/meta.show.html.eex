@@ -28,7 +28,7 @@
 %>
 
 <title><%= @vacation_name %> <%= @federal_state.name %> <%= @year %> | <%= date_range %> - mehr-schulferien.de</title>
-<meta name="description" content="<%= @vacation_name %> <%= @year %> in <%= @federal_state.name %>: <%= date_range %> (<%= duration %>). Kalenderansicht, iCal-Export, Reiseplanung und alle anderen Ferientermine <%= @year %>.">
+<meta name="description" content="<%= dynamic_vacation_description(@vacation_name, @year, @federal_state.name, @vacation_period, @today) %>">
 <meta name="keywords" content="<%= @vacation_name %> <%= @federal_state.name %> <%= @year %>, <%= @vacation_name %> <%= @federal_state.name %>, <%= vacation_keywords %>, <%= @federal_state.name %> Ferien <%= @year %>, Ferientermine <%= @federal_state.name %>">
 
 <%= if assigns[:noindex] do %>
@@ -51,6 +51,16 @@
 
 <!-- Canonical URL to prevent duplicate content -->
 <link rel="canonical" href="<%= Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, @year) %>">
+
+<!-- Pagination for year navigation -->
+<% prev_year = @year - 1 %>
+<% next_year = @year + 1 %>
+<%= if prev_year >= 2020 do %>
+  <link rel="prev" href="<%= Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, prev_year) %>">
+<% end %>
+<%= if next_year <= 2030 do %>
+  <link rel="next" href="<%= Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, next_year) %>">
+<% end %>
 
 <!-- Structured Data -->
 <script type="application/ld+json">

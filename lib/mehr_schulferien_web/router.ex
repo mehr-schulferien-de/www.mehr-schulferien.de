@@ -139,6 +139,17 @@ defmodule MehrSchulferienWeb.Router do
         :show_year,
         constraints: [year: ~r/20[2-3][0-9]/]
 
+    # Year-agnostic vacation URLs (redirect to current year)
+    get "/sommerferien/:federal_state_slug", VacationController, :sommerferien_current
+    get "/osterferien/:federal_state_slug", VacationController, :osterferien_current
+    get "/herbstferien/:federal_state_slug", VacationController, :herbstferien_current
+    get "/weihnachtsferien/:federal_state_slug", VacationController, :weihnachtsferien_current
+    get "/winterferien/:federal_state_slug", VacationController, :winterferien_current
+    get "/pfingstferien/:federal_state_slug", VacationController, :pfingstferien_current
+
+    # Next vacation URL
+    get "/naechste-ferien/:federal_state_slug", VacationController, :next_vacation
+
     # Vacation-specific routes for better SEO
     get "/sommerferien/:federal_state_slug/:year", VacationController, :sommerferien,
       constraints: [year: ~r/20[2-3][0-9]/]

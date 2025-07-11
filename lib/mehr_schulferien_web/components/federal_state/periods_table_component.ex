@@ -9,11 +9,18 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
   attr :today, :any, default: Date.utc_today()
   attr :federal_state, :any, default: nil
   attr :conn, :any, default: nil
+  attr :year, :integer, default: nil
 
   def periods_table(assigns) do
     ~H"""
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto" itemscope itemtype="https://schema.org/Table">
+      <meta itemprop="about" content={table_about_content(assigns)} />
       <table class="min-w-full bg-white border border-gray-200">
+        <%= if assigns[:federal_state] && assigns[:year] do %>
+          <caption class="sr-only">
+            Ferientermine <%= assigns.federal_state.name %> <%= assigns.year %> - Übersicht aller Schulferien mit Datum und Dauer
+          </caption>
+        <% end %>
         <thead>
           <tr>
             <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
@@ -146,5 +153,12 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
           period.starts_on.year
         )
     end
+  end
+
+  defp table_about_content(assigns) do
+    parts = ["Schulferien"]
+    parts = if assigns[:federal_state], do: parts ++ [assigns.federal_state.name], else: parts
+    parts = if assigns[:year], do: parts ++ [assigns.year], else: parts
+    Enum.join(parts, " ")
   end
 end

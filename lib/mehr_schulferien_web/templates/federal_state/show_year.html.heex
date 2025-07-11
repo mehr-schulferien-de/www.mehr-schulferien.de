@@ -24,8 +24,10 @@
             today={@today}
             federal_state={@federal_state}
             conn={@conn}
+            year={@year}
           />
           <.partial_data periods={@periods} federal_state={@federal_state} year={@year} />
+          <.last_updated periods={@periods} federal_state={@federal_state} />
         <% else %>
           <.no_data
             conn={@conn}
@@ -205,5 +207,12 @@
     <% end %>
 
     <.schema_org_event periods={@periods} federal_state={@federal_state} country={@country} />
+    <.faq_schema federal_state={@federal_state} year={@year} periods={@periods} />
+    <.itemlist_schema
+      periods={@periods}
+      all_periods={@all_periods}
+      federal_state={@federal_state}
+      year={@year}
+    />
   </div>
 </div>

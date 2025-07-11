@@ -7,6 +7,8 @@ defmodule MehrSchulferienWeb.VacationView do
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.ICalPanelComponent
   import MehrSchulferienWeb.FederalStateComponents
+  import MehrSchulferienWeb.FederalState.FaqSchemaComponent
+  import MehrSchulferienWeb.FederalState.LastUpdatedComponent
 
   @doc """
   Returns planning tips for each vacation type
@@ -69,4 +71,47 @@ defmodule MehrSchulferienWeb.VacationView do
   end
 
   def get_relevant_months(_), do: []
+
+  @doc """
+  Generates dynamic meta description based on vacation proximity
+  """
+  def dynamic_vacation_description(vacation_name, year, state_name, vacation_period, today) do
+    if vacation_period do
+      date_range =
+        "#{Calendar.strftime(vacation_period.starts_on, "%d.%m.")}-#{Calendar.strftime(vacation_period.ends_on, "%d.%m.%Y")}"
+
+      duration = Date.diff(vacation_period.ends_on, vacation_period.starts_on) + 1
+
+      cond do
+        # Vacation is ongoing
+        Date.compare(today, vacation_period.starts_on) != :lt &&
+            Date.compare(today, vacation_period.ends_on) != :gt ->
+          days_left = Date.diff(vacation_period.ends_on, today)
+
+          "🎉 #{vacation_name} #{year} in #{state_name} laufen noch #{days_left} Tage! Bis #{Calendar.strftime(vacation_period.ends_on, "%d.%m.%Y")}. Alle Ferientermine mit Kalender & iCal-Export."
+
+        # Vacation is upcoming within 30 days
+        Date.diff(vacation_period.starts_on, today) in 1..30 ->
+          days_until = Date.diff(vacation_period.starts_on, today)
+
+          "⏰ Nur noch #{days_until} Tage bis zu den #{vacation_name}! #{state_name} #{year}: #{date_range} (#{duration} Tage). Jetzt Urlaub planen!"
+
+        # Vacation is upcoming within 60 days
+        Date.diff(vacation_period.starts_on, today) in 31..60 ->
+          days_until = Date.diff(vacation_period.starts_on, today)
+
+          "📅 #{vacation_name} #{year} in #{state_name} beginnen in #{days_until} Tagen: #{date_range}. Frühbucher sparen! Plus alle Ferientermine #{year}."
+
+        # Vacation just ended (within 7 days)
+        Date.diff(today, vacation_period.ends_on) in 1..7 ->
+          "#{vacation_name} #{year} in #{state_name} sind vorbei. Nächste Ferien planen: Alle kommenden Ferientermine mit Kalender & iCal-Export."
+
+        # Default description
+        true ->
+          "#{vacation_name} #{year} in #{state_name}: #{date_range} (#{duration} Tage). Kalenderansicht, iCal-Export, Reiseplanung und alle anderen Ferientermine #{year}."
+      end
+    else
+      "#{vacation_name} #{year} Termine für #{state_name} - Alle Schulferien im Überblick mit Kalender, iCal-Export und Planungstipps."
+    end
+  end
 end
