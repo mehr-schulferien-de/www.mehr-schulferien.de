@@ -1,0 +1,143 @@
+<ol class="breadcrumb hidden-xs">
+  <li><%= link("Start", to: Routes.page_path(@conn, :home)) %></li>
+  <li><%= link(@country.name, to: Routes.country_path(@conn, :show, @country.slug)) %></li>
+  <li>
+    <%= link(@federal_state.name,
+      to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug)
+    ) %>
+  </li>
+  <li>
+    <%= link("Brückentage #{@federal_state.name}",
+      to:
+        Routes.bridge_day_path(
+          @conn,
+          :index_within_federal_state,
+          @country.slug,
+          @federal_state.slug
+        ),
+      class: "active"
+    ) %>
+  </li>
+</ol>
+
+<ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
+  <li><%= link("Start", to: Routes.page_path(@conn, :home)) %></li>
+  <li><%= link(@country.code, to: Routes.country_path(@conn, :show, @country.slug)) %></li>
+  <li>
+    <%= link(@federal_state.name,
+      to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug)
+    ) %>
+  </li>
+  <li>
+    <%= link("Brückentage #{@federal_state.name}",
+      to:
+        Routes.bridge_day_path(
+          @conn,
+          :index_within_federal_state,
+          @country.slug,
+          @federal_state.slug
+        ),
+      class: "active"
+    ) %>
+  </li>
+</ol>
+
+<div class="page-header">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Brückentage <%= @federal_state.name %></h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <p>Optimale Brückentage pro Jahr aufgelistet:</p>
+    <ul>
+      <%= for year <- @current_year..@current_year + 2 do %>
+        <%= if MehrSchulferienWeb.BridgeDayController.has_bridge_days?([@country.id, @federal_state.id], year) do %>
+          <li>
+            <%= link(year,
+              to:
+                Routes.bridge_day_path(
+                  @conn,
+                  :show_within_federal_state,
+                  @country.slug,
+                  @federal_state.slug,
+                  year
+                )
+            ) %>
+          </li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<%= if @bridge_day_proposal_count > 0 do %>
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        Die
+        <%= if @bridge_day_proposal_count > 1 do %>
+          <%= @bridge_day_proposal_count %>
+        <% end %>besten Brückentage für das Jahr (<%= @current_year %>)
+      </h2>
+      <p>
+        Wir finden mit unserem Spezialalgorithmus nicht nur die normalen Brückentage (meistens ein Freitag),
+        sondern auch Konstellationen, in denen zwei oder mehr Tage zwischen einem Feiertag und einem Wochenende liegen.
+        <%= if @bridge_day_proposal_count < 3 do %>
+          Allerdings können Sie mit Brückentagen im aktuellen Jahr (<%= @current_year %>) nicht mehr viel rausholen. Am besten Sie starten schon einmal die Urlaubsplanung für das
+          nächste Jahr: <%= link("Brückentage #{@current_year + 1}",
+            to:
+              Routes.bridge_day_path(
+                @conn,
+                :show_within_federal_state,
+                @country.slug,
+                @federal_state.slug,
+                Integer.to_string(@current_year + 1)
+              )
+          ) %>
+        <% end %>
+      </p>
+    </div>
+  </div>
+
+  <%= for num <- 2..5 do %>
+    <%= if @bridge_day_map[num] && Enum.count(@bridge_day_map[num]) > 0 do %>
+      <div class="row">
+        <div class="col-md-12">
+          <h3>
+            <%= if num == 2 do %>
+              <%= if Enum.count(@bridge_day_map[num]) > 1 do %>
+                Normale
+              <% else %>
+                Normaler
+              <% end %>
+            <% else %>
+              <%= num - 1 %>er
+            <% end %>
+            <%= if Enum.count(@bridge_day_map[num]) > 1 do %>
+              Brückentage
+            <% else %>
+              Brückentag
+            <% end %>
+          </h3>
+        </div>
+      </div>
+      <div class="row">
+        <%= for bridge_day <- @bridge_day_map[num] do %>
+          <% all_periods =
+            MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
+          <%= render(MehrSchulferienWeb.PartialView, "_bridge_day_panel.html",
+            all_periods: all_periods,
+            bridge_day: bridge_day,
+            country: @country,
+            federal_state: @federal_state,
+            year: @current_year
+          ) %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

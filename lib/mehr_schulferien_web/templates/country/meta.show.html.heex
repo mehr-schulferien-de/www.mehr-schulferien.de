@@ -1,0 +1,13 @@
+<title>
+  Schulferien <%= @current_year %>
+</title>
+<meta
+  name="description"
+  content={"Aufstellung aller Schulferientermine #{@current_year} für alle Bundesländer in #{@country.name}."}
+/>
+
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: @country.name, item: "https://www.mehr-schulferien.de" <> Routes.country_path(@conn, :show, @country.slug)}
+  ]) %>
+</script>

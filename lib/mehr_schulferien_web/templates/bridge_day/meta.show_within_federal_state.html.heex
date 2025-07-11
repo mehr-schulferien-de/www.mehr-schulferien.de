@@ -1,0 +1,90 @@
+<title>Brückentage <%= @federal_state.name %> <%= @year %> | Optimale Urlaubsplanung</title>
+<meta
+  name="description"
+  content={"Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung - nur #{@bridge_day_proposal_count} Urlaubstage für mehr freie Tage am Stück."}
+/>
+<meta
+  name="keywords"
+  content={"Brückentage, #{@federal_state.name}, #{@year}, Urlaubsplanung, Feiertage, Wochenende, Urlaubstage, freie Tage"}
+/>
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta
+  property="og:url"
+  content={
+    Routes.bridge_day_url(
+      @conn,
+      :show_within_federal_state,
+      @country.slug,
+      @federal_state.slug,
+      @year
+    )
+  }
+/>
+<meta
+  property="og:title"
+  content={"Brückentage #{@federal_state.name} #{@year} | Optimale Urlaubsplanung"}
+/>
+<meta
+  property="og:description"
+  content={"Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung."}
+/>
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta
+  property="twitter:url"
+  content={
+    Routes.bridge_day_url(
+      @conn,
+      :show_within_federal_state,
+      @country.slug,
+      @federal_state.slug,
+      @year
+    )
+  }
+/>
+<meta
+  property="twitter:title"
+  content={"Brückentage #{@federal_state.name} #{@year} | Optimale Urlaubsplanung"}
+/>
+<meta
+  property="twitter:description"
+  content={"Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung."}
+/>
+
+<script type="application/ld+json">
+  <%= Jason.encode!(%{
+    "@context" => "https://schema.org",
+    "@type" => "WebPage",
+    "name" => "Brückentage #{@federal_state.name} #{@year}",
+    "description" => "Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung.",
+    "url" => Routes.bridge_day_url(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year),
+    "mainEntity" => %{
+      "@type" => "ItemList",
+      "itemListElement" => Enum.map(Enum.with_index(@bridge_day_map[2] || []), fn {bridge_day, index} ->
+        %{
+          "@type" => "ListItem",
+          "position" => index + 1,
+          "item" => %{
+            "@type" => "Event",
+            "name" => "Brückentag #{ViewHelpers.format_date(bridge_day.starts_on)}",
+            "startDate" => bridge_day.starts_on,
+            "endDate" => bridge_day.ends_on,
+            "location" => %{
+              "@type" => "Place",
+              "name" => @federal_state.name,
+              "address" => %{
+                "@type" => "PostalAddress",
+                "addressRegion" => @federal_state.name,
+                "addressCountry" => @country.code
+              }
+            }
+          }
+        }
+      end)
+    }
+  }) %>
+</script>

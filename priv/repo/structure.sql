@@ -139,6 +139,112 @@ ALTER SEQUENCE public.daily_change_counts_id_seq OWNED BY public.daily_change_co
 
 
 --
+-- Name: deleted_periods; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.deleted_periods (
+    id bigint NOT NULL,
+    original_id integer NOT NULL,
+    holiday_or_vacation_type_id integer,
+    location_id integer,
+    starts_on date,
+    ends_on date,
+    created_by_email_address character varying(255),
+    html_class character varying(255),
+    is_listed_below_month boolean DEFAULT false,
+    is_public_holiday boolean DEFAULT false,
+    is_school_vacation boolean DEFAULT false,
+    is_valid_for_students boolean DEFAULT false,
+    is_valid_for_everybody boolean DEFAULT false,
+    memo text,
+    display_priority integer DEFAULT 10,
+    deleted_school_original_id integer NOT NULL,
+    deleted_at timestamp(0) without time zone NOT NULL,
+    deleted_by_user_id integer,
+    original_inserted_at timestamp(0) without time zone,
+    original_updated_at timestamp(0) without time zone,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: deleted_periods_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.deleted_periods_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: deleted_periods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.deleted_periods_id_seq OWNED BY public.deleted_periods.id;
+
+
+--
+-- Name: deleted_schools; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.deleted_schools (
+    id bigint NOT NULL,
+    original_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    slug character varying(255),
+    code character varying(255),
+    parent_location_id integer,
+    cachable_calendar_location_id integer,
+    is_country boolean DEFAULT false,
+    is_federal_state boolean DEFAULT false,
+    is_county boolean DEFAULT false,
+    is_city boolean DEFAULT false,
+    is_school boolean DEFAULT true,
+    address_line1 character varying(255),
+    address_street character varying(255),
+    address_zip_code character varying(255),
+    address_city character varying(255),
+    address_email_address character varying(255),
+    address_phone_number character varying(255),
+    address_homepage_url character varying(255),
+    address_school_type character varying(255),
+    address_official_id character varying(255),
+    address_lat double precision,
+    address_lon double precision,
+    deleted_at timestamp(0) without time zone NOT NULL,
+    deleted_by_user_id integer,
+    deletion_reason text,
+    original_inserted_at timestamp(0) without time zone,
+    original_updated_at timestamp(0) without time zone,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: deleted_schools_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.deleted_schools_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: deleted_schools_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.deleted_schools_id_seq OWNED BY public.deleted_schools.id;
+
+
+--
 -- Name: holiday_or_vacation_types; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -428,6 +534,20 @@ ALTER TABLE ONLY public.daily_change_counts ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: deleted_periods id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deleted_periods ALTER COLUMN id SET DEFAULT nextval('public.deleted_periods_id_seq'::regclass);
+
+
+--
+-- Name: deleted_schools id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deleted_schools ALTER COLUMN id SET DEFAULT nextval('public.deleted_schools_id_seq'::regclass);
+
+
+--
 -- Name: holiday_or_vacation_types id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -490,6 +610,22 @@ ALTER TABLE ONLY public.addresses
 
 ALTER TABLE ONLY public.daily_change_counts
     ADD CONSTRAINT daily_change_counts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: deleted_periods deleted_periods_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deleted_periods
+    ADD CONSTRAINT deleted_periods_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: deleted_schools deleted_schools_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deleted_schools
+    ADD CONSTRAINT deleted_schools_pkey PRIMARY KEY (id);
 
 
 --
@@ -575,6 +711,55 @@ CREATE INDEX addresses_zip_code_index ON public.addresses USING btree (zip_code)
 --
 
 CREATE UNIQUE INDEX daily_change_counts_date_index ON public.daily_change_counts USING btree (date);
+
+
+--
+-- Name: deleted_periods_deleted_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX deleted_periods_deleted_at_index ON public.deleted_periods USING btree (deleted_at);
+
+
+--
+-- Name: deleted_periods_deleted_school_original_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX deleted_periods_deleted_school_original_id_index ON public.deleted_periods USING btree (deleted_school_original_id);
+
+
+--
+-- Name: deleted_periods_original_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX deleted_periods_original_id_index ON public.deleted_periods USING btree (original_id);
+
+
+--
+-- Name: deleted_periods_starts_on_ends_on_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX deleted_periods_starts_on_ends_on_index ON public.deleted_periods USING btree (starts_on, ends_on);
+
+
+--
+-- Name: deleted_schools_deleted_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX deleted_schools_deleted_at_index ON public.deleted_schools USING btree (deleted_at);
+
+
+--
+-- Name: deleted_schools_original_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX deleted_schools_original_id_index ON public.deleted_schools USING btree (original_id);
+
+
+--
+-- Name: deleted_schools_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX deleted_schools_slug_index ON public.deleted_schools USING btree (slug);
 
 
 --
@@ -935,3 +1120,7 @@ INSERT INTO public."schema_migrations" (version) VALUES (20250606144035);
 INSERT INTO public."schema_migrations" (version) VALUES (20250608165633);
 INSERT INTO public."schema_migrations" (version) VALUES (20250623073245);
 INSERT INTO public."schema_migrations" (version) VALUES (20250623145041);
+INSERT INTO public."schema_migrations" (version) VALUES (20250626113823);
+INSERT INTO public."schema_migrations" (version) VALUES (20250626113855);
+INSERT INTO public."schema_migrations" (version) VALUES (20250626115814);
+INSERT INTO public."schema_migrations" (version) VALUES (20250626120254);

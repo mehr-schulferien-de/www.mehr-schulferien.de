@@ -6,12 +6,12 @@ defmodule MehrSchulferienWeb.VacationController do
   alias MehrSchulferienWeb.ViewHelpers
 
   @vacation_types %{
-    "sommerferien" => "Sommerferien",
-    "osterferien" => "Osterferien",
-    "herbstferien" => "Herbstferien",
-    "weihnachtsferien" => "Weihnachtsferien",
-    "winterferien" => "Winterferien",
-    "pfingstferien" => "Pfingstferien"
+    "sommerferien" => "Sommer",
+    "osterferien" => "Ostern",
+    "herbstferien" => "Herbst",
+    "weihnachtsferien" => "Weihnachten",
+    "winterferien" => "Winter",
+    "pfingstferien" => "Pfingsten"
   }
 
   # Main vacation display actions
@@ -60,7 +60,8 @@ defmodule MehrSchulferienWeb.VacationController do
     next_vacation_period =
       data.periods
       |> Enum.filter(fn p ->
-        p.holiday_or_vacation_type.is_school_vacation && Date.compare(p.starts_on, today) == :gt
+        p.holiday_or_vacation_type.default_is_school_vacation &&
+          Date.compare(p.starts_on, today) == :gt
       end)
       |> Enum.sort_by(& &1.starts_on)
       |> List.first()
@@ -72,7 +73,7 @@ defmodule MehrSchulferienWeb.VacationController do
 
         first_vacation =
           next_year_data.periods
-          |> Enum.filter(& &1.holiday_or_vacation_type.is_school_vacation)
+          |> Enum.filter(& &1.holiday_or_vacation_type.default_is_school_vacation)
           |> Enum.sort_by(& &1.starts_on)
           |> List.first()
 
@@ -117,14 +118,26 @@ defmodule MehrSchulferienWeb.VacationController do
 
   defp vacation_type_from_name(name) do
     case name do
-      "Sommerferien" -> :sommerferien
-      "Osterferien" -> :osterferien
-      "Herbstferien" -> :herbstferien
-      "Weihnachtsferien" -> :weihnachtsferien
-      "Winterferien" -> :winterferien
-      "Pfingstferien" -> :pfingstferien
+      "Sommer" -> :sommerferien
+      "Ostern" -> :osterferien
+      "Herbst" -> :herbstferien
+      "Weihnachten" -> :weihnachtsferien
+      "Winter" -> :winterferien
+      "Pfingsten" -> :pfingstferien
       # Fallback
       _ -> :sommerferien
+    end
+  end
+
+  defp get_display_vacation_name(vacation_type) do
+    case vacation_type do
+      "sommerferien" -> "Sommerferien"
+      "osterferien" -> "Osterferien"
+      "herbstferien" -> "Herbstferien"
+      "weihnachtsferien" -> "Weihnachtsferien"
+      "winterferien" -> "Winterferien"
+      "pfingstferien" -> "Pfingstferien"
+      _ -> "Ferien"
     end
   end
 
@@ -144,11 +157,12 @@ defmodule MehrSchulferienWeb.VacationController do
     data = CH.prepare_show_year_data(location_ids, year, today)
 
     # Filter for the specific vacation type
-    vacation_name = @vacation_types[vacation_type]
+    db_vacation_name = @vacation_types[vacation_type]
+    display_vacation_name = get_display_vacation_name(vacation_type)
 
     vacation_period =
       Enum.find(data.periods, fn period ->
-        period.holiday_or_vacation_type.name == vacation_name
+        period.holiday_or_vacation_type.name == db_vacation_name
       end)
 
     # Calculate adjoining_duration for each period
@@ -170,7 +184,7 @@ defmodule MehrSchulferienWeb.VacationController do
         country: country,
         federal_state: federal_state,
         vacation_type: vacation_type,
-        vacation_name: vacation_name,
+        vacation_name: display_vacation_name,
         vacation_period: vacation_period,
         periods: periods_with_duration,
         all_periods: data.all_periods,
@@ -195,7 +209,7 @@ defmodule MehrSchulferienWeb.VacationController do
         year: String.to_integer(year),
         years_with_data: MehrSchulferien.Periods.list_years_with_periods(),
         meta_title_type: :vacation,
-        page_title: "#{vacation_name} #{federal_state.name} #{year}"
+        page_title: "#{display_vacation_name} #{federal_state.name} #{year}"
       }
     )
   end

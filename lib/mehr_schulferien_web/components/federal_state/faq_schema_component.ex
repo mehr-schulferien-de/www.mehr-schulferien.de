@@ -9,7 +9,7 @@ defmodule MehrSchulferienWeb.FederalState.FaqSchemaComponent do
     # Generate common questions based on vacation periods
     vacation_questions =
       assigns.periods
-      |> Enum.filter(fn p -> p.holiday_or_vacation_type.is_school_vacation end)
+      |> Enum.filter(fn p -> p.holiday_or_vacation_type.default_is_school_vacation end)
       # Take main vacation types
       |> Enum.take(6)
       |> Enum.map(fn period ->
@@ -63,14 +63,14 @@ defmodule MehrSchulferienWeb.FederalState.FaqSchemaComponent do
 
   defp count_vacation_days(periods) do
     periods
-    |> Enum.filter(fn p -> p.holiday_or_vacation_type.is_school_vacation end)
+    |> Enum.filter(fn p -> p.holiday_or_vacation_type.default_is_school_vacation end)
     |> Enum.map(fn p -> Date.diff(p.ends_on, p.starts_on) + 1 end)
     |> Enum.sum()
   end
 
   defp count_vacation_periods(periods) do
     periods
-    |> Enum.filter(fn p -> p.holiday_or_vacation_type.is_school_vacation end)
+    |> Enum.filter(fn p -> p.holiday_or_vacation_type.default_is_school_vacation end)
     |> Enum.count()
   end
 
@@ -78,7 +78,8 @@ defmodule MehrSchulferienWeb.FederalState.FaqSchemaComponent do
     next_vacation =
       periods
       |> Enum.filter(fn p ->
-        p.holiday_or_vacation_type.is_school_vacation && Date.compare(p.starts_on, today) == :gt
+        p.holiday_or_vacation_type.default_is_school_vacation &&
+          Date.compare(p.starts_on, today) == :gt
       end)
       |> Enum.sort_by(& &1.starts_on)
       |> List.first()

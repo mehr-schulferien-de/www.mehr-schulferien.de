@@ -11,7 +11,7 @@ defmodule MehrSchulferienWeb.FederalState.ItemListSchemaComponent do
     # Create list items for each vacation period
     vacation_items =
       assigns.periods
-      |> Enum.filter(fn p -> p.holiday_or_vacation_type.is_school_vacation end)
+      |> Enum.filter(fn p -> p.holiday_or_vacation_type.default_is_school_vacation end)
       |> Enum.with_index(1)
       |> Enum.map(fn {period, position} ->
         days = Date.diff(period.ends_on, period.starts_on) + 1

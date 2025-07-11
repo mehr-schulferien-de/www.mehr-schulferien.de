@@ -25,7 +25,8 @@ defmodule MehrSchulferienWeb.FederalStateView do
   Generates dynamic meta description for federal state pages based on vacation proximity
   """
   def dynamic_federal_state_description(state_name, year, periods, today) do
-    vacation_periods = Enum.filter(periods, & &1.holiday_or_vacation_type.is_school_vacation)
+    vacation_periods =
+      Enum.filter(periods, & &1.holiday_or_vacation_type.default_is_school_vacation)
 
     # Find current or next vacation
     current_vacation =

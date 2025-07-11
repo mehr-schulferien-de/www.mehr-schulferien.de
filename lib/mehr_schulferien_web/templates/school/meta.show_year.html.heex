@@ -1,0 +1,16 @@
+<title>
+  Schulferien <%= @school.name %> <%= @year %> (<%= @city.name %>, <%= @federal_state.name %>)
+</title>
+<meta
+  name="description"
+  content={"Ferientermine und gesetzliche Feiertage #{@year} bis Juli #{@year + 1} für #{@school.name} in #{@city.name} (#{@federal_state.name})."}
+/>
+
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: @country.name, item: "https://www.mehr-schulferien.de" <> Routes.country_path(@conn, :show, @country.slug)},
+    %{name: "Ferientermine #{@federal_state.name}", item: "https://www.mehr-schulferien.de" <> Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug)},
+    %{name: @city.name, item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}/stadt/#{@city.slug}"},
+    %{name: "#{@school.name} #{@year}", item: "https://www.mehr-schulferien.de" <> Routes.school_path(@conn, :show_year, @country.slug, @school.slug, @year)}
+  ]) %>
+</script>
