@@ -52,6 +52,56 @@
           end %></lastmod>
         </sitemap>
         
+        <%!-- Vacation-specific URLs for better SEO --%>
+        <sitemap>
+          <loc>https://www.mehr-schulferien.de/sommerferien/<%= federal_state.slug %>/<%= year %></loc>
+          <lastmod><%= cond do
+            year < @today.year -> Date.new!(year + 1, 1, 1)
+            year == @today.year -> @today
+            true -> Date.new!(@today.year, 1, 1)
+          end %></lastmod>
+        </sitemap>
+        <sitemap>
+          <loc>https://www.mehr-schulferien.de/osterferien/<%= federal_state.slug %>/<%= year %></loc>
+          <lastmod><%= cond do
+            year < @today.year -> Date.new!(year + 1, 1, 1)
+            year == @today.year -> @today
+            true -> Date.new!(@today.year, 1, 1)
+          end %></lastmod>
+        </sitemap>
+        <sitemap>
+          <loc>https://www.mehr-schulferien.de/herbstferien/<%= federal_state.slug %>/<%= year %></loc>
+          <lastmod><%= cond do
+            year < @today.year -> Date.new!(year + 1, 1, 1)
+            year == @today.year -> @today
+            true -> Date.new!(@today.year, 1, 1)
+          end %></lastmod>
+        </sitemap>
+        <sitemap>
+          <loc>https://www.mehr-schulferien.de/weihnachtsferien/<%= federal_state.slug %>/<%= year %></loc>
+          <lastmod><%= cond do
+            year < @today.year -> Date.new!(year + 1, 1, 1)
+            year == @today.year -> @today
+            true -> Date.new!(@today.year, 1, 1)
+          end %></lastmod>
+        </sitemap>
+        <sitemap>
+          <loc>https://www.mehr-schulferien.de/winterferien/<%= federal_state.slug %>/<%= year %></loc>
+          <lastmod><%= cond do
+            year < @today.year -> Date.new!(year + 1, 1, 1)
+            year == @today.year -> @today
+            true -> Date.new!(@today.year, 1, 1)
+          end %></lastmod>
+        </sitemap>
+        <sitemap>
+          <loc>https://www.mehr-schulferien.de/pfingstferien/<%= federal_state.slug %>/<%= year %></loc>
+          <lastmod><%= cond do
+            year < @today.year -> Date.new!(year + 1, 1, 1)
+            year == @today.year -> @today
+            true -> Date.new!(@today.year, 1, 1)
+          end %></lastmod>
+        </sitemap>
+        
         <%!-- Bridge days URLs for federal states --%>
         <sitemap>
           <loc>https://www.mehr-schulferien.de/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>

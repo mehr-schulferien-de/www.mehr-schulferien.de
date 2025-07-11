@@ -1,8 +1,39 @@
-<title>Schulferien <%= @federal_state.name %> <%= @year %></title>
-<meta name="description" content="Ferientermine und Feiertage für <%= @federal_state.name %> im Jahr <%= @year %>.">
+<% # Extract vacation periods for the description
+   vacation_types = ["Winterferien", "Osterferien", "Pfingstferien", "Sommerferien", "Herbstferien", "Weihnachtsferien"]
+   vacation_periods = @periods 
+     |> Enum.filter(fn p -> p.holiday_or_vacation_type.name in vacation_types end)
+     |> Enum.sort_by(& &1.starts_on)
+   
+   # Format vacation dates for meta description
+   vacation_summary = vacation_periods
+     |> Enum.take(4) # Take first 4 vacation types
+     |> Enum.map(fn p -> 
+        "✓ #{p.holiday_or_vacation_type.name} (#{Calendar.strftime(p.starts_on, "%d.%m.")}-#{Calendar.strftime(p.ends_on, "%d.%m.")})" 
+      end)
+     |> Enum.join(" ")
+%>
+
+<title>Schulferien <%= @federal_state.name %> <%= @year %> - Alle Termine: Oster-, Sommer-, Herbst- & Weihnachtsferien</title>
+<meta name="description" content="Schulferien <%= @federal_state.name %> <%= @year %>: <%= vacation_summary %>. Plus Feiertage, Brückentage, iCal-Export und Kalenderansicht.">
+<meta name="keywords" content="Schulferien <%= @federal_state.name %> <%= @year %>, Sommerferien <%= @federal_state.name %>, Osterferien <%= @federal_state.name %>, Herbstferien <%= @federal_state.name %>, Weihnachtsferien <%= @federal_state.name %>, Ferien <%= @federal_state.name %>, Ferientermine">
+
 <%= if assigns[:noindex] do %>
 <meta name="robots" content="noindex,nofollow">
 <% end %>
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="<%= Routes.federal_state_url(@conn, :show_year, @country.slug, @federal_state.slug, @year) %>">
+<meta property="og:title" content="Schulferien <%= @federal_state.name %> <%= @year %> - Alle Ferientermine">
+<meta property="og:description" content="Alle Schulferien <%= @year %> für <%= @federal_state.name %>: Oster-, Sommer-, Herbst- und Weihnachtsferien. Mit Kalender, iCal-Export und Brückentagen.">
+<meta property="og:site_name" content="mehr-schulferien.de">
+<meta property="og:locale" content="de_DE">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary">
+<meta property="twitter:url" content="<%= Routes.federal_state_url(@conn, :show_year, @country.slug, @federal_state.slug, @year) %>">
+<meta property="twitter:title" content="Schulferien <%= @federal_state.name %> <%= @year %>">
+<meta property="twitter:description" content="Alle Schulferien <%= @year %> für <%= @federal_state.name %>: Oster-, Sommer-, Herbst- und Weihnachtsferien.">
 
 <script type="application/ld+json">
 <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([

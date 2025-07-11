@@ -1,0 +1,166 @@
+<div class="mt-0 sm:mt-1">
+  <div>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
+        <%= @vacation_name %> <%= @federal_state.name %> <%= @year %>
+      </h1>
+
+      <.pagination
+        conn={@conn}
+        country={@country}
+        location={@federal_state}
+        location_type={:federal_state}
+        years_with_data={@years_with_data}
+        year={@year}
+      />
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+      <div class="lg:w-2/3 bg-white p-4 rounded-lg shadow-sm">
+        <%= if @has_data do %>
+          <% # Show the specific vacation period prominently %>
+          <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h2 class="text-lg font-semibold text-blue-900 mb-2">
+              <%= @vacation_name %> <%= @year %>
+            </h2>
+            <div class="text-xl font-bold text-blue-800">
+              <%= Calendar.strftime(@vacation_period.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(
+                @vacation_period.ends_on,
+                "%d.%m.%Y"
+              ) %>
+            </div>
+            <div class="text-sm text-blue-700 mt-1">
+              <%= Date.diff(@vacation_period.ends_on, @vacation_period.starts_on) + 1 %> Tage
+            </div>
+          </div>
+
+          <% # Show all vacation periods for comparison %>
+          <h3 class="text-lg font-semibold text-gray-800 mb-3">
+            Alle Schulferien <%= @federal_state.name %> <%= @year %>
+          </h3>
+          <.periods_table periods={@periods} all_periods={@all_periods} today={@today} />
+
+          <% # Links to other vacation types %>
+          <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 class="text-base font-semibold text-gray-800 mb-3">
+              Weitere Ferientermine <%= @federal_state.name %>:
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              <%= for {type_key, type_name} <- [
+                {"winterferien", "Winterferien"},
+                {"osterferien", "Osterferien"},
+                {"pfingstferien", "Pfingstferien"},
+                {"sommerferien", "Sommerferien"},
+                {"herbstferien", "Herbstferien"},
+                {"weihnachtsferien", "Weihnachtsferien"}
+              ] do %>
+                <%= if type_key != @vacation_type do %>
+                  <a
+                    href={"/#{type_key}/#{@federal_state.slug}/#{@year}"}
+                    class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 border border-blue-300 rounded-md transition-colors"
+                  >
+                    <%= type_name %> <%= @year %>
+                  </a>
+                <% else %>
+                  <span class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
+                    <%= type_name %> <%= @year %>
+                  </span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+
+          <% # Link back to main federal state page %>
+          <div class="mt-4">
+            <a
+              href={
+                Routes.federal_state_path(
+                  @conn,
+                  :show_year,
+                  @country.slug,
+                  @federal_state.slug,
+                  @year
+                )
+              }
+              class="text-blue-600 hover:text-blue-800 text-sm"
+            >
+              ← Alle Ferientermine <%= @federal_state.name %> <%= @year %>
+            </a>
+          </div>
+        <% else %>
+          <div class="text-center py-8">
+            <p class="text-gray-600 mb-4">
+              Für <%= @vacation_name %> <%= @year %> in <%= @federal_state.name %> liegen noch keine Termine vor.
+            </p>
+            <a
+              href={
+                Routes.federal_state_path(
+                  @conn,
+                  :show_year,
+                  @country.slug,
+                  @federal_state.slug,
+                  @year
+                )
+              }
+              class="text-blue-600 hover:text-blue-800"
+            >
+              Alle Ferientermine <%= @federal_state.name %> anzeigen →
+            </a>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="lg:w-1/3">
+        <.ical_panel
+          conn={@conn}
+          entity_slug={@federal_state.slug}
+          entity_name={@federal_state.name}
+          year={@year}
+        />
+
+        <% # Info box about vacation planning %>
+        <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h3 class="text-lg font-semibold text-yellow-900 mb-2">
+            <%= @vacation_name %> planen
+          </h3>
+          <p class="text-sm text-yellow-800">
+            <%= vacation_planning_tip(@vacation_type) %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <%= if @has_data do %>
+      <div class="mt-8">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+          Kalenderansicht <%= @vacation_name %> <%= @year %>
+        </h2>
+
+        <.calendar_legend />
+
+        <% # Show only the months relevant to this vacation %>
+        <% relevant_months = get_relevant_months(@vacation_period) %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <%= for month <- relevant_months do %>
+            <.month_calendar
+              month={month}
+              year={@year}
+              periods={@periods}
+              public_periods={@public_periods}
+              all_periods={@all_periods}
+              months={@months}
+            />
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= if @vacation_period do %>
+      <.schema_org_event
+        periods={[@vacation_period]}
+        federal_state={@federal_state}
+        country={@country}
+      />
+    <% end %>
+  </div>
+</div>

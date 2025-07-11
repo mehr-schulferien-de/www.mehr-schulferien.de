@@ -7,6 +7,8 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
   attr :periods, :list, required: true
   attr :all_periods, :list, required: true
   attr :today, :any, default: Date.utc_today()
+  attr :federal_state, :any, default: nil
+  attr :conn, :any, default: nil
 
   def periods_table(assigns) do
     ~H"""
@@ -52,7 +54,16 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
               onclick={"window.location.href='##{month_name}#{period.starts_on.year}'"}
             >
               <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium">
-                <.period_name period={period} />
+                <%= if @federal_state && @conn && vacation_type_slug(period) do %>
+                  <a
+                    href={vacation_url(@conn, period, @federal_state)}
+                    class="text-blue-600 hover:text-blue-800 underline"
+                  >
+                    <.period_name period={period} />
+                  </a>
+                <% else %>
+                  <.period_name period={period} />
+                <% end %>
               </td>
               <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                 <span class="whitespace-nowrap">
@@ -106,5 +117,34 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
       <% end %>
     </div>
     """
+  end
+
+  # Helper function to get vacation type slug
+  defp vacation_type_slug(period) do
+    case period.holiday_or_vacation_type.name do
+      "Sommerferien" -> "sommerferien"
+      "Osterferien" -> "osterferien"
+      "Herbstferien" -> "herbstferien"
+      "Weihnachtsferien" -> "weihnachtsferien"
+      "Winterferien" -> "winterferien"
+      "Pfingstferien" -> "pfingstferien"
+      _ -> nil
+    end
+  end
+
+  # Helper function to build vacation URL
+  defp vacation_url(conn, period, federal_state) do
+    case vacation_type_slug(period) do
+      nil ->
+        nil
+
+      slug ->
+        MehrSchulferienWeb.Router.Helpers.vacation_path(
+          conn,
+          String.to_atom(slug),
+          federal_state.slug,
+          period.starts_on.year
+        )
+    end
   end
 end
