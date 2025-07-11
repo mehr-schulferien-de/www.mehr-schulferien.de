@@ -533,11 +533,13 @@ defmodule MehrSchulferien.Locations do
               """
               (
                 6371000 * acos(
-                  cos(radians(?)) * 
-                  cos(radians(?)) * 
-                  cos(radians(?) - radians(?)) + 
-                  sin(radians(?)) * 
-                  sin(radians(?))
+                  LEAST(1.0, GREATEST(-1.0,
+                    cos(radians(?)) * 
+                    cos(radians(?)) * 
+                    cos(radians(?) - radians(?)) + 
+                    sin(radians(?)) * 
+                    sin(radians(?))
+                  ))
                 )
               ) <= ?
               """,
@@ -555,11 +557,13 @@ defmodule MehrSchulferien.Locations do
              """
              (
                6371000 * acos(
-                 cos(radians(?)) * 
-                 cos(radians(?)) * 
-                 cos(radians(?) - radians(?)) + 
-                 sin(radians(?)) * 
-                 sin(radians(?))
+                 LEAST(1.0, GREATEST(-1.0,
+                   cos(radians(?)) * 
+                   cos(radians(?)) * 
+                   cos(radians(?) - radians(?)) + 
+                   sin(radians(?)) * 
+                   sin(radians(?))
+                 ))
                )
              )
              """,
