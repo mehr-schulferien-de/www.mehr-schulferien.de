@@ -69,11 +69,12 @@ All locations (countries, federal states, counties, cities, schools) are stored 
 
 ### CSS Framework Architecture
 
-The application uses **Tailwind CSS** as the primary styling framework. Bootstrap is legacy and should NOT be used for any new development.
+The application uses **Tailwind CSS** as the styling framework with a unified design system.
 
-- **IMPORTANT**: Always use Tailwind CSS classes for styling. Never use Bootstrap classes (e.g., `container`, `row`, `col-*`, `btn`, `form-control`, etc.)
-- **StyleConfig** (`lib/mehr_schulferien/style_config.ex`): Manages consistent colors/styles
-- **Framework Selection**: Configurable per-view or globally via `config/config.exs` 
+- **IMPORTANT**: Always use Tailwind CSS classes for styling
+- **Design Tokens** (`lib/mehr_schulferien_web/components/shared/design_tokens.ex`): Central design system
+- **Shared Components** (`lib/mehr_schulferien_web/components/shared/`): Reusable UI components
+- **StyleConfig** (`lib/mehr_schulferien/style_config.ex`): Manages day type colors/styles
 - **Day Types**: Standardized styling for holidays, vacations, weekends, and bridge days
 
 ## Development Guidelines
@@ -97,13 +98,12 @@ The application uses **Tailwind CSS** as the primary styling framework. Bootstra
 
 ### Styling Guidelines
 - **ALWAYS use Tailwind CSS** for all styling needs
-- **NEVER use Bootstrap classes** - the project has migrated away from Bootstrap
-- Common Tailwind patterns in this project:
-  - Layout: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
-  - Cards: `bg-white shadow-sm rounded-lg`
-  - Forms: `border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500`
-  - Buttons: `px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700`
-  - Tables: `min-w-full divide-y divide-gray-200`
+- **Use shared components** from `lib/mehr_schulferien_web/components/shared/` for consistency:
+  - Typography: `<.heading>`, `<.text>`, `<.link>`
+  - Layout: `<.grid>`, `<.card_grid>`, `<.container>`, `<.stack>`
+  - UI Elements: `<.card>`, `<.button>`, `<.badge>`, `<.alert>`
+  - Tables: `<.table>`, `<.thead>`, `<.tbody>`, `<.tr>`, `<.td>`
+- Common patterns are defined in the design token system
 
 ### Testing Strategy
 - System tests for full user workflows
@@ -126,7 +126,7 @@ The application uses **Tailwind CSS** as the primary styling framework. Bootstra
 - **API endpoints** (v2) for programmatic access
 - **Sitemap generation** for SEO
 - **LiveView** for interactive components
-- **Responsive design** with Bootstrap/Tailwind CSS flexibility
+- **Responsive design** with Tailwind CSS
 
 ## Repository Guidelines
 

@@ -149,13 +149,13 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                       "border border-gray-200 text-center py-1 w-1/12 text-xs h-[30px]",
                       cond do
                         is_public_holiday ->
-                          MehrSchulferien.StyleConfig.get_class(:holiday, :tailwind, true)
+                          MehrSchulferien.StyleConfig.get_class(:holiday, true)
 
                         is_vacation ->
-                          MehrSchulferien.StyleConfig.get_class(:vacation, :tailwind, true)
+                          MehrSchulferien.StyleConfig.get_class(:vacation, true)
 
                         weekday >= 6 ->
-                          MehrSchulferien.StyleConfig.get_class(:weekend, :tailwind, true)
+                          MehrSchulferien.StyleConfig.get_class(:weekend, true)
 
                         true ->
                           ""

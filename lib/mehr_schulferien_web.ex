@@ -45,6 +45,16 @@ defmodule MehrSchulferienWeb do
       alias MehrSchulferienWeb.Router.Helpers, as: Routes
       alias MehrSchulferienWeb.ViewHelpers
       alias MehrSchulferienWeb.FaqViewHelpers
+
+      # Import shared components for unified design
+      import MehrSchulferienWeb.Shared.TypographyComponent
+      import MehrSchulferienWeb.Shared.GridComponent
+      import MehrSchulferienWeb.Shared.CardComponent
+      import MehrSchulferienWeb.Shared.ButtonComponent
+      import MehrSchulferienWeb.Shared.TableComponent
+      import MehrSchulferienWeb.Shared.BadgeComponent
+      import MehrSchulferienWeb.Shared.AlertComponent
+      alias MehrSchulferienWeb.Shared.DesignTokens
     end
   end
 
@@ -93,6 +103,16 @@ defmodule MehrSchulferienWeb do
       import MehrSchulferienWeb.Gettext
       import MehrSchulferienWeb.NavigationComponent
       alias MehrSchulferienWeb.Router.Helpers, as: Routes
+
+      # Import shared components for unified design
+      import MehrSchulferienWeb.Shared.TypographyComponent
+      import MehrSchulferienWeb.Shared.GridComponent
+      import MehrSchulferienWeb.Shared.CardComponent
+      import MehrSchulferienWeb.Shared.ButtonComponent
+      import MehrSchulferienWeb.Shared.TableComponent
+      import MehrSchulferienWeb.Shared.BadgeComponent
+      import MehrSchulferienWeb.Shared.AlertComponent
+      alias MehrSchulferienWeb.Shared.DesignTokens
     end
   end
 

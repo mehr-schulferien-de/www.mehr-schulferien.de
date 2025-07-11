@@ -51,7 +51,7 @@
                   </tr>
                   <tr>
                 <% end %>
-                <td class="text-right p-1 <%= ViewHelpers.get_html_class(day, @all_periods, :tailwind) %><%= if Enum.any?(@all_periods, fn p -> Date.compare(day, p.starts_on) != :lt and Date.compare(day, p.ends_on) != :gt end), do: " border-b-4 border-green-600", else: "" %>">
+                <td class="text-right p-1 <%= ViewHelpers.get_html_class(day, @all_periods) %><%= if Enum.any?(@all_periods, fn p -> Date.compare(day, p.starts_on) != :lt and Date.compare(day, p.ends_on) != :gt end), do: " border-b-4 border-green-600", else: "" %>">
                   <time datetime="<%= day %>"><%= day.day %></time>
                 </td>
               <% end %>

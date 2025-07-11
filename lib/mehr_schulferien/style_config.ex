@@ -2,11 +2,12 @@ defmodule MehrSchulferien.StyleConfig do
   @moduledoc """
   Central configuration for styles used across the application.
   Defines color schemes, CSS classes, and related display settings for different types of days.
-  Handles both Bootstrap (legacy) and Tailwind CSS (new) styling.
+  Uses the unified design token system for consistency.
   """
 
+  alias MehrSchulferienWeb.Shared.DesignTokens
+
   # Type definitions
-  @type css_framework :: :bootstrap | :tailwind
   @type day_type :: :holiday | :vacation | :weekend | :bridge_day
 
   # Base color definitions
@@ -22,110 +23,55 @@ defmodule MehrSchulferien.StyleConfig do
     }
   end
 
-  # Bootstrap class mappings
-  @doc """
-  Returns a mapping of day types to Bootstrap CSS classes
-  """
-  def bootstrap_classes do
-    %{
-      # Red for public holidays
-      holiday: "danger",
-      # Green for school vacations
-      vacation: "success",
-      # Gray for weekends
-      weekend: "active",
-      # Yellow for bridge days
-      bridge_day: "warning"
-    }
-  end
-
   # Tailwind class mappings
   @doc """
-  Returns a mapping of day types to Tailwind CSS classes
+  Returns a mapping of day types to Tailwind CSS classes.
+  Uses the unified design token system for consistency.
   """
   def tailwind_classes do
+    day_colors = DesignTokens.day_type_colors()
+
     %{
-      # Blue for public holidays (note: different from Bootstrap)
-      holiday: "bg-blue-600",
-      # Green for school vacations
-      vacation: "bg-green-600",
-      # Gray for weekends
-      weekend: "bg-gray-100",
-      # Yellow for bridge days
-      bridge_day: "bg-yellow-500"
+      holiday: day_colors.holiday.background,
+      vacation: day_colors.vacation.background,
+      weekend: day_colors.weekend.background,
+      bridge_day: day_colors.bridge_day.background
     }
   end
 
   # Tailwind lighter class variants (for background)
   @doc """
-  Returns a mapping of day types to lighter Tailwind CSS classes (for backgrounds)
+  Returns a mapping of day types to lighter Tailwind CSS classes (for backgrounds).
+  Uses the unified design token system for consistency.
   """
   def tailwind_light_classes do
+    day_colors = DesignTokens.day_type_colors()
+
     %{
-      # Light blue for public holidays
-      holiday: "bg-blue-100",
-      # Light green for school vacations
-      vacation: "bg-green-100",
-      # Light gray for weekends
-      weekend: "bg-gray-100",
-      # Light yellow for bridge days
-      bridge_day: "bg-yellow-100"
+      holiday: day_colors.holiday.light_background,
+      vacation: day_colors.vacation.light_background,
+      weekend: day_colors.weekend.light_background,
+      bridge_day: day_colors.bridge_day.light_background
     }
   end
 
-  # Hex color representation for potential future use
+  # Helper functions to get classes by type
   @doc """
-  Returns hex color values for each day type
+  Get the CSS class for a specific day type
   """
-  def hex_colors do
-    %{
-      holiday: %{
-        # Bootstrap danger red
-        bootstrap: "#dc3545",
-        # Tailwind blue-600
-        tailwind: "#2563eb"
-      },
-      vacation: %{
-        # Bootstrap success green
-        bootstrap: "#28a745",
-        # Tailwind green-600
-        tailwind: "#16a34a"
-      },
-      weekend: %{
-        # Bootstrap active light gray
-        bootstrap: "#f8f9fa",
-        # Tailwind gray-100
-        tailwind: "#f3f4f6"
-      },
-      bridge_day: %{
-        # Bootstrap warning yellow
-        bootstrap: "#ffc107",
-        # Tailwind yellow-500
-        tailwind: "#eab308"
-      }
-    }
-  end
+  @spec get_class(day_type(), boolean()) :: String.t()
+  def get_class(day_type, light \\ false)
 
-  # Helper functions to get classes by type and framework
-  @doc """
-  Get the CSS class for a specific day type and CSS framework
-  """
-  @spec get_class(day_type(), css_framework(), boolean()) :: String.t()
-  def get_class(day_type, css_framework \\ :bootstrap, light \\ false)
-
-  def get_class(day_type, :bootstrap, _light) do
-    Map.get(bootstrap_classes(), day_type, "")
-  end
-
-  def get_class(day_type, :tailwind, true) do
+  def get_class(day_type, true) do
     Map.get(tailwind_light_classes(), day_type, "")
   end
 
-  def get_class(day_type, :tailwind, false) do
+  def get_class(day_type, false) do
     Map.get(tailwind_classes(), day_type, "")
   end
 
   # Helper function to convert html_class from database to day_type
+  # This maintains backward compatibility with data stored using Bootstrap class names
   @doc """
   Converts a saved html_class value to the corresponding day_type
   """

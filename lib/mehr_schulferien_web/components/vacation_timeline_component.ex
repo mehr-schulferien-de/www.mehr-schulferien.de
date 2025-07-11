@@ -141,7 +141,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           marker_color =
             if is_school_vacation,
               do: "bg-green-600",
-              else: StyleConfig.get_class(:holiday, :tailwind) %>
+              else: StyleConfig.get_class(:holiday) %>
           <li class="flex items-center space-x-2 mb-1">
             <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
             <%= if federal_state do %>
@@ -259,7 +259,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     cond do
       # If no periods for this day
       period == nil ->
-        if is_weekend, do: StyleConfig.get_class(:weekend, :tailwind), else: ""
+        if is_weekend, do: StyleConfig.get_class(:weekend), else: ""
 
       # Period is a school vacation
       Map.get(period, :is_school_vacation, false) ->
@@ -268,11 +268,11 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
       # Period is a public holiday  
       Map.get(period, :is_public_holiday, false) ->
-        StyleConfig.get_class(:holiday, :tailwind)
+        StyleConfig.get_class(:holiday)
 
       # Fallback for weekend
       is_weekend ->
-        StyleConfig.get_class(:weekend, :tailwind)
+        StyleConfig.get_class(:weekend)
 
       # Default
       true ->

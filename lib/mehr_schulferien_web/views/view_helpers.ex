@@ -96,31 +96,29 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   Returns the html class for a date. This is based on whether the date
   is a holiday period.
 
-  Uses the StyleConfig module to determine the appropriate class based on
-  the current CSS framework (Bootstrap or Tailwind).
+  Uses the StyleConfig module to determine the appropriate Tailwind class.
   """
-  def get_html_class(date, periods, css_framework \\ :tailwind) do
+  def get_html_class(date, periods) do
     case Periods.find_all_periods(periods, date) do
       [] -> ""
-      [period] -> get_html_class_for_period(period, css_framework)
-      periods -> select_html_class(periods, css_framework)
+      [period] -> get_html_class_for_period(period)
+      periods -> select_html_class(periods)
     end
   end
 
-  defp select_html_class(periods, css_framework) do
+  defp select_html_class(periods) do
     period = periods |> Enum.sort(&(&1.display_priority >= &2.display_priority)) |> hd
-    get_html_class_for_period(period, css_framework)
+    get_html_class_for_period(period)
   end
 
-  # Helper to determine the appropriate class based on the period and css_framework
-  defp get_html_class_for_period(period, css_framework) do
+  # Helper to determine the appropriate class based on the period
+  defp get_html_class_for_period(period) do
     # If html_class is not in standard format, return it as-is for backward compatibility
     day_type = StyleConfig.html_class_to_day_type(period.html_class)
 
     if day_type do
       # Use the new StyleConfig for standard day types
-      light = css_framework == :tailwind
-      StyleConfig.get_class(day_type, css_framework, light)
+      StyleConfig.get_class(day_type, true)
     else
       # Keep original html_class for non-standard values
       period.html_class

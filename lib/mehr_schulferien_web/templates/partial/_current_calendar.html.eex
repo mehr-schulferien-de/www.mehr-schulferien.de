@@ -45,7 +45,7 @@
               <% end %>
             </th>
             <%= for day <- @days do %>
-              <% td_html_class = ViewHelpers.get_html_class(day, periods, :tailwind) %>
+              <% td_html_class = ViewHelpers.get_html_class(day, periods) %>
               <td class="text-center p-1 border border-gray-300 <%= td_html_class %>">
                 <%= if td_html_class != "" and td_html_class != "bg-gray-100" do %>
                   <%= if country.slug && federal_state.slug do %>
@@ -71,12 +71,12 @@
                 <% school_period = MehrSchulferien.PeriodDisplay.get_school_period(current_day_periods) %>
                 <%= if MehrSchulferien.PeriodDisplay.display_period_info?(day, @days, school_period) do %>
                   <% colspan = MehrSchulferien.PeriodDisplay.get_period_colspan(day, List.last(@days), school_period) %>
-                  <td class="<%= ViewHelpers.get_html_class(day, [school_period], :tailwind) %> border border-gray-300 p-1" colspan="<%= colspan %>">
+                  <td class="<%= ViewHelpers.get_html_class(day, [school_period]) %> border border-gray-300 p-1" colspan="<%= colspan %>">
                     <%= link MehrSchulferien.PeriodDisplay.show_period_info(school_period, colspan), title: "#{school_period.holiday_or_vacation_type.colloquial} #{day.year} in #{federal_state.name}", to: (if country.slug && federal_state.slug, do: Routes.federal_state_path(@conn, :show, country.slug, federal_state.slug) <> "##{String.downcase(@months[day.month])}#{day.year}", else: "#") %>
                   </td>
                 <% else %>
                   <%= if non_school_period = MehrSchulferien.PeriodDisplay.get_non_school_period(day, school_period, current_day_periods) do %>
-                    <td class="<%= ViewHelpers.get_html_class(day, [non_school_period], :tailwind) %> border border-gray-300"></td>
+                    <td class="<%= ViewHelpers.get_html_class(day, [non_school_period]) %> border border-gray-300"></td>
                   <% end %>
                 <% end %>
               <% else %>

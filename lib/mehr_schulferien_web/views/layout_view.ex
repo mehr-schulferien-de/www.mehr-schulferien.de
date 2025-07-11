@@ -7,17 +7,12 @@ defmodule MehrSchulferienWeb.LayoutView do
   alias MehrSchulferienWeb.NavigationHelper
 
   @doc """
-  Determines whether to use Bootstrap CSS (legacy) or Tailwind CSS (new).
-  Now always returns false as Tailwind is the default.
-  Kept for backwards compatibility.
-  """
-  def use_bootstrap?(_conn, _assigns) do
-    false
-  end
+  Returns the appropriate layout template file.
 
-  @doc """
-  Returns the appropriate layout template file based on the current CSS framework.
-  Now always returns Tailwind layout.
+  - :tailwind_new -> Uses the full modern layout (app_tailwind_full.html)
+  - default -> Uses the minimal layout for legacy pages (app_tailwind_minimal.html)
+
+  Controllers set css_framework: :tailwind_new for fully migrated pages.
   """
   def select_layout_template(_conn, assigns) do
     if Map.get(assigns, :css_framework) == :tailwind_new do
