@@ -37,11 +37,24 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   url: [host: "mehr-schulferien.de", port: nil, scheme: "https"],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
-# Do not print debug messages in production
-config :logger, level: :info
+# Enable debug messages in production (WARNING: only for debugging!)
+config :logger, level: :debug
+
+# Configure logger backend for more detailed output
+config :logger, :console,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id, :user_id, :file, :line]
 
 # Set stacktrace depth to match development for detailed error reporting
 config :phoenix, :stacktrace_depth, 20
+
+# Show detailed errors in production (WARNING: only for debugging!)
+config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
+  debug_errors: true,
+  # Also show code snippets in error pages
+  code_reloader: false,
+  # Disable HTTPS requirement for debugging (if needed)
+  force_ssl: false
 
 # ## SSL Support
 #

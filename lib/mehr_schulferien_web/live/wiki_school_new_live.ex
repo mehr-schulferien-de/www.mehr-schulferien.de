@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   use MehrSchulferienWeb, :live_view
 
-  alias MehrSchulferien.{Maps, Wiki, Locations, Email, Mailer}
+  alias MehrSchulferien.{Maps, Wiki, Locations, Email, Mailer, Config}
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Geocoding.Nominatim
@@ -90,7 +90,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
        put_flash(
          socket,
          :error,
-         "Das tägliche Limit von 20 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+         "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
        )}
     else
       school_name = Map.get(params, "name", "")
@@ -324,7 +324,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   defp get_daily_limit_info do
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
-    limit_reached = daily_changes >= 20
+    limit_reached = daily_changes >= Config.daily_change_limit()
     {daily_changes, limit_reached}
   end
 end

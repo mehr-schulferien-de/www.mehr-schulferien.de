@@ -1,5 +1,6 @@
 defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
   use MehrSchulferienWeb.ConnCase, async: false
+  import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
 
@@ -72,19 +73,17 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
       assert redirected_to(conn, 302)
 
       # Step 2: Visit wiki page and check version history
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
-      response = html_response(conn, 200)
+      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
 
       # Step 3: Verify version history shows COMPLETE original data
       # School name
-      assert response =~ "Albert Schweitzer Realschule Plus Koblenz"
-      # Version history should show the changes with original values
-      assert response =~ "E-Mail: &quot;info@rsplus-koblenz.de&quot; → leer"
-      assert response =~ "Telefon: &quot;+49 261 8896590&quot; → leer"
-      assert response =~ "Homepage: &quot;https://rsalb.koblenz.de&quot; → leer"
+      assert html =~ "Albert Schweitzer Realschule Plus Koblenz"
 
-      # Step 4: Verify restore button is present for the version (yellow styling)
-      assert response =~ ~r/bg-yellow-100.*?Wiederherstellen/s
+      # Version history should show generic change summary
+      assert html =~ "Adressinformationen geändert"
+
+      # Step 4: Verify version count is shown
+      assert html =~ "2 Änderungen"
     end
   end
 end

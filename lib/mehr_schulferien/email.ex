@@ -338,4 +338,90 @@ defmodule MehrSchulferien.Email do
     Hinweis: Die Schule und alle zugehörigen Daten wurden in Backup-Tabellen gesichert (deleted_schools und deleted_periods).
     """)
   end
+
+  def beweglicher_ferientag_created_notification(period, school) do
+    school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school.slug}"
+
+    new()
+    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
+    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> subject("Neuer beweglicher Ferientag: #{school.name}")
+    |> html_body("""
+    <h2>Neuer beweglicher Ferientag wurde erstellt</h2>
+    <p><strong>Schule:</strong> #{school.name}</p>
+    <p><strong>Datum:</strong> #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}</p>
+    #{if period.memo, do: "<p><strong>Bemerkung:</strong> #{period.memo}</p>", else: ""}
+    <p><a href="#{school_url}" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;">Schule anzeigen</a></p>
+    """)
+    |> text_body("""
+    Neuer beweglicher Ferientag wurde erstellt
+
+    Schule: #{school.name}
+    Datum: #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}
+    #{if period.memo, do: "Bemerkung: #{period.memo}\n", else: ""}
+    Link zur Schule: #{school_url}
+    """)
+  end
+
+  def beweglicher_ferientag_updated_notification(period, school, changes) do
+    school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school.slug}"
+
+    new()
+    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
+    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> subject("Beweglicher Ferientag geändert: #{school.name}")
+    |> html_body("""
+    <h2>Beweglicher Ferientag wurde geändert</h2>
+    <p><strong>Schule:</strong> #{school.name}</p>
+    <p><strong>Datum:</strong> #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}</p>
+    #{if period.memo, do: "<p><strong>Bemerkung:</strong> #{period.memo}</p>", else: ""}
+
+    <h3>Änderungen:</h3>
+    #{format_changes_html(changes)}
+
+    <p><strong>Geändert am:</strong> #{format_datetime(DateTime.utc_now())}</p>
+    <p><a href="#{school_url}" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;">Schule anzeigen</a></p>
+    """)
+    |> text_body("""
+    Beweglicher Ferientag wurde geändert
+
+    Schule: #{school.name}
+    Datum: #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}
+    #{if period.memo, do: "Bemerkung: #{period.memo}\n", else: ""}
+
+    Änderungen:
+    #{format_changes_text(changes)}
+
+    Geändert am: #{format_datetime(DateTime.utc_now())}
+
+    Link zur Schule: #{school_url}
+    """)
+  end
+
+  def beweglicher_ferientag_deleted_notification(period, school) do
+    school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school.slug}"
+
+    new()
+    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
+    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> subject("Beweglicher Ferientag gelöscht: #{school.name}")
+    |> html_body("""
+    <h2>Beweglicher Ferientag wurde gelöscht</h2>
+    <p><strong>Schule:</strong> #{school.name}</p>
+    <p><strong>Datum:</strong> #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}</p>
+    #{if period.memo, do: "<p><strong>Bemerkung:</strong> #{period.memo}</p>", else: ""}
+    <p><strong>Gelöscht am:</strong> #{format_datetime(DateTime.utc_now())}</p>
+    <p><a href="#{school_url}" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;">Schule anzeigen</a></p>
+    """)
+    |> text_body("""
+    Beweglicher Ferientag wurde gelöscht
+
+    Schule: #{school.name}
+    Datum: #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}
+    #{if period.memo, do: "Bemerkung: #{period.memo}\n", else: ""}
+    Gelöscht am: #{format_datetime(DateTime.utc_now())}
+
+    Link zur Schule: #{school_url}
+    """)
+  end
 end

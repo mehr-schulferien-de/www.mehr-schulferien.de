@@ -1,0 +1,278 @@
+<div class="max-w-4xl mx-auto py-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+      Schul-Wiki: <%= @school.name %>
+    </h1>
+    <p class="text-gray-600">
+      Bearbeiten Sie die Adressdaten und beweglichen Ferientage dieser Schule. Alle Änderungen werden protokolliert.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Edit Form -->
+    <div class="space-y-6">
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Adressdaten bearbeiten
+        </h2>
+
+        <%= if @limit_reached do %>
+          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-800 text-sm">
+              <strong>Tageslimit erreicht:</strong>
+              Es können heute keine weiteren Änderungen vorgenommen werden.
+              Versuchen Sie es morgen erneut.
+            </p>
+          </div>
+        <% end %>
+
+        <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_school_form.html",
+          changeset: @changeset,
+          action: Routes.wiki_path(@socket, :update_school, @school.slug),
+          method: :post,
+          limit_reached: @limit_reached,
+          school_name: Map.get(@changeset.data, :name) || @school.name || "",
+          address: @school.address,
+          disable_zip_code: false,
+          submit_text: "Änderungen speichern",
+          submit_class: "bg-blue-600 hover:bg-blue-700",
+          submit_focus_class: "focus:ring-blue-500"
+        ) %>
+      </div>
+      <!-- Bewegliche Ferientage Section -->
+      <div
+        class="bg-white shadow-sm border border-gray-200 rounded-lg p-6"
+        id="bewegliche-ferientage"
+      >
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Bewegliche Ferientage
+        </h2>
+
+        <div class="mb-6">
+          <p class="text-sm text-gray-600 mb-4">
+            Bewegliche Ferientage sind zusätzliche freie Tage, die Schulen eigenständig festlegen können.
+          </p>
+
+          <%= if @limit_reached do %>
+            <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p class="text-yellow-800 text-sm">
+                <strong>Hinweis:</strong> Das Tageslimit für Änderungen wurde erreicht.
+                Sie können die beweglichen Ferientage einsehen, aber keine Änderungen vornehmen.
+              </p>
+            </div>
+          <% end %>
+          <!-- New Beweglicher Ferientag Form -->
+          <%= if not @limit_reached do %>
+            <form phx-submit="add_beweglicher_ferientag" class="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h3 class="text-lg font-medium text-gray-900 mb-3">
+                Neuen beweglichen Ferientag hinzufügen
+              </h3>
+
+              <div class="grid grid-cols-1 gap-4">
+                <div>
+                  <label for="ferientag_date" class="block text-sm font-medium text-gray-700 mb-1">
+                    Datum
+                  </label>
+                  <input
+                    type="date"
+                    id="ferientag_date"
+                    name="ferientag[date]"
+                    required
+                    min={Date.utc_today() |> Date.to_iso8601()}
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label for="ferientag_memo" class="block text-sm font-medium text-gray-700 mb-1">
+                    Bemerkung/Grund
+                  </label>
+                  <input
+                    type="text"
+                    id="ferientag_memo"
+                    name="ferientag[memo]"
+                    placeholder="z.B. Pädagogischer Tag"
+                    maxlength="255"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <button
+                  type="submit"
+                  class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Beweglichen Ferientag hinzufügen
+                </button>
+              </div>
+            </form>
+          <% end %>
+          <!-- List of Bewegliche Ferientage -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-3">Aktuelle bewegliche Ferientage</h3>
+
+            <%= if @bewegliche_ferientage == [] do %>
+              <p class="text-gray-500 text-sm">
+                Für diese Schule sind noch keine beweglichen Ferientage eingetragen.
+              </p>
+            <% else %>
+              <div class="space-y-3">
+                <%= for ferientag <- @bewegliche_ferientage do %>
+                  <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                    <div class="flex-1">
+                      <div class="flex items-center">
+                        <svg
+                          class="w-5 h-5 text-blue-500 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          >
+                          </path>
+                        </svg>
+                        <span class="font-semibold text-gray-900">
+                          <%= Calendar.strftime(ferientag.starts_on, "%d.%m.%Y") %>
+                        </span>
+                      </div>
+                      <%= if ferientag.memo do %>
+                        <p class="mt-1 text-sm text-gray-600 ml-7">
+                          <%= ferientag.memo %>
+                        </p>
+                      <% end %>
+                    </div>
+
+                    <%= if not @limit_reached do %>
+                      <button
+                        phx-click="delete_beweglicher_ferientag"
+                        phx-value-id={ferientag.id}
+                        data-confirm="Möchten Sie diesen beweglichen Ferientag wirklich löschen?"
+                        class="ml-4 inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-red-300 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                      >
+                        <svg
+                          class="w-4 h-4 mr-1.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          >
+                          </path>
+                        </svg>
+                        Löschen
+                      </button>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Right Column -->
+    <div class="space-y-6">
+      <!-- Current Data Display -->
+      <%= if @school.address do %>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-3">Aktuelle Daten</h3>
+          <dl class="space-y-2 text-sm">
+            <div>
+              <dt class="font-bold text-gray-700">Schulname:</dt>
+              <dd class="text-gray-900"><%= @school.name %></dd>
+            </div>
+            <div>
+              <dt class="font-bold text-gray-700">Adresse:</dt>
+              <dd class="text-gray-900">
+                <%= @school.address.street || "Nicht angegeben" %><br />
+                <%= @school.address.zip_code || "" %> <%= @school.address.city || "" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-bold text-gray-700">Kontakt:</dt>
+              <dd class="text-gray-900">
+                Tel: <%= @school.address.phone_number || "Nicht angegeben" %><br />
+                E-Mail: <%= @school.address.email_address || "Nicht angegeben" %>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      <% else %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-yellow-900 mb-2">Keine Adressdaten vorhanden</h3>
+          <p class="text-sm text-yellow-800">
+            Für diese Schule sind noch keine Adressdaten hinterlegt.
+            Bitte tragen Sie die bekannten Informationen ein.
+          </p>
+        </div>
+      <% end %>
+      <!-- Version History -->
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
+        <div class="p-6 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center justify-between">
+            Versionshistorie
+            <span class="text-sm font-normal text-gray-500">
+              <%= length(@versions) %> Änderungen
+            </span>
+          </h2>
+        </div>
+        <div class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+          <%= if @versions == [] do %>
+            <div class="p-6 text-center text-gray-500">
+              Noch keine Änderungen vorhanden.
+            </div>
+          <% else %>
+            <%= for version <- @display_versions do %>
+              <div class="p-4 hover:bg-gray-50">
+                <div class="flex justify-between items-start">
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">
+                      Version #<%= version.id %>
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      <%= format_version_date(version) %> • <%= format_originator(version) %>
+                    </p>
+                    <p class="text-sm text-gray-700 mt-2">
+                      <%= version_summary(version, @versions) %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
+        daily_changes: @daily_changes
+      ) %>
+    </div>
+  </div>
+  <!-- Back to School Link -->
+  <div class="mt-8 text-center">
+    <a
+      href={"/ferien/d/schule/#{@school.slug}"}
+      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
+      </svg>
+      Zurück zur Schulseite
+    </a>
+  </div>
+</div>

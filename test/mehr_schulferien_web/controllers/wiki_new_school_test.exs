@@ -132,7 +132,7 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
       # Create 20 changes to reach the limit
       today = Date.utc_today()
 
-      for _ <- 1..20 do
+      for _ <- 1..MehrSchulferien.Config.daily_change_limit() do
         MehrSchulferien.Wiki.increment_daily_change_count(today)
       end
 

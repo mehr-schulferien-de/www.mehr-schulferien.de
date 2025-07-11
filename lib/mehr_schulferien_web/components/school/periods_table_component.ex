@@ -75,19 +75,28 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                     </td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                       <span class="whitespace-nowrap">
-                        <span class="sm:hidden">
-                          <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
-                        </span>
-                        <span class="hidden sm:inline">
-                          <%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>
-                        </span>
-                        -
-                        <span class="sm:hidden">
-                          <%= Calendar.strftime(period.ends_on, "%d.%m.") %>
-                        </span>
-                        <span class="hidden sm:inline">
-                          <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>
-                        </span>
+                        <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
+                          <span class="sm:hidden">
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
+                          </span>
+                          <span class="hidden sm:inline">
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>
+                          </span>
+                        <% else %>
+                          <span class="sm:hidden">
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
+                          </span>
+                          <span class="hidden sm:inline">
+                            <%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>
+                          </span>
+                          -
+                          <span class="sm:hidden">
+                            <%= Calendar.strftime(period.ends_on, "%d.%m.") %>
+                          </span>
+                          <span class="hidden sm:inline">
+                            <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>
+                          </span>
+                        <% end %>
                       </span>
                     </td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">

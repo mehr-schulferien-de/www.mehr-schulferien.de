@@ -1,6 +1,7 @@
 defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
   use MehrSchulferienWeb.ConnCase
   import Phoenix.ConnTest
+  import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
   alias MehrSchulferienWeb.Router.Helpers, as: Routes
@@ -17,7 +18,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       # "When I enter a new street... and save it nothing happens"
 
       # Step 1: Visit the wiki page and verify form is present
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
+      conn = get(conn, "/wiki/schools/#{school.slug}")
       response = html_response(conn, 200)
 
       # Verify page loads correctly with edit form
@@ -50,20 +51,18 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       # The user reported "nothing happens" - this verifies something DOES happen
       assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
 
-      # Step 4: Follow the redirect and verify success feedback
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
-      response = html_response(conn, 200)
+      # Step 4: Check the flash message
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "Schuldaten wurden erfolgreich aktualisiert"
 
-      # Most importantly: verify the user gets feedback that something happened
-      assert response =~ "Adressdaten wurden erfolgreich aktualisiert" ||
-               response =~ "aktualisiert" ||
-               response =~ "erfolgreich"
+      # Step 5: Go back to wiki page to verify changes are visible
+      {:ok, _view, html} = live(recycle(conn), "/wiki/schools/#{school.slug}")
 
       # Verify the new street appears in the interface
-      assert response =~ new_street
+      assert html =~ new_street
 
       # Verify the form now shows the updated value
-      assert response =~ ~r/value="#{Regex.escape(new_street)}"/
+      assert html =~ ~r/value="#{Regex.escape(new_street)}"/
 
       # This test proves that:
       # 1. The form is accessible and functional
@@ -96,7 +95,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       })
 
       # Visit wiki page
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
+      conn = get(conn, "/wiki/schools/#{school.slug}")
       response = html_response(conn, 200)
 
       # Form should be available even without existing address
@@ -121,13 +120,15 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       # Should not be "nothing happens" - should redirect
       assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
 
-      # Follow redirect and verify success
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
-      response = html_response(conn, 200)
+      # The redirect was successful
 
       # Verify success feedback and new data appears
-      assert response =~ "aktualisiert" || response =~ "erfolgreich"
-      assert response =~ "Komplett Neue Straße 123"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "Schuldaten wurden erfolgreich aktualisiert"
+
+      # Check the data in the wiki page
+      {:ok, _view, html} = live(recycle(conn), "/wiki/schools/#{school.slug}")
+      assert html =~ "Komplett Neue Straße 123"
     end
 
     test "form validation and user feedback works correctly", %{
@@ -151,11 +152,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
 
       # User should get some feedback
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
-      response = html_response(conn, 200)
-
-      # Should still show success (since no validation prevents empty fields)
-      assert response =~ "aktualisiert" || response =~ "erfolgreich"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "erfolgreich"
     end
 
     test "wiki page is accessible and not returning errors", %{
@@ -163,7 +160,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       school: school
     } do
       # Basic sanity check - make sure the page itself works
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
+      conn = get(conn, "/wiki/schools/#{school.slug}")
 
       # Should not get 404, 500, etc.
       assert html_response(conn, 200)

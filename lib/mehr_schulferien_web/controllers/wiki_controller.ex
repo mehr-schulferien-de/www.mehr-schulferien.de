@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.WikiController do
   require Logger
   import Ecto.Query
 
-  alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Repo}
+  alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Repo, Config}
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Geocoding.Nominatim
 
@@ -62,39 +62,7 @@ defmodule MehrSchulferienWeb.WikiController do
 
   defp get_coordinates_for_update(_school, _street, _zip_code, _city), do: {nil, nil}
 
-  def show_school(conn, %{"slug" => school_slug}) do
-    school = Locations.get_school_by_slug!(school_slug)
-
-    # Get combined version history for both school and address (limit to last 4 entries)
-    versions = get_combined_versions(school)
-
-    # Get daily change count
-    today = Date.utc_today()
-    daily_changes = Wiki.get_daily_change_count(today)
-    limit_reached = daily_changes >= 20
-
-    # Create a combined changeset for both school and address fields
-    changeset =
-      if school.address do
-        # Merge school and address changesets into one form
-        address_changeset = Maps.change_address(school.address)
-        %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
-      else
-        # Create address changeset with school name
-        address_changeset = Maps.change_address(%Address{school_location_id: school.id})
-        %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
-      end
-
-    render(conn, "show_school.html", %{
-      school: school,
-      versions: versions,
-      display_versions: Enum.take(versions, 5),
-      changeset: changeset,
-      daily_changes: daily_changes,
-      limit_reached: limit_reached,
-      css_framework: :tailwind_new
-    })
-  end
+  # Note: show_school is now handled by WikiSchoolShowLive
 
   def update_school(conn, %{"slug" => school_slug} = params) do
     school = Locations.get_school_by_slug!(school_slug)
@@ -103,13 +71,13 @@ defmodule MehrSchulferienWeb.WikiController do
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
 
-    if daily_changes >= 20 do
+    if daily_changes >= Config.daily_change_limit() do
       conn
       |> put_flash(
         :error,
-        "Das tägliche Limit von 20 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
       )
-      |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+      |> redirect(to: "/wiki/schools/#{school_slug}")
     else
       # Extract school and address params
       school_params = Map.take(params, ["name"])
@@ -354,13 +322,13 @@ defmodule MehrSchulferienWeb.WikiController do
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
 
-    if daily_changes >= 20 do
+    if daily_changes >= Config.daily_change_limit() do
       conn
       |> put_flash(
         :error,
-        "Das tägliche Limit von 20 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
       )
-      |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+      |> redirect(to: "/wiki/schools/#{school_slug}")
     else
       # Determine which model the version belongs to
       with {version_id_int, ""} <- Integer.parse(version_id),
@@ -422,13 +390,13 @@ defmodule MehrSchulferienWeb.WikiController do
           {:error, _} ->
             conn
             |> put_flash(:error, "Fehler beim Zurückkehren zur ausgewählten Version.")
-            |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+            |> redirect(to: "/wiki/schools/#{school_slug}")
         end
       else
         _ ->
           conn
           |> put_flash(:error, "Ungültige Versions-ID.")
-          |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+          |> redirect(to: "/wiki/schools/#{school_slug}")
       end
     end
   end
@@ -567,13 +535,13 @@ defmodule MehrSchulferienWeb.WikiController do
     today = Date.utc_today()
     daily_changes = Wiki.get_daily_change_count(today)
 
-    if daily_changes >= 20 do
+    if daily_changes >= Config.daily_change_limit() do
       conn
       |> put_flash(
         :error,
-        "Das tägliche Limit von 20 Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
       )
-      |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+      |> redirect(to: "/wiki/schools/#{school_slug}")
     else
       # Get the school with address preloaded for email
       school = Repo.preload(school, :address)
@@ -628,7 +596,7 @@ defmodule MehrSchulferienWeb.WikiController do
         {:error, reason} ->
           conn
           |> put_flash(:error, "Fehler beim Löschen der Schule: #{inspect(reason)}")
-          |> redirect(to: Routes.wiki_path(conn, :show_school, school_slug))
+          |> redirect(to: "/wiki/schools/#{school_slug}")
       end
     end
   end

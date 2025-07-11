@@ -18,7 +18,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       assert school.address.street != nil, "Address should have a street"
       assert school.address.street == "Musterstraße 123", "Street should match expected value"
 
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
+      conn = get(conn, "/wiki/schools/#{school.slug}")
 
       response = html_response(conn, 200)
       assert response =~ "Schul-Wiki: #{school.name}"
@@ -34,7 +34,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       city = insert(:city, %{parent_location_id: federal_state.id})
       school = insert(:school, %{parent_location_id: city.id, slug: "test-school-no-address"})
 
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
+      conn = get(conn, "/wiki/schools/#{school.slug}")
 
       response = html_response(conn, 200)
       assert response =~ "Schul-Wiki: #{school.name}"
@@ -193,7 +193,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       {:ok, _} =
         MehrSchulferien.Repo.insert(%MehrSchulferien.Wiki.DailyChangeCount{
           date: today,
-          count: 20
+          count: MehrSchulferien.Config.daily_change_limit()
         })
 
       updated_params = %{
@@ -208,12 +208,10 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       conn =
         post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
 
-      assert redirected_to(conn, 302) =~ Routes.wiki_path(conn, :show_school, school.slug)
+      assert redirected_to(conn, 302) =~ "/wiki/schools/#{school.slug}"
 
-      # Follow the redirect to check for error flash
-      conn = get(recycle(conn), Routes.wiki_path(conn, :show_school, school.slug))
-      response = html_response(conn, 200)
-      assert response =~ "tägliche Limit"
+      # The redirect should show an error flash message
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "tägliche Limit"
 
       # Verify the address was NOT updated
       unchanged_school = Locations.get_school_by_slug!(school.slug)

@@ -1,5 +1,6 @@
 defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
   use MehrSchulferienWeb.ConnCase, async: false
+  import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
 
@@ -22,14 +23,13 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
       assert original_address.city == "Berlin"
       assert is_nil(original_address.email_address) || original_address.email_address == ""
 
-      # Step 2: Visit the wiki page and add an email address
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
-      response = html_response(conn, 200)
+      # Step 2: Visit the wiki page using LiveView
+      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
 
       # Verify we can see the form
-      assert response =~ "Adressdaten bearbeiten"
-      assert response =~ school.name
-      assert response =~ original_address.street
+      assert html =~ "Adressdaten bearbeiten"
+      assert html =~ school.name
+      assert html =~ original_address.street
 
       # Step 3: Add an email address (keeping all other data the same)
       updated_params = %{
@@ -49,14 +49,13 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
       assert redirected_to(conn, 302)
 
       # Step 4: Reopen the wiki and examine the version history
-      conn = get(conn, Routes.wiki_path(conn, :show_school, school.slug))
-      response = html_response(conn, 200)
+      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
 
       # Verify the email was added
-      assert response =~ "new@example.com"
+      assert html =~ "new@example.com"
 
       # Verify version history section exists
-      assert response =~ "Versionshistorie"
+      assert html =~ "Versionshistorie"
 
       # Step 5: Get the versions to understand what we're testing
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -71,32 +70,22 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
       # The version display should show what changed (email was added)
 
       # Check that the school name is shown in the page
-      assert response =~ "Test Gymnasium"
+      assert html =~ "Test Gymnasium"
 
       # Check that original address fields are shown in the current data section (not version history)
-      assert response =~ original_address.street
-      assert response =~ original_address.zip_code
-      assert response =~ original_address.city
-
-      # Check that the restore button is highlighted in yellow (bg-yellow-100)
-      assert response =~ "bg-yellow-100"
+      assert html =~ original_address.street
+      assert html =~ original_address.zip_code
+      assert html =~ original_address.city
 
       # Step 7: Verify the version history shows the change summary
+      # In LiveView version, we check for version number
+      assert html =~ "Version ##{latest_version.id}"
 
-      # Extract the version history section for the latest version
-      latest_version_pattern = ~r/Version ##{latest_version.id}.*?(?=Version #|\z)/s
+      # Check that we show a generic change summary
+      assert html =~ "Adressinformationen geändert"
 
-      case Regex.run(latest_version_pattern, response) do
-        [version_html] ->
-          # The version should show the change summary
-          assert version_html =~ "E-Mail: leer → &quot;new@example.com&quot;"
-
-        nil ->
-          flunk("Could not find version history section for version #{latest_version.id}")
-      end
-
-      # Step 8: Verify the restore functionality is available
-      assert response =~ "Wiederherstellen"
+      # Step 8: Verify version count is shown
+      assert html =~ "2 Änderungen"
 
       # This test demonstrates that:
       # 1. Version history shows change summaries

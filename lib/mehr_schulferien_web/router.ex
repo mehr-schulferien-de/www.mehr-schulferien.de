@@ -110,11 +110,20 @@ defmodule MehrSchulferienWeb.Router do
 
     # Wiki section for collaborative school address editing
     live "/wiki/schools/new", WikiSchoolNewLive
-    get "/wiki/schools/:slug", WikiController, :show_school
+    live "/wiki/schools/:slug", WikiSchoolShowLive
     post "/wiki/schools/:slug", WikiController, :update_school
     put "/wiki/schools/:slug", WikiController, :update_school
     delete "/wiki/schools/:slug", WikiController, :delete_school
     post "/wiki/schools/:slug/rollback/:version_id", WikiController, :rollback_school
+
+    # Bewegliche Ferientage operations
+    post "/wiki/schools/:slug/bewegliche-ferientage",
+         WikiController,
+         :create_beweglicher_ferientag
+
+    delete "/wiki/schools/:slug/bewegliche-ferientage/:id",
+           WikiController,
+           :delete_beweglicher_ferientag
 
     # Federal state routes (SEO-friendly pattern)
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show

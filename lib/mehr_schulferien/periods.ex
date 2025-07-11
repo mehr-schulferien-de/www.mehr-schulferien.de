@@ -263,4 +263,126 @@ defmodule MehrSchulferien.Periods do
     # This could be optimized further by tracking which cache keys contain which locations
     clear_periods_caches()
   end
+
+  #
+  # Bewegliche Ferientage operations
+  #
+
+  @doc """
+  Gets the beweglicher Ferientag holiday type.
+  Returns nil if not found (e.g., in test environment).
+  """
+  def get_beweglicher_ferientag_type do
+    case Repo.get_by(HolidayOrVacationType, slug: "beweglicher-ferientag") do
+      nil -> nil
+      type -> type
+    end
+  end
+
+  @doc """
+  Lists all bewegliche Ferientage for a school.
+  """
+  def list_bewegliche_ferientage_for_school(school_id) do
+    case get_beweglicher_ferientag_type() do
+      nil ->
+        []
+
+      beweglicher_type ->
+        from(p in Period,
+          where:
+            p.location_id == ^school_id and p.holiday_or_vacation_type_id == ^beweglicher_type.id,
+          order_by: [asc: p.starts_on],
+          preload: [:holiday_or_vacation_type]
+        )
+        |> Repo.all()
+    end
+  end
+
+  @doc """
+  Lists upcoming bewegliche Ferientage for a school.
+  """
+  def list_upcoming_bewegliche_ferientage_for_school(school_id) do
+    case get_beweglicher_ferientag_type() do
+      nil ->
+        []
+
+      beweglicher_type ->
+        today = Date.utc_today()
+
+        from(p in Period,
+          where:
+            p.location_id == ^school_id and
+              p.holiday_or_vacation_type_id == ^beweglicher_type.id and
+              p.starts_on >= ^today,
+          order_by: [asc: p.starts_on],
+          preload: [:holiday_or_vacation_type]
+        )
+        |> Repo.all()
+    end
+  end
+
+  @doc """
+  Lists bewegliche Ferientage for a school within a date range.
+  """
+  def list_bewegliche_ferientage_for_school_in_range(school_id, start_date, end_date) do
+    case get_beweglicher_ferientag_type() do
+      nil ->
+        []
+
+      beweglicher_type ->
+        from(p in Period,
+          where:
+            p.location_id == ^school_id and
+              p.holiday_or_vacation_type_id == ^beweglicher_type.id and
+              p.starts_on >= ^start_date and
+              p.ends_on <= ^end_date,
+          order_by: [asc: p.starts_on],
+          preload: [:holiday_or_vacation_type]
+        )
+        |> Repo.all()
+    end
+  end
+
+  @doc """
+  Creates a beweglicher Ferientag period for a school.
+  """
+  def create_beweglicher_ferientag_for_school(school_id, date, memo) do
+    case get_beweglicher_ferientag_type() do
+      nil ->
+        {:error, "Beweglicher Ferientag type not found in database"}
+
+      beweglicher_type ->
+        # Check if a beweglicher Ferientag already exists for this school on this date
+        existing =
+          from(p in Period,
+            where:
+              p.location_id == ^school_id and
+                p.holiday_or_vacation_type_id == ^beweglicher_type.id and
+                p.starts_on == ^date
+          )
+          |> Repo.one()
+
+        if existing do
+          {:error, "Ein beweglicher Ferientag existiert bereits für dieses Datum"}
+        else
+          attrs = %{
+            "location_id" => school_id,
+            "holiday_or_vacation_type_id" => beweglicher_type.id,
+            "starts_on" => date,
+            "ends_on" => date,
+            "memo" => memo,
+            "created_by_email_address" => "wiki@mehr-schulferien.de",
+            "display_priority" => beweglicher_type.default_display_priority || 7,
+            "html_class" => beweglicher_type.default_html_class || "success",
+            "is_listed_below_month" => beweglicher_type.default_is_listed_below_month || true,
+            "is_school_vacation" => beweglicher_type.default_is_school_vacation || false,
+            "is_public_holiday" => beweglicher_type.default_is_public_holiday || false,
+            "is_valid_for_students" => beweglicher_type.default_is_valid_for_students || true,
+            "is_valid_for_everybody" => beweglicher_type.default_is_valid_for_everybody || false
+          }
+
+          create_period(attrs)
+        end
+    end
+  end
 end
