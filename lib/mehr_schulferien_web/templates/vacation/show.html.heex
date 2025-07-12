@@ -42,34 +42,30 @@
           <.last_updated periods={@periods} federal_state={@federal_state} />
 
           <% # Links to other vacation types %>
-          <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h3 class="text-base font-semibold text-gray-800 mb-3">
-              Weitere Ferientermine <%= @federal_state.name %>:
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <%= for {type_key, type_name} <- [
-                {"winterferien", "Winterferien"},
-                {"osterferien", "Osterferien"},
-                {"pfingstferien", "Pfingstferien"},
-                {"sommerferien", "Sommerferien"},
-                {"herbstferien", "Herbstferien"},
-                {"weihnachtsferien", "Weihnachtsferien"}
-              ] do %>
-                <%= if type_key != @vacation_type do %>
-                  <a
-                    href={"/#{type_key}/#{@federal_state.slug}/#{@year}"}
-                    class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 border border-blue-300 rounded-md transition-colors"
-                  >
-                    <%= type_name %> <%= @year %>
-                  </a>
-                <% else %>
-                  <span class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
-                    <%= type_name %> <%= @year %>
-                  </span>
+          <%= if length(@vacation_types) > 1 do %>
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+              <h3 class="text-base font-semibold text-gray-800 mb-3">
+                Weitere Ferientermine <%= @federal_state.name %>:
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                <%= for vt <- @vacation_types do %>
+                  <% vacation_key = "#{vt.slug}ferien" %>
+                  <%= if vacation_key != @vacation_type do %>
+                    <a
+                      href={"/#{vacation_key}/#{@federal_state.slug}/#{@year}"}
+                      class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 border border-blue-300 rounded-md transition-colors"
+                    >
+                      <%= vt.colloquial %> <%= @year %>
+                    </a>
+                  <% else %>
+                    <span class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
+                      <%= vt.colloquial %> <%= @year %>
+                    </span>
+                  <% end %>
                 <% end %>
-              <% end %>
+              </div>
             </div>
-          </div>
+          <% end %>
 
           <% # Link back to main federal state page %>
           <div class="mt-4">
@@ -89,24 +85,65 @@
             </a>
           </div>
         <% else %>
-          <div class="text-center py-8">
-            <p class="text-gray-600 mb-4">
-              Für <%= @vacation_name %> <%= @year %> in <%= @federal_state.name %> liegen noch keine Termine vor.
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-blue-900 mb-3">
+              <%= @vacation_name %> <%= @year %> in <%= @federal_state.name %>
+            </h2>
+            <p class="text-gray-700 mb-4">
+              Die Termine für <%= @vacation_name %> <%= @year %> werden in der Regel
+              <%= if @year > Date.utc_today().year do %>
+                etwa 12-18 Monate im Voraus
+              <% else %>
+                in Kürze
+              <% end %>
+              vom Kultusministerium <%= @federal_state.name %> festgelegt und veröffentlicht.
             </p>
-            <a
-              href={
-                Routes.federal_state_path(
-                  @conn,
-                  :show_year,
-                  @country.slug,
-                  @federal_state.slug,
-                  @year
-                )
-              }
-              class="text-blue-600 hover:text-blue-800"
-            >
-              Alle Ferientermine <%= @federal_state.name %> anzeigen →
-            </a>
+
+            <% # Show previous year's dates as reference if available %>
+            <% previous_year = @year - 1 %>
+            <div class="bg-white rounded p-4 mb-4">
+              <p class="text-sm text-gray-600 mb-2">Zur Orientierung:</p>
+              <a
+                href={
+                  Routes.vacation_path(
+                    @conn,
+                    :show,
+                    @vacation_type,
+                    @federal_state.slug,
+                    previous_year
+                  )
+                }
+                class="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                <%= @vacation_name %> <%= previous_year %> ansehen →
+              </a>
+            </div>
+
+            <div class="space-y-2">
+              <a
+                href={
+                  Routes.federal_state_path(
+                    @conn,
+                    :show_year,
+                    @country.slug,
+                    @federal_state.slug,
+                    @year
+                  )
+                }
+                class="inline-flex items-center text-blue-600 hover:text-blue-800"
+              >
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  >
+                  </path>
+                </svg>
+                Alle Ferientermine <%= @federal_state.name %> <%= @year %>
+              </a>
+            </div>
           </div>
         <% end %>
       </div>

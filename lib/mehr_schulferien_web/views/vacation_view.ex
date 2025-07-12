@@ -111,7 +111,13 @@ defmodule MehrSchulferienWeb.VacationView do
           "#{vacation_name} #{year} in #{state_name}: #{date_range} (#{duration} Tage). Kalenderansicht, iCal-Export, Reiseplanung und alle anderen Ferientermine #{year}."
       end
     else
-      "#{vacation_name} #{year} Termine für #{state_name} - Alle Schulferien im Überblick mit Kalender, iCal-Export und Planungstipps."
+      year_int = if is_binary(year), do: String.to_integer(year), else: year
+
+      if year_int > today.year do
+        "#{vacation_name} #{year} in #{state_name} - Termine werden etwa 12-18 Monate im Voraus veröffentlicht. Aktuelle Schulferien, Kalender und Urlaubsplanung für #{state_name}."
+      else
+        "#{vacation_name} #{year} Termine für #{state_name} werden in Kürze veröffentlicht. Alle Schulferien #{state_name} mit Kalender, iCal-Export und Reisetipps."
+      end
     end
   end
 end

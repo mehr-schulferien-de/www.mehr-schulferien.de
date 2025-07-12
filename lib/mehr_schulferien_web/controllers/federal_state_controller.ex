@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.Calendars.VacationTypes
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
 
@@ -73,6 +74,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
     # Set the appropriate status code based on data availability
     conn = if data.has_data, do: conn, else: put_status(conn, 404)
 
+    # Get vacation types for this federal state
+    vacation_types = VacationTypes.list_for_federal_state(federal_state, today)
+
     render(
       conn,
       "show_year.html",
@@ -81,7 +85,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
         federal_state: federal_state,
         css_framework: :tailwind_new,
         periods: periods_with_duration,
-        all_periods: data.all_periods
+        all_periods: data.all_periods,
+        vacation_types: vacation_types
       }
       |> Map.merge(data)
       |> Map.merge(Map.new(data.faq_data))

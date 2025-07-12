@@ -139,35 +139,31 @@ defmodule MehrSchulferienWeb.Router do
         :show_year,
         constraints: [year: ~r/20[2-3][0-9]/]
 
-    # Year-agnostic vacation URLs (redirect to current year)
-    get "/sommerferien/:federal_state_slug", VacationController, :sommerferien_current
-    get "/osterferien/:federal_state_slug", VacationController, :osterferien_current
-    get "/herbstferien/:federal_state_slug", VacationController, :herbstferien_current
-    get "/weihnachtsferien/:federal_state_slug", VacationController, :weihnachtsferien_current
-    get "/winterferien/:federal_state_slug", VacationController, :winterferien_current
-    get "/pfingstferien/:federal_state_slug", VacationController, :pfingstferien_current
+    # School search LiveView - MUST come before any catch-all routes
+    live "/briefe/", SchoolSearchLive
+
+    # School documents index page
+    get "/briefe/:school_slug", SchoolController, :documents_index
+
+    # Entschuldigung LiveView
+    live "/briefe/:school_slug/entschuldigung", EntschuldigungLive
+
+    # Beurlaubung LiveView
+    live "/briefe/:school_slug/beurlaubung", BeurlaubungLive
+
+    # Sportbefreiung LiveView
+    live "/briefe/:school_slug/sportbefreiung", SportbefreiungLive
 
     # Next vacation URL
     get "/naechste-ferien/:federal_state_slug", VacationController, :next_vacation
 
-    # Vacation-specific routes for better SEO
-    get "/sommerferien/:federal_state_slug/:year", VacationController, :sommerferien,
-      constraints: [year: ~r/20[2-3][0-9]/]
+    # Year-agnostic vacation URLs (redirect to current year)
+    get "/:vacation_slug/:federal_state_slug", VacationController, :vacation_current,
+      constraints: [vacation_slug: ~r/[a-z-]+ferien/]
 
-    get "/osterferien/:federal_state_slug/:year", VacationController, :osterferien,
-      constraints: [year: ~r/20[2-3][0-9]/]
-
-    get "/herbstferien/:federal_state_slug/:year", VacationController, :herbstferien,
-      constraints: [year: ~r/20[2-3][0-9]/]
-
-    get "/weihnachtsferien/:federal_state_slug/:year", VacationController, :weihnachtsferien,
-      constraints: [year: ~r/20[2-3][0-9]/]
-
-    get "/winterferien/:federal_state_slug/:year", VacationController, :winterferien,
-      constraints: [year: ~r/20[2-3][0-9]/]
-
-    get "/pfingstferien/:federal_state_slug/:year", VacationController, :pfingstferien,
-      constraints: [year: ~r/20[2-3][0-9]/]
+    # Vacation routes - matches any vacation type from database
+    get "/:vacation_slug/:federal_state_slug/:year", VacationController, :show,
+      constraints: [year: ~r/20[2-3][0-9]/, vacation_slug: ~r/[a-z-]+ferien/]
 
     # City routes (SEO-friendly pattern)
     get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
@@ -184,21 +180,6 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/ferien/:country_slug/schule/:school_slug/:year", SchoolController, :show_year,
       constraints: [year: ~r/20[2-3][0-9]/]
-
-    # School search LiveView
-    live "/briefe/", SchoolSearchLive
-
-    # School documents index page
-    get "/briefe/:school_slug", SchoolController, :documents_index
-
-    # Entschuldigung LiveView
-    live "/briefe/:school_slug/entschuldigung", EntschuldigungLive
-
-    # Beurlaubung LiveView
-    live "/briefe/:school_slug/beurlaubung", BeurlaubungLive
-
-    # Sportbefreiung LiveView
-    live "/briefe/:school_slug/sportbefreiung", SportbefreiungLive
 
     # Legacy vCard path for backward compatibility
     get "/schule/:school_slug/vcard", SchoolVCardController, :download_legacy

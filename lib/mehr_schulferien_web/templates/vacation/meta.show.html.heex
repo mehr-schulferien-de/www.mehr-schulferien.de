@@ -56,7 +56,7 @@ vacation_keywords =
 <meta property="og:type" content="website" />
 <meta
   property="og:url"
-  content={Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, @year)}
+  content={Routes.vacation_url(@conn, :show, @vacation_type, @federal_state.slug, @year)}
 />
 <meta
   property="og:title"
@@ -72,7 +72,7 @@ vacation_keywords =
 <meta property="twitter:card" content="summary" />
 <meta
   property="twitter:url"
-  content={Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, @year)}
+  content={Routes.vacation_url(@conn, :show, @vacation_type, @federal_state.slug, @year)}
 />
 <meta property="twitter:title" content={"#{@vacation_name} #{@federal_state.name} #{@year}"} />
 <meta
@@ -82,7 +82,7 @@ vacation_keywords =
 <!-- Canonical URL to prevent duplicate content -->
 <link
   rel="canonical"
-  href={Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, @year)}
+  href={Routes.vacation_url(@conn, :show, @vacation_type, @federal_state.slug, @year)}
 />
 <!-- Pagination for year navigation -->
 <% prev_year = @year - 1 %>
@@ -90,17 +90,13 @@ vacation_keywords =
 <%= if prev_year >= 2020 do %>
   <link
     rel="prev"
-    href={
-      Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, prev_year)
-    }
+    href={Routes.vacation_url(@conn, :show, @vacation_type, @federal_state.slug, prev_year)}
   />
 <% end %>
 <%= if next_year <= 2030 do %>
   <link
     rel="next"
-    href={
-      Routes.vacation_url(@conn, String.to_atom(@vacation_type), @federal_state.slug, next_year)
-    }
+    href={Routes.vacation_url(@conn, :show, @vacation_type, @federal_state.slug, next_year)}
   />
 <% end %>
 <!-- Structured Data -->
@@ -108,7 +104,7 @@ vacation_keywords =
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
     %{name: "Deutschland", item: "https://www.mehr-schulferien.de/ferien/d"},
     %{name: @federal_state.name, item: "https://www.mehr-schulferien.de" <> Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug)},
-    %{name: "#{@vacation_name} #{@year}", item: "https://www.mehr-schulferien.de" <> Routes.vacation_path(@conn, String.to_atom(@vacation_type), @federal_state.slug, @year)}
+    %{name: "#{@vacation_name} #{@year}", item: "https://www.mehr-schulferien.de" <> Routes.vacation_path(@conn, :show, @vacation_type, @federal_state.slug, @year)}
   ]) %>
 </script>
 

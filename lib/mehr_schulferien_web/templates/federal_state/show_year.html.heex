@@ -47,47 +47,21 @@
         />
 
         <% # Quick links to vacation-specific pages %>
-        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 class="text-lg font-semibold text-blue-900 mb-3">Direkt zu den Ferien:</h3>
-          <div class="grid grid-cols-2 gap-2">
-            <a
-              href={"/winterferien/#{@federal_state.slug}/#{@year}"}
-              class="px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors text-center"
-            >
-              Winterferien
-            </a>
-            <a
-              href={"/osterferien/#{@federal_state.slug}/#{@year}"}
-              class="px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors text-center"
-            >
-              Osterferien
-            </a>
-            <a
-              href={"/pfingstferien/#{@federal_state.slug}/#{@year}"}
-              class="px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors text-center"
-            >
-              Pfingstferien
-            </a>
-            <a
-              href={"/sommerferien/#{@federal_state.slug}/#{@year}"}
-              class="px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors text-center"
-            >
-              Sommerferien
-            </a>
-            <a
-              href={"/herbstferien/#{@federal_state.slug}/#{@year}"}
-              class="px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors text-center"
-            >
-              Herbstferien
-            </a>
-            <a
-              href={"/weihnachtsferien/#{@federal_state.slug}/#{@year}"}
-              class="px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors text-center"
-            >
-              Weihnachtsferien
-            </a>
+        <%= if length(@vacation_types) > 0 do %>
+          <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">Direkt zu den Ferien:</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <%= for vacation_type <- @vacation_types do %>
+                <a
+                  href={"/#{vacation_type.slug}ferien/#{@federal_state.slug}/#{@year}"}
+                  class="px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors text-center"
+                >
+                  <%= vacation_type.colloquial %>
+                </a>
+              <% end %>
+            </div>
           </div>
-        </div>
+        <% end %>
       </div>
     </div>
 

@@ -1,50 +1,151 @@
 defmodule MehrSchulferienWeb.VacationController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Locations}
+  import Ecto.Query
+  alias MehrSchulferien.{Repo, Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.Calendars.{HolidayOrVacationType, VacationTypes}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
 
-  @vacation_types %{
-    "sommerferien" => "Sommer",
-    "osterferien" => "Ostern",
-    "herbstferien" => "Herbst",
-    "weihnachtsferien" => "Weihnachten",
-    "winterferien" => "Winter",
-    "pfingstferien" => "Pfingsten"
-  }
+  # Generic vacation display action
+  def show(conn, %{
+        "vacation_slug" => vacation_slug,
+        "federal_state_slug" => federal_state_slug,
+        "year" => year
+      }) do
+    # Default country is Germany
+    country = Locations.get_country_by_slug!("d")
+    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
-  # Main vacation display actions
-  def sommerferien(conn, params), do: show_vacation(conn, params, "sommerferien")
-  def osterferien(conn, params), do: show_vacation(conn, params, "osterferien")
-  def herbstferien(conn, params), do: show_vacation(conn, params, "herbstferien")
-  def weihnachtsferien(conn, params), do: show_vacation(conn, params, "weihnachtsferien")
-  def winterferien(conn, params), do: show_vacation(conn, params, "winterferien")
-  def pfingstferien(conn, params), do: show_vacation(conn, params, "pfingstferien")
+    # Extract vacation type from URL (remove "ferien" suffix)
+    vacation_type_slug = String.replace(vacation_slug, "ferien", "")
 
-  # Year-agnostic vacation URLs (redirect to current year)
-  def sommerferien_current(conn, %{"federal_state_slug" => slug}) do
-    redirect_to_current_year(conn, :sommerferien, slug)
+    # Find the vacation type in the database
+    vacation_type_record =
+      Repo.one(
+        from hvt in HolidayOrVacationType,
+          where: hvt.slug == ^vacation_type_slug and hvt.default_is_school_vacation == true
+      )
+
+    if is_nil(vacation_type_record) do
+      # Vacation type not found - redirect
+      conn
+      |> put_flash(:error, "Diese Ferienart existiert nicht.")
+      |> redirect(
+        to:
+          Routes.federal_state_path(
+            conn,
+            :show_year,
+            country.slug,
+            federal_state_slug,
+            year
+          )
+      )
+    else
+      # Check if this vacation type is valid for the federal state
+      if not VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
+        # Redirect to the federal state page if vacation type is not valid
+        conn
+        |> put_flash(
+          :info,
+          "#{vacation_type_record.colloquial} gibt es in #{federal_state.name} nicht."
+        )
+        |> redirect(
+          to:
+            Routes.federal_state_path(
+              conn,
+              :show_year,
+              country.slug,
+              federal_state_slug,
+              year
+            )
+        )
+      else
+        today = DateHelpers.get_today_or_custom_date(conn)
+        location_ids = [country.id, federal_state.id]
+
+        # Get all periods for the state
+        data = CH.prepare_show_year_data(location_ids, year, today)
+
+        # Find the specific vacation period
+        vacation_period =
+          Enum.find(data.periods, fn period ->
+            period.holiday_or_vacation_type.name == vacation_type_record.name
+          end)
+
+        # Calculate adjoining_duration for each period
+        periods_with_duration =
+          Enum.map(data.periods, fn period ->
+            days = Date.diff(period.ends_on, period.starts_on) + 1
+
+            effective_duration =
+              ViewHelpers.calculate_effective_duration(period, data.all_periods)
+
+            difference = effective_duration - days
+            Map.put(period, :adjoining_duration, difference)
+          end)
+
+        # For SEO: Don't set 404 for future vacation pages - they're valid URLs
+        # even if the dates aren't confirmed yet
+        # conn = if vacation_period, do: conn, else: put_status(conn, 404)
+
+        # Get all vacation types for this federal state
+        # Use the viewed year as reference for better UX when viewing future years
+        year_int = String.to_integer(year)
+        # Middle of the viewed year
+        reference_date = Date.new!(year_int, 6, 1)
+        vacation_types = VacationTypes.list_for_federal_state(federal_state, reference_date)
+
+        render(
+          conn,
+          "show.html",
+          %{
+            country: country,
+            federal_state: federal_state,
+            vacation_type: vacation_slug,
+            vacation_name: vacation_type_record.colloquial,
+            vacation_period: vacation_period,
+            vacation_types: vacation_types,
+            periods: periods_with_duration,
+            all_periods: data.all_periods,
+            public_periods: data.public_periods,
+            today: today,
+            has_data: not is_nil(vacation_period),
+            css_framework: :tailwind_new,
+            months: %{
+              1 => "Januar",
+              2 => "Februar",
+              3 => "März",
+              4 => "April",
+              5 => "Mai",
+              6 => "Juni",
+              7 => "Juli",
+              8 => "August",
+              9 => "September",
+              10 => "Oktober",
+              11 => "November",
+              12 => "Dezember"
+            },
+            year: String.to_integer(year),
+            years_with_data: MehrSchulferien.Periods.list_years_with_periods(),
+            meta_title_type: :vacation,
+            page_title: "#{vacation_type_record.colloquial} #{federal_state.name} #{year}"
+          }
+        )
+      end
+    end
   end
 
-  def osterferien_current(conn, %{"federal_state_slug" => slug}) do
-    redirect_to_current_year(conn, :osterferien, slug)
-  end
+  # Year-agnostic vacation URL (redirect to current year)
+  def vacation_current(conn, %{
+        "vacation_slug" => vacation_slug,
+        "federal_state_slug" => federal_state_slug
+      }) do
+    today = DateHelpers.get_today_or_custom_date(conn)
 
-  def herbstferien_current(conn, %{"federal_state_slug" => slug}) do
-    redirect_to_current_year(conn, :herbstferien, slug)
-  end
-
-  def weihnachtsferien_current(conn, %{"federal_state_slug" => slug}) do
-    redirect_to_current_year(conn, :weihnachtsferien, slug)
-  end
-
-  def winterferien_current(conn, %{"federal_state_slug" => slug}) do
-    redirect_to_current_year(conn, :winterferien, slug)
-  end
-
-  def pfingstferien_current(conn, %{"federal_state_slug" => slug}) do
-    redirect_to_current_year(conn, :pfingstferien, slug)
+    redirect(conn,
+      to: "/#{vacation_slug}/#{federal_state_slug}/#{today.year}"
+    )
   end
 
   # Next vacation redirect
@@ -78,10 +179,10 @@ defmodule MehrSchulferienWeb.VacationController do
           |> List.first()
 
         if first_vacation do
-          vacation_type = vacation_type_from_name(first_vacation.holiday_or_vacation_type.name)
+          vacation_slug = first_vacation.holiday_or_vacation_type.slug
 
           redirect(conn,
-            to: Routes.vacation_path(conn, vacation_type, federal_state_slug, today.year + 1)
+            to: "/#{vacation_slug}ferien/#{federal_state_slug}/#{today.year + 1}"
           )
         else
           # Fallback to federal state page
@@ -98,119 +199,11 @@ defmodule MehrSchulferienWeb.VacationController do
         end
 
       vacation ->
-        vacation_type = vacation_type_from_name(vacation.holiday_or_vacation_type.name)
+        vacation_slug = vacation.holiday_or_vacation_type.slug
 
         redirect(conn,
-          to:
-            Routes.vacation_path(conn, vacation_type, federal_state_slug, vacation.starts_on.year)
+          to: "/#{vacation_slug}ferien/#{federal_state_slug}/#{vacation.starts_on.year}"
         )
     end
-  end
-
-  # Private functions
-  defp redirect_to_current_year(conn, vacation_action, federal_state_slug) do
-    today = DateHelpers.get_today_or_custom_date(conn)
-
-    redirect(conn,
-      to: Routes.vacation_path(conn, vacation_action, federal_state_slug, today.year)
-    )
-  end
-
-  defp vacation_type_from_name(name) do
-    case name do
-      "Sommer" -> :sommerferien
-      "Ostern" -> :osterferien
-      "Herbst" -> :herbstferien
-      "Weihnachten" -> :weihnachtsferien
-      "Winter" -> :winterferien
-      "Pfingsten" -> :pfingstferien
-      # Fallback
-      _ -> :sommerferien
-    end
-  end
-
-  defp get_display_vacation_name(vacation_type) do
-    case vacation_type do
-      "sommerferien" -> "Sommerferien"
-      "osterferien" -> "Osterferien"
-      "herbstferien" -> "Herbstferien"
-      "weihnachtsferien" -> "Weihnachtsferien"
-      "winterferien" -> "Winterferien"
-      "pfingstferien" -> "Pfingstferien"
-      _ -> "Ferien"
-    end
-  end
-
-  defp show_vacation(
-         conn,
-         %{"federal_state_slug" => federal_state_slug, "year" => year},
-         vacation_type
-       ) do
-    # Default country is Germany
-    country = Locations.get_country_by_slug!("d")
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-
-    today = DateHelpers.get_today_or_custom_date(conn)
-    location_ids = [country.id, federal_state.id]
-
-    # Get all periods for the state
-    data = CH.prepare_show_year_data(location_ids, year, today)
-
-    # Filter for the specific vacation type
-    db_vacation_name = @vacation_types[vacation_type]
-    display_vacation_name = get_display_vacation_name(vacation_type)
-
-    vacation_period =
-      Enum.find(data.periods, fn period ->
-        period.holiday_or_vacation_type.name == db_vacation_name
-      end)
-
-    # Calculate adjoining_duration for each period
-    periods_with_duration =
-      Enum.map(data.periods, fn period ->
-        days = Date.diff(period.ends_on, period.starts_on) + 1
-        effective_duration = ViewHelpers.calculate_effective_duration(period, data.all_periods)
-        difference = effective_duration - days
-        Map.put(period, :adjoining_duration, difference)
-      end)
-
-    # Set 404 if vacation not found
-    conn = if vacation_period, do: conn, else: put_status(conn, 404)
-
-    render(
-      conn,
-      "show.html",
-      %{
-        country: country,
-        federal_state: federal_state,
-        vacation_type: vacation_type,
-        vacation_name: display_vacation_name,
-        vacation_period: vacation_period,
-        periods: periods_with_duration,
-        all_periods: data.all_periods,
-        public_periods: data.public_periods,
-        today: today,
-        has_data: not is_nil(vacation_period),
-        css_framework: :tailwind_new,
-        months: %{
-          1 => "Januar",
-          2 => "Februar",
-          3 => "März",
-          4 => "April",
-          5 => "Mai",
-          6 => "Juni",
-          7 => "Juli",
-          8 => "August",
-          9 => "September",
-          10 => "Oktober",
-          11 => "November",
-          12 => "Dezember"
-        },
-        year: String.to_integer(year),
-        years_with_data: MehrSchulferien.Periods.list_years_with_periods(),
-        meta_title_type: :vacation,
-        page_title: "#{display_vacation_name} #{federal_state.name} #{year}"
-      }
-    )
   end
 end
