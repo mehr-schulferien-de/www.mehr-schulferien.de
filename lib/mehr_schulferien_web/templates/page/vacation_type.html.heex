@@ -1,0 +1,164 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">
+      <%= @vacation_config.name %> <%= @current_year %> und <%= @next_year %> in Deutschland
+    </h1>
+    <p class="text-lg text-gray-700">
+      Alle Termine der <%= @vacation_config.name %> für alle 16 Bundesländer auf einen Blick. <%= @vacation_config.meta_focus %>
+    </p>
+  </div>
+  <!-- Statistics -->
+  <MehrSchulferienWeb.VacationTypeComponents.vacation_statistics
+    vacation_data={@current_year_data}
+    vacation_name={@vacation_config.name}
+  />
+  <!-- Current Year Section -->
+  <section class="mt-8">
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+      <%= @vacation_config.name %> <%= @current_year %>
+    </h2>
+
+    <MehrSchulferienWeb.VacationTypeComponents.vacation_overview_table
+      vacation_data={@current_year_data}
+      vacation_type={@vacation_type}
+      year={@current_year}
+      conn={@conn}
+    />
+  </section>
+  <!-- Planning Tips -->
+  <MehrSchulferienWeb.VacationTypeComponents.vacation_planning_tips vacation_type={@vacation_type} />
+  <!-- Next Year Section -->
+  <section class="mt-12">
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+      <%= @vacation_config.name %> <%= @next_year %>
+    </h2>
+
+    <MehrSchulferienWeb.VacationTypeComponents.vacation_overview_table
+      vacation_data={@next_year_data}
+      vacation_type={@vacation_type}
+      year={@next_year}
+      conn={@conn}
+    />
+  </section>
+  <!-- Additional Information -->
+  <section class="mt-12 prose prose-lg max-w-none">
+    <h3 class="text-xl font-semibold text-gray-900 mb-4">
+      Wissenswertes über <%= @vacation_config.name %>
+    </h3>
+
+    <%= case @vacation_type do %>
+      <% "sommer" -> %>
+        <p>
+          Die Sommerferien sind die längsten Schulferien des Jahres und dauern in allen Bundesländern
+          sechs Wochen. Die Termine werden von der Kultusministerkonferenz koordiniert und staffeln sich
+          über den Zeitraum von Ende Juni bis Mitte September. Diese Staffelung soll die Reiseströme
+          entzerren und die Urlaubssaison verlängern.
+        </p>
+        <p>
+          Traditionell erhält Bayern immer die spätesten Sommerferien, während andere Bundesländer im
+          Rotationsprinzip wechseln. Die frühen Ferientermine haben oft den Vorteil günstigerer Reisepreise,
+          während späte Termine besseres Wetter im September bieten können.
+        </p>
+      <% "ostern" -> %>
+        <p>
+          Die Osterferien orientieren sich am beweglichen Osterfest und dauern meist etwa zwei Wochen.
+          Sie bieten eine willkommene Pause im Frühjahr und eignen sich besonders für Städtereisen,
+          erste Wanderungen oder Kurzurlaube. Da Ostern ein bewegliches Fest ist, variieren die Termine
+          von Jahr zu Jahr erheblich.
+        </p>
+        <p>
+          Viele Familien nutzen die Osterferien für Besuche bei Verwandten oder für Ausflüge in die
+          erwachende Natur. Auch Sprachreisen und Bildungsurlaube sind in dieser Zeit beliebt.
+        </p>
+      <% "herbst" -> %>
+        <p>
+          Die Herbstferien liegen meist im Oktober und November und dauern ein bis zwei Wochen. Sie sind
+          ideal für Wanderurlaube in der bunten Herbstlandschaft, Städtereisen oder den letzten Campingurlaub
+          des Jahres. Viele Regionen bieten in dieser Zeit Erntedankfeste und Herbstmärkte.
+        </p>
+        <p>
+          Die Herbstferien markieren oft den Übergang zum letzten Schulabschnitt vor Weihnachten und bieten
+          Schülern eine wichtige Erholungspause. Die milden Temperaturen eignen sich perfekt für Outdoor-Aktivitäten.
+        </p>
+      <% "weihnachten" -> %>
+        <p>
+          Die Weihnachtsferien umfassen die Zeit um Weihnachten und Neujahr und dauern meist etwa zwei Wochen.
+          Sie beginnen kurz vor Heiligabend und enden nach dem Dreikönigstag. Diese Ferien sind geprägt von
+          Familienbesuchen, Weihnachtsmärkten und für viele auch von Winterurlauben.
+        </p>
+        <p>
+          Beliebte Reiseziele sind Skigebiete in den Alpen oder Mittelgebirgen, aber auch Städtereisen zu
+          Weihnachtsmärkten oder Silvester-Kurztrips sind sehr gefragt. Die Weihnachtsferien bieten die
+          Möglichkeit, das Jahr gemeinsam ausklingen zu lassen.
+        </p>
+      <% "winter" -> %>
+        <p>
+          Die Winterferien, auch als Faschings- oder Skiferien bekannt, finden meist im Februar statt und
+          dauern eine Woche. Nicht alle Bundesländer haben Winterferien. Sie sind besonders in Regionen mit
+          Wintersportmöglichkeiten beliebt und fallen oft mit der Faschings- oder Karnevalszeit zusammen.
+        </p>
+        <p>
+          Diese Ferien bieten die ideale Gelegenheit für Skiurlaube, Winterwanderungen oder Wellnessaufenthalte.
+          Alternativ nutzen viele Familien die Zeit für eine Flucht in wärmere Gefilde.
+        </p>
+      <% "pfingsten" -> %>
+        <p>
+          Die Pfingstferien gibt es nicht in allen Bundesländern. Wo sie stattfinden, dauern sie meist
+          eine bis zwei Wochen und liegen im Mai oder Juni. Sie bieten sich für Kurzurlaube, verlängerte
+          Wochenenden oder erste Badeausflüge an Nord- und Ostsee an.
+        </p>
+        <p>
+          Da Pfingsten ein beweglicher Feiertag ist, variieren auch die Ferientermine. Die Pfingstferien
+          sind oft die letzte Verschnaufpause vor den Sommerferien und werden gerne für Städtereisen oder
+          Aktivurlaube genutzt.
+        </p>
+      <% _ -> %>
+        <p>
+          Schulferien bieten wichtige Erholungspausen im Schuljahr und ermöglichen gemeinsame Familienzeit.
+          Die Termine werden von den Kultusministerien der Länder festgelegt und rechtzeitig veröffentlicht,
+          damit Familien ihre Urlaube planen können.
+        </p>
+    <% end %>
+  </section>
+  <!-- Links to other vacation types -->
+  <section class="mt-12 bg-gray-50 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Weitere Ferientermine</h3>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <%= if @vacation_type != "sommer" do %>
+        <a href="/sommerferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+          Sommerferien
+        </a>
+      <% end %>
+      <%= if @vacation_type != "ostern" do %>
+        <a href="/osterferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+          Osterferien
+        </a>
+      <% end %>
+      <%= if @vacation_type != "herbst" do %>
+        <a href="/herbstferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+          Herbstferien
+        </a>
+      <% end %>
+      <%= if @vacation_type != "weihnachten" do %>
+        <a href="/weihnachtsferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+          Weihnachtsferien
+        </a>
+      <% end %>
+      <%= if @vacation_type != "winter" do %>
+        <a href="/winterferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+          Winterferien
+        </a>
+      <% end %>
+      <%= if @vacation_type != "pfingsten" do %>
+        <a href="/pfingstferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+          Pfingstferien
+        </a>
+      <% end %>
+    </div>
+  </section>
+</div>
+<!-- Structured Data -->
+<MehrSchulferienWeb.VacationTypeComponents.vacation_structured_data structured_data={
+  @structured_data
+} />

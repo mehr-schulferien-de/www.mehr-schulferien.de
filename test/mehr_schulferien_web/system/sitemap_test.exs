@@ -38,6 +38,14 @@ defmodule MehrSchulferienWeb.SitemapSystemTest do
       # Check developers page
       assert response =~ ~r{<loc>https?://[^<]+/developers</loc>}
 
+      # Check vacation type overview pages
+      assert response =~ ~r{<loc>https?://[^<]+/sommerferien</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/osterferien</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/herbstferien</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/weihnachtsferien</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/winterferien</loc>}
+      assert response =~ ~r{<loc>https?://[^<]+/pfingstferien</loc>}
+
       # Check country URL is present
       assert response =~ ~r{<loc>https?://[^<]+/ferien/d</loc>}
 

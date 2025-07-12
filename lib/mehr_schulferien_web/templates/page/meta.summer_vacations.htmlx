@@ -1,2 +1,2 @@
-<title>Sommerferien in Deutschland</title>
-<meta name="description" content="Eine Kalender Vergleichsübersicht der Sommerferientermine aller Bundesländern im Jahr <%= @current_year %>.">
+<!-- This template is deprecated - summer_vacations now uses meta.vacation_type.html.heex -->
+<%= render "meta.vacation_type.html", Map.put(assigns, :vacation_type, "sommer") %>

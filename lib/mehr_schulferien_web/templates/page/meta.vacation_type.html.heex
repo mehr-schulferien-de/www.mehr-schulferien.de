@@ -1,0 +1,85 @@
+<% # Generate dynamic meta description
+meta_description =
+  MehrSchulferienWeb.Helpers.VacationTypeHelpers.generate_meta_description(
+    @vacation_type,
+    @current_year,
+    @current_year_data
+  ) %>
+
+<title>
+  <%= @vacation_config.name %> <%= @current_year %>, <%= @next_year %> Deutschland - Alle Bundesländer
+</title>
+<meta name="description" content={meta_description} />
+<meta
+  name="keywords"
+  content={"#{@vacation_config.name} #{@current_year}, #{@vacation_config.name} #{@next_year}, #{@vacation_config.name} Deutschland, #{@vacation_config.keywords}, Schulferien Deutschland, Ferientermine"}
+/>
+
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={"https://www.mehr-schulferien.de/#{@vacation_type}ferien"} />
+<meta
+  property="og:title"
+  content={"#{@vacation_config.name} #{@current_year}, #{@next_year} Deutschland"}
+/>
+<meta property="og:description" content={meta_description} />
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={"https://www.mehr-schulferien.de/#{@vacation_type}ferien"} />
+<meta
+  property="twitter:title"
+  content={"#{@vacation_config.name} #{@current_year}, #{@next_year} Deutschland"}
+/>
+<meta property="twitter:description" content={meta_description} />
+<!-- Canonical URL -->
+<link rel="canonical" href={"https://www.mehr-schulferien.de/#{@vacation_type}ferien"} />
+<!-- Breadcrumb Navigation -->
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: "Startseite", item: "https://www.mehr-schulferien.de"},
+    %{name: "#{@vacation_config.name} Deutschland", item: "https://www.mehr-schulferien.de/#{@vacation_type}ferien"}
+  ]) %>
+</script>
+<!-- WebPage Schema -->
+<script type="application/ld+json">
+  <%= Phoenix.HTML.raw(Jason.encode!(%{
+    "@context" => "https://schema.org",
+    "@type" => "WebPage",
+    "name" => "#{@vacation_config.name} #{@current_year}, #{@next_year} Deutschland",
+    "description" => meta_description,
+    "url" => "https://www.mehr-schulferien.de/#{@vacation_type}ferien",
+    "inLanguage" => "de-DE",
+    "isPartOf" => %{
+      "@type" => "WebSite",
+      "name" => "mehr-schulferien.de",
+      "url" => "https://www.mehr-schulferien.de"
+    },
+    "breadcrumb" => %{
+      "@type" => "BreadcrumbList",
+      "itemListElement" => [
+        %{
+          "@type" => "ListItem",
+          "position" => 1,
+          "name" => "Startseite",
+          "item" => "https://www.mehr-schulferien.de"
+        },
+        %{
+          "@type" => "ListItem",
+          "position" => 2,
+          "name" => "#{@vacation_config.name} Deutschland",
+          "item" => "https://www.mehr-schulferien.de/#{@vacation_type}ferien"
+        }
+      ]
+    },
+    "mainEntity" => %{
+      "@type" => "DataFeed",
+      "name" => "#{@vacation_config.name} Termine Deutschland",
+      "description" => "Aktuelle Termine der #{@vacation_config.name} für alle Bundesländer"
+    }
+  })) %>
+</script>

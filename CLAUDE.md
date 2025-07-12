@@ -132,3 +132,7 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
 
 ### Git and GitHub Workflow
 - **Don't git push anything to GitHub without the user asking for it.**
+
+## Memories
+
+- Always remember the sitemap.xml file to be up to date if URLs are added, removed or changed.

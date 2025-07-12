@@ -97,6 +97,11 @@ defmodule MehrSchulferienWeb.Router do
 
     get "/", PageController, :home
     get "/sommerferien", PageController, :summer_vacations
+    get "/osterferien", PageController, :easter_vacations
+    get "/herbstferien", PageController, :fall_vacations
+    get "/weihnachtsferien", PageController, :christmas_vacations
+    get "/winterferien", PageController, :winter_vacations
+    get "/pfingstferien", PageController, :pentecost_vacations
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
 

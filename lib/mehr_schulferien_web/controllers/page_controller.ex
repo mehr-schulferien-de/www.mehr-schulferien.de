@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.PageController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferienWeb.Helpers.VacationTypeHelpers
 
   def index(conn, %{"number_of_days" => number_of_days}) do
     today = DateHelpers.get_today_or_custom_date(conn)
@@ -42,45 +43,66 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def summer_vacations(conn, _params) do
+    render_vacation_type_page(conn, "sommer")
+  end
+
+  def easter_vacations(conn, _params) do
+    render_vacation_type_page(conn, "ostern")
+  end
+
+  def fall_vacations(conn, _params) do
+    render_vacation_type_page(conn, "herbst")
+  end
+
+  def christmas_vacations(conn, _params) do
+    render_vacation_type_page(conn, "weihnachten")
+  end
+
+  def winter_vacations(conn, _params) do
+    render_vacation_type_page(conn, "winter")
+  end
+
+  def pentecost_vacations(conn, _params) do
+    render_vacation_type_page(conn, "pfingsten")
+  end
+
+  # Generic function to render vacation type pages
+  defp render_vacation_type_page(conn, vacation_type) do
     today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
-    # 20.6. + 87 Tage = 15.9.
-    number_of_days = 87
 
-    # Start der Sommerferien (irgendwo)
-    {:ok, fixed_start_date} = Date.from_erl({current_year, 6, 20})
+    # Fetch data for current and next year
+    current_year_data =
+      VacationTypeHelpers.fetch_vacation_data_for_type(vacation_type, current_year)
 
-    # Only use fixed start date if we're not using a custom date
-    today = if conn.assigns.custom_date, do: today, else: fixed_start_date
+    next_year_data =
+      VacationTypeHelpers.fetch_vacation_data_for_type(vacation_type, current_year + 1)
 
-    ends_on = Date.add(today, number_of_days)
-    days = DateHelpers.create_days(today, number_of_days)
-    day_names = DateHelpers.short_days_map()
-    months = DateHelpers.get_months_map()
+    # Format data for display
+    current_year_table = VacationTypeHelpers.format_vacation_table_data(current_year_data)
+    next_year_table = VacationTypeHelpers.format_vacation_table_data(next_year_data)
 
-    # Calculate months_with_days for the timeline
-    month_groups =
-      days
-      |> Enum.group_by(fn day -> {day.year, day.month} end)
-      |> Enum.sort()
+    # Generate structured data
+    structured_data =
+      VacationTypeHelpers.generate_vacation_structured_data(
+        vacation_type,
+        current_year,
+        current_year_data,
+        conn
+      )
 
-    months_with_days =
-      Enum.map(month_groups, fn {{year, month}, month_days} ->
-        month_name = Map.get(months, month, "") |> to_string()
-        {month_name, length(month_days), year, month}
-      end)
+    # Get vacation config
+    config = VacationTypeHelpers.get_vacation_config(vacation_type)
 
-    # Fetch everything in a more efficient way
-    countries = fetch_countries_with_periods(today, ends_on, current_year)
-
-    render(conn, "summer_vacations.html",
-      countries: countries,
-      days: days,
-      day_names: day_names,
-      months: months,
+    render(conn, "vacation_type.html",
+      vacation_type: vacation_type,
+      vacation_config: config,
       current_year: current_year,
-      number_of_days: number_of_days,
-      months_with_days: months_with_days
+      next_year: current_year + 1,
+      current_year_data: current_year_table,
+      next_year_data: next_year_table,
+      structured_data: structured_data,
+      css_framework: :tailwind
     )
   end
 

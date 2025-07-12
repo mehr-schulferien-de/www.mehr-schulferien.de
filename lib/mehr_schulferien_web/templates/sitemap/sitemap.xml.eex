@@ -20,6 +20,32 @@
     <loc>https://www.mehr-schulferien.de/impressum</loc>
     <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
   </sitemap>
+  
+  <%!-- VACATION TYPE OVERVIEW PAGES: Updated daily during the year --%>
+  <sitemap>
+    <loc>https://www.mehr-schulferien.de/sommerferien</loc>
+    <lastmod><%= @today %></lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mehr-schulferien.de/osterferien</loc>
+    <lastmod><%= @today %></lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mehr-schulferien.de/herbstferien</loc>
+    <lastmod><%= @today %></lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mehr-schulferien.de/weihnachtsferien</loc>
+    <lastmod><%= @today %></lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mehr-schulferien.de/winterferien</loc>
+    <lastmod><%= @today %></lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mehr-schulferien.de/pfingstferien</loc>
+    <lastmod><%= @today %></lastmod>
+  </sitemap>
 
   <%= for place <- @countries do %>
     <% country = place[:country] %>
