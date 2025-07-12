@@ -90,25 +90,11 @@ end %>
 
       <% prev_link =
         if show_prev,
-          do:
-            Routes.bridge_day_path(
-              @conn,
-              :show_within_federal_state,
-              @country.slug,
-              @federal_state.slug,
-              prev_year
-            ),
+          do: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{prev_year}",
           else: nil %>
       <% next_link =
         if show_next,
-          do:
-            Routes.bridge_day_path(
-              @conn,
-              :show_within_federal_state,
-              @country.slug,
-              @federal_state.slug,
-              next_year
-            ),
+          do: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{next_year}",
           else: nil %>
 
       <div class="sm:flex sm:items-center sm:space-x-4">
@@ -196,13 +182,7 @@ end %>
                     <a
                       class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center"
                       href={
-                        Routes.bridge_day_path(
-                          @conn,
-                          :show_within_federal_state,
-                          @country.slug,
-                          @federal_state.slug,
-                          year
-                        )
+                        ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}"
                       }
                     >
                       <%= year %>
@@ -274,14 +254,7 @@ end %>
       <%= for {year, idx} <- Enum.with_index(future_years) do %>
         <%= if idx > 0, do: if(idx == length(future_years) - 1, do: " und ", else: ", ") %>
         <%= link("Brückentage #{year}#{if idx == length(future_years) - 1, do: ".", else: ""}",
-          to:
-            Routes.bridge_day_path(
-              @conn,
-              :show_within_federal_state,
-              @country.slug,
-              @federal_state.slug,
-              year
-            ),
+          to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}",
           class: "text-blue-600 hover:underline"
         ) %>
       <% end %>
@@ -378,7 +351,7 @@ end %>
             "organizer" => %{
               "@type" => "Organization",
               "name" => "MehrSchulferien.de",
-              "url" => Routes.page_url(@conn, :home)
+              "url" => url(~p"/")
             }
           }
         end)

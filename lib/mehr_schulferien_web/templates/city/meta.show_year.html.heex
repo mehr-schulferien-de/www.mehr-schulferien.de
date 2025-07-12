@@ -14,10 +14,7 @@
 <% end %>
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
-<meta
-  property="og:url"
-  content={Routes.city_url(@conn, :show_year, @country.slug, @city.slug, @year)}
-/>
+<meta property="og:url" content={url(~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@year}")} />
 <meta
   property="og:title"
   content={"Schulferien #{@city.name} #{@year} - Alle Ferientermine (#{@federal_state.name})"}
@@ -30,7 +27,7 @@
 <meta property="twitter:card" content="summary" />
 <meta
   property="twitter:url"
-  content={Routes.city_url(@conn, :show_year, @country.slug, @city.slug, @year)}
+  content={url(~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@year}")}
 />
 <meta
   property="twitter:title"
@@ -43,8 +40,8 @@
 
 <script type="application/ld+json">
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
-    %{name: @country.name, item: "https://www.mehr-schulferien.de" <> Routes.country_path(@conn, :show, @country.slug)},
-    %{name: "Ferientermine #{@federal_state.name}", item: "https://www.mehr-schulferien.de" <> Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug)},
-    %{name: "Schulferien #{@city.name} #{@year}", item: "https://www.mehr-schulferien.de" <> Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year)}
+    %{name: @country.name, item: url(~p"/ferien/#{@country.slug}")},
+    %{name: "Ferientermine #{@federal_state.name}", item: url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}")},
+    %{name: "Schulferien #{@city.name} #{@year}", item: url(~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@year}")}
   ]) %>
 </script>

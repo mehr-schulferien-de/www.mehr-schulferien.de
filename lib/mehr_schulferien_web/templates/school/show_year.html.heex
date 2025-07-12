@@ -12,12 +12,12 @@
               not String.ends_with?(school_name_without_city, ",") %>
           <%= school_name_without_city %><%= if needs_comma, do: ",", else: "" %> <%= link(
             @city.name,
-            to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+            to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@year}",
             class: "text-blue-600 hover:text-blue-800 cursor-pointer"
           ) %>
         <% else %>
           <%= @school.name %>, <%= link(@city.name,
-            to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+            to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@year}",
             class: "text-blue-600 hover:text-blue-800 cursor-pointer"
           ) %>
         <% end %>
@@ -121,7 +121,7 @@
               <div class="text-sm text-gray-700 mb-2">
                 <%= @school.address.street %><br />
                 <%= @school.address.zip_code %> <%= link(@school.address.city,
-                  to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @year),
+                  to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@year}",
                   class: "text-blue-600 hover:text-blue-800 cursor-pointer font-medium"
                 ) %>
               </div>
@@ -211,7 +211,7 @@
                 <!-- vCard Download Button as a small icon in the bottom-right corner -->
               </div>
               <div class="flex justify-end mt-1">
-                <%= link to: MehrSchulferienWeb.RouteHelpers.school_vcard_path(@conn, :download, @country.slug, @school.slug),
+                <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/vcard",
                       class: "inline-flex items-center gap-1 p-1 rounded-full text-blue-500 hover:text-blue-700 hover:bg-blue-100 transition-colors text-xs font-medium",
                       title: "vCard herunterladen" do %>
                   <svg

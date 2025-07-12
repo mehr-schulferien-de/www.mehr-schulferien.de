@@ -22,13 +22,7 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
       conn =
         get(
           conn,
-          Routes.bridge_day_path(
-            conn,
-            :show_within_federal_state,
-            country.slug,
-            federal_state.slug,
-            @future_year
-          )
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@future_year}"
         )
 
       # Verify basic page content
@@ -64,13 +58,7 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
       conn =
         get(
           conn,
-          Routes.bridge_day_path(
-            conn,
-            :show_within_federal_state,
-            country.slug,
-            federal_state.slug,
-            @future_year
-          )
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@future_year}"
         )
 
       html = html_response(conn, 200)

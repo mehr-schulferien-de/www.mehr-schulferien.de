@@ -1,6 +1,10 @@
 defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
   use Phoenix.Component
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
   alias MehrSchulferienWeb.ViewHelpers
   import MehrSchulferienWeb.FederalState.PeriodNameComponent
 
@@ -140,18 +144,13 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
   end
 
   # Helper function to build vacation URL
-  defp vacation_url(conn, period, federal_state) do
+  defp vacation_url(_conn, period, federal_state) do
     case vacation_type_slug(period) do
       nil ->
         nil
 
       slug ->
-        MehrSchulferienWeb.Router.Helpers.vacation_path(
-          conn,
-          String.to_atom(slug),
-          federal_state.slug,
-          period.starts_on.year
-        )
+        ~p"/#{slug}/#{federal_state.slug}/#{period.starts_on.year}"
     end
   end
 

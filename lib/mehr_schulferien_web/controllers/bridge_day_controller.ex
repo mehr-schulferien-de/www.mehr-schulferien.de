@@ -13,14 +13,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
 
     conn
     |> redirect(
-      to:
-        Routes.bridge_day_path(
-          conn,
-          :show_within_federal_state,
-          country_slug,
-          federal_state_slug,
-          current_year
-        ),
+      to: ~p"/brueckentage/#{country_slug}/bundesland/#{federal_state_slug}/#{current_year}",
       status: :temporary_redirect
     )
   end

@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.RedirectController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
+  # Note: This controller has been fully migrated to use ~p sigil
 
   # ============== NEW: /land/ to /ferien/ redirects for SEO ==============
 
@@ -102,12 +102,12 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
-    |> redirect(to: Routes.city_path(conn, :show_year, country_slug, city_slug, year))
+    |> redirect(to: ~p"/ferien/#{country_slug}/stadt/#{city_slug}/#{year}")
   end
 
   def redirect_city(conn, %{"country_slug" => country_slug, "city_slug" => city_slug}) do
     conn
-    |> redirect(to: Routes.city_path(conn, :show, country_slug, city_slug))
+    |> redirect(to: ~p"/ferien/#{country_slug}/stadt/#{city_slug}")
   end
 
   # Federal state redirects - these were already redirecting properly
@@ -117,9 +117,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
-    |> redirect(
-      to: Routes.federal_state_path(conn, :show_year, country_slug, federal_state_slug, year)
-    )
+    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
   def redirect_federal_state(conn, %{
@@ -127,25 +125,18 @@ defmodule MehrSchulferienWeb.RedirectController do
         "federal_state_slug" => federal_state_slug
       }) do
     conn
-    |> redirect(to: Routes.federal_state_path(conn, :show, country_slug, federal_state_slug))
+    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
   end
 
   def redirect_federal_state_category(conn, %{
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug,
-        "holiday_or_vacation_type_slug" => holiday_or_vacation_type_slug
+        "holiday_or_vacation_type_slug" => _holiday_or_vacation_type_slug
       }) do
+    # Note: :show_holiday_or_vacation_type route doesn't exist in current router
+    # Redirecting to federal state page instead
     conn
-    |> redirect(
-      to:
-        Routes.federal_state_path(
-          conn,
-          :show_holiday_or_vacation_type,
-          country_slug,
-          federal_state_slug,
-          holiday_or_vacation_type_slug
-        )
-    )
+    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
   end
 
   # School redirects - these were already redirecting properly
@@ -155,12 +146,12 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
-    |> redirect(to: Routes.school_path(conn, :show_year, country_slug, school_slug, year))
+    |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}/#{year}")
   end
 
   def redirect_school(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do
     conn
-    |> redirect(to: Routes.school_path(conn, :show, country_slug, school_slug))
+    |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}")
   end
 
   # Public holiday redirects - now redirects to federal state page
@@ -170,7 +161,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "holiday_or_vacation_type_slug" => _holiday_or_vacation_type_slug
       }) do
     conn
-    |> redirect(to: Routes.federal_state_path(conn, :show, country_slug, federal_state_slug))
+    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
   end
 
   # Bridge day redirects - update to use new /brueckentage/ URLs
@@ -194,16 +185,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
-    |> redirect(
-      to:
-        Routes.bridge_day_path(
-          conn,
-          :show_within_federal_state,
-          country_slug,
-          federal_state_slug,
-          year
-        )
-    )
+    |> redirect(to: ~p"/brueckentage/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
   # Misc redirects
@@ -213,7 +195,7 @@ defmodule MehrSchulferienWeb.RedirectController do
       }) do
     conn
     |> redirect(
-      to: Routes.federal_state_path(conn, :county_show, country_slug, federal_state_slug)
+      to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/landkreise-und-staedte"
     )
   end
 end

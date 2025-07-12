@@ -1,42 +1,30 @@
 <ol class="breadcrumb hidden-xs">
-  <li><%= link("Start", to: Routes.page_path(@conn, :home)) %></li>
-  <li><%= link(@country.name, to: Routes.country_path(@conn, :show, @country.slug)) %></li>
+  <li><%= link("Start", to: ~p"/") %></li>
+  <li><%= link(@country.name, to: ~p"/ferien/#{@country.slug}") %></li>
   <li>
     <%= link(@federal_state.name,
-      to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug)
+      to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"
     ) %>
   </li>
   <li>
     <%= link("Brückentage #{@federal_state.name}",
-      to:
-        Routes.bridge_day_path(
-          @conn,
-          :index_within_federal_state,
-          @country.slug,
-          @federal_state.slug
-        ),
+      to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}",
       class: "active"
     ) %>
   </li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><%= link("Start", to: Routes.page_path(@conn, :home)) %></li>
-  <li><%= link(@country.code, to: Routes.country_path(@conn, :show, @country.slug)) %></li>
+  <li><%= link("Start", to: ~p"/") %></li>
+  <li><%= link(@country.code, to: ~p"/ferien/#{@country.slug}") %></li>
   <li>
     <%= link(@federal_state.name,
-      to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug)
+      to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"
     ) %>
   </li>
   <li>
     <%= link("Brückentage #{@federal_state.name}",
-      to:
-        Routes.bridge_day_path(
-          @conn,
-          :index_within_federal_state,
-          @country.slug,
-          @federal_state.slug
-        ),
+      to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}",
       class: "active"
     ) %>
   </li>
@@ -58,14 +46,7 @@
         <%= if MehrSchulferienWeb.BridgeDayController.has_bridge_days?([@country.id, @federal_state.id], year) do %>
           <li>
             <%= link(year,
-              to:
-                Routes.bridge_day_path(
-                  @conn,
-                  :show_within_federal_state,
-                  @country.slug,
-                  @federal_state.slug,
-                  year
-                )
+              to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}"
             ) %>
           </li>
         <% end %>
@@ -90,13 +71,7 @@
           Allerdings können Sie mit Brückentagen im aktuellen Jahr (<%= @current_year %>) nicht mehr viel rausholen. Am besten Sie starten schon einmal die Urlaubsplanung für das
           nächste Jahr: <%= link("Brückentage #{@current_year + 1}",
             to:
-              Routes.bridge_day_path(
-                @conn,
-                :show_within_federal_state,
-                @country.slug,
-                @federal_state.slug,
-                Integer.to_string(@current_year + 1)
-              )
+              ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@current_year + 1}"
           ) %>
         <% end %>
       </p>

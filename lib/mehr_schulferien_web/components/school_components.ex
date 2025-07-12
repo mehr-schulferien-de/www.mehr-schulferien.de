@@ -1,8 +1,11 @@
 defmodule MehrSchulferienWeb.SchoolComponents do
   use Phoenix.Component
-  import Phoenix.HTML.Link
 
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
+  import Phoenix.HTML.Link
 
   def no_data(assigns) do
     ~H"""
@@ -31,14 +34,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
                 <%= for available_year <- @years_with_data do %>
                   <li>
                     <%= link("#{available_year}",
-                      to:
-                        Routes.school_path(
-                          @conn,
-                          :show_year,
-                          @country.slug,
-                          @school.slug,
-                          available_year
-                        ),
+                      to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{available_year}",
                       class: "font-medium text-blue-600 hover:text-blue-500"
                     ) %>
                   </li>

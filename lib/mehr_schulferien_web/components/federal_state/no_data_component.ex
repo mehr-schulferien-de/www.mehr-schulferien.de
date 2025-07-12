@@ -1,8 +1,11 @@
 defmodule MehrSchulferienWeb.FederalState.NoDataComponent do
   use Phoenix.Component
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
   import Phoenix.HTML.Link
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
   attr :conn, :map, required: true
   attr :country, :map, required: true
@@ -20,14 +23,7 @@ defmodule MehrSchulferienWeb.FederalState.NoDataComponent do
           Bitte wählen Sie eines der verfügbaren Jahre:
           <%= for available_year <- @years_with_data do %>
             <%= link("#{available_year}",
-              to:
-                Routes.federal_state_path(
-                  @conn,
-                  :show_year,
-                  @country.slug,
-                  @federal_state.slug,
-                  available_year
-                ),
+              to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{available_year}",
               class: "text-blue-600 hover:underline"
             ) %><%= if available_year != List.last(@years_with_data), do: ", ", else: "" %>
           <% end %>

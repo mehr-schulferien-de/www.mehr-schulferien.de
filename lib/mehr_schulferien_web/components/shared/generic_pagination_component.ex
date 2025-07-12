@@ -5,8 +5,11 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
   """
   use Phoenix.Component
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
   import Phoenix.HTML.Link
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
   attr :conn, :map, required: true
   attr :country, :map, required: true
@@ -160,15 +163,15 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
     """
   end
 
-  defp build_route_path(conn, :federal_state, country, federal_state, year) do
-    Routes.federal_state_path(conn, :show_year, country.slug, federal_state.slug, year)
+  defp build_route_path(_conn, :federal_state, country, federal_state, year) do
+    ~p"/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year}"
   end
 
-  defp build_route_path(conn, :city, country, city, year) do
-    Routes.city_path(conn, :show_year, country.slug, city.slug, year)
+  defp build_route_path(_conn, :city, country, city, year) do
+    ~p"/ferien/#{country.slug}/stadt/#{city.slug}/#{year}"
   end
 
-  defp build_route_path(conn, :school, country, school, year) do
-    Routes.school_path(conn, :show_year, country.slug, school.slug, year)
+  defp build_route_path(_conn, :school, country, school, year) do
+    ~p"/ferien/#{country.slug}/schule/#{school.slug}/#{year}"
   end
 end

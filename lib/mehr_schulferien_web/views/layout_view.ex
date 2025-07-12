@@ -1,6 +1,5 @@
 defmodule MehrSchulferienWeb.LayoutView do
   use MehrSchulferienWeb, :view
-  import Phoenix.HTML.Link
   import MehrSchulferienWeb.NavigationComponent
 
   alias MehrSchulferien.Calendars.DateHelpers

@@ -56,9 +56,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # Verify the address was updated in the database
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -87,9 +87,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # Verify the address was updated with wikipedia_url
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -112,9 +112,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        put(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        put(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # Verify the address was updated in the database
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -150,12 +150,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug),
-          address: new_address_params
-        )
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: new_address_params)
 
-      assert redirected_to(conn, 302) =~
-               Routes.school_path(conn, :show, country.slug, school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/#{country.slug}/schule/#{school.slug}"
 
       # Verify the address was created in the database
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -177,7 +174,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: invalid_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: invalid_params)
 
       # Since homepage_url validation is now enforced, it should show form with errors
       assert html_response(conn, 200) =~ "muss eine gültige URL sein"
@@ -206,7 +203,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       assert redirected_to(conn, 302) =~ "/wiki/schools/#{school.slug}"
 
@@ -236,9 +233,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # Verify the phone number was normalized to international format
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -264,9 +261,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # Verify the phone number remained unchanged
       updated_school = Locations.get_school_by_slug!(school.slug)
@@ -292,9 +289,9 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # Verify the invalid phone number was left unchanged (no error thrown)
       updated_school = Locations.get_school_by_slug!(school.slug)

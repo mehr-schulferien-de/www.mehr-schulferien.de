@@ -33,7 +33,7 @@
               >
               </path>
             </svg>
-            <%= link to: Routes.country_path(@conn, :show, @country.slug), class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
+            <%= link to: ~p"/ferien/#{@country.slug}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
               <%= @country.name %>
             <% end %>
           </div>
@@ -54,7 +54,7 @@
               >
               </path>
             </svg>
-            <%= link to: Routes.federal_state_path(@conn, :show, @country.slug, @federal_state.slug), class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
+            <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
               <%= @federal_state.name %>
             <% end %>
           </div>
@@ -75,7 +75,7 @@
               >
               </path>
             </svg>
-            <%= link to: Routes.city_path(@conn, :show_year, @country.slug, @city.slug, @current_year), class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
+            <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@current_year}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
               <%= @city.name %>
             <% end %>
           </div>
@@ -96,7 +96,7 @@
               >
               </path>
             </svg>
-            <%= link to: Routes.school_path(@conn, :show_year, @country.slug, @school.slug, @current_year), class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2 truncate max-w-[120px] md:max-w-none", title: @school.name do %>
+            <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2 truncate max-w-[120px] md:max-w-none", title: @school.name do %>
               <%= @school.name %>
             <% end %>
           </div>

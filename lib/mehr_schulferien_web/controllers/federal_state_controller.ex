@@ -18,7 +18,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
       })
       when first in @digits do
     location = Locations.get_federal_state!(id)
-    redirect(conn, to: Routes.federal_state_path(conn, :show, country_slug, location.slug))
+    redirect(conn, to: ~p"/ferien/#{country_slug}/bundesland/#{location.slug}")
   end
 
   def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
@@ -26,14 +26,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
     current_year = today.year
 
     redirect(conn,
-      to:
-        Routes.federal_state_path(
-          conn,
-          :show_year,
-          country_slug,
-          federal_state_slug,
-          current_year
-        ),
+      to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{current_year}",
       status: :temporary_redirect
     )
   end

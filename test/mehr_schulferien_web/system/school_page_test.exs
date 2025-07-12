@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
   import Phoenix.ConnTest
 
   import MehrSchulferien.Factory
-  alias MehrSchulferienWeb.TestRouteHelpers, as: Routes
+  alias MehrSchulferienWeb.TestRouteHelpers
 
   @current_year Date.utc_today().year
   @next_year @current_year + 1
@@ -22,7 +22,10 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       school: school
     } do
       conn =
-        get(conn, Routes.school_path(conn, :show_year, country.slug, school.slug, @current_year))
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show_year, country.slug, school.slug, @current_year)
+        )
 
       # Verify basic page content
       assert html_response(conn, 200) =~ "Schulferien #{school.name}"
@@ -48,7 +51,10 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       school: school
     } do
       conn =
-        get(conn, Routes.school_path(conn, :show_year, country.slug, school.slug, @current_year))
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show_year, country.slug, school.slug, @current_year)
+        )
 
       # Check that the FAQ section is present
       assert html_response(conn, 200) =~ "Ferien FAQ"
@@ -73,10 +79,16 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       country: country,
       school: school
     } do
-      conn = get(conn, Routes.school_path(conn, :show, country.slug, school.slug))
+      conn = get(conn, TestRouteHelpers.school_path(conn, :show, country.slug, school.slug))
 
       assert redirected_to(conn, 302) =~
-               Routes.school_path(conn, :show_year, country.slug, school.slug, @current_year)
+               TestRouteHelpers.school_path(
+                 conn,
+                 :show_year,
+                 country.slug,
+                 school.slug,
+                 @current_year
+               )
     end
 
     test "shows 404 for year without data", %{
@@ -85,7 +97,10 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       school: school
     } do
       conn =
-        get(conn, Routes.school_path(conn, :show_year, country.slug, school.slug, @past_year))
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show_year, country.slug, school.slug, @past_year)
+        )
 
       # The 404 page shows a warning message about no data being available for the selected year
       assert html_response(conn, 404) =~ "Keine Feriendaten"

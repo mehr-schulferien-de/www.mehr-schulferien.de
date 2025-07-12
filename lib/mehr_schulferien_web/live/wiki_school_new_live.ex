@@ -112,9 +112,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
               {:noreply,
                socket
                |> put_flash(:info, "Schule wurde erfolgreich angelegt. Danke für Ihre Hilfe!")
-               |> redirect(
-                 to: Routes.school_path(socket, :show, country_slug || "d", school.slug)
-               )}
+               |> redirect(to: ~p"/ferien/#{country_slug || "d"}/schule/#{school.slug}")}
 
             {:error, :invalid_address} ->
               changeset =

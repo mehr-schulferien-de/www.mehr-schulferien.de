@@ -1,75 +1,66 @@
 defmodule MehrSchulferienWeb.TestRouteHelpers do
   @moduledoc """
-  Helper functions for system tests to use the correct routes during the
-  SEO URL structure transition period.
+  Helper functions for system tests to use the correct routes using verified routes.
+  Updated to use Phoenix verified routes instead of legacy Routes helpers.
   """
 
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
 
-  def school_path(conn, action, country_slug, school_slug, year \\ nil) do
+  def school_path(_conn, action, country_slug, school_slug, year \\ nil) do
     case action do
       :show ->
-        Routes.school_path(conn, :show, country_slug, school_slug)
+        ~p"/ferien/#{country_slug}/schule/#{school_slug}"
 
       :show_year when is_binary(year) or is_integer(year) ->
-        Routes.school_path(conn, :show_year, country_slug, school_slug, year)
+        ~p"/ferien/#{country_slug}/schule/#{school_slug}/#{year}"
 
       _ ->
-        Routes.school_path(conn, action, country_slug, school_slug)
+        ~p"/ferien/#{country_slug}/schule/#{school_slug}"
     end
   end
 
-  def school_vcard_path(conn, :download, country_slug \\ nil, school_slug) do
+  def school_vcard_path(_conn, :download, country_slug \\ nil, school_slug) do
     if country_slug do
       # New SEO-friendly path
-      Routes.school_vcard_path(conn, :download, country_slug, school_slug)
+      ~p"/ferien/#{country_slug}/schule/#{school_slug}/vcard"
     else
-      # Legacy path - use direct URL instead of helper
+      # Legacy path - direct URL
       "/schule/#{school_slug}/vcard"
     end
   end
 
-  def city_path(conn, action, country_slug, city_slug, year \\ nil) do
+  def city_path(_conn, action, country_slug, city_slug, year \\ nil) do
     case action do
       :show ->
-        Routes.city_path(conn, :show, country_slug, city_slug)
+        ~p"/ferien/#{country_slug}/stadt/#{city_slug}"
 
       :show_year when is_binary(year) or is_integer(year) ->
-        Routes.city_path(conn, :show_year, country_slug, city_slug, year)
+        ~p"/ferien/#{country_slug}/stadt/#{city_slug}/#{year}"
 
       _ ->
-        Routes.city_path(conn, action, country_slug, city_slug)
+        ~p"/ferien/#{country_slug}/stadt/#{city_slug}"
     end
   end
 
-  def federal_state_path(conn, action, country_slug, federal_state_slug, year_or_type \\ nil) do
+  def federal_state_path(_conn, action, country_slug, federal_state_slug, year_or_type \\ nil) do
     case action do
       :show ->
-        Routes.federal_state_path(conn, :show, country_slug, federal_state_slug)
+        ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}"
 
       :show_year when is_binary(year_or_type) or is_integer(year_or_type) ->
-        Routes.federal_state_path(
-          conn,
-          :show_year,
-          country_slug,
-          federal_state_slug,
-          year_or_type
-        )
+        ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{year_or_type}"
 
       :show_holiday_or_vacation_type when is_binary(year_or_type) ->
-        Routes.federal_state_path(
-          conn,
-          :show_holiday_or_vacation_type,
-          country_slug,
-          federal_state_slug,
-          year_or_type
-        )
+        # This might need adjustment based on actual route
+        ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{year_or_type}"
 
       :county_show ->
-        Routes.federal_state_path(conn, :county_show, country_slug, federal_state_slug)
+        ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/landkreise-und-staedte"
 
       _ ->
-        Routes.federal_state_path(conn, action, country_slug, federal_state_slug)
+        ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}"
     end
   end
 end

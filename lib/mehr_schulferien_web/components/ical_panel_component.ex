@@ -1,8 +1,11 @@
 defmodule MehrSchulferienWeb.ICalPanelComponent do
   use Phoenix.Component
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
   import Phoenix.HTML.Link
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
   attr :conn, :map, required: true
   attr :entity_slug, :string, required: true
@@ -18,17 +21,17 @@ defmodule MehrSchulferienWeb.ICalPanelComponent do
       </p>
       <ul class="space-y-2 list-disc pl-5 text-sm">
         <li>
-          <%= link to: Routes.api_i_cal_path(@conn, :show, @entity_slug, vacation_types: "school", year: @year, calendar_year: true), class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
+          <%= link to: ~p"/api/v2.0/icalendars/location/#{@entity_slug}?vacation_types=school&year=#{@year}&calendar_year=true", class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
             iCal Schulferien <%= @entity_name %> <%= @year %>
           <% end %>
         </li>
         <li>
-          <%= link to: Routes.api_i_cal_path(@conn, :show, @entity_slug, vacation_types: "school", year: @year - 1), class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
+          <%= link to: ~p"/api/v2.0/icalendars/location/#{@entity_slug}?vacation_types=school&year=#{@year - 1}", class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
             iCal Schuljahr <%= @year - 1 %>/<%= @year %> <%= @entity_name %>
           <% end %>
         </li>
         <li>
-          <%= link to: Routes.api_i_cal_path(@conn, :show, @entity_slug, vacation_types: "school", year: @year), class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
+          <%= link to: ~p"/api/v2.0/icalendars/location/#{@entity_slug}?vacation_types=school&year=#{@year}", class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
             iCal Schuljahr <%= @year %>/<%= @year + 1 %> <%= @entity_name %>
           <% end %>
         </li>

@@ -22,13 +22,7 @@ defmodule MehrSchulferienWeb.BridgeDayNavigationSystemTest do
       conn =
         get(
           conn,
-          Routes.bridge_day_path(
-            conn,
-            :show_within_federal_state,
-            country.slug,
-            federal_state.slug,
-            @current_year
-          )
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@current_year}"
         )
 
       # Page loads successfully
@@ -58,13 +52,7 @@ defmodule MehrSchulferienWeb.BridgeDayNavigationSystemTest do
       conn =
         get(
           conn,
-          Routes.bridge_day_path(
-            conn,
-            :show_within_federal_state,
-            country.slug,
-            federal_state.slug,
-            @future_year
-          )
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@future_year}"
         )
 
       # Page loads successfully

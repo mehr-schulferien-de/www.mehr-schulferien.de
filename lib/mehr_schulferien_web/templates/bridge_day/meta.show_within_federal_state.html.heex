@@ -14,15 +14,7 @@
 <meta property="og:type" content="website" />
 <meta
   property="og:url"
-  content={
-    Routes.bridge_day_url(
-      @conn,
-      :show_within_federal_state,
-      @country.slug,
-      @federal_state.slug,
-      @year
-    )
-  }
+  content={url(~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}")}
 />
 <meta
   property="og:title"
@@ -36,15 +28,7 @@
 <meta property="twitter:card" content="summary_large_image" />
 <meta
   property="twitter:url"
-  content={
-    Routes.bridge_day_url(
-      @conn,
-      :show_within_federal_state,
-      @country.slug,
-      @federal_state.slug,
-      @year
-    )
-  }
+  content={url(~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}")}
 />
 <meta
   property="twitter:title"
@@ -61,7 +45,7 @@
     "@type" => "WebPage",
     "name" => "Brückentage #{@federal_state.name} #{@year}",
     "description" => "Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung.",
-    "url" => Routes.bridge_day_url(@conn, :show_within_federal_state, @country.slug, @federal_state.slug, @year),
+    "url" => url(~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}"),
     "mainEntity" => %{
       "@type" => "ItemList",
       "itemListElement" => Enum.map(Enum.with_index(@bridge_day_map[2] || []), fn {bridge_day, index} ->

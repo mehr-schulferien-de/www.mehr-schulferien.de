@@ -59,14 +59,7 @@ defmodule MehrSchulferienWeb.SchoolController do
     current_year = today.year
 
     redirect(conn,
-      to:
-        Routes.school_path(
-          conn,
-          :show_year,
-          country_slug,
-          school_slug,
-          current_year
-        )
+      to: ~p"/ferien/#{country_slug}/schule/#{school_slug}/#{current_year}"
     )
   end
 

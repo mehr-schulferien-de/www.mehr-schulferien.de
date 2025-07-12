@@ -3,7 +3,10 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
   Shared components for vacation type overview pages
   """
   use Phoenix.Component
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
+
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
 
   @doc """
   Renders a table showing all federal states' vacation dates
@@ -73,7 +76,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                 <%= if data.period do %>
                   <a
-                    href={Routes.vacation_path(@conn, :show, @vacation_type, data.state_slug, @year)}
+                    href={~p"/#{@vacation_type}/#{data.state_slug}/#{@year}"}
                     class="text-blue-600 hover:text-blue-900"
                   >
                     Details <span class="sr-only">für <%= data.state_name %></span>

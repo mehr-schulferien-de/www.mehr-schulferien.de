@@ -57,7 +57,7 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
     conn =
       get(
         conn,
-        Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "school", year: "2025")
+        ~p"/api/v2.0/icalendars/location/#{location.slug}?vacation_types=school&year=2025"
       )
 
     assert response_content_type(conn, :ics)
@@ -67,7 +67,7 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
     conn =
       get(
         conn,
-        Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "all", year: "2025")
+        ~p"/api/v2.0/icalendars/location/#{location.slug}?vacation_types=all&year=2025"
       )
 
     assert response_content_type(conn, :ics)
@@ -78,11 +78,7 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
     location: location
   } do
     path =
-      Routes.api_i_cal_path(conn, :show, location.slug,
-        vacation_types: "school",
-        year: "2025",
-        calendar_year: "true"
-      )
+      ~p"/api/v2.0/icalendars/location/#{location.slug}?vacation_types=school&year=2025&calendar_year=true"
 
     conn = get(conn, path)
 
@@ -105,8 +101,7 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
     location: location
   } do
     # Without calendar_year parameter, it should use school year format
-    path =
-      Routes.api_i_cal_path(conn, :show, location.slug, vacation_types: "school", year: "2025")
+    path = ~p"/api/v2.0/icalendars/location/#{location.slug}?vacation_types=school&year=2025"
 
     conn = get(conn, path)
 

@@ -44,7 +44,7 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       assert redirected_to(conn, 302)
 

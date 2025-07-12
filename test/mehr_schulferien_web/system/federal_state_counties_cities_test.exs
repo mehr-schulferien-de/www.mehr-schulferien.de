@@ -77,10 +77,10 @@ defmodule MehrSchulferienWeb.FederalStateCountiesCitiesSystemTest do
 
       # Check that the links to the cities are correct
       assert html_response(conn, 200) =~
-               "href=\"#{Routes.city_path(conn, :show, country.slug, city1.slug)}\""
+               "href=\"#{~p"/ferien/#{country.slug}/stadt/#{city1.slug}"}\""
 
       assert html_response(conn, 200) =~
-               "href=\"#{Routes.city_path(conn, :show, country.slug, city2.slug)}\""
+               "href=\"#{~p"/ferien/#{country.slug}/stadt/#{city2.slug}"}\""
     end
   end
 end

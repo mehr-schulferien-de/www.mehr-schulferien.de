@@ -126,32 +126,32 @@
     <h3 class="text-lg font-semibold text-gray-900 mb-4">Weitere Ferientermine</h3>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
       <%= if @vacation_type != "sommer" do %>
-        <a href="/sommerferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+        <a href={~p"/sommerferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
           Sommerferien
         </a>
       <% end %>
       <%= if @vacation_type != "ostern" do %>
-        <a href="/osterferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+        <a href={~p"/osterferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
           Osterferien
         </a>
       <% end %>
       <%= if @vacation_type != "herbst" do %>
-        <a href="/herbstferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+        <a href={~p"/herbstferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
           Herbstferien
         </a>
       <% end %>
       <%= if @vacation_type != "weihnachten" do %>
-        <a href="/weihnachtsferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+        <a href={~p"/weihnachtsferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
           Weihnachtsferien
         </a>
       <% end %>
       <%= if @vacation_type != "winter" do %>
-        <a href="/winterferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+        <a href={~p"/winterferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
           Winterferien
         </a>
       <% end %>
       <%= if @vacation_type != "pfingsten" do %>
-        <a href="/pfingstferien" class="text-blue-600 hover:text-blue-800 hover:underline">
+        <a href={~p"/pfingstferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
           Pfingstferien
         </a>
       <% end %>

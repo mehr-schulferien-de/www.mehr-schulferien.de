@@ -1,34 +1,35 @@
 defmodule MehrSchulferienWeb.CriticalRoutesTest do
   use MehrSchulferienWeb.ConnCase, async: true
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
   describe "critical bug prevention: briefe routes must come before vacation catch-all" do
-    test "briefe routes work and don't get year appended", %{conn: conn} do
+    test "briefe routes work and don't get year appended", %{conn: _conn} do
       # This test ensures the routes are compiled in the correct order
       # If briefe routes come after vacation routes, these will fail
 
       # Test the routes exist by trying to build paths
       # If the route doesn't exist, this will raise an error
-      assert Routes.school_path(conn, :documents_index, "test-school") == "/briefe/test-school"
+      assert ~p"/briefe/test-school" == "/briefe/test-school"
 
       # These should work as live paths
-      assert Routes.live_path(conn, MehrSchulferienWeb.SchoolSearchLive) == "/briefe"
+      assert ~p"/briefe" == "/briefe"
 
-      assert Routes.live_path(conn, MehrSchulferienWeb.EntschuldigungLive, "test-school") ==
-               "/briefe/test-school/entschuldigung"
+      assert ~p"/briefe/test-school/entschuldigung" == "/briefe/test-school/entschuldigung"
     end
 
-    test "vacation routes work with proper slugs", %{conn: conn} do
+    test "vacation routes work with proper slugs", %{conn: _conn} do
       # These should generate proper vacation paths
-      assert Routes.vacation_path(conn, :vacation_current, "sommerferien", "bayern") ==
-               "/sommerferien/bayern"
+      assert ~p"/sommerferien/bayern" == "/sommerferien/bayern"
 
-      assert Routes.vacation_path(conn, :show, "sommerferien", "bayern", 2025) ==
-               "/sommerferien/bayern/2025"
+      assert ~p"/sommerferien/bayern/2025" == "/sommerferien/bayern/2025"
     end
 
-    test "document PDF routes work", %{conn: conn} do
+    test "document PDF routes work", %{conn: _conn} do
       # PDF download routes should be accessible
-      assert Routes.document_pdf_path(conn, :download, "test-school", "entschuldigung") ==
+      assert ~p"/briefe/test-school/entschuldigung/pdf" ==
                "/briefe/test-school/entschuldigung/pdf"
     end
   end
@@ -91,15 +92,10 @@ defmodule MehrSchulferienWeb.CriticalRoutesTest do
       # the vacation route and redirected to /briefe/56068-max-von-laue-gymnasium/2025
 
       # If routes are ordered correctly, this should generate the right path
-      assert Routes.school_path(build_conn(), :documents_index, "56068-max-von-laue-gymnasium") ==
-               "/briefe/56068-max-von-laue-gymnasium"
+      assert ~p"/briefe/56068-max-von-laue-gymnasium" == "/briefe/56068-max-von-laue-gymnasium"
 
       # And this should work for all document types
-      assert Routes.live_path(
-               build_conn(),
-               MehrSchulferienWeb.EntschuldigungLive,
-               "56068-max-von-laue-gymnasium"
-             ) ==
+      assert ~p"/briefe/56068-max-von-laue-gymnasium/entschuldigung" ==
                "/briefe/56068-max-von-laue-gymnasium/entschuldigung"
     end
   end

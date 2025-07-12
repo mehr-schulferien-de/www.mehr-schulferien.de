@@ -8,6 +8,6 @@
 
 <script type="application/ld+json">
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
-    %{name: @country.name, item: "https://www.mehr-schulferien.de" <> Routes.country_path(@conn, :show, @country.slug)}
+    %{name: @country.name, item: url(~p"/ferien/#{@country.slug}")}
   ]) %>
 </script>

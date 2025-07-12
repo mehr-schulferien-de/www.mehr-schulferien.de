@@ -47,7 +47,7 @@
       <%= for federal_state <- @federal_states do %>
         <tr class="hover:bg-gray-50">
           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-            <%= link to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug), class: "hover:text-blue-600 transition-colors duration-200" do %>
+            <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{federal_state.slug}", class: "hover:text-blue-600 transition-colors duration-200" do %>
               <%= ViewHelpers.abbreviate(federal_state.name, 12) %>
             <% end %>
           </td>
@@ -62,7 +62,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <span>
                   <% month = @months[period.starts_on.month] %>
-                  <%= link to: Routes.federal_state_path(@conn, :show, @country.slug, federal_state.slug) <> "##{String.downcase(month)}#{period.starts_on.year}", class: "hover:text-blue-600 transition-colors duration-200" do %>
+                  <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{federal_state.slug}" <> "##{String.downcase(month)}#{period.starts_on.year}", class: "hover:text-blue-600 transition-colors duration-200" do %>
                     <%= for period <- periods do %>
                       <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short) %><br />
                     <% end %>

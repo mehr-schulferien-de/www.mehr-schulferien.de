@@ -29,7 +29,7 @@
 
         <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_school_form.html",
           changeset: @changeset,
-          action: Routes.wiki_path(@socket, :update_school, @school.slug),
+          action: ~p"/wiki/schools/#{@school.slug}",
           method: :post,
           limit_reached: @limit_reached,
           school_name: Map.get(@changeset.data, :name) || @school.name || "",

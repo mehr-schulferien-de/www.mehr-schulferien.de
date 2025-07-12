@@ -1,7 +1,6 @@
 defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
   use MehrSchulferienWeb.ConnCase
   import MehrSchulferien.Factory
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
   describe "coordinate updates on address change" do
     setup do
@@ -97,7 +96,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
@@ -125,7 +124,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
@@ -151,7 +150,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
@@ -180,7 +179,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
@@ -208,7 +207,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
@@ -248,9 +247,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school_no_address.slug),
-          address: new_address_params
-        )
+        post(conn, ~p"/wiki/schools/#{school_no_address.slug}", address: new_address_params)
 
       assert redirected_to(conn, 302) =~
                "/ferien/#{country.slug}/schule/#{school_no_address.slug}"

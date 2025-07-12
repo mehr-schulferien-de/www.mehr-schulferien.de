@@ -22,13 +22,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       conn =
         get(
           conn,
-          Routes.bridge_day_path(
-            conn,
-            :show_within_federal_state,
-            country.slug,
-            federal_state.slug,
-            current_year
-          )
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}"
         )
 
       assert html_response(conn, 200)
@@ -64,13 +58,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       conn =
         get(
           conn,
-          Routes.bridge_day_path(
-            conn,
-            :show_within_federal_state,
-            country.slug,
-            federal_state.slug,
-            current_year
-          )
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}"
         )
 
       assert html_response(conn, 200) =~ "#{current_year}"
@@ -87,13 +75,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       conn =
         get(
           conn,
-          Routes.bridge_day_path(
-            conn,
-            :show_within_federal_state,
-            country.slug,
-            federal_state.slug,
-            invalid_year
-          )
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{invalid_year}"
         )
 
       assert conn.status == 404

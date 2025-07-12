@@ -4,7 +4,6 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
   import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
 
   describe "wiki school street update functionality" do
     setup [:create_school_with_address]
@@ -45,11 +44,11 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: updated_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)
 
       # Step 3: Verify the request was successful (not "nothing happens")
       # The user reported "nothing happens" - this verifies something DOES happen
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # Step 4: Check the flash message
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
@@ -113,12 +112,10 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug),
-          address: new_address_params
-        )
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: new_address_params)
 
       # Should not be "nothing happens" - should redirect
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # The redirect was successful
 
@@ -146,10 +143,10 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       }
 
       conn =
-        post(conn, Routes.wiki_path(conn, :update_school, school.slug), address: empty_params)
+        post(conn, ~p"/wiki/schools/#{school.slug}", address: empty_params)
 
       # Even with empty data, should not be "nothing happens"
-      assert redirected_to(conn, 302) =~ Routes.school_path(conn, :show, "d", school.slug)
+      assert redirected_to(conn, 302) =~ ~p"/ferien/d/schule/#{school.slug}"
 
       # User should get some feedback
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "erfolgreich"

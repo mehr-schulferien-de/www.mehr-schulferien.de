@@ -5,26 +5,12 @@
       <nav aria-label="Breadcrumb" class="flex-1 min-w-0">
         <% breadcrumbs = [
           {"Startseite", "/"},
-          {@country.name, Routes.country_path(@socket, :show, @country.slug)},
-          {@federal_state.name,
-           Routes.federal_state_path(@socket, :show, @country.slug, @federal_state.slug)},
-          {@city.name,
-           Routes.city_path(
-             @socket,
-             :show_year,
-             @country.slug,
-             @city.slug,
-             Date.utc_today().year
-           )},
+          {@country.name, ~p"/ferien/#{@country.slug}"},
+          {@federal_state.name, ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"},
+          {@city.name, ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{Date.utc_today().year}"},
           {@school.name,
-           Routes.school_path(
-             @socket,
-             :show_year,
-             @country.slug,
-             @school.slug,
-             Date.utc_today().year
-           )},
-          {"Vordrucke", Routes.school_path(@socket, :documents_index, @school.slug)},
+           ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{Date.utc_today().year}"},
+          {"Vordrucke", ~p"/briefe/#{@school.slug}"},
           {"Beurlaubungsvordruck", nil}
         ] %>
         <!-- Mobile breadcrumbs (show only last 2 items) -->

@@ -202,7 +202,7 @@ The layout file checks this function to determine which CSS to include:
   <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
   </style>
 <% else %>
-  <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/assets/app.css") %>"/>
+  <link rel="stylesheet" href="<%= static_path(@conn, "/assets/app.css") %>"/>
 <% end %>
 ```
 

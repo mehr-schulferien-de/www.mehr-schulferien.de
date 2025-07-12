@@ -65,14 +65,7 @@ defmodule MehrSchulferienWeb.CityController do
     current_year = today.year
 
     redirect(conn,
-      to:
-        Routes.city_path(
-          conn,
-          :show_year,
-          country_slug,
-          city_slug,
-          current_year
-        ),
+      to: ~p"/ferien/#{country_slug}/stadt/#{city_slug}/#{current_year}",
       status: :temporary_redirect
     )
   end

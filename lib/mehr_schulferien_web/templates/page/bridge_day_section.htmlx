@@ -10,7 +10,7 @@
           <p class="text-green-800 font-semibold">Bis zu #{percent}% mehr freie Tage möglich!</p>
           <p class="text-green-700 mt-2">
             Beispiel: Mit nur #{min_leave} Urlaubstag#{if min_leave > 1, do: "en", else: ""} in NRW können Sie #{max_days} Tage frei machen
-            (<a href=\"#{Routes.bridge_day_path(@conn, :show_within_federal_state, "d", "nordrhein-westfalen", year)}\" class=\"text-green-600 hover:text-green-800 underline\">Beispiel ansehen</a>).
+            (<a href=\"#{~p"/brueckentage/d/bundesland/nordrhein-westfalen/#{year}"}\" class=\"text-green-600 hover:text-green-800 underline\">Beispiel ansehen</a>).
           </p>
         </div>
         """
@@ -49,7 +49,7 @@
                 <td class="px-4 py-3 text-sm text-gray-900"><%= federal_state.name %></td>
                 <%= if length(federal_state.years_with_bridge_days) > 0 do %>
                   <%= for year <- federal_state.years_with_bridge_days do %>
-                    <td class="px-4 py-3"><%= link year, to: Routes.bridge_day_path(@conn, :show_within_federal_state, country.slug, federal_state.slug, year), class: "inline-block px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100" %></td>
+                    <td class="px-4 py-3"><%= link year, to: ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{year}", class: "inline-block px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100" %></td>
                   <% end %>
                 <% end %>
               </tr>

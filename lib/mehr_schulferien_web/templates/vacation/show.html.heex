@@ -70,15 +70,7 @@
           <% # Link back to main federal state page %>
           <div class="mt-4">
             <a
-              href={
-                Routes.federal_state_path(
-                  @conn,
-                  :show_year,
-                  @country.slug,
-                  @federal_state.slug,
-                  @year
-                )
-              }
+              href={~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}"}
               class="text-blue-600 hover:text-blue-800 text-sm"
             >
               ← Alle Ferientermine <%= @federal_state.name %> <%= @year %>
@@ -104,15 +96,7 @@
             <div class="bg-white rounded p-4 mb-4">
               <p class="text-sm text-gray-600 mb-2">Zur Orientierung:</p>
               <a
-                href={
-                  Routes.vacation_path(
-                    @conn,
-                    :show,
-                    @vacation_type,
-                    @federal_state.slug,
-                    previous_year
-                  )
-                }
+                href={~p"/#{@vacation_type}/#{@federal_state.slug}/#{previous_year}"}
                 class="text-blue-600 hover:text-blue-800 font-medium"
               >
                 <%= @vacation_name %> <%= previous_year %> ansehen →
@@ -121,15 +105,7 @@
 
             <div class="space-y-2">
               <a
-                href={
-                  Routes.federal_state_path(
-                    @conn,
-                    :show_year,
-                    @country.slug,
-                    @federal_state.slug,
-                    @year
-                  )
-                }
+                href={~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}"}
                 class="inline-flex items-center text-blue-600 hover:text-blue-800"
               >
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

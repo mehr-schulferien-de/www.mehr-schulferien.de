@@ -128,6 +128,43 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
 - **LiveView** for interactive components
 - **Responsive design** with Tailwind CSS
 
+## Phoenix Verified Routes (~p sigil)
+
+The project has been fully migrated to Phoenix verified routes (Phoenix 1.7.21+) and exclusively uses the `~p` sigil for all routing.
+
+### Implementation
+1. **Setup** - Verified routes are configured in:
+   - `lib/mehr_schulferien_web.ex` - Added `use Phoenix.VerifiedRoutes` to controller, view, and view_helpers macros
+   - Components that need routing include `use Phoenix.VerifiedRoutes, endpoint: MehrSchulferienWeb.Endpoint, router: MehrSchulferienWeb.Router`
+
+2. **Usage** - All routes use the ~p sigil pattern:
+   ```elixir
+   # Paths
+   ~p"/#{@vacation_type}/#{state_slug}/#{@year}"
+   ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"
+   
+   # URLs (for meta tags, redirects, etc.)
+   url(~p"/#{@vacation_type}/#{state_slug}/#{@year}")
+   
+   # Static assets
+   static_path(@conn, "/assets/app.css")
+   static_url(@conn, "/images/file.png")
+   ```
+
+3. **Migration Complete**:
+   - ✅ **All controllers migrated** (8 files): redirect, vacation, wiki, federal_state, bridge_day, city, school
+   - ✅ **All templates migrated** (45+ files): vacation, city, country, federal_state, school, bridge_day, page, partial, wiki, layout
+   - ✅ **All LiveView files migrated** (4 files): entschuldigung, beurlaubung, sportbefreiung, wiki_school_new
+   - ✅ **All components migrated**: vacation_type_components and other shared components
+   - ✅ **Legacy RouteHelpers module removed**
+   - ✅ **All Routes aliases removed**
+
+4. **Benefits**:
+   - **Compile-time verification**: Routes are checked at compile time, preventing broken links
+   - **Better performance**: No runtime route generation overhead  
+   - **Type safety**: Parameters are validated against route definitions
+   - **Cleaner code**: More concise syntax than the old Routes helpers
+
 ## Repository Guidelines
 
 ### Git and GitHub Workflow

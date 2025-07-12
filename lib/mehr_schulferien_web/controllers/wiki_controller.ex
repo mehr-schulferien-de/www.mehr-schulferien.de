@@ -229,7 +229,7 @@ defmodule MehrSchulferienWeb.WikiController do
 
           conn
           |> put_flash(:info, flash_message)
-          |> redirect(to: Routes.school_path(conn, :show, country_slug, school_slug))
+          |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}")
 
         {{:error, changeset}, _} ->
           # School update failed
@@ -385,7 +385,7 @@ defmodule MehrSchulferienWeb.WikiController do
 
             conn
             |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
-            |> redirect(to: Routes.school_path(conn, :show, country_slug, school_slug))
+            |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}")
 
           {:error, _} ->
             conn
@@ -581,9 +581,9 @@ defmodule MehrSchulferienWeb.WikiController do
           # Redirect to city page if city exists, otherwise to country page
           redirect_path =
             if city && city.slug do
-              Routes.city_path(conn, :show, country_slug, city.slug)
+              ~p"/ferien/#{country_slug}/stadt/#{city.slug}"
             else
-              Routes.country_path(conn, :show, country_slug)
+              ~p"/ferien/#{country_slug}"
             end
 
           conn

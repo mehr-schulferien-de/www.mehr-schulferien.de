@@ -1,8 +1,12 @@
 defmodule MehrSchulferienWeb.FaqComponent do
   use Phoenix.Component
+
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
   alias MehrSchulferienWeb.FaqViewHelpers
   alias MehrSchulferienWeb.ViewHelpers
-  alias MehrSchulferienWeb.Router.Helpers, as: Routes
   import Phoenix.HTML.Link
   import Phoenix.HTML, only: [raw: 1]
 
@@ -385,14 +389,14 @@ defmodule MehrSchulferienWeb.FaqComponent do
       <dd class="mt-2 text-sm text-gray-600">
         <%= if length(@sorted_schools) == 1 do %>
           <%= link(hd(@sorted_schools).name,
-            to: Routes.school_path(@conn, :show, @country.slug, hd(@sorted_schools).slug),
+            to: ~p"/ferien/#{@country.slug}/schule/#{hd(@sorted_schools).slug}",
             class: "text-blue-600 hover:text-blue-500"
           ) %>
         <% else %>
           <% {schools_except_last, [last_school]} = Enum.split(@sorted_schools, -1) %>
           <%= for {school, index} <- Enum.with_index(schools_except_last) do %>
             <%= link(school.name,
-              to: Routes.school_path(@conn, :show, @country.slug, school.slug),
+              to: ~p"/ferien/#{@country.slug}/schule/#{school.slug}",
               class: "text-blue-600 hover:text-blue-500"
             ) %><%= if index < length(schools_except_last) - 1, do: ", ", else: "" %>
           <% end %>
@@ -400,7 +404,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
             und
           <% end %>
           <%= link(last_school.name,
-            to: Routes.school_path(@conn, :show, @country.slug, last_school.slug),
+            to: ~p"/ferien/#{@country.slug}/schule/#{last_school.slug}",
             class: "text-blue-600 hover:text-blue-500"
           ) %>
         <% end %>
@@ -424,14 +428,14 @@ defmodule MehrSchulferienWeb.FaqComponent do
         <%= if length(@sorted_schools) == 1 do %>
           <% {school, distance} = hd(@sorted_schools) %>
           <%= link(school.name,
-            to: Routes.school_path(@conn, :show, @country.slug, school.slug),
+            to: ~p"/ferien/#{@country.slug}/schule/#{school.slug}",
             class: "text-blue-600 hover:text-blue-500"
           ) %> (<%= format_distance(distance) %>)
         <% else %>
           <% {schools_except_last, [last_school_tuple]} = Enum.split(@sorted_schools, -1) %>
           <%= for {{school, distance}, index} <- Enum.with_index(schools_except_last) do %>
             <%= link(school.name,
-              to: Routes.school_path(@conn, :show, @country.slug, school.slug),
+              to: ~p"/ferien/#{@country.slug}/schule/#{school.slug}",
               class: "text-blue-600 hover:text-blue-500"
             ) %> (<%= format_distance(distance) %>)<%= if index < length(schools_except_last) - 1,
               do: ", ",
@@ -442,7 +446,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
           <% end %>
           <% {last_school, last_distance} = last_school_tuple %>
           <%= link(last_school.name,
-            to: Routes.school_path(@conn, :show, @country.slug, last_school.slug),
+            to: ~p"/ferien/#{@country.slug}/schule/#{last_school.slug}",
             class: "text-blue-600 hover:text-blue-500"
           ) %> (<%= format_distance(last_distance) %>)
         <% end %>
@@ -459,7 +463,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
       </dt>
       <dd class="mt-2 text-sm text-gray-600">
         <%= link("Liste der Landkreise und Städte in #{@federal_state.name}.",
-          to: Routes.federal_state_path(@conn, :county_show, @country.slug, @federal_state.slug),
+          to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/landkreise-und-staedte",
           class: "font-semibold text-blue-600 hover:text-blue-500"
         ) %>
       </dd>

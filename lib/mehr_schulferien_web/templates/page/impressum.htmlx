@@ -1,6 +1,6 @@
 <nav class="mb-6" aria-label="Breadcrumb">
   <ol class="flex items-center space-x-2">
-    <li><%= link "Start", to: Routes.page_path(@conn, :home), class: "text-blue-600 hover:text-blue-800" %></li>
+    <li><%= link "Start", to: ~p"/", class: "text-blue-600 hover:text-blue-800" %></li>
   </ol>
 </nav>
 

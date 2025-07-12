@@ -23,7 +23,10 @@ defmodule MehrSchulferienWeb do
 
       import Plug.Conn
       import MehrSchulferienWeb.Gettext
-      alias MehrSchulferienWeb.Router.Helpers, as: Routes
+
+      use Phoenix.VerifiedRoutes,
+        endpoint: MehrSchulferienWeb.Endpoint,
+        router: MehrSchulferienWeb.Router
     end
   end
 
@@ -42,7 +45,11 @@ defmodule MehrSchulferienWeb do
 
       import MehrSchulferienWeb.ErrorHelpers
       import MehrSchulferienWeb.Gettext
-      alias MehrSchulferienWeb.Router.Helpers, as: Routes
+
+      use Phoenix.VerifiedRoutes,
+        endpoint: MehrSchulferienWeb.Endpoint,
+        router: MehrSchulferienWeb.Router
+
       alias MehrSchulferienWeb.ViewHelpers
       alias MehrSchulferienWeb.FaqViewHelpers
 
@@ -102,7 +109,10 @@ defmodule MehrSchulferienWeb do
       import MehrSchulferienWeb.ErrorHelpers
       import MehrSchulferienWeb.Gettext
       import MehrSchulferienWeb.NavigationComponent
-      alias MehrSchulferienWeb.Router.Helpers, as: Routes
+
+      use Phoenix.VerifiedRoutes,
+        endpoint: MehrSchulferienWeb.Endpoint,
+        router: MehrSchulferienWeb.Router
 
       # Import shared components for unified design
       import MehrSchulferienWeb.Shared.TypographyComponent

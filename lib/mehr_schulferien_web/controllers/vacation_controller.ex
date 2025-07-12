@@ -31,16 +31,7 @@ defmodule MehrSchulferienWeb.VacationController do
       # Vacation type not found - redirect
       conn
       |> put_flash(:error, "Diese Ferienart existiert nicht.")
-      |> redirect(
-        to:
-          Routes.federal_state_path(
-            conn,
-            :show_year,
-            country.slug,
-            federal_state_slug,
-            year
-          )
-      )
+      |> redirect(to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state_slug}/#{year}")
     else
       # Check if this vacation type is valid for the federal state
       if not VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
@@ -50,16 +41,7 @@ defmodule MehrSchulferienWeb.VacationController do
           :info,
           "#{vacation_type_record.colloquial} gibt es in #{federal_state.name} nicht."
         )
-        |> redirect(
-          to:
-            Routes.federal_state_path(
-              conn,
-              :show_year,
-              country.slug,
-              federal_state_slug,
-              year
-            )
-        )
+        |> redirect(to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state_slug}/#{year}")
       else
         today = DateHelpers.get_today_or_custom_date(conn)
         location_ids = [country.id, federal_state.id]
@@ -187,14 +169,7 @@ defmodule MehrSchulferienWeb.VacationController do
         else
           # Fallback to federal state page
           redirect(conn,
-            to:
-              Routes.federal_state_path(
-                conn,
-                :show_year,
-                country.slug,
-                federal_state_slug,
-                today.year
-              )
+            to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state_slug}/#{today.year}"
           )
         end
 
