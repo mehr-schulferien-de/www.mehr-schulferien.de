@@ -47,14 +47,14 @@ defmodule MehrSchulferienWeb.FederalState.ItemListSchemaComponent do
 
     ~H"""
     <script type="application/ld+json">
-      <%= Jason.encode!(%{
+      <%= Phoenix.HTML.raw(Jason.encode!(%{
         "@context" => "https://schema.org",
         "@type" => "ItemList",
         "name" => "Schulferien #{@federal_state.name} #{@year}",
         "description" => "Vollständige Liste aller Schulferien #{@year} in #{@federal_state.name} mit Terminen und Dauer",
         "numberOfItems" => length(@vacation_items),
         "itemListElement" => @vacation_items
-      }) %>
+      })) %>
     </script>
     """
   end

@@ -56,7 +56,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
     ~H"""
     <%= for period <- @periods do %>
       <script type="application/ld+json">
-        <%= Jason.encode!(%{
+        <%= Phoenix.HTML.raw(Jason.encode!(%{
           "@context" => "http://schema.org",
           "@type" => "Event",
           "name" => period.holiday_or_vacation_type.colloquial,
@@ -76,7 +76,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
               "addressCountry" => @country.code
             }
           }
-        }) %>
+        })) %>
       </script>
     <% end %>
     """
@@ -133,7 +133,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
 
     ~H"""
     <script type="application/ld+json">
-      <%= Jason.encode!(
+      <%= Phoenix.HTML.raw(Jason.encode!(
         Map.merge(%{
           "@context" => "http://schema.org",
           "@type" => "School",
@@ -144,7 +144,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
             "longitude" => Map.get(@school, :longitude, "")
           }
         }, @optional_fields)
-      ) %>
+      )) %>
     </script>
     """
   end

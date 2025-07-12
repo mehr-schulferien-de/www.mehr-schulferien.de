@@ -52,11 +52,11 @@ defmodule MehrSchulferienWeb.FederalState.FaqSchemaComponent do
 
     ~H"""
     <script type="application/ld+json">
-      <%= Jason.encode!(%{
+      <%= Phoenix.HTML.raw(Jason.encode!(%{
         "@context" => "https://schema.org",
         "@type" => "FAQPage",
         "mainEntity" => @vacation_questions ++ @general_questions
-      }) %>
+      })) %>
     </script>
     """
   end

@@ -5,7 +5,7 @@ defmodule MehrSchulferienWeb.FederalStateComponents do
     ~H"""
     <%= for period <- @periods do %>
       <script type="application/ld+json">
-        <%= Jason.encode!(%{
+        <%= Phoenix.HTML.raw(Jason.encode!(%{
           "@context" => "http://schema.org",
           "@type" => "Event",
           "name" => period.holiday_or_vacation_type.colloquial,
@@ -25,7 +25,7 @@ defmodule MehrSchulferienWeb.FederalStateComponents do
               "addressCountry" => @country.code
             }
           }
-        }) %>
+        })) %>
       </script>
     <% end %>
     """

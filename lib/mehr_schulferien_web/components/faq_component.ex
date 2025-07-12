@@ -546,7 +546,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
       ~H"""
       <script type="application/ld+json">
-        <%= Jason.encode!(%{
+        <%= Phoenix.HTML.raw(Jason.encode!(%{
           "@context" => "https://schema.org",
           "@type" => "FAQPage",
           "mainEntity" => Enum.map(@valid_questions, fn question ->
@@ -559,7 +559,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
               }
             }
           end)
-        }) %>
+        })) %>
       </script>
       """
     else

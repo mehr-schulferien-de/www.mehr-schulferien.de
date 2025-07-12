@@ -239,6 +239,7 @@ defmodule MehrSchulferienWeb.ViewHelpers do
       "itemListElement" => filtered
     }
     |> Jason.encode!()
+    |> Phoenix.HTML.raw()
   end
 
   @doc """
