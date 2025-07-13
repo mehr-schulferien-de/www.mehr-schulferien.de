@@ -43,6 +43,10 @@ defmodule MehrSchulferienWeb.Router do
   scope "/", MehrSchulferienWeb do
     pipe_through :redirects
 
+    # Redirect old /cities/ routes to SEO-friendly /ferien/ routes
+    get "/cities/:city_slug/:year", RedirectController, :redirect_cities_with_year
+    get "/cities/:city_slug", RedirectController, :redirect_cities
+
     # Redirect old /land/ routes to SEO-friendly /ferien/ routes
     get "/land/:country_slug/stadt/:city_slug/:year",
         RedirectController,

@@ -3,6 +3,35 @@ defmodule MehrSchulferienWeb.RedirectController do
 
   # Note: This controller has been fully migrated to use ~p sigil
 
+  # ============== NEW: /cities/ to /ferien/ redirects ==============
+
+  # Old /cities/ URL pattern redirects
+  def redirect_cities(conn, %{"city_slug" => city_slug}) do
+    # Extract the city ID from the slug (format: "33619-bielefeld")
+    [_id | _rest] = String.split(city_slug, "-", parts: 2)
+
+    # For the /cities/ pattern, we need to look up the city to get the country
+    # For now, we'll assume it's Germany (deutschland)
+    country_slug = "deutschland"
+
+    conn
+    |> put_status(:moved_permanently)
+    |> redirect(to: "/ferien/#{country_slug}/stadt/#{city_slug}")
+  end
+
+  def redirect_cities_with_year(conn, %{"city_slug" => city_slug, "year" => year}) do
+    # Extract the city ID from the slug (format: "33619-bielefeld")
+    [_id | _rest] = String.split(city_slug, "-", parts: 2)
+
+    # For the /cities/ pattern, we need to look up the city to get the country
+    # For now, we'll assume it's Germany (deutschland)
+    country_slug = "deutschland"
+
+    conn
+    |> put_status(:moved_permanently)
+    |> redirect(to: "/ferien/#{country_slug}/stadt/#{city_slug}/#{year}")
+  end
+
   # ============== NEW: /land/ to /ferien/ redirects for SEO ==============
 
   # City redirects from /land/ to /ferien/
