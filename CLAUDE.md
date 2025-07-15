@@ -173,3 +173,4 @@ The project has been fully migrated to Phoenix verified routes (Phoenix 1.7.21+)
 ## Memories
 
 - Always remember the sitemap.xml file to be up to date if URLs are added, removed or changed.
+- When the URL structure changes always update the sitemap.xml too.
