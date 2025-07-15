@@ -1,0 +1,44 @@
+<title>
+  Schulferien <%= @school.name %> <%= @current_school_year %>/<%= @current_school_year + 1 %> (<%= @city.name %>, <%= @federal_state.name %>)
+</title>
+<meta
+  name="description"
+  content={"Aktuelle Schulferien und Ferientermine für #{@school.name} in #{@city.name} (#{@federal_state.name}). Übersicht über alle Ferienzeiten im Schuljahr #{@current_school_year}/#{@current_school_year + 1}."}
+/>
+<meta
+  name="keywords"
+  content={"Schulferien, #{@school.name}, #{@city.name}, #{@federal_state.name}, Ferientermine, #{@current_school_year}, Ferien"}
+/>
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={url(~p"/ferien/#{@country.slug}/schule/#{@school.slug}")} />
+<meta
+  property="og:title"
+  content={"Schulferien #{@school.name} #{@current_school_year}/#{@current_school_year + 1}"}
+/>
+<meta
+  property="og:description"
+  content={"Aktuelle Schulferien und Ferientermine für #{@school.name} in #{@city.name} (#{@federal_state.name})."}
+/>
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+<!-- Twitter -->
+<meta property="twitter:card" content="summary" />
+<meta property="twitter:url" content={url(~p"/ferien/#{@country.slug}/schule/#{@school.slug}")} />
+<meta
+  property="twitter:title"
+  content={"Schulferien #{@school.name} #{@current_school_year}/#{@current_school_year + 1}"}
+/>
+<meta
+  property="twitter:description"
+  content={"Aktuelle Schulferien und Ferientermine für #{@school.name} in #{@city.name} (#{@federal_state.name})."}
+/>
+
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: @country.name, item: "https://www.mehr-schulferien.de" <> ~p"/ferien/#{@country.slug}"},
+    %{name: "Ferientermine #{@federal_state.name}", item: "https://www.mehr-schulferien.de" <> ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"},
+    %{name: @city.name, item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}/stadt/#{@city.slug}"},
+    %{name: @school.name, item: "https://www.mehr-schulferien.de" <> ~p"/ferien/#{@country.slug}/schule/#{@school.slug}"}
+  ]) %>
+</script>
