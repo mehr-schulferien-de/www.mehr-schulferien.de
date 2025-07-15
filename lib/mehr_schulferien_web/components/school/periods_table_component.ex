@@ -7,12 +7,17 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
   attr :periods, :list, required: true
   attr :all_periods, :list, required: true
   attr :today, :any, default: Date.utc_today()
+  attr :current_school_year, :integer, required: true
+  attr :next_school_year, :integer, required: true
 
   def periods_table(assigns) do
-    # Group periods by school year
+    # Group periods by school year and filter to only current and next school year
     grouped_periods =
       Enum.group_by(assigns.periods, fn period ->
         get_school_year(period.starts_on)
+      end)
+      |> Enum.filter(fn {year, _} ->
+        year == assigns.current_school_year || year == assigns.next_school_year
       end)
       |> Enum.sort_by(fn {year, _} -> year end, :asc)
 
@@ -27,7 +32,12 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
               Schuljahr <%= school_year %>/<%= school_year + 1 %>
             </h3>
 
-            <table class="min-w-full bg-white border border-gray-200">
+            <table class="min-w-full bg-white border border-gray-200 table-fixed">
+              <colgroup>
+                <col class="w-1/2" />
+                <col class="w-1/3" />
+                <col class="w-1/6" />
+              </colgroup>
               <thead>
                 <tr>
                   <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
@@ -48,8 +58,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                       Date.compare(@today, period.ends_on) != :gt
 
                   is_past =
-                    Date.compare(@today, period.ends_on) == :gt &&
-                      period.starts_on.year == @today.year
+                    Date.compare(@today, period.ends_on) == :gt
 
                   month_name =
                     case period.starts_on.month do
@@ -74,7 +83,20 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                       <.period_name period={period} />
                       <%= if period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && period.memo && period.memo != "" do %>
                         <div class="text-xs text-gray-600 mt-1">
-                          <%= period.memo %>
+                          <%= # Remove "beweglicher Ferientag" from the beginning of the memo (case insensitive)
+                          cleaned_memo = String.trim(period.memo)
+
+                          if String.downcase(cleaned_memo)
+                             |> String.starts_with?("beweglicher ferientag") do
+                            cleaned_memo
+                            |> String.replace_prefix("beweglicher Ferientag", "")
+                            |> String.replace_prefix("Beweglicher Ferientag", "")
+                            |> String.replace_prefix("beweglicher ferientag", "")
+                            |> String.replace_prefix("Beweglicher ferientag", "")
+                            |> String.trim()
+                          else
+                            cleaned_memo
+                          end %>
                         </div>
                       <% end %>
                     </td>

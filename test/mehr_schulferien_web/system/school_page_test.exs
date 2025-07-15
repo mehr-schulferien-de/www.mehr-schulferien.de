@@ -24,14 +24,15 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       conn =
         get(
           conn,
-          TestRouteHelpers.school_path(conn, :show_year, country.slug, school.slug, @current_year)
+          TestRouteHelpers.school_path(conn, :show, country.slug, school.slug)
         )
 
       # Verify basic page content
       assert html_response(conn, 200) =~ "Schulferien #{school.name}"
 
-      # Check that the periods table exists
-      assert html_response(conn, 200) =~ "Schuljahr #{@current_year - 1}/#{@current_year}"
+      # Check that the periods table exists for current school year
+      # In January 2024, current school year is 2023/2024
+      assert html_response(conn, 200) =~ "Schuljahr 2023/2024"
 
       # Check for current year calendar months
       assert html_response(conn, 200) =~ "Januar #{@current_year}"
@@ -53,14 +54,18 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       conn =
         get(
           conn,
-          TestRouteHelpers.school_path(conn, :show_year, country.slug, school.slug, @current_year)
+          TestRouteHelpers.school_path(conn, :show, country.slug, school.slug)
         )
 
       # Check that the FAQ section is present
       assert html_response(conn, 200) =~ "Ferien FAQ"
 
-      # Check the current year question exists
-      assert html_response(conn, 200) =~ "Schulfrei in der #{school.name} #{@current_year}"
+      # Check the current school year question exists
+      # In July 2025, the current school year is 2024 (school year 2024/2025)
+      current_school_year =
+        if Date.utc_today().month >= 8, do: @current_year, else: @current_year - 1
+
+      assert html_response(conn, 200) =~ "Schulfrei in der #{school.name} #{current_school_year}"
 
       # Check that the next/future year question doesn't exist
       refute html_response(conn, 200) =~ "Schulfrei in der #{school.name} #{@next_year}"
@@ -74,24 +79,27 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
                "Wann sind die nächsten Schulferien in der #{school.name}?"
     end
 
-    test "redirects from base URL to current year", %{
+    test "redirects from year-specific URL to base URL", %{
       conn: conn,
       country: country,
       school: school
     } do
-      conn = get(conn, TestRouteHelpers.school_path(conn, :show, country.slug, school.slug))
+      conn =
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show_year, country.slug, school.slug, @current_year)
+        )
 
-      assert redirected_to(conn, 302) =~
+      assert redirected_to(conn, 301) =~
                TestRouteHelpers.school_path(
                  conn,
-                 :show_year,
+                 :show,
                  country.slug,
-                 school.slug,
-                 @current_year
+                 school.slug
                )
     end
 
-    test "shows 404 for year without data", %{
+    test "redirects from past year URL to base URL", %{
       conn: conn,
       country: country,
       school: school
@@ -102,9 +110,14 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
           TestRouteHelpers.school_path(conn, :show_year, country.slug, school.slug, @past_year)
         )
 
-      # The 404 page shows a warning message about no data being available for the selected year
-      assert html_response(conn, 404) =~ "Keine Feriendaten"
-      assert html_response(conn, 404) =~ "Bitte wählen Sie ein verfügbares Jahr"
+      # Year-specific URLs always redirect to base URL
+      assert redirected_to(conn, 301) =~
+               TestRouteHelpers.school_path(
+                 conn,
+                 :show,
+                 country.slug,
+                 school.slug
+               )
     end
   end
 
@@ -160,29 +173,39 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       insert(:holiday_or_vacation_type, %{name: "Weihnachts", colloquial: "Weihnachtsferien"})
     ]
 
-    # Current year periods
+    # Current school year periods (for FAQ logic)
+    # Since we're in July 2025, current school year is 2024/2025
+    current_school_year =
+      if Date.utc_today().month >= 8, do: @current_year, else: @current_year - 1
+
     [
-      # Winter
-      {0, Date.new!(@current_year, 2, 1), Date.new!(@current_year, 2, 10)},
-      # Easter
-      {1, Date.new!(@current_year, 4, 3), Date.new!(@current_year, 4, 14)},
-      # Summer
-      {2, Date.new!(@current_year, 7, 13), Date.new!(@current_year, 8, 25)},
-      # Autumn
-      {3, Date.new!(@current_year, 10, 23), Date.new!(@current_year, 11, 3)},
+      # Autumn (school year start)
+      {3, Date.new!(current_school_year, 10, 23), Date.new!(current_school_year, 11, 3)},
       # Christmas extending to next year
-      {4, Date.new!(@current_year, 12, 21), Date.new!(@next_year, 1, 5)}
+      {4, Date.new!(current_school_year, 12, 21), Date.new!(current_school_year + 1, 1, 5)},
+      # Winter
+      {0, Date.new!(current_school_year + 1, 2, 1), Date.new!(current_school_year + 1, 2, 10)},
+      # Easter
+      {1, Date.new!(current_school_year + 1, 4, 3), Date.new!(current_school_year + 1, 4, 14)},
+      # Summer
+      {2, Date.new!(current_school_year + 1, 7, 13), Date.new!(current_school_year + 1, 8, 25)}
     ]
     |> add_periods(holiday_types, federal_state.id)
 
-    # Next year periods (up to July 31st)
+    # Next school year periods
+    next_school_year = current_school_year + 1
+
     [
+      # Autumn (next school year start)
+      {3, Date.new!(next_school_year, 10, 20), Date.new!(next_school_year, 11, 1)},
+      # Christmas extending to following year
+      {4, Date.new!(next_school_year, 12, 20), Date.new!(next_school_year + 1, 1, 6)},
       # Winter
-      {0, Date.new!(@next_year, 2, 5), Date.new!(@next_year, 2, 10)},
+      {0, Date.new!(next_school_year + 1, 2, 5), Date.new!(next_school_year + 1, 2, 10)},
       # Easter
-      {1, Date.new!(@next_year, 3, 25), Date.new!(@next_year, 4, 5)},
+      {1, Date.new!(next_school_year + 1, 3, 25), Date.new!(next_school_year + 1, 4, 5)},
       # Summer extending beyond July
-      {2, Date.new!(@next_year, 7, 18), Date.new!(@next_year, 8, 28)}
+      {2, Date.new!(next_school_year + 1, 7, 18), Date.new!(next_school_year + 1, 8, 28)}
     ]
     |> add_periods(holiday_types, federal_state.id)
 

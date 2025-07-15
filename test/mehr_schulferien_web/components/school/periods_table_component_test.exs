@@ -16,7 +16,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-10-15]
+        today: ~D[2024-10-15],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -41,8 +43,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "displays memo for Beweglicher Ferientag with memo" do
       # Create a Beweglicher Ferientag with memo
       period_with_memo = %{
-        starts_on: ~D[2024-05-10],
-        ends_on: ~D[2024-05-10],
+        starts_on: ~D[2025-05-10],
+        ends_on: ~D[2025-05-10],
         holiday_or_vacation_type: %{
           name: "Beweglicher Ferientag",
           colloquial: "Beweglicher Ferientag"
@@ -55,7 +57,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-04-01]
+        today: ~D[2024-09-01],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -69,8 +73,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "does not display memo for non-Beweglicher Ferientag periods" do
       # Create a regular vacation period with memo
       regular_period = %{
-        starts_on: ~D[2024-07-15],
-        ends_on: ~D[2024-08-27],
+        starts_on: ~D[2025-07-15],
+        ends_on: ~D[2025-08-27],
         holiday_or_vacation_type: %{
           name: "Sommerferien",
           colloquial: "Sommerferien"
@@ -83,7 +87,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-06-01]
+        today: ~D[2024-09-01],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -96,8 +102,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "does not display memo section for Beweglicher Ferientag with empty memo" do
       # Create a Beweglicher Ferientag with empty memo
       period_empty_memo = %{
-        starts_on: ~D[2024-05-31],
-        ends_on: ~D[2024-05-31],
+        starts_on: ~D[2025-05-31],
+        ends_on: ~D[2025-05-31],
         holiday_or_vacation_type: %{
           name: "Beweglicher Ferientag",
           colloquial: "Beweglicher Ferientag"
@@ -110,7 +116,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-05-01]
+        today: ~D[2024-09-01],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -124,8 +132,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "does not display memo section for Beweglicher Ferientag with nil memo" do
       # Create a Beweglicher Ferientag without memo field
       period_nil_memo = %{
-        starts_on: ~D[2024-06-03],
-        ends_on: ~D[2024-06-03],
+        starts_on: ~D[2024-11-03],
+        ends_on: ~D[2024-11-03],
         holiday_or_vacation_type: %{
           name: "Beweglicher Ferientag",
           colloquial: "Beweglicher Ferientag"
@@ -138,7 +146,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-05-01]
+        today: ~D[2024-09-01],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -152,8 +162,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "handles multiple Beweglicher Ferientage with different memo states" do
       periods = [
         %{
-          starts_on: ~D[2024-05-10],
-          ends_on: ~D[2024-05-10],
+          starts_on: ~D[2025-05-10],
+          ends_on: ~D[2025-05-10],
           holiday_or_vacation_type: %{
             name: "Beweglicher Ferientag",
             colloquial: "Beweglicher Ferientag"
@@ -161,8 +171,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
           memo: "Tag nach Christi Himmelfahrt"
         },
         %{
-          starts_on: ~D[2024-05-31],
-          ends_on: ~D[2024-05-31],
+          starts_on: ~D[2025-05-31],
+          ends_on: ~D[2025-05-31],
           holiday_or_vacation_type: %{
             name: "Beweglicher Ferientag",
             colloquial: "Beweglicher Ferientag"
@@ -170,8 +180,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
           memo: ""
         },
         %{
-          starts_on: ~D[2024-06-21],
-          ends_on: ~D[2024-06-21],
+          starts_on: ~D[2025-06-21],
+          ends_on: ~D[2025-06-21],
           holiday_or_vacation_type: %{
             name: "Beweglicher Ferientag",
             colloquial: "Beweglicher Ferientag"
@@ -183,7 +193,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-04-01]
+        today: ~D[2024-09-01],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -214,7 +226,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
         periods: periods,
         all_periods: periods,
         # During second period
-        today: ~D[2024-10-15]
+        today: ~D[2024-10-15],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -244,7 +258,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-10-01]
+        today: ~D[2024-10-01],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -263,13 +279,16 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-06-01]
+        today: ~D[2024-09-01],
+        current_school_year: 2024,
+        next_school_year: 2025
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
 
       # Check for correct anchor links - using escaped quotes in HTML
-      assert html =~ "onclick=\"window.location.href=&#39;#juli2024&#39;\""
+      # The July period starts in July 2024 but belongs to school year 2023/2024, so it won't be displayed
+      # Only the October period (school year 2024/2025) will be shown
       assert html =~ "onclick=\"window.location.href=&#39;#oktober2024&#39;\""
     end
   end

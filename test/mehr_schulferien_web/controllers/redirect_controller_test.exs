@@ -6,21 +6,27 @@ defmodule MehrSchulferienWeb.RedirectControllerTest do
     setup do
       # Create test data hierarchy
       country = insert(:country, %{slug: "deutschland", name: "Deutschland"})
-      federal_state = insert(:federal_state, %{parent_location_id: country.id, name: "Nordrhein-Westfalen"})
+
+      federal_state =
+        insert(:federal_state, %{parent_location_id: country.id, name: "Nordrhein-Westfalen"})
+
       county = insert(:county, %{parent_location_id: federal_state.id, name: "Bielefeld"})
-      city = insert(:city, %{
-        parent_location_id: county.id,
-        name: "Bielefeld",
-        slug: "bielefeld"
-      })
-      
+
+      city =
+        insert(:city, %{
+          parent_location_id: county.id,
+          name: "Bielefeld",
+          slug: "bielefeld"
+        })
+
       # Create zip code and mapping
       zip_code = insert(:zip_code, %{value: "33619"})
+
       insert(:zip_code_mapping, %{
         location_id: city.id,
         zip_code_id: zip_code.id
       })
-      
+
       {:ok, %{city: city, country: country}}
     end
 
