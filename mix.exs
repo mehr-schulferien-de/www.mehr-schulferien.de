@@ -42,11 +42,9 @@ defmodule MehrSchulferien.MixProject do
       {:plug_cowboy, "~> 2.6"},
       {:ex_machina, "~> 2.7.0", only: :test},
       {:faker, "~> 0.17", only: :test},
-      {:timex, "~> 3.7.12"},
       {:sitemap, "~> 1.0"},
       {:ex_doc, "~> 0.38", only: :dev, runtime: false},
       {:ecto_autoslug_field, "~> 3.0"},
-      {:icalendar, "~> 1.1.0"},
       {:slugger, "~> 0.3"},
       {:req, "~> 0.5.10"},
       {:tidewave, "~> 0.1.6", only: :dev},
@@ -54,7 +52,8 @@ defmodule MehrSchulferien.MixProject do
       {:paper_trail, "~> 1.0.0"},
       {:swoosh, "~> 1.16"},
       {:gen_smtp, "~> 1.2"},
-      {:hackney, "~> 1.9"}
+      {:hackney, "~> 1.9"},
+      {:tzdata, "~> 1.1"}
     ]
   end
 

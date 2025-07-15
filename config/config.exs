@@ -7,6 +7,9 @@
 # General application configuration
 import Config
 
+# Configure timezone database to use tzdata
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 config :mehr_schulferien,
   ecto_repos: [MehrSchulferien.Repo],
   # Configure pdflatex path (can be overridden in environment configs)
