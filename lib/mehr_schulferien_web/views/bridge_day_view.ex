@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.BridgeDayView do
   use MehrSchulferienWeb, :view
 
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.BridgeDayCalculations
 
   def format_month_header(start_date, end_date) do
     months_map = DateHelpers.get_months_map()
@@ -27,41 +28,9 @@ defmodule MehrSchulferienWeb.BridgeDayView do
     end
   end
 
-  def get_number_max_days(periods) do
-    start_date = hd(periods).starts_on
-    end_date = List.last(periods).ends_on
-    Date.diff(end_date, start_date) + 1
-  end
+  defdelegate get_number_max_days(periods), to: BridgeDayCalculations
 
-  @doc """
-  Checks if a bridge day meets the minimum gain requirements:
-  - 1 day off → at least 3 free days (more reasonable)
-  - 2 days off → at least 4 free days
-  - 3 days off → at least 5 free days
-  - 4 days off → at least 6 free days
-
-  Returns true if the bridge day meets the minimum gain requirements, false otherwise.
-  """
-  def meets_minimum_gain?(bridge_day, periods) do
-    vacation_days = bridge_day.number_days
-    total_free_days = get_number_max_days(periods)
-
-    minimum_free_days =
-      case vacation_days do
-        # 1 day off → at least 3 free days (more reasonable)
-        1 -> 3
-        # 2 days off → at least 4 free days
-        2 -> 4
-        # 3 days off → at least 5 free days
-        3 -> 5
-        # 4 days off → at least 6 free days
-        4 -> 6
-        # Fallback for other values
-        _ -> vacation_days + 2
-      end
-
-    total_free_days >= minimum_free_days
-  end
+  defdelegate meets_minimum_gain?(bridge_day, periods), to: BridgeDayCalculations
 
   # NOTE: riverrun (2020-05-27)
   # This function is not being used because if a public holiday overlaps

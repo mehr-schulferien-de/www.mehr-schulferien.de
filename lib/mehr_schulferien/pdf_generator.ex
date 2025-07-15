@@ -89,13 +89,41 @@ defmodule MehrSchulferien.PdfGenerator do
     tex_file = Path.join(@temp_dir, "#{temp_filename}.tex")
     pdf_file = Path.join(@temp_dir, "#{temp_filename}.pdf")
 
-    try do
-      # Write LaTeX content to temporary file
-      File.write!(tex_file, latex_content)
+    # Ensure temp directory exists
+    ensure_temp_dir()
 
-      # Compile LaTeX to PDF
+    # Write LaTeX content to temporary file
+    case File.write(tex_file, latex_content) do
+      :ok ->
+        compile_and_read_pdf(tex_file, pdf_file, temp_filename)
+
+      {:error, reason} ->
+        Logger.error("Failed to write LaTeX file: #{inspect(reason)}")
+        cleanup_temp_files(temp_filename)
+        {:error, "Failed to create temporary file"}
+    end
+  end
+
+  defp ensure_temp_dir do
+    case File.mkdir_p(@temp_dir) do
+      :ok ->
+        :ok
+
+      {:error, :eexist} ->
+        :ok
+
+      {:error, reason} ->
+        Logger.error("Failed to create temp directory: #{inspect(reason)}")
+        :error
+    end
+  end
+
+  defp compile_and_read_pdf(tex_file, pdf_file, temp_filename) do
+    pdflatex_path = Application.get_env(:mehr_schulferien, :pdflatex_path, "pdflatex")
+
+    try do
       case System.cmd(
-             Application.get_env(:mehr_schulferien, :pdflatex_path, "pdflatex"),
+             pdflatex_path,
              [
                "-interaction=nonstopmode",
                "-output-directory=#{@temp_dir}",
@@ -119,11 +147,11 @@ defmodule MehrSchulferien.PdfGenerator do
           {:error, "LaTeX compilation failed"}
       end
     rescue
-      error ->
-        Logger.error("Exception during PDF generation: #{inspect(error)}")
-        {:error, "PDF generation error"}
+      error in [ErlangError] ->
+        Logger.error("Failed to execute pdflatex command: #{inspect(error)}")
+        {:error, "PDF generation command not found or failed to execute"}
     after
-      # Clean up temporary files
+      # Always clean up temporary files
       cleanup_temp_files(temp_filename)
     end
   end

@@ -8,6 +8,35 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
+  # Private helper functions
+
+  defp calculate_vacation_stats(vacation_data) do
+    valid_data = Enum.filter(vacation_data, &(&1.period != nil))
+
+    if Enum.empty?(valid_data) do
+      nil
+    else
+      earliest = List.first(valid_data)
+      latest = Enum.max_by(valid_data, fn %{period: p} -> p.starts_on end)
+      durations = Enum.map(valid_data, & &1.duration) |> Enum.uniq() |> Enum.sort()
+      latest_end = Enum.max_by(valid_data, fn %{period: p} -> p.ends_on end)
+
+      %{
+        earliest_state: earliest.state_name,
+        earliest_date: format_date(earliest.period.starts_on),
+        latest_state: latest.state_name,
+        latest_date: format_date(latest.period.starts_on),
+        min_duration: List.first(durations),
+        max_duration: List.last(durations),
+        total_days: Date.diff(latest_end.period.ends_on, earliest.period.starts_on) + 1
+      }
+    end
+  end
+
+  defp format_date(date) do
+    Calendar.strftime(date, "%d.%m.%Y")
+  end
+
   @doc """
   Renders a table showing all federal states' vacation dates
   """
@@ -98,33 +127,8 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
   attr :vacation_name, :string, required: true
 
   def vacation_statistics(assigns) do
-    # Calculate statistics
-    valid_data = Enum.filter(assigns.vacation_data, &(&1.period != nil))
-
-    assigns =
-      if Enum.empty?(valid_data) do
-        assign(assigns, :stats, nil)
-      else
-        earliest = List.first(valid_data)
-        latest = Enum.max_by(valid_data, fn %{period: p} -> p.starts_on end)
-        durations = Enum.map(valid_data, & &1.duration) |> Enum.uniq() |> Enum.sort()
-
-        stats = %{
-          earliest_state: earliest.state_name,
-          earliest_date: Calendar.strftime(earliest.period.starts_on, "%d.%m.%Y"),
-          latest_state: latest.state_name,
-          latest_date: Calendar.strftime(latest.period.starts_on, "%d.%m.%Y"),
-          min_duration: List.first(durations),
-          max_duration: List.last(durations),
-          total_days:
-            Date.diff(
-              Enum.max_by(valid_data, fn %{period: p} -> p.ends_on end).period.ends_on,
-              earliest.period.starts_on
-            ) + 1
-        }
-
-        assign(assigns, :stats, stats)
-      end
+    stats = calculate_vacation_stats(assigns.vacation_data)
+    assigns = assign(assigns, :stats, stats)
 
     ~H"""
     <%= if @stats do %>
@@ -176,66 +180,53 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
     """
   end
 
+  # Planning tips for each vacation type
+  @planning_tips %{
+    "sommer" => [
+      "Buchen Sie Unterkünfte frühzeitig - besonders für beliebte Reiseziele",
+      "Vergleichen Sie die Ferientermine, um Hauptreisezeiten zu vermeiden",
+      "Nutzen Sie die frühen oder späten Termine für günstigere Preise",
+      "Beachten Sie die Staugefahr an den Wochenenden zu Ferienbeginn"
+    ],
+    "ostern" => [
+      "Perfekt für Städtereisen in der Nebensaison",
+      "Ostermärkte und Frühlingsveranstaltungen besuchen",
+      "Erste Wanderungen und Radtouren des Jahres planen",
+      "Kurzurlaube mit verlängerten Wochenenden kombinieren"
+    ],
+    "herbst" => [
+      "Ideale Zeit für Wanderurlaube in bunter Natur",
+      "Weinlesefeste und Erntedankfeiern besuchen",
+      "Letzte Chance für Campingurlaube vor dem Winter",
+      "Städtereisen bei angenehmen Temperaturen"
+    ],
+    "weihnachten" => [
+      "Frühzeitig Skiurlaube und Winterreisen buchen",
+      "Weihnachtsmärkte in verschiedenen Städten besuchen",
+      "Silvesterreisen rechtzeitig planen",
+      "Familienbesuche und Urlaubstage koordinieren"
+    ],
+    "winter" => [
+      "Hauptsaison für Wintersport - früh buchen",
+      "Faschingsveranstaltungen in die Planung einbeziehen",
+      "Alternative: Flucht in wärmere Gefilde",
+      "Wellness-Urlaube als Alternative zum Skifahren"
+    ],
+    "pfingsten" => [
+      "Verlängerte Wochenenden optimal nutzen",
+      "Kurztrips und Städtereisen ideal",
+      "Erste Badesaison an Nord- und Ostsee",
+      "Pfingstveranstaltungen und Volksfeste besuchen"
+    ]
+  }
+
   @doc """
   Renders vacation planning tips specific to vacation type
   """
   attr :vacation_type, :string, required: true
 
   def vacation_planning_tips(assigns) do
-    tips =
-      case assigns.vacation_type do
-        "sommer" ->
-          [
-            "Buchen Sie Unterkünfte frühzeitig - besonders für beliebte Reiseziele",
-            "Vergleichen Sie die Ferientermine, um Hauptreisezeiten zu vermeiden",
-            "Nutzen Sie die frühen oder späten Termine für günstigere Preise",
-            "Beachten Sie die Staugefahr an den Wochenenden zu Ferienbeginn"
-          ]
-
-        "ostern" ->
-          [
-            "Perfekt für Städtereisen in der Nebensaison",
-            "Ostermärkte und Frühlingsveranstaltungen besuchen",
-            "Erste Wanderungen und Radtouren des Jahres planen",
-            "Kurzurlaube mit verlängerten Wochenenden kombinieren"
-          ]
-
-        "herbst" ->
-          [
-            "Ideale Zeit für Wanderurlaube in bunter Natur",
-            "Weinlesefeste und Erntedankfeiern besuchen",
-            "Letzte Chance für Campingurlaube vor dem Winter",
-            "Städtereisen bei angenehmen Temperaturen"
-          ]
-
-        "weihnachten" ->
-          [
-            "Frühzeitig Skiurlaube und Winterreisen buchen",
-            "Weihnachtsmärkte in verschiedenen Städten besuchen",
-            "Silvesterreisen rechtzeitig planen",
-            "Familienbesuche und Urlaubstage koordinieren"
-          ]
-
-        "winter" ->
-          [
-            "Hauptsaison für Wintersport - früh buchen",
-            "Faschingsveranstaltungen in die Planung einbeziehen",
-            "Alternative: Flucht in wärmere Gefilde",
-            "Wellness-Urlaube als Alternative zum Skifahren"
-          ]
-
-        "pfingsten" ->
-          [
-            "Verlängerte Wochenenden optimal nutzen",
-            "Kurztrips und Städtereisen ideal",
-            "Erste Badesaison an Nord- und Ostsee",
-            "Pfingstveranstaltungen und Volksfeste besuchen"
-          ]
-
-        _ ->
-          []
-      end
-
+    tips = Map.get(@planning_tips, assigns.vacation_type, [])
     assigns = assign(assigns, :tips, tips)
 
     ~H"""
@@ -248,7 +239,10 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
+              aria-hidden="true"
+              role="img"
             >
+              <title>Info-Symbol</title>
               <path
                 fill-rule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"

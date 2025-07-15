@@ -5,6 +5,7 @@ defmodule MehrSchulferien.Calendars.VacationTypes do
 
   import Ecto.Query
   alias MehrSchulferien.{Repo, Periods.Period, Calendars.HolidayOrVacationType}
+  alias MehrSchulferien.Helpers.DateConstants
 
   @doc """
   Returns the vacation types that exist for a given federal state.
@@ -20,8 +21,8 @@ defmodule MehrSchulferien.Calendars.VacationTypes do
   """
   def list_for_federal_state(federal_state, today \\ Date.utc_today()) do
     # Calculate date range: 12 months before and after today
-    start_date = Date.add(today, -365)
-    end_date = Date.add(today, 365)
+    start_date = Date.add(today, -DateConstants.days_per_year())
+    end_date = Date.add(today, DateConstants.days_per_year())
 
     Period
     |> join(:inner, [p], hvt in HolidayOrVacationType,

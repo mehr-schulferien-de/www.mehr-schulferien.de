@@ -3,9 +3,9 @@ defmodule MehrSchulferien.BridgeDays do
   Functions for calculating and handling bridge days.
   """
 
-  alias MehrSchulferien.{Locations, Calendars.DateHelpers, Repo, Periods}
+  alias MehrSchulferien.{Locations, Calendars.DateHelpers, Repo, Periods, BridgeDayCalculations}
   alias MehrSchulferien.Periods.Grouping
-  alias MehrSchulferienWeb.BridgeDayView
+  alias MehrSchulferien.Helpers.{DateConstants, DateComparison}
 
   @doc """
   Returns whether a location has bridge days for a specific year.
@@ -48,8 +48,8 @@ defmodule MehrSchulferien.BridgeDays do
       year_periods =
         Enum.filter(all_periods, fn period ->
           period.location_id in location_ids and
-            Date.compare(period.starts_on, year_end) != :gt and
-            Date.compare(period.ends_on, year_start) != :lt
+            DateComparison.is_on_or_before?(period.starts_on, year_end) and
+            DateComparison.is_on_or_after?(period.ends_on, year_start)
         end)
 
       # Check if there are bridge days
@@ -61,7 +61,7 @@ defmodule MehrSchulferien.BridgeDays do
             bridge_day_map[num]
             |> Enum.any?(fn bridge_day ->
               all_periods = Grouping.list_periods_with_bridge_day(year_periods, bridge_day)
-              BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+              BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
             end)
           else
             false
@@ -102,42 +102,79 @@ defmodule MehrSchulferien.BridgeDays do
   Uses NRW (largest state) as the example.
   """
   def best_bridge_day_teaser do
-    try do
-      today = DateHelpers.today_berlin()
-      current_year = today.year
-      country = Locations.get_country_by_slug!("d")
-      federal_states = Locations.list_federal_states(country)
-      north_rhine_westphalia = Enum.find(federal_states, &(&1.slug == "nordrhein-westfalen"))
-      location_ids = [country.id, north_rhine_westphalia.id]
-      {:ok, start_date} = Date.new(current_year, 1, 1)
-      {:ok, end_date} = Date.new(current_year, 12, 31)
-      public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
-      bridge_day_map = Grouping.group_by_interval(public_periods)
-
-      best_deal =
-        List.flatten(Enum.map(bridge_day_map, fn {_k, v} -> v || [] end))
-        |> Enum.max_by(
-          fn bridge_day ->
-            periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
-            max_days = BridgeDayView.get_number_max_days(periods)
-            percent = round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
-            percent
-          end,
-          fn -> nil end
-        )
-
-      if best_deal do
-        periods = Grouping.list_periods_with_bridge_day(public_periods, best_deal)
-        max_days = BridgeDayView.get_number_max_days(periods)
-        min_leave = best_deal.number_days
-        percent = round((max_days - min_leave) / min_leave * 100)
-        {percent, min_leave, max_days, current_year, best_deal.starts_on, best_deal.ends_on}
-      else
-        nil
-      end
-    rescue
+    with today <- DateHelpers.today_berlin(),
+         current_year <- today.year,
+         {:ok, country} <- safely_get_country("d"),
+         {:ok, federal_states} <- safely_list_federal_states(country),
+         {:ok, nrw} <- find_nrw(federal_states),
+         location_ids <- [country.id, nrw.id],
+         {:ok, start_date} <- Date.new(current_year, 1, 1),
+         {:ok, end_date} <- Date.new(current_year, 12, 31),
+         public_periods <-
+           Periods.list_public_everybody_periods(location_ids, start_date, end_date),
+         {:ok, best_deal} <- find_best_deal(public_periods) do
+      calculate_teaser_data(best_deal, public_periods, current_year)
+    else
       _ -> nil
     end
+  end
+
+  defp safely_get_country(slug) do
+    {:ok, Locations.get_country_by_slug!(slug)}
+  rescue
+    Ecto.NoResultsError -> {:error, :country_not_found}
+    error -> {:error, error}
+  end
+
+  defp safely_list_federal_states(country) do
+    {:ok, Locations.list_federal_states(country)}
+  rescue
+    error -> {:error, error}
+  end
+
+  defp find_nrw(federal_states) do
+    case Enum.find(federal_states, &(&1.slug == "nordrhein-westfalen")) do
+      nil -> {:error, :nrw_not_found}
+      nrw -> {:ok, nrw}
+    end
+  end
+
+  defp find_best_deal(public_periods) do
+    bridge_day_map = Grouping.group_by_interval(public_periods)
+
+    best_deal =
+      List.flatten(Enum.map(bridge_day_map, fn {_k, v} -> v || [] end))
+      |> Enum.max_by(
+        fn bridge_day ->
+          periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
+          max_days = BridgeDayCalculations.get_number_max_days(periods)
+          # Handle division by zero
+          if bridge_day.number_days > 0 do
+            round((max_days - bridge_day.number_days) / bridge_day.number_days * 100)
+          else
+            0
+          end
+        end,
+        fn -> nil end
+      )
+
+    if best_deal, do: {:ok, best_deal}, else: {:error, :no_deals_found}
+  end
+
+  defp calculate_teaser_data(best_deal, public_periods, current_year) do
+    periods = Grouping.list_periods_with_bridge_day(public_periods, best_deal)
+    max_days = BridgeDayCalculations.get_number_max_days(periods)
+    min_leave = best_deal.number_days
+
+    # Prevent division by zero
+    percent =
+      if min_leave > 0 do
+        round((max_days - min_leave) / min_leave * 100)
+      else
+        0
+      end
+
+    {percent, min_leave, max_days, current_year, best_deal.starts_on, best_deal.ends_on}
   end
 
   @doc """
@@ -196,7 +233,7 @@ defmodule MehrSchulferien.BridgeDays do
   # Helper function to search for bridge days within a specific month window
   defp find_next_bridge_day_in_window(location_ids, current_date, days_count, months) do
     # Calculate window end date based on the specified number of months
-    end_date = Date.add(current_date, months * 30)
+    end_date = Date.add(current_date, DateConstants.days_from_months(months))
 
     # Fetch public periods only within this window
     public_periods = Periods.list_public_everybody_periods(location_ids, current_date, end_date)
@@ -213,7 +250,7 @@ defmodule MehrSchulferien.BridgeDays do
 
       # Return the earliest bridge day (already sorted by starts_on from the query)
       bridge_days
-      |> Enum.filter(&(Date.compare(&1.starts_on, current_date) == :gt))
+      |> Enum.filter(&DateComparison.is_after?(&1.starts_on, current_date))
       |> List.first()
     end
   end
@@ -254,7 +291,7 @@ defmodule MehrSchulferien.BridgeDays do
     location_ids = [country.id, federal_state.id]
 
     # Calculate end date based on months_ahead parameter
-    end_date = Date.add(start_date, months_ahead * 30)
+    end_date = Date.add(start_date, DateConstants.days_from_months(months_ahead))
 
     # Fetch all public periods in the specified time window
     public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
@@ -275,10 +312,10 @@ defmodule MehrSchulferien.BridgeDays do
 
           # Analyze each bridge day opportunity in this category
           bridge_days
-          |> Enum.filter(&(Date.compare(&1.starts_on, start_date) == :gt))
+          |> Enum.filter(&DateComparison.is_after?(&1.starts_on, start_date))
           |> Enum.map(fn bridge_day ->
             periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
-            total_free_days = BridgeDayView.get_number_max_days(periods)
+            total_free_days = BridgeDayCalculations.get_number_max_days(periods)
             efficiency_percentage = round((total_free_days - vacation_days) / vacation_days * 100)
 
             %{

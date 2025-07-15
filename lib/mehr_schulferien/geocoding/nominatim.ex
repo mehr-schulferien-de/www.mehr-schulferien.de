@@ -84,11 +84,8 @@ defmodule MehrSchulferien.Geocoding.Nominatim do
   defp parse_response(response) when is_list(response) and length(response) > 0 do
     case List.first(response) do
       %{"lon" => lon_str, "lat" => lat_str} ->
-        try do
-          lon = String.to_float(lon_str)
-          lat = String.to_float(lat_str)
-          {:ok, {lon, lat}}
-        rescue
+        case {parse_coordinate(lon_str), parse_coordinate(lat_str)} do
+          {{:ok, lon}, {:ok, lat}} -> {:ok, {lon, lat}}
           _ -> {:error, :invalid_coordinates}
         end
 
@@ -98,6 +95,17 @@ defmodule MehrSchulferien.Geocoding.Nominatim do
   end
 
   defp parse_response(_), do: {:error, :not_found}
+
+  defp parse_coordinate(coord_str) when is_binary(coord_str) do
+    case Float.parse(coord_str) do
+      {coord, ""} -> {:ok, coord}
+      # Accept partial parse
+      {coord, _remainder} -> {:ok, coord}
+      :error -> {:error, :invalid_format}
+    end
+  end
+
+  defp parse_coordinate(_), do: {:error, :invalid_format}
 
   defp enforce_rate_limit do
     now = System.monotonic_time(:millisecond)

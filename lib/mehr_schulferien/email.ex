@@ -1,10 +1,17 @@
 defmodule MehrSchulferien.Email do
   import Swoosh.Email
+  alias MehrSchulferien.UrlBuilder
+
+  @admin_email Application.compile_env!(:mehr_schulferien, :admin_email)
+  @admin_name Application.compile_env!(:mehr_schulferien, :admin_name)
+  @support_email Application.compile_env!(:mehr_schulferien, :support_email)
+  @noreply_email Application.compile_env!(:mehr_schulferien, :noreply_email)
+  @system_email_name Application.compile_env!(:mehr_schulferien, :system_email_name)
 
   def welcome_email(user_email, user_name) do
     new()
     |> to({user_name, user_email})
-    |> from({"MehrSchulferien", "noreply@mehr-schulferien.de"})
+    |> from({"MehrSchulferien", @noreply_email})
     |> subject("Willkommen bei MehrSchulferien!")
     |> html_body("""
     <h1>Willkommen #{user_name}!</h1>
@@ -26,8 +33,8 @@ defmodule MehrSchulferien.Email do
 
   def contact_form_notification(from_email, from_name, subject_line, message) do
     new()
-    |> to({"MehrSchulferien Support", "support@mehr-schulferien.de"})
-    |> from({"MehrSchulferien Contact Form", "noreply@mehr-schulferien.de"})
+    |> to({"MehrSchulferien Support", @support_email})
+    |> from({"MehrSchulferien Contact Form", @noreply_email})
     |> reply_to({from_name, from_email})
     |> subject("Kontaktformular: #{subject_line}")
     |> html_body("""
@@ -51,7 +58,7 @@ defmodule MehrSchulferien.Email do
   def vacation_reminder(user_email, user_name, vacation_name, start_date) do
     new()
     |> to({user_name, user_email})
-    |> from({"MehrSchulferien", "noreply@mehr-schulferien.de"})
+    |> from({"MehrSchulferien", @noreply_email})
     |> subject("Erinnerung: #{vacation_name} beginnt bald")
     |> html_body("""
     <h1>Hallo #{user_name},</h1>
@@ -74,18 +81,18 @@ defmodule MehrSchulferien.Email do
   def test_email(recipient_email) do
     new()
     |> to(recipient_email)
-    |> from({"MehrSchulferien Test", "test@mehr-schulferien.de"})
+    |> from({"MehrSchulferien Test", @noreply_email})
     |> subject("Test Email von MehrSchulferien")
     |> html_body("<h1>Test Email</h1><p>Dies ist eine Test-E-Mail von MehrSchulferien.</p>")
     |> text_body("Test Email\n\nDies ist eine Test-E-Mail von MehrSchulferien.")
   end
 
   def school_created_notification(school, address, country_slug \\ "d") do
-    school_url = "https://www.mehr-schulferien.de/ferien/#{country_slug}/schule/#{school.slug}"
+    school_url = UrlBuilder.school_url(country_slug, school)
 
     new()
-    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
-    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
     |> subject("Neue Schule erstellt: #{school.name}")
     |> html_body("""
     <h2>Neue Schule wurde erstellt</h2>
@@ -137,11 +144,11 @@ defmodule MehrSchulferien.Email do
   end
 
   def school_updated_notification(school, address, changes, country_slug \\ "d") do
-    school_url = "https://www.mehr-schulferien.de/ferien/#{country_slug}/schule/#{school.slug}"
+    school_url = UrlBuilder.school_url(country_slug, school)
 
     new()
-    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
-    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
     |> subject("Schule bearbeitet: #{school.name}")
     |> html_body("""
     <h2>Schule wurde bearbeitet</h2>
@@ -261,11 +268,11 @@ defmodule MehrSchulferien.Email do
   end
 
   def school_deleted_notification(school, address, country_slug \\ "d") do
-    school_url = "https://www.mehr-schulferien.de/ferien/#{country_slug}/schule/#{school.slug}"
+    school_url = UrlBuilder.school_url(country_slug, school)
 
     new()
-    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
-    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
     |> subject("Schule gelöscht: #{school.name}")
     |> html_body("""
     <h2>Schule wurde gelöscht</h2>
@@ -343,8 +350,8 @@ defmodule MehrSchulferien.Email do
     school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school.slug}"
 
     new()
-    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
-    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
     |> subject("Neuer beweglicher Ferientag: #{school.name}")
     |> html_body("""
     <h2>Neuer beweglicher Ferientag wurde erstellt</h2>
@@ -367,8 +374,8 @@ defmodule MehrSchulferien.Email do
     school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school.slug}"
 
     new()
-    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
-    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
     |> subject("Beweglicher Ferientag geändert: #{school.name}")
     |> html_body("""
     <h2>Beweglicher Ferientag wurde geändert</h2>
@@ -402,8 +409,8 @@ defmodule MehrSchulferien.Email do
     school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school.slug}"
 
     new()
-    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
-    |> from({"MehrSchulferien System", "noreply@mehr-schulferien.de"})
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
     |> subject("Beweglicher Ferientag gelöscht: #{school.name}")
     |> html_body("""
     <h2>Beweglicher Ferientag wurde gelöscht</h2>

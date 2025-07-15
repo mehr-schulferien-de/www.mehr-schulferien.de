@@ -10,7 +10,13 @@ import Config
 config :mehr_schulferien,
   ecto_repos: [MehrSchulferien.Repo],
   # Configure pdflatex path (can be overridden in environment configs)
-  pdflatex_path: "pdflatex"
+  pdflatex_path: "pdflatex",
+  # Email configuration
+  admin_email: "sw@wintermeyer-consulting.de",
+  admin_name: "Stefan Wintermeyer",
+  support_email: "support@mehr-schulferien.de",
+  noreply_email: "noreply@mehr-schulferien.de",
+  system_email_name: "MehrSchulferien System"
 
 # Configures the endpoint
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,

@@ -433,8 +433,10 @@ defmodule MehrSchulferienWeb.WikiController do
   defp traverse_to_country(%{parent_location_id: nil}), do: nil
 
   defp traverse_to_country(%{parent_location_id: parent_id}) do
-    parent = Locations.get_location!(parent_id)
-    traverse_to_country(parent)
+    case Locations.get_location(parent_id) do
+      nil -> nil
+      parent -> traverse_to_country(parent)
+    end
   end
 
   defp traverse_to_country(_), do: nil

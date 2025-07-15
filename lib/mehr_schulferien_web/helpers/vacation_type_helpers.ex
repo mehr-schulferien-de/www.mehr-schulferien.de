@@ -4,7 +4,7 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
   Provides SEO content, data fetching, and formatting functions.
   """
 
-  alias MehrSchulferien.{Locations, Periods}
+  alias MehrSchulferien.{Locations, Periods, UrlBuilder}
 
   @vacation_configs %{
     "sommer" => %{
@@ -184,7 +184,7 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
                 }
               },
               "url" =>
-                "https://www.mehr-schulferien.de" <>
+                UrlBuilder.base_url() <>
                   Phoenix.Controller.current_path(conn) <>
                   "##{state.slug}"
             }
