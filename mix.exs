@@ -26,7 +26,6 @@ defmodule MehrSchulferien.MixProject do
 
   defp deps do
     [
-      {:igniter, "~> 0.6", only: [:dev, :test]},
       {:phoenix, "~> 1.7.21"},
       {:phoenix_ecto, "~> 4.6.4"},
       {:ecto_sql, "~> 3.10"},
@@ -38,16 +37,12 @@ defmodule MehrSchulferien.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.2"},
-      {:finch, "~> 0.18"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.24"},
       {:jason, "~> 1.4.0"},
       {:plug_cowboy, "~> 2.6"},
       {:ex_machina, "~> 2.7.0", only: :test},
       {:faker, "~> 0.17", only: :test},
       {:timex, "~> 3.7.12"},
-      {:ex_ical, "~> 0.2.0"},
       {:sitemap, "~> 1.0"},
       {:ex_doc, "~> 0.38", only: :dev, runtime: false},
       {:ecto_autoslug_field, "~> 3.0"},
