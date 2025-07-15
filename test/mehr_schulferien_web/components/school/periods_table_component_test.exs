@@ -9,14 +9,15 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       # Create test periods
       periods = [
         build_period(~D[2024-09-01], ~D[2024-09-15], "Herbstferien"),
-        build_period(~D[2024-12-23], ~D[2025-01-06], "Weihnachtsferien"),
+        build_period(~D[2025-01-07], ~D[2025-01-17], "Weihnachtsferien"),
         build_period(~D[2025-02-10], ~D[2025-02-14], "Winterferien")
       ]
 
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-10-15],
+        # Changed to 2025 to match new filtering logic
+        today: ~D[2025-03-15],
         current_school_year: 2024,
         next_school_year: 2025
       }
@@ -26,8 +27,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       # Check school year headers
       assert html =~ "Schuljahr 2024/2025"
 
-      # Check period names
-      assert html =~ "Herbstferien"
+      # Check period names - Herbstferien should NOT appear (starts in 2024)
+      refute html =~ "Herbstferien"
+      # These should appear (start in 2025)
       assert html =~ "Weihnachtsferien"
       assert html =~ "Winterferien"
 
@@ -218,26 +220,26 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "highlights current period correctly" do
       periods = [
         build_period(~D[2024-09-01], ~D[2024-09-15], "Herbstferien"),
-        build_period(~D[2024-10-14], ~D[2024-10-25], "Herbstferien"),
-        build_period(~D[2024-12-23], ~D[2025-01-06], "Weihnachtsferien")
+        build_period(~D[2025-10-14], ~D[2025-10-25], "Herbstferien"),
+        build_period(~D[2025-12-23], ~D[2026-01-06], "Weihnachtsferien")
       ]
 
       assigns = %{
         periods: periods,
         all_periods: periods,
         # During second period
-        today: ~D[2024-10-15],
-        current_school_year: 2024,
-        next_school_year: 2025
+        today: ~D[2025-10-15],
+        current_school_year: 2025,
+        next_school_year: 2026
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
 
-      # Check for highlighting class
+      # Check for highlighting class for current period
       assert html =~ "bg-yellow-100"
 
-      # Check that past periods have gray text
-      assert html =~ "text-gray-400"
+      # Periods from past calendar years are filtered out
+      refute html =~ "text-gray-400"
     end
 
     test "calculates effective duration correctly" do
@@ -245,9 +247,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       periods = [
         %{
           # Monday
-          starts_on: ~D[2024-10-21],
+          starts_on: ~D[2025-10-21],
           # Friday
-          ends_on: ~D[2024-10-25],
+          ends_on: ~D[2025-10-25],
           holiday_or_vacation_type: %{
             name: "Herbstferien",
             colloquial: "Herbstferien"
@@ -258,9 +260,9 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-10-01],
-        current_school_year: 2024,
-        next_school_year: 2025
+        today: ~D[2025-10-01],
+        current_school_year: 2025,
+        next_school_year: 2026
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
@@ -273,23 +275,23 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "generates correct anchor links for calendar navigation" do
       periods = [
         build_period(~D[2024-07-15], ~D[2024-08-27], "Sommerferien"),
-        build_period(~D[2024-10-28], ~D[2024-11-01], "Herbstferien")
+        build_period(~D[2025-10-28], ~D[2025-11-01], "Herbstferien")
       ]
 
       assigns = %{
         periods: periods,
         all_periods: periods,
-        today: ~D[2024-09-01],
-        current_school_year: 2024,
-        next_school_year: 2025
+        today: ~D[2025-09-01],
+        current_school_year: 2025,
+        next_school_year: 2026
       }
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
 
       # Check for correct anchor links - using escaped quotes in HTML
-      # The July period starts in July 2024 but belongs to school year 2023/2024, so it won't be displayed
-      # Only the October period (school year 2024/2025) will be shown
-      assert html =~ "onclick=\"window.location.href=&#39;#oktober2024&#39;\""
+      # The July period starts in 2024, so it will be filtered out
+      # Only the October 2025 period will be shown
+      assert html =~ "onclick=\"window.location.href=&#39;#oktober2025&#39;\""
     end
   end
 

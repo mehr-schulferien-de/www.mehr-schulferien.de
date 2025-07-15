@@ -11,9 +11,17 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
   attr :next_school_year, :integer, required: true
 
   def periods_table(assigns) do
-    # Group periods by school year and filter to only current and next school year
+    # Filter to only show periods from current calendar year and future years,
+    # then group by school year and filter to only current and next school year
+    current_calendar_year = assigns.today.year
+
     grouped_periods =
-      Enum.group_by(assigns.periods, fn period ->
+      assigns.periods
+      |> Enum.filter(fn period ->
+        # Only show periods that start in the current calendar year or later
+        period.starts_on.year >= current_calendar_year
+      end)
+      |> Enum.group_by(fn period ->
         get_school_year(period.starts_on)
       end)
       |> Enum.filter(fn {year, _} ->

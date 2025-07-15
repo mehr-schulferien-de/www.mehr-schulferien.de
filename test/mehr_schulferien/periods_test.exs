@@ -302,7 +302,8 @@ defmodule MehrSchulferien.PeriodsTest do
       assert ical_content =~ "BEGIN:VEVENT"
       assert ical_content =~ "END:VEVENT"
       assert ical_content =~ "DTSTART;VALUE=DATE:20200707"
-      assert ical_content =~ "DTEND;VALUE=DATE:20200711"  # End date is exclusive, so +1 day
+      # End date is exclusive, so +1 day
+      assert ical_content =~ "DTEND;VALUE=DATE:20200711"
       assert ical_content =~ "SUMMARY:#{vacation_type.colloquial} (#{federal_state.name})"
       assert ical_content =~ "LOCATION:#{federal_state.name}"
     end
