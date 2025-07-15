@@ -49,6 +49,11 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
                 <% end %>
                 <%= if days == 1, do: "Tag", else: "Tage" %>)
               </span>
+              <%= if period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && period.memo && period.memo != "" do %>
+                <span class="text-xs text-gray-600 block mt-0.5">
+                  <%= period.memo %>
+                </span>
+              <% end %>
             </span>
             <% start_fmt =
               if period.starts_on.year != period.ends_on.year,

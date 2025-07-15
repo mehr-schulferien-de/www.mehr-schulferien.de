@@ -72,6 +72,11 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                   >
                     <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium">
                       <.period_name period={period} />
+                      <%= if period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && period.memo && period.memo != "" do %>
+                        <div class="text-xs text-gray-600 mt-1">
+                          <%= period.memo %>
+                        </div>
+                      <% end %>
                     </td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                       <span class="whitespace-nowrap">
