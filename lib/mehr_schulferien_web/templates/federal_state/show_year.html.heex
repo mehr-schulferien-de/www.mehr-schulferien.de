@@ -181,7 +181,9 @@
     <% end %>
 
     <.schema_org_event periods={@periods} federal_state={@federal_state} country={@country} />
-    <.faq_schema federal_state={@federal_state} year={@year} periods={@periods} />
+    <%= unless @today.year == @year do %>
+      <.faq_schema federal_state={@federal_state} year={@year} periods={@periods} />
+    <% end %>
     <.itemlist_schema
       periods={@periods}
       all_periods={@all_periods}
