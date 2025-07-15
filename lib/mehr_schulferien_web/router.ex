@@ -95,6 +95,17 @@ defmodule MehrSchulferienWeb.Router do
         :redirect_counties_and_cities
   end
 
+  # ========== API Routes (must come before catch-all routes) ==========
+  scope "/api/v2.0", MehrSchulferienWeb.Api.V2, as: :api do
+    pipe_through :api
+
+    resources "/locations", LocationController, only: [:index, :show]
+    resources "/periods", PeriodController, only: [:index, :show]
+    resources "/holiday_or_vacation_types", HolidayOrVacationTypeController, only: [:index, :show]
+    get "/vcards/schools/:slug", VCardController, :school_show
+    get "/icalendars/location/:slug", ICalController, :show
+  end
+
   # ========== Main Routes (SEO-optimized /ferien/ URLs) ==========
   scope "/", MehrSchulferienWeb do
     pipe_through :browser
@@ -211,15 +222,5 @@ defmodule MehrSchulferienWeb.Router do
     # Document PDF downloads - consolidated
     get "/briefe/:school_slug/:document_type/pdf", DocumentPdfController, :download,
       constraints: [document_type: ~r/entschuldigung|beurlaubung|sportbefreiung/]
-  end
-
-  scope "/api/v2.0", MehrSchulferienWeb.Api.V2, as: :api do
-    pipe_through :api
-
-    resources "/locations", LocationController, only: [:index, :show]
-    resources "/periods", PeriodController, only: [:index, :show]
-    resources "/holiday_or_vacation_types", HolidayOrVacationTypeController, only: [:index, :show]
-    get "/vcards/schools/:slug", VCardController, :school_show
-    get "/icalendars/location/:slug", ICalController, :show
   end
 end
