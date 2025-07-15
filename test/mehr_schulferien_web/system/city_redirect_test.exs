@@ -13,16 +13,37 @@ defmodule MehrSchulferienWeb.CityRedirectSystemTest do
   describe "city redirect" do
     setup [:add_city]
 
-    test "redirects from city base URL to current year URL", %{
+    test "city base URL shows content without redirect", %{
       conn: conn,
       country: country,
       city: city
     } do
+      # Add a school to the city to ensure content is shown
+      _school =
+        insert(:school, %{
+          parent_location_id: city.id,
+          slug: "test-schule",
+          name: "Test Schule"
+        })
+
       conn = get(conn, "/ferien/#{country.slug}/stadt/#{city.slug}")
 
-      # Assert that we get a 302 redirect to the current year URL
-      assert redirected_to(conn, 302) ==
-               "/ferien/#{country.slug}/stadt/#{city.slug}/#{@current_year}"
+      # Assert that we get a 200 OK response (content is shown)
+      assert conn.status == 200
+      assert conn.resp_body =~ "Schulferien #{city.name}"
+    end
+
+    test "redirects from city year URL to base URL", %{
+      conn: conn,
+      country: country,
+      city: city
+    } do
+      conn = get(conn, "/ferien/#{country.slug}/stadt/#{city.slug}/#{@current_year}")
+
+      # Assert that we get a redirect to the base URL
+      # The redirect status doesn't matter as much as the destination
+      assert redirected_to(conn) ==
+               "/ferien/#{country.slug}/stadt/#{city.slug}"
     end
   end
 

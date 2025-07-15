@@ -1,0 +1,44 @@
+<title>
+  Schulferien <%= @city.name %> <%= @current_year %>/<%= @next_year %> - Alle Ferientermine (<%= @federal_state.name %>)
+</title>
+<meta
+  name="description"
+  content={"Schulferien #{@current_year}/#{@next_year} für #{@city.name} in #{@federal_state.name}: Oster-, Sommer-, Herbst- und Weihnachtsferien. Alle Termine, iCal-Export und Kalenderansicht."}
+/>
+<meta
+  name="keywords"
+  content={"Schulferien, #{@city.name}, #{@federal_state.name}, #{@current_year}, #{@next_year}, Ferientermine, Osterferien, Sommerferien, Herbstferien, Weihnachtsferien"}
+/>
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={url(~p"/ferien/#{@country.slug}/stadt/#{@city.slug}")} />
+<meta
+  property="og:title"
+  content={"Schulferien #{@city.name} #{@current_year}/#{@next_year} - Alle Ferientermine (#{@federal_state.name})"}
+/>
+<meta
+  property="og:description"
+  content={"Schulferien #{@current_year}/#{@next_year} für #{@city.name} in #{@federal_state.name}: Oster-, Sommer-, Herbst- und Weihnachtsferien. Alle Termine, iCal-Export und Kalenderansicht."}
+/>
+<!-- Twitter -->
+<meta property="twitter:card" content="summary" />
+<meta property="twitter:url" content={url(~p"/ferien/#{@country.slug}/stadt/#{@city.slug}")} />
+<meta
+  property="twitter:title"
+  content={"Schulferien #{@city.name} #{@current_year}/#{@next_year} - Alle Ferientermine (#{@federal_state.name})"}
+/>
+<meta
+  property="twitter:description"
+  content={"Schulferien #{@current_year}/#{@next_year} für #{@city.name} in #{@federal_state.name}: Oster-, Sommer-, Herbst- und Weihnachtsferien. Alle Termine, iCal-Export und Kalenderansicht."}
+/>
+
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: @country.name, item: url(~p"/ferien/#{@country.slug}")},
+    %{name: "Ferientermine #{@federal_state.name}", item: url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}")},
+    %{name: "Schulferien #{@city.name}", item: url(~p"/ferien/#{@country.slug}/stadt/#{@city.slug}")}
+  ]) %>
+</script>

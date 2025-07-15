@@ -1,6 +1,10 @@
 defmodule MehrSchulferienWeb.CityComponents do
   use Phoenix.Component
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: MehrSchulferienWeb.Endpoint,
+    router: MehrSchulferienWeb.Router
+
   def schema_org_event(assigns) do
     ~H"""
     <%= for period <- @periods do %>

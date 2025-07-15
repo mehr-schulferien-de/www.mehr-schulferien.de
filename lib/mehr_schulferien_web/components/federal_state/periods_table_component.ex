@@ -14,6 +14,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
   attr :federal_state, :any, default: nil
   attr :conn, :any, default: nil
   attr :year, :integer, default: nil
+  attr :current_year, :integer, default: nil
 
   def periods_table(assigns) do
     ~H"""
@@ -45,6 +46,9 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
                 Date.compare(@today, period.ends_on) != :gt %>
             <% is_past =
               Date.compare(@today, period.ends_on) == :gt && period.starts_on.year == @today.year %>
+            <% # Determine year for color coding
+            period_year = period.starts_on.year
+            is_next_year = @current_year && period_year > @current_year %>
             <% month_name =
               case period.starts_on.month do
                 1 -> "januar"
@@ -61,7 +65,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
                 12 -> "dezember"
               end %>
             <tr
-              class={"hover:bg-gray-50 cursor-pointer #{if is_current, do: "bg-yellow-100"} #{if is_past, do: "text-gray-400"}"}
+              class={"hover:bg-gray-50 cursor-pointer #{if is_current, do: "bg-yellow-100"} #{if is_past, do: "text-gray-400"} #{if is_next_year, do: "bg-gray-50"}"}
               onclick={"window.location.href='##{month_name}#{period.starts_on.year}'"}
             >
               <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium">
@@ -79,26 +83,15 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
               <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
                 <span class="whitespace-nowrap">
                   <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
-                    <span class="sm:hidden">
-                      <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
-                    </span>
-                    <span class="hidden sm:inline">
-                      <%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>
-                    </span>
+                    <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
                   <% else %>
-                    <span class="sm:hidden">
-                      <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
-                    </span>
-                    <span class="hidden sm:inline">
-                      <%= Calendar.strftime(period.starts_on, "%d.%m.%Y") %>
-                    </span>
-                    -
-                    <span class="sm:hidden">
-                      <%= Calendar.strftime(period.ends_on, "%d.%m.") %>
-                    </span>
-                    <span class="hidden sm:inline">
-                      <%= Calendar.strftime(period.ends_on, "%d.%m.%Y") %>
-                    </span>
+                    <%= Calendar.strftime(period.starts_on, "%d.%m.") %> - <%= Calendar.strftime(
+                      period.ends_on,
+                      "%d.%m."
+                    ) %>
+                  <% end %>
+                  <%= if is_next_year do %>
+                    <span class="text-xs text-gray-500 ml-1">(<%= period.starts_on.year %>)</span>
                   <% end %>
                 </span>
               </td>

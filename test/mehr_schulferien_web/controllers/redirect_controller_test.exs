@@ -1,26 +1,47 @@
 defmodule MehrSchulferienWeb.RedirectControllerTest do
   use MehrSchulferienWeb.ConnCase
+  import MehrSchulferien.Factory
 
   describe "cities redirects" do
-    @tag skip: "Requires database setup with zip code 33619 mapped to Bielefeld"
-    test "redirects /cities/:city_slug to /ferien/deutschland/stadt/:city_slug with 301", %{
-      conn: conn
-    } do
-      # This test would redirect from zip-code-based URL to proper city slug
-      # Example: /cities/33619-bielefeld -> /ferien/deutschland/stadt/bielefeld
-      conn = get(conn, "/cities/33619-bielefeld")
-      assert conn.status == 301
-      # The actual redirect location would depend on the city's slug in the database
+    setup do
+      # Create test data hierarchy
+      country = insert(:country, %{slug: "deutschland", name: "Deutschland"})
+      federal_state = insert(:federal_state, %{parent_location_id: country.id, name: "Nordrhein-Westfalen"})
+      county = insert(:county, %{parent_location_id: federal_state.id, name: "Bielefeld"})
+      city = insert(:city, %{
+        parent_location_id: county.id,
+        name: "Bielefeld",
+        slug: "bielefeld"
+      })
+      
+      # Create zip code and mapping
+      zip_code = insert(:zip_code, %{value: "33619"})
+      insert(:zip_code_mapping, %{
+        location_id: city.id,
+        zip_code_id: zip_code.id
+      })
+      
+      {:ok, %{city: city, country: country}}
     end
 
-    @tag skip: "Requires database setup with zip code 33619 mapped to Bielefeld"
+    test "redirects /cities/:city_slug to /ferien/deutschland/stadt/:city_slug with 301", %{
+      conn: conn,
+      city: city,
+      country: country
+    } do
+      # This redirects from zip-code-based URL to proper city slug
+      conn = get(conn, "/cities/33619-bielefeld")
+      assert conn.status == 301
+      assert redirected_to(conn, 301) == "/ferien/#{country.slug}/stadt/#{city.slug}"
+    end
+
     test "redirects /cities/:city_slug/:year to /ferien/deutschland/stadt/:city_slug/:year with 301",
-         %{conn: conn} do
-      # This test would redirect from zip-code-based URL to proper city slug with year
-      # Example: /cities/33619-bielefeld/2025 -> /ferien/deutschland/stadt/bielefeld/2025
+         %{conn: conn, city: city, country: country} do
+      # This redirects from zip-code-based URL to proper city slug with year
       conn = get(conn, "/cities/33619-bielefeld/2025")
       assert conn.status == 301
-      # The actual redirect location would depend on the city's slug in the database
+      # The redirect controller redirects to the URL with year
+      assert redirected_to(conn, 301) == "/ferien/#{country.slug}/stadt/#{city.slug}/2025"
     end
   end
 
