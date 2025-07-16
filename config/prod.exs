@@ -35,10 +35,11 @@ config :mehr_schulferien, MehrSchulferien.Repo,
 # before starting your production server.
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   url: [host: "mehr-schulferien.de", port: nil, scheme: "https"],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  debug_errors: true
 
-# Do not print debug messages in production
-config :logger, level: :info
+# Increased logging level for debugging in production
+config :logger, level: :debug
 
 # Set stacktrace depth to match development for detailed error reporting
 config :phoenix, :stacktrace_depth, 20
