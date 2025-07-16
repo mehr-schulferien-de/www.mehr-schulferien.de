@@ -232,17 +232,31 @@
           <% else %>
             <%= for version <- @display_versions do %>
               <div class="p-4 hover:bg-gray-50">
-                <div class="flex justify-between items-start">
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-900">
-                      Version #<%= version.id %>
-                    </p>
-                    <p class="text-xs text-gray-500 mt-1">
-                      <%= format_version_date(version) %> • <%= format_originator(version) %>
-                    </p>
-                    <p class="text-sm text-gray-700 mt-2">
-                      <%= version_summary(version, @versions) %>
-                    </p>
+                <div class="flex-1">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">
+                        Version #<%= version.id %>
+                      </p>
+                      <p class="text-xs text-gray-500 mt-1">
+                        <%= format_version_date(version) %> • <%= format_originator(version) %>
+                      </p>
+                    </div>
+                    <%= if version.id != List.first(@versions).id do %>
+                      <button
+                        phx-click="rollback_version"
+                        phx-value-id={version.id}
+                        data-confirm="Sind Sie sicher, dass Sie zu dieser Version zurückkehren möchten?"
+                        class="ml-4 px-3 py-1 text-xs font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                      >
+                        Wiederherstellen
+                      </button>
+                    <% end %>
+                  </div>
+                  <div class="mt-2 text-sm text-gray-700 space-y-1">
+                    <%= for change_line <- String.split(version_summary(version, @versions), ", ") do %>
+                      <p class="break-words">• <%= change_line %></p>
+                    <% end %>
                   </div>
                 </div>
               </div>
