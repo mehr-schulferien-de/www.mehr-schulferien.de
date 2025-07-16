@@ -104,6 +104,9 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
           if school_version || address_version do
             Wiki.increment_daily_change_count(today)
             
+            Logger.info("=== SCHOOL UPDATE EMAIL DEBUG START ===")
+            Logger.info("Changes detected - school_version: #{inspect(school_version != nil)}, address_version: #{inspect(address_version != nil)}")
+            
             # Reload data
             updated_school = Locations.get_school_by_slug!(school.slug)
             versions = get_combined_versions(updated_school)
@@ -111,40 +114,62 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
             limit_reached = daily_changes >= Config.daily_change_limit()
             
             # Send email notification
-            Task.start(fn ->
+            email_task = Task.async(fn ->
               try do
+                Logger.info("Email task started")
+                
                 # Reload school with all associations needed for email
                 updated_school_with_associations = 
                   Locations.get_location!(updated_school.id)
                   |> Repo.preload([:address, :parent_location])
                 
+                Logger.info("School loaded with associations: id=#{updated_school_with_associations.id}, has_address=#{updated_school_with_associations.address != nil}")
+                
                 # Gather change information
                 changes = gather_changes(school_version, address_version)
                 
-                Logger.info("Sending email notification for school update")
-                Logger.info("School: #{inspect(updated_school_with_associations.name)}")
-                Logger.info("Changes: #{inspect(changes)}")
+                Logger.info("Changes gathered: #{inspect(changes)}")
                 
                 # Get country slug for the email
                 country_slug = get_country_slug_from_school(updated_school_with_associations)
                 Logger.info("Country slug: #{inspect(country_slug)}")
                 
-                result =
-                  Email.school_updated_notification(
-                    updated_school_with_associations,
-                    updated_school_with_associations.address,
-                    changes,
-                    country_slug
-                  )
-                  |> Mailer.deliver!()
+                # Build email
+                email = Email.school_updated_notification(
+                  updated_school_with_associations,
+                  updated_school_with_associations.address,
+                  changes,
+                  country_slug
+                )
+                
+                Logger.info("Email built: to=#{inspect(email.to)}, subject=#{inspect(email.subject)}")
+                
+                # Send email
+                result = Mailer.deliver!(email)
                 
                 Logger.info("Email sent successfully: #{inspect(result)}")
+                {:ok, result}
               rescue
                 error ->
                   Logger.error("Failed to send school update email: #{inspect(error)}")
                   Logger.error(Exception.format(:error, error, __STACKTRACE__))
+                  {:error, error}
               end
             end)
+            
+            # Wait a bit to see if the task completes
+            case Task.yield(email_task, 5000) || Task.shutdown(email_task, :brutal_kill) do
+              {:ok, {:ok, result}} ->
+                Logger.info("Email task completed successfully: #{inspect(result)}")
+              {:ok, {:error, error}} ->
+                Logger.error("Email task failed: #{inspect(error)}")
+              nil ->
+                Logger.warning("Email task timed out after 5 seconds")
+              {:exit, reason} ->
+                Logger.error("Email task crashed: #{inspect(reason)}")
+            end
+            
+            Logger.info("=== SCHOOL UPDATE EMAIL DEBUG END ===")
             
             # Update changeset
             changeset =
