@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Periods, Config}
   alias MehrSchulferien.Maps.Address
   alias PaperTrail
+  require Logger
 
   @impl true
   def mount(%{"slug" => school_slug}, _session, socket) do
@@ -108,6 +109,30 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
             versions = get_combined_versions(updated_school)
             daily_changes = Wiki.get_daily_change_count(today)
             limit_reached = daily_changes >= Config.daily_change_limit()
+            
+            # Send email notification
+            Task.start(fn ->
+              # Gather change information
+              changes = gather_changes(school_version, address_version)
+              
+              Logger.info("Sending email notification for school update")
+              Logger.info("School: #{inspect(updated_school.name)}")
+              Logger.info("Changes: #{inspect(changes)}")
+              
+              # Get country slug for the email
+              country_slug = get_country_slug_from_school(updated_school)
+              
+              result =
+                Email.school_updated_notification(
+                  updated_school,
+                  updated_school.address,
+                  changes,
+                  country_slug
+                )
+                |> Mailer.deliver()
+              
+              Logger.info("Email send result: #{inspect(result)}")
+            end)
             
             # Update changeset
             changeset =
@@ -269,4 +294,112 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   defp has_beweglicher_ferientag_on_date?(ferientage, date) do
     Enum.any?(ferientage, fn ft -> Date.compare(ft.starts_on, date) == :eq end)
   end
+
+  defp gather_changes(school_version, address_version) do
+    changes = %{}
+
+    changes =
+      if school_version do
+        # Get the previous value for the school
+        old_values = get_previous_values("Location", school_version.item_id, school_version)
+
+        school_changes =
+          case school_version.item_changes do
+            %{name: new_name} ->
+              old_name = Map.get(old_values, :name, "")
+              %{"Schulname" => {old_name, new_name}}
+
+            _ ->
+              %{}
+          end
+
+        Map.merge(changes, school_changes)
+      else
+        changes
+      end
+
+    if address_version do
+      # Get the previous value for the address
+      old_values = get_previous_values("Address", address_version.item_id, address_version)
+
+      address_changes =
+        Enum.reduce(address_version.item_changes, %{}, fn {field, new_value}, acc ->
+          field_name =
+            case field do
+              :street -> "Straße"
+              :zip_code -> "PLZ"
+              :city -> "Stadt"
+              :email_address -> "E-Mail"
+              :phone_number -> "Telefon"
+              :homepage_url -> "Homepage"
+              :wikipedia_url -> "Wikipedia"
+              _ -> nil
+            end
+
+          if field_name do
+            old_value = Map.get(old_values, field, "")
+            Map.put(acc, field_name, {old_value, new_value})
+          else
+            acc
+          end
+        end)
+
+      Map.merge(changes, address_changes)
+    else
+      changes
+    end
+  end
+
+  defp get_previous_values(item_type, item_id, current_version) do
+    versions =
+      PaperTrail.get_versions(%{item_type: item_type, item_id: item_id})
+      |> Enum.filter(&(&1.id < current_version.id))
+      |> Enum.sort_by(& &1.id, :desc)
+
+    case versions do
+      [previous_version | _] ->
+        # Get values from the previous version, handling old_values if present
+        case previous_version do
+          %{old_values: old_values} when is_map(old_values) ->
+            old_values
+
+          _ ->
+            # If no old_values, reconstruct from item_changes
+            previous_version.item_changes || %{}
+        end
+
+      [] ->
+        # No previous version, so all fields were empty/nil
+        %{}
+    end
+  end
+
+  defp get_country_slug_from_school(school) do
+    # Traverse up the hierarchy to find the country
+    # Be flexible about hierarchy levels since test data might skip intermediate levels
+    location = school
+
+    # Keep going up until we find a country or run out of parents
+    location = traverse_to_country(location)
+
+    case location do
+      %{slug: slug, is_country: true} -> slug
+      # Default to Germany
+      _ -> "d"
+    end
+  end
+
+  defp traverse_to_country(%{is_country: true} = location), do: location
+
+  defp traverse_to_country(%{parent_location: %{is_country: true} = parent})
+       when not is_nil(parent) do
+    parent
+  end
+
+  defp traverse_to_country(%{parent_location: parent}) when not is_nil(parent) do
+    parent = Locations.get_location_with_parent!(parent.id)
+    traverse_to_country(parent)
+  end
+
+  defp traverse_to_country(_), do: nil
 end
