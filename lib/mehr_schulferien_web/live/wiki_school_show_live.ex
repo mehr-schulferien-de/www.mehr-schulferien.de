@@ -650,13 +650,48 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
           end
           
         if model do
-          # Restore to the state before this version using old_values
-          old_values = version.old_values || %{}
-          changeset = Ecto.Changeset.change(model, old_values)
+          # If we have old_values, restore to the state before this version
+          # If not, we need to reconstruct the state from all versions
+          restore_values = 
+            if version.old_values && map_size(version.old_values) > 0 do
+              version.old_values
+            else
+              # Get all versions up to but not including this one
+              all_versions = 
+                case version.item_type do
+                  "Location" -> 
+                    PaperTrail.get_versions(%MehrSchulferien.Locations.Location{id: version.item_id})
+                  "Address" -> 
+                    PaperTrail.get_versions(%MehrSchulferien.Maps.Address{id: version.item_id})
+                  _ -> 
+                    []
+                end
+                
+              # Find the previous version to restore to
+              previous_versions = 
+                all_versions
+                |> Enum.filter(&(&1.id < version.id))
+                |> Enum.sort_by(& &1.id, :desc)
+                
+              case previous_versions do
+                [prev_version | _] ->
+                  # Use the changes from the previous version as our restore point
+                  prev_version.item_changes || %{}
+                [] ->
+                  # This was the first change, so restore to empty/default values
+                  %{}
+              end
+            end
+            
+          changeset = Ecto.Changeset.change(model, restore_values)
           PaperTrail.update(changeset, meta: %{ip_address: nil})
         else
           {:error, :model_not_found}
         end
+        
+      "insert" ->
+        # Can't restore an insert event - would need to delete the record
+        {:error, :cannot_restore_insert}
         
       _ ->
         {:error, :cannot_restore_event}
