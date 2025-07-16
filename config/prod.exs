@@ -39,8 +39,6 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   debug_errors: true,
   # Configure for reverse proxy
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  # Trust the proxy headers
-  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
   # Check origin to prevent CSRF attacks
   check_origin: ["https://mehr-schulferien.de", "https://www.mehr-schulferien.de"]
 

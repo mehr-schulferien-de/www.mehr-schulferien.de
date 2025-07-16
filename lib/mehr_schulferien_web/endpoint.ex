@@ -57,7 +57,6 @@ defmodule MehrSchulferienWeb.Endpoint do
     signing_salt: "ld6G7jfc",
     secure: Mix.env() == :prod,
     extra: "SameSite=Lax",
-    domain: ".mehr-schulferien.de",
     max_age: 86_400
 
   if Application.compile_env(:mehr_schulferien, :env) == :dev do
