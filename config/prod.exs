@@ -39,7 +39,8 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   check_origin: ["https://mehr-schulferien.de", "https://www.mehr-schulferien.de"]
 
 # Increased logging level for debugging in production
-config :logger, level: :info
+# config :logger, level: :info
+config :logger, level: :debug
 
 # Set stacktrace depth to match development for detailed error reporting
 config :phoenix, :stacktrace_depth, 20
