@@ -34,9 +34,7 @@ config :mehr_schulferien, MehrSchulferien.Repo,
 # which you should run after static files are built and
 # before starting your production server.
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
-  url: [host: "mehr-schulferien.de", port: 443, scheme: "https"],
   cache_static_manifest: "priv/static/cache_manifest.json",
-  debug_errors: true,
   # Configure for reverse proxy
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   # Check origin to prevent CSRF attacks
