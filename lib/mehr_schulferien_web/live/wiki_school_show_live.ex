@@ -395,8 +395,20 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
         Map.get(old_values, field, default)
       _ ->
         # If no old_values, try to get from previous version
+        # Get the model to pass to PaperTrail
+        model = 
+          case version.item_type do
+            "Location" -> %MehrSchulferien.Locations.Location{id: version.item_id}
+            "Address" -> %MehrSchulferien.Maps.Address{id: version.item_id}
+            _ -> nil
+          end
+          
         versions = 
-          PaperTrail.get_versions(%{item_type: version.item_type, item_id: version.item_id})
+          if model do
+            PaperTrail.get_versions(model)
+          else
+            []
+          end
           |> Enum.filter(&(&1.id < version.id))
           |> Enum.sort_by(& &1.id, :desc)
           
