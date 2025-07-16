@@ -54,7 +54,9 @@ defmodule MehrSchulferienWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_mehr_schulferien_key",
-    signing_salt: "ld6G7jfc"
+    signing_salt: "ld6G7jfc",
+    secure: Mix.env() == :prod,
+    extra: "SameSite=Lax"
 
   if Application.compile_env(:mehr_schulferien, :env) == :dev do
     plug Tidewave
