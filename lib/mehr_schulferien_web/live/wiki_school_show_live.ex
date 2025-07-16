@@ -609,8 +609,20 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   end
 
   defp get_previous_values(item_type, item_id, current_version) do
+    # Create proper struct for PaperTrail
+    model = 
+      case item_type do
+        "Location" -> %MehrSchulferien.Locations.Location{id: item_id}
+        "Address" -> %MehrSchulferien.Maps.Address{id: item_id}
+        _ -> nil
+      end
+    
     versions =
-      PaperTrail.get_versions(%{item_type: item_type, item_id: item_id})
+      if model do
+        PaperTrail.get_versions(model)
+      else
+        []
+      end
       |> Enum.filter(&(&1.id < current_version.id))
       |> Enum.sort_by(& &1.id, :desc)
 
