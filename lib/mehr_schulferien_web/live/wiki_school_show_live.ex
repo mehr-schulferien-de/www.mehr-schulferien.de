@@ -349,12 +349,22 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
     # Get detailed changes for this version
     changes = version.item_changes || %{}
     
+    # Debug log
+    if map_size(changes) > 0 do
+      Logger.debug("Version #{version.id} changes: #{inspect(changes)}")
+    end
+    
     case version.item_type do
       "Location" ->
-        if Map.has_key?(changes, :name) do
-          old_name = get_old_value(version, :name, "")
-          new_name = changes.name
-          "Schulname: \"#{old_name}\" → \"#{new_name}\""
+        # Check for both string and atom keys
+        if Map.has_key?(changes, :name) or Map.has_key?(changes, "name") do
+          new_name = changes[:name] || changes["name"]
+          old_name = get_old_value(version, :name, "[nicht verfügbar]")
+          if old_name == "[nicht verfügbar]" do
+            "Schulname geändert zu: \"#{new_name}\""
+          else
+            "Schulname: \"#{old_name}\" → \"#{new_name}\""
+          end
         else
           "Schulinformationen geändert"
         end
@@ -362,23 +372,113 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
       "Address" ->
         change_descriptions = 
           Enum.map(changes, fn {field, new_value} ->
-            old_value = get_old_value(version, field, "")
+            # Handle both string and atom keys
+            field_name = cond do
+              field == :street or field == "street" -> :street
+              field == :zip_code or field == "zip_code" -> :zip_code
+              field == :city or field == "city" -> :city
+              field == :email_address or field == "email_address" -> :email_address
+              field == :phone_number or field == "phone_number" -> :phone_number
+              field == :homepage_url or field == "homepage_url" -> :homepage_url
+              field == :wikipedia_url or field == "wikipedia_url" -> :wikipedia_url
+              true -> nil
+            end
             
-            case field do
-              :street -> "Straße: \"#{old_value}\" → \"#{new_value}\""
-              :zip_code -> "PLZ: \"#{old_value}\" → \"#{new_value}\""
-              :city -> "Stadt: \"#{old_value}\" → \"#{new_value}\""
-              :email_address -> "E-Mail: \"#{old_value}\" → \"#{new_value}\""
-              :phone_number -> "Telefon: \"#{old_value}\" → \"#{new_value}\""
-              :homepage_url -> "Homepage: \"#{old_value}\" → \"#{new_value}\""
-              :wikipedia_url -> "Wikipedia: \"#{old_value}\" → \"#{new_value}\""
+            case field_name do
+              :street -> 
+                old_value = get_old_value(version, field, nil)
+                if old_value do
+                  "Straße: \"#{old_value}\" → \"#{new_value}\""
+                else
+                  "Straße: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
+                end
+                
+              :zip_code -> 
+                old_value = get_old_value(version, field, nil)
+                if old_value do
+                  "PLZ: \"#{old_value}\" → \"#{new_value}\""
+                else
+                  "PLZ: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
+                end
+                
+              :city -> 
+                old_value = get_old_value(version, field, nil)
+                if old_value do
+                  "Stadt: \"#{old_value}\" → \"#{new_value}\""
+                else
+                  "Stadt: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
+                end
+                
+              :email_address -> 
+                old_value = get_old_value(version, field, nil)
+                if old_value do
+                  "E-Mail: \"#{old_value}\" → \"#{new_value}\""
+                else
+                  "E-Mail: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
+                end
+                
+              :phone_number -> 
+                old_value = get_old_value(version, field, nil)
+                if old_value do
+                  "Telefon: \"#{old_value}\" → \"#{new_value}\""
+                else
+                  "Telefon: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
+                end
+                
+              :homepage_url -> 
+                old_value = get_old_value(version, field, nil)
+                if old_value do
+                  "Homepage: \"#{old_value}\" → \"#{new_value}\""
+                else
+                  "Homepage: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
+                end
+                
+              :wikipedia_url -> 
+                old_value = get_old_value(version, field, nil)
+                if old_value do
+                  "Wikipedia: \"#{old_value}\" → \"#{new_value}\""
+                else
+                  "Wikipedia: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
+                end
+                
               _ -> nil
             end
           end)
           |> Enum.reject(&is_nil/1)
           
         if Enum.empty?(change_descriptions) do
-          "Adressinformationen geändert"
+          # Show what fields were changed even if we don't have the old values
+          if map_size(changes) > 0 do
+            changed_fields = 
+              changes
+              |> Map.keys()
+              |> Enum.map(fn field ->
+                cond do
+                  field in [:street, "street"] -> "Straße"
+                  field in [:zip_code, "zip_code"] -> "PLZ"
+                  field in [:city, "city"] -> "Stadt"
+                  field in [:email_address, "email_address"] -> "E-Mail"
+                  field in [:phone_number, "phone_number"] -> "Telefon"
+                  field in [:homepage_url, "homepage_url"] -> "Homepage"
+                  field in [:wikipedia_url, "wikipedia_url"] -> "Wikipedia"
+                  field in [:line1, "line1"] -> nil  # Skip internal fields
+                  field in [:school_location_id, "school_location_id"] -> nil
+                  field in [:lon, "lon"] -> nil
+                  field in [:lat, "lat"] -> nil
+                  field in [:school_type, "school_type"] -> nil  # Skip null fields
+                  true -> to_string(field)
+                end
+              end)
+              |> Enum.reject(&is_nil/1)
+              
+            if length(changed_fields) > 0 do
+              "Geänderte Felder: #{Enum.join(changed_fields, ", ")}"
+            else
+              "Adressinformationen geändert"
+            end
+          else
+            "Adressinformationen geändert"
+          end
         else
           Enum.join(change_descriptions, ", ")
         end
