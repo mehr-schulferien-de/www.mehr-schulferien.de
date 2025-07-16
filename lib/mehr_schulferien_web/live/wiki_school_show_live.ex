@@ -45,6 +45,108 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   end
 
   @impl true
+  def handle_event("update_school", %{"address" => address_params, "name" => name}, socket) do
+    if socket.assigns.limit_reached do
+      {:noreply,
+       put_flash(
+         socket,
+         :error,
+         "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+       )}
+    else
+      school = socket.assigns.school
+      today = Date.utc_today()
+      
+      # Update school name if changed
+      school_result =
+        if name != school.name do
+          location_changeset = MehrSchulferien.Locations.Location.changeset(school, %{name: name})
+          # Note: We can't get IP address in LiveView easily, so using nil
+          PaperTrail.update(location_changeset, meta: %{ip_address: nil})
+        else
+          {:ok, %{model: school, version: nil}}
+        end
+
+      # Handle address update/creation
+      address_result =
+        case school_result do
+          {:ok, %{model: updated_school, version: _school_version}} ->
+            address_params =
+              address_params
+              |> Map.put("school_location_id", updated_school.id)
+              |> Map.put("line1", name)
+
+            if updated_school.address do
+              # Update existing address
+              changeset = Address.changeset(updated_school.address, address_params)
+              
+              case changeset.changes do
+                changes when map_size(changes) == 0 ->
+                  {:ok, %{model: updated_school.address, version: nil}}
+                _ ->
+                  PaperTrail.update(changeset, meta: %{ip_address: nil})
+              end
+            else
+              # Create new address
+              changeset = Address.changeset(%Address{}, address_params)
+              PaperTrail.insert(changeset, meta: %{ip_address: nil})
+            end
+            
+          error ->
+            error
+        end
+
+      case {school_result, address_result} do
+        {{:ok, %{model: _updated_school, version: school_version}},
+         {:ok, %{model: _address, version: address_version}}} ->
+          
+          if school_version || address_version do
+            Wiki.increment_daily_change_count(today)
+            
+            # Reload data
+            updated_school = Locations.get_school_by_slug!(school.slug)
+            versions = get_combined_versions(updated_school)
+            daily_changes = Wiki.get_daily_change_count(today)
+            limit_reached = daily_changes >= Config.daily_change_limit()
+            
+            # Update changeset
+            changeset =
+              if updated_school.address do
+                address_changeset = Maps.change_address(updated_school.address)
+                %{address_changeset | data: Map.merge(address_changeset.data, %{name: updated_school.name})}
+              else
+                address_changeset = Maps.change_address(%Address{school_location_id: updated_school.id})
+                %{address_changeset | data: Map.merge(address_changeset.data, %{name: updated_school.name})}
+              end
+            
+            {:noreply,
+             socket
+             |> put_flash(:info, "Änderungen wurden erfolgreich gespeichert.")
+             |> assign(
+               school: updated_school,
+               versions: versions,
+               display_versions: Enum.take(versions, 5),
+               changeset: changeset,
+               daily_changes: daily_changes,
+               limit_reached: limit_reached
+             )}
+          else
+            {:noreply, put_flash(socket, :info, "Keine Änderungen vorgenommen.")}
+          end
+          
+        {{:error, _}, _} ->
+          {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren des Schulnamens.")}
+          
+        {_, {:error, :invalid_address}} ->
+          {:noreply, put_flash(socket, :error, "Ungültige Adresse. Bitte überprüfen Sie die Eingaben.")}
+          
+        {_, {:error, _}} ->
+          {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren der Adresse.")}
+      end
+    end
+  end
+
+  @impl true
   def handle_event("add_beweglicher_ferientag", %{"ferientag" => params}, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
