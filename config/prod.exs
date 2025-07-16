@@ -35,8 +35,6 @@ config :mehr_schulferien, MehrSchulferien.Repo,
 # before starting your production server.
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
-  # Configure for reverse proxy
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
   # Check origin to prevent CSRF attacks
   check_origin: ["https://mehr-schulferien.de", "https://www.mehr-schulferien.de"]
 
