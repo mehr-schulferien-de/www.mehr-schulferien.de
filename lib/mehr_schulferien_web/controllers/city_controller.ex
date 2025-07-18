@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.CityController do
   alias MehrSchulferien.{Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
+  import MehrSchulferienWeb.LocationTrackingHelpers
 
   def show_year(conn, %{
         "country_slug" => country_slug,
@@ -61,6 +62,9 @@ defmodule MehrSchulferienWeb.CityController do
       else
         put_status(conn, 404)
       end
+
+    # Track city visit
+    conn = track_location_visit(conn, "c", city.slug)
 
     render(
       conn,

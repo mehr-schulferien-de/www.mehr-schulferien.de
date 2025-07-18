@@ -1,6 +1,16 @@
 defmodule MehrSchulferienWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :mehr_schulferien
 
+  # Session configuration
+  @session_options [
+    store: :cookie,
+    key: "_mehr_schulferien_key",
+    signing_salt: "ld6G7jfc",
+    secure: Mix.env() == :prod,
+    extra: "SameSite=Lax",
+    max_age: 86_400
+  ]
+
   socket "/socket", MehrSchulferienWeb.UserSocket,
     websocket: true,
     longpoll: false,
@@ -11,7 +21,7 @@ defmodule MehrSchulferienWeb.Endpoint do
     ]
 
   socket "/live", Phoenix.LiveView.Socket,
-    websocket: true,
+    websocket: [connect_info: [:x_headers, :peer_data, session: @session_options]],
     longpoll: false,
     drainer: [
       batch_size: 10000,
@@ -51,13 +61,7 @@ defmodule MehrSchulferienWeb.Endpoint do
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
-  plug Plug.Session,
-    store: :cookie,
-    key: "_mehr_schulferien_key",
-    signing_salt: "ld6G7jfc",
-    secure: Mix.env() == :prod,
-    extra: "SameSite=Lax",
-    max_age: 86_400
+  plug Plug.Session, @session_options
 
   if Application.compile_env(:mehr_schulferien, :env) == :dev do
     plug Tidewave

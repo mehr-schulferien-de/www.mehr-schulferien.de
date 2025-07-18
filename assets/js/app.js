@@ -36,6 +36,7 @@ Hooks.MaintainScroll = {
   }
 }
 
+
 // Function to get cookie value by name
 function getCookie(name) {
   const value = `; ${document.cookie}`;

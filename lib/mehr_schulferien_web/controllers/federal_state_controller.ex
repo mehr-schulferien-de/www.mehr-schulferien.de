@@ -5,6 +5,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   alias MehrSchulferien.Calendars.VacationTypes
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
+  import MehrSchulferienWeb.LocationTrackingHelpers
 
   @digits ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
@@ -66,6 +67,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     # Set the appropriate status code based on data availability
     conn = if data.has_data, do: conn, else: put_status(conn, 404)
+
+    # Track federal state visit
+    conn = track_location_visit(conn, "f", federal_state.slug)
 
     # Get vacation types for this federal state
     vacation_types = VacationTypes.list_for_federal_state(federal_state, today)

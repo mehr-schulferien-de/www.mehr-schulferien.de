@@ -86,6 +86,7 @@ defmodule MehrSchulferienWeb do
       use Phoenix.LiveView,
         layout: {MehrSchulferienWeb.LayoutView, :live}
 
+      on_mount MehrSchulferienWeb.LocationCookiesOnMount
       unquote(view_helpers())
     end
   end

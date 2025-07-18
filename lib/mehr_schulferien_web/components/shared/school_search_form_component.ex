@@ -21,6 +21,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
   attr :location_label, :string, default: "Stadt oder PLZ"
   attr :location_placeholder, :string, default: "z.B. Berlin oder 10115"
   attr :autofocus_field, :atom, default: nil
+  slot :below_form
 
   def school_search_form(assigns) do
     ~H"""
@@ -116,6 +117,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
           Zurücksetzen
         </button>
       </div>
+      <%= render_slot(@below_form) %>
     </form>
     """
   end

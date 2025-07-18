@@ -124,6 +124,7 @@ defmodule MehrSchulferienWeb.PageController do
     # Use our custom date or the current date
     today = DateHelpers.get_today_or_custom_date(conn)
 
+
     # We don't need to set noindex here as it's already set by the DateAssignsPlug
     # when a custom date is present
 

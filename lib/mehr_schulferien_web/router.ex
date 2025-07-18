@@ -1,6 +1,7 @@
 defmodule MehrSchulferienWeb.Router do
   use MehrSchulferienWeb, :router
   import Phoenix.LiveView.Router
+  
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -10,6 +11,7 @@ defmodule MehrSchulferienWeb.Router do
     plug :put_secure_browser_headers
     plug MehrSchulferienWeb.LocalePlug
     plug MehrSchulferienWeb.Plugs.DateAssignsPlug
+    plug MehrSchulferienWeb.Plugs.LocationCookiesPlug
   end
 
   pipeline :api do
