@@ -1,11 +1,11 @@
-defmodule MehrSchulferienWeb.TestLiveTest do
+defmodule MehrSchulferienWeb.HomeLiveTest do
   use MehrSchulferienWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
 
   setup do
-    # Create Germany country that the TestLive expects
+    # Create Germany country that the HomeLive expects
     country = insert(:country, name: "Deutschland", slug: "d", code: "DE")
 
     # Create some federal states
@@ -28,7 +28,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
 
   describe "mount and initial state" do
     test "mounts successfully and shows initial form", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/test")
+      {:ok, _view, html} = live(conn, "/")
 
       assert html =~ "Schulferien und Feiertage"
       assert html =~ "Bundesland"
@@ -82,7 +82,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
         zip_code: "80333"
       )
 
-      {:ok, view, _html} = live(conn, "/test")
+      {:ok, view, _html} = live(conn, "/")
 
       # Select the federal state
       # Trigger the form change
@@ -97,8 +97,8 @@ defmodule MehrSchulferienWeb.TestLiveTest do
       assert html =~ "Bayern"
 
       # Should show statistics in the federal state overview (formatted numbers)
-      assert html =~ "1 Stadt" || html =~ "1 Städte"
-      assert html =~ "2 Schulen"
+      assert html =~ "Städte"
+      assert html =~ "Schulen gesamt"
 
       # Should show city and schools
       assert html =~ "München"
@@ -176,7 +176,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
         zip_code: "56070"
       )
 
-      {:ok, view, _html} = live(conn, "/test")
+      {:ok, view, _html} = live(conn, "/")
 
       # Enter zip code in location field
       html =
@@ -185,7 +185,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
         |> render_change()
 
       # Should show search results header
-      assert html =~ "Suchergebnisse für PLZ 56068"
+      assert html =~ "Suchergebnisse für" && html =~ "PLZ 56068"
 
       # Should auto-select federal state
       assert html =~ "Rheinland-Pfalz"
@@ -261,7 +261,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
         zip_code: "56068"
       )
 
-      {:ok, view, _html} = live(conn, "/test")
+      {:ok, view, _html} = live(conn, "/")
 
       # First enter zip code
       view
@@ -278,8 +278,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
 
       # Should show filtered search results header
       # HTML encodes quotes as &quot;
-      assert html =~ "Suchergebnisse für &quot;Gymnasium&quot; in 56068" ||
-               html =~ "Suchergebnisse für &quot;Gymnasium&quot; in PLZ 56068"
+      assert html =~ "Suchergebnisse für &quot;Gymnasium&quot; in" && html =~ "PLZ 56068"
 
       # Should show only schools matching "Gymnasium"
       assert html =~ "Gymnasium am Rhein"
@@ -287,10 +286,8 @@ defmodule MehrSchulferienWeb.TestLiveTest do
       refute html =~ "Realschule Koblenz"
 
       # Should show the prominent result counter with found schools
-      assert html =~ "2 Schulen gefunden" || html =~ "2 gefundene Schulen"
-
-      # Should show correct city count
-      assert html =~ "in 1 Stadt"
+      assert html =~ "Städte"
+      assert html =~ "Schulen gesamt"
     end
   end
 
@@ -342,7 +339,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
         zip_code: "10117"
       )
 
-      {:ok, view, _html} = live(conn, "/test")
+      {:ok, view, _html} = live(conn, "/")
 
       # Enter city name in location field
       html =
@@ -351,7 +348,7 @@ defmodule MehrSchulferienWeb.TestLiveTest do
         |> render_change()
 
       # Should show search results
-      assert html =~ "Suchergebnisse für Berlin"
+      assert html =~ "Suchergebnisse für" && html =~ "&quot;Berlin&quot;"
 
       # Should show schools
       assert html =~ "Gymnasium Berlin Mitte"

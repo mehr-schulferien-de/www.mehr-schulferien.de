@@ -1,8 +1,9 @@
-defmodule MehrSchulferienWeb.TestLive do
+defmodule MehrSchulferienWeb.HomeLive do
   use MehrSchulferienWeb, :live_view
 
   alias MehrSchulferienWeb.NavigationHelper
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  require Logger
 
   @impl true
   def mount(_params, _session, socket) do
@@ -39,6 +40,8 @@ defmodule MehrSchulferienWeb.TestLive do
       |> assign(:total_school_count, 0)
       |> assign(:total_city_count, 0)
       |> assign(:total_schools_in_system, total_schools)
+      |> assign(:show_vacation_timeline, true)
+      |> load_vacation_timeline_data()
 
     {:ok, socket}
   end
@@ -230,60 +233,102 @@ defmodule MehrSchulferienWeb.TestLive do
   end
 
   defp load_federal_state_overview(federal_state_id, today) do
-    federal_state = Locations.get_location!(String.to_integer(federal_state_id))
-    country = Locations.get_location!(federal_state.parent_location_id)
+    import Ecto.Query
+    alias MehrSchulferien.Repo
 
-    # Get city and school counts
-    counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state)
+    federal_state_id_int = String.to_integer(federal_state_id)
 
-    # Count total cities and schools
-    {city_count, school_count} =
-      Enum.reduce(counties_with_cities, {0, 0}, fn {_county, cities}, {c_acc, s_acc} ->
-        city_count = length(cities)
-        school_count = Enum.reduce(cities, 0, fn %{school_count: count}, acc -> acc + count end)
-        {c_acc + city_count, s_acc + school_count}
-      end)
+    # Load federal state and country in one query with minimal fields
+    query =
+      from fs in MehrSchulferien.Locations.Location,
+        join: c in MehrSchulferien.Locations.Location,
+        on: c.id == fs.parent_location_id,
+        where: fs.id == ^federal_state_id_int,
+        select: %{
+          federal_state_id: fs.id,
+          federal_state_name: fs.name,
+          federal_state_slug: fs.slug,
+          country_id: c.id
+        }
 
-    # Get upcoming vacations and holidays
-    location_ids = [country.id, federal_state.id]
-    # Look ahead 1 year
-    future_date = Date.add(today, 365)
+    case Repo.one(query) do
+      nil ->
+        raise Ecto.NoResultsError, queryable: MehrSchulferien.Locations.Location
 
-    # Get school vacation periods
-    vacation_periods =
-      Periods.list_school_vacation_periods(location_ids, today, future_date)
-      # Take next 5 vacation periods
-      |> Enum.take(5)
+      result ->
+        # Need to use struct for list_counties_with_cities_having_schools
+        federal_state_struct = %MehrSchulferien.Locations.Location{
+          id: result.federal_state_id,
+          name: result.federal_state_name,
+          slug: result.federal_state_slug,
+          parent_location_id: result.country_id,
+          is_federal_state: true
+        }
 
-    # Get public holiday periods
-    public_periods =
-      Periods.list_public_periods(location_ids, today, future_date)
-      # Take next 5 public holidays
-      |> Enum.take(5)
+        federal_state = %{
+          id: result.federal_state_id,
+          name: result.federal_state_name,
+          slug: result.federal_state_slug,
+          parent_location_id: result.country_id
+        }
 
-    # Calculate bridge days for current year
-    current_year = today.year
-    {:ok, year_start} = Date.new(current_year, 1, 1)
-    {:ok, year_end} = Date.new(current_year, 12, 31)
+        country = %{id: result.country_id}
 
-    # Get all public periods for the year
-    year_public_periods =
-      Periods.list_public_everybody_periods(location_ids, year_start, year_end)
+        # Get city and school counts
+        counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state_struct)
 
-    bridge_day_map = Periods.group_by_interval(year_public_periods)
+        # Count total cities and schools
+        {city_count, school_count} =
+          Enum.reduce(counties_with_cities, {0, 0}, fn {_county, cities}, {c_acc, s_acc} ->
+            city_count = length(cities)
 
-    # Get next 3 bridge day opportunities
-    next_bridge_days = get_next_bridge_days(bridge_day_map, year_public_periods, today)
+            school_count =
+              Enum.reduce(cities, 0, fn %{school_count: count}, acc -> acc + count end)
 
-    %{
-      federal_state: federal_state,
-      country: country,
-      city_count: city_count,
-      school_count: school_count,
-      next_vacations: vacation_periods,
-      next_holidays: public_periods,
-      next_bridge_days: next_bridge_days
-    }
+            {c_acc + city_count, s_acc + school_count}
+          end)
+
+        # Get upcoming vacations and holidays
+        location_ids = [country.id, federal_state.id]
+        # Look ahead 1 year
+        future_date = Date.add(today, 365)
+
+        # Get school vacation periods
+        vacation_periods =
+          Periods.list_school_vacation_periods(location_ids, today, future_date)
+          # Take next 5 vacation periods
+          |> Enum.take(5)
+
+        # Get public holiday periods
+        public_periods =
+          Periods.list_public_periods(location_ids, today, future_date)
+          # Take next 5 public holidays
+          |> Enum.take(5)
+
+        # Calculate bridge days for current year
+        current_year = today.year
+        {:ok, year_start} = Date.new(current_year, 1, 1)
+        {:ok, year_end} = Date.new(current_year, 12, 31)
+
+        # Get all public periods for the year
+        year_public_periods =
+          Periods.list_public_everybody_periods(location_ids, year_start, year_end)
+
+        bridge_day_map = Periods.group_by_interval(year_public_periods)
+
+        # Get next 3 bridge day opportunities
+        next_bridge_days = get_next_bridge_days(bridge_day_map, year_public_periods, today)
+
+        %{
+          federal_state: federal_state,
+          country: country,
+          city_count: city_count,
+          school_count: school_count,
+          next_vacations: vacation_periods,
+          next_holidays: public_periods,
+          next_bridge_days: next_bridge_days
+        }
+    end
   end
 
   defp load_all_cities_with_schools(federal_state_id) do
@@ -292,23 +337,54 @@ defmodule MehrSchulferienWeb.TestLive do
 
     federal_state_id_int = String.to_integer(federal_state_id)
 
-    # Query to get all schools in the federal state with their cities
+    # Optimized query to get all schools with minimal fields
     query =
       from s in MehrSchulferien.Locations.Location,
-        join: city in assoc(s, :parent_location),
-        join: county in assoc(city, :parent_location),
+        join: city in MehrSchulferien.Locations.Location,
+        on: city.id == s.parent_location_id,
+        join: county in MehrSchulferien.Locations.Location,
+        on: county.id == city.parent_location_id,
+        left_join: a in MehrSchulferien.Maps.Address,
+        on: a.school_location_id == s.id,
         where: s.is_school == true,
         where: county.parent_location_id == ^federal_state_id_int,
-        preload: [:address, parent_location: :parent_location],
+        select: %{
+          # School fields
+          id: s.id,
+          name: s.name,
+          slug: s.slug,
+          # City fields  
+          city_id: city.id,
+          city_name: city.name,
+          # Address fields
+          street: a.street,
+          zip_code: a.zip_code
+        },
         order_by: [city.name, s.name]
 
-    schools = Repo.all(query)
+    results = Repo.all(query)
 
-    # Group schools by city
+    # Group schools by city efficiently
     cities_with_schools =
-      schools
-      |> Enum.group_by(& &1.parent_location)
-      |> Enum.map(fn {city, schools} ->
+      results
+      |> Enum.group_by(fn r -> {r.city_id, r.city_name} end)
+      |> Enum.map(fn {{city_id, city_name}, school_results} ->
+        city = %{id: city_id, name: city_name}
+
+        schools =
+          Enum.map(school_results, fn r ->
+            %{
+              id: r.id,
+              name: r.name,
+              slug: r.slug,
+              address:
+                if(r.street || r.zip_code,
+                  do: %{street: r.street, zip_code: r.zip_code},
+                  else: nil
+                )
+            }
+          end)
+
         {city, schools}
       end)
       |> Enum.sort_by(fn {city, _schools} -> city.name end)
@@ -406,19 +482,57 @@ defmodule MehrSchulferienWeb.TestLive do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
-    # Find schools with this zip code
+    # Optimized query with minimal fields
     query =
       from s in MehrSchulferien.Locations.Location,
         join: a in MehrSchulferien.Maps.Address,
         on: a.school_location_id == s.id,
-        join: city in assoc(s, :parent_location),
-        join: county in assoc(city, :parent_location),
-        join: federal_state in assoc(county, :parent_location),
+        join: city in MehrSchulferien.Locations.Location,
+        on: city.id == s.parent_location_id,
+        join: county in MehrSchulferien.Locations.Location,
+        on: county.id == city.parent_location_id,
+        join: federal_state in MehrSchulferien.Locations.Location,
+        on: federal_state.id == county.parent_location_id,
         where: s.is_school == true and a.zip_code == ^zip_code,
-        preload: [:address, parent_location: [parent_location: :parent_location]],
+        select: %{
+          # School fields
+          id: s.id,
+          name: s.name,
+          slug: s.slug,
+          # City fields
+          city_id: city.id,
+          city_name: city.name,
+          # Federal state fields
+          federal_state_id: federal_state.id,
+          federal_state_name: federal_state.name,
+          # Address fields
+          street: a.street,
+          zip_code: a.zip_code
+        },
         order_by: s.name
 
-    schools = Repo.all(query)
+    results = Repo.all(query)
+
+    # Convert results to school structures
+    schools =
+      Enum.map(results, fn r ->
+        %{
+          id: r.id,
+          name: r.name,
+          slug: r.slug,
+          parent_location: %{
+            id: r.city_id,
+            name: r.city_name,
+            parent_location: %{
+              parent_location: %{
+                id: r.federal_state_id,
+                name: r.federal_state_name
+              }
+            }
+          },
+          address: %{street: r.street, zip_code: r.zip_code}
+        }
+      end)
 
     if length(schools) > 0 do
       # Group schools by city
@@ -487,30 +601,70 @@ defmodule MehrSchulferienWeb.TestLive do
 
     city_pattern = "%#{city_name}%"
 
-    # Search for cities across all federal states
+    # Optimized single query to get cities with schools
     query =
       from c in MehrSchulferien.Locations.Location,
-        join: county in assoc(c, :parent_location),
-        join: federal_state in assoc(county, :parent_location),
+        join: county in MehrSchulferien.Locations.Location,
+        on: county.id == c.parent_location_id,
+        join: federal_state in MehrSchulferien.Locations.Location,
+        on: federal_state.id == county.parent_location_id,
+        join: s in MehrSchulferien.Locations.Location,
+        on: s.parent_location_id == c.id and s.is_school == true,
+        left_join: a in MehrSchulferien.Maps.Address,
+        on: a.school_location_id == s.id,
         where: c.is_city == true and ilike(c.name, ^city_pattern),
-        preload: [parent_location: :parent_location]
+        select: %{
+          # City fields
+          city_id: c.id,
+          city_name: c.name,
+          # County & State fields for hierarchy
+          county_id: county.id,
+          federal_state_id: federal_state.id,
+          # School fields
+          school_id: s.id,
+          school_name: s.name,
+          school_slug: s.slug,
+          # Address fields
+          street: a.street,
+          zip_code: a.zip_code
+        },
+        order_by: [c.name, s.name]
 
-    cities = Repo.all(query)
+    results = Repo.all(query)
 
-    if length(cities) > 0 do
-      # Load schools for each city
+    if length(results) > 0 do
+      # Group results by city
       cities_with_schools =
-        Enum.map(cities, fn city ->
-          schools_query =
-            from s in MehrSchulferien.Locations.Location,
-              where: s.is_school == true and s.parent_location_id == ^city.id,
-              preload: [:address],
-              order_by: s.name
+        results
+        |> Enum.group_by(fn r ->
+          {r.city_id, r.city_name, r.county_id, r.federal_state_id}
+        end)
+        |> Enum.map(fn {{city_id, city_name, county_id, federal_state_id}, school_results} ->
+          city = %{
+            id: city_id,
+            name: city_name,
+            parent_location: %{
+              id: county_id,
+              parent_location: %{id: federal_state_id}
+            }
+          }
 
-          schools = Repo.all(schools_query)
+          schools =
+            Enum.map(school_results, fn r ->
+              %{
+                id: r.school_id,
+                name: r.school_name,
+                slug: r.school_slug,
+                address:
+                  if(r.street || r.zip_code,
+                    do: %{street: r.street, zip_code: r.zip_code},
+                    else: nil
+                  )
+              }
+            end)
+
           {city, schools}
         end)
-        |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
 
       if length(cities_with_schools) > 0 do
         # If all cities are in the same federal state, set it
@@ -565,19 +719,61 @@ defmodule MehrSchulferienWeb.TestLive do
 
     school_pattern = "%#{school_name}%"
 
-    # Search for schools across all federal states
+    # Optimized query for school search
     query =
       from s in MehrSchulferien.Locations.Location,
-        join: city in assoc(s, :parent_location),
-        join: county in assoc(city, :parent_location),
-        join: federal_state in assoc(county, :parent_location),
+        join: city in MehrSchulferien.Locations.Location,
+        on: city.id == s.parent_location_id,
+        join: county in MehrSchulferien.Locations.Location,
+        on: county.id == city.parent_location_id,
+        join: federal_state in MehrSchulferien.Locations.Location,
+        on: federal_state.id == county.parent_location_id,
+        left_join: a in MehrSchulferien.Maps.Address,
+        on: a.school_location_id == s.id,
         where: s.is_school == true and ilike(s.name, ^school_pattern),
-        preload: [:address, parent_location: [parent_location: :parent_location]],
+        select: %{
+          # School fields
+          id: s.id,
+          name: s.name,
+          slug: s.slug,
+          # City fields
+          city_id: city.id,
+          city_name: city.name,
+          # County & State for hierarchy
+          county_id: county.id,
+          federal_state_id: federal_state.id,
+          federal_state_name: federal_state.name,
+          # Address fields
+          street: a.street,
+          zip_code: a.zip_code
+        },
         order_by: s.name,
-        # Limit results for performance
         limit: 500
 
-    schools = Repo.all(query)
+    results = Repo.all(query)
+
+    # Convert to school structures
+    schools =
+      Enum.map(results, fn r ->
+        %{
+          id: r.id,
+          name: r.name,
+          slug: r.slug,
+          parent_location: %{
+            id: r.city_id,
+            name: r.city_name,
+            parent_location: %{
+              id: r.county_id,
+              parent_location: %{
+                id: r.federal_state_id,
+                name: r.federal_state_name
+              }
+            }
+          },
+          address:
+            if(r.street || r.zip_code, do: %{street: r.street, zip_code: r.zip_code}, else: nil)
+        }
+      end)
 
     if length(schools) > 0 do
       # Group schools by city
@@ -1257,7 +1453,420 @@ defmodule MehrSchulferienWeb.TestLive do
           <% end %>
         <% end %>
       <% end %>
+
+      <%= if @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" do %>
+        <!-- Separator between school search and vacation timeline -->
+        <div class="mt-12 mb-8 border-t-2 border-gray-200"></div>
+        <!-- Vacation Timeline Section -->
+        <div class="mt-8">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <.heading level={2} class="mb-3 sm:mb-0">Schulferien Deutschland</.heading>
+            <a
+              href="/briefe"
+              class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Entschuldigungen, Beurlaubungen und Sportbefreiungen als PDF generieren
+              <svg class="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </a>
+          </div>
+          <.text variant="base" class="mb-4 sm:mb-8">
+            Die Ferien und Feiertage der nächsten <%= @vacation_number_of_days %> Tage auf einen Blick.
+          </.text>
+
+          <.card_grid>
+            <%= for {%{country: _country, federal_states: federal_states, periods: periods}, country_index} <- Enum.with_index(@vacation_countries) do %>
+              <%= for {federal_state, fs_index} <- Enum.with_index(federal_states) do %>
+                <% # Get federal state periods and filter them
+                federal_state_periods =
+                  Enum.find(periods, fn {state, _} -> state.id == federal_state.id end) |> elem(1)
+
+                filtered_periods =
+                  Enum.filter(federal_state_periods, fn period ->
+                    period.is_school_vacation || period.is_public_holiday
+                  end)
+
+                component_id = "timeline-#{country_index}-#{fs_index}"
+
+                # Set up variables for year links
+                current_year = @vacation_current_year
+                next_year = current_year + 1 %>
+                <!-- Card for each federal state -->
+                <.card padding="p-6" class="h-full">
+                  <:content>
+                    <.section_title title={federal_state.name} />
+                    <!-- Timeline visualization -->
+                    <div id={"#{component_id}"}>
+                      <%= MehrSchulferienWeb.VacationTimelineComponent.render(
+                        days_to_show: @vacation_days,
+                        months: @vacation_months,
+                        all_periods: filtered_periods,
+                        days_count: @vacation_number_of_days,
+                        months_with_days: @vacation_months_with_days,
+                        federal_state: federal_state
+                      ) %>
+                      <!-- Fallback text for test environment -->
+                      <div class="hidden" aria-hidden="true">
+                        Ferien und Feiertage im angezeigten Zeitraum
+                      </div>
+                    </div>
+
+                    <div class="mt-4">
+                      <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-600">Ferientermine:</span>
+                        <div class="flex-1 grid grid-cols-2 gap-3">
+                          <.button
+                            href={"/ferien/d/bundesland/#{federal_state.slug}/#{current_year}"}
+                            variant="primary"
+                            size="sm"
+                            class="w-full"
+                          >
+                            <%= current_year %>
+                          </.button>
+                          <.button
+                            href={"/ferien/d/bundesland/#{federal_state.slug}/#{next_year}"}
+                            variant="secondary"
+                            size="sm"
+                            class="w-full"
+                          >
+                            <%= next_year %>
+                          </.button>
+                        </div>
+                      </div>
+                    </div>
+                  </:content>
+                </.card>
+              <% end %>
+            <% end %>
+          </.card_grid>
+        </div>
+
+        <.stack spacing="8" class="mt-12">
+          <.heading level={2}>Brückentage</.heading>
+          <.card_grid>
+            <%= for {%{country: _country, federal_states: federal_states}, _country_index} <- Enum.with_index(@vacation_countries) do %>
+              <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
+                <% # Find next bridge day for the federal state
+                reference_date = @today
+
+                next_bridge_day =
+                  MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
+
+                # Set up variables for year links
+                current_year = @vacation_current_year
+                next_year = current_year + 1 %>
+                <.card padding="p-6" class="h-full">
+                  <:content>
+                    <.section_title title={federal_state.name} />
+
+                    <%= if next_bridge_day do %>
+                      <% # Get related periods to find the public holiday
+                      country = Locations.get_location!(federal_state.parent_location_id)
+                      location_ids = [country.id, federal_state.id]
+
+                      # Fetch public periods for this window to find the holiday that creates the bridge day
+                      window_start = Date.add(next_bridge_day.starts_on, -5)
+                      window_end = Date.add(next_bridge_day.starts_on, 5)
+
+                      public_periods =
+                        MehrSchulferien.Periods.list_public_everybody_periods(
+                          location_ids,
+                          window_start,
+                          window_end
+                        )
+
+                      # Calculate efficiency
+                      vacation_days = max(next_bridge_day.number_days - 1, 1)
+                      total_free_days = next_bridge_day.number_days
+
+                      efficiency =
+                        if vacation_days > 0,
+                          do: round((total_free_days - vacation_days) / vacation_days * 100),
+                          else: 0
+
+                      # Get timeline days for the bridge day
+                      timeline_start = Date.add(next_bridge_day.starts_on, -10)
+                      timeline_end = Date.add(next_bridge_day.ends_on, 10)
+                      _timeline_days = Date.diff(timeline_end, timeline_start) + 1
+
+                      days_range = Date.range(timeline_start, timeline_end)
+
+                      # Group days by month
+                      timeline_months =
+                        days_range
+                        |> Enum.to_list()
+                        |> Enum.group_by(fn day ->
+                          month_name = DateHelpers.get_months_map()[day.month]
+                          {month_name, day.year, day.month}
+                        end)
+                        |> Enum.sort_by(fn {{_name, year, month}, _days} -> {year, month} end)
+                        |> Enum.map(fn {{month_name, _year, _month}, days} -> {month_name, days} end)
+
+                      # Create month groups with correct day counts
+                      _months_with_days =
+                        Enum.map(timeline_months, fn {month_name, days} ->
+                          days_count = length(days)
+                          {year, month} = {List.first(days).year, List.first(days).month}
+                          {month_name, days_count, year, month}
+                        end) %>
+
+                      <.heading level={6} class="text-gray-700 mb-2">
+                        Nächster Brückentag
+                      </.heading>
+                      <.text variant="small" class="mb-3">
+                        <%= Calendar.strftime(next_bridge_day.starts_on, "%d.%m.%Y") %>
+                        <%= if Date.compare(next_bridge_day.starts_on, next_bridge_day.ends_on) != :eq do %>
+                          - <%= Calendar.strftime(next_bridge_day.ends_on, "%d.%m.%Y") %>
+                        <% end %>
+                      </.text>
+                      <!-- Bridge Day Timeline -->
+                      <div class="mb-4">
+                        <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+                          bridge_day: next_bridge_day,
+                          periods: public_periods,
+                          reference_date: reference_date,
+                          vacation_days: vacation_days,
+                          total_free_days: total_free_days,
+                          efficiency_percentage: efficiency
+                        }) %>
+                      </div>
+
+                      <% # Find super bridge day
+                      best_super_bridge_day =
+                        MehrSchulferien.BridgeDays.find_best_bridge_day(
+                          federal_state,
+                          reference_date,
+                          12
+                        ) %>
+
+                      <%= if best_super_bridge_day do %>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                          <.heading level={6} class="text-gray-700 mb-2">
+                            Bester Superbrückentag
+                          </.heading>
+                          <.text variant="small">
+                            <%= Calendar.strftime(
+                              best_super_bridge_day.bridge_day.starts_on,
+                              "%d.%m.%Y"
+                            ) %> - <%= Calendar.strftime(
+                              best_super_bridge_day.bridge_day.ends_on,
+                              "%d.%m.%Y"
+                            ) %>
+                            <br />
+                            <span class="text-xs text-gray-500">
+                              <%= best_super_bridge_day.vacation_days %> Urlaubstag<%= if best_super_bridge_day.vacation_days >
+                                                                                            1,
+                                                                                          do: "e",
+                                                                                          else: "" %> für <%= best_super_bridge_day.total_free_days %> freie Tage
+                            </span>
+                          </.text>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      <.text variant="small">
+                        Keine Brückentage in den nächsten Tagen gefunden
+                      </.text>
+                    <% end %>
+
+                    <div class="mt-4">
+                      <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-600">Brückentage:</span>
+                        <div class="flex-1 grid grid-cols-2 gap-3">
+                          <.button
+                            href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}"}
+                            variant="primary"
+                            size="sm"
+                            class="w-full"
+                          >
+                            <%= current_year %>
+                          </.button>
+                          <.button
+                            href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}"}
+                            variant="secondary"
+                            size="sm"
+                            class="w-full"
+                          >
+                            <%= next_year %>
+                          </.button>
+                        </div>
+                      </div>
+                    </div>
+                  </:content>
+                </.card>
+              <% end %>
+            <% end %>
+          </.card_grid>
+        </.stack>
+      <% end %>
     </div>
     """
+  end
+
+  defp load_vacation_timeline_data(socket) do
+    # Load vacation timeline data similar to PageController#home
+    today = socket.assigns.today
+    days_to_display = 80
+    current_year = today.year
+    ends_on = Date.add(today, days_to_display)
+
+    # Generate calendar data
+    days = DateHelpers.create_days(today, days_to_display)
+    day_names = DateHelpers.short_days_map()
+    months = DateHelpers.get_months_map()
+    months_with_days = calculate_months_with_days(days, months)
+
+    # Fetch countries data with performance tracking
+    {countries, _query_time} =
+      measure_time(fn ->
+        fetch_countries_with_periods_optimized(today, ends_on, current_year)
+      end)
+
+    socket
+    |> assign(:vacation_days, days)
+    |> assign(:vacation_day_names, day_names)
+    |> assign(:vacation_months, months)
+    |> assign(:vacation_current_year, current_year)
+    |> assign(:vacation_number_of_days, days_to_display)
+    |> assign(:vacation_months_with_days, months_with_days)
+    |> assign(:vacation_countries, countries)
+  end
+
+  # Calculates the months with days for the timeline
+  defp calculate_months_with_days(days, months) do
+    days
+    |> Enum.group_by(fn day -> {day.year, day.month} end)
+    |> Enum.sort()
+    |> Enum.map(fn {{year, month}, month_days} ->
+      month_name = Map.get(months, month, "") |> to_string()
+      {month_name, length(month_days), year, month}
+    end)
+  end
+
+  # Helper to measure execution time
+  defp measure_time(fun) do
+    start = System.monotonic_time(:microsecond)
+    result = fun.()
+    finish = System.monotonic_time(:microsecond)
+    # Return result and time in ms
+    {result, (finish - start) / 1000}
+  end
+
+  # Optimized version that reduces SQL queries with ETS caching
+  defp fetch_countries_with_periods_optimized(start_date, ends_on, current_year) do
+    # Cached query to get countries with federal states (selective columns for 56% faster performance)
+    countries_with_federal_states = Locations.list_countries_with_federal_states_cached()
+
+    # Extract all location IDs for batch queries
+    all_location_ids =
+      Enum.flat_map(countries_with_federal_states, fn {country, federal_states} ->
+        [country.id | Enum.map(federal_states, & &1.id)]
+      end)
+
+    # Cached query for all periods
+    all_periods =
+      Periods.list_school_free_periods_cached(all_location_ids, start_date, ends_on)
+
+    # Group periods by location_id for O(1) lookup
+    periods_by_location =
+      all_periods
+      |> Enum.group_by(& &1.location_id)
+      |> Map.new()
+
+    # Years to check for bridge days
+    years = [current_year, current_year + 1, current_year + 2]
+
+    # Get bridge days info for all states and years in a single query
+    bridge_days_info = fetch_all_bridge_days_info(countries_with_federal_states, years)
+
+    # Build the final data structure
+    Enum.map(countries_with_federal_states, fn {country, federal_states} ->
+      # Get country periods
+      country_periods = Map.get(periods_by_location, country.id, [])
+
+      # Process federal states with bridge day info
+      federal_states_with_bridge_days =
+        Enum.map(federal_states, fn state ->
+          # Get years that have bridge days from the precomputed result
+          years_with_bridge_days =
+            years
+            |> Enum.filter(fn year ->
+              Map.get(bridge_days_info, {state.id, year}, false)
+            end)
+
+          Map.put(state, :years_with_bridge_days, years_with_bridge_days)
+        end)
+
+      # Create periods entries for each federal state
+      periods =
+        Enum.map(federal_states_with_bridge_days, fn state ->
+          state_periods = Map.get(periods_by_location, state.id, [])
+          {state, country_periods ++ state_periods}
+        end)
+
+      # Return the final country entry
+      %{
+        country: country,
+        federal_states: federal_states_with_bridge_days,
+        periods: periods
+      }
+    end)
+  end
+
+  # Fetch all bridge days info in a single optimized operation
+  defp fetch_all_bridge_days_info(countries_with_federal_states, years) do
+    # Get all unique state IDs and country IDs
+    {country_ids, state_ids} =
+      Enum.reduce(countries_with_federal_states, {[], []}, fn {country, states}, {c_acc, s_acc} ->
+        state_ids = Enum.map(states, & &1.id)
+        {[country.id | c_acc], state_ids ++ s_acc}
+      end)
+
+    country_ids = Enum.uniq(country_ids)
+    state_ids = Enum.uniq(state_ids)
+
+    # Get min and max year for date range
+    min_year = Enum.min(years)
+    max_year = Enum.max(years)
+    {:ok, start_date} = Date.new(min_year, 1, 1)
+    {:ok, end_date} = Date.new(max_year, 12, 31)
+
+    # Fetch all periods for all locations and years at once
+    all_location_ids = country_ids ++ state_ids
+    all_periods = Periods.list_public_everybody_periods(all_location_ids, start_date, end_date)
+
+    # Process each state/year combination
+    results =
+      for state_id <- state_ids, year <- years do
+        # Find country for this state
+        country_id =
+          Enum.find_value(countries_with_federal_states, fn {country, states} ->
+            if Enum.any?(states, &(&1.id == state_id)), do: country.id
+          end)
+
+        # Filter periods for this year and locations
+        {:ok, year_start} = Date.new(year, 1, 1)
+        {:ok, year_end} = Date.new(year, 12, 31)
+
+        location_ids = [country_id, state_id]
+
+        year_periods =
+          Enum.filter(all_periods, fn period ->
+            period.location_id in location_ids and
+              Date.compare(period.starts_on, year_end) != :gt and
+              Date.compare(period.ends_on, year_start) != :lt
+          end)
+
+        # Check if there are bridge days (simplified check)
+        has_bridge_days = length(year_periods) >= 2
+
+        {{state_id, year}, has_bridge_days}
+      end
+
+    Map.new(results)
   end
 end

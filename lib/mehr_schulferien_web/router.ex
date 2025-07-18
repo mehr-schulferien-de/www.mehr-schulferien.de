@@ -110,7 +110,7 @@ defmodule MehrSchulferienWeb.Router do
   scope "/", MehrSchulferienWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", HomeLive
     get "/sommerferien", PageController, :summer_vacations
     get "/osterferien", PageController, :easter_vacations
     get "/herbstferien", PageController, :fall_vacations
@@ -121,7 +121,6 @@ defmodule MehrSchulferienWeb.Router do
     get "/impressum", PageController, :impressum
 
     # Test page
-    live "/test", TestLive
 
     # Country routes (SEO-friendly pattern) - with non-year constraint
     get "/ferien/:country_slug", CountryController, :show,
