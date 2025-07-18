@@ -925,6 +925,14 @@ defmodule MehrSchulferienWeb.HomeLive do
     end
   end
   
+  defp should_show_recent_locations(search_params) do
+    # Show recent locations only when both text fields are empty
+    location = Map.get(search_params, "location", "")
+    school_name = Map.get(search_params, "school_name", "")
+    
+    location == "" and school_name == ""
+  end
+  
 
   defp get_next_bridge_days(bridge_day_map, public_periods, today) do
     # Collect all bridge day opportunities
@@ -977,7 +985,7 @@ defmodule MehrSchulferienWeb.HomeLive do
       >
         <:below_form>
           <!-- Recent Locations below form buttons -->
-          <%= if length(@recent_locations) > 0 do %>
+          <%= if length(@recent_locations) > 0 and should_show_recent_locations(@search_params) do %>
             <div class="mt-6 pt-5 border-t border-gray-200">
               <div class="flex flex-col gap-3">
                 <div class="text-xs font-medium text-gray-500 uppercase tracking-wider">Zuletzt besucht</div>
@@ -1043,36 +1051,19 @@ defmodule MehrSchulferienWeb.HomeLive do
         </:below_form>
       </.school_search_form>
       <!-- Prominent Result Counter -->
-      <%= if @total_school_count > 0 do %>
+      <%= if @total_school_count > 0 and length(@cities_with_schools) > 1 do %>
         <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 text-center md:text-left">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <span class="font-bold text-lg sm:text-xl text-green-800">
-                <%= if @total_school_count == 1 and length(@cities_with_schools) == 1 do %>
-                  <% {city, [school | _]} = hd(@cities_with_schools) %> 1 Schule gefunden:
-                  <a
-                    href={"/ferien/d/schule/#{school.slug}"}
-                    class="text-green-800 hover:text-green-900 underline"
-                  >
-                    <%= school.name %>
-                  </a>
-                  in <%= city.name %>
-                <% else %>
-                  <%= format_number(@total_school_count) %> <%= if @total_school_count == 1,
-                    do: "Schule",
-                    else: "Schulen" %> gefunden
-                  <%= if @total_city_count > 0 do %>
-                    <span class="text-green-700 ml-2 text-base">
-                      <%= if @total_city_count == 1 do %>
-                        <% {city, _schools} = hd(@cities_with_schools) %> in <%= city.name %>
-                      <% else %>
-                        in <%= format_number(@total_city_count) %> <%= if @total_city_count == 1,
-                          do: "Stadt",
-                          else: "Städten" %>
-                      <% end %>
-                    </span>
-                  <% end %>
-                <% end %>
+                <%= format_number(@total_school_count) %> <%= if @total_school_count == 1,
+                  do: "Schule",
+                  else: "Schulen" %> gefunden
+                <span class="text-green-700 ml-2 text-base">
+                  in <%= format_number(@total_city_count) %> <%= if @total_city_count == 1,
+                    do: "Stadt",
+                    else: "Städten" %>
+                </span>
               </span>
             </div>
             <%= if @searching do %>
@@ -1096,24 +1087,36 @@ defmodule MehrSchulferienWeb.HomeLive do
               <% end %>
             </.heading>
             <div class="flex gap-4 text-sm text-gray-600">
-              <span>
-                <span class="font-semibold">
-                  <%= format_number(@federal_state_overview.city_count) %>
+              <%= if length(@cities_with_schools) == 1 do %>
+                <% {_city, schools} = hd(@cities_with_schools) %>
+                <span>
+                  <span class="font-semibold">
+                    <%= format_number(length(schools)) %>
+                  </span>
+                  <%= if length(schools) == 1,
+                         do: "Schule",
+                         else: "Schulen" %>
                 </span>
-                <%= if @federal_state_overview.city_count ==
-                         1,
-                       do: "Stadt",
-                       else: "Städte" %>
-              </span>
-              <span>
-                <span class="font-semibold">
-                  <%= format_number(@federal_state_overview.school_count) %>
+              <% else %>
+                <span>
+                  <span class="font-semibold">
+                    <%= format_number(@federal_state_overview.city_count) %>
+                  </span>
+                  <%= if @federal_state_overview.city_count ==
+                           1,
+                         do: "Stadt",
+                         else: "Städte" %>
                 </span>
-                <%= if @federal_state_overview.school_count ==
-                         1,
-                       do: "Schule",
-                       else: "Schulen" %>
-              </span>
+                <span>
+                  <span class="font-semibold">
+                    <%= format_number(@federal_state_overview.school_count) %>
+                  </span>
+                  <%= if @federal_state_overview.school_count ==
+                           1,
+                         do: "Schule",
+                         else: "Schulen" %>
+                </span>
+              <% end %>
             </div>
           </div>
 
@@ -1236,57 +1239,59 @@ defmodule MehrSchulferienWeb.HomeLive do
 
           <%= if length(@cities_with_schools) > 0 do %>
             <!-- Summary Statistics -->
-            <div class="mb-4 sm:mb-6 bg-gray-50 rounded-lg p-3 sm:p-4">
-              <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
-                <div>
-                  <.text variant="small" class="text-xs sm:text-sm text-gray-600">Städte</.text>
-                  <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                    <%= format_number(length(@cities_with_schools)) %>
-                  </.text>
-                </div>
-                <div>
-                  <.text variant="small" class="text-xs sm:text-sm text-gray-600">
-                    Schulen gesamt
-                  </.text>
-                  <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                    <%= format_number(
-                      Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
-                        acc + length(schools)
-                      end)
-                    ) %>
-                  </.text>
-                </div>
-                <div>
-                  <.text variant="small" class="text-xs sm:text-sm text-gray-600">
-                    Ø Schulen pro Stadt
-                  </.text>
-                  <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                    <%= format_number(
-                      Float.round(
+            <%= if length(@cities_with_schools) > 1 do %>
+              <div class="mb-4 sm:mb-6 bg-gray-50 rounded-lg p-3 sm:p-4">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
+                  <div>
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">Städte</.text>
+                    <.text variant="lead" class="font-bold text-lg sm:text-2xl">
+                      <%= format_number(length(@cities_with_schools)) %>
+                    </.text>
+                  </div>
+                  <div>
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">
+                      Schulen gesamt
+                    </.text>
+                    <.text variant="lead" class="font-bold text-lg sm:text-2xl">
+                      <%= format_number(
                         Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
                           acc + length(schools)
-                        end) / length(@cities_with_schools),
-                        1
-                      )
-                    ) %>
-                  </.text>
-                </div>
-                <div>
-                  <.text variant="small" class="text-xs sm:text-sm text-gray-600">Größte Stadt</.text>
-                  <%= case Enum.max_by(@cities_with_schools, fn {_city, schools} -> length(schools) end, fn -> nil end) do %>
-                    <% {city, schools} -> %>
-                      <a
-                        href={"#city-card-#{city.id}"}
-                        class="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        <%= city.name %> (<%= format_number(length(schools)) %>)
-                      </a>
-                    <% _ -> %>
-                      <.text variant="base" class="text-sm sm:text-base font-semibold">-</.text>
-                  <% end %>
+                        end)
+                      ) %>
+                    </.text>
+                  </div>
+                  <div>
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">
+                      Ø Schulen pro Stadt
+                    </.text>
+                    <.text variant="lead" class="font-bold text-lg sm:text-2xl">
+                      <%= format_number(
+                        Float.round(
+                          Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
+                            acc + length(schools)
+                          end) / length(@cities_with_schools),
+                          1
+                        )
+                      ) %>
+                    </.text>
+                  </div>
+                  <div>
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">Größte Stadt</.text>
+                    <%= case Enum.max_by(@cities_with_schools, fn {_city, schools} -> length(schools) end, fn -> nil end) do %>
+                      <% {city, schools} -> %>
+                        <a
+                          href={"#city-card-#{city.id}"}
+                          class="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          <%= city.name %> (<%= format_number(length(schools)) %>)
+                        </a>
+                      <% _ -> %>
+                        <.text variant="base" class="text-sm sm:text-base font-semibold">-</.text>
+                    <% end %>
+                  </div>
                 </div>
               </div>
-            </div>
+            <% end %>
             <!-- Cities Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               <%= for {city, schools} <- @cities_with_schools do %>
