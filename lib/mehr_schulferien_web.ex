@@ -61,6 +61,7 @@ defmodule MehrSchulferienWeb do
       import MehrSchulferienWeb.Shared.TableComponent
       import MehrSchulferienWeb.Shared.BadgeComponent
       import MehrSchulferienWeb.Shared.AlertComponent
+      import MehrSchulferienWeb.Shared.SchoolSearchFormComponent
       alias MehrSchulferienWeb.Shared.DesignTokens
     end
   end
@@ -122,6 +123,7 @@ defmodule MehrSchulferienWeb do
       import MehrSchulferienWeb.Shared.TableComponent
       import MehrSchulferienWeb.Shared.BadgeComponent
       import MehrSchulferienWeb.Shared.AlertComponent
+      import MehrSchulferienWeb.Shared.SchoolSearchFormComponent
       alias MehrSchulferienWeb.Shared.DesignTokens
     end
   end

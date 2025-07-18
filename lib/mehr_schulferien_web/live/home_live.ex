@@ -275,7 +275,8 @@ defmodule MehrSchulferienWeb.HomeLive do
         country = %{id: result.country_id}
 
         # Get city and school counts
-        counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state_struct)
+        counties_with_cities =
+          Locations.list_counties_with_cities_having_schools(federal_state_struct)
 
         # Count total cities and schools
         {city_count, school_count} =
@@ -873,76 +874,12 @@ defmodule MehrSchulferienWeb.HomeLive do
         Schulferien und Feiertage
       </.heading>
 
-      <form
-        phx-submit="search"
-        phx-change="validate"
-        class="mb-6 sm:mb-8 bg-white shadow-sm rounded-lg p-4 sm:p-6"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-          <div>
-            <label for="search_federal_state" class="block text-sm font-medium text-gray-700 mb-2">
-              Bundesland
-            </label>
-            <select
-              name="search[federal_state_id]"
-              id="search_federal_state"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[42px]"
-              phx-change="validate"
-              value={@search_params["federal_state_id"] || ""}
-            >
-              <option value="">Alle Bundesländer</option>
-              <%= for {name, id} <- @federal_states do %>
-                <option
-                  value={to_string(id)}
-                  selected={@search_params["federal_state_id"] == to_string(id)}
-                >
-                  <%= name %>
-                </option>
-              <% end %>
-            </select>
-          </div>
-          <div>
-            <label for="search_location" class="block text-sm font-medium text-gray-700 mb-2">
-              Stadt oder PLZ
-            </label>
-            <input
-              type="text"
-              name="search[location]"
-              value={@search_params["location"] || ""}
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="z.B. Berlin oder 10115"
-              id="search_location"
-              phx-debounce="300"
-            />
-          </div>
-          <div>
-            <label for="search_school_name" class="block text-sm font-medium text-gray-700 mb-2">
-              Schulname
-            </label>
-            <input
-              type="text"
-              name="search[school_name]"
-              value={@search_params["school_name"] || ""}
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="z.B. Gymnasium"
-              id="search_school_name"
-              phx-debounce="300"
-            />
-          </div>
-        </div>
-        <div class="mt-6 flex gap-3">
-          <.button type="submit" variant="primary" disabled={@searching}>
-            <%= if @searching, do: "Suche läuft...", else: "Suchen" %>
-          </.button>
-          <button
-            type="button"
-            phx-click="reset"
-            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Zurücksetzen
-          </button>
-        </div>
-      </form>
+      <.school_search_form
+        federal_states={@federal_states}
+        show_federal_state={true}
+        search_params={@search_params}
+        searching={@searching}
+      />
       <!-- Prominent Result Counter -->
       <%= if @total_school_count > 0 do %>
         <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 text-center md:text-left">
