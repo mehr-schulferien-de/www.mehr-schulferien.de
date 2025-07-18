@@ -89,25 +89,25 @@ defmodule MehrSchulferienWeb.HomeLive do
 
           # Further filter by location if provided
           socket =
-            if String.length(location) >= 2 do
+            if String.length(location) >= 1 do
               filter_by_city_name(socket, location)
             else
               socket
             end
 
           # Further filter by school name if provided  
-          if String.length(school_name) >= 2 do
+          if String.length(school_name) >= 1 do
             filter_by_school_name(socket, school_name)
           else
             socket
           end
 
         # Only location is provided (no federal state selected) - must be city name
-        String.length(location) >= 2 ->
+        String.length(location) >= 1 ->
           handle_city_search_all_states(socket, location, school_name)
 
         # Only school name is provided
-        String.length(school_name) >= 2 ->
+        String.length(school_name) >= 1 ->
           handle_school_search_all_states(socket, school_name)
 
         # Default: clear results
@@ -434,6 +434,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           # City fields  
           city_id: city.id,
           city_name: city.name,
+          city_slug: city.slug,
           # Address fields
           street: a.street,
           zip_code: a.zip_code
@@ -445,9 +446,9 @@ defmodule MehrSchulferienWeb.HomeLive do
     # Group schools by city efficiently
     cities_with_schools =
       results
-      |> Enum.group_by(fn r -> {r.city_id, r.city_name} end)
-      |> Enum.map(fn {{city_id, city_name}, school_results} ->
-        city = %{id: city_id, name: city_name}
+      |> Enum.group_by(fn r -> {r.city_id, r.city_name, r.city_slug} end)
+      |> Enum.map(fn {{city_id, city_name, city_slug}, school_results} ->
+        city = %{id: city_id, name: city_name, slug: city_slug}
 
         schools =
           Enum.map(school_results, fn r ->
@@ -580,6 +581,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           # City fields
           city_id: city.id,
           city_name: city.name,
+          city_slug: city.slug,
           # Federal state fields
           federal_state_id: federal_state.id,
           federal_state_name: federal_state.name,
@@ -601,6 +603,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           parent_location: %{
             id: r.city_id,
             name: r.city_name,
+            slug: r.city_slug,
             parent_location: %{
               parent_location: %{
                 id: r.federal_state_id,
@@ -658,7 +661,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         |> assign(:show_all_schools, true)
 
       # Further filter by school name if provided
-      if String.length(school_name) >= 2 do
+      if String.length(school_name) >= 1 do
         filter_by_school_name(socket, school_name)
       else
         socket
@@ -695,6 +698,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           # City fields
           city_id: c.id,
           city_name: c.name,
+          city_slug: c.slug,
           # County & State fields for hierarchy
           county_id: county.id,
           federal_state_id: federal_state.id,
@@ -715,12 +719,13 @@ defmodule MehrSchulferienWeb.HomeLive do
       cities_with_schools =
         results
         |> Enum.group_by(fn r ->
-          {r.city_id, r.city_name, r.county_id, r.federal_state_id}
+          {r.city_id, r.city_name, r.city_slug, r.county_id, r.federal_state_id}
         end)
-        |> Enum.map(fn {{city_id, city_name, county_id, federal_state_id}, school_results} ->
+        |> Enum.map(fn {{city_id, city_name, city_slug, county_id, federal_state_id}, school_results} ->
           city = %{
             id: city_id,
             name: city_name,
+            slug: city_slug,
             parent_location: %{
               id: county_id,
               parent_location: %{id: federal_state_id}
@@ -778,7 +783,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           |> assign(:show_all_schools, true)
 
         # Further filter by school name if provided
-        if String.length(school_name) >= 2 do
+        if String.length(school_name) >= 1 do
           filter_by_school_name(socket, school_name)
         else
           socket
@@ -1050,30 +1055,6 @@ defmodule MehrSchulferienWeb.HomeLive do
           <% end %>
         </:below_form>
       </.school_search_form>
-      <!-- Prominent Result Counter -->
-      <%= if @total_school_count > 0 and length(@cities_with_schools) > 1 do %>
-        <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 text-center md:text-left">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <span class="font-bold text-lg sm:text-xl text-green-800">
-                <%= format_number(@total_school_count) %> <%= if @total_school_count == 1,
-                  do: "Schule",
-                  else: "Schulen" %> gefunden
-                <span class="text-green-700 ml-2 text-base">
-                  in <%= format_number(@total_city_count) %> <%= if @total_city_count == 1,
-                    do: "Stadt",
-                    else: "Städten" %>
-                </span>
-              </span>
-            </div>
-            <%= if @searching do %>
-              <div class="mt-2 sm:mt-0">
-                <span class="text-sm text-green-600 animate-pulse">Suche läuft...</span>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
 
       <%= if @federal_state_overview do %>
         <div class="mb-6 sm:mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
@@ -1205,7 +1186,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         <div class="mb-8">
           <.heading level={2} class="mb-3 sm:mb-4 text-lg sm:text-2xl">
             <%= cond do %>
-              <% String.length(@search_params["location"] || "") >= 2 and String.length(@search_params["school_name"] || "") >= 2 -> %>
+              <% String.length(@search_params["location"] || "") >= 1 and String.length(@search_params["school_name"] || "") >= 1 -> %>
                 Suchergebnisse für "<%= @search_params["school_name"] %>" in
                 <%= if is_zip_code?(@search_params["location"]) do %>
                   PLZ <%= @search_params["location"] %>
@@ -1215,7 +1196,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                 <%= if @federal_state_overview do %>
                   (<%= get_federal_state_name(@federal_state_overview) %>)
                 <% end %>
-              <% String.length(@search_params["location"] || "") >= 2 -> %>
+              <% String.length(@search_params["location"] || "") >= 1 -> %>
                 Suchergebnisse für
                 <%= if is_zip_code?(@search_params["location"]) do %>
                   PLZ <%= @search_params["location"] %>
@@ -1225,7 +1206,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                 <%= if @federal_state_overview do %>
                   (<%= get_federal_state_name(@federal_state_overview) %>)
                 <% end %>
-              <% String.length(@search_params["school_name"] || "") >= 2 -> %>
+              <% String.length(@search_params["school_name"] || "") >= 1 -> %>
                 Suchergebnisse für "<%= @search_params["school_name"] %>"
                 <%= if @federal_state_overview do %>
                   in <%= get_federal_state_name(@federal_state_overview) %>
@@ -1292,128 +1273,182 @@ defmodule MehrSchulferienWeb.HomeLive do
                 </div>
               </div>
             <% end %>
-            <!-- Cities Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-              <%= for {city, schools} <- @cities_with_schools do %>
-                <div
-                  class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200"
-                  id={"city-card-#{city.id}"}
-                >
-                  <!-- City Header -->
-                  <div class="px-3 sm:px-5 py-2.5 sm:py-4 border-b border-gray-200">
-                    <div class="flex items-baseline justify-between gap-2">
-                      <h3 class="text-sm sm:text-lg font-semibold text-gray-900 truncate">
-                        <%= city.name %>
-                      </h3>
-                      <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0 whitespace-nowrap">
-                        <%= format_number(length(schools)) %> <%= if length(schools) == 1,
-                          do: "Schule",
-                          else: "Schulen" %>
-                      </span>
-                    </div>
-                    <% zip_codes =
-                      schools
-                      |> Enum.map(&(&1.address && &1.address.zip_code))
-                      |> Enum.filter(& &1)
-                      |> Enum.uniq()
-                      |> Enum.sort() %>
-                    <%= if length(zip_codes) > 0 do %>
-                      <p class="text-sm text-gray-500 mt-1">
-                        PLZ-Bereich: <%= format_zip_codes_list(zip_codes) %>
-                      </p>
-                    <% end %>
-                  </div>
-                  <!-- Schools List -->
-                  <div class="px-3 sm:px-5 py-2 sm:py-4">
-                    <ul class="space-y-1.5 sm:space-y-3">
-                      <% is_expanded = MapSet.member?(@expanded_cities, city.id) %>
-                      <% visible_schools =
-                        if length(schools) > 10 && !is_expanded,
-                          do: Enum.take(schools, 10),
-                          else: schools %>
-                      <!-- Schools list -->
-                      <%= for {school, index} <- Enum.with_index(visible_schools) do %>
-                        <li class={
-                          if index < length(visible_schools) - 1,
-                            do: "pb-1.5 sm:pb-3 border-b border-gray-100",
-                            else: ""
-                        }>
-                          <a
-                            href={"/ferien/d/schule/#{school.slug}"}
-                            class="group block hover:translate-x-1 transition-transform duration-150 py-0.5"
-                          >
-                            <div class="flex items-start justify-between gap-1">
-                              <div class="flex-1 min-w-0 pr-1">
-                                <p class="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                                  <%= school.name %>
-                                </p>
-                                <%= if school.address && school.address.street do %>
-                                  <p class="text-xs text-gray-500 mt-0.5 truncate">
-                                    <%= school.address.street %>
-                                    <%= if school.address.zip_code do %>
-                                      , <%= school.address.zip_code %> <%= String.slice(
-                                        city.name,
-                                        0,
-                                        15
-                                      ) %><%= if String.length(city.name) > 15, do: "..." %>
-                                    <% end %>
-                                  </p>
-                                <% end %>
-                              </div>
-                              <div class="flex-shrink-0">
-                                <svg
-                                  class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-600 transition-colors mt-0.5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5l7 7-7 7"
-                                  />
-                                </svg>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                      <% end %>
-                    </ul>
-                    <!-- Expand/Collapse Button -->
-                    <%= if length(schools) > 10 do %>
-                      <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100">
-                        <button
-                          phx-click="toggle_city"
-                          phx-value-city-id={city.id}
-                          class="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center w-full justify-center group py-1"
-                          id={"toggle-city-#{city.id}"}
-                        >
-                          <%= if MapSet.member?(@expanded_cities, city.id) do %>
-                            <span>Weniger anzeigen</span>
-                          <% else %>
-                            <span>Alle <%= length(schools) %> Schulen anzeigen</span>
-                          <% end %>
-                          <svg
-                            class={"ml-0.5 sm:ml-1 w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 #{if MapSet.member?(@expanded_cities, city.id), do: "rotate-180", else: ""}"}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M19 9l-7 7-7-7"
-                            />
-                          </svg>
-                        </button>
+            <!-- Cities Grid / School List -->
+            <%= if length(@cities_with_schools) == 1 do %>
+              <!-- Single city: show schools in a 3-column grid -->
+              <% {city, schools} = hd(@cities_with_schools) %>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <%= for school <- schools do %>
+                  <a
+                    href={"/ferien/d/schule/#{school.slug}"}
+                    class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-4 group block"
+                  >
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="flex-1 min-w-0">
+                        <h3 class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
+                          <%= school.name %>
+                        </h3>
+                        <%= if school.address do %>
+                          <p class="text-xs text-gray-500">
+                            <%= if school.address.street do %>
+                              <%= school.address.street %><br />
+                            <% end %>
+                            <%= if school.address.zip_code do %>
+                              <%= school.address.zip_code %> <%= city.name %>
+                            <% end %>
+                          </p>
+                        <% end %>
                       </div>
-                    <% end %>
+                      <svg
+                        class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 mt-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  </a>
+                <% end %>
+              </div>
+            <% else %>
+              <!-- Multiple cities: show cities with schools in cards -->
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                <%= for {city, schools} <- @cities_with_schools do %>
+                  <div
+                    class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200"
+                    id={"city-card-#{city.id}"}
+                  >
+                    <!-- City Header -->
+                    <div class="px-3 sm:px-5 py-2.5 sm:py-4 border-b border-gray-200">
+                      <div class="flex items-baseline justify-between gap-2">
+                        <%= if Map.has_key?(city, :slug) do %>
+                          <a 
+                            href={~p"/ferien/d/stadt/#{city.slug}"}
+                            class="text-sm sm:text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
+                          >
+                            <%= city.name %>
+                          </a>
+                        <% else %>
+                          <h3 class="text-sm sm:text-lg font-semibold text-gray-900 truncate">
+                            <%= city.name %>
+                          </h3>
+                        <% end %>
+                        <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0 whitespace-nowrap">
+                          <%= format_number(length(schools)) %> <%= if length(schools) == 1,
+                            do: "Schule",
+                            else: "Schulen" %>
+                        </span>
+                      </div>
+                      <% zip_codes =
+                        schools
+                        |> Enum.map(&(&1.address && &1.address.zip_code))
+                        |> Enum.filter(& &1)
+                        |> Enum.uniq()
+                        |> Enum.sort() %>
+                      <%= if length(zip_codes) > 0 do %>
+                        <p class="text-sm text-gray-500 mt-1">
+                          PLZ-Bereich: <%= format_zip_codes_list(zip_codes) %>
+                        </p>
+                      <% end %>
+                    </div>
+                    <!-- Schools List -->
+                    <div class="px-3 sm:px-5 py-2 sm:py-4">
+                      <ul class="space-y-1.5 sm:space-y-3">
+                        <% is_expanded = MapSet.member?(@expanded_cities, city.id) %>
+                        <% visible_schools =
+                          if length(schools) > 10 && !is_expanded,
+                            do: Enum.take(schools, 10),
+                            else: schools %>
+                        <!-- Schools list -->
+                        <%= for {school, index} <- Enum.with_index(visible_schools) do %>
+                          <li class={
+                            if index < length(visible_schools) - 1,
+                              do: "pb-1.5 sm:pb-3 border-b border-gray-100",
+                              else: ""
+                          }>
+                            <a
+                              href={"/ferien/d/schule/#{school.slug}"}
+                              class="group block hover:translate-x-1 transition-transform duration-150 py-0.5"
+                            >
+                              <div class="flex items-start justify-between gap-1">
+                                <div class="flex-1 min-w-0 pr-1">
+                                  <p class="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                    <%= school.name %>
+                                  </p>
+                                  <%= if school.address && school.address.street do %>
+                                    <p class="text-xs text-gray-500 mt-0.5 truncate">
+                                      <%= school.address.street %>
+                                      <%= if school.address.zip_code do %>
+                                        , <%= school.address.zip_code %> <%= String.slice(
+                                          city.name,
+                                          0,
+                                          15
+                                        ) %><%= if String.length(city.name) > 15, do: "..." %>
+                                      <% end %>
+                                    </p>
+                                  <% end %>
+                                </div>
+                                <div class="flex-shrink-0">
+                                  <svg
+                                    class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-600 transition-colors mt-0.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M9 5l7 7-7 7"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                            </a>
+                          </li>
+                        <% end %>
+                      </ul>
+                      <!-- Expand/Collapse Button -->
+                      <%= if length(schools) > 10 do %>
+                        <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100">
+                          <button
+                            phx-click="toggle_city"
+                            phx-value-city-id={city.id}
+                            class="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center w-full justify-center group py-1"
+                            id={"toggle-city-#{city.id}"}
+                          >
+                            <%= if MapSet.member?(@expanded_cities, city.id) do %>
+                              <span>Weniger anzeigen</span>
+                            <% else %>
+                              <span>Alle <%= length(schools) %> Schulen anzeigen</span>
+                            <% end %>
+                            <svg
+                              class={"ml-0.5 sm:ml-1 w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 #{if MapSet.member?(@expanded_cities, city.id), do: "rotate-180", else: ""}"}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      <% end %>
+                    </div>
                   </div>
-                </div>
-              <% end %>
-            </div>
+                <% end %>
+              </div>
+            <% end %>
           <% else %>
             <.alert variant="info">
               Keine Städte mit Schulen gefunden für dieses Bundesland.
