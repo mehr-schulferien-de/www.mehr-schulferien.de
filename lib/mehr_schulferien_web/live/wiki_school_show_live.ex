@@ -57,7 +57,7 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
     else
       school = socket.assigns.school
       today = Date.utc_today()
-      
+
       # Update school name if changed
       school_result =
         if name != school.name do
@@ -80,10 +80,11 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
             if updated_school.address do
               # Update existing address
               changeset = Address.changeset(updated_school.address, address_params)
-              
+
               case changeset.changes do
                 changes when map_size(changes) == 0 ->
                   {:ok, %{model: updated_school.address, version: nil}}
+
                 _ ->
                   PaperTrail.update(changeset, meta: %{ip_address: nil})
               end
@@ -92,7 +93,7 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
               changeset = Address.changeset(%Address{}, address_params)
               PaperTrail.insert(changeset, meta: %{ip_address: nil})
             end
-            
+
           error ->
             error
         end
@@ -100,87 +101,63 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
       case {school_result, address_result} do
         {{:ok, %{model: _updated_school, version: school_version}},
          {:ok, %{model: _address, version: address_version}}} ->
-          
           if school_version || address_version do
             Wiki.increment_daily_change_count(today)
-            
-            Logger.info("=== SCHOOL UPDATE EMAIL DEBUG START ===")
-            Logger.info("Changes detected - school_version: #{inspect(school_version != nil)}, address_version: #{inspect(address_version != nil)}")
-            
+
             # Reload data
             updated_school = Locations.get_school_by_slug!(school.slug)
             versions = get_combined_versions(updated_school)
             daily_changes = Wiki.get_daily_change_count(today)
             limit_reached = daily_changes >= Config.daily_change_limit()
-            
+
             # Send email notification
-            email_task = Task.async(fn ->
+            Task.start(fn ->
               try do
-                Logger.info("Email task started")
-                
                 # Reload school with all associations needed for email
-                updated_school_with_associations = 
+                updated_school_with_associations =
                   Locations.get_location!(updated_school.id)
                   |> Repo.preload([:address, :parent_location])
-                
-                Logger.info("School loaded with associations: id=#{updated_school_with_associations.id}, has_address=#{updated_school_with_associations.address != nil}")
-                
+
                 # Gather change information
                 changes = gather_changes(school_version, address_version)
-                
-                Logger.info("Changes gathered: #{inspect(changes)}")
-                
+
                 # Get country slug for the email
                 country_slug = get_country_slug_from_school(updated_school_with_associations)
-                Logger.info("Country slug: #{inspect(country_slug)}")
-                
-                # Build email
-                email = Email.school_updated_notification(
+
+                # Build and send email
+                Email.school_updated_notification(
                   updated_school_with_associations,
                   updated_school_with_associations.address,
                   changes,
                   country_slug
                 )
-                
-                Logger.info("Email built: to=#{inspect(email.to)}, subject=#{inspect(email.subject)}")
-                
-                # Send email
-                result = Mailer.deliver!(email)
-                
-                Logger.info("Email sent successfully: #{inspect(result)}")
-                {:ok, result}
+                |> Mailer.deliver!()
               rescue
                 error ->
                   Logger.error("Failed to send school update email: #{inspect(error)}")
                   Logger.error(Exception.format(:error, error, __STACKTRACE__))
-                  {:error, error}
               end
             end)
-            
-            # Wait a bit to see if the task completes
-            case Task.yield(email_task, 5000) || Task.shutdown(email_task, :brutal_kill) do
-              {:ok, {:ok, result}} ->
-                Logger.info("Email task completed successfully: #{inspect(result)}")
-              {:ok, {:error, error}} ->
-                Logger.error("Email task failed: #{inspect(error)}")
-              nil ->
-                Logger.warning("Email task timed out after 5 seconds")
-              {:exit, reason} ->
-                Logger.error("Email task crashed: #{inspect(reason)}")
-            end
-            
-            Logger.info("=== SCHOOL UPDATE EMAIL DEBUG END ===")
-            
+
             # Update changeset
             changeset =
               if updated_school.address do
                 address_changeset = Maps.change_address(updated_school.address)
-                %{address_changeset | data: Map.merge(address_changeset.data, %{name: updated_school.name})}
+
+                %{
+                  address_changeset
+                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
+                }
               else
-                address_changeset = Maps.change_address(%Address{school_location_id: updated_school.id})
-                %{address_changeset | data: Map.merge(address_changeset.data, %{name: updated_school.name})}
+                address_changeset =
+                  Maps.change_address(%Address{school_location_id: updated_school.id})
+
+                %{
+                  address_changeset
+                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
+                }
               end
-            
+
             {:noreply,
              socket
              |> put_flash(:info, "Änderungen wurden erfolgreich gespeichert.")
@@ -195,13 +172,14 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
           else
             {:noreply, put_flash(socket, :info, "Keine Änderungen vorgenommen.")}
           end
-          
+
         {{:error, _}, _} ->
           {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren des Schulnamens.")}
-          
+
         {_, {:error, :invalid_address}} ->
-          {:noreply, put_flash(socket, :error, "Ungültige Adresse. Bitte überprüfen Sie die Eingaben.")}
-          
+          {:noreply,
+           put_flash(socket, :error, "Ungültige Adresse. Bitte überprüfen Sie die Eingaben.")}
+
         {_, {:error, _}} ->
           {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren der Adresse.")}
       end
@@ -305,18 +283,18 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
        )}
     else
       version = PaperTrail.get_version(version_id)
-      
+
       case restore_version(version) do
         {:ok, _restored} ->
           today = Date.utc_today()
           Wiki.increment_daily_change_count(today)
-          
+
           # Reload school and data
           school = Locations.get_school_by_slug!(socket.assigns.school.slug)
           versions = get_combined_versions(school)
           daily_changes = Wiki.get_daily_change_count(today)
           limit_reached = daily_changes >= Config.daily_change_limit()
-          
+
           # Update changeset
           changeset =
             if school.address do
@@ -326,7 +304,7 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
               address_changeset = Maps.change_address(%Address{school_location_id: school.id})
               %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
             end
-          
+
           {:noreply,
            socket
            |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
@@ -338,9 +316,10 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
              daily_changes: daily_changes,
              limit_reached: limit_reached
            )}
-           
+
         {:error, _} ->
-          {:noreply, put_flash(socket, :error, "Fehler beim Zurückkehren zur ausgewählten Version.")}
+          {:noreply,
+           put_flash(socket, :error, "Fehler beim Zurückkehren zur ausgewählten Version.")}
       end
     end
   end
@@ -373,18 +352,14 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   defp version_summary(version, _all_versions) do
     # Get detailed changes for this version
     changes = version.item_changes || %{}
-    
-    # Debug log
-    if map_size(changes) > 0 do
-      Logger.debug("Version #{version.id} changes: #{inspect(changes)}")
-    end
-    
+
     case version.item_type do
       "Location" ->
         # Check for both string and atom keys
         if Map.has_key?(changes, :name) or Map.has_key?(changes, "name") do
           new_name = changes[:name] || changes["name"]
           old_name = get_old_value(version, :name, "[nicht verfügbar]")
+
           if old_name == "[nicht verfügbar]" do
             "Schulname geändert zu: \"#{new_name}\""
           else
@@ -393,88 +368,97 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
         else
           "Schulinformationen geändert"
         end
-        
+
       "Address" ->
-        change_descriptions = 
+        change_descriptions =
           Enum.map(changes, fn {field, new_value} ->
             # Handle both string and atom keys
-            field_name = cond do
-              field == :street or field == "street" -> :street
-              field == :zip_code or field == "zip_code" -> :zip_code
-              field == :city or field == "city" -> :city
-              field == :email_address or field == "email_address" -> :email_address
-              field == :phone_number or field == "phone_number" -> :phone_number
-              field == :homepage_url or field == "homepage_url" -> :homepage_url
-              field == :wikipedia_url or field == "wikipedia_url" -> :wikipedia_url
-              true -> nil
-            end
-            
+            field_name =
+              cond do
+                field == :street or field == "street" -> :street
+                field == :zip_code or field == "zip_code" -> :zip_code
+                field == :city or field == "city" -> :city
+                field == :email_address or field == "email_address" -> :email_address
+                field == :phone_number or field == "phone_number" -> :phone_number
+                field == :homepage_url or field == "homepage_url" -> :homepage_url
+                field == :wikipedia_url or field == "wikipedia_url" -> :wikipedia_url
+                true -> nil
+              end
+
             case field_name do
-              :street -> 
+              :street ->
                 old_value = get_old_value(version, field, nil)
+
                 if old_value do
                   "Straße: \"#{old_value}\" → \"#{new_value}\""
                 else
                   "Straße: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
                 end
-                
-              :zip_code -> 
+
+              :zip_code ->
                 old_value = get_old_value(version, field, nil)
+
                 if old_value do
                   "PLZ: \"#{old_value}\" → \"#{new_value}\""
                 else
                   "PLZ: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
                 end
-                
-              :city -> 
+
+              :city ->
                 old_value = get_old_value(version, field, nil)
+
                 if old_value do
                   "Stadt: \"#{old_value}\" → \"#{new_value}\""
                 else
                   "Stadt: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
                 end
-                
-              :email_address -> 
+
+              :email_address ->
                 old_value = get_old_value(version, field, nil)
+
                 if old_value do
                   "E-Mail: \"#{old_value}\" → \"#{new_value}\""
                 else
                   "E-Mail: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
                 end
-                
-              :phone_number -> 
+
+              :phone_number ->
                 old_value = get_old_value(version, field, nil)
+
                 if old_value do
                   "Telefon: \"#{old_value}\" → \"#{new_value}\""
                 else
                   "Telefon: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
                 end
-                
-              :homepage_url -> 
+
+              :homepage_url ->
                 old_value = get_old_value(version, field, nil)
+
                 if old_value do
                   "Homepage: \"#{old_value}\" → \"#{new_value}\""
                 else
                   "Homepage: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
                 end
-                
-              :wikipedia_url -> 
+
+              :wikipedia_url ->
                 old_value = get_old_value(version, field, nil)
+
                 if old_value do
                   "Wikipedia: \"#{old_value}\" → \"#{new_value}\""
                 else
                   "Wikipedia: #{if new_value == "" or is_nil(new_value), do: "gelöscht", else: "\"#{new_value}\""}"
                 end
-                
-              _ -> nil
+
+              _ ->
+                nil
             end
           end)
           |> Enum.reject(&is_nil/1)
-          
+
         if Enum.empty?(change_descriptions) do
           # Show what fields were changed even if we don't have the old values
           if map_size(changes) > 0 do
-            changed_fields = 
+            changed_fields =
               changes
               |> Map.keys()
               |> Enum.map(fn field ->
@@ -486,16 +470,18 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
                   field in [:phone_number, "phone_number"] -> "Telefon"
                   field in [:homepage_url, "homepage_url"] -> "Homepage"
                   field in [:wikipedia_url, "wikipedia_url"] -> "Wikipedia"
-                  field in [:line1, "line1"] -> nil  # Skip internal fields
+                  # Skip internal fields
+                  field in [:line1, "line1"] -> nil
                   field in [:school_location_id, "school_location_id"] -> nil
                   field in [:lon, "lon"] -> nil
                   field in [:lat, "lat"] -> nil
-                  field in [:school_type, "school_type"] -> nil  # Skip null fields
+                  # Skip null fields
+                  field in [:school_type, "school_type"] -> nil
                   true -> to_string(field)
                 end
               end)
               |> Enum.reject(&is_nil/1)
-              
+
             if length(changed_fields) > 0 do
               "Geänderte Felder: #{Enum.join(changed_fields, ", ")}"
             else
@@ -507,28 +493,29 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
         else
           Enum.join(change_descriptions, ", ")
         end
-        
-      _ -> 
+
+      _ ->
         "Änderung"
     end
   end
-  
+
   defp get_old_value(version, field, default) do
     # Try to get old value from paper_trail's old_values
     case version do
       %{old_values: old_values} when is_map(old_values) ->
         Map.get(old_values, field, default)
+
       _ ->
         # If no old_values, try to get from previous version
         # Get the model to pass to PaperTrail
-        model = 
+        model =
           case version.item_type do
             "Location" -> %MehrSchulferien.Locations.Location{id: version.item_id}
             "Address" -> %MehrSchulferien.Maps.Address{id: version.item_id}
             _ -> nil
           end
-          
-        versions = 
+
+        versions =
           if model do
             PaperTrail.get_versions(model)
           else
@@ -536,13 +523,14 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
           end
           |> Enum.filter(&(&1.id < version.id))
           |> Enum.sort_by(& &1.id, :desc)
-          
+
         case versions do
           [prev_version | _] ->
             case prev_version.item_changes do
               %{^field => value} -> value
               _ -> default
             end
+
           [] ->
             default
         end
@@ -610,13 +598,13 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
 
   defp get_previous_values(item_type, item_id, current_version) do
     # Create proper struct for PaperTrail
-    model = 
+    model =
       case item_type do
         "Location" -> %MehrSchulferien.Locations.Location{id: item_id}
         "Address" -> %MehrSchulferien.Maps.Address{id: item_id}
         _ -> nil
       end
-    
+
     versions =
       if model do
         PaperTrail.get_versions(model)
@@ -672,64 +660,69 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   end
 
   defp traverse_to_country(_), do: nil
-  
+
   defp restore_version(nil), do: {:error, :version_not_found}
-  
+
   defp restore_version(version) do
     case version.event do
       "update" ->
         # Get the model
-        model = 
+        model =
           case version.item_type do
             "Location" -> Locations.get_location!(version.item_id)
             "Address" -> Maps.get_address!(version.item_id)
             _ -> nil
           end
-          
+
         if model do
           # If we have old_values, restore to the state before this version
           # If not, we need to reconstruct the state from all versions
-          restore_values = 
+          restore_values =
             if version.old_values && map_size(version.old_values) > 0 do
               version.old_values
             else
               # Get all versions up to but not including this one
-              all_versions = 
+              all_versions =
                 case version.item_type do
-                  "Location" -> 
-                    PaperTrail.get_versions(%MehrSchulferien.Locations.Location{id: version.item_id})
-                  "Address" -> 
+                  "Location" ->
+                    PaperTrail.get_versions(%MehrSchulferien.Locations.Location{
+                      id: version.item_id
+                    })
+
+                  "Address" ->
                     PaperTrail.get_versions(%MehrSchulferien.Maps.Address{id: version.item_id})
-                  _ -> 
+
+                  _ ->
                     []
                 end
-                
+
               # Find the previous version to restore to
-              previous_versions = 
+              previous_versions =
                 all_versions
                 |> Enum.filter(&(&1.id < version.id))
                 |> Enum.sort_by(& &1.id, :desc)
-                
+
               case previous_versions do
                 [prev_version | _] ->
                   # Use the changes from the previous version as our restore point
                   prev_version.item_changes || %{}
+
                 [] ->
                   # This was the first change, so restore to empty/default values
                   %{}
               end
             end
-            
+
           changeset = Ecto.Changeset.change(model, restore_values)
           PaperTrail.update(changeset, meta: %{ip_address: nil})
         else
           {:error, :model_not_found}
         end
-        
+
       "insert" ->
         # Can't restore an insert event - would need to delete the record
         {:error, :cannot_restore_insert}
-        
+
       _ ->
         {:error, :cannot_restore_event}
     end

@@ -120,6 +120,9 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers", PageController, :developers
     get "/impressum", PageController, :impressum
 
+    # Test page
+    live "/test", TestLive
+
     # Country routes (SEO-friendly pattern) - with non-year constraint
     get "/ferien/:country_slug", CountryController, :show,
       constraints: [country_slug: ~r/^(?!20[2-3][0-9]$)[a-zA-Z][a-zA-Z0-9_-]*$/]

@@ -20,6 +20,22 @@ Hooks.FormCookie = {
   }
 }
 
+Hooks.MaintainScroll = {
+  mounted() {
+    // Handle maintain-scroll event from server
+    this.handleEvent("maintain-scroll", ({element_id}) => {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        const element = document.getElementById(element_id)
+        if (element) {
+          // Scroll the element into view with smooth behavior
+          element.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+      }, 50)
+    })
+  }
+}
+
 // Function to get cookie value by name
 function getCookie(name) {
   const value = `; ${document.cookie}`;
