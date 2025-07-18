@@ -80,7 +80,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           clear_search_results(socket)
 
         # If location is a zip code, always handle it with auto federal state detection
-        String.length(location) >= 2 and is_zip_code?(location) ->
+        String.length(location) >= 1 and is_partial_or_full_zip_code?(location) ->
           handle_zip_code_search_with_auto_federal_state(socket, location, school_name)
 
         # Federal state is selected
@@ -502,6 +502,13 @@ defmodule MehrSchulferienWeb.HomeLive do
   defp is_zip_code?(text) do
     String.length(text) == 5 and Regex.match?(~r/^\d{5}$/, text)
   end
+  
+  defp is_partial_or_full_zip_code?(nil), do: false
+  
+  defp is_partial_or_full_zip_code?(text) do
+    # Check if it's all digits and between 1-5 characters
+    String.length(text) >= 1 and String.length(text) <= 5 and Regex.match?(~r/^\d+$/, text)
+  end
 
   defp clear_search_results(socket) do
     socket
@@ -526,41 +533,82 @@ defmodule MehrSchulferienWeb.HomeLive do
   end
 
   defp filter_by_city_name(socket, city_name) do
-    city_pattern = String.downcase(city_name)
-
-    # Filter existing cities by name
-    filtered_cities =
-      socket.assigns.cities_with_schools
-      |> Enum.filter(fn {city, _schools} ->
-        String.contains?(String.downcase(city.name), city_pattern)
-      end)
-
-    assign(socket, :cities_with_schools, filtered_cities)
+    # Support wildcard searches with *
+    if String.contains?(city_name, "*") do
+      # Wildcard search - replace * with .* for regex
+      pattern = city_name 
+        |> String.downcase()
+        |> String.replace("*", ".*")
+        |> Regex.compile!()
+      
+      filtered_cities =
+        socket.assigns.cities_with_schools
+        |> Enum.filter(fn {city, _schools} ->
+          Regex.match?(pattern, String.downcase(city.name))
+        end)
+      
+      assign(socket, :cities_with_schools, filtered_cities)
+    else
+      # Default: search from beginning of name
+      city_pattern = String.downcase(city_name)
+      
+      filtered_cities =
+        socket.assigns.cities_with_schools
+        |> Enum.filter(fn {city, _schools} ->
+          String.starts_with?(String.downcase(city.name), city_pattern)
+        end)
+      
+      assign(socket, :cities_with_schools, filtered_cities)
+    end
   end
 
   defp filter_by_school_name(socket, school_name) do
-    school_pattern = String.downcase(school_name)
-
-    # Filter schools within existing cities
-    filtered_cities =
-      socket.assigns.cities_with_schools
-      |> Enum.map(fn {city, schools} ->
-        filtered_schools =
-          Enum.filter(schools, fn school ->
-            String.contains?(String.downcase(school.name), school_pattern)
-          end)
-
-        {city, filtered_schools}
-      end)
-      |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
-
-    assign(socket, :cities_with_schools, filtered_cities)
+    # Support wildcard searches with *
+    if String.contains?(school_name, "*") do
+      # Wildcard search - replace * with .* for regex
+      pattern = school_name 
+        |> String.downcase()
+        |> String.replace("*", ".*")
+        |> Regex.compile!()
+      
+      filtered_cities =
+        socket.assigns.cities_with_schools
+        |> Enum.map(fn {city, schools} ->
+          filtered_schools =
+            Enum.filter(schools, fn school ->
+              Regex.match?(pattern, String.downcase(school.name))
+            end)
+          {city, filtered_schools}
+        end)
+        |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
+      
+      assign(socket, :cities_with_schools, filtered_cities)
+    else
+      # Default: search from beginning of name
+      school_pattern = String.downcase(school_name)
+      
+      filtered_cities =
+        socket.assigns.cities_with_schools
+        |> Enum.map(fn {city, schools} ->
+          filtered_schools =
+            Enum.filter(schools, fn school ->
+              String.starts_with?(String.downcase(school.name), school_pattern)
+            end)
+          {city, filtered_schools}
+        end)
+        |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
+      
+      assign(socket, :cities_with_schools, filtered_cities)
+    end
   end
 
   defp handle_zip_code_search_with_auto_federal_state(socket, zip_code, school_name) do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
+    # Use LIKE for partial zip code matching (starts with)
+    zip_pattern = "#{zip_code}%"
+    
     # Optimized query with minimal fields
     query =
       from s in MehrSchulferien.Locations.Location,
@@ -572,7 +620,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         on: county.id == city.parent_location_id,
         join: federal_state in MehrSchulferien.Locations.Location,
         on: federal_state.id == county.parent_location_id,
-        where: s.is_school == true and a.zip_code == ^zip_code,
+        where: s.is_school == true and like(a.zip_code, ^zip_pattern),
         select: %{
           # School fields
           id: s.id,
@@ -616,44 +664,48 @@ defmodule MehrSchulferienWeb.HomeLive do
       end)
 
     if length(schools) > 0 do
-      # Group schools by city
+      # Group schools by city - ensure we're grouping by city ID to avoid issues
       cities_with_schools =
         schools
-        |> Enum.group_by(& &1.parent_location)
-        |> Enum.map(fn {city, schools} -> {city, schools} end)
+        |> Enum.group_by(fn school -> 
+          # Group by city ID to ensure unique cities are properly detected
+          school.parent_location.id
+        end)
+        |> Enum.map(fn {city_id, city_schools} ->
+          # Get the city info from the first school
+          city = hd(city_schools).parent_location
+          {city, city_schools}
+        end)
+        |> Enum.sort_by(fn {city, _} -> city.name end)
 
-      # Check if all schools are in the same federal state
-      federal_states =
+      # Check if all schools are from a single city
+      unique_cities = 
         cities_with_schools
-        |> Enum.map(fn {city, _} -> city.parent_location.parent_location end)
-        |> Enum.uniq_by(& &1.id)
-
-      # Update search params based on federal states found
-      search_params =
-        if length(federal_states) == 1 do
-          # All schools in same federal state - use it
-          federal_state = hd(federal_states)
-          Map.put(socket.assigns.search_params, "federal_state_id", to_string(federal_state.id))
-        else
-          # Multiple federal states or other issue - reset to default
-          Map.put(socket.assigns.search_params, "federal_state_id", "")
-        end
-
-      socket = assign(socket, :search_params, search_params)
-
-      # Load federal state overview if single state
-      socket =
-        if length(federal_states) == 1 do
-          federal_state = hd(federal_states)
-
-          federal_state_overview =
-            load_federal_state_overview(to_string(federal_state.id), socket.assigns.today)
-
-          socket
-          |> assign(:federal_state_overview, federal_state_overview)
-        else
-          socket
-        end
+        |> Enum.map(fn {city, _} -> city.id end)
+        |> Enum.uniq()
+      
+      # Only update federal state if there's exactly one city
+      if length(unique_cities) == 1 do
+        # Single city - get its federal state
+        {city, _} = hd(cities_with_schools)
+        federal_state = city.parent_location.parent_location
+        
+        # Update search params with federal state
+        search_params = Map.put(socket.assigns.search_params, "federal_state_id", to_string(federal_state.id))
+        socket = assign(socket, :search_params, search_params)
+        
+        # Load federal state overview
+        federal_state_overview =
+          load_federal_state_overview(to_string(federal_state.id), socket.assigns.today)
+        
+        socket
+        |> assign(:federal_state_overview, federal_state_overview)
+      else
+        # Multiple cities - don't set federal state
+        search_params = Map.put(socket.assigns.search_params, "federal_state_id", "")
+        socket
+        |> assign(:search_params, search_params)
+      end
 
       socket =
         socket
@@ -680,7 +732,15 @@ defmodule MehrSchulferienWeb.HomeLive do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
-    city_pattern = "%#{city_name}%"
+    # Support wildcard searches with * 
+    city_pattern = if String.contains?(city_name, "*") do
+      # Replace * with % for SQL wildcard
+      city_name |> String.replace("*", "%")
+    else
+      # Default: search from beginning of words
+      # This will match "Koblenz", "Kassel" but not "Frankfurt" for search "k"
+      "#{city_name}%"
+    end
 
     # Optimized single query to get cities with schools
     query =
@@ -750,15 +810,11 @@ defmodule MehrSchulferienWeb.HomeLive do
         end)
 
       if length(cities_with_schools) > 0 do
-        # If all cities are in the same federal state, set it
-        federal_states =
-          cities_with_schools
-          |> Enum.map(fn {city, _} -> city.parent_location.parent_location end)
-          |> Enum.uniq_by(& &1.id)
-
+        # Only set federal state if there's exactly one city
         socket =
-          if length(federal_states) == 1 do
-            federal_state = hd(federal_states)
+          if length(cities_with_schools) == 1 do
+            {city, _} = hd(cities_with_schools)
+            federal_state = city.parent_location.parent_location
 
             federal_state_overview =
               load_federal_state_overview(to_string(federal_state.id), socket.assigns.today)
@@ -774,7 +830,10 @@ defmodule MehrSchulferienWeb.HomeLive do
             |> assign(:federal_state_overview, federal_state_overview)
             |> assign(:search_params, search_params)
           else
+            # Multiple cities - don't set federal state
+            search_params = Map.put(socket.assigns.search_params, "federal_state_id", "")
             socket
+            |> assign(:search_params, search_params)
           end
 
         socket =
@@ -800,7 +859,14 @@ defmodule MehrSchulferienWeb.HomeLive do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
-    school_pattern = "%#{school_name}%"
+    # Support wildcard searches with * 
+    school_pattern = if String.contains?(school_name, "*") do
+      # Replace * with % for SQL wildcard
+      school_name |> String.replace("*", "%")
+    else
+      # Default: search from beginning of name
+      "#{school_name}%"
+    end
 
     # Optimized query for school search
     query =
@@ -865,24 +931,27 @@ defmodule MehrSchulferienWeb.HomeLive do
         |> Enum.group_by(& &1.parent_location)
         |> Enum.map(fn {city, schools} -> {city, schools} end)
 
-      # Check if all schools are in the same federal state
-      federal_states =
-        cities_with_schools
-        |> Enum.map(fn {city, _} -> city.parent_location.parent_location end)
-        |> Enum.uniq_by(& &1.id)
-
+      # Only set federal state if there's exactly one city
       socket =
-        if length(federal_states) == 1 do
-          # All schools are in the same federal state, load the overview
-          federal_state = hd(federal_states)
+        if length(cities_with_schools) == 1 do
+          # Single city - load federal state overview
+          {city, _} = hd(cities_with_schools)
+          federal_state = city.parent_location.parent_location
 
           federal_state_overview =
             load_federal_state_overview(to_string(federal_state.id), socket.assigns.today)
 
+          # Update search params with federal state
+          search_params = Map.put(socket.assigns.search_params, "federal_state_id", to_string(federal_state.id))
+
           socket
           |> assign(:federal_state_overview, federal_state_overview)
+          |> assign(:search_params, search_params)
         else
+          # Multiple cities - don't set federal state
+          search_params = Map.put(socket.assigns.search_params, "federal_state_id", "")
           socket
+          |> assign(:search_params, search_params)
         end
 
       socket
@@ -1188,23 +1257,31 @@ defmodule MehrSchulferienWeb.HomeLive do
             <%= cond do %>
               <% String.length(@search_params["location"] || "") >= 1 and String.length(@search_params["school_name"] || "") >= 1 -> %>
                 Suchergebnisse für "<%= @search_params["school_name"] %>" in
-                <%= if is_zip_code?(@search_params["location"]) do %>
+                <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
                   PLZ <%= @search_params["location"] %>
+                  <%= if length(@cities_with_schools) == 1 do %>
+                    <% {city, _schools} = hd(@cities_with_schools) %>
+                    (<a href={~p"/ferien/d/stadt/#{city.slug}"} class="text-blue-600 hover:text-blue-800 underline"><%= city.name %></a>)
+                  <% end %>
                 <% else %>
                   "<%= @search_params["location"] %>"
-                <% end %>
-                <%= if @federal_state_overview do %>
-                  (<%= get_federal_state_name(@federal_state_overview) %>)
+                  <%= if @federal_state_overview do %>
+                    (<%= get_federal_state_name(@federal_state_overview) %>)
+                  <% end %>
                 <% end %>
               <% String.length(@search_params["location"] || "") >= 1 -> %>
                 Suchergebnisse für
-                <%= if is_zip_code?(@search_params["location"]) do %>
+                <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
                   PLZ <%= @search_params["location"] %>
+                  <%= if length(@cities_with_schools) == 1 do %>
+                    <% {city, _schools} = hd(@cities_with_schools) %>
+                    (<a href={~p"/ferien/d/stadt/#{city.slug}"} class="text-blue-600 hover:text-blue-800 underline"><%= city.name %></a>)
+                  <% end %>
                 <% else %>
                   "<%= @search_params["location"] %>"
-                <% end %>
-                <%= if @federal_state_overview do %>
-                  (<%= get_federal_state_name(@federal_state_overview) %>)
+                  <%= if @federal_state_overview do %>
+                    (<%= get_federal_state_name(@federal_state_overview) %>)
+                  <% end %>
                 <% end %>
               <% String.length(@search_params["school_name"] || "") >= 1 -> %>
                 Suchergebnisse für "<%= @search_params["school_name"] %>"

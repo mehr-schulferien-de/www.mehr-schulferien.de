@@ -283,3 +283,53 @@ html {
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
 }
+
+/* Animation for federal state dropdown updates */
+@keyframes highlightUpdate {
+  0% {
+    background-color: rgb(219, 234, 254); /* blue-100 */
+    border-color: rgb(59, 130, 246); /* blue-500 */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    background-color: rgb(191, 219, 254); /* blue-200 */
+    border-color: rgb(59, 130, 246); /* blue-500 */
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  }
+  100% {
+    background-color: white;
+    border-color: rgb(209, 213, 219); /* gray-300 */
+    box-shadow: 0 0 0 0px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Phoenix LiveView adds phx-change-loading class during updates */
+#search_federal_state {
+  transition: all 0.3s ease-out;
+  position: relative;
+}
+
+/* Animate when LiveView is updating the form */
+.phx-change-loading #search_federal_state,
+.phx-submit-loading #search_federal_state {
+  animation: highlightUpdate 1.5s ease-out;
+}
+
+/* Additional visual feedback for value changes */
+#search_federal_state:not([value=""]):not(:focus) {
+  background-color: rgb(243, 244, 246); /* gray-100 */
+}
+
+/* Pulse animation for the dropdown arrow when value changes */
+@keyframes arrowPulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+.phx-change-loading #search_federal_state {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+  background-repeat: no-repeat;
+  animation: highlightUpdate 1.5s ease-out, arrowPulse 0.5s ease-out 3;
+}

@@ -19,7 +19,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
   attr :search_params, :map, required: true
   attr :searching, :boolean, default: false
   attr :location_label, :string, default: "Stadt oder PLZ"
-  attr :location_placeholder, :string, default: "z.B. Berlin oder 10115"
+  attr :location_placeholder, :string, default: "z.B. Berlin, 10115 oder *burg"
   attr :autofocus_field, :atom, default: nil
   slot :below_form
 
@@ -98,7 +98,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
             name="search[school_name]"
             value={@search_params["school_name"] || ""}
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            placeholder="z.B. Gymnasium"
+            placeholder="z.B. Gymnasium oder Real*"
             id="search_school_name"
             phx-debounce="300"
             autofocus={@autofocus_field == :school_name}
@@ -117,6 +117,16 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
           Zurücksetzen
         </button>
       </div>
+      <%= if @search_params["location"] == "" and @search_params["school_name"] == "" do %>
+        <div class="mt-3 text-xs text-gray-500">
+          <span class="inline-flex items-center gap-1">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Tipp: Verwenden Sie * für erweiterte Suchen (z.B. *dorf findet alle Orte die auf "dorf" enden)
+          </span>
+        </div>
+      <% end %>
       <%= render_slot(@below_form) %>
     </form>
     """
