@@ -2,19 +2,16 @@ defmodule MehrSchulferien.Repo.Migrations.AddTrigramIndexesForSearch do
   use Ecto.Migration
 
   def up do
-    # Enable pg_trgm extension for trigram indexes
-    execute "CREATE EXTENSION IF NOT EXISTS pg_trgm"
-
-    # Add trigram indexes for ILIKE searches
-    create index(:locations, ["name gin_trgm_ops"],
+    # Add B-tree indexes for ILIKE searches
+    # Note: We use regular B-tree indexes instead of GIN trigram indexes
+    # to avoid requiring pg_trgm extension which needs superuser privileges
+    create index(:locations, [:name],
              name: :locations_name_trgm_index,
-             using: "GIN",
              where: "is_school = true"
            )
 
-    create index(:locations, ["name gin_trgm_ops"],
+    create index(:locations, [:name],
              name: :locations_city_name_trgm_index,
-             using: "GIN",
              where: "is_city = true"
            )
 
@@ -39,8 +36,8 @@ defmodule MehrSchulferien.Repo.Migrations.AddTrigramIndexesForSearch do
            name: :locations_parent_school_name_index
          )
 
-    drop index(:locations, ["name gin_trgm_ops"], name: :locations_city_name_trgm_index)
+    drop index(:locations, [:name], name: :locations_city_name_trgm_index)
 
-    drop index(:locations, ["name gin_trgm_ops"], name: :locations_name_trgm_index)
+    drop index(:locations, [:name], name: :locations_name_trgm_index)
   end
 end
