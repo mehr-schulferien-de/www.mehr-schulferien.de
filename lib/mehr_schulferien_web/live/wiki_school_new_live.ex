@@ -165,7 +165,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   defp create_school_with_address(school_name, address_params, city, socket) do
     # Generate slug with zip code prefix
     zip_code = Map.get(address_params, "zip_code", "")
-    base_slug = Slugger.slugify_downcase(school_name)
+    base_slug = MehrSchulferien.SlugGenerator.slugify_downcase(school_name)
     school_slug = "#{zip_code}-#{base_slug}"
 
     # Create school location attrs

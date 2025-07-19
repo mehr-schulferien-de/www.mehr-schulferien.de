@@ -54,7 +54,7 @@ defmodule MehrSchulferien.Slugs do
     end
 
     defp get_slug_base(slug, federal_state_code) do
-      slug <> "-" <> Slugger.slugify_downcase(federal_state_code)
+      slug <> "-" <> MehrSchulferien.SlugGenerator.slugify_downcase(federal_state_code)
     end
 
     defp format_slug(slug, 0), do: slug

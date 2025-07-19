@@ -221,7 +221,7 @@ defmodule MehrSchulferienWeb.HomeLiveTest do
           slug: "koblenz",
           parent_location_id: county.id
         )
-        
+
       # Create additional cities to make the statistics section appear
       city2 =
         insert(:city,
@@ -229,7 +229,7 @@ defmodule MehrSchulferienWeb.HomeLiveTest do
           slug: "mainz",
           parent_location_id: county.id
         )
-        
+
       city3 =
         insert(:city,
           name: "Trier",

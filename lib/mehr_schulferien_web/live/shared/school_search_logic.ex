@@ -16,7 +16,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
   Checks if text is a partial or full zip code (1-5 digits)
   """
   def is_partial_or_full_zip_code?(nil), do: false
-  
+
   def is_partial_or_full_zip_code?(text) do
     String.length(text) >= 1 and String.length(text) <= 5 and Regex.match?(~r/^\d+$/, text)
   end
@@ -52,11 +52,11 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
       String.contains?(text, "*") ->
         # Replace * with % for SQL wildcard
         String.replace(text, "*", "%")
-      
+
       default_prefix ->
         # Default: search from beginning (starts with)
         "#{text}%"
-      
+
       true ->
         # Contains search
         "%#{text}%"
@@ -84,7 +84,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         where: s.is_school == true,
         where: like(zc.value, ^zip_pattern) or like(a.zip_code, ^zip_pattern)
 
-    query = 
+    query =
       if federal_state_id && federal_state_id != "" do
         from [s, city, county, a, zcm, zc] in base_query,
           where: county.parent_location_id == ^String.to_integer(federal_state_id)
@@ -95,6 +95,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
     query =
       if String.length(school_name) >= 1 do
         school_pattern = prepare_search_pattern(school_name)
+
         from [s, city, county, a, zcm, zc] in query,
           where: ilike(s.name, ^school_pattern)
       else
@@ -143,7 +144,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         on: a.school_location_id == s.id,
         where: c.is_city == true and ilike(c.name, ^city_pattern)
 
-    query = 
+    query =
       if federal_state_id && federal_state_id != "" do
         from [c, county, federal_state, s, a] in base_query,
           where: federal_state.id == ^String.to_integer(federal_state_id)
@@ -154,6 +155,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
     query =
       if String.length(school_name) >= 1 do
         school_pattern = prepare_search_pattern(school_name)
+
         from [c, county, federal_state, s, a] in query,
           where: ilike(s.name, ^school_pattern)
       else
@@ -202,7 +204,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         on: a.school_location_id == s.id,
         where: s.is_school == true and ilike(s.name, ^school_pattern)
 
-    query = 
+    query =
       if federal_state_id && federal_state_id != "" do
         from [s, city, county, federal_state, a] in base_query,
           where: federal_state.id == ^String.to_integer(federal_state_id)

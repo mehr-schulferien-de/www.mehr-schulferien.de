@@ -9,7 +9,7 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
   def mount(_params, session, socket) do
     # Get federal states for the search form
     federal_states = get_federal_states()
-    
+
     # Get location history from session
     recent_locations = load_recent_locations(session["recent_locations"])
 
@@ -50,11 +50,14 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
 
         # Check if location is a partial or full zip code
         SchoolSearchLogic.is_partial_or_full_zip_code?(location) ->
-          results = SchoolSearchLogic.search_schools_by_zip(location, school_name, federal_state_id)
+          results =
+            SchoolSearchLogic.search_schools_by_zip(location, school_name, federal_state_id)
+
           schools = SchoolSearchLogic.results_to_schools(results)
 
           # Only update federal state if exactly one city in results
           cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
+
           updated_search_params =
             if length(cities_with_schools) == 1 do
               # Detect federal state from results
@@ -72,33 +75,34 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
         # Regular search with location/school name
         String.length(location) >= 1 or String.length(school_name) >= 1 ->
           # Determine search type based on converted params
-          results = 
+          results =
             cond do
               search_params_for_query["city"] != "" and school_name != "" ->
                 SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"], 
-                  school_name, 
+                  search_params_for_query["city"],
+                  school_name,
                   federal_state_id
                 )
-              
+
               search_params_for_query["city"] != "" ->
                 SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"], 
-                  "", 
+                  search_params_for_query["city"],
+                  "",
                   federal_state_id
                 )
-              
+
               school_name != "" ->
                 SchoolSearchLogic.search_schools_by_name(school_name, federal_state_id)
-              
+
               true ->
                 []
             end
 
           schools = SchoolSearchLogic.results_to_schools(results)
-          
+
           # Only update federal state if exactly one city in results
           cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
+
           updated_search_params =
             if length(cities_with_schools) == 1 and federal_state_id == "" do
               if detected_state = SchoolSearchLogic.detect_single_federal_state(results) do
@@ -171,11 +175,14 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
 
         # Check if location is a partial or full zip code
         SchoolSearchLogic.is_partial_or_full_zip_code?(location) ->
-          results = SchoolSearchLogic.search_schools_by_zip(location, school_name, federal_state_id)
+          results =
+            SchoolSearchLogic.search_schools_by_zip(location, school_name, federal_state_id)
+
           schools = SchoolSearchLogic.results_to_schools(results)
 
           # Only update federal state if exactly one city in results
           cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
+
           updated_search_params =
             if length(cities_with_schools) == 1 do
               # Detect federal state from results
@@ -205,33 +212,34 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
         # Regular search with location/school name (single character allowed)
         String.length(location) >= 1 or String.length(school_name) >= 1 ->
           # Determine search type based on converted params
-          results = 
+          results =
             cond do
               search_params_for_query["city"] != "" and school_name != "" ->
                 SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"], 
-                  school_name, 
+                  search_params_for_query["city"],
+                  school_name,
                   federal_state_id
                 )
-              
+
               search_params_for_query["city"] != "" ->
                 SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"], 
-                  "", 
+                  search_params_for_query["city"],
+                  "",
                   federal_state_id
                 )
-              
+
               school_name != "" ->
                 SchoolSearchLogic.search_schools_by_name(school_name, federal_state_id)
-              
+
               true ->
                 []
             end
 
           schools = SchoolSearchLogic.results_to_schools(results)
-          
+
           # Only update federal state if exactly one city in results
           cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
+
           updated_search_params =
             if length(cities_with_schools) == 1 and federal_state_id == "" do
               if detected_state = SchoolSearchLogic.detect_single_federal_state(results) do
@@ -349,77 +357,79 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
   end
 
   # Removed - now using SchoolSearchLogic.search_schools_by_federal_state
-  
+
   defp load_recent_locations(nil), do: []
   defp load_recent_locations(""), do: []
-  
+
   defp load_recent_locations(locations_str) do
     # Get country for lookups
-    country = try do
-      Locations.get_country_by_slug!("d")
-    rescue
-      _ -> nil
-    end
-    
+    country =
+      try do
+        Locations.get_country_by_slug!("d")
+      rescue
+        _ -> nil
+      end
+
     locations_str
     |> String.split(",")
     |> Enum.map(&parse_location_entry/1)
     |> Enum.reject(&is_nil/1)
     |> Enum.map(fn {type, slug} ->
-      location = case type do
-        "f" ->
-          try do
-            fs = Locations.get_federal_state_by_slug!(slug, country)
-            %{type: :federal_state, location: fs, name: fs.name, slug: fs.slug}
-          rescue
-            _ -> nil
-          end
-          
-        "c" ->
-          try do
-            city = Locations.get_city_by_slug!(slug)
-            %{type: :city, location: city, name: city.name, slug: city.slug}
-          rescue
-            _ -> nil
-          end
-          
-        "s" ->
-          try do
-            school = Locations.get_school_by_slug!(slug)
-            # Get parent city for display
-            city = Locations.get_location!(school.parent_location_id)
-            %{
-              type: :school, 
-              location: school, 
-              name: school.name, 
-              slug: school.slug,
-              city_name: city.name
-            }
-          rescue
-            _ -> nil
-          end
-      end
-      
+      location =
+        case type do
+          "f" ->
+            try do
+              fs = Locations.get_federal_state_by_slug!(slug, country)
+              %{type: :federal_state, location: fs, name: fs.name, slug: fs.slug}
+            rescue
+              _ -> nil
+            end
+
+          "c" ->
+            try do
+              city = Locations.get_city_by_slug!(slug)
+              %{type: :city, location: city, name: city.name, slug: city.slug}
+            rescue
+              _ -> nil
+            end
+
+          "s" ->
+            try do
+              school = Locations.get_school_by_slug!(slug)
+              # Get parent city for display
+              city = Locations.get_location!(school.parent_location_id)
+
+              %{
+                type: :school,
+                location: school,
+                name: school.name,
+                slug: school.slug,
+                city_name: city.name
+              }
+            rescue
+              _ -> nil
+            end
+        end
+
       location
     end)
     |> Enum.reject(&is_nil/1)
   end
-  
+
   defp parse_location_entry(entry) do
     case String.split(entry, ":") do
       [type, slug] when type in ["f", "c", "s"] -> {type, slug}
       _ -> nil
     end
   end
-  
+
   defp should_show_recent_locations(search_params) do
     # Show recent locations only when both text fields are empty
     location = Map.get(search_params, "location", "")
     school_name = Map.get(search_params, "school_name", "")
-    
+
     location == "" and school_name == ""
   end
-  
 
   @impl true
   def render(assigns) do
@@ -474,7 +484,7 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
         autofocus_field={:location}
       >
         <:below_form>
-          <.location_history 
+          <.location_history
             recent_locations={@recent_locations}
             show={should_show_recent_locations(@search_params)}
           />

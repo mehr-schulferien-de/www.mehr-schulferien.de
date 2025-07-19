@@ -45,7 +45,6 @@ defmodule MehrSchulferien.MixProject do
       {:sitemap, "~> 1.0"},
       {:ex_doc, "~> 0.38", only: :dev, runtime: false},
       {:ecto_autoslug_field, "~> 3.0"},
-      {:slugger, "~> 0.3"},
       {:req, "~> 0.5.10"},
       {:tidewave, "~> 0.1.6", only: :dev},
       {:ex_phone_number, "~> 0.4.8"},

@@ -87,6 +87,7 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
           _ -> IO.puts("No version text found at all")
         end
       end
+
       assert html =~ "Version ##{latest_version.id}"
 
       # Check that version history shows something changed

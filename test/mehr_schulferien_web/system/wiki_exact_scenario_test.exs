@@ -83,18 +83,20 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
       # Debug: Check what's actually in the version history
       if not (html =~ "Geänderte Felder:") do
         IO.puts("Version history content check:")
+
         if html =~ "Versionshistorie" do
           IO.puts("Version history section exists")
           # Extract version history content
           case Regex.run(~r/<div[^>]*class="[^"]*divide-y[^"]*"[^>]*>(.*?)<\/div>/s, html) do
             [_, content] ->
               IO.puts("Version content snippet: #{String.slice(content, 0, 200)}...")
+
             _ ->
               IO.puts("Could not extract version history content")
           end
         end
       end
-      
+
       # For now, just check that version history exists and has changes
       assert html =~ "Versionshistorie"
       assert html =~ "2 Änderungen"

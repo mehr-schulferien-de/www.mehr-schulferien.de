@@ -185,69 +185,71 @@ defmodule MehrSchulferienWeb.HomeLive do
   defp load_location_history_from_session(session) do
     # Extract cookie values from session
     Logger.info("HomeLive - Session data: #{inspect(session)}")
-    
+
     recent_locations_str = session["recent_locations"]
     Logger.info("HomeLive - Recent locations string: #{inspect(recent_locations_str)}")
-    
+
     load_recent_locations(recent_locations_str)
   end
 
   defp load_recent_locations(nil), do: []
   defp load_recent_locations(""), do: []
-  
+
   defp load_recent_locations(locations_str) do
-    
     # Get country for lookups
-    country = try do
-      Locations.get_country_by_slug!("d")
-    rescue
-      _ -> nil
-    end
-    
+    country =
+      try do
+        Locations.get_country_by_slug!("d")
+      rescue
+        _ -> nil
+      end
+
     locations_str
     |> String.split(",")
     |> Enum.map(&parse_location_entry/1)
     |> Enum.reject(&is_nil/1)
     |> Enum.map(fn {type, slug} ->
-      location = case type do
-        "f" ->
-          try do
-            fs = Locations.get_federal_state_by_slug!(slug, country)
-            %{type: :federal_state, location: fs, name: fs.name, slug: fs.slug}
-          rescue
-            _ -> nil
-          end
-          
-        "c" ->
-          try do
-            city = Locations.get_city_by_slug!(slug)
-            %{type: :city, location: city, name: city.name, slug: city.slug}
-          rescue
-            _ -> nil
-          end
-          
-        "s" ->
-          try do
-            school = Locations.get_school_by_slug!(slug)
-            # Get parent city for display
-            city = Locations.get_location!(school.parent_location_id)
-            %{
-              type: :school, 
-              location: school, 
-              name: school.name, 
-              slug: school.slug,
-              city_name: city.name
-            }
-          rescue
-            _ -> nil
-          end
-      end
-      
+      location =
+        case type do
+          "f" ->
+            try do
+              fs = Locations.get_federal_state_by_slug!(slug, country)
+              %{type: :federal_state, location: fs, name: fs.name, slug: fs.slug}
+            rescue
+              _ -> nil
+            end
+
+          "c" ->
+            try do
+              city = Locations.get_city_by_slug!(slug)
+              %{type: :city, location: city, name: city.name, slug: city.slug}
+            rescue
+              _ -> nil
+            end
+
+          "s" ->
+            try do
+              school = Locations.get_school_by_slug!(slug)
+              # Get parent city for display
+              city = Locations.get_location!(school.parent_location_id)
+
+              %{
+                type: :school,
+                location: school,
+                name: school.name,
+                slug: school.slug,
+                city_name: city.name
+              }
+            rescue
+              _ -> nil
+            end
+        end
+
       location
     end)
     |> Enum.reject(&is_nil/1)
   end
-  
+
   defp parse_location_entry(entry) do
     case String.split(entry, ":") do
       [type, slug] when type in ["f", "c", "s"] -> {type, slug}
@@ -498,9 +500,9 @@ defmodule MehrSchulferienWeb.HomeLive do
   end
 
   # Helper functions for the new search logic
-  
+
   defp is_partial_or_full_zip_code?(nil), do: false
-  
+
   defp is_partial_or_full_zip_code?(text) do
     # Check if it's all digits and between 1-5 characters
     String.length(text) >= 1 and String.length(text) <= 5 and Regex.match?(~r/^\d+$/, text)
@@ -532,28 +534,29 @@ defmodule MehrSchulferienWeb.HomeLive do
     # Support wildcard searches with *
     if String.contains?(city_name, "*") do
       # Wildcard search - replace * with .* for regex
-      pattern = city_name 
+      pattern =
+        city_name
         |> String.downcase()
         |> String.replace("*", ".*")
         |> Regex.compile!()
-      
+
       filtered_cities =
         socket.assigns.cities_with_schools
         |> Enum.filter(fn {city, _schools} ->
           Regex.match?(pattern, String.downcase(city.name))
         end)
-      
+
       assign(socket, :cities_with_schools, filtered_cities)
     else
       # Default: search from beginning of name
       city_pattern = String.downcase(city_name)
-      
+
       filtered_cities =
         socket.assigns.cities_with_schools
         |> Enum.filter(fn {city, _schools} ->
           String.starts_with?(String.downcase(city.name), city_pattern)
         end)
-      
+
       assign(socket, :cities_with_schools, filtered_cities)
     end
   end
@@ -562,11 +565,12 @@ defmodule MehrSchulferienWeb.HomeLive do
     # Support wildcard searches with *
     if String.contains?(school_name, "*") do
       # Wildcard search - replace * with .* for regex
-      pattern = school_name 
+      pattern =
+        school_name
         |> String.downcase()
         |> String.replace("*", ".*")
         |> Regex.compile!()
-      
+
       filtered_cities =
         socket.assigns.cities_with_schools
         |> Enum.map(fn {city, schools} ->
@@ -574,15 +578,16 @@ defmodule MehrSchulferienWeb.HomeLive do
             Enum.filter(schools, fn school ->
               Regex.match?(pattern, String.downcase(school.name))
             end)
+
           {city, filtered_schools}
         end)
         |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
-      
+
       assign(socket, :cities_with_schools, filtered_cities)
     else
       # Default: search from beginning of name
       school_pattern = String.downcase(school_name)
-      
+
       filtered_cities =
         socket.assigns.cities_with_schools
         |> Enum.map(fn {city, schools} ->
@@ -590,10 +595,11 @@ defmodule MehrSchulferienWeb.HomeLive do
             Enum.filter(schools, fn school ->
               String.starts_with?(String.downcase(school.name), school_pattern)
             end)
+
           {city, filtered_schools}
         end)
         |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
-      
+
       assign(socket, :cities_with_schools, filtered_cities)
     end
   end
@@ -604,7 +610,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
     # Use LIKE for partial zip code matching (starts with)
     zip_pattern = "#{zip_code}%"
-    
+
     # Optimized query with minimal fields
     query =
       from s in MehrSchulferien.Locations.Location,
@@ -663,7 +669,7 @@ defmodule MehrSchulferienWeb.HomeLive do
       # Group schools by city - ensure we're grouping by city ID to avoid issues
       cities_with_schools =
         schools
-        |> Enum.group_by(fn school -> 
+        |> Enum.group_by(fn school ->
           # Group by city ID to ensure unique cities are properly detected
           school.parent_location.id
         end)
@@ -675,30 +681,33 @@ defmodule MehrSchulferienWeb.HomeLive do
         |> Enum.sort_by(fn {city, _} -> city.name end)
 
       # Check if all schools are from a single city
-      unique_cities = 
+      unique_cities =
         cities_with_schools
         |> Enum.map(fn {city, _} -> city.id end)
         |> Enum.uniq()
-      
+
       # Only update federal state if there's exactly one city
       if length(unique_cities) == 1 do
         # Single city - get its federal state
         {city, _} = hd(cities_with_schools)
         federal_state = city.parent_location.parent_location
-        
+
         # Update search params with federal state
-        search_params = Map.put(socket.assigns.search_params, "federal_state_id", to_string(federal_state.id))
+        search_params =
+          Map.put(socket.assigns.search_params, "federal_state_id", to_string(federal_state.id))
+
         socket = assign(socket, :search_params, search_params)
-        
+
         # Load federal state overview
         federal_state_overview =
           load_federal_state_overview(to_string(federal_state.id), socket.assigns.today)
-        
+
         socket
         |> assign(:federal_state_overview, federal_state_overview)
       else
         # Multiple cities - don't set federal state
         search_params = Map.put(socket.assigns.search_params, "federal_state_id", "")
+
         socket
         |> assign(:search_params, search_params)
       end
@@ -729,14 +738,15 @@ defmodule MehrSchulferienWeb.HomeLive do
     alias MehrSchulferien.Repo
 
     # Support wildcard searches with * 
-    city_pattern = if String.contains?(city_name, "*") do
-      # Replace * with % for SQL wildcard
-      city_name |> String.replace("*", "%")
-    else
-      # Default: search from beginning of words
-      # This will match "Koblenz", "Kassel" but not "Frankfurt" for search "k"
-      "#{city_name}%"
-    end
+    city_pattern =
+      if String.contains?(city_name, "*") do
+        # Replace * with % for SQL wildcard
+        city_name |> String.replace("*", "%")
+      else
+        # Default: search from beginning of words
+        # This will match "Koblenz", "Kassel" but not "Frankfurt" for search "k"
+        "#{city_name}%"
+      end
 
     # Optimized single query to get cities with schools
     query =
@@ -777,7 +787,8 @@ defmodule MehrSchulferienWeb.HomeLive do
         |> Enum.group_by(fn r ->
           {r.city_id, r.city_name, r.city_slug, r.county_id, r.federal_state_id}
         end)
-        |> Enum.map(fn {{city_id, city_name, city_slug, county_id, federal_state_id}, school_results} ->
+        |> Enum.map(fn {{city_id, city_name, city_slug, county_id, federal_state_id},
+                        school_results} ->
           city = %{
             id: city_id,
             name: city_name,
@@ -828,6 +839,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           else
             # Multiple cities - don't set federal state
             search_params = Map.put(socket.assigns.search_params, "federal_state_id", "")
+
             socket
             |> assign(:search_params, search_params)
           end
@@ -856,13 +868,14 @@ defmodule MehrSchulferienWeb.HomeLive do
     alias MehrSchulferien.Repo
 
     # Support wildcard searches with * 
-    school_pattern = if String.contains?(school_name, "*") do
-      # Replace * with % for SQL wildcard
-      school_name |> String.replace("*", "%")
-    else
-      # Default: search from beginning of name
-      "#{school_name}%"
-    end
+    school_pattern =
+      if String.contains?(school_name, "*") do
+        # Replace * with % for SQL wildcard
+        school_name |> String.replace("*", "%")
+      else
+        # Default: search from beginning of name
+        "#{school_name}%"
+      end
 
     # Optimized query for school search
     query =
@@ -938,7 +951,8 @@ defmodule MehrSchulferienWeb.HomeLive do
             load_federal_state_overview(to_string(federal_state.id), socket.assigns.today)
 
           # Update search params with federal state
-          search_params = Map.put(socket.assigns.search_params, "federal_state_id", to_string(federal_state.id))
+          search_params =
+            Map.put(socket.assigns.search_params, "federal_state_id", to_string(federal_state.id))
 
           socket
           |> assign(:federal_state_overview, federal_state_overview)
@@ -946,6 +960,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         else
           # Multiple cities - don't set federal state
           search_params = Map.put(socket.assigns.search_params, "federal_state_id", "")
+
           socket
           |> assign(:search_params, search_params)
         end
@@ -977,16 +992,14 @@ defmodule MehrSchulferienWeb.HomeLive do
   defp get_federal_state_name(nil), do: ""
   defp get_federal_state_name(%{federal_state: %{name: name}}), do: name
   defp get_federal_state_name(_), do: ""
-  
-  
+
   defp should_show_recent_locations(search_params) do
     # Show recent locations only when both text fields are empty
     location = Map.get(search_params, "location", "")
     school_name = Map.get(search_params, "school_name", "")
-    
+
     location == "" and school_name == ""
   end
-  
 
   defp get_next_bridge_days(bridge_day_map, public_periods, today) do
     # Collect all bridge day opportunities
@@ -1038,7 +1051,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         searching={@searching}
       >
         <:below_form>
-          <.location_history 
+          <.location_history
             recent_locations={@recent_locations}
             show={should_show_recent_locations(@search_params)}
           />
@@ -1064,8 +1077,8 @@ defmodule MehrSchulferienWeb.HomeLive do
                     <%= format_number(length(schools)) %>
                   </span>
                   <%= if length(schools) == 1,
-                         do: "Schule",
-                         else: "Schulen" %>
+                    do: "Schule",
+                    else: "Schulen" %>
                 </span>
               <% else %>
                 <span>
@@ -1180,8 +1193,10 @@ defmodule MehrSchulferienWeb.HomeLive do
                 <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
                   PLZ <%= @search_params["location"] %>
                   <%= if length(@cities_with_schools) == 1 do %>
-                    <% {city, _schools} = hd(@cities_with_schools) %>
-                    (<a href={~p"/ferien/d/stadt/#{city.slug}"} class="text-blue-600 hover:text-blue-800 underline"><%= city.name %></a>)
+                    <% {city, _schools} = hd(@cities_with_schools) %> (<a
+                      href={~p"/ferien/d/stadt/#{city.slug}"}
+                      class="text-blue-600 hover:text-blue-800 underline"
+                    ><%= city.name %></a>)
                   <% end %>
                 <% else %>
                   "<%= @search_params["location"] %>"
@@ -1194,8 +1209,10 @@ defmodule MehrSchulferienWeb.HomeLive do
                 <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
                   PLZ <%= @search_params["location"] %>
                   <%= if length(@cities_with_schools) == 1 do %>
-                    <% {city, _schools} = hd(@cities_with_schools) %>
-                    (<a href={~p"/ferien/d/stadt/#{city.slug}"} class="text-blue-600 hover:text-blue-800 underline"><%= city.name %></a>)
+                    <% {city, _schools} = hd(@cities_with_schools) %> (<a
+                      href={~p"/ferien/d/stadt/#{city.slug}"}
+                      class="text-blue-600 hover:text-blue-800 underline"
+                    ><%= city.name %></a>)
                   <% end %>
                 <% else %>
                   "<%= @search_params["location"] %>"
@@ -1254,7 +1271,9 @@ defmodule MehrSchulferienWeb.HomeLive do
                     </.text>
                   </div>
                   <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">Größte Stadt</.text>
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">
+                      Größte Stadt
+                    </.text>
                     <%= case Enum.max_by(@cities_with_schools, fn {_city, schools} -> length(schools) end, fn -> nil end) do %>
                       <% {city, schools} -> %>
                         <a
@@ -1325,7 +1344,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                     <div class="px-3 sm:px-5 py-2.5 sm:py-4 border-b border-gray-200">
                       <div class="flex items-baseline justify-between gap-2">
                         <%= if Map.has_key?(city, :slug) do %>
-                          <a 
+                          <a
                             href={~p"/ferien/d/stadt/#{city.slug}"}
                             class="text-sm sm:text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
                           >
