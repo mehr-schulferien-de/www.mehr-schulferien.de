@@ -192,7 +192,7 @@ defmodule MehrSchulferienWeb.WikiController do
 
           # Send email notification if there were any changes
           if school_version || address_version do
-            Task.start(fn ->
+            email_task = fn ->
               # Gather change information
               changes = gather_changes(school_version, address_version)
 
@@ -213,7 +213,14 @@ defmodule MehrSchulferienWeb.WikiController do
                 |> Mailer.deliver()
 
               Logger.info("Email send result: #{inspect(result)}")
-            end)
+            end
+
+            # Run synchronously in test environment to avoid connection ownership issues
+            if Application.get_env(:mehr_schulferien, :env) == :test do
+              email_task.()
+            else
+              Task.start(email_task)
+            end
           end
 
           # Get country slug for redirect to school vacation page
@@ -565,7 +572,7 @@ defmodule MehrSchulferienWeb.WikiController do
           Wiki.increment_daily_change_count(today)
 
           # Send email notification
-          Task.start(fn ->
+          email_task = fn ->
             Logger.info("Sending email notification for school deletion")
             Logger.info("School: #{inspect(school.name)}")
 
@@ -578,7 +585,14 @@ defmodule MehrSchulferienWeb.WikiController do
               |> Mailer.deliver()
 
             Logger.info("Email send result: #{inspect(result)}")
-          end)
+          end
+
+          # Run synchronously in test environment to avoid connection ownership issues
+          if Application.get_env(:mehr_schulferien, :env) == :test do
+            email_task.()
+          else
+            Task.start(email_task)
+          end
 
           # Redirect to city page if city exists, otherwise to country page
           redirect_path =

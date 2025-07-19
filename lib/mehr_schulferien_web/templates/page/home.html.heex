@@ -20,56 +20,6 @@
       (ab dem <%= Calendar.strftime(@custom_start_date, "%d.%m.%Y") %>)
     <% end %>.
   </.text>
-  <!-- Recent Locations Section -->
-  <%= if @recent_federal_state || length(@recent_cities) > 0 || length(@recent_schools) > 0 do %>
-    <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-      <h2 class="text-lg font-semibold text-blue-900 mb-3">Zuletzt besuchte Orte</h2>
-
-      <%= if @recent_federal_state do %>
-        <div class="mb-3">
-          <span class="text-sm text-gray-600">Bundesland: </span>
-          <a
-            href={~p"/ferien/d/bundesland/#{@recent_federal_state.slug}"}
-            class="text-blue-700 hover:text-blue-900 font-medium"
-          >
-            <%= @recent_federal_state.name %>
-          </a>
-        </div>
-      <% end %>
-
-      <%= if length(@recent_cities) > 0 do %>
-        <div class="mb-3">
-          <span class="text-sm text-gray-600">Städte: </span>
-          <span class="inline-flex gap-2 flex-wrap">
-            <%= for city <- @recent_cities do %>
-              <a href={~p"/ferien/d/stadt/#{city.slug}"} class="text-blue-700 hover:text-blue-900">
-                <%= city.name %>
-              </a>
-            <% end %>
-          </span>
-        </div>
-      <% end %>
-
-      <%= if length(@recent_schools) > 0 do %>
-        <div>
-          <span class="text-sm text-gray-600">Schulen: </span>
-          <div class="mt-1 space-y-1">
-            <%= for school <- @recent_schools do %>
-              <div>
-                <a
-                  href={~p"/ferien/d/schule/#{school.slug}"}
-                  class="text-blue-700 hover:text-blue-900"
-                >
-                  <%= school.name %>
-                </a>
-                <span class="text-xs text-gray-500 ml-1">(<%= school.cityName %>)</span>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
 
   <.card_grid>
     <%= for {%{country: _country, federal_states: federal_states, periods: periods}, country_index} <- Enum.with_index(@countries) do %>
