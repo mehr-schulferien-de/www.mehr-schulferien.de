@@ -26,19 +26,19 @@ defmodule MehrSchulferienWeb.SchoolComponentsTest do
       }
 
       html = render_component(&SchoolComponents.schema_org_event/1, assigns)
-      
+
       # Should only render one script tag for the valid period
       assert html =~ "Sommerferien"
       assert html =~ "2025-07-01"
       refute html =~ "2025-09-01"
-      
+
       # Count script tags - should be exactly 1
-      script_count = 
+      script_count =
         html
         |> String.split("</script>")
         |> length()
         |> Kernel.-(1)
-      
+
       assert script_count == 1
     end
 
@@ -64,7 +64,7 @@ defmodule MehrSchulferienWeb.SchoolComponentsTest do
       }
 
       html = render_component(&SchoolComponents.schema_org_event/1, assigns)
-      
+
       assert html =~ "Teststraße 123"
       assert html =~ "01234"
     end
@@ -88,7 +88,7 @@ defmodule MehrSchulferienWeb.SchoolComponentsTest do
       }
 
       html = render_component(&SchoolComponents.schema_org_event/1, assigns)
-      
+
       # Should have empty strings for address fields
       assert html =~ ~s("streetAddress":"")
       assert html =~ ~s("postalCode":"")
@@ -116,7 +116,7 @@ defmodule MehrSchulferienWeb.SchoolComponentsTest do
       }
 
       html = render_component(&SchoolComponents.schema_org_event/1, assigns)
-      
+
       # Should have empty strings for address fields when they're nil
       assert html =~ ~s("streetAddress":"")
       assert html =~ ~s("postalCode":"")
@@ -144,7 +144,7 @@ defmodule MehrSchulferienWeb.SchoolComponentsTest do
       }
 
       html = render_component(&SchoolComponents.schema_org_school/1, assigns)
-      
+
       assert html =~ "Test Gymnasium"
       assert html =~ "Teststraße 123"
       assert html =~ "01234"
@@ -167,7 +167,7 @@ defmodule MehrSchulferienWeb.SchoolComponentsTest do
       }
 
       html = render_component(&SchoolComponents.schema_org_school/1, assigns)
-      
+
       assert html =~ "Test Gymnasium"
       # Should have empty strings for geo coordinates
       assert html =~ ~s("latitude":"")
@@ -196,7 +196,7 @@ defmodule MehrSchulferienWeb.SchoolComponentsTest do
       }
 
       html = render_component(&SchoolComponents.schema_org_school/1, assigns)
-      
+
       assert html =~ "Test Gymnasium"
       assert html =~ "Teststraße 123"
       # Should have empty strings for nil geo coordinates

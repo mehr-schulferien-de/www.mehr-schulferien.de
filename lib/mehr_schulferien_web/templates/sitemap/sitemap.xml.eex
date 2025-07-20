@@ -1,51 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <%!-- DAILY UPDATES: Updated every day --%>
-  <sitemap>
+  <url>
     <loc>https://www.mehr-schulferien.de/</loc>
     <lastmod><%= @today %></lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://www.mehr-schulferien.de/sitemap.xml</loc>
-    <lastmod><%= @today %></lastmod>
-  </sitemap>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
 
   <%!-- MONTHLY UPDATES: Updated on the 1st of each month --%>
-  <sitemap>
+  <url>
     <loc>https://www.mehr-schulferien.de/developers</loc>
     <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
-  </sitemap>
-  <sitemap>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/impressum</loc>
     <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
-  </sitemap>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
   
   <%!-- VACATION TYPE OVERVIEW PAGES: Updated daily during the year --%>
-  <sitemap>
+  <url>
     <loc>https://www.mehr-schulferien.de/sommerferien</loc>
     <lastmod><%= @today %></lastmod>
-  </sitemap>
-  <sitemap>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/osterferien</loc>
     <lastmod><%= @today %></lastmod>
-  </sitemap>
-  <sitemap>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/herbstferien</loc>
     <lastmod><%= @today %></lastmod>
-  </sitemap>
-  <sitemap>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/weihnachtsferien</loc>
     <lastmod><%= @today %></lastmod>
-  </sitemap>
-  <sitemap>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/winterferien</loc>
     <lastmod><%= @today %></lastmod>
-  </sitemap>
-  <sitemap>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/pfingstferien</loc>
     <lastmod><%= @today %></lastmod>
-  </sitemap>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
 
   <%= for place <- @countries do %>
     <% country = place[:country] %>
@@ -55,10 +69,12 @@
 
     <%!-- YEARLY UPDATES: Updated on January 1st each year --%>
     <%!-- Country URLs --%>
-    <sitemap>
+    <url>
       <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %></loc>
       <lastmod><%= Date.new!(@today.year, 1, 1) %></lastmod>
-    </sitemap>
+      <changefreq>yearly</changefreq>
+      <priority>0.8</priority>
+    </url>
 
     <%!-- CONDITIONAL UPDATES: Update frequency depends on the year --%>
     <%!-- Past years: Static (updated once on Jan 1st of following year) --%>
@@ -69,96 +85,118 @@
     <%= for federal_state <- federal_states do %>
       <%!-- Years for federal state --%>
       <%= for year <- Map.get(federal_state, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
-        <sitemap>
+        <url>
           <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.8</priority>
+        </url>
         
         <%!-- Vacation-specific URLs for better SEO --%>
-        <sitemap>
+        <url>
           <loc>https://www.mehr-schulferien.de/sommerferien/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
-        <sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.7</priority>
+        </url>
+        <url>
           <loc>https://www.mehr-schulferien.de/osterferien/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
-        <sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.7</priority>
+        </url>
+        <url>
           <loc>https://www.mehr-schulferien.de/herbstferien/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
-        <sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.7</priority>
+        </url>
+        <url>
           <loc>https://www.mehr-schulferien.de/weihnachtsferien/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
-        <sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.7</priority>
+        </url>
+        <url>
           <loc>https://www.mehr-schulferien.de/winterferien/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
-        <sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.7</priority>
+        </url>
+        <url>
           <loc>https://www.mehr-schulferien.de/pfingstferien/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.7</priority>
+        </url>
         
         <%!-- Bridge days URLs for federal states --%>
-        <sitemap>
+        <url>
           <loc>https://www.mehr-schulferien.de/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
           <lastmod><%= cond do
             year < @today.year -> Date.new!(year + 1, 1, 1)
             year == @today.year -> @today
             true -> Date.new!(@today.year, 1, 1)
           end %></lastmod>
-        </sitemap>
+          <changefreq><%= if year == @today.year, do: "daily", else: "yearly" %></changefreq>
+          <priority>0.7</priority>
+        </url>
       <% end %>
     <% end %>
 
     <%!-- Cities URLs --%>
     <%= for city <- cities do %>
-      <sitemap>
+      <url>
         <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/stadt/<%= city.slug %></loc>
         <lastmod><%= @today %></lastmod>
-      </sitemap>
+        <changefreq>daily</changefreq>
+        <priority>0.6</priority>
+      </url>
     <% end %>
 
     <%!-- Schools URLs --%>
     <%= for school <- schools do %>
       <%!-- Static school pages --%>
-      <sitemap>
+      <url>
         <loc>https://www.mehr-schulferien.de/briefe/<%= school.slug %>/entschuldigung</loc>
         <lastmod><%= Date.beginning_of_month(@today) %></lastmod>
-      </sitemap>
-      <sitemap>
+        <changefreq>daily</changefreq>
+        <priority>0.6</priority>
+      </url>
+      <url>
         <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/schule/<%= school.slug %></loc>
         <lastmod><%= @today %></lastmod>
-      </sitemap>
+        <changefreq>daily</changefreq>
+        <priority>0.6</priority>
+      </url>
     <% end %>
   <% end %>
-</sitemapindex>
+</urlset>

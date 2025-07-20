@@ -30,7 +30,7 @@ defmodule MehrSchulferienWeb.SitemapSystemTest do
       # Check XML format
       response = response(conn, 200)
       assert response =~ ~s(<?xml version="1.0" encoding="UTF-8"?>)
-      assert response =~ ~s(<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
+      assert response =~ ~s(<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
 
       # Check main pages - homepage URL
       assert response =~ ~r{<loc>https?://[^<]+/</loc>}

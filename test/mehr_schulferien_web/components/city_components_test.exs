@@ -25,19 +25,19 @@ defmodule MehrSchulferienWeb.CityComponentsTest do
       }
 
       html = render_component(&CityComponents.schema_org_event/1, assigns)
-      
+
       # Should only render one script tag for the valid period
       assert html =~ "Sommerferien"
       assert html =~ "2025-07-01"
       refute html =~ "2025-09-01"
-      
+
       # Count script tags - should be exactly 1
-      script_count = 
+      script_count =
         html
         |> String.split("</script>")
         |> length()
         |> Kernel.-(1)
-      
+
       assert script_count == 1
     end
 
@@ -61,20 +61,20 @@ defmodule MehrSchulferienWeb.CityComponentsTest do
       }
 
       html = render_component(&CityComponents.schema_org_event/1, assigns)
-      
+
       # Should render both periods
       assert html =~ "Sommerferien"
       assert html =~ "2025-07-01"
       assert html =~ "Herbstferien"
       assert html =~ "2025-10-01"
-      
+
       # Count script tags - should be exactly 2
-      script_count = 
+      script_count =
         html
         |> String.split("</script>")
         |> length()
         |> Kernel.-(1)
-      
+
       assert script_count == 2
     end
   end
