@@ -111,7 +111,7 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def impressum(conn, _params) do
-    render(conn, "impressum.html")
+    render(conn, "impressum.html", css_framework: :tailwind_new)
   end
 
   def home(conn, params) do

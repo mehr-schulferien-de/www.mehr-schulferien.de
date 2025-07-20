@@ -81,4 +81,19 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     # Check for description meta tag
     assert html_response(conn, 200) =~ "Ferien und Feiertage der nächsten"
   end
+
+  test "GET /impressum returns 200", %{conn: conn} do
+    conn = get(conn, "/impressum")
+    response = html_response(conn, 200)
+
+    # Check that page renders with 200 status code
+    assert response
+
+    # Check that it includes the main heading
+    assert response =~ "Impressum und Datenschutzerklärung"
+
+    # Check for some content
+    assert response =~ "Stefan Wintermeyer"
+    assert response =~ "Datenschutzerklärung"
+  end
 end
