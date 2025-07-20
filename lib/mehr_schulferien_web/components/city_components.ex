@@ -7,7 +7,7 @@ defmodule MehrSchulferienWeb.CityComponents do
 
   def schema_org_event(assigns) do
     ~H"""
-    <%= for period <- @periods do %>
+    <%= for period <- @periods, period.holiday_or_vacation_type do %>
       <script type="application/ld+json">
         <%= Phoenix.HTML.raw(Jason.encode!(%{
           "@context" => "http://schema.org",

@@ -50,7 +50,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
 
   def schema_org_event(assigns) do
     ~H"""
-    <%= for period <- @periods do %>
+    <%= for period <- @periods, period.holiday_or_vacation_type do %>
       <script type="application/ld+json">
         <%= Phoenix.HTML.raw(Jason.encode!(%{
           "@context" => "http://schema.org",
@@ -65,9 +65,9 @@ defmodule MehrSchulferienWeb.SchoolComponents do
             "name" => @school.name,
             "address" => %{
               "@type" => "PostalAddress",
-              "streetAddress" => if(@school.address, do: @school.address.street, else: ""),
+              "streetAddress" => if(@school.address && @school.address.street, do: @school.address.street, else: ""),
               "addressLocality" => @city.name,
-              "postalCode" => if(@school.address, do: @school.address.zip_code, else: ""),
+              "postalCode" => if(@school.address && @school.address.zip_code, do: @school.address.zip_code, else: ""),
               "addressRegion" => @federal_state.name,
               "addressCountry" => @country.code
             }
@@ -136,8 +136,8 @@ defmodule MehrSchulferienWeb.SchoolComponents do
           "name" => @school.name,
           "geo" => %{
             "@type" => "GeoCoordinates",
-            "latitude" => Map.get(@school, :latitude, ""),
-            "longitude" => Map.get(@school, :longitude, "")
+            "latitude" => if(@school.address && @school.address.lat, do: @school.address.lat, else: ""),
+            "longitude" => if(@school.address && @school.address.lon, do: @school.address.lon, else: "")
           }
         }, @optional_fields)
       )) %>

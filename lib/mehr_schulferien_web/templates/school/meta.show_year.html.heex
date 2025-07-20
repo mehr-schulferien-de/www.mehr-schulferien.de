@@ -10,7 +10,7 @@
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
     %{name: @country.name, item: "https://www.mehr-schulferien.de" <> ~p"/ferien/#{@country.slug}"},
     %{name: "Ferientermine #{@federal_state.name}", item: "https://www.mehr-schulferien.de" <> ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"},
-    %{name: @city.name, item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}/stadt/#{@city.slug}"},
+    %{name: @city.name, item: "https://www.mehr-schulferien.de" <> ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}"},
     %{name: "#{@school.name} #{@year}", item: "https://www.mehr-schulferien.de" <> ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{@year}"}
   ]) %>
 </script>
