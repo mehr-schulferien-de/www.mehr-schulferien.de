@@ -114,4 +114,61 @@ defmodule MehrSchulferienWeb.Api.V2.ICalControllerTest do
     assert content_disposition =~ "Schuljahr_2025-2026.ics"
     assert response_content_type(conn, :ics)
   end
+
+  test "prefers federal state when multiple locations have same slug", %{
+    conn: conn
+  } do
+    # Create a federal state with slug "hessen"
+    federal_state = insert(:federal_state, %{name: "Hessen", slug: "hessen"})
+
+    # Create a city with the same slug "hessen"
+    city = insert(:city, %{name: "Hessen", slug: "hessen"})
+
+    # Add periods for the federal state (in school year 2021/2022)
+    insert(:period, %{
+      location_id: federal_state.id,
+      starts_on: ~D[2021-10-11],
+      ends_on: ~D[2021-10-23],
+      is_school_vacation: true,
+      is_valid_for_students: true
+    })
+
+    # Add periods for the city (should not be included in result)
+    insert(:period, %{
+      location_id: city.id,
+      starts_on: ~D[2021-12-23],
+      ends_on: ~D[2022-01-08],
+      is_school_vacation: true,
+      is_valid_for_students: true
+    })
+
+    # Request iCal for "hessen" - should get federal state data
+    conn =
+      get(
+        conn,
+        ~p"/api/v2.0/icalendars/location/hessen?vacation_types=school&year=2021"
+      )
+
+    assert response_content_type(conn, :ics)
+    response = response(conn, 200)
+
+    # Should contain the federal state's vacation period
+    assert String.contains?(response, "DTSTART;VALUE=DATE:20211011")
+    # iCal uses exclusive end date
+    assert String.contains?(response, "DTEND;VALUE=DATE:20211024")
+    assert String.contains?(response, "Hessen")
+
+    # Should NOT contain the city's vacation period dates
+    refute String.contains?(response, "20211223")
+    # Would be 20220109 as exclusive end date
+    refute String.contains?(response, "20220109")
+
+    # Verify the filename uses the federal state name
+    content_disposition =
+      Enum.find_value(conn.resp_headers, fn {header, value} ->
+        if header == "content-disposition", do: value, else: nil
+      end)
+
+    assert content_disposition =~ "Schulferien_Hessen_Schuljahr_2021-2022.ics"
+  end
 end

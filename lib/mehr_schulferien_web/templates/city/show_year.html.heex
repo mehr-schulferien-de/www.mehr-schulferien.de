@@ -44,7 +44,13 @@
         </.card>
       </div>
       <div class="lg:w-1/3">
-        <.ical_panel conn={@conn} entity_slug={@city.slug} entity_name={@city.name} year={@year} />
+        <.ical_panel
+          conn={@conn}
+          entity_slug={@city.slug}
+          entity_name={@city.name}
+          entity_type="city"
+          year={@year}
+        />
 
         <.card padding="p-4" class="mt-4">
           <:content>

@@ -25,15 +25,18 @@ defmodule MehrSchulferien.Factory do
     name = attrs[:name] || Enum.random(["Herbst", "Sommer", "Weihnachts"])
     country_id = attrs[:country_location_id] || insert(:country).id
 
+    # Check if name already has "ferien" suffix
+    colloquial = if String.ends_with?(name, "ferien"), do: name, else: "#{name}ferien"
+
     holiday_or_vacation_type = %HolidayOrVacationType{
       name: name,
-      colloquial: "#{name}ferien",
+      colloquial: colloquial,
       default_display_priority: 3,
       default_html_class: "green",
       default_is_listed_below_month: true,
       default_is_school_vacation: true,
       default_is_valid_for_students: true,
-      slug: String.downcase("name"),
+      slug: String.downcase(name),
       wikipedia_url: "https://de.wikipedia.org/wiki/Schulferien##{name}ferien",
       country_location_id: country_id
     }
@@ -97,17 +100,26 @@ defmodule MehrSchulferien.Factory do
     merge_attributes(school, attrs)
   end
 
-  def period_factory do
-    federal_state = insert(:federal_state)
+  def period_factory(attrs \\ %{}) do
+    federal_state = Map.get(attrs, :location_id) || insert(:federal_state).id
 
-    %Period{
-      holiday_or_vacation_type: build(:holiday_or_vacation_type),
+    period = %Period{
       created_by_email_address: "sw@wintermeyer-consulting.de",
       display_priority: 3,
       starts_on: Faker.Date.between(~D[2010-12-01], ~D[2015-12-01]),
       ends_on: Faker.Date.between(~D[2016-12-01], ~D[2019-12-01]),
-      location_id: federal_state.id
+      location_id: federal_state
     }
+
+    # Only add the association if no ID is provided
+    period =
+      if Map.has_key?(attrs, :holiday_or_vacation_type_id) do
+        period
+      else
+        Map.put(period, :holiday_or_vacation_type, build(:holiday_or_vacation_type))
+      end
+
+    merge_attributes(period, attrs)
   end
 
   def religion_factory do

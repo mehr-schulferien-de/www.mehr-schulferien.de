@@ -1,6 +1,0 @@
-<meta name="description" content="Aktuelle Schulferien, Feiertage und Brückentage für alle 16 Bundesländer in Deutschland. Übersicht der nächsten <%= @number_of_days %> Tage<%= if @custom_start_date && Date.compare(@custom_start_date, Date.utc_today()) != :eq do %> ab <%= Calendar.strftime(@custom_start_date, "%d.%m.%Y") %><% end %> mit Terminen für 2025/2026. Kostenlos Entschuldigungen als PDF erstellen.">
-<title>Schulferien Deutschland 2025: Alle Bundesländer, Feiertage & Brückentage im Überblick</title>
-<link rel="canonical" href="<%= url(~p"/") %>">
-<%= if @noindex do %>
-<meta name="robots" content="noindex">
-<% end %> 

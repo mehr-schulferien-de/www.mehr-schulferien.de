@@ -45,8 +45,9 @@ defmodule MehrSchulferien.Periods.CustomICal do
   defp build_ical_content(events) do
     """
     BEGIN:VCALENDAR
-    CALSCALE:GREGORIAN
     VERSION:2.0
+    PRODID:-//mehr-schulferien.de//Mehr-Schulferien//DE
+    CALSCALE:GREGORIAN
     #{Enum.join(events, "\n")}
     END:VCALENDAR
     """

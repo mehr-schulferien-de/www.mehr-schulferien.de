@@ -107,6 +107,42 @@ defmodule MehrSchulferienWeb.Router do
     get "/icalendars/location/:slug", ICalController, :show
   end
 
+  # ========== API v2.1 Routes (improved structure) ==========
+  scope "/api/v2.1", MehrSchulferienWeb.Api.V21, as: :api_v21 do
+    pipe_through :api
+
+    # Federal States
+    resources "/federal-states", FederalStateController, only: [:index, :show], param: "slug"
+    get "/federal-states/:slug/periods", FederalStateController, :periods
+    get "/federal-states/:slug/icalendar", FederalStateController, :icalendar
+
+    # Cities
+    resources "/cities", CityController, only: [:index, :show], param: "slug"
+    get "/cities/:slug/periods", CityController, :periods
+    get "/cities/:slug/icalendar", CityController, :icalendar
+
+    # Counties
+    resources "/counties", CountyController, only: [:index, :show], param: "slug"
+    get "/counties/:slug/periods", CountyController, :periods
+    get "/counties/:slug/icalendar", CountyController, :icalendar
+
+    # Schools
+    resources "/schools", SchoolController, only: [:index, :show], param: "slug"
+    get "/schools/:slug/periods", SchoolController, :periods
+    get "/schools/:slug/icalendar", SchoolController, :icalendar
+    get "/schools/:slug/vcard", SchoolController, :vcard
+
+    # Countries
+    resources "/countries", CountryController, only: [:index, :show], param: "slug"
+    get "/countries/:slug/federal-states", CountryController, :federal_states
+
+    # Holiday/Vacation Types
+    resources "/holiday-vacation-types", HolidayVacationTypeController, only: [:index, :show]
+
+    # Periods
+    resources "/periods", PeriodController, only: [:index, :show]
+  end
+
   # ========== Main Routes (SEO-optimized /ferien/ URLs) ==========
   scope "/", MehrSchulferienWeb do
     pipe_through :browser

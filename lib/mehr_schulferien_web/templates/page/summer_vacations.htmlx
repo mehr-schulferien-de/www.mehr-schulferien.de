@@ -1,2 +1,0 @@
-<!-- This template is deprecated - summer_vacations now uses vacation_type.html.heex -->
-<%= render "vacation_type.html", Map.put(assigns, :vacation_type, "sommer") %>

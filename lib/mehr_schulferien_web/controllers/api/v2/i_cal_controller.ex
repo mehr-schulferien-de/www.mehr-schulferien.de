@@ -2,9 +2,13 @@ defmodule MehrSchulferienWeb.Api.V2.ICalController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Locations, Periods}
+  alias MehrSchulferien.Locations.Location
+  alias MehrSchulferien.Repo
+  import Ecto.Query
 
   def show(conn, %{"slug" => slug, "vacation_types" => vacation_types, "year" => year} = params) do
-    location = Locations.get_location_by_slug!(slug)
+    # First try to find a federal state with this slug, otherwise any location
+    location = get_location_by_slug_preferring_federal_state(slug)
     location_ids = Locations.recursive_location_ids(location)
     year = String.to_integer(year)
 
@@ -110,5 +114,22 @@ defmodule MehrSchulferienWeb.Api.V2.ICalController do
     conn
     |> put_resp_header("content-type", "text/calendar; charset=utf-8")
     |> put_resp_header("content-disposition", "attachment; filename=#{filename}")
+  end
+
+  defp get_location_by_slug_preferring_federal_state(slug) do
+    # First try to find a federal state with this slug
+    federal_state_query =
+      from l in Location,
+        where: l.slug == ^slug and l.is_federal_state == true
+
+    case Repo.one(federal_state_query) do
+      nil ->
+        # If no federal state found, get any location with this slug
+        # This maintains backward compatibility for other location types
+        Locations.get_location_by_slug!(slug)
+
+      location ->
+        location
+    end
   end
 end

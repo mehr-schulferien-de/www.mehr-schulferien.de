@@ -45,6 +45,8 @@ sudo apt-get install texlive-pstricks
 ## Documentation
 
 - [URL Parameters](docs/url_parameters.md) - Information about available URL parameters for customizing views
+- [API v2.1 Documentation](docs/api_v2.1.md) - REST API documentation with improved structure (recommended)
+- [API v2.0 Documentation](docs/api_v2.md) - Legacy REST API documentation
 
 ## Project Structure
 
