@@ -27,6 +27,7 @@ defmodule MehrSchulferien.MixProject do
 
   defp deps do
     [
+      {:usage_rules, "~> 0.1", only: [:dev]},
       {:phoenix, "~> 1.7.21"},
       {:phoenix_ecto, "~> 4.6.4"},
       {:ecto_sql, "~> 3.10"},
@@ -54,7 +55,8 @@ defmodule MehrSchulferien.MixProject do
       {:gen_smtp, "~> 1.2"},
       {:hackney, "~> 1.9"},
       {:tzdata, "~> 1.1"},
-      {:mix_version, "~> 2.5.0"}
+      {:mix_version, "~> 2.5.0"},
+      {:igniter, "~> 0.6", only: [:dev, :test]}
     ]
   end
 

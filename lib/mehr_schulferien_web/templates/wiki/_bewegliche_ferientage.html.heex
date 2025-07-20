@@ -1,105 +1,107 @@
-<div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-  <h2 class="text-xl font-semibold text-gray-900 mb-4">
-    Bewegliche Ferientage
-  </h2>
+<.card padding="p-6" variant="enhanced">
+  <:content>
+    <.heading level={2} class="text-xl mb-4">
+      Bewegliche Ferientage
+    </.heading>
 
-  <div class="mb-6">
-    <p class="text-sm text-gray-600 mb-4">
-      Bewegliche Ferientage sind zusätzliche freie Tage, die Schulen eigenständig festlegen können.
-    </p>
+    <div class="mb-6">
+      <.text variant="small" class="text-gray-600 mb-4">
+        Bewegliche Ferientage sind zusätzliche freie Tage, die Schulen eigenständig festlegen können.
+      </.text>
 
-    <%= if @limit_reached do %>
-      <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <p class="text-yellow-800 text-sm">
-          <strong>Hinweis:</strong> Das Tageslimit für Änderungen wurde erreicht.
-          Sie können die beweglichen Ferientage einsehen, aber keine Änderungen vornehmen.
-        </p>
-      </div>
-    <% end %>
-    <!-- New Beweglicher Ferientag Form -->
-    <%= if not @limit_reached do %>
-      <form phx-submit="add_beweglicher_ferientag" class="mb-6 p-4 bg-gray-50 rounded-lg">
-        <h3 class="text-lg font-medium text-gray-900 mb-3">
-          Neuen beweglichen Ferientag hinzufügen
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="ferientag_date" class="block text-sm font-medium text-gray-700 mb-1">
-              Datum
-            </label>
-            <input
-              type="date"
-              id="ferientag_date"
-              name="ferientag[date]"
-              required
-              min={Date.utc_today() |> Date.to_iso8601()}
-              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label for="ferientag_memo" class="block text-sm font-medium text-gray-700 mb-1">
-              Bemerkung/Grund
-            </label>
-            <input
-              type="text"
-              id="ferientag_memo"
-              name="ferientag[memo]"
-              placeholder="z.B. Pädagogischer Tag"
-              maxlength="255"
-              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-            />
-          </div>
-        </div>
-
-        <div class="mt-4">
-          <button
-            type="submit"
-            class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Beweglichen Ferientag hinzufügen
-          </button>
-        </div>
-      </form>
-    <% end %>
-    <!-- List of Bewegliche Ferientage -->
-    <div>
-      <h3 class="text-lg font-medium text-gray-900 mb-3">Aktuelle bewegliche Ferientage</h3>
-
-      <%= if @bewegliche_ferientage == [] do %>
-        <p class="text-gray-500 text-sm">
-          Für diese Schule sind noch keine beweglichen Ferientage eingetragen.
-        </p>
-      <% else %>
-        <div class="space-y-2">
-          <%= for ferientag <- @bewegliche_ferientage do %>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div>
-                <span class="font-medium text-gray-900">
-                  <%= Calendar.strftime(ferientag.starts_on, "%d.%m.%Y") %>
-                </span>
-                <%= if ferientag.memo do %>
-                  <span class="ml-2 text-sm text-gray-600">
-                    - <%= ferientag.memo %>
-                  </span>
-                <% end %>
-              </div>
-
-              <%= if not @limit_reached do %>
-                <button
-                  phx-click="delete_beweglicher_ferientag"
-                  phx-value-id={ferientag.id}
-                  data-confirm="Möchten Sie diesen beweglichen Ferientag wirklich löschen?"
-                  class="text-red-600 hover:text-red-800 text-sm font-medium"
-                >
-                  Löschen
-                </button>
-              <% end %>
-            </div>
-          <% end %>
+      <%= if @limit_reached do %>
+        <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <.text variant="small" class="text-yellow-800">
+            <strong>Hinweis:</strong> Das Tageslimit für Änderungen wurde erreicht.
+            Sie können die beweglichen Ferientage einsehen, aber keine Änderungen vornehmen.
+          </.text>
         </div>
       <% end %>
+      <!-- New Beweglicher Ferientag Form -->
+      <%= if not @limit_reached do %>
+        <form phx-submit="add_beweglicher_ferientag" class="mb-6 p-4 bg-gray-50 rounded-lg">
+          <.heading level={3} class="text-lg mb-3">
+            Neuen beweglichen Ferientag hinzufügen
+          </.heading>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="ferientag_date" class="block text-sm font-medium text-gray-700 mb-1">
+                Datum
+              </label>
+              <input
+                type="date"
+                id="ferientag_date"
+                name="ferientag[date]"
+                required
+                min={Date.utc_today() |> Date.to_iso8601()}
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="ferientag_memo" class="block text-sm font-medium text-gray-700 mb-1">
+                Bemerkung/Grund
+              </label>
+              <input
+                type="text"
+                id="ferientag_memo"
+                name="ferientag[memo]"
+                placeholder="z.B. Pädagogischer Tag"
+                maxlength="255"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Beweglichen Ferientag hinzufügen
+            </button>
+          </div>
+        </form>
+      <% end %>
+      <!-- List of Bewegliche Ferientage -->
+      <div>
+        <.heading level={3} class="text-lg mb-3">Aktuelle bewegliche Ferientage</.heading>
+
+        <%= if @bewegliche_ferientage == [] do %>
+          <.text variant="muted">
+            Für diese Schule sind noch keine beweglichen Ferientage eingetragen.
+          </.text>
+        <% else %>
+          <div class="space-y-2">
+            <%= for ferientag <- @bewegliche_ferientage do %>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <span class="font-medium text-gray-900">
+                    <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(ferientag.starts_on) %>
+                  </span>
+                  <%= if ferientag.memo do %>
+                    <span class="ml-2 text-sm text-gray-600">
+                      - <%= ferientag.memo %>
+                    </span>
+                  <% end %>
+                </div>
+
+                <%= if not @limit_reached do %>
+                  <button
+                    phx-click="delete_beweglicher_ferientag"
+                    phx-value-id={ferientag.id}
+                    data-confirm="Möchten Sie diesen beweglichen Ferientag wirklich löschen?"
+                    class="text-red-600 hover:text-red-800 text-sm font-medium"
+                  >
+                    Löschen
+                  </button>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
-  </div>
-</div>
+  </:content>
+</.card>

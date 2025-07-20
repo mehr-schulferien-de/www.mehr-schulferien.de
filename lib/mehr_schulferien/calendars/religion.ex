@@ -3,7 +3,7 @@ defmodule MehrSchulferien.Calendars.Religion do
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.NameSlug
+  alias MehrSchulferien.Slugs.NameSlug
   alias MehrSchulferien.Calendars.HolidayOrVacationType
   alias MehrSchulferien.Periods.Period
 

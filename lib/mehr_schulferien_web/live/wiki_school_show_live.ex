@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
 
   alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Periods, Config, Repo}
   alias MehrSchulferien.Maps.Address
+  alias MehrSchulferienWeb.Formatters.DateFormatter
   alias PaperTrail
   require Logger
 
@@ -339,8 +340,7 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   end
 
   defp format_version_date(version) do
-    version.inserted_at
-    |> Calendar.strftime("%d.%m.%Y um %H:%M Uhr")
+    DateFormatter.format_datetime(version.inserted_at)
   end
 
   defp format_originator(%{originator: originator}) when not is_nil(originator) do

@@ -1,7 +1,7 @@
 <div class="mt-4 sm:mt-8">
   <.page_title
     title="Schulferien Deutschland"
-    subtitle={"Die nächsten #{@number_of_days} Tage auf einen Blick#{if @custom_date && Date.compare(@custom_date, Date.utc_today()) != :eq, do: " (ab dem #{Calendar.strftime(@custom_date, "%d.%m.%Y")})", else: ""}."}
+    subtitle={"Die nächsten #{@number_of_days} Tage auf einen Blick#{if @custom_date && Date.compare(@custom_date, Date.utc_today()) != :eq, do: " (ab dem #{MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@custom_date)})", else: ""}."}
   />
 
   <.card_grid>

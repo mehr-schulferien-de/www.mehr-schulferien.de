@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.HomeLive do
   use MehrSchulferienWeb, :live_view
 
   alias MehrSchulferienWeb.NavigationHelper
+  alias MehrSchulferienWeb.Formatters.DateFormatter
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
   import MehrSchulferienWeb.Shared.LocationHistoryComponent
   require Logger
@@ -1116,10 +1117,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                       <%= vacation.holiday_or_vacation_type.colloquial %>
                     </div>
                     <div class="text-gray-600">
-                      <%= Calendar.strftime(vacation.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(
-                        vacation.ends_on,
-                        "%d.%m.%Y"
-                      ) %>
+                      <%= DateFormatter.format_date_full(vacation.starts_on) %> - <%= DateFormatter.format_date_full(vacation.ends_on) %>
                     </div>
                   </div>
                 <% end %>
@@ -1141,7 +1139,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                       <%= holiday.holiday_or_vacation_type.colloquial %>
                     </div>
                     <div class="text-gray-600">
-                      <%= Calendar.strftime(holiday.starts_on, "%d.%m.%Y") %>
+                      <%= DateFormatter.format_date_full(holiday.starts_on) %>
                     </div>
                   </div>
                 <% end %>
@@ -1774,9 +1772,9 @@ defmodule MehrSchulferienWeb.HomeLive do
                         Nächster Brückentag
                       </.heading>
                       <.text variant="small" class="mb-3">
-                        <%= Calendar.strftime(next_bridge_day.starts_on, "%d.%m.%Y") %>
+                        <%= DateFormatter.format_date_full(next_bridge_day.starts_on) %>
                         <%= if Date.compare(next_bridge_day.starts_on, next_bridge_day.ends_on) != :eq do %>
-                          - <%= Calendar.strftime(next_bridge_day.ends_on, "%d.%m.%Y") %>
+                          - <%= DateFormatter.format_date_full(next_bridge_day.ends_on) %>
                         <% end %>
                       </.text>
                       <!-- Bridge Day Timeline -->
@@ -1805,13 +1803,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             Bester Superbrückentag
                           </.heading>
                           <.text variant="small">
-                            <%= Calendar.strftime(
-                              best_super_bridge_day.bridge_day.starts_on,
-                              "%d.%m.%Y"
-                            ) %> - <%= Calendar.strftime(
-                              best_super_bridge_day.bridge_day.ends_on,
-                              "%d.%m.%Y"
-                            ) %>
+                            <%= DateFormatter.format_date_full(best_super_bridge_day.bridge_day.starts_on) %> - <%= DateFormatter.format_date_full(best_super_bridge_day.bridge_day.ends_on) %>
                             <br />
                             <span class="text-xs text-gray-500">
                               <%= best_super_bridge_day.vacation_days %> Urlaubstag<%= if best_super_bridge_day.vacation_days >

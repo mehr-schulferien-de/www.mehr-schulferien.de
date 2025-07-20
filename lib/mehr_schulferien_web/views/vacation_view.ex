@@ -10,6 +10,8 @@ defmodule MehrSchulferienWeb.VacationView do
   import MehrSchulferienWeb.FederalState.FaqSchemaComponent
   import MehrSchulferienWeb.FederalState.LastUpdatedComponent
 
+  alias MehrSchulferienWeb.Formatters.DateFormatter
+
   @doc """
   Returns planning tips for each vacation type
   """
@@ -78,7 +80,7 @@ defmodule MehrSchulferienWeb.VacationView do
   def dynamic_vacation_description(vacation_name, year, state_name, vacation_period, today) do
     if vacation_period do
       date_range =
-        "#{Calendar.strftime(vacation_period.starts_on, "%d.%m.")}-#{Calendar.strftime(vacation_period.ends_on, "%d.%m.%Y")}"
+        "#{DateFormatter.format_date_short(vacation_period.starts_on)}-#{DateFormatter.format_date_full(vacation_period.ends_on)}"
 
       duration = Date.diff(vacation_period.ends_on, vacation_period.starts_on) + 1
 
@@ -88,7 +90,7 @@ defmodule MehrSchulferienWeb.VacationView do
             Date.compare(today, vacation_period.ends_on) != :gt ->
           days_left = Date.diff(vacation_period.ends_on, today)
 
-          "🎉 #{vacation_name} #{year} in #{state_name} laufen noch #{days_left} Tage! Bis #{Calendar.strftime(vacation_period.ends_on, "%d.%m.%Y")}. Alle Ferientermine mit Kalender & iCal-Export."
+          "🎉 #{vacation_name} #{year} in #{state_name} laufen noch #{days_left} Tage! Bis #{DateFormatter.format_date_full(vacation_period.ends_on)}. Alle Ferientermine mit Kalender & iCal-Export."
 
         # Vacation is upcoming within 30 days
         Date.diff(vacation_period.starts_on, today) in 1..30 ->

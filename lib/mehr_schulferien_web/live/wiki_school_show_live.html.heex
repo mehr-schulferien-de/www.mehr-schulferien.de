@@ -136,7 +136,7 @@
                           </path>
                         </svg>
                         <span class="font-semibold text-gray-900">
-                          <%= Calendar.strftime(ferientag.starts_on, "%d.%m.%Y") %>
+                          <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(ferientag.starts_on) %>
                         </span>
                       </div>
                       <%= if ferientag.memo do %>

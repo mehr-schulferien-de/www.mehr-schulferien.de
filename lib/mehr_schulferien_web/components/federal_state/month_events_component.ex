@@ -2,11 +2,39 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
   use Phoenix.Component
 
   alias MehrSchulferienWeb.ViewHelpers
+  alias MehrSchulferienWeb.Formatters.DateFormatter
   import MehrSchulferienWeb.FederalState.PeriodNameComponent
 
   attr :month_periods, :list, required: true
   attr :month_public_periods, :list, required: true
   attr :all_periods, :list, required: true
+
+  # Helper function for period date formatting
+  defp format_period_date(period) do
+    if Date.compare(period.starts_on, period.ends_on) == :eq do
+      # Single date
+      if period.starts_on.year != Date.utc_today().year do
+        DateFormatter.format_date_with_short_year(period.starts_on)
+      else
+        DateFormatter.format_date_short(period.starts_on)
+      end
+    else
+      # Date range
+      start_formatted = if period.starts_on.year != period.ends_on.year do
+        DateFormatter.format_date_with_short_year(period.starts_on)
+      else
+        DateFormatter.format_date_short(period.starts_on)
+      end
+      
+      end_formatted = if period.starts_on.year != period.ends_on.year do
+        DateFormatter.format_date_with_short_year(period.ends_on)
+      else
+        DateFormatter.format_date_short(period.ends_on)
+      end
+      
+      "#{start_formatted} - #{end_formatted}"
+    end
+  end
 
   def month_events(assigns) do
     ~H"""
@@ -17,20 +45,8 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
             <span class="font-medium text-blue-700 flex-1 pr-2">
               <.period_name period={period} />
             </span>
-            <% start_fmt =
-              if period.starts_on.year != period.ends_on.year,
-                do: "%d.%m.%y",
-                else: "%d.%m." %>
-            <% end_fmt = start_fmt %>
             <span class="text-gray-600 whitespace-nowrap">
-              <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
-                <%= Calendar.strftime(period.starts_on, start_fmt) %>
-              <% else %>
-                <%= Calendar.strftime(period.starts_on, start_fmt) %> - <%= Calendar.strftime(
-                  period.ends_on,
-                  end_fmt
-                ) %>
-              <% end %>
+              <%= format_period_date(period) %>
             </span>
           </li>
         <% end %>
@@ -55,23 +71,8 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
                 </span>
               <% end %>
             </span>
-            <% start_fmt =
-              if period.starts_on.year != period.ends_on.year,
-                do: "%d.%m.%y",
-                else: "%d.%m." %>
-            <% end_fmt =
-              if period.starts_on.year != period.ends_on.year,
-                do: "%d.%m.%y",
-                else: "%d.%m." %>
             <span class="text-gray-600 whitespace-nowrap">
-              <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
-                <%= Calendar.strftime(period.starts_on, start_fmt) %>
-              <% else %>
-                <%= Calendar.strftime(period.starts_on, start_fmt) %> - <%= Calendar.strftime(
-                  period.ends_on,
-                  end_fmt
-                ) %>
-              <% end %>
+              <%= format_period_date(period) %>
             </span>
           </li>
         <% end %>

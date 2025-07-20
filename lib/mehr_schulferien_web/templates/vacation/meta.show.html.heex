@@ -3,7 +3,7 @@
 # Create date range string
 date_range =
   if @vacation_period do
-    "#{Calendar.strftime(@vacation_period.starts_on, "%d.%m.")}-#{Calendar.strftime(@vacation_period.ends_on, "%d.%m.%Y")}"
+    "#{MehrSchulferienWeb.Formatters.DateFormatter.format_date_short(@vacation_period.starts_on)}-#{MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.ends_on)}"
   else
     ""
   end
@@ -115,7 +115,7 @@ vacation_keywords =
           "addressCountry": "DE"
         }
       },
-      "description": "<%= @vacation_name %> in <%= @federal_state.name %> vom <%= Calendar.strftime(@vacation_period.starts_on, "%d.%m.%Y") %> bis <%= Calendar.strftime(@vacation_period.ends_on, "%d.%m.%Y") %>. Schulfreie Zeit für alle Schüler in <%= @federal_state.name %>.",
+      "description": "<%= @vacation_name %> in <%= @federal_state.name %> vom <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.starts_on) %> bis <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.ends_on) %>. Schulfreie Zeit für alle Schüler in <%= @federal_state.name %>.",
       "organizer": {
         "@type": "Organization",
         "name": "Kultusministerium <%= @federal_state.name %>"

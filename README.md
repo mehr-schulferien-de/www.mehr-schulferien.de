@@ -12,6 +12,8 @@ See the [contributing guide](https://github.com/mehr-schulferien-de/www.mehr-sch
 for more information about setting up your development environment and opening pull
 requests.
 
+For a comprehensive code review with improvement recommendations, see [CODE_REVIEW_FINDINGS.md](CODE_REVIEW_FINDINGS.md).
+
 ## Required Dependencies
 
 ### LaTeX Packages for PDF Generation

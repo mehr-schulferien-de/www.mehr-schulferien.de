@@ -1,49 +1,51 @@
 <div class="max-w-4xl mx-auto py-6">
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+    <.heading level={1} class="text-3xl mb-2">
       Schul-Wiki: <%= @school.name %>
-    </h1>
-    <p class="text-gray-600">
+    </.heading>
+    <.text class="text-gray-600">
       Bearbeiten Sie die Adressdaten dieser Schule. Alle Änderungen werden protokolliert und können rückgängig gemacht werden.
-    </p>
+    </.text>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Edit Form -->
     <div class="space-y-6">
-      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
-          Adressdaten bearbeiten
-        </h2>
+      <.card padding="p-6" variant="enhanced">
+        <:content>
+          <.heading level={2} class="text-xl mb-4">
+            Adressdaten bearbeiten
+          </.heading>
 
-        <%= if @limit_reached do %>
-          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p class="text-red-800 text-sm">
-              <strong>Tageslimit erreicht:</strong>
-              Es können heute keine weiteren Änderungen vorgenommen werden.
-              Versuchen Sie es morgen erneut.
-            </p>
-          </div>
-        <% end %>
+          <%= if @limit_reached do %>
+            <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <.text variant="small" class="text-red-800">
+                <strong>Tageslimit erreicht:</strong>
+                Es können heute keine weiteren Änderungen vorgenommen werden.
+                Versuchen Sie es morgen erneut.
+              </.text>
+            </div>
+          <% end %>
 
-        <%= render("_school_form.html",
-          changeset: @changeset,
-          action: ~p"/wiki/schools/#{@school.slug}",
-          method: :post,
-          limit_reached: @limit_reached,
-          school_name: Map.get(@changeset.data, :name) || @school.name || "",
-          address: @school.address,
-          disable_zip_code: false,
-          submit_text: "Änderungen speichern",
-          submit_class: "bg-blue-600 hover:bg-blue-700",
-          submit_focus_class: "focus:ring-blue-500"
-        ) %>
-      </div>
+          <%= render("_school_form.html",
+            changeset: @changeset,
+            action: ~p"/wiki/schools/#{@school.slug}",
+            method: :post,
+            limit_reached: @limit_reached,
+            school_name: Map.get(@changeset.data, :name) || @school.name || "",
+            address: @school.address,
+            disable_zip_code: false,
+            submit_text: "Änderungen speichern",
+            submit_class: "bg-blue-600 hover:bg-blue-700",
+            submit_focus_class: "focus:ring-blue-500"
+          ) %>
+        </:content>
+      </.card>
       <!-- Current Data Display -->
       <%= if @school.address do %>
         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-3">Aktuelle Daten</h3>
+          <.heading level={3} class="text-lg mb-3">Aktuelle Daten</.heading>
           <dl class="space-y-2 text-sm">
             <div>
               <dt class="font-bold text-gray-700">Schulname:</dt>
@@ -117,69 +119,73 @@
         </div>
       <% else %>
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-          <h3 class="text-lg font-medium text-yellow-900 mb-2">Keine Adressdaten vorhanden</h3>
-          <p class="text-sm text-yellow-800">
+          <.heading level={3} class="text-lg text-yellow-900 mb-2">
+            Keine Adressdaten vorhanden
+          </.heading>
+          <.text variant="small" class="text-yellow-800">
             Für diese Schule sind noch keine Adressdaten hinterlegt.
             Bitte tragen Sie die bekannten Informationen ein.
-          </p>
+          </.text>
         </div>
       <% end %>
     </div>
     <!-- Version History and Instructions -->
     <div class="space-y-6">
       <!-- Version History -->
-      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
-        <div class="p-6 border-b border-gray-200">
-          <h2 class="text-xl font-semibold text-gray-900 flex items-center justify-between">
+      <.card_with_sections variant="enhanced">
+        <:header class="p-6 border-b border-gray-200">
+          <.heading level={2} class="text-xl flex items-center justify-between">
             Versionshistorie
             <span class="text-sm font-normal text-gray-500">
               <%= length(@versions) %> Änderungen
             </span>
-          </h2>
-        </div>
-        <div class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-          <%= if @versions == [] do %>
-            <div class="p-6 text-center text-gray-500">
-              Noch keine Änderungen vorhanden.
-            </div>
-          <% else %>
-            <%= for version <- @display_versions do %>
-              <div class="p-4 hover:bg-gray-50">
-                <div class="flex justify-between items-start">
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-900">
-                      Version #<%= version.id %>
-                    </p>
-                    <p class="text-xs text-gray-500 mt-1">
-                      <%= format_version_date(version) %> • <%= format_originator(version) %>
-                    </p>
-                    <p class="text-sm text-gray-700 mt-2">
-                      <%= version_summary(version, @versions) %>
-                    </p>
-                  </div>
-                  <%= if version.id != List.first(@versions).id do %>
-                    <%= form_for %{}, ~p"/wiki/schools/#{@school.slug}/rollback/#{version.id}", [method: :post, class: "inline"], fn _f -> %>
-                      <%= submit("Wiederherstellen",
-                        class:
-                          "ml-4 px-3 py-1 text-xs font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500",
-                        onclick:
-                          "return confirm('Sind Sie sicher, dass Sie zu dieser Version zurückkehren möchten?')"
-                      ) %>
+          </.heading>
+        </:header>
+        <:content>
+          <div class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+            <%= if @versions == [] do %>
+              <div class="p-6 text-center text-gray-500">
+                Noch keine Änderungen vorhanden.
+              </div>
+            <% else %>
+              <%= for version <- @display_versions do %>
+                <div class="p-4 hover:bg-gray-50">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <p class="text-sm font-medium text-gray-900">
+                        Version #<%= version.id %>
+                      </p>
+                      <p class="text-xs text-gray-500 mt-1">
+                        <%= format_version_date(version) %> • <%= format_originator(version) %>
+                      </p>
+                      <.text variant="small" class="text-gray-700 mt-2">
+                        <%= version_summary(version, @versions) %>
+                      </.text>
+                    </div>
+                    <%= if version.id != List.first(@versions).id do %>
+                      <%= form_for %{}, ~p"/wiki/schools/#{@school.slug}/rollback/#{version.id}", [method: :post, class: "inline"], fn _f -> %>
+                        <%= submit("Wiederherstellen",
+                          class:
+                            "ml-4 px-3 py-1 text-xs font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500",
+                          onclick:
+                            "return confirm('Sind Sie sicher, dass Sie zu dieser Version zurückkehren möchten?')"
+                        ) %>
+                      <% end %>
                     <% end %>
-                  <% end %>
+                  </div>
                 </div>
-              </div>
+              <% end %>
+              <%= if length(@versions) > 5 do %>
+                <div class="p-4 text-center">
+                  <.text variant="muted">
+                    Zeige die letzten 5 von <%= length(@versions) %> Änderungen
+                  </.text>
+                </div>
+              <% end %>
             <% end %>
-            <%= if length(@versions) > 5 do %>
-              <div class="p-4 text-center">
-                <p class="text-sm text-gray-500">
-                  Zeige die letzten 5 von <%= length(@versions) %> Änderungen
-                </p>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
+          </div>
+        </:content>
+      </.card_with_sections>
 
       <%= render("_daily_limit_info.html", daily_changes: @daily_changes) %>
     </div>
@@ -204,9 +210,9 @@
   <!-- Delete School Section -->
   <div class="mt-12 border-t border-gray-200 pt-8">
     <div class="bg-red-50 border border-red-200 rounded-lg p-6">
-      <h3 class="text-lg font-medium text-red-900 mb-2">
+      <.heading level={3} class="text-lg text-red-900 mb-2">
         Gefahrenzone
-      </h3>
+      </.heading>
       <p class="text-sm text-red-700 mb-4">
         Das Löschen einer Schule kann nicht rückgängig gemacht werden. Alle zugehörigen Daten werden in eine Backup-Tabelle verschoben.
       </p>

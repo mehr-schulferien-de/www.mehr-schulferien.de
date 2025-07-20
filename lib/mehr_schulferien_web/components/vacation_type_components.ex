@@ -8,6 +8,8 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
+  alias MehrSchulferienWeb.Formatters.DateFormatter
+
   # Private helper functions
 
   defp calculate_vacation_stats(vacation_data) do
@@ -34,7 +36,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
   end
 
   defp format_date(date) do
-    Calendar.strftime(date, "%d.%m.%Y")
+    DateFormatter.format_date_full(date)
   end
 
   @doc """

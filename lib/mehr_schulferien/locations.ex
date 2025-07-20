@@ -258,17 +258,45 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Returns a list of ids of the location and all it's ancestors.
+
+  Uses a single recursive CTE query instead of multiple queries.
+  Returns IDs ordered from root (country) to the given location.
   """
-  def recursive_location_ids(location) do
-    build_ids_list([], location)
-  end
+  def recursive_location_ids(%Location{id: location_id}) do
+    query = """
+    WITH RECURSIVE location_hierarchy AS (
+      -- Base case: start with the given location
+      SELECT id, parent_location_id, 1 as level
+      FROM locations
+      WHERE id = $1
+      
+      UNION ALL
+      
+      -- Recursive case: find parent of each location
+      SELECT l.id, l.parent_location_id, lh.level + 1
+      FROM locations l
+      INNER JOIN location_hierarchy lh ON l.id = lh.parent_location_id
+    )
+    SELECT id 
+    FROM location_hierarchy
+    ORDER BY level DESC
+    """
 
-  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: nil}) do
-    [id | ids_list]
-  end
+    case Repo.query(query, [location_id]) do
+      {:ok, %{rows: rows}} ->
+        Enum.map(rows, fn [id] -> id end)
 
-  defp build_ids_list(ids_list, %Location{id: id, parent_location_id: parent_location_id}) do
-    build_ids_list([id | ids_list], Repo.get(Location, parent_location_id))
+      {:error, reason} ->
+        # Log the error for debugging
+        require Logger
+
+        Logger.error(
+          "Failed to execute recursive CTE for location #{location_id}: #{inspect(reason)}"
+        )
+
+        # Return empty list on error to maintain consistent return type
+        []
+    end
   end
 
   #

@@ -1,12 +1,12 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">
+    <.heading level={1} class="text-3xl mb-4">
       <%= @vacation_config.name %> <%= @current_year %> und <%= @next_year %> in Deutschland
-    </h1>
-    <p class="text-lg text-gray-700">
+    </.heading>
+    <.text variant="lead" class="text-gray-700">
       Alle Termine der <%= @vacation_config.name %> für alle 16 Bundesländer auf einen Blick. <%= @vacation_config.meta_focus %>
-    </p>
+    </.text>
   </div>
   <!-- Statistics -->
   <MehrSchulferienWeb.VacationTypeComponents.vacation_statistics
@@ -15,9 +15,9 @@
   />
   <!-- Current Year Section -->
   <section class="mt-8">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+    <.heading level={2} class="text-2xl mb-4">
       <%= @vacation_config.name %> <%= @current_year %>
-    </h2>
+    </.heading>
 
     <MehrSchulferienWeb.VacationTypeComponents.vacation_overview_table
       vacation_data={@current_year_data}
@@ -30,9 +30,9 @@
   <MehrSchulferienWeb.VacationTypeComponents.vacation_planning_tips vacation_type={@vacation_type} />
   <!-- Next Year Section -->
   <section class="mt-12">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+    <.heading level={2} class="text-2xl mb-4">
       <%= @vacation_config.name %> <%= @next_year %>
-    </h2>
+    </.heading>
 
     <MehrSchulferienWeb.VacationTypeComponents.vacation_overview_table
       vacation_data={@next_year_data}
@@ -43,9 +43,9 @@
   </section>
   <!-- Additional Information -->
   <section class="mt-12 prose prose-lg max-w-none">
-    <h3 class="text-xl font-semibold text-gray-900 mb-4">
+    <.heading level={3} class="text-xl mb-4">
       Wissenswertes über <%= @vacation_config.name %>
-    </h3>
+    </.heading>
 
     <%= case @vacation_type do %>
       <% "sommer" -> %>
@@ -123,37 +123,37 @@
   </section>
   <!-- Links to other vacation types -->
   <section class="mt-12 bg-gray-50 rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">Weitere Ferientermine</h3>
+    <.heading level={3} class="text-lg mb-4">Weitere Ferientermine</.heading>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
       <%= if @vacation_type != "sommer" do %>
-        <a href={~p"/sommerferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
+        <.link href={~p"/sommerferien"} variant="primary">
           Sommerferien
-        </a>
+        </.link>
       <% end %>
       <%= if @vacation_type != "ostern" do %>
-        <a href={~p"/osterferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
+        <.link href={~p"/osterferien"} variant="primary">
           Osterferien
-        </a>
+        </.link>
       <% end %>
       <%= if @vacation_type != "herbst" do %>
-        <a href={~p"/herbstferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
+        <.link href={~p"/herbstferien"} variant="primary">
           Herbstferien
-        </a>
+        </.link>
       <% end %>
       <%= if @vacation_type != "weihnachten" do %>
-        <a href={~p"/weihnachtsferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
+        <.link href={~p"/weihnachtsferien"} variant="primary">
           Weihnachtsferien
-        </a>
+        </.link>
       <% end %>
       <%= if @vacation_type != "winter" do %>
-        <a href={~p"/winterferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
+        <.link href={~p"/winterferien"} variant="primary">
           Winterferien
-        </a>
+        </.link>
       <% end %>
       <%= if @vacation_type != "pfingsten" do %>
-        <a href={~p"/pfingstferien"} class="text-blue-600 hover:text-blue-800 hover:underline">
+        <.link href={~p"/pfingstferien"} variant="primary">
           Pfingstferien
-        </a>
+        </.link>
       <% end %>
     </div>
   </section>

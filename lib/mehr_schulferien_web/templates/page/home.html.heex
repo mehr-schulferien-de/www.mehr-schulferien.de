@@ -17,7 +17,7 @@
   </div>
   <.text variant="base" class="mb-4 sm:mb-8">
     Die Ferien und Feiertage der nächsten <%= @number_of_days %> Tage auf einen Blick<%= if @custom_start_date && Date.compare(@custom_start_date, Date.utc_today()) != :eq do %>
-      (ab dem <%= Calendar.strftime(@custom_start_date, "%d.%m.%Y") %>)
+      (ab dem <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@custom_start_date) %>)
     <% end %>.
   </.text>
 
@@ -167,9 +167,9 @@
                 Nächster Brückentag
               </.heading>
               <.text variant="small" class="mb-3">
-                <%= Calendar.strftime(next_bridge_day.starts_on, "%d.%m.%Y") %>
+                <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(next_bridge_day.starts_on) %>
                 <%= if Date.compare(next_bridge_day.starts_on, next_bridge_day.ends_on) != :eq do %>
-                  - <%= Calendar.strftime(next_bridge_day.ends_on, "%d.%m.%Y") %>
+                  - <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(next_bridge_day.ends_on) %>
                 <% end %>
               </.text>
               <!-- Bridge Day Timeline -->
@@ -198,10 +198,7 @@
                     Bester Superbrückentag
                   </.heading>
                   <.text variant="small">
-                    <%= Calendar.strftime(best_super_bridge_day.bridge_day.starts_on, "%d.%m.%Y") %> - <%= Calendar.strftime(
-                      best_super_bridge_day.bridge_day.ends_on,
-                      "%d.%m.%Y"
-                    ) %>
+                    <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(best_super_bridge_day.bridge_day.starts_on) %> - <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(best_super_bridge_day.bridge_day.ends_on) %>
                     <br />
                     <span class="text-xs text-gray-500">
                       <%= best_super_bridge_day.vacation_days %> Urlaubstag<%= if best_super_bridge_day.vacation_days >

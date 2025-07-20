@@ -1,9 +1,9 @@
 <div class="mt-0 sm:mt-1">
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
+      <.heading level={1} class="text-left">
         Schulferien <%= @federal_state.name %>
-      </h1>
+      </.heading>
 
       <.pagination
         conn={@conn}
@@ -16,27 +16,31 @@
     </div>
 
     <div class="flex flex-col lg:flex-row gap-6">
-      <div class="lg:w-2/3 bg-white p-4 rounded-lg shadow-sm">
-        <%= if @has_data do %>
-          <.periods_table
-            periods={@periods}
-            all_periods={@all_periods}
-            today={@today}
-            federal_state={@federal_state}
-            conn={@conn}
-            year={@year}
-          />
-          <.partial_data periods={@periods} federal_state={@federal_state} year={@year} />
-          <.last_updated periods={@periods} federal_state={@federal_state} />
-        <% else %>
-          <.no_data
-            conn={@conn}
-            country={@country}
-            federal_state={@federal_state}
-            year={@year}
-            years_with_data={@years_with_data}
-          />
-        <% end %>
+      <div class="lg:w-2/3">
+        <.card padding="p-4">
+          <:content>
+            <%= if @has_data do %>
+              <.periods_table
+                periods={@periods}
+                all_periods={@all_periods}
+                today={@today}
+                federal_state={@federal_state}
+                conn={@conn}
+                year={@year}
+              />
+              <.partial_data periods={@periods} federal_state={@federal_state} year={@year} />
+              <.last_updated periods={@periods} federal_state={@federal_state} />
+            <% else %>
+              <.no_data
+                conn={@conn}
+                country={@country}
+                federal_state={@federal_state}
+                year={@year}
+                years_with_data={@years_with_data}
+              />
+            <% end %>
+          </:content>
+        </.card>
       </div>
       <div class="lg:w-1/3">
         <.ical_panel
@@ -49,7 +53,9 @@
         <% # Quick links to vacation-specific pages %>
         <%= if length(@vacation_types) > 0 do %>
           <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 class="text-lg font-semibold text-blue-900 mb-3">Direkt zu den Ferien:</h3>
+            <.heading level={3} class="text-lg text-blue-900 mb-3">
+              Direkt zu den Ferien:
+            </.heading>
             <div class="grid grid-cols-2 gap-2">
               <%= for vacation_type <- @vacation_types do %>
                 <a
@@ -67,7 +73,7 @@
 
     <%= if @has_data do %>
       <div class="mt-8">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Kalenderansicht</h2>
+        <.heading level={2} class="text-xl sm:text-2xl mb-4">Kalenderansicht</.heading>
 
         <.calendar_legend />
 

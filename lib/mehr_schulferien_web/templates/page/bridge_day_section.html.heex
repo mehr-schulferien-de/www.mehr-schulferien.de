@@ -1,28 +1,28 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
-  <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+  <.heading level={2} class="text-2xl mb-6 flex items-center">
     <span class="mr-2">📅</span> Brückentage
-  </h2>
+  </.heading>
   <% teaser_data = MehrSchulferienWeb.PageView.best_bridge_day_teaser() %>
   <%= case teaser_data do %>
     <% {percent, min_leave, max_days, year, _starts_on, _ends_on} -> %>
       <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-        <p class="text-green-800 font-semibold">
+        <.text class="text-green-800 font-semibold">
           Bis zu <%= percent %>% mehr freie Tage möglich!
-        </p>
-        <p class="text-green-700 mt-2">
+        </.text>
+        <.text class="text-green-700 mt-2">
           Beispiel: Mit nur <%= min_leave %> Urlaubstag<%= if min_leave > 1, do: "en", else: "" %> in NRW können Sie <%= max_days %> Tage frei machen
           (<a
             href={~p"/brueckentage/d/bundesland/nordrhein-westfalen/#{year}"}
             class="text-green-600 hover:text-green-800 underline"
           >Beispiel ansehen</a>).
-        </p>
+        </.text>
       </div>
     <% _ -> %>
       <div></div>
   <% end %>
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-    <p class="text-blue-800"><strong>Mehr Urlaub mit weniger Urlaubstagen!</strong></p>
-    <p class="text-blue-700 mt-1">
+    <.text class="text-blue-800"><strong>Mehr Urlaub mit weniger Urlaubstagen!</strong></.text>
+    <.text class="text-blue-700 mt-1">
       Nutzen Sie Brückentage für eine clevere Urlaubsplanung.
       <a
         href="https://de.wikipedia.org/wiki/Brückentag"
@@ -32,16 +32,16 @@
       >
         Was ist ein Brückentag?
       </a>
-    </p>
+    </.text>
   </div>
-  <p class="text-gray-700 mb-6">
+  <.text class="text-gray-700 mb-6">
     Unser Algorithmus zeigt nicht nur normale <a
       href="https://de.wikipedia.org/wiki/Brückentag"
       class="text-blue-600 hover:text-blue-800 underline"
     >Brückentage</a>, sondern auch
     die Variationen, in denen 2 bis 4 genommene Urlaubstage ein Vielfaches an effektivem
     Urlaub realisieren.
-  </p>
+  </.text>
   <div class="overflow-x-auto rounded-lg border border-gray-200">
     <table class="min-w-full bg-white">
       <thead class="bg-gray-50">

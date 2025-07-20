@@ -57,16 +57,16 @@ end %>
 
   <div class="flex flex-col items-start mb-6 sm:flex-row sm:justify-between">
     <div class="mb-4 sm:mb-0">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+      <.heading level={1} class="text-3xl mb-2">
         Brückentage <%= @year %> in <%= @federal_state.name %>
-      </h1>
-      <h2 class="text-xl text-gray-700">
+      </.heading>
+      <.heading level={2} class="text-xl text-gray-700">
         Die <%= @bridge_day_proposal_count %> besten Tipps für
         <%= if min_leave > 0 and max_free > 0 do %>
           <%= round((max_free - min_leave) / min_leave * 100) %>%
         <% end %>
         mehr Urlaub.
-      </h2>
+      </.heading>
     </div>
 
     <div class="w-full sm:w-auto">
@@ -372,7 +372,7 @@ end %>
 
   <%= for num <- 2..5 do %>
     <%= if @bridge_day_map[num] && Enum.count(@bridge_day_map[num]) > 0 do %>
-      <h2 class="text-2xl font-bold text-gray-900 mb-4 mt-8">
+      <.heading level={2} class="text-2xl mb-4 mt-8">
         <%= if num == 2 do %>
           <%= if Enum.count(@bridge_day_map[num]) > 1 do %>
             Normale
@@ -395,7 +395,7 @@ end %>
             Brückentag
           <% end %>
         <% end %>
-      </h2>
+      </.heading>
 
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <%= for bridge_day <- @bridge_day_map[num] do %>
@@ -448,11 +448,14 @@ end %>
               do: "bg-gray-100 text-gray-500 rounded shadow p-6 h-full",
               else: "bg-white rounded shadow p-6 h-full"
           }>
-            <h3 class={
-              if is_past_bridge_day,
-                do: "text-xl font-semibold mb-4 text-gray-500",
-                else: "text-xl font-semibold mb-4"
-            }>
+            <.heading
+              level={3}
+              class={
+                if is_past_bridge_day,
+                  do: "text-xl font-semibold mb-4 text-gray-500",
+                  else: "text-xl font-semibold mb-4"
+              }
+            >
               <%= MehrSchulferienWeb.BridgeDayView.format_month_header(
                 bridge_day.starts_on,
                 bridge_day.ends_on
@@ -462,7 +465,7 @@ end %>
                   <%= bridge_day.starts_on.year %>
                 </span>
               <% end %>
-            </h3>
+            </.heading>
 
             <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
               bridge_day: bridge_day,
@@ -484,7 +487,7 @@ end %>
 
   <%= if @bridge_day_map[2] && Enum.count(@bridge_day_map[2]) > 0 do %>
     <div class="mt-12 mb-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6">Brückentag-FAQ</h2>
+      <.heading level={2} class="text-2xl mb-6">Brückentag-FAQ</.heading>
 
       <div class="bg-white rounded shadow p-6">
         <dl class="divide-y divide-gray-200">
@@ -585,9 +588,9 @@ end %>
                       end %>
                     <li>
                       <strong><%= date_string = if Date.compare(bridge_day.starts_on, bridge_day.ends_on) == :eq do
-                          Calendar.strftime(bridge_day.starts_on, "%d.%m.%Y")
+                          MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(bridge_day.starts_on)
                         else
-                          Calendar.strftime(bridge_day.starts_on, "%d.%m.") <> " - " <> Calendar.strftime(bridge_day.ends_on, "%d.%m.%Y")
+                          MehrSchulferienWeb.Formatters.DateFormatter.format_date_short(bridge_day.starts_on) <> " - " <> MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(bridge_day.ends_on)
                         end
                         date_string %></strong>: <%= type_name %><%= if holiday_name,
                         do: " (#{holiday_name})",

@@ -5,8 +5,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
-  alias MehrSchulferienWeb.ViewHelpers
-  import MehrSchulferienWeb.FederalState.PeriodNameComponent
+  import MehrSchulferienWeb.Shared.PeriodsTableBaseComponent
 
   attr :periods, :list, required: true
   attr :all_periods, :list, required: true
@@ -41,84 +40,24 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
         </thead>
         <tbody class="divide-y divide-gray-200">
           <%= for period <- @periods do %>
-            <% is_current =
-              Date.compare(@today, period.starts_on) != :lt &&
-                Date.compare(@today, period.ends_on) != :gt %>
-            <% is_past =
-              Date.compare(@today, period.ends_on) == :gt && period.starts_on.year == @today.year %>
-            <% # Determine year for color coding
-            period_year = period.starts_on.year
-            is_next_year = @current_year && period_year > @current_year %>
-            <% month_name =
-              case period.starts_on.month do
-                1 -> "januar"
-                2 -> "februar"
-                3 -> "märz"
-                4 -> "april"
-                5 -> "mai"
-                6 -> "juni"
-                7 -> "juli"
-                8 -> "august"
-                9 -> "september"
-                10 -> "oktober"
-                11 -> "november"
-                12 -> "dezember"
-              end %>
-            <tr
-              class={"hover:bg-gray-50 cursor-pointer #{if is_current, do: "bg-yellow-100"} #{if is_past, do: "text-gray-400"} #{if is_next_year, do: "bg-gray-50"}"}
-              onclick={"window.location.href='##{month_name}#{period.starts_on.year}'"}
-            >
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium">
-                <%= if @federal_state && @conn && vacation_type_slug(period) do %>
-                  <a
-                    href={vacation_url(@conn, period, @federal_state)}
-                    class="text-blue-600 hover:text-blue-800 underline"
-                  >
-                    <.period_name period={period} />
-                  </a>
-                <% else %>
-                  <.period_name period={period} />
-                <% end %>
-              </td>
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
-                <span class="whitespace-nowrap">
-                  <%= if Date.compare(period.starts_on, period.ends_on) == :eq do %>
-                    <%= Calendar.strftime(period.starts_on, "%d.%m.") %>
-                  <% else %>
-                    <%= Calendar.strftime(period.starts_on, "%d.%m.") %> - <%= Calendar.strftime(
-                      period.ends_on,
-                      "%d.%m."
-                    ) %>
-                  <% end %>
-                  <%= if is_next_year do %>
-                    <span class="text-xs text-gray-500 ml-1">(<%= period.starts_on.year %>)</span>
-                  <% end %>
-                </span>
-              </td>
-              <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
-                <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
-                <% effective_duration = ViewHelpers.calculate_effective_duration(period, @all_periods) %>
-                <% difference = effective_duration - days %>
-
-                <%= days + difference %>
-              </td>
-            </tr>
+            <.period_row
+              period={period}
+              all_periods={@all_periods}
+              today={@today}
+              current_year={@current_year}
+              period_link_builder={
+                if @federal_state && @conn && vacation_type_slug(period) do
+                  fn p -> vacation_url(@conn, p, @federal_state) end
+                else
+                  nil
+                end
+              }
+            />
           <% end %>
         </tbody>
       </table>
 
-      <% has_differences =
-        Enum.any?(@periods, fn period ->
-          days = Date.diff(period.ends_on, period.starts_on) + 1
-          effective_duration = ViewHelpers.calculate_effective_duration(period, @all_periods)
-          effective_duration != days
-        end) %>
-
-      <%= if has_differences do %>
-        <div class="text-xs text-gray-500 mt-2">
-          * Die effektive Dauer in Tagen enthält an die Ferien angrenzende Wochenenden und Feiertage.
-        </div>
-      <% end %>
+      <.periods_footnote periods={@periods} all_periods={@all_periods} />
     </div>
     """
   end

@@ -11,47 +11,47 @@
 
 <div class="mb-8">
   <div class="w-full">
-    <h1 class="text-3xl font-bold mb-6">
+    <.heading level={1} class="text-3xl mb-6">
       Informationen für Entwickler
-    </h1>
+    </.heading>
   </div>
 </div>
 
 <div class="w-full">
   <div class="w-full">
-    <h2 class="text-2xl font-semibold mb-3">Das Open-Source-Projekt</h2>
+    <.heading level={2} class="text-2xl mb-3">Das Open-Source-Projekt</.heading>
 
     <p class="mb-4">
       mehr-schulferien.de ist ein mit der Programmiersprache Elixir und dem
-      <a href="http://phoenixframework.org" class="text-blue-600 hover:text-blue-800">
+      <.link href="http://phoenixframework.org" variant="primary">
         Phoenix Framework
-      </a>
+      </.link>
       geschriebenes Open-Source-Projekt (MIT Lizenz). Der
       Code wird auf
-      <a
+      <.link
         href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de"
-        class="text-blue-600 hover:text-blue-800"
+        variant="primary"
       >
         https://github.com/mehr-schulferien-de/www.mehr-schulferien.de
-      </a>
+      </.link>
       gehostet und dort findet die Entwicklungsarbeit statt.
     </p>
     <p class="mb-4">
       <b>Wir freuen uns über gute Feature-Requests und Bug-Reports!</b>
       Idealerweise
-      als <a
+      als <.link
         href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new"
-        class="text-blue-600 hover:text-blue-800"
-      >Issues auf Github</a>, aber auch gerne per E-Mail an Stefan Wintermeyer
-      <a href="mailto:sw@wintermeyer-consulting.de" class="text-blue-600 hover:text-blue-800">
+        variant="primary"
+      >Issues auf Github</.link>, aber auch gerne per E-Mail an Stefan Wintermeyer
+      <.link href="mailto:sw@wintermeyer-consulting.de" variant="primary">
         (sw@wintermeyer-consulting.de)
-      </a>
+      </.link>
     </p>
 
-    <h2 class="text-2xl font-semibold mb-3">URL-Parameter</h2>
+    <.heading level={2} class="text-2xl mb-3">URL-Parameter</.heading>
     <p class="mb-4">
       Verschiedene Ansichten können über URL-Parameter angepasst werden. Die Ferienübersicht unter
-      <a href="/" class="text-blue-600 hover:text-blue-800">/</a>
+      <.link href="/" variant="primary">/</.link>
       unterstützt folgende Parameter:
     </p>
 
@@ -84,28 +84,28 @@
 
     <p class="mb-4">
       Beispiel mit kombinierten Parametern:
-      <a href="/?today=01.09.2024&days=180" class="text-blue-600 hover:text-blue-800 font-mono">
+      <.link href="/?today=01.09.2024&days=180" variant="primary" class="font-mono">
         /?today=01.09.2024&days=180
-      </a>
+      </.link>
     </p>
     <p class="mb-4">
-      Weitere Informationen finden Sie in der <a
+      Weitere Informationen finden Sie in der <.link
         href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/blob/master/docs/url_parameters.md"
-        class="text-blue-600 hover:text-blue-800"
-      >Dokumentation auf GitHub</a>.
+        variant="primary"
+      >Dokumentation auf GitHub</.link>.
     </p>
 
-    <h2 class="text-2xl font-semibold mb-3">Die API</h2>
+    <.heading level={2} class="text-2xl mb-3">Die API</.heading>
     <p class="mb-4">
       Alle Daten können per RESTful JSON-API abgerufen werden. Stück für Stück werden wir hierzu die Dokumentation erweitern. Hier schon mal die Basics.
     </p>
 
-    <h3 class="text-xl font-semibold mb-2">locations</h3>
+    <.heading level={3} class="text-xl mb-2">locations</.heading>
     <p class="mb-4">
       Das Model Locations wird für die Speicherung von Ländern (countries), Bundesländern (federal_states), Landkreisen (counties),
       Städten (cities) und Schulen (schools) benutzt. Die Dabei werden die einzelnen Ebenen mit einander verknüpft.
     </p>
-    <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
+    <.heading level={4} class="text-lg mb-2">Beispiel</.heading>
     <ul class="list-disc pl-5 mb-4">
       <li>
         Daten zu Deutschland abrufen:<br />
@@ -117,11 +117,11 @@
       </li>
     </ul>
 
-    <h3 class="text-xl font-semibold mb-2">periods</h3>
+    <.heading level={3} class="text-xl mb-2">periods</.heading>
     <p class="mb-4">
       Das Model Period wird zur Speicherung der einzelnen Ferien und Feiertage benutzt.
     </p>
-    <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
+    <.heading level={4} class="text-lg mb-2">Beispiel</.heading>
     <ul class="list-disc pl-5 mb-4">
       <li>
         Daten zum Eintrag mit der ID 23 abrufen:<br />
@@ -133,11 +133,11 @@
       </li>
     </ul>
 
-    <h3 class="text-xl font-semibold mb-2">holiday_or_vacation_types</h3>
+    <.heading level={3} class="text-xl mb-2">holiday_or_vacation_types</.heading>
     <p class="mb-4">
       Das Model HolidayOrVacationType wird zur Speicherung der einzelnen Arten von Ferien und Feiertage benutzt.
     </p>
-    <h4 class="text-lg font-semibold mb-2">Beispiel</h4>
+    <.heading level={4} class="text-lg mb-2">Beispiel</.heading>
     <ul class="list-disc pl-5 mb-4">
       <li>
         Daten zum Eintrag mit der ID 10 abrufen:<br />
@@ -149,14 +149,14 @@
       </li>
     </ul>
 
-    <h3 class="text-xl font-semibold mb-2">Noch Wünsche an die API?</h3>
+    <.heading level={3} class="text-xl mb-2">Noch Wünsche an die API?</.heading>
     <p class="mb-4">
       Mit der aktuellen API haben Sie Zugriff auf alle Daten, müssen diese aber noch selber verarbeiten. In Zukunft
       werden wir auch Anfragen wie "Ist heute ein Feiertag" per API beantworten. Wenn Sie dazu Wünsche oder Vorschläge
-      haben, würden wir uns über ein entsprechendes Feature-Request-<a
+      haben, würden wir uns über ein entsprechendes Feature-Request-<.link
         href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new"
-        class="text-blue-600 hover:text-blue-800"
-      >Issues auf Github</a> freuen.
+        variant="primary"
+      >Issues auf Github</.link> freuen.
     </p>
   </div>
 </div>
