@@ -10,7 +10,8 @@ defmodule MehrSchulferien.MixProject do
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      versioning: versioning()
     ]
   end
 
@@ -72,6 +73,12 @@ defmodule MehrSchulferien.MixProject do
         "phx.digest"
       ],
       "assets.copy": ["cmd cp -r assets/static/* priv/static/"]
+    ]
+  end
+
+  defp versioning do
+    [
+      annotate: false
     ]
   end
 end
