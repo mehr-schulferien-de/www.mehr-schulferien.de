@@ -37,11 +37,11 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       # Use the old route format that goes through the redirects pipeline
       conn = get(conn, "/land/#{country.slug}/bundesland/#{federal_state.slug}/brueckentage")
 
-      # We expect a 302 temporary redirect
-      assert conn.status == 302
+      # We expect a 301 permanent redirect
+      assert conn.status == 301
 
       # The redirect URL should contain the correct base path
-      redirect_path = redirected_to(conn, 302)
+      redirect_path = redirected_to(conn, 301)
 
       assert redirect_path =~
                "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/brueckentage"
@@ -141,10 +141,10 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       conn = get(conn, "/land/d-test/bundesland/brandenburg-test/brueckentage/2025")
 
       # We expect a redirect first
-      assert conn.status == 302
+      assert conn.status == 301
 
       # Follow the redirect
-      redirected_path = redirected_to(conn, 302)
+      redirected_path = redirected_to(conn, 301)
       conn = get(recycle(conn), redirected_path)
 
       # Now we should get a 200

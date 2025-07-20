@@ -15,10 +15,9 @@ defmodule MehrSchulferienWeb.CityController do
       Locations.show_city_to_country_map(country_slug, city_slug)
 
     # Redirect to the city page without year (301 permanent redirect for SEO)
-    redirect(conn,
-      to: ~p"/ferien/#{country.slug}/stadt/#{city_slug}",
-      status: :moved_permanently
-    )
+    conn
+    |> put_status(:moved_permanently)
+    |> redirect(to: ~p"/ferien/#{country.slug}/stadt/#{city_slug}")
   end
 
   def show(conn, %{"country_slug" => country_slug, "city_slug" => city_slug}) do
@@ -26,9 +25,7 @@ defmodule MehrSchulferienWeb.CityController do
       Locations.show_city_to_country_map(country_slug, city_slug)
 
     # Get schools in this city for display
-    # If a city has no schools, it should return a 404
     schools = Locations.list_schools(city)
-    city_has_schools = not Enum.empty?(schools)
 
     today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
@@ -55,13 +52,8 @@ defmodule MehrSchulferienWeb.CityController do
         Map.put(period, :adjoining_duration, difference)
       end)
 
-    # Set the appropriate status code based on data availability and presence of schools
-    conn =
-      if city_has_schools and (current_year_data.has_data or next_year_data.has_data) do
-        conn
-      else
-        put_status(conn, 404)
-      end
+    # Always return 200 status for city pages
+    conn = conn
 
     # Track city visit
     conn = track_location_visit(conn, "c", city.slug)

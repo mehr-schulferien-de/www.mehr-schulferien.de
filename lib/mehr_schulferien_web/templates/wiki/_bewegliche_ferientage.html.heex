@@ -78,7 +78,9 @@
               <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div>
                   <span class="font-medium text-gray-900">
-                    <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(ferientag.starts_on) %>
+                    <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                      ferientag.starts_on
+                    ) %>
                   </span>
                   <%= if ferientag.memo do %>
                     <span class="ml-2 text-sm text-gray-600">

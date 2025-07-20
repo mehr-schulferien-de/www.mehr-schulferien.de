@@ -19,8 +19,8 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     # Get the current year
     _current_year = MehrSchulferien.Calendars.DateHelpers.today_berlin().year
 
-    # Assert that the request is redirected (302 status code)
-    assert redirected_to(conn, 302) =~
+    # Assert that the request is redirected (301 status code)
+    assert redirected_to(conn, 301) =~
              "/ferien/#{country.slug}/bundesland/#{federal_state.slug}"
   end
 

@@ -1117,7 +1117,9 @@ defmodule MehrSchulferienWeb.HomeLive do
                       <%= vacation.holiday_or_vacation_type.colloquial %>
                     </div>
                     <div class="text-gray-600">
-                      <%= DateFormatter.format_date_full(vacation.starts_on) %> - <%= DateFormatter.format_date_full(vacation.ends_on) %>
+                      <%= DateFormatter.format_date_full(vacation.starts_on) %> - <%= DateFormatter.format_date_full(
+                        vacation.ends_on
+                      ) %>
                     </div>
                   </div>
                 <% end %>
@@ -1803,7 +1805,11 @@ defmodule MehrSchulferienWeb.HomeLive do
                             Bester Superbrückentag
                           </.heading>
                           <.text variant="small">
-                            <%= DateFormatter.format_date_full(best_super_bridge_day.bridge_day.starts_on) %> - <%= DateFormatter.format_date_full(best_super_bridge_day.bridge_day.ends_on) %>
+                            <%= DateFormatter.format_date_full(
+                              best_super_bridge_day.bridge_day.starts_on
+                            ) %> - <%= DateFormatter.format_date_full(
+                              best_super_bridge_day.bridge_day.ends_on
+                            ) %>
                             <br />
                             <span class="text-xs text-gray-500">
                               <%= best_super_bridge_day.vacation_days %> Urlaubstag<%= if best_super_bridge_day.vacation_days >

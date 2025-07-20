@@ -41,8 +41,10 @@ defmodule MehrSchulferienWeb.CityRedirectSystemTest do
       conn = get(conn, "/ferien/#{country.slug}/stadt/#{city.slug}/#{@current_year}")
 
       # Assert that we get a redirect to the base URL
-      # The redirect status doesn't matter as much as the destination
-      assert redirected_to(conn) ==
+      # Expecting 301 permanent redirect
+      assert conn.status == 301
+
+      assert redirected_to(conn, 301) ==
                "/ferien/#{country.slug}/stadt/#{city.slug}"
     end
   end

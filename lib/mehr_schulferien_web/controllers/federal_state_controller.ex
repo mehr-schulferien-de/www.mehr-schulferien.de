@@ -19,7 +19,10 @@ defmodule MehrSchulferienWeb.FederalStateController do
       })
       when first in @digits do
     location = Locations.get_federal_state!(id)
-    redirect(conn, to: ~p"/ferien/#{country_slug}/bundesland/#{location.slug}")
+
+    conn
+    |> put_status(:moved_permanently)
+    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{location.slug}")
   end
 
   def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do

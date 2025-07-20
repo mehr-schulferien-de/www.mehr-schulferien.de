@@ -84,6 +84,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: "/ferien/#{country_slug}/stadt/#{city_slug}/#{year}")
   end
 
@@ -92,6 +93,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "city_slug" => city_slug
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: "/ferien/#{country_slug}/stadt/#{city_slug}")
   end
 
@@ -102,6 +104,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: "/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
@@ -110,6 +113,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "federal_state_slug" => federal_state_slug
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: "/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
   end
 
@@ -118,6 +122,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "federal_state_slug" => federal_state_slug
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(
       to: "/ferien/#{country_slug}/bundesland/#{federal_state_slug}/landkreise-und-staedte"
     )
@@ -130,6 +135,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: "/ferien/#{country_slug}/schule/#{school_slug}/#{year}")
   end
 
@@ -138,6 +144,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "school_slug" => school_slug
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: "/ferien/#{country_slug}/schule/#{school_slug}")
   end
 
@@ -162,6 +169,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: "/brueckentage/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
@@ -174,11 +182,13 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/stadt/#{city_slug}/#{year}")
   end
 
   def redirect_city(conn, %{"country_slug" => country_slug, "city_slug" => city_slug}) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/stadt/#{city_slug}")
   end
 
@@ -189,6 +199,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
@@ -197,6 +208,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "federal_state_slug" => federal_state_slug
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
   end
 
@@ -208,6 +220,7 @@ defmodule MehrSchulferienWeb.RedirectController do
     # Note: :show_holiday_or_vacation_type route doesn't exist in current router
     # Redirecting to federal state page instead
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
   end
 
@@ -218,11 +231,13 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}/#{year}")
   end
 
   def redirect_school(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}")
   end
 
@@ -233,6 +248,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "holiday_or_vacation_type_slug" => _holiday_or_vacation_type_slug
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
   end
 
@@ -257,6 +273,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "year" => year
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(to: ~p"/brueckentage/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
@@ -266,6 +283,7 @@ defmodule MehrSchulferienWeb.RedirectController do
         "federal_state_slug" => federal_state_slug
       }) do
     conn
+    |> put_status(:moved_permanently)
     |> redirect(
       to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/landkreise-und-staedte"
     )

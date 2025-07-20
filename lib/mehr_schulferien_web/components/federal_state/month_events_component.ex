@@ -20,18 +20,20 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
       end
     else
       # Date range
-      start_formatted = if period.starts_on.year != period.ends_on.year do
-        DateFormatter.format_date_with_short_year(period.starts_on)
-      else
-        DateFormatter.format_date_short(period.starts_on)
-      end
-      
-      end_formatted = if period.starts_on.year != period.ends_on.year do
-        DateFormatter.format_date_with_short_year(period.ends_on)
-      else
-        DateFormatter.format_date_short(period.ends_on)
-      end
-      
+      start_formatted =
+        if period.starts_on.year != period.ends_on.year do
+          DateFormatter.format_date_with_short_year(period.starts_on)
+        else
+          DateFormatter.format_date_short(period.starts_on)
+        end
+
+      end_formatted =
+        if period.starts_on.year != period.ends_on.year do
+          DateFormatter.format_date_with_short_year(period.ends_on)
+        else
+          DateFormatter.format_date_short(period.ends_on)
+        end
+
       "#{start_formatted} - #{end_formatted}"
     end
   end

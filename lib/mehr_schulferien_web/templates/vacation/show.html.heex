@@ -26,7 +26,11 @@
                   <%= @vacation_name %> <%= @year %>
                 </.heading>
                 <div class="text-xl font-bold text-blue-800">
-                  <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.starts_on) %> - <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.ends_on) %>
+                  <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                    @vacation_period.starts_on
+                  ) %> - <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                    @vacation_period.ends_on
+                  ) %>
                 </div>
                 <div class="text-sm text-blue-700 mt-1">
                   <%= Date.diff(@vacation_period.ends_on, @vacation_period.starts_on) + 1 %> Tage
