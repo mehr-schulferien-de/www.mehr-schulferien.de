@@ -15,10 +15,34 @@ defmodule MehrSchulferien.Helpers.DateConstants do
   # Number of days in a week
   @days_per_week 7
 
+  # Bridge day calculations
+  @min_bridge_days 2
+  @max_bridge_days 5
+  @extended_max_bridge_days 6
+
+  # Default display settings
+  @default_days_to_display 90
+  @max_versions_to_display 5
+
+  # Period display calculations
+  @period_display_colspan_multiplier 4
+  @period_display_name_buffer 16
+
   def days_per_year, do: @days_per_year
   def days_per_month, do: @days_per_month
   def months_per_year, do: @months_per_year
   def days_per_week, do: @days_per_week
+
+  # Bridge day constants
+  def min_bridge_days, do: @min_bridge_days
+  def max_bridge_days, do: @max_bridge_days
+  def extended_max_bridge_days, do: @extended_max_bridge_days
+
+  # Display constants
+  def default_days_to_display, do: @default_days_to_display
+  def max_versions_to_display, do: @max_versions_to_display
+  def period_display_colspan_multiplier, do: @period_display_colspan_multiplier
+  def period_display_name_buffer, do: @period_display_name_buffer
 
   @doc """
   Calculates date offset in days from a given number of months.

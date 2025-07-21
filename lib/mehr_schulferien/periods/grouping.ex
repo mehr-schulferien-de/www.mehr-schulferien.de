@@ -8,6 +8,11 @@ defmodule MehrSchulferien.Periods.Grouping do
 
   alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.Periods.BridgeDayPeriod
+  alias MehrSchulferien.Helpers.DateConstants
+  
+  # Import constants as module attributes for use in guards
+  @min_bridge_days DateConstants.min_bridge_days()
+  @max_bridge_days DateConstants.max_bridge_days()
 
   @doc """
   Takes a year's periods, from `start_date`, and groups them based on
@@ -48,7 +53,7 @@ defmodule MehrSchulferien.Periods.Grouping do
           diff = Date.diff(period.starts_on, last_period.ends_on)
 
           case {diff, acc} do
-            {diff, _} when diff not in 2..5 ->
+            {diff, _} when diff not in @min_bridge_days..@max_bridge_days ->
               acc
 
             {_, %{^diff => value}} ->
@@ -84,7 +89,7 @@ defmodule MehrSchulferien.Periods.Grouping do
   defp list_consecutive_periods([], output), do: output
 
   defp list_consecutive_periods([first | rest], output) do
-    if Date.diff(first.starts_on, List.last(output).ends_on) < 2 do
+    if Date.diff(first.starts_on, List.last(output).ends_on) < DateConstants.min_bridge_days() do
       list_consecutive_periods(rest, output ++ [first])
     else
       output
@@ -98,7 +103,7 @@ defmodule MehrSchulferien.Periods.Grouping do
   defp reverse_list_consecutive_periods([], output), do: output
 
   defp reverse_list_consecutive_periods([first | rest], output) do
-    if Date.diff(List.last(output).starts_on, first.ends_on) < 2 do
+    if Date.diff(List.last(output).starts_on, first.ends_on) < DateConstants.min_bridge_days() do
       reverse_list_consecutive_periods(rest, [first | output])
     else
       output

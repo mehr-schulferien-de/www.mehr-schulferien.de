@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
 
   alias MehrSchulferien.{Locations, Maps, Calendars, Repo, Periods}
   alias MehrSchulferien.Maps.ZipCodeMapping
+  alias MehrSchulferienWeb.Formatters.DateFormatter
 
   describe "bewegliche Ferientage integration" do
     setup do
@@ -108,7 +109,7 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
       {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
 
       # Check that our beweglicher Ferientag is displayed
-      formatted_date = Calendar.strftime(future_date, "%d.%m.%Y")
+      formatted_date = DateFormatter.format_date_full(future_date)
       assert html =~ formatted_date
       assert html =~ "Test Pädagogischer Tag"
 

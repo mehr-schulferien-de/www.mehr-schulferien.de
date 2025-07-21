@@ -56,7 +56,7 @@ defmodule MehrSchulferien.BridgeDays do
       bridge_day_map = Grouping.group_by_interval(year_periods)
 
       has_bridge_days =
-        Enum.any?(2..5, fn num ->
+        Enum.any?(DateConstants.min_bridge_days()..DateConstants.max_bridge_days(), fn num ->
           if bridge_day_map[num] do
             bridge_day_map[num]
             |> Enum.any?(fn bridge_day ->
@@ -305,7 +305,7 @@ defmodule MehrSchulferien.BridgeDays do
 
       # Collect all opportunities with 1-5 vacation days
       opportunities =
-        for days <- 2..6,
+        for days <- DateConstants.min_bridge_days()..DateConstants.extended_max_bridge_days(),
             bridge_days = Map.get(bridge_day_map, days, []),
             length(bridge_days) > 0 do
           vacation_days = days - 1

@@ -4,6 +4,7 @@ defmodule MehrSchulferien.PeriodDisplay do
   """
 
   alias MehrSchulferienWeb.ViewHelpers
+  alias MehrSchulferien.Helpers.DateConstants
 
   @doc """
   Returns the school period from a list of periods.
@@ -49,7 +50,7 @@ defmodule MehrSchulferien.PeriodDisplay do
         last_date
       end
 
-    Date.diff(ends_on, date) + 1
+    Date.diff(ends_on, date) + 1  # +1 for inclusive counting
   end
 
   @doc """
@@ -58,9 +59,9 @@ defmodule MehrSchulferien.PeriodDisplay do
   def show_period_info(period, colspan) do
     name = period.holiday_or_vacation_type.colloquial
     name_len = String.length(name)
-    span = colspan * 4
+    span = colspan * DateConstants.period_display_colspan_multiplier()
 
-    if name_len + 16 < span do
+    if name_len + DateConstants.period_display_name_buffer() < span do
       "#{name} #{show_period_date(period)}"
     else
       if name_len < span do
