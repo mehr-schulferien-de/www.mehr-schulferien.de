@@ -78,6 +78,19 @@ defmodule MehrSchulferienWeb.VacationController do
         reference_date = Date.new!(year_int, 6, 1)
         vacation_types = VacationTypes.list_for_federal_state(federal_state, reference_date)
 
+        # Calculate vacation period's adjoining duration if it exists
+        vacation_period_with_adjoining =
+          if vacation_period do
+            effective_duration =
+              ViewHelpers.calculate_effective_duration(vacation_period, data.all_periods)
+
+            days = Date.diff(vacation_period.ends_on, vacation_period.starts_on) + 1
+            difference = effective_duration - days
+            Map.put(vacation_period, :adjoining_duration, difference)
+          else
+            nil
+          end
+
         render(
           conn,
           "show.html",
@@ -86,7 +99,7 @@ defmodule MehrSchulferienWeb.VacationController do
             federal_state: federal_state,
             vacation_type: vacation_slug,
             vacation_name: vacation_type_record.colloquial,
-            vacation_period: vacation_period,
+            vacation_period: vacation_period_with_adjoining,
             vacation_types: vacation_types,
             periods: periods_with_duration,
             all_periods: data.all_periods,

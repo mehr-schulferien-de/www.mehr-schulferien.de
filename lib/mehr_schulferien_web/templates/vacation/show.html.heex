@@ -180,6 +180,15 @@
       </div>
     <% end %>
 
+    <% # FAQ Section %>
+    <MehrSchulferienWeb.VacationFaqComponent.vacation_faq
+      vacation_period={@vacation_period}
+      vacation_name={@vacation_name}
+      federal_state={@federal_state}
+      year={@year}
+      all_periods={@all_periods}
+    />
+
     <%= if @vacation_period do %>
       <.schema_org_event
         periods={[@vacation_period]}

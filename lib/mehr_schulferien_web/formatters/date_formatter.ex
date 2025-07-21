@@ -137,6 +137,31 @@ defmodule MehrSchulferienWeb.Formatters.DateFormatter do
     |> format_date_ical()
   end
 
+  @doc """
+  Returns the German weekday name for a given date
+
+  ## Examples
+
+      iex> weekday_name(~D[2024-01-15])
+      "Montag"
+      
+      iex> weekday_name(~D[2024-01-16])
+      "Dienstag"
+  """
+  def weekday_name(date) do
+    weekday_names = %{
+      1 => "Montag",
+      2 => "Dienstag",
+      3 => "Mittwoch",
+      4 => "Donnerstag",
+      5 => "Freitag",
+      6 => "Samstag",
+      7 => "Sonntag"
+    }
+
+    weekday_names[Date.day_of_week(date)]
+  end
+
   # Private helper functions
 
   defp pad_number(number) when number < 10, do: "0#{number}"
