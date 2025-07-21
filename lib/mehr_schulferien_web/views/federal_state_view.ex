@@ -16,6 +16,7 @@ defmodule MehrSchulferienWeb.FederalStateView do
   import MehrSchulferienWeb.FederalState.FaqSchemaComponent
   import MehrSchulferienWeb.FederalState.ItemListSchemaComponent
   import MehrSchulferienWeb.FederalState.LastUpdatedComponent
+  import MehrSchulferienWeb.Shared.WordPressPluginInfoComponent
 
   def format_zip_codes(city) do
     MehrSchulferienWeb.ViewHelpers.format_zip_codes(city)

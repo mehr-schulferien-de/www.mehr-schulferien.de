@@ -4,13 +4,13 @@ defmodule MehrSchulferienWeb.SchoolView do
   alias MehrSchulferienWeb.{ViewHelpers}
 
   # Import the components we need for our templates
-  import MehrSchulferienWeb.Shared.GenericPaginationComponent
   import MehrSchulferienWeb.School.PeriodsTableComponent
   import MehrSchulferienWeb.FederalState.CalendarLegendComponent
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.SchoolComponents
   import MehrSchulferienWeb.FaqComponent
   import MehrSchulferienWeb.ICalPanelComponent
+  import MehrSchulferienWeb.Shared.WordPressPluginInfoComponent
 
   def format_date_range(period, short_format \\ false) do
     ViewHelpers.format_date_range(period.starts_on, period.ends_on, if(short_format, do: :short))

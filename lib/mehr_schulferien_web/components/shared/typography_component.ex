@@ -57,6 +57,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   attr :href, :string, required: true
   attr :class, :string, default: ""
   attr :target, :string, default: nil
+  attr :rel, :string, default: nil
   attr :variant, :string, default: "primary", values: ["primary", "secondary", "muted"]
   slot :inner_block, required: true
 
@@ -71,7 +72,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")
 
     ~H"""
-    <a href={@href} target={@target} class={@computed_class}>
+    <a href={@href} target={@target} rel={@rel} class={@computed_class}>
       <%= render_slot(@inner_block) %>
     </a>
     """
