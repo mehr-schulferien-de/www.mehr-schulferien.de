@@ -48,11 +48,11 @@ defmodule MehrSchulferien.Wiki do
       # Get all versions for this model
       all_versions = PaperTrail.get_versions(model) |> Enum.sort_by(& &1.id)
 
-      # Get the state before the target version
-      state_before_target = get_state_before_version(version, all_versions)
+      # Get the state AS OF the target version (not before it)
+      state_at_target = get_state_at_version(version, all_versions)
 
       # Create changeset with the reconstructed state
-      changeset = Ecto.Changeset.change(model, state_before_target)
+      changeset = Ecto.Changeset.change(model, state_at_target)
       PaperTrail.update(changeset, meta: %{ip_address: ip_address})
     else
       :error -> {:error, :invalid_version_id}
@@ -61,8 +61,8 @@ defmodule MehrSchulferien.Wiki do
     end
   end
 
-  defp get_state_before_version(target_version, all_versions) do
-    # Find the target version index and get all versions before it
+  defp get_state_at_version(target_version, all_versions) do
+    # Find the target version index
     target_index = Enum.find_index(all_versions, fn v -> v.id == target_version.id end)
 
     cond do
@@ -70,24 +70,10 @@ defmodule MehrSchulferien.Wiki do
         # Target version not found, return empty state
         %{}
 
-      target_index == 0 ->
-        # This is the first version (insert), so use its changes as the rollback state
-        # Convert the target version's changes to atom keys and filter timestamps
-        changes = target_version.item_changes || %{}
-
-        changes
-        |> Enum.filter(fn {key, _value} ->
-          key not in ["inserted_at", "updated_at"]
-        end)
-        |> Enum.into(%{}, fn {key, value} ->
-          key_atom = if is_atom(key), do: key, else: String.to_atom(key)
-          {key_atom, value}
-        end)
-
       true ->
-        # Get all previous versions (before the target one) and reconstruct state
-        previous_versions = Enum.take(all_versions, target_index)
-        reconstruct_state_from_versions(previous_versions)
+        # Get all versions up to and including the target one
+        versions_to_apply = Enum.take(all_versions, target_index + 1)
+        reconstruct_state_from_versions(versions_to_apply)
     end
   end
 

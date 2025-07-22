@@ -258,6 +258,49 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   @doc """
+  Formats a number with thousands separator.
+
+  ## Examples
+
+      iex> format_number(1234567)
+      "1.234.567"
+      
+      iex> format_number(1234)
+      "1.234"
+      
+      iex> format_number(123)
+      "123"
+      
+      iex> format_number(nil)
+      ""
+  """
+  def format_number(nil), do: ""
+
+  def format_number(number) when is_integer(number) do
+    number
+    |> Integer.to_string()
+    |> String.reverse()
+    |> String.split("", trim: true)
+    |> Enum.chunk_every(3)
+    |> Enum.map(&Enum.join/1)
+    |> Enum.join(".")
+    |> String.reverse()
+  end
+
+  def format_number(number) when is_float(number) do
+    number
+    |> round()
+    |> format_number()
+  end
+
+  def format_number(number) when is_binary(number) do
+    case Integer.parse(number) do
+      {int, _} -> format_number(int)
+      :error -> ""
+    end
+  end
+
+  @doc """
   Formats zip codes for a city as a comma-separated list with "und" before the last item.
   This function was duplicated across FederalStateView and CityView.
   """

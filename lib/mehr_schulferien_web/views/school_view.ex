@@ -9,8 +9,6 @@ defmodule MehrSchulferienWeb.SchoolView do
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.SchoolComponents
   import MehrSchulferienWeb.FaqComponent
-  import MehrSchulferienWeb.ICalPanelComponent
-  import MehrSchulferienWeb.Shared.WordPressPluginInfoComponent
 
   def format_date_range(period, short_format \\ false) do
     ViewHelpers.format_date_range(period.starts_on, period.ends_on, if(short_format, do: :short))

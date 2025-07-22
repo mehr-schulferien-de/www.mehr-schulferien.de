@@ -38,211 +38,110 @@
                 years_with_data={@years_with_data}
               />
             <% end %>
-            <!-- Bewegliche Ferientage Info Box -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-              <.heading level={3} class="text-lg text-blue-900 mb-2 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  >
-                  </path>
-                </svg>
-                Bewegliche Ferientage
-              </.heading>
-              <.text variant="small" class="text-blue-800 mb-3">
-                Schulen können zusätzliche freie Tage selbst festlegen. Diese beweglichen Ferientage sind oft noch nicht in den offiziellen Ferienkalendern enthalten.
-              </.text>
-              <%= link to: "/wiki/schools/#{@school.slug}#bewegliche-ferientage",
-                class: "inline-flex items-center px-3 py-2 text-sm font-medium text-blue-700 bg-white hover:bg-blue-100 border border-blue-300 rounded-md transition-colors" do %>
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  >
-                  </path>
-                </svg>
-                Bewegliche Ferientage hinzufügen
-              <% end %>
-              <p class="text-xs text-blue-700 mt-2">
-                Helfen Sie anderen Eltern und Schülern, indem Sie die beweglichen Ferientage dieser Schule eintragen.
-              </p>
+            <!-- Contribute Data Note - Subtle -->
+            <div class="mt-6 flex items-center gap-2 text-xs text-gray-500">
+              <svg
+                class="w-4 h-4 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>
+                Fehlen Ferientage?
+                <%= link to: "/wiki/schools/#{@school.slug}/ferientage",
+                    class: "text-blue-600 hover:text-blue-800 font-medium ml-1" do %>
+                  Bewegliche Ferientage hinzufügen
+                <% end %>
+              </span>
             </div>
-          </:content>
-        </.card>
-      </div>
-      <div class="lg:w-1/3">
-        <.ical_panel
-          conn={@conn}
-          entity_slug={@school.slug}
-          entity_name={@school.name}
-          entity_type="school"
-          year={@current_school_year}
-        />
-
-        <.card padding="p-4" class="mt-6 relative">
-          <:content>
-            <.heading level={2} class="text-xl mb-3">Kontaktdaten</.heading>
-            <%= if @school.address do %>
-              <!-- Bearbeiten Button (top-right) -->
-              <%= link to: "/wiki/schools/#{@school.slug}",
-                  class: "absolute top-4 right-4 p-2 rounded-full text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors",
-                  title: "Bearbeiten" do %>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-              <% end %>
-              <!-- Address & Contact Info -->
-              <div class="bg-gray-50 p-3 rounded-md border-l-4 border-blue-500 mb-3">
-                <div class="font-semibold text-gray-900 text-sm mb-1">
-                  <%= @school.name %>
-                </div>
-                <div class="text-sm text-gray-700 mb-2">
-                  <%= @school.address.street %><br />
-                  <%= @school.address.zip_code %> <%= link(@school.address.city,
-                    to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}",
-                    class: "text-blue-600 hover:text-blue-800 cursor-pointer font-medium"
-                  ) %>
-                </div>
-                <!-- Compact Contact Info -->
-                <div class="space-y-1">
-                  <%= if @school.address.email_address do %>
-                    <div class="flex items-center text-sm">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-3 w-3 text-blue-600 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        role="img"
-                      >
-                        <title>E-Mail</title>
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                      </svg>
-                      <% email = @school.address.email_address %>
-                      <a
-                        href={"mailto:" <> email}
-                        class="text-blue-600 hover:text-blue-800 cursor-pointer break-words"
-                      >
-                        <%= email %>
-                      </a>
-                    </div>
-                  <% end %>
-                  <%= if @school.address.phone_number do %>
-                    <div class="flex items-center text-sm">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-3 w-3 text-green-600 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        role="img"
-                      >
-                        <title>Telefon</title>
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                        />
-                      </svg>
-                      <% phone = @school.address.phone_number %>
-                      <% tel_link =
-                        MehrSchulferienWeb.Helpers.PhoneFormatterHelpers.format_tel_link(phone) %>
-                      <% formatted_phone =
-                        MehrSchulferienWeb.Helpers.PhoneFormatterHelpers.format_phone_number(
-                          phone
-                        ) %>
-                      <a href={tel_link} class="text-blue-600 hover:text-blue-800 cursor-pointer">
-                        <%= formatted_phone %>
-                      </a>
-                    </div>
-                  <% end %>
-                  <%= if @school.address.homepage_url do %>
-                    <div class="flex items-center text-sm">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-3 w-3 text-blue-500 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      <% homepage_url = @school.address.homepage_url %>
-                      <a
-                        href={homepage_url}
-                        class="text-blue-600 hover:text-blue-800 cursor-pointer break-all"
-                        title={homepage_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <%= homepage_url %>
-                      </a>
-                    </div>
-                  <% end %>
-                  <!-- vCard Download Button as a small icon in the bottom-right corner -->
-                </div>
-                <div class="flex justify-end mt-1">
-                  <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/vcard",
-                      class: "inline-flex items-center gap-1 p-1 rounded-full text-blue-500 hover:text-blue-700 hover:bg-blue-100 transition-colors text-xs font-medium",
-                      title: "vCard herunterladen" do %>
+            <!-- iCal Export Box -->
+            <%= if @has_data do %>
+              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+                <div>
+                  <.heading
+                    level={3}
+                    class="text-sm font-medium text-gray-900 mb-1 flex items-center"
+                  >
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
+                      class="w-4 h-4 mr-2 text-gray-600"
                       fill="none"
-                      viewBox="0 0 24 24"
                       stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    vCard
-                  <% end %>
+                    iCal Download
+                  </.heading>
+                  <.text variant="muted" class="mb-3">
+                    Importieren Sie die Schulferien direkt in Ihren Kalender.
+                  </.text>
+                  <div class="grid grid-cols-2 gap-2">
+                    <% api_version = "v2.1" %>
+                    <% base_path = if @school.is_school, do: "schools", else: "locations" %>
+                    <% current_calendar_year = @today.year %>
+                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year}&calendar_year=true",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        download: "schulferien-#{@school.slug}-#{current_calendar_year}.ics" do %>
+                      📅 <%= current_calendar_year %>
+                    <% end %>
+                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year + 1}&calendar_year=true",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        download: "schulferien-#{@school.slug}-#{current_calendar_year + 1}.ics" do %>
+                      📅 <%= current_calendar_year + 1 %>
+                    <% end %>
+                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@current_school_year}",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        download: "schuljahr-#{@school.slug}-#{@current_school_year}-#{@current_school_year + 1}.ics" do %>
+                      📚 <%= @current_school_year %>/<%= String.slice(
+                        to_string(@current_school_year + 1),
+                        -2..-1
+                      ) %>
+                    <% end %>
+                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@next_school_year}",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        download: "schuljahr-#{@school.slug}-#{@next_school_year}-#{@next_school_year + 1}.ics" do %>
+                      📚 <%= @next_school_year %>/<%= String.slice(
+                        to_string(@next_school_year + 1),
+                        -2..-1
+                      ) %>
+                    <% end %>
+                  </div>
                 </div>
               </div>
-              <!-- Links Section: Only Wikipedia if present -->
-              <div class="grid grid-cols-2 gap-3 mt-4">
-                <!-- Maps Column -->
-                <div>
-                  <.heading
-                    level={3}
-                    class="text-sm text-gray-500 uppercase tracking-wide mb-2 flex items-center"
-                  >
+            <% end %>
+          </:content>
+        </.card>
+      </div>
+      <div class="lg:w-1/3">
+        <!-- Unified School Information Card -->
+        <.card padding="p-0" class="overflow-hidden">
+          <:content>
+            <%= if @school.address do %>
+              <!-- Header -->
+              <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                <.heading level={2} class="text-lg m-0">Schulinformationen</.heading>
+              </div>
+
+              <div class="p-4 space-y-4">
+                <!-- Contact Information -->
+                <div class="space-y-3">
+                  <!-- Address -->
+                  <div class="flex items-start">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 mr-1"
+                      class="h-4 w-4 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -260,47 +159,47 @@
                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                       />
                     </svg>
-                    Karten
-                  </.heading>
-                  <% map_query =
-                    "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}" %>
-                  <ul class="space-y-1 list-disc pl-6 text-sm">
-                    <li>
-                      <a
-                        href={MehrSchulferienWeb.Helpers.UrlHelpers.google_maps_url(map_query)}
-                        class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                      >
-                        Google Maps
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href={MehrSchulferienWeb.Helpers.UrlHelpers.openstreetmap_url(map_query)}
-                        class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                      >
-                        OpenStreetMap
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href={MehrSchulferienWeb.Helpers.UrlHelpers.apple_maps_url(map_query)}
-                        class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                      >
-                        Apple Maps
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <!-- Wikipedia Link Only if present -->
-                <%= if @school.address.wikipedia_url do %>
-                  <div>
-                    <.heading
-                      level={3}
-                      class="text-sm text-gray-500 uppercase tracking-wide mb-2 flex items-center"
-                    >
+                    <div class="text-sm flex-1">
+                      <div class="font-medium text-gray-900"><%= @school.name %></div>
+                      <div class="text-gray-600">
+                        <%= @school.address.street %><br />
+                        <%= @school.address.zip_code %> <%= @school.address.city %>
+                      </div>
+                      <% map_query =
+                        "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}" %>
+                      <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.google_maps_url(map_query),
+                          class: "inline-flex items-center mt-1 text-xs text-blue-600 hover:text-blue-800",
+                          target: "_blank",
+                          rel: "noopener noreferrer" do %>
+                        <svg
+                          class="w-3 h-3 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        Auf Google Maps anzeigen
+                      <% end %>
+                    </div>
+                  </div>
+                  <!-- Contact Details -->
+                  <%= if @school.address.phone_number do %>
+                    <div class="flex items-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 mr-1"
+                        class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -309,33 +208,189 @@
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
-                          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                         />
                       </svg>
-                      Links
-                    </.heading>
-                    <ul class="space-y-1 list-disc pl-6 text-sm">
-                      <li>
+                      <% phone = @school.address.phone_number %>
+                      <% tel_link =
+                        MehrSchulferienWeb.Helpers.PhoneFormatterHelpers.format_tel_link(phone) %>
+                      <% formatted_phone =
+                        MehrSchulferienWeb.Helpers.PhoneFormatterHelpers.format_phone_number(
+                          phone
+                        ) %>
+                      <a href={tel_link} class="text-sm text-blue-600 hover:text-blue-800">
+                        <%= formatted_phone %>
+                      </a>
+                    </div>
+                  <% end %>
+
+                  <%= if @school.address.email_address do %>
+                    <div class="flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <% email = @school.address.email_address %>
+                      <a
+                        href={"mailto:" <> email}
+                        class="text-sm text-blue-600 hover:text-blue-800 break-all"
+                      >
+                        <%= email %>
+                      </a>
+                    </div>
+                  <% end %>
+                  <%= if @school.address.homepage_url do %>
+                    <div class="flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        />
+                      </svg>
+                      <% homepage_url = @school.address.homepage_url %>
+                      <a
+                        href={homepage_url}
+                        class="text-sm text-blue-600 hover:text-blue-800 break-all"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <%= ViewHelpers.extract_domain(homepage_url) || homepage_url %>
+                      </a>
+                    </div>
+                  <% end %>
+                </div>
+                <!-- Export vCard - directly below contact details -->
+                <div class="mt-3">
+                  <div class="text-xs text-gray-500 mb-1">Kontaktdaten exportieren:</div>
+                  <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/vcard",
+                      class: "inline-flex items-center text-sm text-blue-600 hover:text-blue-800" do %>
+                    <svg
+                      class="h-4 w-4 mr-1.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
+                      />
+                    </svg>
+                    Als Kontakt speichern (vCard)
+                  <% end %>
+                </div>
+                <!-- Description (if available) -->
+                <%= if @school.address.description do %>
+                  <div class="pt-3 border-t border-gray-100">
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                      <%= @school.address.description %>
+                    </p>
+                  </div>
+                <% end %>
+                <!-- Key Facts (if available) - less prominent at bottom -->
+                <%= if @school.address.students_count || @school.address.founded_year do %>
+                  <div class="pt-3 border-t border-gray-100 flex gap-4 text-sm text-gray-600">
+                    <%= if @school.address.founded_year do %>
+                      <div class="flex items-center gap-1">
+                        <span class="text-gray-500">Gegründet:</span>
+                        <span class="font-medium"><%= @school.address.founded_year %></span>
+                      </div>
+                    <% end %>
+                    <%= if @school.address.students_count do %>
+                      <div class="flex items-center gap-1">
+                        <span class="text-gray-500">Schüler:</span>
+                        <span class="font-medium">
+                          <%= ViewHelpers.format_number(@school.address.students_count) %>
+                        </span>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+                <!-- Actions -->
+                <div class="pt-4 border-t border-gray-100">
+                  <!-- Contribute Data -->
+                  <div class="text-xs text-gray-500">
+                    <span>Daten verbessern:</span>
+                    <%= link to: "/wiki/schools/#{@school.slug}/edit",
+                        class: "text-blue-600 hover:text-blue-800 ml-1" do %>
+                      Schulinfos bearbeiten
+                    <% end %>
+                  </div>
+                </div>
+                <!-- Social Media & Web Links -->
+                <%= if @school.address.instagram_url || @school.address.wikipedia_url do %>
+                  <div class="pt-3 border-t border-gray-100 space-y-2">
+                    <%= if @school.address.instagram_url do %>
+                      <div class="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z" />
+                        </svg>
+                        <% instagram_url = @school.address.instagram_url %>
                         <a
-                          href={@school.address.wikipedia_url}
-                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                          href={instagram_url}
+                          class="text-sm text-blue-600 hover:text-blue-800"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <%= display_url(@school.address.wikipedia_url) %>
+                          Instagram
                         </a>
-                      </li>
-                    </ul>
+                      </div>
+                    <% end %>
+
+                    <%= if @school.address.wikipedia_url do %>
+                      <div class="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12.09 13.119c-.936 1.932-2.217 4.548-2.853 5.728-.616 1.074-1.127.931-1.532.029-1.406-3.321-4.293-9.144-5.651-12.409-.251-.601-.441-.987-.619-1.139-.181-.15-.554-.24-1.122-.271C.103 5.033 0 4.982 0 4.898v-.455l.052-.045c.924-.005 5.401 0 5.401 0l.051.045v.434c0 .119-.075.176-.225.176l-.564.031c-.485.029-.727.164-.727.436 0 .135.053.33.166.601 1.082 2.646 4.818 10.521 4.818 10.521l.136.046 2.411-4.81-.482-1.067-1.658-3.264s-.318-.654-.428-.872c-.728-1.443-.712-1.518-1.447-1.617-.207-.023-.313-.05-.313-.149v-.468l.06-.045h4.292l.113.037v.451c0 .105-.076.15-.227.15l-.308.047c-.792.061-.661.381-.136 1.422l1.582 3.252 1.758-3.504c.293-.64.233-.801.111-.947-.07-.084-.305-.22-.812-.24l-.201-.021c-.052 0-.098-.015-.145-.051-.045-.031-.067-.076-.067-.129v-.427l.061-.045c1.247-.008 4.043 0 4.043 0l.059.045v.436c0 .121-.059.178-.193.178-.646.03-.782.095-1.023.439-.12.181-.375.569-.646 1.039l-2.301 4.273-.065.135 2.792 5.712.17.048 4.396-10.438c.154-.422.129-.722-.064-.895-.197-.172-.346-.273-.857-.295l-.42-.016c-.061 0-.105-.014-.152-.045-.043-.029-.072-.075-.072-.119v-.436l.059-.045h4.961l.041.045v.437c0 .119-.074.18-.209.18-.648.03-1.127.18-1.443.421-.314.255-.557.616-.736 1.067 0 0-4.043 9.258-5.426 12.339-.525 1.007-1.053.917-1.503-.031-.571-1.171-1.773-3.786-2.646-5.71l.053-.036z" />
+                        </svg>
+                        <a
+                          href={@school.address.wikipedia_url}
+                          class="text-sm text-blue-600 hover:text-blue-800"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Wikipedia
+                        </a>
+                      </div>
+                    <% end %>
                   </div>
                 <% end %>
               </div>
             <% else %>
-              <!-- Compact No Contact Data -->
-              <div class="text-center py-4">
-                <div class="w-8 h-8 mx-auto mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+              <!-- No Contact Data -->
+              <div class="p-8 text-center">
+                <div class="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 text-gray-400"
+                    class="h-6 w-6 text-gray-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -344,22 +399,16 @@
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                     />
                   </svg>
                 </div>
-                <p class="text-xs text-gray-500 mb-3">Keine Kontaktdaten verfügbar</p>
+                <p class="text-sm text-gray-500 mb-4">Keine Schulinformationen verfügbar</p>
                 <%= link to: "/wiki/schools/#{@school.slug}", 
-                   class: "inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer" do %>
+                   class: "inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-md transition-colors" do %>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-3 w-3 mr-1"
+                    class="h-4 w-4 mr-1.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -371,13 +420,13 @@
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                     />
                   </svg>
-                  Hinzufügen
+                  Informationen hinzufügen
                 <% end %>
               </div>
             <% end %>
           </:content>
         </.card>
-        <!-- Own Card for Entschuldigung schreiben and future links -->
+        <!-- Documents & Letters Card -->
         <.card padding="p-4" class="mt-4">
           <:content>
             <.heading level={3} class="text-lg mb-3 flex items-center">
@@ -392,17 +441,17 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M16.5 3.5a2.121 2.121 0 013 3L7 19.5 3 21l1.5-4L16.5 3.5z"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              Schreiben & Bescheinigungen
+              Dokumente
             </.heading>
-            <div class="flex flex-col gap-2">
+            <div class="grid grid-cols-1 gap-2">
               <%= link to: "/briefe/#{@school.slug}/entschuldigung",
-                 class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 border border-teal-600 rounded transition-colors cursor-pointer shadow-sm w-full sm:w-auto" do %>
+                 class: "flex items-center px-3 py-2 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors group" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-3 w-3 mr-1"
+                  class="h-4 w-4 mr-2 text-gray-400 group-hover:text-teal-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -411,22 +460,16 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M12 20h9"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16.5 3.5a2.121 2.121 0 013 3L7 19.5 3 21l1.5-4L16.5 3.5z"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                   />
                 </svg>
-                Entschuldigung schreiben
+                <span class="group-hover:text-gray-900">Entschuldigung schreiben</span>
               <% end %>
               <%= link to: "/briefe/#{@school.slug}/beurlaubung",
-                 class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 rounded transition-colors cursor-pointer shadow-sm w-full sm:w-auto" do %>
+                 class: "flex items-center px-3 py-2 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors group" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-3 w-3 mr-1"
+                  class="h-4 w-4 mr-2 text-gray-400 group-hover:text-blue-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -435,16 +478,16 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                Beurlaubung beantragen
+                <span class="group-hover:text-gray-900">Beurlaubung beantragen</span>
               <% end %>
               <%= link to: "/briefe/#{@school.slug}/sportbefreiung",
-                 class: "flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 border border-purple-600 rounded transition-colors cursor-pointer shadow-sm w-full sm:w-auto" do %>
+                 class: "flex items-center px-3 py-2 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors group" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-3 w-3 mr-1"
+                  class="h-4 w-4 mr-2 text-gray-400 group-hover:text-purple-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -456,17 +499,11 @@
                     d="M13 10V3L4 14h7v7l9-11h-7z"
                   />
                 </svg>
-                Sportbefreiung beantragen
+                <span class="group-hover:text-gray-900">Sportbefreiung beantragen</span>
               <% end %>
             </div>
           </:content>
         </.card>
-
-        <.wordpress_plugin_info
-          location_type={:school}
-          location_name={@school.name}
-          location_slug={@school.slug}
-        />
       </div>
     </div>
 
@@ -599,5 +636,115 @@
       federal_state={@federal_state}
       country={@country}
     />
+    <!-- Developer Section -->
+    <div class="mt-12 border-t border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <.heading level={2} class="text-2xl text-center mb-8">
+          Für Entwickler
+        </.heading>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- WordPress Plugin Card -->
+          <.card variant="enhanced" padding="p-6">
+            <:content>
+              <div class="flex items-start">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-blue-600 mr-4 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                  />
+                </svg>
+                <div>
+                  <.heading level={3} class="text-lg mb-2">
+                    WordPress Plugin
+                  </.heading>
+                  <.text variant="small" class="text-gray-700 mb-4">
+                    Integrieren Sie die Schulferien von <%= @school.name %> direkt in Ihre WordPress-Website mit unserem kostenlosen Plugin.
+                  </.text>
+
+                  <div class="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 font-mono text-xs break-all">
+                    [schulferien location_type="school" location="<%= @school.slug %>" display="table"]
+                  </div>
+
+                  <a
+                    href="https://github.com/mehr-schulferien-de/mehr-schulferien-wordpress-plugin"
+                    class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    Plugin auf GitHub ansehen
+                  </a>
+                </div>
+              </div>
+            </:content>
+          </.card>
+          <!-- API Access Card -->
+          <.card variant="enhanced" padding="p-6">
+            <:content>
+              <div class="flex items-start">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8 text-green-600 mr-4 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <div>
+                  <.heading level={3} class="text-lg mb-2">
+                    API Zugriff
+                  </.heading>
+                  <.text variant="small" class="text-gray-700 mb-4">
+                    Nutzen Sie unsere REST API, um Feriendaten in Ihre eigenen Anwendungen zu integrieren.
+                  </.text>
+
+                  <div class="space-y-2">
+                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
+                      GET /api/v2.1/schools/<%= @school.slug %>/icalendar
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
+                      GET /api/v2.1/schools/<%= @school.slug %>/periods
+                    </div>
+                  </div>
+
+                  <.text variant="muted" class="mt-3">
+                    Die API liefert Daten im JSON- und iCal-Format.
+                  </.text>
+                </div>
+              </div>
+            </:content>
+          </.card>
+        </div>
+        <!-- Open Source Contribution -->
+        <div class="mt-8">
+          <MehrSchulferienWeb.Components.GitHubPromotionComponent.github_promotion
+            locale="de"
+            wrapper_class="bg-gray-50 rounded-lg px-6 py-8 sm:px-8"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </div>

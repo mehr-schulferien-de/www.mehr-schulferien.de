@@ -83,4 +83,49 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
       assert ViewHelpers.get_html_class(~D[2020-03-02], [period_1, period_2]) == "bg-green-100"
     end
   end
+
+  describe "format_number/1" do
+    test "formats large numbers with thousand separators" do
+      assert ViewHelpers.format_number(1_234_567) == "1.234.567"
+      assert ViewHelpers.format_number(1_000_000) == "1.000.000"
+      assert ViewHelpers.format_number(99999) == "99.999"
+    end
+
+    test "formats small numbers without separators" do
+      assert ViewHelpers.format_number(123) == "123"
+      assert ViewHelpers.format_number(99) == "99"
+      assert ViewHelpers.format_number(1) == "1"
+    end
+
+    test "formats numbers at thousand boundaries" do
+      assert ViewHelpers.format_number(1000) == "1.000"
+      assert ViewHelpers.format_number(1234) == "1.234"
+      assert ViewHelpers.format_number(10000) == "10.000"
+    end
+
+    test "handles nil gracefully" do
+      assert ViewHelpers.format_number(nil) == ""
+    end
+
+    test "handles floats by rounding" do
+      assert ViewHelpers.format_number(1234.56) == "1.235"
+      assert ViewHelpers.format_number(999.99) == "1.000"
+      assert ViewHelpers.format_number(1000.1) == "1.000"
+    end
+
+    test "handles string numbers" do
+      assert ViewHelpers.format_number("1234567") == "1.234.567"
+      assert ViewHelpers.format_number("1000") == "1.000"
+      assert ViewHelpers.format_number("invalid") == ""
+    end
+
+    test "handles zero" do
+      assert ViewHelpers.format_number(0) == "0"
+    end
+
+    test "handles negative numbers" do
+      assert ViewHelpers.format_number(-1234) == "-1.234"
+      assert ViewHelpers.format_number(-1_234_567) == "-1.234.567"
+    end
+  end
 end

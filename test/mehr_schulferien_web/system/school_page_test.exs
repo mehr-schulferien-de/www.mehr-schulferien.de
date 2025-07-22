@@ -31,8 +31,12 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       assert html_response(conn, 200) =~ "Schulferien #{school.name}"
 
       # Check that the periods table exists for current school year
-      # In January 2024, current school year is 2023/2024
-      assert html_response(conn, 200) =~ "Schuljahr 2023/2024"
+      # Dynamically determine current school year based on current date
+      current_school_year =
+        if Date.utc_today().month >= 8, do: @current_year, else: @current_year - 1
+
+      assert html_response(conn, 200) =~
+               "Schuljahr #{current_school_year}/#{current_school_year + 1}"
 
       # Check for current year calendar months
       assert html_response(conn, 200) =~ "Januar #{@current_year}"
