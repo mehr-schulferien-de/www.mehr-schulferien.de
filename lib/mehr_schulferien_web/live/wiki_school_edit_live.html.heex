@@ -1,0 +1,599 @@
+<div class="max-w-4xl mx-auto py-6">
+  <!-- Flash messages -->
+  <%= if Phoenix.Flash.get(@flash, :info) do %>
+    <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+      <p class="text-green-800">
+        <%= Phoenix.Flash.get(@flash, :info) %>
+      </p>
+    </div>
+  <% end %>
+
+  <%= if Phoenix.Flash.get(@flash, :error) do %>
+    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+      <p class="text-red-800">
+        <%= Phoenix.Flash.get(@flash, :error) %>
+      </p>
+    </div>
+  <% end %>
+  <!-- Header with Navigation -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+      Schul-Wiki: <%= @school.name %>
+    </h1>
+    <p class="text-gray-600 mb-4">
+      Bearbeiten Sie die Adressdaten dieser Schule. Alle Änderungen werden mit Ihrer IP-Adresse protokolliert.
+    </p>
+    <!-- Navigation Tabs -->
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8">
+        <span class="border-b-2 border-blue-500 py-2 px-1 text-sm font-medium text-blue-600">
+          Stammdaten
+        </span>
+        <%= link("Bewegliche Ferientage",
+          to: ~p"/wiki/schools/#{@school.slug}/ferientage",
+          class:
+            "border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
+        ) %>
+      </nav>
+    </div>
+  </div>
+  <!-- Auto Data Enrichment Button -->
+  <%= if not @limit_reached and @api_key_available do %>
+    <div class="mb-6 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-lg p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-medium text-gray-900">Fehlende Daten automatisch ergänzen</h3>
+          <p class="text-sm text-gray-600 mt-1">
+            Suche nach öffentlich verfügbaren Informationen zu dieser Schule
+          </p>
+        </div>
+        <button
+          phx-click="enrich_data"
+          disabled={@enrichment_loading}
+          class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 rounded-md transition-colors shadow-sm"
+        >
+          <%= if @enrichment_loading do %>
+            <svg
+              class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              >
+              </circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              >
+              </path>
+            </svg>
+            Suche läuft...
+          <% else %>
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 10h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zM8 10V7a4 4 0 0 1 8 0v3M12 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
+              >
+              </path>
+            </svg>
+            Auto Data Enrichment
+          <% end %>
+        </button>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Edit Form -->
+    <div class="space-y-6">
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Adressdaten bearbeiten
+        </h2>
+
+        <%= if @limit_reached do %>
+          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-800 text-sm">
+              <strong>Tageslimit erreicht:</strong>
+              Es können heute keine weiteren Änderungen vorgenommen werden.
+              Versuchen Sie es morgen erneut.
+            </p>
+          </div>
+        <% end %>
+
+        <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_school_form.html",
+          changeset: @changeset,
+          limit_reached: @limit_reached,
+          school_name: Map.get(@changeset.data, :name) || @school.name || "",
+          address: @school.address,
+          disable_zip_code: false,
+          submit_text: "Änderungen speichern",
+          submit_class: "bg-blue-600 hover:bg-blue-700",
+          submit_focus_class: "focus:ring-blue-500"
+        ) %>
+      </div>
+    </div>
+    <!-- Right Column -->
+    <div class="space-y-6">
+      <!-- Current Data Display -->
+      <%= if @school.address do %>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-3">Aktuelle Daten</h3>
+          <dl class="space-y-2 text-sm">
+            <div>
+              <dt class="font-bold text-gray-700">Schulname:</dt>
+              <dd class="text-gray-900"><%= @school.name %></dd>
+            </div>
+            <%= if @school.address.street || @school.address.zip_code || @school.address.city do %>
+              <div>
+                <dt class="font-bold text-gray-700">Adresse:</dt>
+                <dd class="text-gray-900">
+                  <%= if @school.address.street do %>
+                    <%= @school.address.street %><br />
+                  <% end %>
+                  <%= if @school.address.zip_code || @school.address.city do %>
+                    <%= @school.address.zip_code || "" %> <%= @school.address.city || "" %>
+                  <% end %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.phone_number || @school.address.email_address do %>
+              <div>
+                <dt class="font-bold text-gray-700">Kontakt:</dt>
+                <dd class="text-gray-900">
+                  <%= if @school.address.phone_number do %>
+                    Tel: <%= @school.address.phone_number %><br />
+                  <% end %>
+                  <%= if @school.address.email_address do %>
+                    E-Mail: <%= @school.address.email_address %>
+                  <% end %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.homepage_url do %>
+              <div>
+                <dt class="font-bold text-gray-700">Homepage:</dt>
+                <dd class="text-gray-900">
+                  <%= link(display_url(@school.address.homepage_url),
+                    to: @school.address.homepage_url,
+                    target: "_blank",
+                    class: "text-blue-600 hover:underline"
+                  ) %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.wikipedia_url do %>
+              <div>
+                <dt class="font-bold text-gray-700">Wikipedia:</dt>
+                <dd class="text-gray-900">
+                  <%= link(display_url(@school.address.wikipedia_url),
+                    to: @school.address.wikipedia_url,
+                    target: "_blank",
+                    class: "text-blue-600 hover:underline"
+                  ) %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.instagram_url do %>
+              <div>
+                <dt class="font-bold text-gray-700">Instagram:</dt>
+                <dd class="text-gray-900">
+                  <%= link(
+                    ("@" <> String.split(@school.address.instagram_url, "/")) |> List.last(),
+                    to: @school.address.instagram_url,
+                    target: "_blank",
+                    class: "text-blue-600 hover:underline"
+                  ) %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.students_count do %>
+              <div>
+                <dt class="font-bold text-gray-700">Schülerzahl:</dt>
+                <dd class="text-gray-900"><%= @school.address.students_count %></dd>
+              </div>
+            <% end %>
+            <%= if @school.address.founded_year do %>
+              <div>
+                <dt class="font-bold text-gray-700">Gründungsjahr:</dt>
+                <dd class="text-gray-900"><%= @school.address.founded_year %></dd>
+              </div>
+            <% end %>
+            <%= if @school.address.description do %>
+              <div>
+                <dt class="font-bold text-gray-700">Beschreibung:</dt>
+                <dd class="text-gray-900"><%= @school.address.description %></dd>
+              </div>
+            <% end %>
+          </dl>
+        </div>
+      <% else %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-yellow-900 mb-2">Keine Adressdaten vorhanden</h3>
+          <p class="text-sm text-yellow-800">
+            Für diese Schule sind noch keine Adressdaten hinterlegt.
+            Bitte tragen Sie die bekannten Informationen ein.
+          </p>
+        </div>
+      <% end %>
+      <!-- Version History -->
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
+        <div class="p-6 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center justify-between">
+            Versionshistorie
+            <span class="text-sm font-normal text-gray-500">
+              <%= length(@versions) %> Änderungen
+            </span>
+          </h2>
+        </div>
+        <div class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+          <%= if @versions == [] do %>
+            <div class="p-6 text-center text-gray-500">
+              Noch keine Änderungen vorhanden.
+            </div>
+          <% else %>
+            <%= for version <- @display_versions do %>
+              <div class={"p-4 hover:bg-gray-50 border-l-4 #{if Map.get(version, :change_count, 0) > 0, do: "border-blue-400", else: "border-gray-200"}"}>
+                <div class="flex-1">
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1">
+                        <p class="text-sm font-medium text-gray-900">
+                          Version #<%= version.id %>
+                        </p>
+                        <%= if Map.get(version, :change_count, 0) > 0 do %>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <%= Map.get(version, :change_count) %> <%= if Map.get(version, :change_count) == 1, do: "Änderung", else: "Änderungen" %>
+                          </span>
+                        <% end %>
+                      </div>
+                      
+                      <p class="text-xs text-gray-500 mb-2">
+                        <%= MehrSchulferienWeb.Formatters.DateFormatter.format_datetime(
+                          version.inserted_at
+                        ) %> • <%= Map.get(version, :originator) || "Unbekannt" %>
+                      </p>
+
+                      <%= if Map.get(version, :change_summary) do %>
+                        <p class="text-sm text-gray-700 mb-2">
+                          <span class="font-medium">Änderungen:</span> <%= Map.get(version, :change_summary) %>
+                        </p>
+                      <% end %>
+
+                      <%= if Map.get(version, :changes) && map_size(Map.get(version, :changes)) > 0 do %>
+                        <details class="mt-2">
+                          <summary class="text-xs text-gray-600 cursor-pointer hover:text-gray-800">
+                            Details anzeigen
+                          </summary>
+                          <div class="mt-2 pl-4 border-l-2 border-gray-100">
+                            <%= for {field_name, {old_value, new_value}} <- Map.get(version, :changes) do %>
+                              <div class="mb-3 text-xs">
+                                <span class="font-medium text-gray-700 block mb-1"><%= field_name %>:</span>
+                                <div class="ml-2 bg-gray-50 p-2 rounded border-l-2 border-gray-300">
+                                  <%= if is_nil(old_value) or old_value == "" do %>
+                                    <div class="bg-green-50 p-1 rounded">
+                                      <span class="text-green-700 font-mono text-xs">+ hinzugefügt:</span>
+                                      <div class="text-green-800 mt-1 font-medium">"<%= new_value %>"</div>
+                                    </div>
+                                  <% else %>
+                                    <%= if is_nil(new_value) or new_value == "" do %>
+                                      <div class="bg-red-50 p-1 rounded">
+                                        <span class="text-red-700 font-mono text-xs">- gelöscht:</span>
+                                        <div class="text-red-800 mt-1 font-medium">"<%= old_value %>"</div>
+                                      </div>
+                                    <% else %>
+                                      <div class="space-y-1">
+                                        <div class="bg-red-50 p-1 rounded">
+                                          <span class="text-red-700 font-mono text-xs">- alt:</span>
+                                          <div class="text-red-800 mt-1 font-medium">"<%= old_value %>"</div>
+                                        </div>
+                                        <div class="bg-green-50 p-1 rounded">
+                                          <span class="text-green-700 font-mono text-xs">+ neu:</span>
+                                          <div class="text-green-800 mt-1 font-medium">"<%= new_value %>"</div>
+                                        </div>
+                                      </div>
+                                    <% end %>
+                                  <% end %>
+                                </div>
+                              </div>
+                            <% end %>
+                          </div>
+                        </details>
+                      <% end %>
+                    </div>
+                    <%= if not @limit_reached do %>
+                      <button
+                        phx-click="rollback_version"
+                        phx-value-id={version.id}
+                        data-confirm="Möchten Sie diese Version wiederherstellen? Die aktuellen Daten werden mit den Werten aus dieser Version überschrieben."
+                        class="ml-4 px-3 py-1 text-xs font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 shrink-0"
+                      >
+                        Wiederherstellen
+                      </button>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
+        daily_changes: @daily_changes
+      ) %>
+    </div>
+  </div>
+  <!-- Back to School Link -->
+  <div class="mt-8 text-center">
+    <a
+      href={~p"/ferien/d/schule/#{@school.slug}"}
+      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
+      </svg>
+      Zurück zur Schulseite
+    </a>
+  </div>
+</div>
+<!-- Enrichment Modal -->
+<%= if @enrichment_data do %>
+  <div
+    class="fixed z-50 inset-0 overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true">
+      </div>
+      <!-- This element is to trick the browser into centering the modal contents. -->
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+        &#8203;
+      </span>
+      <!-- Modal panel -->
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+        <form phx-submit="apply_enriched_data">
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                <svg
+                  class="h-6 w-6 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  >
+                  </path>
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-grow">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                  Gefundene Daten
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    Wählen Sie aus, welche Daten übernommen werden sollen:
+                  </p>
+                </div>
+
+                <div class="mt-4 space-y-3">
+                  <%= if @enrichment_data.homepage_url do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[homepage_url]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Homepage</span>
+                        <p class="text-sm text-gray-500">
+                          <%= display_url(@enrichment_data.homepage_url) %>
+                        </p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.phone_number do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[phone_number]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Telefonnummer</span>
+                        <p class="text-sm text-gray-500"><%= @enrichment_data.phone_number %></p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.wikipedia_url do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[wikipedia_url]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Wikipedia</span>
+                        <p class="text-sm text-gray-500">
+                          <%= display_url(@enrichment_data.wikipedia_url) %>
+                        </p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.instagram_url do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[instagram_url]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Instagram</span>
+                        <p class="text-sm text-gray-500">
+                          <%= display_url(@enrichment_data.instagram_url) %>
+                        </p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.description do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[description]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Beschreibung</span>
+                        <p class="text-sm text-gray-500"><%= @enrichment_data.description %></p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.street do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[street]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Straße</span>
+                        <p class="text-sm text-gray-500"><%= @enrichment_data.street %></p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.zip_code do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[zip_code]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">PLZ</span>
+                        <p class="text-sm text-gray-500"><%= @enrichment_data.zip_code %></p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.city do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[city]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Stadt</span>
+                        <p class="text-sm text-gray-500"><%= @enrichment_data.city %></p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.additional_info[:students_count] do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[students_count]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Schülerzahl</span>
+                        <p class="text-sm text-gray-500">
+                          <%= @enrichment_data.additional_info[:students_count] %>
+                        </p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if @enrichment_data.additional_info[:founded] do %>
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        name="fields[founded_year]"
+                        value="true"
+                        checked
+                        class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                      <div class="ml-3">
+                        <span class="text-sm font-medium text-gray-900">Gründungsjahr</span>
+                        <p class="text-sm text-gray-500">
+                          <%= @enrichment_data.additional_info[:founded] %>
+                        </p>
+                      </div>
+                    </label>
+                  <% end %>
+
+                  <%= if map_size(Map.take(@enrichment_data, [:homepage_url, :phone_number, :wikipedia_url, :instagram_url, :description, :street, :zip_code, :city])) == 0 && 
+                         map_size(Map.take(@enrichment_data.additional_info || %{}, [:students_count, :founded])) == 0 do %>
+                    <p class="text-sm text-gray-500 italic">Keine neuen Daten gefunden.</p>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button
+              type="submit"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              Daten übernehmen
+            </button>
+            <button
+              type="button"
+              phx-click="cancel_enrichment"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              Abbrechen
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<% end %>
