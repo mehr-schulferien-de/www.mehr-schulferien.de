@@ -16,15 +16,21 @@ defmodule MehrSchulferienWeb.VacationController do
     # Load locations
     country = Locations.get_country_by_slug!("d")
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    
+
     # Extract and load vacation type
     vacation_type_slug = String.replace(vacation_slug, "ferien", "")
     vacation_type_record = get_vacation_type_record(vacation_type_slug)
 
     # Handle invalid vacation type
     if is_nil(vacation_type_record) do
-      redirect_to_federal_state(conn, "Diese Ferienart existiert nicht.", 
-                                country, federal_state_slug, year, :error)
+      redirect_to_federal_state(
+        conn,
+        "Diese Ferienart existiert nicht.",
+        country,
+        federal_state_slug,
+        year,
+        :error
+      )
     else
       # Check if vacation type is valid for the state
       if not VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
@@ -83,25 +89,29 @@ defmodule MehrSchulferienWeb.VacationController do
     vacation_types = get_vacation_types_for_year(federal_state, year)
 
     # Calculate vacation period's adjoining duration if it exists
-    vacation_period_with_adjoining = 
+    vacation_period_with_adjoining =
       if vacation_period do
         add_adjoining_duration(vacation_period, data.all_periods)
       else
         nil
       end
 
-    render(conn, "show.html", build_render_assigns(%{
-      country: country,
-      federal_state: federal_state,
-      vacation_slug: vacation_slug,
-      vacation_type_record: vacation_type_record,
-      vacation_period_with_adjoining: vacation_period_with_adjoining,
-      vacation_types: vacation_types,
-      periods_with_duration: periods_with_duration,
-      data: data,
-      today: today,
-      year: year
-    }))
+    render(
+      conn,
+      "show.html",
+      build_render_assigns(%{
+        country: country,
+        federal_state: federal_state,
+        vacation_slug: vacation_slug,
+        vacation_type_record: vacation_type_record,
+        vacation_period_with_adjoining: vacation_period_with_adjoining,
+        vacation_types: vacation_types,
+        periods_with_duration: periods_with_duration,
+        data: data,
+        today: today,
+        year: year
+      })
+    )
   end
 
   defp find_vacation_period(periods, vacation_name) do
@@ -125,7 +135,8 @@ defmodule MehrSchulferienWeb.VacationController do
 
   defp get_vacation_types_for_year(federal_state, year) do
     year_int = String.to_integer(year)
-    reference_date = Date.new!(year_int, 6, 1)  # Middle of the viewed year
+    # Middle of the viewed year
+    reference_date = Date.new!(year_int, 6, 1)
     VacationTypes.list_for_federal_state(federal_state, reference_date)
   end
 
@@ -147,7 +158,8 @@ defmodule MehrSchulferienWeb.VacationController do
       year: String.to_integer(params.year),
       years_with_data: MehrSchulferien.Periods.list_years_with_periods(),
       meta_title_type: :vacation,
-      page_title: "#{params.vacation_type_record.colloquial} #{params.federal_state.name} #{params.year}"
+      page_title:
+        "#{params.vacation_type_record.colloquial} #{params.federal_state.name} #{params.year}"
     }
   end
 

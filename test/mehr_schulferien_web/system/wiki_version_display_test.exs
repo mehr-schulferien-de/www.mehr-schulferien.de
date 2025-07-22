@@ -24,7 +24,7 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
       assert is_nil(original_address.email_address) || original_address.email_address == ""
 
       # Step 2: Visit the wiki page using LiveView
-      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
+      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}/edit")
 
       # Verify we can see the form
       assert html =~ "Adressdaten bearbeiten"
@@ -49,7 +49,7 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
       assert redirected_to(conn, 302)
 
       # Step 4: Reopen the wiki and examine the version history
-      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
+      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}/edit")
 
       # Verify the email was added
       assert html =~ "new@example.com"

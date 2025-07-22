@@ -45,6 +45,7 @@ defmodule MehrSchulferienWeb do
 
       import MehrSchulferienWeb.ErrorHelpers
       import MehrSchulferienWeb.Gettext
+      import MehrSchulferienWeb.Helpers.UrlHelpers
 
       use Phoenix.VerifiedRoutes,
         endpoint: MehrSchulferienWeb.Endpoint,
@@ -111,6 +112,7 @@ defmodule MehrSchulferienWeb do
       import MehrSchulferienWeb.ErrorHelpers
       import MehrSchulferienWeb.Gettext
       import MehrSchulferienWeb.NavigationComponent
+      import MehrSchulferienWeb.Helpers.UrlHelpers
 
       use Phoenix.VerifiedRoutes,
         endpoint: MehrSchulferienWeb.Endpoint,

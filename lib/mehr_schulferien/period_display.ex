@@ -50,7 +50,8 @@ defmodule MehrSchulferien.PeriodDisplay do
         last_date
       end
 
-    Date.diff(ends_on, date) + 1  # +1 for inclusive counting
+    # +1 for inclusive counting
+    Date.diff(ends_on, date) + 1
   end
 
   @doc """

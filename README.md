@@ -48,6 +48,23 @@ sudo apt-get install texlive-pstricks
 - [API v2.1 Documentation](docs/api_v2.1.md) - REST API documentation with improved structure (recommended)
 - [API v2.0 Documentation](docs/api_v2.md) - Legacy REST API documentation
 
+## Features
+
+### School Data Enrichment
+The wiki system now includes automated data enrichment capabilities:
+- **Search Engine Integration**: Automatically fetch school information (homepage, phone, social media) from search results
+- **Selective Updates**: Choose which fields to update from the enriched data
+- **Data Source Tracking**: Shows where data comes from and when it was last refreshed
+
+### Improved Bewegliche Ferientage Management
+Enhanced input methods for school holidays:
+- **Flexible Date Input**: Support for single dates, date ranges, and multiple dates
+  - Single date: `16.02.2026`
+  - Date range: `16.-20.02.2026`
+  - Multiple dates: `16.02.2026, 18.03.2026`
+- **Bulk Operations**: Add multiple holidays at once
+- **Copy & Paste Support**: Easy input from external sources
+
 ## Project Structure
 
 The application follows a modular structure with clear separation of concerns:

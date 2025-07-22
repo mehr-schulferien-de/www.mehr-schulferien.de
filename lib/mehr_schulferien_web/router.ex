@@ -170,6 +170,8 @@ defmodule MehrSchulferienWeb.Router do
     # Wiki section for collaborative school address editing
     live "/wiki/schools/new", WikiSchoolNewLive
     live "/wiki/schools/:slug", WikiSchoolShowLive
+    live "/wiki/schools/:slug/edit", WikiSchoolEditLive
+    live "/wiki/schools/:slug/ferientage", WikiSchoolFerientageLive
     post "/wiki/schools/:slug", WikiController, :update_school
     put "/wiki/schools/:slug", WikiController, :update_school
     delete "/wiki/schools/:slug", WikiController, :delete_school

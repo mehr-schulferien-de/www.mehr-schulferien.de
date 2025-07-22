@@ -3,10 +3,9 @@ defmodule MehrSchulferien.Geocoding.NominatimTest do
 
   alias MehrSchulferien.Geocoding.Nominatim
 
-
   @moduledoc """
   Tests for the Nominatim geocoding module.
-  
+
   Since we don't have a mocking library, these tests focus on the parsing
   and error handling logic. In a production environment, you would want to
   add integration tests that actually call the Nominatim API (with proper
@@ -67,7 +66,7 @@ defmodule MehrSchulferien.Geocoding.NominatimTest do
     test "rate limiting uses process dictionary" do
       # Clear any existing rate limit state
       Process.delete(:nominatim_last_request)
-      
+
       # After a call, the process dictionary should contain the timestamp
       # We can't actually call the function without making a real request,
       # but we can verify the module is properly loaded

@@ -72,8 +72,8 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
 
       assert redirected_to(conn, 302)
 
-      # Step 2: Visit wiki page and check version history
-      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
+      # Step 2: Visit wiki edit page to check version history
+      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}/edit")
 
       # Step 3: Verify version history shows COMPLETE original data
       # School name

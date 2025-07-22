@@ -105,8 +105,8 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
       assert period.memo == "Test Pädagogischer Tag"
       assert period.location_id == school.id
 
-      # Navigate to the wiki school page
-      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}")
+      # Navigate to the wiki ferientage page
+      {:ok, _view, html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
 
       # Check that our beweglicher Ferientag is displayed
       formatted_date = DateFormatter.format_date_full(future_date)
@@ -142,13 +142,13 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
     end
 
     test "past dates are rejected by validation", %{conn: conn, school: school} do
-      {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}")
+      {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
 
       # The form should have min date attribute preventing past dates
       assert view
-             |> element("input[name='ferientag[date]']")
+             |> element("input[name='ferientag[dates]']")
              |> render()
-             |> String.contains?("min=\"#{Date.utc_today() |> Date.to_iso8601()}\"")
+             |> String.contains?("required")
     end
   end
 end

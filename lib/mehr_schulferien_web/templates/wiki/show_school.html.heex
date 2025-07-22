@@ -53,68 +53,98 @@
                 <%= @school.name || "Nicht angegeben" %>
               </dd>
             </div>
-            <div>
-              <dt class="font-bold text-gray-700">Straße:</dt>
-              <dd class="text-gray-900">
-                <%= @school.address.street || "Nicht angegeben" %>
-              </dd>
-            </div>
-            <div>
-              <dt class="font-bold text-gray-700">PLZ:</dt>
-              <dd class="text-gray-900">
-                <%= @school.address.zip_code || "Nicht angegeben" %>
-              </dd>
-            </div>
-            <div>
-              <dt class="font-bold text-gray-700">Stadt:</dt>
-              <dd class="text-gray-900">
-                <%= @school.address.city || "Nicht angegeben" %>
-              </dd>
-            </div>
-            <div>
-              <dt class="font-bold text-gray-700">E-Mail:</dt>
-              <dd class="text-gray-900">
-                <%= @school.address.email_address || "Nicht angegeben" %>
-              </dd>
-            </div>
-            <div>
-              <dt class="font-bold text-gray-700">Telefon:</dt>
-              <dd class="text-gray-900">
-                <%= @school.address.phone_number || "Nicht angegeben" %>
-              </dd>
-            </div>
-            <div>
-              <dt class="font-bold text-gray-700">Homepage:</dt>
-              <dd class="text-gray-900">
-                <%= if @school.address.homepage_url do %>
+            <%= if @school.address.street do %>
+              <div>
+                <dt class="font-bold text-gray-700">Straße:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.street %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.zip_code do %>
+              <div>
+                <dt class="font-bold text-gray-700">PLZ:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.zip_code %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.city do %>
+              <div>
+                <dt class="font-bold text-gray-700">Stadt:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.city %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.email_address do %>
+              <div>
+                <dt class="font-bold text-gray-700">E-Mail:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.email_address %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.phone_number do %>
+              <div>
+                <dt class="font-bold text-gray-700">Telefon:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.phone_number %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.homepage_url do %>
+              <div>
+                <dt class="font-bold text-gray-700">Homepage:</dt>
+                <dd class="text-gray-900">
                   <a
                     href={@school.address.homepage_url}
                     target="_blank"
                     class="text-blue-600 hover:text-blue-800 underline"
                   >
-                    <%= @school.address.homepage_url %>
+                    <%= display_url(@school.address.homepage_url) %>
                   </a>
-                <% else %>
-                  Nicht angegeben
-                <% end %>
-              </dd>
-            </div>
-            <div>
-              <dt class="font-bold text-gray-700">Wikipedia:</dt>
-              <dd class="text-gray-900">
-                <%= if @school.address.wikipedia_url do %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.wikipedia_url do %>
+              <div>
+                <dt class="font-bold text-gray-700">Wikipedia:</dt>
+                <dd class="text-gray-900">
                   <a
                     href={@school.address.wikipedia_url}
                     target="_blank"
                     class="text-blue-600 hover:text-blue-800 underline"
                   >
-                    <%= @school.address.wikipedia_url %>
+                    <%= display_url(@school.address.wikipedia_url) %>
                   </a>
-                <% else %>
-                  Nicht angegeben
-                <% end %>
-              </dd>
-            </div>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.students_count do %>
+              <div>
+                <dt class="font-bold text-gray-700">Schülerzahl:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.students_count %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.founded_year do %>
+              <div>
+                <dt class="font-bold text-gray-700">Gründungsjahr:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.founded_year %>
+                </dd>
+              </div>
+            <% end %>
+            <%= if @school.address.description do %>
+              <div>
+                <dt class="font-bold text-gray-700">Beschreibung:</dt>
+                <dd class="text-gray-900">
+                  <%= @school.address.description %>
+                </dd>
+              </div>
+            <% end %>
           </dl>
         </div>
       <% else %>

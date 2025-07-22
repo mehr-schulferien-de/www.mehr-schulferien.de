@@ -9,7 +9,7 @@ defmodule MehrSchulferien.Periods.Grouping do
   alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.Periods.BridgeDayPeriod
   alias MehrSchulferien.Helpers.DateConstants
-  
+
   # Import constants as module attributes for use in guards
   @min_bridge_days DateConstants.min_bridge_days()
   @max_bridge_days DateConstants.max_bridge_days()

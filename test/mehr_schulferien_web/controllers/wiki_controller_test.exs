@@ -24,7 +24,8 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       assert response =~ "Schul-Wiki: #{school.name}"
       assert response =~ school.address.street
       assert response =~ school.address.phone_number
-      assert response =~ "Adressdaten bearbeiten"
+      assert response =~ "Stammdaten bearbeiten"
+      assert response =~ "Bewegliche Ferientage"
     end
 
     test "shows school wiki page without existing address", %{conn: conn} do
@@ -38,7 +39,8 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
 
       response = html_response(conn, 200)
       assert response =~ "Schul-Wiki: #{school.name}"
-      assert response =~ "Adressdaten bearbeiten"
+      assert response =~ "Stammdaten bearbeiten"
+      assert response =~ "Noch keine Adressdaten vorhanden"
     end
 
     test "updates school address successfully via POST", %{

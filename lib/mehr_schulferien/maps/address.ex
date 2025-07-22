@@ -62,6 +62,7 @@ defmodule MehrSchulferien.Maps.Address do
     field :instagram_url, :string
     field :students_count, :integer
     field :founded_year, :integer
+    field :description, :string
 
     belongs_to :school_location, Location
 
@@ -92,10 +93,12 @@ defmodule MehrSchulferien.Maps.Address do
       :google_search_cached_at,
       :instagram_url,
       :students_count,
-      :founded_year
+      :founded_year,
+      :description
     ])
     |> validate_required([:school_location_id])
     |> normalize_phone_number()
+    |> normalize_urls()
     |> validate_homepage_url()
     |> validate_instagram_url()
     |> validate_coordinates()
@@ -143,6 +146,55 @@ defmodule MehrSchulferien.Maps.Address do
       "school_type" => school_type
     })
   end
+
+  # Normalizes URLs by removing trailing slashes from domain-only URLs
+  defp normalize_urls(changeset) do
+    changeset
+    |> normalize_url_field(:homepage_url)
+    |> normalize_url_field(:wikipedia_url)
+    |> normalize_url_field(:instagram_url)
+  end
+
+  defp normalize_url_field(changeset, field) do
+    case get_change(changeset, field) do
+      nil ->
+        changeset
+
+      url when is_binary(url) ->
+        normalized = normalize_url(url)
+
+        if normalized != url do
+          put_change(changeset, field, normalized)
+        else
+          changeset
+        end
+
+      _ ->
+        changeset
+    end
+  end
+
+  defp normalize_url(url) when is_binary(url) do
+    # Parse the URL to check if it has a path
+    case URI.parse(url) do
+      %URI{scheme: scheme, host: host, path: path}
+      when scheme in ["http", "https"] and is_binary(host) ->
+        # If path is nil, "/" or empty, it's a domain-only URL
+        if path in [nil, "/", ""] do
+          # Remove trailing slash for domain-only URLs
+          "#{scheme}://#{host}"
+        else
+          # Keep the URL as-is if it has a real path
+          url
+        end
+
+      _ ->
+        # Return unchanged if parsing fails or it's not a valid HTTP(S) URL
+        url
+    end
+  end
+
+  defp normalize_url(url), do: url
 
   # Normalizes phone numbers to international format.
   # German phone numbers are converted to international format (+49).
@@ -254,11 +306,11 @@ defmodule MehrSchulferien.Maps.Address do
 
       year ->
         current_year = Date.utc_today().year
-        
-        if year >= 1800 and year <= current_year do
+
+        if year >= 1200 and year <= current_year do
           changeset
         else
-          add_error(changeset, :founded_year, "muss zwischen 1800 und #{current_year} liegen")
+          add_error(changeset, :founded_year, "muss zwischen 1200 und #{current_year} liegen")
         end
     end
   end

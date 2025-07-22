@@ -6,26 +6,26 @@ defmodule MehrSchulferien.StyleConfigTest do
   describe "day_types/0" do
     test "returns all day type definitions with German names" do
       result = StyleConfig.day_types()
-      
+
       assert result == %{
-        holiday: "Feiertage",
-        vacation: "Schulferien",
-        weekend: "Wochenenden",
-        bridge_day: "Brückentage"
-      }
+               holiday: "Feiertage",
+               vacation: "Schulferien",
+               weekend: "Wochenenden",
+               bridge_day: "Brückentage"
+             }
     end
   end
 
   describe "tailwind_classes/0" do
     test "returns mapping of day types to Tailwind CSS classes" do
       result = StyleConfig.tailwind_classes()
-      
+
       assert is_map(result)
       assert Map.has_key?(result, :holiday)
       assert Map.has_key?(result, :vacation)
       assert Map.has_key?(result, :weekend)
       assert Map.has_key?(result, :bridge_day)
-      
+
       # Verify the values are strings (CSS classes)
       Enum.each(result, fn {_key, value} ->
         assert is_binary(value)
@@ -36,13 +36,13 @@ defmodule MehrSchulferien.StyleConfigTest do
   describe "tailwind_light_classes/0" do
     test "returns mapping of day types to lighter Tailwind CSS classes" do
       result = StyleConfig.tailwind_light_classes()
-      
+
       assert is_map(result)
       assert Map.has_key?(result, :holiday)
       assert Map.has_key?(result, :vacation)
       assert Map.has_key?(result, :weekend)
       assert Map.has_key?(result, :bridge_day)
-      
+
       # Verify the values are strings (CSS classes)
       Enum.each(result, fn {_key, value} ->
         assert is_binary(value)
@@ -67,7 +67,7 @@ defmodule MehrSchulferien.StyleConfigTest do
       |> Enum.each(fn day_type ->
         light_class = StyleConfig.get_class(day_type, true)
         normal_class = StyleConfig.get_class(day_type, false)
-        
+
         assert is_binary(light_class)
         assert light_class != ""
         # Light and normal classes should be different
@@ -83,7 +83,7 @@ defmodule MehrSchulferien.StyleConfigTest do
     test "defaults to normal class when light flag is false" do
       normal_class = StyleConfig.get_class(:vacation)
       explicit_normal = StyleConfig.get_class(:vacation, false)
-      
+
       assert normal_class == explicit_normal
     end
   end
@@ -110,7 +110,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: false,
         html_class: "success"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == :vacation
     end
 
@@ -120,7 +120,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: true,
         html_class: "danger"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == :holiday
     end
 
@@ -130,7 +130,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: false,
         html_class: "warning"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == :bridge_day
     end
 
@@ -140,7 +140,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: false,
         html_class: "active"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == :weekend
     end
 
@@ -150,7 +150,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: false,
         html_class: "primary"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == nil
     end
 
@@ -161,7 +161,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: true,
         html_class: "danger"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == :vacation
     end
 
@@ -172,7 +172,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: true,
         html_class: "warning"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == :holiday
     end
 
@@ -182,7 +182,7 @@ defmodule MehrSchulferien.StyleConfigTest do
         is_public_holiday: false,
         html_class: "primary"
       }
-      
+
       assert StyleConfig.period_to_day_type(period) == nil
     end
 
@@ -197,13 +197,14 @@ defmodule MehrSchulferien.StyleConfigTest do
       assert is_map(StyleConfig.day_types())
       assert is_map(StyleConfig.tailwind_classes())
       assert is_map(StyleConfig.tailwind_light_classes())
-      
+
       assert is_binary(StyleConfig.get_class(:vacation))
+
       assert is_atom(StyleConfig.html_class_to_day_type("success")) or
-             is_nil(StyleConfig.html_class_to_day_type("unknown"))
-      
+               is_nil(StyleConfig.html_class_to_day_type("unknown"))
+
       assert is_atom(StyleConfig.period_to_day_type(%{is_school_vacation: true})) or
-             is_nil(StyleConfig.period_to_day_type(%{}))
+               is_nil(StyleConfig.period_to_day_type(%{}))
     end
   end
 end

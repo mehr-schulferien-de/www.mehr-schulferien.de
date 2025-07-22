@@ -16,19 +16,27 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       # This test validates the specific issue reported: 
       # "When I enter a new street... and save it nothing happens"
 
-      # Step 1: Visit the wiki page and verify form is present
+      # Step 1: Visit the wiki overview page
       conn = get(conn, "/wiki/schools/#{school.slug}")
       response = html_response(conn, 200)
 
-      # Verify page loads correctly with edit form
+      # Verify page loads correctly with navigation options
       assert response =~ "Schul-Wiki: #{school.name}"
-      assert response =~ "Adressdaten bearbeiten"
-      assert response =~ ~r/name="address\[street\]"/
-      assert response =~ "Änderungen speichern"
+      assert response =~ "Stammdaten bearbeiten"
+      assert response =~ "Bewegliche Ferientage"
+
+      # Navigate to the edit page
+      conn = get(conn, "/wiki/schools/#{school.slug}/edit")
+      edit_response = html_response(conn, 200)
+
+      # Verify edit form is present
+      assert edit_response =~ "Adressdaten bearbeiten"
+      assert edit_response =~ ~r/name="address\[street\]"/
+      assert edit_response =~ "Änderungen speichern"
 
       # Verify current address is displayed (if it exists)
       if address.street do
-        assert response =~ address.street
+        assert edit_response =~ address.street
       end
 
       # Step 2: Submit a new street address
@@ -54,14 +62,18 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
                "Schuldaten wurden erfolgreich aktualisiert"
 
-      # Step 5: Go back to wiki page to verify changes are visible
-      {:ok, _view, html} = live(recycle(conn), "/wiki/schools/#{school.slug}")
+      # Step 5: Go to the edit page to verify changes are visible
+      {:ok, _view, html} = live(recycle(conn), "/wiki/schools/#{school.slug}/edit")
 
       # Verify the new street appears in the interface
       assert html =~ new_street
 
       # Verify the form now shows the updated value
       assert html =~ ~r/value="#{Regex.escape(new_street)}"/
+
+      # Also check the overview page shows the updated data
+      {:ok, _view, overview_html} = live(recycle(conn), "/wiki/schools/#{school.slug}")
+      assert overview_html =~ new_street
 
       # This test proves that:
       # 1. The form is accessible and functional
@@ -93,13 +105,21 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
         lon: 13.4050
       })
 
-      # Visit wiki page
+      # Visit wiki overview page
       conn = get(conn, "/wiki/schools/#{school.slug}")
       response = html_response(conn, 200)
 
+      # Should show navigation options
+      assert response =~ "Stammdaten bearbeiten"
+      assert response =~ "Noch keine Adressdaten vorhanden"
+
+      # Navigate to edit page
+      conn = get(conn, "/wiki/schools/#{school.slug}/edit")
+      edit_response = html_response(conn, 200)
+
       # Form should be available even without existing address
-      assert response =~ "Adressdaten bearbeiten"
-      assert response =~ ~r/name="address\[street\]"/
+      assert edit_response =~ "Adressdaten bearbeiten"
+      assert edit_response =~ ~r/name="address\[street\]"/
 
       # Submit new address data
       new_address_params = %{
@@ -123,9 +143,13 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
                "Schuldaten wurden erfolgreich aktualisiert"
 
-      # Check the data in the wiki page
+      # Check the data in the overview page
       {:ok, _view, html} = live(recycle(conn), "/wiki/schools/#{school.slug}")
       assert html =~ "Komplett Neue Straße 123"
+
+      # Also verify it shows in the edit page
+      {:ok, _view, edit_html} = live(recycle(conn), "/wiki/schools/#{school.slug}/edit")
+      assert edit_html =~ "Komplett Neue Straße 123"
     end
 
     test "form validation and user feedback works correctly", %{
@@ -156,21 +180,29 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       conn: conn,
       school: school
     } do
-      # Basic sanity check - make sure the page itself works
+      # Basic sanity check - make sure the overview page works
       conn = get(conn, "/wiki/schools/#{school.slug}")
+      overview_response = html_response(conn, 200)
 
       # Should not get 404, 500, etc.
-      assert html_response(conn, 200)
+      assert overview_response
 
-      # Key elements should be present
-      assert html_response(conn, 200) =~ "Schul-Wiki"
-      assert html_response(conn, 200) =~ school.name
-      assert html_response(conn, 200) =~ "Adressdaten bearbeiten"
-      assert html_response(conn, 200) =~ "Änderungen speichern"
+      # Key elements should be present on overview page
+      assert overview_response =~ "Schul-Wiki"
+      assert overview_response =~ school.name
+      assert overview_response =~ "Stammdaten bearbeiten"
+      assert overview_response =~ "Bewegliche Ferientage"
+
+      # Check the edit page has the form
+      conn = get(conn, "/wiki/schools/#{school.slug}/edit")
+      edit_response = html_response(conn, 200)
+
+      assert edit_response =~ "Adressdaten bearbeiten"
+      assert edit_response =~ "Änderungen speichern"
 
       # Form should be functional
-      assert html_response(conn, 200) =~ ~r/<form.*method="post"/
-      assert html_response(conn, 200) =~ ~r/name="address\[street\]"/
+      assert edit_response =~ ~r/<form.*method="post"/
+      assert edit_response =~ ~r/name="address\[street\]"/
     end
   end
 

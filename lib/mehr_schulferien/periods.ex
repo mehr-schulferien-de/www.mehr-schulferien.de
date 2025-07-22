@@ -344,6 +344,24 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
+  Counts bewegliche Ferientage for a school.
+  """
+  def count_bewegliche_ferientage_for_school(school_id) do
+    case get_beweglicher_ferientag_type() do
+      nil ->
+        0
+
+      beweglicher_type ->
+        from(p in Period,
+          where:
+            p.location_id == ^school_id and p.holiday_or_vacation_type_id == ^beweglicher_type.id,
+          select: count(p.id)
+        )
+        |> Repo.one()
+    end
+  end
+
+  @doc """
   Creates a beweglicher Ferientag period for a school.
   """
   def create_beweglicher_ferientag_for_school(school_id, date, memo) do

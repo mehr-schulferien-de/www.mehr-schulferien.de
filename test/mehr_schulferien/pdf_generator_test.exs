@@ -280,13 +280,12 @@ defmodule MehrSchulferien.PdfGeneratorTest do
     test "module exports expected functions" do
       # Ensure module is loaded
       Code.ensure_loaded(PdfGenerator)
-      
+
       # Check all PDF generation functions
       assert function_exported?(PdfGenerator, :generate_entschuldigung_pdf, 2)
       assert function_exported?(PdfGenerator, :generate_beurlaubung_pdf, 2)
       assert function_exported?(PdfGenerator, :generate_sportbefreiung_pdf, 2)
     end
-
   end
 
   describe "edge cases" do
@@ -306,8 +305,9 @@ defmodule MehrSchulferien.PdfGeneratorTest do
         first_name: "",
         last_name: ""
       }
+
       assert PdfGenerator.format_full_name(minimal_name_data) == " "
-      
+
       # format_personal_greeting can handle empty map
       assert PdfGenerator.format_personal_greeting(%{}) == "Sehr geehrte Damen und Herren,"
     end
