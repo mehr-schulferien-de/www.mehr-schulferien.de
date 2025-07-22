@@ -10,15 +10,30 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
     setup do
       # Create test data using factory
       country = insert(:country, %{slug: "d", name: "Deutschland"})
-      federal_state = insert(:federal_state, %{parent_location_id: country.id, slug: "rp", name: "Rheinland-Pfalz"})
-      county = insert(:county, %{parent_location_id: federal_state.id, slug: "koblenz-county", name: "Koblenz"})
-      city = insert(:city, %{parent_location_id: county.id, slug: "koblenz-city", name: "Koblenz"})
-      
-      school = insert(:school, %{
-        name: "Test Gymnasium",
-        slug: "test-gymnasium",
-        parent_location_id: city.id
-      })
+
+      federal_state =
+        insert(:federal_state, %{
+          parent_location_id: country.id,
+          slug: "rp",
+          name: "Rheinland-Pfalz"
+        })
+
+      county =
+        insert(:county, %{
+          parent_location_id: federal_state.id,
+          slug: "koblenz-county",
+          name: "Koblenz"
+        })
+
+      city =
+        insert(:city, %{parent_location_id: county.id, slug: "koblenz-city", name: "Koblenz"})
+
+      school =
+        insert(:school, %{
+          name: "Test Gymnasium",
+          slug: "test-gymnasium",
+          parent_location_id: city.id
+        })
 
       %{school: school}
     end
@@ -45,8 +60,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
       version = List.first(versions)
 
       # Perform rollback
-      result = live |> element("button[phx-click='rollback_version'][phx-value-id='#{version.id}']") |> render_click()
-      
+      result =
+        live
+        |> element("button[phx-click='rollback_version'][phx-value-id='#{version.id}']")
+        |> render_click()
+
       # Check that rollback succeeded
       assert result =~ "Erfolgreich zur ausgewählten Version zurückgekehrt"
 
@@ -90,13 +108,19 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
       assert updated_school.address.zip_code == "54321"
 
       # Get address versions
-      address_versions = PaperTrail.get_versions(updated_school.address) |> Enum.sort_by(& &1.id, :desc)
+      address_versions =
+        PaperTrail.get_versions(updated_school.address) |> Enum.sort_by(& &1.id, :desc)
+
       assert length(address_versions) == 2
 
       # Rollback to first version (the creation)
       first_version = List.last(address_versions)
-      result = live |> element("button[phx-click='rollback_version'][phx-value-id='#{first_version.id}']") |> render_click()
-      
+
+      result =
+        live
+        |> element("button[phx-click='rollback_version'][phx-value-id='#{first_version.id}']")
+        |> render_click()
+
       assert result =~ "Erfolgreich zur ausgewählten Version zurückgekehrt"
 
       # Verify address was rolled back to original state
@@ -110,8 +134,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
       {:ok, live, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
       # Try to rollback to a non-existent version
-      result = live |> element("button[phx-click='rollback_version'][phx-value-id='99999']") |> render_click()
-      
+      result =
+        live
+        |> element("button[phx-click='rollback_version'][phx-value-id='99999']")
+        |> render_click()
+
       assert result =~ "Version nicht gefunden"
     end
 
@@ -120,7 +147,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
 
       # Try to rollback with invalid ID (this should be caught by JavaScript validation normally)
       assert_raise ArgumentError, fn ->
-        live |> element("button[phx-click='rollback_version'][phx-value-id='invalid']") |> render_click()
+        live
+        |> element("button[phx-click='rollback_version'][phx-value-id='invalid']")
+        |> render_click()
       end
     end
 
@@ -174,13 +203,20 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
 
       # Get all versions
       updated_school = Locations.get_school_by_slug!(school.slug)
-      address_versions = PaperTrail.get_versions(updated_school.address) |> Enum.sort_by(& &1.id, :asc)
+
+      address_versions =
+        PaperTrail.get_versions(updated_school.address) |> Enum.sort_by(& &1.id, :asc)
+
       assert length(address_versions) == 3
 
       # Rollback to middle version (should restore "Updated" values)
       middle_version = Enum.at(address_versions, 1)
-      result = live |> element("button[phx-click='rollback_version'][phx-value-id='#{middle_version.id}']") |> render_click()
-      
+
+      result =
+        live
+        |> element("button[phx-click='rollback_version'][phx-value-id='#{middle_version.id}']")
+        |> render_click()
+
       assert result =~ "Erfolgreich zur ausgewählten Version zurückgekehrt"
 
       # Verify rollback to middle state
@@ -200,13 +236,14 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
       Wiki.increment_daily_change_count(today)
       Wiki.increment_daily_change_count(today)
       Wiki.increment_daily_change_count(today)
-      Wiki.increment_daily_change_count(today) # Reach limit of 5
+      # Reach limit of 5
+      Wiki.increment_daily_change_count(today)
 
       {:ok, live, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
       # Create a version first (this should work since we're testing rollback limits)
       # We need to manually create a version to test rollback limits
-      {:ok, %{model: _address, version: version}} = 
+      {:ok, %{model: _address, version: version}} =
         PaperTrail.insert(
           Address.changeset(%Address{}, %{
             "school_location_id" => school.id,
@@ -216,8 +253,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
         )
 
       # Try to rollback when limit is reached
-      result = live |> element("button[phx-click='rollback_version'][phx-value-id='#{version.id}']") |> render_click()
-      
+      result =
+        live
+        |> element("button[phx-click='rollback_version'][phx-value-id='#{version.id}']")
+        |> render_click()
+
       assert result =~ "Das tägliche Limit"
     end
 
@@ -244,7 +284,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
       version = List.first(versions)
 
       # Perform rollback
-      live |> element("button[phx-click='rollback_version'][phx-value-id='#{version.id}']") |> render_click()
+      live
+      |> element("button[phx-click='rollback_version'][phx-value-id='#{version.id}']")
+      |> render_click()
 
       # Verify daily count was incremented
       final_count = Wiki.get_daily_change_count(today)
@@ -276,20 +318,26 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
 
       # Get versions before rollback
       updated_school = Locations.get_school_by_slug!(school.slug)
-      versions_before = PaperTrail.get_versions(updated_school.address) |> Enum.sort_by(& &1.id, :desc)
+
+      versions_before =
+        PaperTrail.get_versions(updated_school.address) |> Enum.sort_by(& &1.id, :desc)
+
       first_version = List.last(versions_before)
 
       # Perform rollback
-      html = live |> element("button[phx-click='rollback_version'][phx-value-id='#{first_version.id}']") |> render_click()
+      html =
+        live
+        |> element("button[phx-click='rollback_version'][phx-value-id='#{first_version.id}']")
+        |> render_click()
 
       # Check that version history is updated
       assert html =~ "Versionshistorie"
-      
+
       # There should now be 3 versions (create, update, rollback)
       final_school = Locations.get_school_by_slug!(school.slug)
       final_versions = PaperTrail.get_versions(final_school.address)
       assert length(final_versions) == 3
-      
+
       # And the street should be back to original
       assert final_school.address.street == "Original Street"
     end

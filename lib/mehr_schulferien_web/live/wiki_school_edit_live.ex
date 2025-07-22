@@ -533,7 +533,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
        )}
     else
       school = socket.assigns.school
-      
+
       # Try to rollback the version to the appropriate model
       rollback_result = attempt_version_rollback(school, version_id)
 
@@ -552,10 +552,19 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
           changeset =
             if updated_school.address do
               address_changeset = Maps.change_address(updated_school.address)
-              %{address_changeset | data: Map.merge(address_changeset.data, %{name: updated_school.name})}
+
+              %{
+                address_changeset
+                | data: Map.merge(address_changeset.data, %{name: updated_school.name})
+              }
             else
-              address_changeset = Maps.change_address(%Address{school_location_id: updated_school.id})
-              %{address_changeset | data: Map.merge(address_changeset.data, %{name: updated_school.name})}
+              address_changeset =
+                Maps.change_address(%Address{school_location_id: updated_school.id})
+
+              %{
+                address_changeset
+                | data: Map.merge(address_changeset.data, %{name: updated_school.name})
+              }
             end
 
           {:noreply,
@@ -571,7 +580,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
            )}
 
         {:error, reason} ->
-          error_message = 
+          error_message =
             case reason do
               :version_not_found -> "Version nicht gefunden."
               :version_mismatch -> "Version gehört nicht zu diesem Modell."
@@ -644,7 +653,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   defp enrich_version_with_changes(version) do
     changes = get_version_changes(version)
     change_summary = generate_change_summary(changes)
-    
+
     version
     |> Map.put(:changes, changes)
     |> Map.put(:change_summary, change_summary)
@@ -656,29 +665,32 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
       "Location" ->
         # Handle both string and atom keys
         item_changes = version.item_changes || %{}
+
         cond do
           Map.has_key?(item_changes, "name") ->
             new_name = item_changes["name"]
             old_values = get_previous_values("Location", version.item_id, version)
             old_name = Map.get(old_values, "name") || Map.get(old_values, :name, "")
             %{"Schulname" => {old_name, new_name}}
+
           Map.has_key?(item_changes, :name) ->
             new_name = item_changes[:name]
             old_values = get_previous_values("Location", version.item_id, version)
             old_name = Map.get(old_values, "name") || Map.get(old_values, :name, "")
             %{"Schulname" => {old_name, new_name}}
+
           true ->
             %{}
         end
-      
+
       "Address" ->
         old_values = get_previous_values("Address", version.item_id, version)
-        
+
         Enum.reduce(version.item_changes || %{}, %{}, fn {field, new_value}, acc ->
           # Convert field to both string and atom versions for lookup
           field_str = if is_atom(field), do: Atom.to_string(field), else: field
           field_atom = if is_binary(field), do: String.to_atom(field), else: field
-          
+
           field_name =
             case field_str do
               "street" -> "Straße"
@@ -698,11 +710,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
           if field_name do
             # Try both string and atom keys in old_values
             old_value = Map.get(old_values, field_str) || Map.get(old_values, field_atom, "")
-            
+
             # Only include changes where there's a meaningful difference
             old_empty = is_nil(old_value) or old_value == ""
             new_empty = is_nil(new_value) or new_value == ""
-            
+
             if old_empty and new_empty do
               # Both empty - no meaningful change
               acc
@@ -713,7 +725,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
             acc
           end
         end)
-      
+
       _ ->
         %{}
     end
@@ -724,25 +736,31 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   defp generate_change_summary(changes) do
-    change_descriptions = 
+    change_descriptions =
       Enum.map(changes, fn {field_name, {old_value, new_value}} ->
         old_empty = is_nil(old_value) or old_value == ""
         new_empty = is_nil(new_value) or new_value == ""
-        
+
         cond do
           old_empty and not new_empty ->
             "#{field_name} hinzugefügt"
+
           not old_empty and new_empty ->
             "#{field_name} gelöscht"
+
           true ->
             "#{field_name} aktualisiert"
         end
       end)
-    
+
     case length(change_descriptions) do
-      1 -> List.first(change_descriptions)
-      2 -> Enum.join(change_descriptions, " • ")
-      n when n > 2 -> 
+      1 ->
+        List.first(change_descriptions)
+
+      2 ->
+        Enum.join(change_descriptions, " • ")
+
+      n when n > 2 ->
         first_two = change_descriptions |> Enum.take(2) |> Enum.join(" • ")
         "#{first_two} • #{n - 2} weitere"
     end
@@ -779,7 +797,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
           # Convert field to both string and atom versions for lookup
           field_str = if is_atom(field), do: Atom.to_string(field), else: field
           field_atom = if is_binary(field), do: String.to_atom(field), else: field
-          
+
           field_name =
             case field_str do
               "street" -> "Straße"
@@ -799,11 +817,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
           if field_name do
             # Try both string and atom keys in old_values
             old_value = Map.get(old_values, field_str) || Map.get(old_values, field_atom, "")
-            
+
             # Only include changes where there's a meaningful difference
             old_empty = is_nil(old_value) or old_value == ""
             new_empty = is_nil(new_value) or new_value == ""
-            
+
             if old_empty and new_empty do
               # Both empty - no meaningful change
               acc
@@ -837,21 +855,22 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
         []
       end
       |> Enum.filter(&(&1.id < current_version.id))
-      |> Enum.sort_by(& &1.id, :asc)  # Sort ascending to replay changes chronologically
+      # Sort ascending to replay changes chronologically
+      |> Enum.sort_by(& &1.id, :asc)
 
     # Reconstruct the state by replaying all previous versions chronologically
     versions
     |> Enum.reduce(%{}, fn version, state ->
       changes = version.item_changes || %{}
       # Merge changes into the current state, converting keys to consistent format
-      merged_changes = 
-        changes 
-        |> Enum.into(%{}, fn {k, v} -> 
+      merged_changes =
+        changes
+        |> Enum.into(%{}, fn {k, v} ->
           # Convert atom keys to string keys for consistency
           key = if is_atom(k), do: Atom.to_string(k), else: k
           {key, v}
         end)
-      
+
       Map.merge(state, merged_changes)
     end)
   end
@@ -912,6 +931,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   rescue
     Ecto.NoResultsError ->
       {:error, :version_not_found}
+
     ArgumentError ->
       {:error, :invalid_version_id}
   end
