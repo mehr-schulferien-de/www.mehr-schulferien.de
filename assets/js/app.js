@@ -36,6 +36,16 @@ Hooks.MaintainScroll = {
   }
 }
 
+Hooks.ScrollToTop = {
+  mounted() {
+    // Handle scroll-to-top event from server
+    this.handleEvent("scroll-to-top", () => {
+      // Smooth scroll to top of page
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
+  }
+}
+
 
 // Function to get cookie value by name
 function getCookie(name) {

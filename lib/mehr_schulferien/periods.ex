@@ -365,6 +365,8 @@ defmodule MehrSchulferien.Periods do
   Creates a beweglicher Ferientag period for a school.
   """
   def create_beweglicher_ferientag_for_school(school_id, date, memo) do
+    alias MehrSchulferien.Wiki
+
     case get_beweglicher_ferientag_type() do
       nil ->
         {:error, "Beweglicher Ferientag type not found in database"}
@@ -399,8 +401,166 @@ defmodule MehrSchulferien.Periods do
             "is_valid_for_everybody" => beweglicher_type.default_is_valid_for_everybody || false
           }
 
-          create_period(attrs)
+          case create_period(attrs) do
+            {:ok, period} ->
+              # Track the change for daily limit
+              Wiki.increment_daily_change_count(Date.utc_today())
+              {:ok, period}
+
+            error ->
+              error
+          end
         end
     end
+  end
+
+  @doc """
+  Copies bewegliche Ferientage from one school to multiple target schools.
+  Only copies ferientage that don't already exist on the same date in target schools.
+  Returns a map with results for each target school.
+  """
+  def copy_bewegliche_ferientage(source_school_id, target_school_ids) do
+    source_ferientage = list_bewegliche_ferientage_for_school(source_school_id)
+
+    results =
+      Enum.map(target_school_ids, fn target_school_id ->
+        target_results = copy_ferientage_to_school(source_ferientage, target_school_id)
+        {target_school_id, target_results}
+      end)
+
+    Map.new(results)
+  end
+
+  @doc """
+  Copies specific bewegliche Ferientage to multiple target schools.
+  Only copies ferientage that don't already exist on the same date in target schools.
+  Respects the daily change limit and stops when limit is reached.
+  Returns a map with results for each target school.
+  """
+  def copy_specific_bewegliche_ferientage(ferientage_list, target_school_ids) do
+    alias MehrSchulferien.{Wiki, Config}
+    today = Date.utc_today()
+    limit = Config.daily_change_limit()
+
+    # Process schools one by one, checking the limit
+    {results, _limit_reached} =
+      Enum.reduce(target_school_ids, {%{}, false}, fn target_school_id,
+                                                      {acc_results, limit_reached} ->
+        if limit_reached do
+          # If limit already reached, skip this school
+          {Map.put(acc_results, target_school_id, [{:error, nil, "Tageslimit erreicht"}]), true}
+        else
+          # Check current count before processing this school
+          current_count = Wiki.get_daily_change_count(today)
+
+          if current_count >= limit do
+            # Limit reached now
+            {Map.put(acc_results, target_school_id, [{:error, nil, "Tageslimit erreicht"}]), true}
+          else
+            # Process this school with limit awareness
+            target_results =
+              copy_ferientage_to_school_with_limit(
+                ferientage_list,
+                target_school_id,
+                limit - current_count
+              )
+
+            {Map.put(acc_results, target_school_id, target_results), false}
+          end
+        end
+      end)
+
+    results
+  end
+
+  defp copy_ferientage_to_school(source_ferientage, target_school_id) do
+    # Get existing ferientage for target school
+    existing_ferientage = list_bewegliche_ferientage_for_school(target_school_id)
+    existing_dates = MapSet.new(existing_ferientage, & &1.starts_on)
+
+    # Copy only ferientage that don't exist yet
+    Enum.map(source_ferientage, fn ferientag ->
+      if MapSet.member?(existing_dates, ferientag.starts_on) do
+        {:skipped, ferientag.starts_on, "Bereits vorhanden"}
+      else
+        case create_beweglicher_ferientag_for_school(
+               target_school_id,
+               ferientag.starts_on,
+               ferientag.memo || ""
+             ) do
+          {:ok, period} ->
+            {:success, period}
+
+          {:error, reason} ->
+            {:error, ferientag.starts_on, reason}
+        end
+      end
+    end)
+  end
+
+  defp copy_ferientage_to_school_with_limit(source_ferientage, target_school_id, remaining_quota) do
+    alias MehrSchulferien.{Wiki, Config}
+    today = Date.utc_today()
+
+    # Get existing ferientage for target school
+    existing_ferientage = list_bewegliche_ferientage_for_school(target_school_id)
+    existing_dates = MapSet.new(existing_ferientage, & &1.starts_on)
+
+    # Process ferientage one by one, checking quota
+    {results, _used_quota} =
+      Enum.reduce(source_ferientage, {[], 0}, fn ferientag, {acc_results, used_quota} ->
+        current_count = Wiki.get_daily_change_count(today)
+
+        if current_count >= Config.daily_change_limit() or used_quota >= remaining_quota do
+          # Quota exhausted
+          {[{:error, ferientag.starts_on, "Tageslimit erreicht"} | acc_results], used_quota}
+        else
+          if MapSet.member?(existing_dates, ferientag.starts_on) do
+            # Already exists, doesn't count against quota
+            {[{:skipped, ferientag.starts_on, "Bereits vorhanden"} | acc_results], used_quota}
+          else
+            case create_beweglicher_ferientag_for_school(
+                   target_school_id,
+                   ferientag.starts_on,
+                   ferientag.memo || ""
+                 ) do
+              {:ok, period} ->
+                # Success, increment used quota
+                {[{:success, period} | acc_results], used_quota + 1}
+
+              {:error, reason} ->
+                # Error, doesn't count against quota
+                {[{:error, ferientag.starts_on, reason} | acc_results], used_quota}
+            end
+          end
+        end
+      end)
+
+    Enum.reverse(results)
+  end
+
+  @doc """
+  Bulk copies bewegliche Ferientage from source to target schools with transaction support.
+  Returns {:ok, results} or {:error, reason}.
+  """
+  def bulk_copy_bewegliche_ferientage(source_school_id, target_school_ids) do
+    Repo.transaction(fn ->
+      results = copy_bewegliche_ferientage(source_school_id, target_school_ids)
+
+      # Check if any errors occurred
+      errors =
+        Enum.flat_map(results, fn {_school_id, school_results} ->
+          Enum.filter(school_results, fn
+            {:error, _, _} -> true
+            _ -> false
+          end)
+        end)
+
+      if Enum.empty?(errors) do
+        results
+      else
+        Repo.rollback(:copy_failed)
+      end
+    end)
   end
 end

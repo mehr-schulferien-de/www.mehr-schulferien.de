@@ -6,5 +6,5 @@ defmodule MehrSchulferien.Config do
   @doc """
   The daily limit for wiki changes to prevent abuse.
   """
-  def daily_change_limit, do: 100
+  def daily_change_limit, do: 250
 end

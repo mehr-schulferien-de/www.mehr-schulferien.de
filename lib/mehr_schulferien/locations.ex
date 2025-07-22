@@ -1038,4 +1038,153 @@ defmodule MehrSchulferien.Locations do
     parent = Repo.get(Location, parent_id)
     if parent, do: get_federal_state_for_location(parent), else: nil
   end
+
+  #
+  # Geographic search functions for schools
+  #
+
+  @doc """
+  Finds schools within the same zip code as the given school.
+  Returns a list of schools with their addresses preloaded.
+  """
+  def find_schools_by_same_zip_code(%Location{is_school: true} = school) do
+    school = Repo.preload(school, :address)
+
+    case school.address do
+      %{zip_code: zip_code} when not is_nil(zip_code) and zip_code != "" ->
+        from(s in Location,
+          join: a in assoc(s, :address),
+          where:
+            s.is_school == true and
+              s.id != ^school.id and
+              a.zip_code == ^zip_code,
+          preload: [:address],
+          order_by: s.name
+        )
+        |> Repo.all()
+
+      _ ->
+        []
+    end
+  end
+
+  @doc """
+  Finds schools within a given radius (in kilometers) from the given school.
+  Uses the Haversine formula to calculate distances.
+  Returns schools with their addresses and calculated distances.
+  """
+  def find_schools_within_radius(%Location{is_school: true} = school, radius_km) do
+    school = Repo.preload(school, :address)
+
+    case school.address do
+      %{lat: lat, lon: lon} when not is_nil(lat) and not is_nil(lon) ->
+        # Earth radius in kilometers
+        earth_radius = 6371.0
+
+        query = """
+        SELECT DISTINCT l.*, 
+               (#{earth_radius} * acos(
+                 cos(radians($1)) * cos(radians(a.lat)) * 
+                 cos(radians(a.lon) - radians($2)) + 
+                 sin(radians($1)) * sin(radians(a.lat))
+               )) as distance_km
+        FROM locations l
+        INNER JOIN addresses a ON a.school_location_id = l.id
+        WHERE l.is_school = true
+          AND l.id != $3
+          AND a.lat IS NOT NULL
+          AND a.lon IS NOT NULL
+          AND (#{earth_radius} * acos(
+                cos(radians($1)) * cos(radians(a.lat)) * 
+                cos(radians(a.lon) - radians($2)) + 
+                sin(radians($1)) * sin(radians(a.lat))
+              )) <= $4
+        ORDER BY distance_km ASC
+        """
+
+        result = Ecto.Adapters.SQL.query!(Repo, query, [lat, lon, school.id, radius_km])
+
+        # Convert results to Location structs with distance
+        Enum.map(result.rows, fn row ->
+          location = Repo.load(Location, {result.columns, row})
+          location = Repo.preload(location, :address)
+
+          # Find the distance value (last column)
+          distance_idx = Enum.find_index(result.columns, &(&1 == "distance_km"))
+          distance = if distance_idx, do: Enum.at(row, distance_idx), else: nil
+
+          # Add distance as a virtual field
+          Map.put(location, :distance_km, distance)
+        end)
+
+      _ ->
+        []
+    end
+  end
+
+  @doc """
+  Searches for schools by name within a given radius from the given school.
+  Combines name search with geographic filtering.
+  """
+  def search_schools_by_name_within_radius(
+        %Location{is_school: true} = school,
+        name_pattern,
+        radius_km
+      ) do
+    school = Repo.preload(school, :address)
+
+    case school.address do
+      %{lat: lat, lon: lon} when not is_nil(lat) and not is_nil(lon) ->
+        # Get all schools within radius first
+        schools_in_radius = find_schools_within_radius(school, radius_km)
+
+        # Filter by name pattern
+        Enum.filter(schools_in_radius, fn s ->
+          String.match?(String.downcase(s.name), ~r/#{String.downcase(name_pattern)}/)
+        end)
+
+      _ ->
+        []
+    end
+  end
+
+  @doc """
+  Finds all schools in the same city as the given school.
+  """
+  def find_schools_in_same_city(%Location{is_school: true} = school) do
+    from(s in Location,
+      where:
+        s.is_school == true and
+          s.id != ^school.id and
+          s.parent_location_id == ^school.parent_location_id,
+      preload: [:address],
+      order_by: s.name
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Helper function to calculate distance between two coordinates using Haversine formula.
+  Returns distance in kilometers.
+  """
+  def calculate_distance(lat1, lon1, lat2, lon2) do
+    # Earth radius in kilometers
+    earth_radius = 6371.0
+
+    # Convert to radians
+    lat1_rad = lat1 * :math.pi() / 180
+    lat2_rad = lat2 * :math.pi() / 180
+    delta_lat = (lat2 - lat1) * :math.pi() / 180
+    delta_lon = (lon2 - lon1) * :math.pi() / 180
+
+    # Haversine formula
+    a =
+      :math.sin(delta_lat / 2) * :math.sin(delta_lat / 2) +
+        :math.cos(lat1_rad) * :math.cos(lat2_rad) *
+          :math.sin(delta_lon / 2) * :math.sin(delta_lon / 2)
+
+    c = 2 * :math.atan2(:math.sqrt(a), :math.sqrt(1 - a))
+
+    earth_radius * c
+  end
 end
