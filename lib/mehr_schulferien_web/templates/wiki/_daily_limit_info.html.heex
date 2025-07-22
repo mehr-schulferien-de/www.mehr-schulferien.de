@@ -1,12 +1,12 @@
-<div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
-  <.heading level={3} class="text-lg mb-3">Tageslimit</.heading>
+<div class="bg-white shadow-sm border border-gray-200 rounded-lg p-4">
+  <h3 class="text-sm font-medium text-gray-900 mb-2">Tageslimit</h3>
   <div class="space-y-2 text-sm">
-    <.text class="text-gray-700">
+    <p class="text-gray-600">
       Zum Schutz vor Missbrauch gibt es ein Tageslimit von <%= MehrSchulferien.Config.daily_change_limit() %> Änderungen.
-    </.text>
+    </p>
     <div class="flex items-center justify-between">
       <span class="text-gray-600">Heutige Änderungen:</span>
-      <span class={"font-semibold #{if @daily_changes >= MehrSchulferien.Config.daily_change_limit(), do: "text-red-600", else: "text-gray-900"}"}>
+      <span class={"font-medium #{if @daily_changes >= MehrSchulferien.Config.daily_change_limit(), do: "text-red-600", else: "text-gray-900"}"}>
         <%= @daily_changes %> / <%= MehrSchulferien.Config.daily_change_limit() %>
       </span>
     </div>
@@ -14,7 +14,7 @@
       <div class="bg-gray-200 rounded-full h-2">
         <div
           class={"h-2 rounded-full #{if @daily_changes >= MehrSchulferien.Config.daily_change_limit(), do: "bg-red-600", else: "bg-green-600"}"}
-          style={"width: #{min(@daily_changes, 100)}%"}
+          style={"width: #{min(@daily_changes / MehrSchulferien.Config.daily_change_limit() * 100, 100)}%"}
         >
         </div>
       </div>

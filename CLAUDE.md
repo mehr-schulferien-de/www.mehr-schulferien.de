@@ -104,6 +104,11 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
   - UI Elements: `<.card>`, `<.button>`, `<.badge>`, `<.alert>`
   - Tables: `<.table>`, `<.thead>`, `<.tbody>`, `<.tr>`, `<.td>`
 - Common patterns are defined in the design token system
+- **List formatting**: For HTML lists (`<ul>`, `<ol>`), use proper Tailwind classes:
+  - Use `list-disc` or `list-decimal` for bullet/number styles
+  - Use `ml-5` or similar margin for proper indentation
+  - Avoid manual bullet points (•) in list items
+  - This ensures proper text wrapping where continuation lines align with text, not bullets
 
 ### Testing Strategy
 - System tests for full user workflows

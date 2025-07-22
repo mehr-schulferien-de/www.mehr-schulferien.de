@@ -65,12 +65,101 @@
           <h2 class="text-xl font-semibold text-gray-900 mb-4">
             Neuen beweglichen Ferientag hinzufügen
           </h2>
+          <!-- Form Mode Toggle -->
+          <div class="mb-6">
+            <div class="flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+              <button
+                type="button"
+                phx-click="toggle_form_mode"
+                class={
+                  if @simple_form_mode,
+                    do:
+                      "flex-1 px-4 py-2 text-sm font-medium text-gray-900 bg-white rounded-md shadow-sm",
+                    else: "flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+                }
+                disabled={@simple_form_mode}
+              >
+                Einzelner Tag
+              </button>
+              <button
+                type="button"
+                phx-click="toggle_form_mode"
+                class={
+                  if not @simple_form_mode,
+                    do:
+                      "flex-1 px-4 py-2 text-sm font-medium text-gray-900 bg-white rounded-md shadow-sm",
+                    else: "flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+                }
+                disabled={not @simple_form_mode}
+              >
+                Mehrere Tage (Power User)
+              </button>
+            </div>
+          </div>
 
-          <form phx-submit="add_beweglicher_ferientag">
-            <div class="space-y-4">
+          <%= if @simple_form_mode do %>
+            <!-- Simple Form Mode -->
+            <form phx-submit="add_single_ferientag" class="space-y-4">
+              <div>
+                <label for="ferientag_date" class="block text-sm font-medium text-gray-700 mb-1">
+                  Datum *
+                </label>
+                <input
+                  type="date"
+                  id="ferientag_date"
+                  name="ferientag[date]"
+                  required
+                  min={Date.utc_today() |> Date.to_iso8601()}
+                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2"
+                  disabled={@limit_reached}
+                />
+              </div>
+
+              <div>
+                <label
+                  for="ferientag_memo_simple"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Bemerkung/Grund
+                </label>
+                <input
+                  type="text"
+                  id="ferientag_memo_simple"
+                  name="ferientag[memo]"
+                  placeholder="z.B. Pädagogischer Tag, Lehrerfortbildung, Brückentag"
+                  maxlength="255"
+                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                  disabled={@limit_reached}
+                />
+                <p class="mt-1 text-xs text-gray-500">
+                  Eine kurze Beschreibung hilft Eltern und Schülern, den Grund für den freien Tag zu verstehen.
+                </p>
+              </div>
+
+              <div class="flex justify-between items-center pt-2">
+                <button
+                  type="submit"
+                  class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled={@limit_reached}
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Ferientag hinzufügen
+                </button>
+              </div>
+            </form>
+          <% else %>
+            <!-- Advanced Form Mode -->
+            <form phx-submit="add_beweglicher_ferientag" class="space-y-4">
               <div>
                 <label for="ferientag_dates" class="block text-sm font-medium text-gray-700 mb-1">
-                  Datum/Daten <span class="text-red-500">*</span>
+                  Datum/Daten *
                 </label>
                 <input
                   type="text"
@@ -78,12 +167,15 @@
                   name="ferientag[dates]"
                   required
                   placeholder="z.B. 16.02.2026 oder 16.-20.02.2026 oder 16.02.2026, 18.03.2026"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                  disabled={@limit_reached}
                 />
                 <div class="mt-2 text-xs text-gray-600 space-y-1">
                   <p><strong>Eingabeformate:</strong></p>
                   <p>• Einzeltag: <code class="bg-gray-100 px-1 rounded">16.02.2026</code></p>
-                  <p>• Zeitraum: <code class="bg-gray-100 px-1 rounded">16.-20.02.2026</code></p>
+                  <p>
+                    • Zeitraum: <code class="bg-gray-100 px-1 rounded">16.-20.02.2026</code>
+                  </p>
                   <p>
                     • Mehrere Tage:
                     <code class="bg-gray-100 px-1 rounded">16.02.2026, 18.03.2026</code>
@@ -97,7 +189,7 @@
 
               <div>
                 <label for="ferientag_memo" class="block text-sm font-medium text-gray-700 mb-1">
-                  Bemerkung/Grund (optional)
+                  Bemerkung/Grund
                 </label>
                 <input
                   type="text"
@@ -105,31 +197,33 @@
                   name="ferientag[memo]"
                   placeholder="z.B. Pädagogischer Tag, Lehrerfortbildung, Brückentag"
                   maxlength="255"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                  disabled={@limit_reached}
                 />
                 <p class="mt-1 text-xs text-gray-500">
                   Eine kurze Beschreibung hilft Eltern und Schülern, den Grund für den freien Tag zu verstehen.
                 </p>
               </div>
-            </div>
 
-            <div class="mt-6">
-              <button
-                type="submit"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                Ferientag(e) hinzufügen
-              </button>
-            </div>
-          </form>
+              <div class="pt-2">
+                <button
+                  type="submit"
+                  class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled={@limit_reached}
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Ferientag(e) hinzufügen
+                </button>
+              </div>
+            </form>
+          <% end %>
         </div>
       <% end %>
       <!-- List of Bewegliche Ferientage -->
@@ -234,26 +328,6 @@
     </div>
     <!-- Sidebar -->
     <div class="space-y-6">
-      <!-- Tips Section -->
-      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
-        <h3 class="text-sm font-medium text-amber-900 mb-2">
-          <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          Tipps zur Eingabe
-        </h3>
-        <ul class="text-sm text-amber-800 space-y-1">
-          <li>• Sie können mehrere Tage auf einmal eingeben</li>
-          <li>• Zeiträume sparen Tipparbeit bei mehrtägigen Veranstaltungen</li>
-          <li>• Vergangene Daten werden automatisch gefiltert</li>
-          <li>• Eine aussagekräftige Bemerkung hilft allen Beteiligten</li>
-        </ul>
-      </div>
       <!-- Daily Limit Info -->
       <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
         daily_changes: @daily_changes

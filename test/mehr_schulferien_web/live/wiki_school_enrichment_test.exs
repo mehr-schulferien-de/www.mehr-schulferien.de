@@ -153,42 +153,36 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
       {:ok, school: school}
     end
 
-    test "accepts single date input", %{conn: conn, school: school} do
+    test "accepts single date input using simple form", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
 
       future_date = Date.utc_today() |> Date.add(30)
-      date_string = "#{future_date.day}.#{future_date.month}.#{future_date.year}"
+      date_iso = Date.to_iso8601(future_date)
 
+      # Use the simple form
       view
-      |> form("form[phx-submit='add_beweglicher_ferientag']",
-        ferientag: %{dates: date_string, memo: "Test"}
+      |> form("form[phx-submit='add_single_ferientag']",
+        ferientag: %{date: date_iso, memo: "Pädagogischer Tag"}
       )
       |> render_submit()
 
       html = render(view)
 
-      # Debug: Check if ferientag was added by looking for the date
+      # Check if ferientag was added by looking for the date
       formatted_date = MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(future_date)
-
-      if not (html =~ formatted_date) do
-        IO.puts("Debug: Date not found in HTML")
-        IO.puts("Looking for: #{formatted_date}")
-
-        # Check if we have any ferientage section
-        if html =~ "Aktuelle bewegliche Ferientage" do
-          IO.puts("Found ferientage section")
-        else
-          IO.puts("No ferientage section found")
-        end
-      end
 
       # Either check for the flash message OR the added ferientag
       assert html =~ formatted_date ||
                html =~ "Beweglicher Ferientag wurde erfolgreich hinzugefügt."
     end
 
-    test "accepts date range input", %{conn: conn, school: school} do
+    test "accepts date range input using advanced form", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
+
+      # Toggle to advanced form mode by clicking the second button
+      view
+      |> element("button[phx-click='toggle_form_mode']:last-child")
+      |> render_click()
 
       future_date = Date.utc_today() |> Date.add(30)
 
@@ -209,6 +203,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
 
     test "accepts multiple dates input", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
+
+      # Toggle to advanced form mode by clicking the second button
+      view
+      |> element("button[phx-click='toggle_form_mode']:last-child")
+      |> render_click()
 
       date1 = Date.utc_today() |> Date.add(30)
       date2 = Date.utc_today() |> Date.add(40)
@@ -231,6 +230,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
     test "shows error for invalid date format", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
 
+      # Toggle to advanced form mode by clicking the second button
+      view
+      |> element("button[phx-click='toggle_form_mode']:last-child")
+      |> render_click()
+
       view
       |> form("form[phx-submit='add_beweglicher_ferientag']",
         ferientag: %{dates: "invalid date", memo: "Test"}
@@ -242,6 +246,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
 
     test "shows error for past dates", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
+
+      # Toggle to advanced form mode by clicking the second button
+      view
+      |> element("button[phx-click='toggle_form_mode']:last-child")
+      |> render_click()
 
       past_date = Date.utc_today() |> Date.add(-10)
       date_string = "#{past_date.day}.#{past_date.month}.#{past_date.year}"

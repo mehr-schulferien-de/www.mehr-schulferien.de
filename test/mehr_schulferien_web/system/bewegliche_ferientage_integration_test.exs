@@ -142,13 +142,16 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
     end
 
     test "past dates are rejected by validation", %{conn: conn, school: school} do
-      {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
+      {:ok, view, html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
 
-      # The form should have min date attribute preventing past dates
+      # Simple form should be shown by default (toggle shows "Mehrere Tage")
+      assert html =~ "Mehrere Tage"
+
+      # The date input should have min date attribute preventing past dates
       assert view
-             |> element("input[name='ferientag[dates]']")
+             |> element("input[name='ferientag[date]']")
              |> render()
-             |> String.contains?("required")
+             |> String.contains?("min=")
     end
   end
 end

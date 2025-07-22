@@ -30,7 +30,8 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
        school: school,
        bewegliche_ferientage: bewegliche_ferientage,
        daily_changes: daily_changes,
-       limit_reached: limit_reached
+       limit_reached: limit_reached,
+       simple_form_mode: true
      )}
   end
 
@@ -155,6 +156,83 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
         {:error, _changeset} ->
           {:noreply, put_flash(socket, :error, "Fehler beim Löschen des beweglichen Ferientags.")}
+      end
+    end
+  end
+
+  @impl true
+  def handle_event("toggle_form_mode", _params, socket) do
+    {:noreply, assign(socket, simple_form_mode: !socket.assigns.simple_form_mode)}
+  end
+
+  @impl true
+  def handle_event("add_single_ferientag", %{"ferientag" => params}, socket) do
+    if socket.assigns.limit_reached do
+      {:noreply,
+       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+    else
+      school = socket.assigns.school
+
+      # Get date from form
+      date_string = params["date"]
+
+      # Get memo directly from the text input
+      memo = params["memo"] || ""
+
+      # Parse date
+      case Date.from_iso8601(date_string) do
+        {:ok, date} ->
+          # Check if date is in the future
+          if Date.compare(date, Date.utc_today()) != :gt do
+            {:noreply,
+             put_flash(
+               socket,
+               :error,
+               "Nur zukünftige Daten können als bewegliche Ferientage eingetragen werden."
+             )}
+          else
+            # Check if ferientag already exists on this date
+            if has_beweglicher_ferientag_on_date?(socket.assigns.bewegliche_ferientage, date) do
+              {:noreply,
+               put_flash(
+                 socket,
+                 :error,
+                 "Für dieses Datum existiert bereits ein beweglicher Ferientag."
+               )}
+            else
+              # Create ferientag
+              case Periods.create_beweglicher_ferientag_for_school(school.id, date, memo) do
+                {:ok, period} ->
+                  # Send email notification
+                  Email.beweglicher_ferientag_created_notification(period, school)
+                  |> Mailer.deliver!()
+
+                  # Reload bewegliche Ferientage
+                  bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
+
+                  # Update daily change count
+                  today = Date.utc_today()
+                  daily_changes = Wiki.get_daily_change_count(today)
+                  limit_reached = daily_changes >= Config.daily_change_limit()
+
+                  {:noreply,
+                   socket
+                   |> put_flash(:info, "Beweglicher Ferientag wurde erfolgreich hinzugefügt.")
+                   |> assign(
+                     bewegliche_ferientage: bewegliche_ferientage,
+                     daily_changes: daily_changes,
+                     limit_reached: limit_reached
+                   )}
+
+                {:error, _changeset} ->
+                  {:noreply,
+                   put_flash(socket, :error, "Fehler beim Hinzufügen des beweglichen Ferientags.")}
+              end
+            end
+          end
+
+        {:error, _} ->
+          {:noreply, put_flash(socket, :error, "Ungültiges Datumsformat.")}
       end
     end
   end
