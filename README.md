@@ -222,3 +222,28 @@ To start your Phoenix server:
 Open [`localhost:4000`](http://localhost:4000) in your browser.
 
 Open an issue in case you run into any problems.
+
+## Environment Variables
+
+The following environment variables can be configured:
+
+### SerpApi Search (Optional)
+
+If you want to use the school search functionality with SerpApi (supports multiple search engines):
+
+```bash
+export SERPAPI_API_KEY="your_serpapi_key_here"
+```
+
+To get an API key:
+1. Visit https://serpapi.com
+2. Sign up for an account
+3. Copy your API key from the dashboard
+
+The search functionality is used by the `mix search_school` task to enrich school data with:
+- Homepage URLs
+- Phone numbers
+- Social media links
+- School descriptions
+
+If the API key is not set, the search functionality will return an error message.

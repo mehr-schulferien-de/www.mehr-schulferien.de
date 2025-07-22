@@ -167,13 +167,9 @@ The project has been fully migrated to Phoenix verified routes (Phoenix 1.7.21+)
 
 ## Repository Guidelines
 
-### Git and GitHub Workflow
-- **Don't git push anything to GitHub without the user asking for it.**
-
 ## Memories
 
 - Always remember the sitemap.xml file to be up to date if URLs are added, removed or changed.
-- When the URL structure changes always update the sitemap.xml too.
 <!-- usage-rules-start -->
 <!-- usage-rules-header -->
 # Usage Rules

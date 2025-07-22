@@ -57,6 +57,11 @@ defmodule MehrSchulferien.Maps.Address do
     field :official_id, :string
     field :lon, :float
     field :lat, :float
+    field :google_search_cache, :map
+    field :google_search_cached_at, :utc_datetime
+    field :instagram_url, :string
+    field :students_count, :integer
+    field :founded_year, :integer
 
     belongs_to :school_location, Location
 
@@ -82,12 +87,19 @@ defmodule MehrSchulferien.Maps.Address do
       :official_id,
       :lon,
       :lat,
-      :school_location_id
+      :school_location_id,
+      :google_search_cache,
+      :google_search_cached_at,
+      :instagram_url,
+      :students_count,
+      :founded_year
     ])
     |> validate_required([:school_location_id])
     |> normalize_phone_number()
     |> validate_homepage_url()
+    |> validate_instagram_url()
     |> validate_coordinates()
+    |> validate_founded_year()
   end
 
   # Validates homepage URL is well-formed when present (optional field)
@@ -213,6 +225,41 @@ defmodule MehrSchulferien.Maps.Address do
 
       {_, _} ->
         changeset
+    end
+  end
+
+  # Validates Instagram URL is from instagram.com when present
+  defp validate_instagram_url(changeset) do
+    case get_field(changeset, :instagram_url) do
+      nil ->
+        changeset
+
+      "" ->
+        changeset
+
+      url ->
+        if String.contains?(url, "instagram.com") do
+          changeset
+        else
+          add_error(changeset, :instagram_url, "muss eine Instagram URL sein")
+        end
+    end
+  end
+
+  # Validates founded year is reasonable (between 1800 and current year)
+  defp validate_founded_year(changeset) do
+    case get_field(changeset, :founded_year) do
+      nil ->
+        changeset
+
+      year ->
+        current_year = Date.utc_today().year
+        
+        if year >= 1800 and year <= current_year do
+          changeset
+        else
+          add_error(changeset, :founded_year, "muss zwischen 1800 und #{current_year} liegen")
+        end
     end
   end
 end
