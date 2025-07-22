@@ -188,7 +188,7 @@
                 <dt class="font-bold text-gray-700">Instagram:</dt>
                 <dd class="text-gray-900">
                   <%= link(
-                    ("@" <> String.split(@school.address.instagram_url, "/")) |> List.last(),
+                    "@" <> (String.split(@school.address.instagram_url, "/") |> List.last()),
                     to: @school.address.instagram_url,
                     target: "_blank",
                     class: "text-blue-600 hover:underline"
