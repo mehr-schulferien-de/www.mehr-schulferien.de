@@ -167,31 +167,60 @@
                       </div>
                       <% map_query =
                         "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}" %>
-                      <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.google_maps_url(map_query),
-                          class: "inline-flex items-center mt-1 text-xs text-blue-600 hover:text-blue-800",
-                          target: "_blank",
-                          rel: "noopener noreferrer" do %>
-                        <svg
-                          class="w-3 h-3 mr-1"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        Auf Google Maps anzeigen
-                      <% end %>
+                      <div class="flex flex-wrap gap-2 mt-1">
+                        <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.google_maps_url(map_query),
+                            class: "inline-flex items-center text-xs text-blue-600 hover:text-blue-800",
+                            target: "_blank",
+                            rel: "noopener noreferrer" do %>
+                          <svg
+                            class="w-3 h-3 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                          Google Maps
+                        <% end %>
+                        <%= if @is_apple_device do %>
+                          <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.apple_maps_url(map_query),
+                              class: "inline-flex items-center text-xs text-blue-600 hover:text-blue-800",
+                              target: "_blank",
+                              rel: "noopener noreferrer" do %>
+                            <svg
+                              class="w-3 h-3 mr-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              />
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                            Apple Maps
+                          <% end %>
+                        <% end %>
+                      </div>
                     </div>
                   </div>
                   <!-- Contact Details -->

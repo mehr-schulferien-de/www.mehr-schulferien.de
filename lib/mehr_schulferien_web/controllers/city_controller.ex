@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.CityController do
   alias MehrSchulferien.{Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
+  alias MehrSchulferienWeb.Helpers.UserAgentHelpers
   import MehrSchulferienWeb.LocationTrackingHelpers
 
   def show_year(conn, %{
@@ -58,6 +59,9 @@ defmodule MehrSchulferienWeb.CityController do
     # Track city visit
     conn = track_location_visit(conn, "c", city.slug)
 
+    # Detect if user is on Apple device
+    is_apple_device = UserAgentHelpers.is_apple_device?(conn)
+
     render(
       conn,
       "show.html",
@@ -75,7 +79,8 @@ defmodule MehrSchulferienWeb.CityController do
         next_year: next_year,
         years_with_data: current_year_data.years_with_data,
         today: today,
-        has_data: current_year_data.has_data or next_year_data.has_data
+        has_data: current_year_data.has_data or next_year_data.has_data,
+        is_apple_device: is_apple_device
       }
       |> Map.merge(Map.new(current_year_data.faq_data))
     )
