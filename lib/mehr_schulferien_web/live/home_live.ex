@@ -1059,131 +1059,6 @@ defmodule MehrSchulferienWeb.HomeLive do
         </:below_form>
       </.school_search_form>
 
-      <%= if @federal_state_overview do %>
-        <div class="mb-6 sm:mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-            <.heading level={2} class="mb-2 sm:mb-0 text-lg sm:text-xl">
-              <%= if length(@cities_with_schools) == 1 do %>
-                <% {city, _schools} = hd(@cities_with_schools) %>
-                <%= city.name %>, <%= @federal_state_overview.federal_state.name %>
-              <% else %>
-                <%= @federal_state_overview.federal_state.name %>
-              <% end %>
-            </.heading>
-            <div class="flex gap-4 text-sm text-gray-600">
-              <%= if length(@cities_with_schools) == 1 do %>
-                <% {_city, schools} = hd(@cities_with_schools) %>
-                <span>
-                  <span class="font-semibold">
-                    <%= format_number(length(schools)) %>
-                  </span>
-                  <%= if length(schools) == 1,
-                    do: "Schule",
-                    else: "Schulen" %>
-                </span>
-              <% else %>
-                <span>
-                  <span class="font-semibold">
-                    <%= format_number(@federal_state_overview.city_count) %>
-                  </span>
-                  <%= if @federal_state_overview.city_count ==
-                           1,
-                         do: "Stadt",
-                         else: "Städte" %>
-                </span>
-                <span>
-                  <span class="font-semibold">
-                    <%= format_number(@federal_state_overview.school_count) %>
-                  </span>
-                  <%= if @federal_state_overview.school_count ==
-                           1,
-                         do: "Schule",
-                         else: "Schulen" %>
-                </span>
-              <% end %>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-            <a
-              href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <.text variant="base" class="font-semibold mb-2">Nächste Schulferien</.text>
-              <div class="space-y-1">
-                <%= for vacation <- Enum.take(@federal_state_overview.next_vacations, 3) do %>
-                  <div class="text-sm">
-                    <div class="font-medium">
-                      <%= vacation.holiday_or_vacation_type.colloquial %>
-                    </div>
-                    <div class="text-gray-600">
-                      <%= DateFormatter.format_date_full(vacation.starts_on) %> - <%= DateFormatter.format_date_full(
-                        vacation.ends_on
-                      ) %>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
-                Mehr anzeigen →
-              </div>
-            </a>
-
-            <a
-              href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <.text variant="base" class="font-semibold mb-2">Nächste Feiertage</.text>
-              <div class="space-y-1">
-                <%= for holiday <- Enum.take(@federal_state_overview.next_holidays, 3) do %>
-                  <div class="text-sm">
-                    <div class="font-medium">
-                      <%= holiday.holiday_or_vacation_type.colloquial %>
-                    </div>
-                    <div class="text-gray-600">
-                      <%= DateFormatter.format_date_full(holiday.starts_on) %>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
-                Mehr anzeigen →
-              </div>
-            </a>
-
-            <a
-              href={"/brueckentage/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <.text variant="base" class="font-semibold mb-2">Nächste Brückentage</.text>
-              <div class="space-y-1">
-                <%= if length(@federal_state_overview.next_bridge_days) > 0 do %>
-                  <%= for bridge_info <- Enum.take(@federal_state_overview.next_bridge_days, 3) do %>
-                    <div class="text-sm">
-                      <div class="font-medium">
-                        <%= bridge_info.vacation_days %> <%= if bridge_info.vacation_days == 1,
-                          do: "Tag",
-                          else: "Tage" %> Urlaub
-                      </div>
-                      <div class="text-gray-600">
-                        → <%= bridge_info.total_free_days %> Tage frei (×<%= bridge_info.gain_factor %>)
-                      </div>
-                    </div>
-                  <% end %>
-                <% else %>
-                  <div class="text-sm text-gray-500">
-                    Keine Brückentage in nächster Zeit
-                  </div>
-                <% end %>
-              </div>
-              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
-                Mehr anzeigen →
-              </div>
-            </a>
-          </div>
-        </div>
-      <% end %>
-
       <%= if @show_all_schools do %>
         <div class="mb-8">
           <.heading level={2} class="mb-3 sm:mb-4 text-lg sm:text-2xl">
@@ -1471,7 +1346,134 @@ defmodule MehrSchulferienWeb.HomeLive do
             </.alert>
           <% end %>
         </div>
-      <% else %>
+      <% end %>
+
+      <%= if @federal_state_overview do %>
+        <div class="mb-6 sm:mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+            <.heading level={2} class="mb-2 sm:mb-0 text-lg sm:text-xl">
+              <%= if length(@cities_with_schools) == 1 do %>
+                <% {city, _schools} = hd(@cities_with_schools) %>
+                <%= city.name %>, <%= @federal_state_overview.federal_state.name %>
+              <% else %>
+                <%= @federal_state_overview.federal_state.name %>
+              <% end %>
+            </.heading>
+            <div class="flex gap-4 text-sm text-gray-600">
+              <%= if length(@cities_with_schools) == 1 do %>
+                <% {_city, schools} = hd(@cities_with_schools) %>
+                <span>
+                  <span class="font-semibold">
+                    <%= format_number(length(schools)) %>
+                  </span>
+                  <%= if length(schools) == 1,
+                    do: "Schule",
+                    else: "Schulen" %>
+                </span>
+              <% else %>
+                <span>
+                  <span class="font-semibold">
+                    <%= format_number(@federal_state_overview.city_count) %>
+                  </span>
+                  <%= if @federal_state_overview.city_count ==
+                           1,
+                         do: "Stadt",
+                         else: "Städte" %>
+                </span>
+                <span>
+                  <span class="font-semibold">
+                    <%= format_number(@federal_state_overview.school_count) %>
+                  </span>
+                  <%= if @federal_state_overview.school_count ==
+                           1,
+                         do: "Schule",
+                         else: "Schulen" %>
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+            <a
+              href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
+              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <.text variant="base" class="font-semibold mb-2">Nächste Schulferien</.text>
+              <div class="space-y-1">
+                <%= for vacation <- Enum.take(@federal_state_overview.next_vacations, 3) do %>
+                  <div class="text-sm">
+                    <div class="font-medium">
+                      <%= vacation.holiday_or_vacation_type.colloquial %>
+                    </div>
+                    <div class="text-gray-600">
+                      <%= DateFormatter.format_date_full(vacation.starts_on) %> - <%= DateFormatter.format_date_full(
+                        vacation.ends_on
+                      ) %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
+                Mehr anzeigen →
+              </div>
+            </a>
+
+            <a
+              href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
+              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <.text variant="base" class="font-semibold mb-2">Nächste Feiertage</.text>
+              <div class="space-y-1">
+                <%= for holiday <- Enum.take(@federal_state_overview.next_holidays, 3) do %>
+                  <div class="text-sm">
+                    <div class="font-medium">
+                      <%= holiday.holiday_or_vacation_type.colloquial %>
+                    </div>
+                    <div class="text-gray-600">
+                      <%= DateFormatter.format_date_full(holiday.starts_on) %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
+                Mehr anzeigen →
+              </div>
+            </a>
+
+            <a
+              href={"/brueckentage/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
+              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <.text variant="base" class="font-semibold mb-2">Nächste Brückentage</.text>
+              <div class="space-y-1">
+                <%= if length(@federal_state_overview.next_bridge_days) > 0 do %>
+                  <%= for bridge_info <- Enum.take(@federal_state_overview.next_bridge_days, 3) do %>
+                    <div class="text-sm">
+                      <div class="font-medium">
+                        <%= bridge_info.vacation_days %> <%= if bridge_info.vacation_days == 1,
+                          do: "Tag",
+                          else: "Tage" %> Urlaub
+                      </div>
+                      <div class="text-gray-600">
+                        → <%= bridge_info.total_free_days %> Tage frei (×<%= bridge_info.gain_factor %>)
+                      </div>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <div class="text-sm text-gray-500">
+                    Keine Brückentage in nächster Zeit
+                  </div>
+                <% end %>
+              </div>
+              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
+                Mehr anzeigen →
+              </div>
+            </a>
+          </div>
+        </div>
+      <% end %>
+
+      <%= if !@show_all_schools do %>
         <%= if length(@schools) > 0 do %>
           <div class="bg-white shadow-sm rounded-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
