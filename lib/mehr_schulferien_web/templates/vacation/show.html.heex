@@ -1,4 +1,4 @@
-<div class="mt-0 sm:mt-1">
+<div class="mt-4 sm:mt-1">
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
       <.heading level={1} class="text-left">
@@ -21,6 +21,8 @@
           <:content>
             <%= if @has_data do %>
               <% # Show the specific vacation period prominently %>
+              <% official_duration = Date.diff(@vacation_period.ends_on, @vacation_period.starts_on) + 1 %>
+              <% effective_duration = MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(@vacation_period, @all_periods) %>
               <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <.heading level={2} class="text-lg text-blue-900 mb-2">
                   <%= @vacation_name %> <%= @year %>
@@ -33,8 +35,18 @@
                   ) %>
                 </div>
                 <div class="text-sm text-blue-700 mt-1">
-                  <%= Date.diff(@vacation_period.ends_on, @vacation_period.starts_on) + 1 %> Tage
+                  <%= official_duration %> Tage
+                  <%= if effective_duration > official_duration do %>
+                    <span class="text-green-700 font-semibold">
+                      (insgesamt <%= effective_duration %> freie Tage*)
+                    </span>
+                  <% end %>
                 </div>
+                <%= if effective_duration > official_duration do %>
+                  <div class="text-xs text-blue-600 mt-2 italic">
+                    * inkl. angrenzende Wochenenden und Feiertage
+                  </div>
+                <% end %>
               </div>
 
               <% # Show all vacation periods for comparison %>
@@ -142,6 +154,26 @@
           entity_type="federal_state"
           year={@year}
         />
+
+        <% # Show handwritten date visualization if we have vacation data %>
+        <%= if @vacation_period do %>
+          <div class="mt-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+            <.heading level={3} class="text-lg text-gray-800 mb-3">
+              Ferientermine als Notiz
+            </.heading>
+            <div class="w-full">
+              <%= Phoenix.HTML.raw(
+                MehrSchulferienWeb.Helpers.HandwrittenDateImage.generate_svg(
+                  @vacation_period,
+                  @vacation_name,
+                  @federal_state.name,
+                  @year,
+                  @all_periods
+                )
+              ) %>
+            </div>
+          </div>
+        <% end %>
 
         <% # Info box about vacation planning %>
         <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">

@@ -1,52 +1,33 @@
-<% # Generate SEO-optimized meta tags for vacation-specific pages
+<% # Generate dynamic meta description
+meta_description =
+  MehrSchulferienWeb.VacationView.dynamic_vacation_description(
+    @vacation_name,
+    @year,
+    @federal_state.name,
+    @vacation_period,
+    @today
+  )
 
-# Create date range string
-date_range =
+# Generate handwritten image meta tags if we have vacation data
+handwritten_meta_tags =
   if @vacation_period do
-    "#{MehrSchulferienWeb.Formatters.DateFormatter.format_date_short(@vacation_period.starts_on)}-#{MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.ends_on)}"
+    MehrSchulferienWeb.Helpers.HandwrittenDateImage.meta_tags(
+      @conn,
+      @vacation_period,
+      @vacation_name,
+      @federal_state.name,
+      @year,
+      @all_periods
+    )
   else
-    ""
-  end
-
-# Create duration string
-duration =
-  if @vacation_period do
-    days = Date.diff(@vacation_period.ends_on, @vacation_period.starts_on) + 1
-    "#{days} Tage"
-  else
-    ""
-  end
-
-# Generate vacation-specific keywords
-vacation_keywords =
-  case @vacation_type do
-    "sommerferien" -> "Sommerurlaub, Familienurlaub, Schulferien Sommer"
-    "osterferien" -> "Osterurlaub, Frühlingsferien, Osterausflug"
-    "herbstferien" -> "Herbsturlaub, Wanderurlaub, Herbstausflug"
-    "weihnachtsferien" -> "Weihnachtsurlaub, Winterurlaub, Silvesterurlaub"
-    "winterferien" -> "Skiurlaub, Winterurlaub, Skiferien"
-    "pfingstferien" -> "Pfingsturlaub, Kurzurlaub, verlängertes Wochenende"
-    _ -> "Schulferien, Urlaub"
+    []
   end %>
 
-<title>
-  <%= @vacation_name %> <%= @federal_state.name %> <%= @year %> | <%= date_range %> - mehr-schulferien.de
-</title>
-<meta
-  name="description"
-  content={
-    dynamic_vacation_description(
-      @vacation_name,
-      @year,
-      @federal_state.name,
-      @vacation_period,
-      @today
-    )
-  }
-/>
+<title><%= @page_title %> - mehr-schulferien.de</title>
+<meta name="description" content={meta_description} />
 <meta
   name="keywords"
-  content={"#{@vacation_name} #{@federal_state.name} #{@year}, #{@vacation_name} #{@federal_state.name}, #{vacation_keywords}, #{@federal_state.name} Ferien #{@year}, Ferientermine #{@federal_state.name}"}
+  content={"#{@vacation_name} #{@year}, #{@vacation_name} #{@federal_state.name}, Schulferien #{@federal_state.name} #{@year}, Ferientermine, Kalender"}
 />
 
 <%= if assigns[:noindex] do %>
@@ -54,72 +35,82 @@ vacation_keywords =
 <% end %>
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content={url(~p"/#{@vacation_type}/#{@federal_state.slug}/#{@year}")} />
 <meta
-  property="og:title"
-  content={"#{@vacation_name} #{@federal_state.name} #{@year} - #{date_range}"}
+  property="og:url"
+  content={"https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"}
 />
-<meta
-  property="og:description"
-  content={"#{@vacation_name} #{@year} in #{@federal_state.name}: #{date_range} (#{duration}). Planen Sie Ihren Urlaub mit allen Ferienterminen."}
-/>
+<meta property="og:title" content={@page_title} />
+<meta property="og:description" content={meta_description} />
 <meta property="og:site_name" content="mehr-schulferien.de" />
 <meta property="og:locale" content="de_DE" />
+<!-- Handwritten Date Image -->
+<%= for {name, content} <- handwritten_meta_tags do %>
+  <meta property={name} content={content} />
+<% end %>
 <!-- Twitter -->
-<meta property="twitter:card" content="summary" />
+<meta property="twitter:card" content="summary_large_image" />
 <meta
   property="twitter:url"
-  content={url(~p"/#{@vacation_type}/#{@federal_state.slug}/#{@year}")}
+  content={"https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"}
 />
-<meta property="twitter:title" content={"#{@vacation_name} #{@federal_state.name} #{@year}"} />
-<meta
-  property="twitter:description"
-  content={"#{date_range} (#{duration}) - Alle Infos zu #{@vacation_name} #{@year} in #{@federal_state.name}."}
+<meta property="twitter:title" content={@page_title} />
+<meta property="twitter:description" content={meta_description} />
+<!-- Canonical URL -->
+<link
+  rel="canonical"
+  href={"https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"}
 />
-<!-- Canonical URL to prevent duplicate content -->
-<link rel="canonical" href={url(~p"/#{@vacation_type}/#{@federal_state.slug}/#{@year}")} />
-<!-- Pagination for year navigation -->
-<% prev_year = @year - 1 %>
-<% next_year = @year + 1 %>
-<%= if prev_year >= 2020 do %>
-  <link rel="prev" href={url(~p"/#{@vacation_type}/#{@federal_state.slug}/#{prev_year}")} />
-<% end %>
-<%= if next_year <= 2030 do %>
-  <link rel="next" href={url(~p"/#{@vacation_type}/#{@federal_state.slug}/#{next_year}")} />
-<% end %>
-<!-- Structured Data -->
+<!-- Breadcrumb Navigation -->
 <script type="application/ld+json">
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
-    %{name: "Deutschland", item: url(~p"/ferien/d")},
-    %{name: @federal_state.name, item: url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}")},
-    %{name: "#{@vacation_name} #{@year}", item: url(~p"/#{@vacation_type}/#{@federal_state.slug}/#{@year}")}
+    %{name: "Startseite", item: "https://www.mehr-schulferien.de"},
+    %{name: "Ferien Deutschland", item: "https://www.mehr-schulferien.de/ferien/deutschland"},
+    %{name: "#{@federal_state.name}", item: "https://www.mehr-schulferien.de/ferien/deutschland/bundesland/#{@federal_state.slug}"},
+    %{name: "#{@vacation_name} #{@year}", item: "https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"}
   ]) %>
 </script>
-
-<%= if @vacation_period do %>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Event",
-      "name": "<%= @vacation_name %> <%= @federal_state.name %> <%= @year %>",
-      "startDate": "<%= @vacation_period.starts_on %>",
-      "endDate": "<%= @vacation_period.ends_on %>",
-      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-      "eventStatus": "https://schema.org/EventScheduled",
-      "location": {
-        "@type": "Place",
-        "name": "<%= @federal_state.name %>",
-        "address": {
-          "@type": "PostalAddress",
-          "addressRegion": "<%= @federal_state.name %>",
-          "addressCountry": "DE"
+<!-- WebPage Schema -->
+<script type="application/ld+json">
+  <%= Phoenix.HTML.raw(Jason.encode!(%{
+    "@context" => "https://schema.org",
+    "@type" => "WebPage",
+    "name" => @page_title,
+    "description" => meta_description,
+    "url" => "https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}",
+    "inLanguage" => "de-DE",
+    "isPartOf" => %{
+      "@type" => "WebSite",
+      "name" => "mehr-schulferien.de",
+      "url" => "https://www.mehr-schulferien.de"
+    },
+    "breadcrumb" => %{
+      "@type" => "BreadcrumbList",
+      "itemListElement" => [
+        %{
+          "@type" => "ListItem",
+          "position" => 1,
+          "name" => "Startseite",
+          "item" => "https://www.mehr-schulferien.de"
+        },
+        %{
+          "@type" => "ListItem",
+          "position" => 2,
+          "name" => "Ferien Deutschland",
+          "item" => "https://www.mehr-schulferien.de/ferien/deutschland"
+        },
+        %{
+          "@type" => "ListItem",
+          "position" => 3,
+          "name" => @federal_state.name,
+          "item" => "https://www.mehr-schulferien.de/ferien/deutschland/bundesland/#{@federal_state.slug}"
+        },
+        %{
+          "@type" => "ListItem",
+          "position" => 4,
+          "name" => "#{@vacation_name} #{@year}",
+          "item" => "https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"
         }
-      },
-      "description": "<%= @vacation_name %> in <%= @federal_state.name %> vom <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.starts_on) %> bis <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@vacation_period.ends_on) %>. Schulfreie Zeit für alle Schüler in <%= @federal_state.name %>.",
-      "organizer": {
-        "@type": "Organization",
-        "name": "Kultusministerium <%= @federal_state.name %>"
-      }
+      ]
     }
-  </script>
-<% end %>
+  })) %>
+</script>
