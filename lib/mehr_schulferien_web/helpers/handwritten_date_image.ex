@@ -258,10 +258,10 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
     federal_state = conn.assigns[:federal_state]
     federal_state_slug = if federal_state, do: federal_state.slug, else: ""
 
-    # Build the full URL for the image
+    # Build the full URL for the image using url helper without port
+    # Use hardcoded production URL to avoid port issues
     image_url =
-      MehrSchulferienWeb.Endpoint.url() <>
-        "/#{vacation_slug}/#{federal_state_slug}/#{year}/handwritten.webp"
+      "https://www.mehr-schulferien.de/#{vacation_slug}/#{federal_state_slug}/#{year}/handwritten.webp"
 
     [
       {"og:image", image_url},
