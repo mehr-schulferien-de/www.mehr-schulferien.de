@@ -30,16 +30,32 @@ defmodule MehrSchulferienWeb.CityController do
 
     today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
-    next_year = current_year + 1
+
+    # Determine current school year (starts in August)
+    current_school_year = if today.month >= 8, do: current_year, else: current_year - 1
+    next_school_year = current_school_year + 1
+
     location_ids = [country.id, federal_state.id, county.id, city.id]
 
-    # Fetch data for current year and next year
-    current_year_data = CH.prepare_show_year_data(location_ids, current_year, today)
-    next_year_data = CH.prepare_show_year_data(location_ids, next_year, today)
+    # Get all periods in one query from current school year start to next school year end
+    {:ok, full_start} = Date.new(current_school_year, 8, 1)
+    {:ok, full_end} = Date.new(next_school_year + 1, 7, 31)
 
-    # Combine periods from both years
-    all_periods = current_year_data.periods ++ next_year_data.periods
-    all_public_periods = current_year_data.public_periods ++ next_year_data.public_periods
+    all_periods =
+      MehrSchulferien.Periods.list_school_vacation_periods(location_ids, full_start, full_end)
+
+    all_public_periods =
+      MehrSchulferien.Periods.list_public_periods(location_ids, full_start, full_end)
+
+    # Check if we have data
+    has_data = length(all_periods) > 0
+
+    # Get years with data for navigation
+    years_with_data =
+      all_periods
+      |> Enum.map(& &1.starts_on.year)
+      |> Enum.uniq()
+      |> Enum.sort()
 
     # Calculate adjoining_duration for each period
     periods_with_duration =
@@ -59,6 +75,9 @@ defmodule MehrSchulferienWeb.CityController do
     # Track city visit
     conn = track_location_visit(conn, "c", city.slug)
 
+    # Get FAQ data
+    faq_data = CH.list_faq_data(location_ids, today)
+
     # Detect if user is on Apple device
     is_apple_device = UserAgentHelpers.is_apple_device?(conn)
 
@@ -76,13 +95,15 @@ defmodule MehrSchulferienWeb.CityController do
         public_periods: all_public_periods,
         all_periods: all_periods ++ all_public_periods,
         current_year: current_year,
-        next_year: next_year,
-        years_with_data: current_year_data.years_with_data,
+        next_year: current_year + 1,
+        current_school_year: current_school_year,
+        next_school_year: next_school_year,
+        years_with_data: years_with_data,
         today: today,
-        has_data: current_year_data.has_data or next_year_data.has_data,
+        has_data: has_data,
         is_apple_device: is_apple_device
       }
-      |> Map.merge(Map.new(current_year_data.faq_data))
+      |> Map.merge(Map.new(faq_data))
     )
   end
 end

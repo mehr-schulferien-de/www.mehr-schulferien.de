@@ -85,6 +85,7 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
 1. **RUN TESTS FIRST**: `mix test` - ALL tests MUST pass before any work is considered complete
 2. **FIX ALL WARNINGS**: `mix compile --warnings-as-errors` - NO warnings are acceptable
 3. **FORMAT CODE**: `mix format` - Code MUST be properly formatted
+4. **FIX TESTS BEFORE GIT COMMIT**: `mix test` - All tests must be green before you can `git commit` anything.
 
 **NEVER commit or consider work done without completing ALL three steps above.**
 
@@ -325,3 +326,7 @@ mix usage_rules.search_docs "Enum.zip" --query-by title
 
 <!-- usage_rules:otp-end -->
 <!-- usage-rules-end -->
+
+## Git Workflow and Interactions Memories
+
+- You are allowed to git commit and git push code but ask the user first or wait for the user to tell you to do it.

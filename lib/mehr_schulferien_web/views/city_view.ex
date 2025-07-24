@@ -10,8 +10,6 @@ defmodule MehrSchulferienWeb.CityView do
   import MehrSchulferienWeb.FederalState.PartialDataComponent
   import MehrSchulferienWeb.CityComponents
   import MehrSchulferienWeb.FaqComponent
-  import MehrSchulferienWeb.ICalPanelComponent
-  import MehrSchulferienWeb.Shared.WordPressPluginInfoComponent
 
   def format_zip_codes(city) do
     MehrSchulferienWeb.ViewHelpers.format_zip_codes(city)
