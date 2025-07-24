@@ -86,7 +86,10 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
        selected_ferientage: selected_ferientage_ids,
        copy_in_progress: false,
        quick_copy_ferientage: MapSet.new(),
-       show_copy_confirmation_modal: false
+       show_copy_confirmation_modal: false,
+       would_exceed_limit: false,
+       required_changes: 0,
+       remaining_quota: Config.daily_change_limit() - daily_changes
      )}
   end
 
@@ -524,7 +527,18 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
            put_flash(socket, :error, "Bitte wählen Sie mindestens eine Zielschule aus.")}
 
         true ->
-          {:noreply, assign(socket, show_copy_confirmation_modal: true)}
+          # Calculate if this operation would exceed the daily limit
+          required_changes = calculate_required_changes(socket)
+          remaining_quota = Config.daily_change_limit() - socket.assigns.daily_changes
+          would_exceed_limit = required_changes > remaining_quota
+
+          {:noreply,
+           assign(socket,
+             show_copy_confirmation_modal: true,
+             would_exceed_limit: would_exceed_limit,
+             required_changes: required_changes,
+             remaining_quota: remaining_quota
+           )}
       end
     end
   end
@@ -601,7 +615,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           count_copy_results(results)
 
         # Send email notifications for successful copies
-        send_copy_notifications(results, socket.assigns.school)
+        send_copy_notifications(results, socket.assigns.school, selected_ferientage)
 
         # Update daily change count
         today = Date.utc_today()
@@ -704,29 +718,91 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
     Enum.join(Enum.reverse(parts), ", ")
   end
 
-  defp send_copy_notifications(results, _source_school) do
-    Enum.each(results, fn {target_school_id, school_results} ->
-      successful_periods =
-        school_results
-        |> Enum.filter(fn
-          {:success, _} -> true
-          _ -> false
-        end)
-        |> Enum.map(fn {:success, period} -> period end)
+  defp send_copy_notifications(results, source_school, selected_ferientage) do
+    # Build copy summary for the email
+    copy_summary = build_copy_summary(results, source_school, selected_ferientage)
 
-      if length(successful_periods) > 0 do
-        target_school = Locations.get_location!(target_school_id)
+    # Send single summary email instead of individual emails
+    Email.bewegliche_ferientage_bulk_copy_notification(source_school, copy_summary)
+    |> Mailer.deliver!()
+  end
 
-        Enum.each(successful_periods, fn period ->
-          Email.beweglicher_ferientag_created_notification(period, target_school)
-          |> Mailer.deliver!()
-        end)
-      end
+  defp build_copy_summary(results, _source_school, selected_ferientage) do
+    # Count overall statistics
+    {total_success, total_skip, total_error} =
+      Enum.reduce(results, {0, 0, 0}, fn {_school_id, school_results}, {s, sk, e} ->
+        counts = count_school_results(school_results)
+        {s + counts.success, sk + counts.skip, e + counts.error}
+      end)
+
+    # Build school results with details
+    school_results =
+      Enum.map(results, fn {school_id, school_results} ->
+        school = Locations.get_location!(school_id)
+        counts = count_school_results(school_results)
+
+        status =
+          cond do
+            counts.error == length(school_results) -> :failed
+            counts.success > 0 && (counts.skip > 0 || counts.error > 0) -> :partial
+            counts.success > 0 -> :success
+            true -> :failed
+          end
+
+        %{
+          school_id: school_id,
+          school_name: school.name,
+          school_slug: school.slug,
+          status: status,
+          success_count: counts.success,
+          skip_count: counts.skip,
+          error_count: counts.error
+        }
+      end)
+      |> Enum.sort_by(& &1.school_name)
+
+    # Build ferientage details
+    ferientage_details =
+      selected_ferientage
+      |> Enum.map(fn ferientag ->
+        %{
+          date: ferientag.starts_on,
+          memo: ferientag.memo
+        }
+      end)
+      |> Enum.sort_by(& &1.date)
+
+    %{
+      ferientage_count: length(selected_ferientage),
+      total_schools: length(results),
+      success_count: total_success,
+      skip_count: total_skip,
+      error_count: total_error,
+      ferientage_details: ferientage_details,
+      school_results: school_results
+    }
+  end
+
+  defp count_school_results(school_results) do
+    Enum.reduce(school_results, %{success: 0, skip: 0, error: 0}, fn
+      {:success, _}, acc -> %{acc | success: acc.success + 1}
+      {:skipped, _, _}, acc -> %{acc | skip: acc.skip + 1}
+      {:error, _, _}, acc -> %{acc | error: acc.error + 1}
     end)
   end
 
   defp has_beweglicher_ferientag_on_date?(ferientage, date) do
     Enum.any?(ferientage, fn ft -> Date.compare(ft.starts_on, date) == :eq end)
+  end
+
+  defp calculate_required_changes(socket) do
+    # Calculate the maximum number of changes that could be required
+    # This is: number of selected ferientage * number of selected schools
+    # Note: Some might be skipped if they already exist, but we calculate worst case
+    num_ferientage = MapSet.size(socket.assigns.selected_ferientage)
+    num_schools = MapSet.size(socket.assigns.selected_schools)
+
+    num_ferientage * num_schools
   end
 
   defp parse_radius(radius_string) do

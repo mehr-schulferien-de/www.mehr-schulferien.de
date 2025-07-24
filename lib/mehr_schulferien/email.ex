@@ -431,4 +431,104 @@ defmodule MehrSchulferien.Email do
     Link zur Schule: #{school_url}
     """)
   end
+
+  def bewegliche_ferientage_bulk_copy_notification(source_school, copy_summary) do
+    new()
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
+    |> subject("Bewegliche Ferientage kopiert: #{source_school.name}")
+    |> html_body(build_bulk_copy_html_body(source_school, copy_summary))
+    |> text_body(build_bulk_copy_text_body(source_school, copy_summary))
+  end
+
+  defp build_bulk_copy_html_body(source_school, copy_summary) do
+    source_school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{source_school.slug}"
+
+    """
+    <h2>Bewegliche Ferientage wurden kopiert</h2>
+    <p><strong>Quellschule:</strong> <a href="#{source_school_url}">#{source_school.name}</a></p>
+    <p><strong>Zeitstempel:</strong> #{format_datetime(DateTime.utc_now())}</p>
+
+    <h3>Zusammenfassung</h3>
+    <ul>
+      <li><strong>Anzahl kopierte Ferientage:</strong> #{copy_summary.ferientage_count}</li>
+      <li><strong>Anzahl Zielschulen:</strong> #{copy_summary.total_schools}</li>
+      <li><strong>Erfolgreich kopiert:</strong> #{copy_summary.success_count} Einträge</li>
+      #{if copy_summary.skip_count > 0, do: "<li><strong>Bereits vorhanden:</strong> #{copy_summary.skip_count} Einträge</li>", else: ""}
+      #{if copy_summary.error_count > 0, do: "<li><strong>Fehler:</strong> #{copy_summary.error_count} Einträge</li>", else: ""}
+    </ul>
+
+    <h3>Kopierte Ferientage</h3>
+    <ul>
+    #{Enum.map_join(copy_summary.ferientage_details, "\n", fn detail -> "<li>#{Calendar.strftime(detail.date, "%d.%m.%Y")}#{if detail.memo, do: " - #{detail.memo}", else: ""}</li>" end)}
+    </ul>
+
+    <h3>Zielschulen</h3>
+    <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+      <thead>
+        <tr style="background-color: #f3f4f6;">
+          <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: left;">Schule</th>
+          <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: left;">Status</th>
+          <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: left;">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+    #{Enum.map_join(copy_summary.school_results, "\n", fn school_result ->
+      school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school_result.school_slug}"
+      status_color = case school_result.status do
+        :success -> "#10b981"
+        :partial -> "#f59e0b"
+        :failed -> "#ef4444"
+        _ -> "#6b7280"
+      end
+
+      """
+        <tr>
+          <td style="border: 1px solid #e5e7eb; padding: 8px;">
+            <a href="#{school_url}">#{school_result.school_name}</a>
+          </td>
+          <td style="border: 1px solid #e5e7eb; padding: 8px;">
+            <span style="color: #{status_color}; font-weight: bold;">#{format_copy_status(school_result.status)}</span>
+          </td>
+          <td style="border: 1px solid #e5e7eb; padding: 8px;">
+            #{school_result.success_count} erfolgreich#{if school_result.skip_count > 0, do: ", #{school_result.skip_count} bereits vorhanden", else: ""}#{if school_result.error_count > 0, do: ", #{school_result.error_count} Fehler", else: ""}
+          </td>
+        </tr>
+      """
+    end)}
+      </tbody>
+    </table>
+    """
+  end
+
+  defp build_bulk_copy_text_body(source_school, copy_summary) do
+    source_school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{source_school.slug}"
+
+    """
+    Bewegliche Ferientage wurden kopiert
+
+    Quellschule: #{source_school.name}
+    Link: #{source_school_url}
+    Zeitstempel: #{format_datetime(DateTime.utc_now())}
+
+    ZUSAMMENFASSUNG
+    - Anzahl kopierte Ferientage: #{copy_summary.ferientage_count}
+    - Anzahl Zielschulen: #{copy_summary.total_schools}
+    - Erfolgreich kopiert: #{copy_summary.success_count} Einträge
+    #{if copy_summary.skip_count > 0, do: "- Bereits vorhanden: #{copy_summary.skip_count} Einträge\n", else: ""}#{if copy_summary.error_count > 0, do: "- Fehler: #{copy_summary.error_count} Einträge\n", else: ""}
+    KOPIERTE FERIENTAGE
+    #{Enum.map_join(copy_summary.ferientage_details, "\n", fn detail -> "- #{Calendar.strftime(detail.date, "%d.%m.%Y")}#{if detail.memo, do: " - #{detail.memo}", else: ""}" end)}
+
+    ZIELSCHULEN
+    #{Enum.map_join(copy_summary.school_results, "\n", fn school_result -> "- #{school_result.school_name}: #{format_copy_status(school_result.status)} (#{school_result.success_count} erfolgreich#{if school_result.skip_count > 0, do: ", #{school_result.skip_count} bereits vorhanden", else: ""}#{if school_result.error_count > 0, do: ", #{school_result.error_count} Fehler", else: ""})" end)}
+
+    Links zu den Schulen:
+    #{Enum.map_join(copy_summary.school_results, "\n", fn school_result -> "- #{school_result.school_name}: https://www.mehr-schulferien.de/ferien/d/schule/#{school_result.school_slug}" end)}
+    """
+  end
+
+  defp format_copy_status(:success), do: "Erfolgreich"
+  defp format_copy_status(:partial), do: "Teilweise erfolgreich"
+  defp format_copy_status(:failed), do: "Fehlgeschlagen"
+  defp format_copy_status(_), do: "Unbekannt"
 end
