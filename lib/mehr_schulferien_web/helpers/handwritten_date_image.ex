@@ -11,24 +11,67 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
   Returns the SVG as a string that can be embedded in HTML or saved as a file.
   """
   def generate_svg(vacation_period, vacation_name, federal_state_name, year, all_periods \\ []) do
+    generate_svg_with_dimensions(
+      "100%",
+      "100%",
+      vacation_period,
+      vacation_name,
+      federal_state_name,
+      year,
+      all_periods
+    )
+  end
+
+  @doc """
+  Generates an SVG image with specific dimensions for social media sharing.
+  """
+  def generate_svg_for_social(
+        vacation_period,
+        vacation_name,
+        federal_state_name,
+        year,
+        all_periods \\ []
+      ) do
+    generate_svg_with_dimensions(
+      "1200",
+      "630",
+      vacation_period,
+      vacation_name,
+      federal_state_name,
+      year,
+      all_periods
+    )
+  end
+
+  defp generate_svg_with_dimensions(
+         width,
+         height,
+         vacation_period,
+         vacation_name,
+         federal_state_name,
+         year,
+         all_periods
+       ) do
     # Format dates
     start_date = DateFormatter.format_date_full(vacation_period.starts_on)
     end_date = DateFormatter.format_date_full(vacation_period.ends_on)
-    
+
     # Calculate both official and effective duration
     official_duration = Date.diff(vacation_period.ends_on, vacation_period.starts_on) + 1
-    effective_duration = if length(all_periods) > 0 do
-      MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(vacation_period, all_periods)
-    else
-      official_duration
-    end
-    
+
+    effective_duration =
+      if length(all_periods) > 0 do
+        MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(vacation_period, all_periods)
+      else
+        official_duration
+      end
+
     # Calculate additional days if any
     additional_days = effective_duration - official_duration
 
     # Create SVG with handwritten style
     """
-    <svg width="100%" height="100%" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <svg width="#{width}" height="#{height}" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
       <!-- Paper background with subtle texture -->
       <defs>
         <filter id="paperTexture">
@@ -42,6 +85,9 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
           <feComposite operator="in" in2="turbulence"/>
         </filter>
       </defs>
+      
+      <!-- Background fill for better social media display -->
+      <rect width="400" height="320" fill="#F5F5F5"/>
       
       <!-- Paper background -->
       <rect width="400" height="320" fill="#FEFDF8" filter="url(#paperTexture)"/>
@@ -112,36 +158,36 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       </g>
       
       #{if additional_days > 0 do
-        """
-        <!-- Additional days note - looks like someone added it later -->
-        <g transform="translate(245, 265) rotate(-8)">
-          <text font-family="'Kalam', cursive" font-size="22" fill="#dc2626" opacity="0.9" font-weight="bold">
-            +#{additional_days}
-          </text>
-        </g>
-        <g transform="translate(240, 278) rotate(-8)">
-          <path d="M 0 0 Q 10 2 20 -1 T 35 0" stroke="#dc2626" stroke-width="2" fill="none" opacity="0.8"/>
-        </g>
-        """
-      else
-        ""
-      end}
+      """
+      <!-- Additional days note - looks like someone added it later -->
+      <g transform="translate(245, 265) rotate(-8)">
+        <text font-family="'Kalam', cursive" font-size="22" fill="#dc2626" opacity="0.9" font-weight="bold">
+          +#{additional_days}
+        </text>
+      </g>
+      <g transform="translate(240, 278) rotate(-8)">
+        <path d="M 0 0 Q 10 2 20 -1 T 35 0" stroke="#dc2626" stroke-width="2" fill="none" opacity="0.8"/>
+      </g>
+      """
+    else
+      ""
+    end}
       
       <!-- Small doodles for authenticity -->
       #{generate_doodles()}
       
       #{if additional_days > 0 do
-        """
-        <!-- Scribbled note about weekends -->
-        <g transform="translate(245, 293) rotate(3)">
-          <text font-family="'Kalam', cursive" font-size="11" fill="#6B7280" opacity="0.7">
-            mit WE
-          </text>
-        </g>
-        """
-      else
-        ""
-      end}
+      """
+      <!-- Scribbled note about weekends -->
+      <g transform="translate(245, 293) rotate(3)">
+        <text font-family="'Kalam', cursive" font-size="11" fill="#6B7280" opacity="0.7">
+          mit WE
+        </text>
+      </g>
+      """
+    else
+      ""
+    end}
       
       <!-- Handwritten style font import -->
       <style>
@@ -180,8 +226,22 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
   @doc """
   Generates a data URI for embedding the SVG directly in HTML
   """
-  def generate_data_uri(vacation_period, vacation_name, federal_state_name, year, all_periods \\ []) do
-    svg = generate_svg(vacation_period, vacation_name, federal_state_name, year, all_periods)
+  def generate_data_uri(
+        vacation_period,
+        vacation_name,
+        federal_state_name,
+        year,
+        all_periods \\ []
+      ) do
+    svg =
+      generate_svg_for_social(
+        vacation_period,
+        vacation_name,
+        federal_state_name,
+        year,
+        all_periods
+      )
+
     encoded = Base.encode64(svg)
     "data:image/svg+xml;base64,#{encoded}"
   end
@@ -189,20 +249,34 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
   @doc """
   Generates Open Graph meta tags for the handwritten image
   """
-  def meta_tags(_conn, vacation_period, vacation_name, federal_state_name, year, all_periods \\ []) do
-    # You could implement actual file saving here if needed
-    # For now, we'll use the data URI approach
+  def meta_tags(
+        conn,
+        vacation_period,
+        vacation_name,
+        federal_state_name,
+        year,
+        _all_periods \\ []
+      ) do
+    # Get the vacation type slug from the vacation_period
+    vacation_slug = "#{vacation_period.holiday_or_vacation_type.slug}ferien"
 
-    data_uri = generate_data_uri(vacation_period, vacation_name, federal_state_name, year, all_periods)
+    # Get the federal state slug from conn assigns
+    federal_state = conn.assigns[:federal_state]
+    federal_state_slug = if federal_state, do: federal_state.slug, else: ""
+
+    # Build the full URL for the image
+    image_url =
+      MehrSchulferienWeb.Endpoint.url() <>
+        "/#{vacation_slug}/#{federal_state_slug}/#{year}/handwritten.svg"
 
     [
-      {"og:image", data_uri},
+      {"og:image", image_url},
       {"og:image:type", "image/svg+xml"},
-      {"og:image:width", "400"},
-      {"og:image:height", "320"},
+      {"og:image:width", "1200"},
+      {"og:image:height", "630"},
       {"og:image:alt",
        "#{vacation_name} #{federal_state_name} #{year} - Handgeschriebene Ferientermine"},
-      {"twitter:image", data_uri},
+      {"twitter:image", image_url},
       {"twitter:card", "summary_large_image"}
     ]
   end

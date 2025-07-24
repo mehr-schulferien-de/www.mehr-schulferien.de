@@ -226,6 +226,12 @@ defmodule MehrSchulferienWeb.Router do
     get "/:vacation_slug/:federal_state_slug/:year", VacationController, :show,
       constraints: [year: ~r/20[2-3][0-9]/, vacation_slug: ~r/[a-z-]+ferien/]
 
+    # Vacation handwritten image route
+    get "/:vacation_slug/:federal_state_slug/:year/handwritten.svg",
+        VacationImageController,
+        :handwritten_svg,
+        constraints: [year: ~r/20[2-3][0-9]/, vacation_slug: ~r/[a-z-]+ferien/]
+
     # City routes (SEO-friendly pattern)
     get "/ferien/:country_slug/stadt/:city_slug", CityController, :show
 

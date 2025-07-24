@@ -21,8 +21,13 @@
           <:content>
             <%= if @has_data do %>
               <% # Show the specific vacation period prominently %>
-              <% official_duration = Date.diff(@vacation_period.ends_on, @vacation_period.starts_on) + 1 %>
-              <% effective_duration = MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(@vacation_period, @all_periods) %>
+              <% official_duration =
+                Date.diff(@vacation_period.ends_on, @vacation_period.starts_on) + 1 %>
+              <% effective_duration =
+                MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(
+                  @vacation_period,
+                  @all_periods
+                ) %>
               <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <.heading level={2} class="text-lg text-blue-900 mb-2">
                   <%= @vacation_name %> <%= @year %>
@@ -161,7 +166,7 @@
             <.heading level={3} class="text-lg text-gray-800 mb-3">
               Ferientermine als Notiz
             </.heading>
-            <div class="w-full">
+            <div class="w-full" style="max-width: 400px; margin: 0 auto;">
               <%= Phoenix.HTML.raw(
                 MehrSchulferienWeb.Helpers.HandwrittenDateImage.generate_svg(
                   @vacation_period,

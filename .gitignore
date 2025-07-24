@@ -38,3 +38,6 @@ npm-debug.log
 
 # Test screenshots
 /test/screenshots/
+
+# Mix deploy task (contains server credentials)
+/lib/mix/tasks/deploy.ex
