@@ -28,10 +28,10 @@ defmodule MehrSchulferien.ImageConverterResvg do
     resvg_opts = [
       width: width,
       height: height,
-      font_family: "Comic Sans MS",
+      font_family: "Comic Neue",
       # Add fallback fonts
       sans_serif_family: "Arial",
-      cursive_family: "Comic Sans MS",
+      cursive_family: "Comic Neue",
       # Set DPI for better quality
       dpi: 144
     ]
