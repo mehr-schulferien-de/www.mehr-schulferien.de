@@ -86,8 +86,6 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
         </filter>
       </defs>
       
-      <!-- Background fill for better social media display -->
-      <rect width="400" height="320" fill="#F5F5F5"/>
       
       <!-- Paper background -->
       <rect width="400" height="320" fill="#FEFDF8" filter="url(#paperTexture)"/>
@@ -108,7 +106,7 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       
       <!-- Title with handwritten style -->
       <text x="200" y="65" text-anchor="middle" 
-            font-family="'Kalam', cursive" font-size="30" fill="#1a365d" 
+            font-family="Comic Sans MS" font-size="30" fill="#1a365d" 
             transform="rotate(-1 200 65)">
         #{vacation_name} #{year}
       </text>
@@ -119,28 +117,28 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       
       <!-- Federal state name -->
       <text x="200" y="110" text-anchor="middle" 
-            font-family="'Kalam', cursive" font-size="22" fill="#374151" 
+            font-family="Comic Sans MS" font-size="22" fill="#374151" 
             transform="rotate(0.5 200 110)">
         #{federal_state_name}
       </text>
       
       <!-- Date range with larger, emphasized font -->
       <text x="200" y="155" text-anchor="middle" 
-            font-family="'Kalam', cursive" font-size="28" fill="#dc2626" font-weight="bold"
+            font-family="Comic Sans MS" font-size="28" fill="#dc2626" font-weight="bold"
             transform="rotate(-0.5 200 155)">
         #{start_date}
       </text>
       
       <!-- "bis" (to) -->
       <text x="200" y="185" text-anchor="middle" 
-            font-family="'Kalam', cursive" font-size="20" fill="#4b5563"
+            font-family="Comic Sans MS" font-size="20" fill="#4b5563"
             transform="rotate(0.3 200 185)">
         bis
       </text>
       
       <!-- End date -->
       <text x="200" y="215" text-anchor="middle" 
-            font-family="'Kalam', cursive" font-size="28" fill="#dc2626" font-weight="bold"
+            font-family="Comic Sans MS" font-size="28" fill="#dc2626" font-weight="bold"
             transform="rotate(0.7 200 215)">
         #{end_date}
       </text>
@@ -148,10 +146,10 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       <!-- Duration in days with circle -->
       <g transform="translate(170, 265)">
         <!-- Hand-drawn circle -->
-        <path d="M -50 0 Q -50 -22 -22 -32 T 22 -32 Q 50 -22 50 0 T 22 32 Q 0 40 -22 32 T -50 0" 
+        <path d="M -65 0 Q -65 -30 -30 -42 T 30 -42 Q 65 -30 65 0 T 30 42 Q 0 50 -30 42 T -65 0" 
               stroke="#059669" stroke-width="2.5" fill="none" opacity="0.8"/>
         <text text-anchor="middle" 
-              font-family="'Kalam', cursive" font-size="26" fill="#059669" font-weight="bold"
+              font-family="Comic Sans MS" font-size="26" fill="#059669" font-weight="bold"
               transform="rotate(-1)">
           #{official_duration} Tage
         </text>
@@ -161,7 +159,7 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       """
       <!-- Additional days note - looks like someone added it later -->
       <g transform="translate(245, 265) rotate(-8)">
-        <text font-family="'Kalam', cursive" font-size="22" fill="#dc2626" opacity="0.9" font-weight="bold">
+        <text font-family="Comic Sans MS" font-size="22" fill="#dc2626" opacity="0.9" font-weight="bold">
           +#{additional_days}
         </text>
       </g>
@@ -180,7 +178,7 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       """
       <!-- Scribbled note about weekends -->
       <g transform="translate(245, 293) rotate(3)">
-        <text font-family="'Kalam', cursive" font-size="11" fill="#6B7280" opacity="0.7">
+        <text font-family="Comic Sans MS" font-size="11" fill="#6B7280" opacity="0.7">
           mit WE
         </text>
       </g>
@@ -189,10 +187,6 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       ""
     end}
       
-      <!-- Handwritten style font import -->
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&amp;display=swap');
-      </style>
     </svg>
     """
   end
@@ -267,11 +261,11 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
     # Build the full URL for the image
     image_url =
       MehrSchulferienWeb.Endpoint.url() <>
-        "/#{vacation_slug}/#{federal_state_slug}/#{year}/handwritten.svg"
+        "/#{vacation_slug}/#{federal_state_slug}/#{year}/handwritten.webp"
 
     [
       {"og:image", image_url},
-      {"og:image:type", "image/svg+xml"},
+      {"og:image:type", "image/webp"},
       {"og:image:width", "1200"},
       {"og:image:height", "630"},
       {"og:image:alt",

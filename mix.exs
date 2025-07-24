@@ -56,6 +56,8 @@ defmodule MehrSchulferien.MixProject do
       {:hackney, "~> 1.9"},
       {:tzdata, "~> 1.1"},
       {:mix_version, "~> 2.5.0"},
+      {:mogrify, "~> 0.9.3"},
+      {:resvg, "~> 0.5.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]}
     ]
   end
