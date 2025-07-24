@@ -43,6 +43,33 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
     )
   end
 
+  @doc """
+  Generates an SVG image showing all vacation periods for a federal state in a year.
+  Returns the SVG as a string that can be embedded in HTML.
+  """
+  def generate_all_vacations_svg(vacation_periods, federal_state_name, year) do
+    generate_all_vacations_svg_with_dimensions(
+      "100%",
+      "100%", 
+      vacation_periods,
+      federal_state_name,
+      year
+    )
+  end
+
+  @doc """
+  Generates an SVG image showing all vacation periods with specific dimensions for social media.
+  """
+  def generate_all_vacations_svg_for_social(vacation_periods, federal_state_name, year) do
+    generate_all_vacations_svg_with_dimensions(
+      "1200",
+      "630",
+      vacation_periods,
+      federal_state_name,
+      year
+    )
+  end
+
   defp generate_svg_with_dimensions(
          width,
          height,
@@ -189,6 +216,268 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       
     </svg>
     """
+  end
+
+  defp generate_all_vacations_svg_with_dimensions(
+         width,
+         height,
+         vacation_periods,
+         federal_state_name,
+         year
+       ) do
+    # Sort vacation periods by start date - ensure proper Date comparison
+    # Take only the first 6 if there are more
+    sorted_periods = 
+      vacation_periods
+      |> Enum.sort_by(& &1.starts_on, {:asc, Date})
+      |> Enum.take(6)
+    
+    # Determine if we're rendering for social media
+    is_social = width != "100%" && height != "100%"
+    
+    # Set up dimensions and scaling
+    {viewbox_width, viewbox_height, scale_factor} = if is_social do
+      {1200, 630, 3.0}  # Fixed size for social media with 3x scale
+    else
+      # Fixed dimensions for web display
+      {800, 400, 2.0}  # Taller viewbox to fit more items
+    end
+    
+    # Determine column layout based on number of periods
+    num_columns = cond do
+      is_social and length(sorted_periods) <= 3 -> 1
+      is_social and length(sorted_periods) <= 6 -> 2  # Use 2 columns for 2x3 grid on social
+      is_social -> 3
+      length(sorted_periods) <= 2 -> 1
+      length(sorted_periods) <= 6 -> 2  # Use 2 columns for 3-6 items on web
+      true -> 3
+    end
+    
+    # Generate vacation entries based on column layout
+    vacation_entries = case num_columns do
+      1 ->
+        # Single column layout
+        sorted_periods
+          |> Enum.with_index()
+          |> Enum.map(fn {period, index} ->
+            generate_compact_vacation_entry(period, index, 0, 1, scale_factor, viewbox_width)
+          end)
+          |> Enum.join("\n      ")
+      
+      2 ->
+        # Two column layout
+        sorted_periods
+          |> Enum.with_index()
+          |> Enum.map(fn {period, index} ->
+            column = rem(index, 2)
+            row = div(index, 2)
+            generate_compact_vacation_entry(period, row, column, 2, scale_factor, viewbox_width)
+          end)
+          |> Enum.join("\n      ")
+      
+      3 ->
+        # Three column layout
+        sorted_periods
+          |> Enum.with_index()
+          |> Enum.map(fn {period, index} ->
+            column = rem(index, 3)
+            row = div(index, 3)
+            generate_compact_vacation_entry(period, row, column, 3, scale_factor, viewbox_width)
+          end)
+          |> Enum.join("\n      ")
+    end
+    
+    # Scale all sizes based on scale_factor
+    paper_padding = 5 * scale_factor
+    stroke_width = 1 * scale_factor
+    hole_radius = 8 * scale_factor
+    hole_x = 25 * scale_factor
+    
+    title_size = if scale_factor > 2.5 do
+      55  # Fixed size for social media (about 18pt)
+    else 
+      40  # Smaller for web (20pt at 2x scale)
+    end
+    
+    state_size = if scale_factor > 2.5 do
+      45  # Fixed size for social media (about 15pt)
+    else
+      32  # Smaller for web (16pt at 2x scale)
+    end
+    
+    """
+    <svg width="#{width}" height="#{height}" viewBox="0 0 #{viewbox_width} #{viewbox_height}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <!-- Paper background with subtle texture -->
+      <defs>
+        <filter id="paperTexture">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="5" result="noise" seed="1"/>
+          <feDiffuseLighting in="noise" lighting-color="white" surfaceScale="1">
+            <feDistantLight azimuth="45" elevation="60"/>
+          </feDiffuseLighting>
+        </filter>
+      </defs>
+      
+      <!-- Paper background -->
+      <rect width="#{viewbox_width}" height="#{viewbox_height}" fill="#FEFDF8" filter="url(#paperTexture)"/>
+      
+      <!-- Paper shadow -->
+      <rect x="#{paper_padding}" y="#{paper_padding}" 
+            width="#{viewbox_width - paper_padding * 2}" 
+            height="#{viewbox_height - paper_padding * 2}" 
+            fill="#00000010" rx="#{scale_factor * 2}"/>
+      
+      <!-- Main paper -->
+      <rect x="#{paper_padding / 2}" y="#{paper_padding / 2}" 
+            width="#{viewbox_width - paper_padding}" 
+            height="#{viewbox_height - paper_padding}" 
+            fill="#FFFEF9" stroke="#E8E8E8" stroke-width="#{stroke_width}" rx="#{scale_factor * 2}"/>
+      
+      <!-- Three-hole punch marks -->
+      <circle cx="#{hole_x}" cy="#{viewbox_height * 0.2}" r="#{hole_radius}" fill="#F0F0F0" stroke="#DDD" stroke-width="#{stroke_width}"/>
+      <circle cx="#{hole_x}" cy="#{viewbox_height * 0.5}" r="#{hole_radius}" fill="#F0F0F0" stroke="#DDD" stroke-width="#{stroke_width}"/>
+      <circle cx="#{hole_x}" cy="#{viewbox_height * 0.8}" r="#{hole_radius}" fill="#F0F0F0" stroke="#DDD" stroke-width="#{stroke_width}"/>
+      
+      <!-- Title with handwritten style -->
+      <text x="#{viewbox_width / 2}" y="#{if scale_factor > 2.5, do: 65, else: 70}" text-anchor="middle" 
+            font-family="Comic Neue, Comic Sans MS, cursive" font-size="#{title_size}" fill="#1a365d">
+        Schulferien #{year}
+      </text>
+      
+      <!-- Underline with hand-drawn wobble -->
+      <path d="M #{viewbox_width * 0.2} #{if scale_factor > 2.5, do: 90, else: 88} Q #{viewbox_width * 0.35} #{if scale_factor > 2.5, do: 87, else: 86} #{viewbox_width / 2} #{if scale_factor > 2.5, do: 90, else: 88} T #{viewbox_width * 0.8} #{if scale_factor > 2.5, do: 90, else: 88}" 
+            stroke="#2563eb" stroke-width="#{2 * scale_factor}" fill="none" opacity="0.7"/>
+      
+      <!-- Federal state name -->
+      <text x="#{viewbox_width / 2}" y="#{if scale_factor > 2.5, do: 160, else: 125}" text-anchor="middle" 
+            font-family="Comic Neue, Comic Sans MS, cursive" font-size="#{state_size}" fill="#374151">
+        #{federal_state_name}
+      </text>
+      
+      <!-- Vacation entries -->
+      #{vacation_entries}
+      
+      <!-- Small hearts doodle -->
+      #{if is_social do
+        # No decoration for social media to save space
+        ""
+      else
+        # Use the existing doodles function for smaller version
+        generate_doodles()
+      end}
+      
+    </svg>
+    """
+  end
+
+  defp generate_compact_vacation_entry(period, row, column, num_columns, scale_factor, viewbox_width) do
+    # Format dates without year for compactness
+    start_date = format_date_no_year(period.starts_on)
+    end_date = format_date_no_year(period.ends_on)
+    
+    # Ultra-compact font sizes
+    name_size = cond do
+      scale_factor > 2.5 and num_columns == 3 ->
+        42  # Smaller for 3 columns on social media
+      scale_factor > 2.5 ->
+        48  # Fixed size for better readability (16pt)
+      true ->
+        28  # One point larger (14pt at 2x scale)
+    end
+    
+    date_size = cond do
+      scale_factor > 2.5 and num_columns == 3 ->
+        36  # Smaller for 3 columns on social media
+      scale_factor > 2.5 ->
+        40  # Fixed size for better readability (13pt)
+      true ->
+        24  # One point larger (12pt at 2x scale)
+    end
+    
+    # Calculate positions based on grid layout - ultra compact
+    y_spacing = if scale_factor > 2.5 do
+      130  # More generous spacing between rows
+    else
+      65  # Slightly tighter to fit with increased header space
+    end
+    
+    y_start = if scale_factor > 2.5 do
+      245  # Move down 2-3 pixels more
+    else
+      180  # More space after header
+    end
+    
+    # Calculate column width and x position - bring columns closer together
+    effective_width = if num_columns == 2 and scale_factor > 2.5 do
+      viewbox_width * 0.7  # Use only 70% of width for 2 columns
+    else
+      viewbox_width
+    end
+    
+    column_width = effective_width / num_columns
+    
+    # Calculate starting offset to center the columns - shift more to the left
+    start_offset = if num_columns == 2 and scale_factor > 2.5 do
+      viewbox_width * 0.12  # Reduced from 15% to move content left
+    else
+      0
+    end
+    
+    _x_padding = if scale_factor > 2.5 do
+      20 * scale_factor
+    else
+      case num_columns do
+        1 -> 60
+        2 -> 50  
+        3 -> 40  # More padding to spread out columns
+      end
+    end
+    # Center each column in its allocated space
+    column_center = start_offset + (column * column_width) + (column_width / 2)
+    x_base = cond do
+      num_columns == 2 ->
+        column_center - 80  # More offset for 2 columns to center better
+      num_columns == 3 and scale_factor > 2.5 ->
+        column_center - 120  # Increased offset to prevent cutoff
+      true ->
+        column_center - 50  # Standard offset
+    end
+    y_base = y_start + (row * y_spacing)
+    
+    # No rotation for cleaner look
+    rotation = [0, 0]
+    
+    # Use full vacation name
+    vacation_name = period.holiday_or_vacation_type.colloquial
+    
+    # Even more compact line spacing
+    line_spacing = if scale_factor > 2.5 do
+      55  # More generous spacing between name and date
+    else
+      28  # A bit more space between name and date
+    end
+    
+    """
+    <!-- #{period.holiday_or_vacation_type.colloquial} -->
+    <g>
+      <text x="#{x_base}" y="#{y_base}" 
+            font-family="Comic Neue, Comic Sans MS, cursive" font-size="#{name_size}" fill="#1e40af" font-weight="bold"
+            transform="rotate(#{Enum.at(rotation, 0)} #{x_base} #{y_base})">
+        #{vacation_name}
+      </text>
+      
+      <text x="#{x_base + 5}" y="#{y_base + line_spacing}" 
+            font-family="Comic Neue, Comic Sans MS, cursive" font-size="#{date_size}" fill="#dc2626"
+            transform="rotate(#{Enum.at(rotation, 1)} #{x_base + 5} #{y_base + line_spacing})">
+        #{start_date} - #{end_date}
+      </text>
+    </g>
+    """
+  end
+
+  defp format_date_no_year(date) do
+    day = date.day |> Integer.to_string() |> String.pad_leading(2, "0")
+    month = date.month |> Integer.to_string() |> String.pad_leading(2, "0")
+    "#{day}.#{month}."
   end
 
   defp generate_paper_lines do

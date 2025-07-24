@@ -200,6 +200,17 @@ defmodule MehrSchulferienWeb.Router do
         :show_year,
         constraints: [year: ~r/20[2-3][0-9]/]
 
+    # Federal state handwritten image routes
+    get "/ferien/:country_slug/bundesland/:federal_state_slug/:year/handwritten.svg",
+        FederalStateImageController,
+        :handwritten_svg,
+        constraints: [year: ~r/20[2-3][0-9]/]
+
+    get "/ferien/:country_slug/bundesland/:federal_state_slug/:year/handwritten.webp",
+        FederalStateImageController,
+        :handwritten_webp,
+        constraints: [year: ~r/20[2-3][0-9]/]
+
     # School search LiveView - MUST come before any catch-all routes
     live "/briefe/", SchoolSearchLive
 

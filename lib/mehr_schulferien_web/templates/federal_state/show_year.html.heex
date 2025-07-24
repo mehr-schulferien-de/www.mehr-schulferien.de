@@ -83,6 +83,32 @@
         </.card>
       </div>
       <div class="lg:w-1/3">
+        <% # Show handwritten date visualization if we have vacation data %>
+        <%= if @has_data and length(@periods) > 0 do %>
+          <% # Get only actual vacation periods (exclude single "schulfrei" days) %>
+          <% school_vacation_periods = Enum.filter(@periods, fn period -> 
+               # Include only multi-day vacations, not single school-free days
+               Date.diff(period.ends_on, period.starts_on) > 0
+             end) %>
+          
+          <%= if length(school_vacation_periods) > 0 do %>
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+              <.heading level={3} class="text-lg text-gray-800 mb-3">
+                Ferientermine als Notiz
+              </.heading>
+              <div class="w-full" style="max-width: 400px; margin: 0 auto;">
+                <%= Phoenix.HTML.raw(
+                  MehrSchulferienWeb.Helpers.HandwrittenDateImage.generate_all_vacations_svg(
+                    school_vacation_periods,
+                    @federal_state.name,
+                    @year
+                  )
+                ) %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+        
         <% # Quick links to vacation-specific pages %>
         <%= if length(@vacation_types) > 0 do %>
           <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
