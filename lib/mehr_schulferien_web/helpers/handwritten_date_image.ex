@@ -50,7 +50,7 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
   def generate_all_vacations_svg(vacation_periods, federal_state_name, year) do
     generate_all_vacations_svg_with_dimensions(
       "100%",
-      "100%", 
+      "100%",
       vacation_periods,
       federal_state_name,
       year
@@ -227,46 +227,53 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
        ) do
     # Sort vacation periods by start date - ensure proper Date comparison
     # Take only the first 6 if there are more
-    sorted_periods = 
+    sorted_periods =
       vacation_periods
       |> Enum.sort_by(& &1.starts_on, {:asc, Date})
       |> Enum.take(6)
-    
+
     # Determine if we're rendering for social media
     is_social = width != "100%" && height != "100%"
-    
+
     # Set up dimensions and scaling
-    {viewbox_width, viewbox_height, scale_factor} = if is_social do
-      {1200, 630, 3.0}  # Fixed size for social media with 3x scale
-    else
-      # Fixed dimensions for web display
-      {800, 400, 2.0}  # Taller viewbox to fit more items
-    end
-    
+    {viewbox_width, viewbox_height, scale_factor} =
+      if is_social do
+        # Fixed size for social media with 3x scale
+        {1200, 630, 3.0}
+      else
+        # Fixed dimensions for web display
+        # Taller viewbox to fit more items
+        {800, 400, 2.0}
+      end
+
     # Determine column layout based on number of periods
-    num_columns = cond do
-      is_social and length(sorted_periods) <= 3 -> 1
-      is_social and length(sorted_periods) <= 6 -> 2  # Use 2 columns for 2x3 grid on social
-      is_social -> 3
-      length(sorted_periods) <= 2 -> 1
-      length(sorted_periods) <= 6 -> 2  # Use 2 columns for 3-6 items on web
-      true -> 3
-    end
-    
+    num_columns =
+      cond do
+        is_social and length(sorted_periods) <= 3 -> 1
+        # Use 2 columns for 2x3 grid on social
+        is_social and length(sorted_periods) <= 6 -> 2
+        is_social -> 3
+        length(sorted_periods) <= 2 -> 1
+        # Use 2 columns for 3-6 items on web
+        length(sorted_periods) <= 6 -> 2
+        true -> 3
+      end
+
     # Generate vacation entries based on column layout
-    vacation_entries = case num_columns do
-      1 ->
-        # Single column layout
-        sorted_periods
+    vacation_entries =
+      case num_columns do
+        1 ->
+          # Single column layout
+          sorted_periods
           |> Enum.with_index()
           |> Enum.map(fn {period, index} ->
             generate_compact_vacation_entry(period, index, 0, 1, scale_factor, viewbox_width)
           end)
           |> Enum.join("\n      ")
-      
-      2 ->
-        # Two column layout
-        sorted_periods
+
+        2 ->
+          # Two column layout
+          sorted_periods
           |> Enum.with_index()
           |> Enum.map(fn {period, index} ->
             column = rem(index, 2)
@@ -274,10 +281,10 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
             generate_compact_vacation_entry(period, row, column, 2, scale_factor, viewbox_width)
           end)
           |> Enum.join("\n      ")
-      
-      3 ->
-        # Three column layout
-        sorted_periods
+
+        3 ->
+          # Three column layout
+          sorted_periods
           |> Enum.with_index()
           |> Enum.map(fn {period, index} ->
             column = rem(index, 3)
@@ -285,26 +292,34 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
             generate_compact_vacation_entry(period, row, column, 3, scale_factor, viewbox_width)
           end)
           |> Enum.join("\n      ")
-    end
-    
+      end
+
     # Scale all sizes based on scale_factor
     paper_padding = 5 * scale_factor
     stroke_width = 1 * scale_factor
     hole_radius = 8 * scale_factor
     hole_x = 25 * scale_factor
-    
-    title_size = if scale_factor > 2.5 do
-      55  # Fixed size for social media (about 18pt)
-    else 
-      40  # Smaller for web (20pt at 2x scale)
-    end
-    
-    state_size = if scale_factor > 2.5 do
-      45  # Fixed size for social media (about 15pt)
-    else
-      32  # Smaller for web (16pt at 2x scale)
-    end
-    
+
+    title_size =
+      if scale_factor > 2.5 do
+        # Fixed size for social media (about 18pt)
+        55
+      else
+        # Smaller for web (20pt at 2x scale)
+        40
+      end
+
+    state_size =
+      if scale_factor > 2.5 do
+        # Fixed size for social media (about 15pt)
+        45
+      else
+        # Smaller for web (16pt at 2x scale)
+        32
+      end
+
+    # No decoration for social media to save space
+    # Use the existing doodles function for smaller version
     """
     <svg width="#{width}" height="#{height}" viewBox="0 0 #{viewbox_width} #{viewbox_height}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
       <!-- Paper background with subtle texture -->
@@ -358,104 +373,145 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
       
       <!-- Small hearts doodle -->
       #{if is_social do
-        # No decoration for social media to save space
-        ""
-      else
-        # Use the existing doodles function for smaller version
-        generate_doodles()
-      end}
+      ""
+    else
+      generate_doodles()
+    end}
       
     </svg>
     """
   end
 
-  defp generate_compact_vacation_entry(period, row, column, num_columns, scale_factor, viewbox_width) do
+  defp generate_compact_vacation_entry(
+         period,
+         row,
+         column,
+         num_columns,
+         scale_factor,
+         viewbox_width
+       ) do
     # Format dates without year for compactness
     start_date = format_date_no_year(period.starts_on)
     end_date = format_date_no_year(period.ends_on)
-    
+
     # Ultra-compact font sizes
-    name_size = cond do
-      scale_factor > 2.5 and num_columns == 3 ->
-        42  # Smaller for 3 columns on social media
-      scale_factor > 2.5 ->
-        48  # Fixed size for better readability (16pt)
-      true ->
-        28  # One point larger (14pt at 2x scale)
-    end
-    
-    date_size = cond do
-      scale_factor > 2.5 and num_columns == 3 ->
-        36  # Smaller for 3 columns on social media
-      scale_factor > 2.5 ->
-        40  # Fixed size for better readability (13pt)
-      true ->
-        24  # One point larger (12pt at 2x scale)
-    end
-    
-    # Calculate positions based on grid layout - ultra compact
-    y_spacing = if scale_factor > 2.5 do
-      130  # More generous spacing between rows
-    else
-      65  # Slightly tighter to fit with increased header space
-    end
-    
-    y_start = if scale_factor > 2.5 do
-      245  # Move down 2-3 pixels more
-    else
-      180  # More space after header
-    end
-    
-    # Calculate column width and x position - bring columns closer together
-    effective_width = if num_columns == 2 and scale_factor > 2.5 do
-      viewbox_width * 0.7  # Use only 70% of width for 2 columns
-    else
-      viewbox_width
-    end
-    
-    column_width = effective_width / num_columns
-    
-    # Calculate starting offset to center the columns - shift more to the left
-    start_offset = if num_columns == 2 and scale_factor > 2.5 do
-      viewbox_width * 0.12  # Reduced from 15% to move content left
-    else
-      0
-    end
-    
-    _x_padding = if scale_factor > 2.5 do
-      20 * scale_factor
-    else
-      case num_columns do
-        1 -> 60
-        2 -> 50  
-        3 -> 40  # More padding to spread out columns
+    name_size =
+      cond do
+        scale_factor > 2.5 and num_columns == 3 ->
+          # Smaller for 3 columns on social media
+          42
+
+        scale_factor > 2.5 ->
+          # Fixed size for better readability (16pt)
+          48
+
+        true ->
+          # One point larger (14pt at 2x scale)
+          28
       end
-    end
+
+    date_size =
+      cond do
+        scale_factor > 2.5 and num_columns == 3 ->
+          # Smaller for 3 columns on social media
+          36
+
+        scale_factor > 2.5 ->
+          # Fixed size for better readability (13pt)
+          40
+
+        true ->
+          # One point larger (12pt at 2x scale)
+          24
+      end
+
+    # Calculate positions based on grid layout - ultra compact
+    y_spacing =
+      if scale_factor > 2.5 do
+        # More generous spacing between rows
+        130
+      else
+        # Slightly tighter to fit with increased header space
+        65
+      end
+
+    y_start =
+      if scale_factor > 2.5 do
+        # Move down 2-3 pixels more
+        245
+      else
+        # More space after header
+        180
+      end
+
+    # Calculate column width and x position - bring columns closer together
+    effective_width =
+      if num_columns == 2 and scale_factor > 2.5 do
+        # Use only 70% of width for 2 columns
+        viewbox_width * 0.7
+      else
+        viewbox_width
+      end
+
+    column_width = effective_width / num_columns
+
+    # Calculate starting offset to center the columns - shift more to the left
+    start_offset =
+      if num_columns == 2 and scale_factor > 2.5 do
+        # Reduced from 15% to move content left
+        viewbox_width * 0.12
+      else
+        0
+      end
+
+    _x_padding =
+      if scale_factor > 2.5 do
+        20 * scale_factor
+      else
+        case num_columns do
+          1 -> 60
+          2 -> 50
+          # More padding to spread out columns
+          3 -> 40
+        end
+      end
+
     # Center each column in its allocated space
-    column_center = start_offset + (column * column_width) + (column_width / 2)
-    x_base = cond do
-      num_columns == 2 ->
-        column_center - 80  # More offset for 2 columns to center better
-      num_columns == 3 and scale_factor > 2.5 ->
-        column_center - 120  # Increased offset to prevent cutoff
-      true ->
-        column_center - 50  # Standard offset
-    end
-    y_base = y_start + (row * y_spacing)
-    
+    column_center = start_offset + column * column_width + column_width / 2
+
+    x_base =
+      cond do
+        num_columns == 2 ->
+          # More offset for 2 columns to center better
+          column_center - 80
+
+        num_columns == 3 and scale_factor > 2.5 ->
+          # Increased offset to prevent cutoff
+          column_center - 120
+
+        true ->
+          # Standard offset
+          column_center - 50
+      end
+
+    y_base = y_start + row * y_spacing
+
     # No rotation for cleaner look
     rotation = [0, 0]
-    
+
     # Use full vacation name
     vacation_name = period.holiday_or_vacation_type.colloquial
-    
+
     # Even more compact line spacing
-    line_spacing = if scale_factor > 2.5 do
-      55  # More generous spacing between name and date
-    else
-      28  # A bit more space between name and date
-    end
-    
+    line_spacing =
+      if scale_factor > 2.5 do
+        # More generous spacing between name and date
+        55
+      else
+        # A bit more space between name and date
+        28
+      end
+
     """
     <!-- #{period.holiday_or_vacation_type.colloquial} -->
     <g>

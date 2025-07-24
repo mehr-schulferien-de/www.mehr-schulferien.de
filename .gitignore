@@ -34,6 +34,9 @@ npm-debug.log
 /priv/static/*
 !/priv/static/ads.txt
 
+# Image cache
+/priv/static/cache/
+
 .DS_Store
 
 # Test screenshots

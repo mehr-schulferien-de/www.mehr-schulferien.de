@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.FederalStateImageController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Locations, Calendars.DateHelpers, ImageConverterResvg}
+  alias MehrSchulferien.{Locations, Calendars.DateHelpers, ImageConverterResvg, ImageCache}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Helpers.HandwrittenDateImage
 
@@ -53,6 +53,32 @@ defmodule MehrSchulferienWeb.FederalStateImageController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
+    # Try to get cached image first
+    case ImageCache.get_or_generate_webp(
+           cache_key_parts: ["federal_state", country_slug, federal_state_slug, year],
+           generator_fn: fn ->
+             generate_federal_state_webp(country_slug, federal_state_slug, year, conn)
+           end
+         ) do
+      {:ok, webp_binary} ->
+        conn
+        |> put_resp_content_type("image/webp")
+        |> put_resp_header("cache-control", "public, max-age=86400")
+        |> send_resp(200, webp_binary)
+
+      {:error, :no_periods} ->
+        conn
+        |> put_status(404)
+        |> text("No vacation periods found")
+
+      {:error, _reason} ->
+        conn
+        |> put_status(500)
+        |> text("Image conversion failed")
+    end
+  end
+
+  defp generate_federal_state_webp(country_slug, federal_state_slug, year, conn) do
     # Load locations
     {federal_state, country} =
       Locations.get_federal_state_and_country_by_slug!(country_slug, federal_state_slug)
@@ -80,27 +106,14 @@ defmodule MehrSchulferienWeb.FederalStateImageController do
           String.to_integer(year)
         )
 
-      # Convert SVG to WebP on the fly using resvg
-      case ImageConverterResvg.svg_content_to_webp_binary(svg_content,
-             quality: 90,
-             width: 1200,
-             height: 630
-           ) do
-        {:ok, webp_binary} ->
-          conn
-          |> put_resp_content_type("image/webp")
-          |> put_resp_header("cache-control", "public, max-age=86400")
-          |> send_resp(200, webp_binary)
-
-        {:error, _reason} ->
-          conn
-          |> put_status(500)
-          |> text("Image conversion failed")
-      end
+      # Convert SVG to WebP using resvg
+      ImageConverterResvg.svg_content_to_webp_binary(svg_content,
+        quality: 90,
+        width: 1200,
+        height: 630
+      )
     else
-      conn
-      |> put_status(404)
-      |> text("No vacation periods found")
+      {:error, :no_periods}
     end
   end
 end
