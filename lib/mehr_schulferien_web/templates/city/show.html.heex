@@ -199,14 +199,18 @@
                 <div class="pt-3 border-t border-gray-100">
                   <!-- Mobile: Just show count -->
                   <div class="text-sm text-gray-600 lg:hidden">
-                    <span class="text-gray-500">Schulen:</span>
-                    <span class="font-medium"><%= length(@schools) %></span>
+                    <a href="#faq" class="hover:text-blue-600">
+                      <span class="text-gray-500">Schulen:</span>
+                      <span class="font-medium"><%= length(@schools) %></span>
+                    </a>
                   </div>
                   <!-- Desktop: Show school list -->
                   <div class="hidden lg:block">
                     <div class="text-sm text-gray-600 mb-2">
-                      <span class="text-gray-500">Schulen:</span>
-                      <span class="font-medium"><%= length(@schools) %></span>
+                      <a href="#faq" class="hover:text-blue-600">
+                        <span class="text-gray-500">Schulen:</span>
+                        <span class="font-medium"><%= length(@schools) %></span>
+                      </a>
                     </div>
                     <!-- School list sorted by name -->
                     <div
