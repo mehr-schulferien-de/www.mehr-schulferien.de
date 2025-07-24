@@ -28,23 +28,65 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
     # Get bewegliche Ferientage for the school
     bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
 
+    # Get bewegliche ferientage from other schools with same zip code
+    other_schools_ferientage =
+      if school.address && school.address.zip_code && bewegliche_ferientage == [] do
+        schools_same_zip = Locations.find_schools_by_same_zip_code(school)
+
+        schools_same_zip
+        |> Enum.flat_map(fn other_school ->
+          Periods.list_bewegliche_ferientage_for_school(other_school.id)
+          |> Enum.map(fn period ->
+            Map.put(period, :school_name, other_school.name)
+          end)
+        end)
+        |> Enum.uniq_by(fn period -> {period.starts_on, period.memo} end)
+        |> Enum.sort_by(& &1.starts_on)
+      else
+        []
+      end
+
+    # Pre-select all ferientage for copying
+    selected_ferientage_ids =
+      if length(bewegliche_ferientage) > 0 do
+        MapSet.new(Enum.map(bewegliche_ferientage, & &1.id))
+      else
+        MapSet.new()
+      end
+
+    # Initial search parameters
+    initial_search_params = %{
+      "search_type" => "zip_code",
+      "name_pattern" => "",
+      "radius" => "10"
+    }
+
+    # Perform initial search if we have bewegliche ferientage to copy
+    initial_search_results =
+      if length(bewegliche_ferientage) > 0 && !limit_reached do
+        search_results = perform_school_search(school, initial_search_params)
+        selected_dates = Enum.map(bewegliche_ferientage, & &1.starts_on)
+        enrich_with_existing_ferientage(search_results, selected_dates)
+      else
+        []
+      end
+
     {:ok,
      assign(socket,
        school: school,
        bewegliche_ferientage: bewegliche_ferientage,
+       other_schools_ferientage: other_schools_ferientage,
        daily_changes: daily_changes,
        limit_reached: limit_reached,
        simple_form_mode: true,
-       copy_mode: false,
-       search_params: %{
-         "search_type" => "zip_code",
-         "name_pattern" => "",
-         "radius" => "10"
-       },
-       search_results: [],
+       copy_mode: true,
+       search_params: initial_search_params,
+       search_results: initial_search_results,
        selected_schools: MapSet.new(),
-       selected_ferientage: MapSet.new(),
-       copy_in_progress: false
+       selected_ferientage: selected_ferientage_ids,
+       copy_in_progress: false,
+       quick_copy_ferientage: MapSet.new(),
+       show_copy_confirmation_modal: false
      )}
   end
 
@@ -251,54 +293,6 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   end
 
   @impl true
-  def handle_event("toggle_copy_mode", _params, socket) do
-    # When toggling copy mode, reset selections
-    new_copy_mode = !socket.assigns.copy_mode
-
-    socket =
-      if new_copy_mode do
-        # When entering copy mode, select all ferientage by default
-        all_ferientage_ids = Enum.map(socket.assigns.bewegliche_ferientage, & &1.id)
-        assign(socket, selected_ferientage: MapSet.new(all_ferientage_ids))
-      else
-        # When leaving copy mode, clear selections
-        assign(socket,
-          selected_ferientage: MapSet.new(),
-          selected_schools: MapSet.new(),
-          search_results: []
-        )
-      end
-
-    {:noreply, assign(socket, copy_mode: new_copy_mode)}
-  end
-
-  @impl true
-  def handle_event("search_schools", %{"search" => params}, socket) do
-    if socket.assigns.limit_reached do
-      {:noreply,
-       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Aktionen möglich.")}
-    else
-      school = Locations.get_school_by_slug!(socket.assigns.school.slug)
-      school = Repo.preload(school, :address)
-
-      search_results = perform_school_search(school, params)
-
-      # Enrich results with existing ferientage information
-      selected_ferientage_dates = get_selected_ferientage_dates(socket)
-
-      enriched_results =
-        enrich_with_existing_ferientage(search_results, selected_ferientage_dates)
-
-      {:noreply,
-       assign(socket,
-         search_params: params,
-         search_results: enriched_results,
-         selected_schools: MapSet.new()
-       )}
-    end
-  end
-
-  @impl true
   def handle_event("toggle_school_selection", %{"school-id" => school_id}, socket) do
     school_id = String.to_integer(school_id)
     selected_schools = socket.assigns.selected_schools
@@ -383,6 +377,164 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   end
 
   @impl true
+  def handle_event("update_search_params", %{"search" => params}, socket) do
+    if socket.assigns.limit_reached do
+      {:noreply, socket}
+    else
+      # Update search params while preserving existing values
+      updated_params = Map.merge(socket.assigns.search_params, params)
+
+      # Ensure radius doesn't exceed 50
+      updated_params =
+        if updated_params["radius"] do
+          radius_value =
+            case Integer.parse(updated_params["radius"]) do
+              {num, _} -> min(num, 50) |> max(1)
+              :error -> 10
+            end
+
+          Map.put(updated_params, "radius", to_string(radius_value))
+        else
+          updated_params
+        end
+
+      # Automatically perform search
+      school = Locations.get_school_by_slug!(socket.assigns.school.slug)
+      school = Repo.preload(school, :address)
+
+      search_results = perform_school_search(school, updated_params)
+
+      # Enrich results with existing ferientage information
+      selected_ferientage_dates = get_selected_ferientage_dates(socket)
+
+      enriched_results =
+        enrich_with_existing_ferientage(search_results, selected_ferientage_dates)
+
+      {:noreply,
+       assign(socket,
+         search_params: updated_params,
+         search_results: enriched_results,
+         selected_schools: MapSet.new()
+       )}
+    end
+  end
+
+  @impl true
+  def handle_event("toggle_quick_copy_selection", %{"date" => date_str, "memo" => memo}, socket) do
+    key = {date_str, memo}
+    quick_copy_ferientage = socket.assigns.quick_copy_ferientage
+
+    new_selected =
+      if MapSet.member?(quick_copy_ferientage, key) do
+        MapSet.delete(quick_copy_ferientage, key)
+      else
+        MapSet.put(quick_copy_ferientage, key)
+      end
+
+    {:noreply, assign(socket, quick_copy_ferientage: new_selected)}
+  end
+
+  @impl true
+  def handle_event("quick_copy_ferientage", _params, socket) do
+    if socket.assigns.limit_reached do
+      {:noreply,
+       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+    else
+      if MapSet.size(socket.assigns.quick_copy_ferientage) == 0 do
+        {:noreply, put_flash(socket, :error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
+      else
+        # Create bewegliche ferientage for selected dates
+        school = socket.assigns.school
+        today = Date.utc_today()
+
+        results =
+          socket.assigns.quick_copy_ferientage
+          |> Enum.map(fn {date_str, memo} ->
+            case Date.from_iso8601(date_str) do
+              {:ok, date} ->
+                if Date.compare(date, today) == :gt do
+                  Periods.create_beweglicher_ferientag_for_school(school.id, date, memo)
+                else
+                  {:error, "Past date"}
+                end
+
+              _ ->
+                {:error, "Invalid date"}
+            end
+          end)
+
+        successful = Enum.count(results, fn {status, _} -> status == :ok end)
+
+        if successful > 0 do
+          # Send email notifications for successful ones
+          Enum.each(results, fn
+            {:ok, period} ->
+              Email.beweglicher_ferientag_created_notification(period, school)
+              |> Mailer.deliver!()
+
+            _ ->
+              :ok
+          end)
+
+          # Reload bewegliche Ferientage
+          bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
+
+          # Update daily change count
+          daily_changes = Wiki.get_daily_change_count(today)
+          limit_reached = daily_changes >= Config.daily_change_limit()
+
+          message =
+            if successful == 1 do
+              "Beweglicher Ferientag wurde erfolgreich hinzugefügt."
+            else
+              "#{successful} bewegliche Ferientage wurden erfolgreich hinzugefügt."
+            end
+
+          {:noreply,
+           socket
+           |> put_flash(:info, message)
+           |> assign(
+             bewegliche_ferientage: bewegliche_ferientage,
+             other_schools_ferientage: [],
+             quick_copy_ferientage: MapSet.new(),
+             daily_changes: daily_changes,
+             limit_reached: limit_reached
+           )}
+        else
+          {:noreply,
+           put_flash(socket, :error, "Fehler beim Hinzufügen der beweglichen Ferientage.")}
+        end
+      end
+    end
+  end
+
+  @impl true
+  def handle_event("show_copy_confirmation", _params, socket) do
+    if socket.assigns.limit_reached do
+      {:noreply,
+       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+    else
+      cond do
+        MapSet.size(socket.assigns.selected_ferientage) == 0 ->
+          {:noreply,
+           put_flash(socket, :error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
+
+        MapSet.size(socket.assigns.selected_schools) == 0 ->
+          {:noreply,
+           put_flash(socket, :error, "Bitte wählen Sie mindestens eine Zielschule aus.")}
+
+        true ->
+          {:noreply, assign(socket, show_copy_confirmation_modal: true)}
+      end
+    end
+  end
+
+  @impl true
+  def handle_event("close_copy_confirmation", _params, socket) do
+    {:noreply, assign(socket, show_copy_confirmation_modal: false)}
+  end
+
+  @impl true
   def handle_event("copy_ferientage", _params, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
@@ -398,7 +550,10 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
            put_flash(socket, :error, "Bitte wählen Sie mindestens eine Zielschule aus.")}
 
         true ->
-          {:noreply, assign(socket, copy_in_progress: true) |> copy_ferientage_to_schools()}
+          {:noreply,
+           socket
+           |> assign(copy_in_progress: true, show_copy_confirmation_modal: false)
+           |> copy_ferientage_to_schools()}
       end
     end
   end
@@ -417,7 +572,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
       "name_radius" ->
         name_pattern = params["name_pattern"] || ""
-        radius = parse_radius(params["radius"] || "50")
+        radius = parse_radius(params["radius"] || "10")
 
         if String.trim(name_pattern) == "" do
           []
@@ -468,7 +623,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           copy_in_progress: false,
           selected_schools: MapSet.new(),
           search_results: [],
-          copy_mode: false,
+          copy_mode: true,
           daily_changes: daily_changes,
           limit_reached: limit_reached
         )

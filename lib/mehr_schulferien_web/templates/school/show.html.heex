@@ -38,6 +38,44 @@
                 years_with_data={@years_with_data}
               />
             <% end %>
+            <!-- Bewegliche Ferientage from other schools with same zip code -->
+            <%= if @school_bewegliche_ferientage == [] && @other_schools_bewegliche_ferientage != [] do %>
+              <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div class="flex-1">
+                    <.text variant="small" class="text-blue-900 font-medium mb-1">
+                      Andere Schulen mit der gleichen Postleitzahl haben an folgenden Daten einen beweglichen Ferientag: <%= @other_schools_bewegliche_ferientage
+                      |> Enum.map(fn period ->
+                        formatted_date =
+                          MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                            period.starts_on
+                          )
+
+                        if period.memo do
+                          "#{formatted_date} (#{period.memo})"
+                        else
+                          formatted_date
+                        end
+                      end)
+                      |> Enum.join(", ") %>
+                    </.text>
+                  </div>
+                </div>
+              </div>
+            <% end %>
             <!-- Contribute Data Note - Subtle -->
             <div class="mt-6 flex items-center gap-2 text-xs text-gray-500">
               <svg
@@ -54,7 +92,6 @@
                 />
               </svg>
               <span>
-                Fehlen Ferientage?
                 <%= link to: "/wiki/schools/#{@school.slug}/ferientage",
                     class: "text-blue-600 hover:text-blue-800 font-medium ml-1" do %>
                   Bewegliche Ferientage hinzufügen

@@ -1,4 +1,8 @@
-<div class="max-w-4xl mx-auto py-6" id="ferientage-container" phx-hook="ScrollToTop">
+<div
+  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8"
+  id="ferientage-container"
+  phx-hook="ScrollToTop"
+>
   <!-- Flash messages -->
   <%= if Phoenix.Flash.get(@flash, :info) do %>
     <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -16,57 +20,97 @@
     </div>
   <% end %>
   <!-- Header with Navigation -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">
-      Schul-Wiki: <%= @school.name %>
-    </h1>
-    <p class="text-gray-600 mb-4">
-      Verwalten Sie die beweglichen Ferientage dieser Schule.
-    </p>
+  <div class="mb-6 sm:mb-8">
+    <div class="mb-4 sm:mb-6">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        Schul-Wiki: <span class="text-blue-600"><%= @school.name %></span>
+      </h1>
+      <p class="text-sm sm:text-base text-gray-600">
+        Verwalten Sie die beweglichen Ferientage dieser Schule.
+      </p>
+    </div>
     <!-- Navigation Tabs -->
-    <div class="border-b border-gray-200">
-      <nav class="-mb-px flex space-x-8">
+    <div class="border-b border-gray-200 -mx-4 sm:mx-0">
+      <nav class="-mb-px flex space-x-4 sm:space-x-8 px-4 sm:px-0">
         <%= link("Stammdaten",
           to: ~p"/wiki/schools/#{@school.slug}/edit",
           class:
-            "border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            "whitespace-nowrap border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
         ) %>
-        <span class="border-b-2 border-blue-500 py-2 px-1 text-sm font-medium text-blue-600">
+        <span class="whitespace-nowrap border-b-2 border-blue-500 py-3 px-1 text-sm font-medium text-blue-600">
           Bewegliche Ferientage
         </span>
       </nav>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
     <!-- Main Content - Bewegliche Ferientage -->
-    <div class="lg:col-span-2 space-y-6">
+    <div class="lg:col-span-2 space-y-4 sm:space-y-6">
       <!-- Info Section -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 class="text-sm font-medium text-blue-900 mb-1">Was sind bewegliche Ferientage?</h3>
-        <p class="text-sm text-blue-800">
-          Bewegliche Ferientage sind zusätzliche freie Tage, die Schulen eigenständig festlegen können.
-          Diese Tage werden oft für pädagogische Konferenzen, Brückentage oder andere schulische Zwecke genutzt.
-        </p>
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 sm:p-5 shadow-sm">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-semibold text-blue-900 mb-1">
+              Was sind bewegliche Ferientage?
+            </h3>
+            <p class="text-xs sm:text-sm text-blue-800 leading-relaxed">
+              Bewegliche Ferientage sind zusätzliche freie Tage, die Schulen eigenständig festlegen können.
+              Diese Tage werden oft für pädagogische Konferenzen, Brückentage oder andere schulische Zwecke genutzt.
+            </p>
+          </div>
+        </div>
       </div>
 
       <%= if @limit_reached do %>
-        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p class="text-red-800 text-sm">
-            <strong>Tageslimit erreicht:</strong>
-            Es können heute keine weiteren Änderungen vorgenommen werden.
-            Versuchen Sie es morgen erneut.
-          </p>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+          <div class="flex items-start">
+            <svg
+              class="h-5 w-5 text-red-400 mr-3 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <div>
+              <p class="text-red-800 text-sm">
+                <strong>Tageslimit erreicht:</strong>
+                Es können heute keine weiteren Änderungen vorgenommen werden.
+                Versuchen Sie es morgen erneut.
+              </p>
+            </div>
+          </div>
         </div>
       <% end %>
       <!-- Add New Ferientag Form -->
       <%= if not @limit_reached do %>
-        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <div class="bg-white shadow-sm border border-gray-200 rounded-xl p-4 sm:p-6">
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Neuen beweglichen Ferientag hinzufügen
           </h2>
           <!-- Form Mode Toggle -->
-          <div class="mb-6">
+          <div class="mb-4 sm:mb-6">
             <div class="flex rounded-lg border border-gray-200 bg-gray-50 p-1">
               <button
                 type="button"
@@ -74,8 +118,9 @@
                 class={
                   if @simple_form_mode,
                     do:
-                      "flex-1 px-4 py-2 text-sm font-medium text-gray-900 bg-white rounded-md shadow-sm",
-                    else: "flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+                      "flex-1 px-3 py-2 text-xs sm:text-sm font-medium text-gray-900 bg-white rounded-md shadow-sm transition-all",
+                    else:
+                      "flex-1 px-3 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-900 transition-all"
                 }
                 disabled={@simple_form_mode}
               >
@@ -87,12 +132,14 @@
                 class={
                   if not @simple_form_mode,
                     do:
-                      "flex-1 px-4 py-2 text-sm font-medium text-gray-900 bg-white rounded-md shadow-sm",
-                    else: "flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+                      "flex-1 px-3 py-2 text-xs sm:text-sm font-medium text-gray-900 bg-white rounded-md shadow-sm transition-all",
+                    else:
+                      "flex-1 px-3 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-900 transition-all"
                 }
                 disabled={not @simple_form_mode}
               >
-                Mehrere Tage (Power User)
+                <span class="inline sm:hidden">Mehrere Tage</span>
+                <span class="hidden sm:inline">Mehrere Tage (Power User)</span>
               </button>
             </div>
           </div>
@@ -110,7 +157,7 @@
                   name="ferientag[date]"
                   required
                   min={Date.utc_today() |> Date.to_iso8601()}
-                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2"
+                  class="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-sm px-3 py-2.5 transition-colors"
                   disabled={@limit_reached}
                 />
               </div>
@@ -128,7 +175,7 @@
                   name="ferientag[memo]"
                   placeholder="z.B. Pädagogischer Tag, Lehrerfortbildung, Brückentag"
                   maxlength="255"
-                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                  class="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-sm px-3 py-2.5 placeholder-gray-400 transition-colors"
                   disabled={@limit_reached}
                 />
                 <p class="mt-1 text-xs text-gray-500">
@@ -139,7 +186,7 @@
               <div class="flex justify-between items-center pt-2">
                 <button
                   type="submit"
-                  class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-sm transition-all hover:shadow-md"
                   disabled={@limit_reached}
                 >
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,7 +214,7 @@
                   name="ferientag[dates]"
                   required
                   placeholder="z.B. 16.02.2026 oder 16.-20.02.2026 oder 16.02.2026, 18.03.2026"
-                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                  class="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-sm px-3 py-2.5 placeholder-gray-400 transition-colors"
                   disabled={@limit_reached}
                 />
                 <div class="mt-2 text-xs text-gray-600 space-y-1">
@@ -197,7 +244,7 @@
                   name="ferientag[memo]"
                   placeholder="z.B. Pädagogischer Tag, Lehrerfortbildung, Brückentag"
                   maxlength="255"
-                  class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                  class="mt-1 block w-full rounded-lg border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-sm px-3 py-2.5 placeholder-gray-400 transition-colors"
                   disabled={@limit_reached}
                 />
                 <p class="mt-1 text-xs text-gray-500">
@@ -208,7 +255,7 @@
               <div class="pt-2">
                 <button
                   type="submit"
-                  class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-sm transition-all hover:shadow-md"
                   disabled={@limit_reached}
                 >
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,19 +273,116 @@
           <% end %>
         </div>
       <% end %>
+      <!-- Quick Copy from Other Schools -->
+      <%= if @bewegliche_ferientage == [] && @other_schools_ferientage != [] do %>
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4 sm:p-6 shadow-sm">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 flex items-start sm:items-center">
+            <svg
+              class="w-5 h-5 mr-2 text-blue-600 flex-shrink-0 mt-0.5 sm:mt-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span class="leading-tight">
+              Bewegliche Ferientage von anderen Schulen übernehmen
+            </span>
+          </h3>
+          <p class="text-xs sm:text-sm mb-4 text-gray-700">
+            Oft haben Schulen im selben Postleitzahlenbereich die gleichen beweglichen Ferientage.
+          </p>
+
+          <div class="space-y-2 mb-4">
+            <%= for period <- @other_schools_ferientage do %>
+              <label class="flex items-start p-3 bg-white rounded-lg border border-blue-100 hover:border-blue-300 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  phx-click="toggle_quick_copy_selection"
+                  phx-value-date={period.starts_on |> Date.to_iso8601()}
+                  phx-value-memo={period.memo || ""}
+                  checked={
+                    MapSet.member?(
+                      @quick_copy_ferientage,
+                      {period.starts_on |> Date.to_iso8601(), period.memo || ""}
+                    )
+                  }
+                  class="mt-1 mr-3 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <div class="flex-1">
+                  <div class="flex items-center">
+                    <span class="font-medium text-gray-900">
+                      <%= DateFormatter.format_date_full(period.starts_on) %>
+                    </span>
+                    <%= if Date.compare(period.starts_on, Date.utc_today()) == :lt do %>
+                      <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                        Vergangen
+                      </span>
+                    <% end %>
+                  </div>
+                  <%= if period.memo do %>
+                    <p class="text-sm text-gray-600 mt-0.5">
+                      <%= period.memo %>
+                    </p>
+                  <% end %>
+                  <p class="text-xs text-gray-500 mt-1">
+                    von: <%= period.school_name %>
+                  </p>
+                </div>
+              </label>
+            <% end %>
+          </div>
+
+          <%= if MapSet.size(@quick_copy_ferientage) > 0 do %>
+            <div class="flex items-center justify-between pt-4 border-t border-blue-200">
+              <span class="text-sm text-blue-800">
+                <%= MapSet.size(@quick_copy_ferientage) %> Ferientag<%= if MapSet.size(
+                                                                             @quick_copy_ferientage
+                                                                           ) != 1,
+                                                                           do: "e" %> ausgewählt
+              </span>
+              <button
+                type="button"
+                phx-click="quick_copy_ferientage"
+                class="inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm transition-all hover:shadow-md"
+              >
+                <svg
+                  class="w-4 h-4 mr-1.5 sm:mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+                Ausgewählte Ferientage übernehmen
+              </button>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
       <!-- List of Bewegliche Ferientage -->
-      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
-        <div class="p-6 border-b border-gray-200">
-          <h2 class="text-xl font-semibold text-gray-900">
+      <div class="bg-white shadow-sm border border-gray-200 rounded-xl overflow-hidden">
+        <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-900">
             Aktuelle bewegliche Ferientage
           </h2>
         </div>
 
-        <div class="p-6">
+        <div class="p-4 sm:p-6">
           <%= if @bewegliche_ferientage == [] do %>
-            <div class="text-center py-8">
+            <div class="text-center py-6 sm:py-8">
               <svg
-                class="mx-auto h-12 w-12 text-gray-400"
+                class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -250,23 +394,23 @@
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <p class="mt-2 text-gray-500">
+              <p class="mt-2 text-sm sm:text-base text-gray-500">
                 Für diese Schule sind noch keine beweglichen Ferientage eingetragen.
               </p>
               <%= if not @limit_reached do %>
-                <p class="mt-1 text-sm text-gray-400">
+                <p class="mt-1 text-xs sm:text-sm text-gray-400">
                   Fügen Sie oben die ersten Ferientage hinzu.
                 </p>
               <% end %>
             </div>
           <% else %>
-            <div class="space-y-3">
+            <div class="space-y-2 sm:space-y-3">
               <%= for ferientag <- @bewegliche_ferientage do %>
-                <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
                   <div class="flex-1">
-                    <div class="flex items-center">
+                    <div class="flex items-start sm:items-center">
                       <svg
-                        class="w-5 h-5 text-blue-500 mr-2"
+                        class="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5 sm:mt-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -279,20 +423,22 @@
                         >
                         </path>
                       </svg>
-                      <span class="font-semibold text-gray-900">
-                        <%= DateFormatter.format_date_full(ferientag.starts_on) %>
-                      </span>
-                      <%= if Date.compare(ferientag.starts_on, Date.utc_today()) == :lt do %>
-                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-                          Vergangen
+                      <div class="flex-1">
+                        <span class="font-semibold text-sm sm:text-base text-gray-900">
+                          <%= DateFormatter.format_date_full(ferientag.starts_on) %>
                         </span>
-                      <% end %>
+                        <%= if Date.compare(ferientag.starts_on, Date.utc_today()) == :lt do %>
+                          <span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                            Vergangen
+                          </span>
+                        <% end %>
+                        <%= if ferientag.memo do %>
+                          <p class="text-xs sm:text-sm text-gray-600 mt-0.5">
+                            <%= ferientag.memo %>
+                          </p>
+                        <% end %>
+                      </div>
                     </div>
-                    <%= if ferientag.memo do %>
-                      <p class="mt-1 text-sm text-gray-600 ml-7">
-                        <%= ferientag.memo %>
-                      </p>
-                    <% end %>
                   </div>
 
                   <%= if not @limit_reached do %>
@@ -300,7 +446,7 @@
                       phx-click="delete_beweglicher_ferientag"
                       phx-value-id={ferientag.id}
                       data-confirm="Möchten Sie diesen beweglichen Ferientag wirklich löschen?"
-                      class="ml-4 inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-red-300 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                      class="mt-2 sm:mt-0 sm:ml-4 inline-flex items-center px-2.5 sm:px-3 py-1.5 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-red-300 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors w-full sm:w-auto justify-center"
                     >
                       <svg
                         class="w-4 h-4 mr-1.5"
@@ -322,50 +468,16 @@
                 </div>
               <% end %>
             </div>
-            <!-- Copy Button at the end of the list -->
-            <%= if length(@bewegliche_ferientage) > 0 and not @limit_reached do %>
-              <div class="mt-6 pt-6 border-t border-gray-200">
-                <button
-                  type="button"
-                  phx-click="toggle_copy_mode"
-                  class={[
-                    "w-full inline-flex items-center justify-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                    if(@copy_mode,
-                      do: "bg-blue-600 text-white hover:bg-blue-700",
-                      else: "border border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
-                    )
-                  ]}
-                >
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Bewegliche Ferientage auf andere Schulen übertragen
-                  <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </button>
-              </div>
-            <% end %>
           <% end %>
         </div>
       </div>
       <!-- Copy Ferientage Section -->
-      <%= if @copy_mode and length(@bewegliche_ferientage) > 0 do %>
-        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+      <%= if length(@bewegliche_ferientage) > 0 and not @limit_reached do %>
+        <div class="bg-white shadow-sm border border-gray-200 rounded-xl p-4 sm:p-6">
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-start sm:items-center">
               <svg
-                class="w-5 h-5 mr-2 text-blue-600"
+                class="w-5 h-5 mr-2 text-blue-600 flex-shrink-0 mt-0.5 sm:mt-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -377,30 +489,32 @@
                   d="M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2m-6 0h8a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9a2 2 0 00-2 2v2"
                 />
               </svg>
-              Bewegliche Ferientage auf andere Schulen übertragen
+              <span class="leading-tight">
+                Bewegliche Ferientage auf andere Schulen übertragen
+              </span>
             </h3>
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-xs sm:text-sm text-gray-600">
               Kopieren Sie ausgewählte bewegliche Ferientage dieser Schule auf andere Schulen in der Umgebung.
             </p>
           </div>
           <!-- Ferientage Selection -->
-          <div class="mb-6">
-            <div class="flex items-center justify-between mb-3">
-              <h4 class="text-sm font-medium text-gray-900">
+          <div class="mb-4 sm:mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
+              <h4 class="text-xs sm:text-sm font-medium text-gray-900">
                 1. Wählen Sie die zu kopierenden Ferientage
               </h4>
-              <div class="space-x-2">
+              <div class="flex space-x-2">
                 <button
                   type="button"
                   phx-click="select_all_ferientage"
-                  class="text-xs text-blue-600 hover:text-blue-800"
+                  class="text-xs text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   Alle auswählen
                 </button>
                 <button
                   type="button"
                   phx-click="deselect_all_ferientage"
-                  class="text-xs text-blue-600 hover:text-blue-800"
+                  class="text-xs text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   Keine auswählen
                 </button>
@@ -441,12 +555,12 @@
             <% end %>
           </div>
           <!-- Search Form -->
-          <h4 class="text-sm font-medium text-gray-900 mb-3">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-900 mb-3">
             2. Zielschulen suchen
           </h4>
-          <form phx-submit="search_schools" class="space-y-4 mb-6">
+          <form phx-change="update_search_params" class="space-y-4 mb-4 sm:mb-6">
             <div>
-              <label class="text-sm font-medium text-gray-700">Suchkriterium</label>
+              <label class="text-xs sm:text-sm font-medium text-gray-700">Suchkriterium</label>
               <div class="mt-2 space-y-2">
                 <label class="flex items-center">
                   <input
@@ -456,10 +570,10 @@
                     checked={@search_params["search_type"] == "zip_code"}
                     class="mr-2"
                   />
-                  <span class="text-sm">
+                  <span class="text-xs sm:text-sm">
                     Gleiche Postleitzahl
                     <%= if @school.address && @school.address.zip_code do %>
-                      (<%= @school.address.zip_code %>)
+                      <span class="text-gray-500">(<%= @school.address.zip_code %>)</span>
                     <% end %>
                   </span>
                 </label>
@@ -471,7 +585,7 @@
                     checked={@search_params["search_type"] == "same_city"}
                     class="mr-2"
                   />
-                  <span class="text-sm">Gleiche Stadt</span>
+                  <span class="text-xs sm:text-sm">Gleiche Stadt</span>
                 </label>
                 <label class="flex items-center">
                   <input
@@ -481,7 +595,7 @@
                     checked={@search_params["search_type"] == "radius"}
                     class="mr-2"
                   />
-                  <span class="text-sm">
+                  <span class="text-xs sm:text-sm">
                     Im Umkreis von
                     <input
                       type="number"
@@ -490,7 +604,7 @@
                       min="1"
                       max="50"
                       step="1"
-                      class="mx-1 w-16 px-2 py-1 text-sm border border-gray-300 rounded"
+                      class="mx-1 w-14 sm:w-16 px-1.5 sm:px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded"
                     /> km
                   </span>
                 </label>
@@ -502,65 +616,53 @@
                     checked={@search_params["search_type"] == "name_radius"}
                     class="mr-2 mt-1"
                   />
-                  <div class="text-sm">
-                    Nach Name im 50km Umkreis:
+                  <div class="text-xs sm:text-sm">
+                    Nach Name im
+                    <span class="font-medium"><%= @search_params["radius"] %>km</span>
+                    Umkreis:
                     <input
                       type="text"
                       name="search[name_pattern]"
                       value={@search_params["name_pattern"]}
                       placeholder="z.B. Gymnasium"
-                      class="mt-1 block w-full px-3 py-1 text-sm border border-gray-300 rounded"
+                      class="mt-1 block w-full px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md"
                     />
                   </div>
                 </label>
               </div>
             </div>
-
-            <button
-              type="submit"
-              class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              Schulen suchen
-            </button>
           </form>
           <!-- Search Results -->
           <%= if length(@search_results) > 0 do %>
             <div class="border-t border-gray-200 pt-4">
-              <h4 class="text-sm font-medium text-gray-900 mb-3">
+              <h4 class="text-xs sm:text-sm font-medium text-gray-900 mb-3">
                 3. Zielschulen auswählen
               </h4>
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-sm text-gray-600">
-                  <%= length(@search_results) %> Schule<%= if length(@search_results) != 1,
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
+                <span class="text-xs sm:text-sm text-gray-600">
+                  <span class="font-semibold"><%= length(@search_results) %></span>
+                  Schule<%= if length(@search_results) != 1,
                     do: "n" %> gefunden
                 </span>
-                <div class="space-x-2">
+                <div class="flex space-x-2">
                   <button
                     type="button"
                     phx-click="select_all_schools"
-                    class="text-sm text-blue-600 hover:text-blue-800"
+                    class="text-xs text-blue-600 hover:text-blue-800 transition-colors"
                   >
                     Alle auswählen
                   </button>
                   <button
                     type="button"
                     phx-click="deselect_all_schools"
-                    class="text-sm text-blue-600 hover:text-blue-800"
+                    class="text-xs text-blue-600 hover:text-blue-800 transition-colors"
                   >
                     Keine auswählen
                   </button>
                 </div>
               </div>
 
-              <div class="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded p-2">
+              <div class="space-y-1.5 sm:space-y-2 max-h-48 sm:max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-2">
                 <%= for school <- @search_results do %>
                   <label class={[
                     "flex items-start p-2 rounded",
@@ -582,7 +684,7 @@
                     />
                     <div class="flex-1">
                       <div class={[
-                        "text-sm font-medium",
+                        "text-xs sm:text-sm font-medium",
                         if(Map.get(school, :has_all_selected_dates, false),
                           do: "text-gray-500",
                           else: "text-gray-900"
@@ -594,7 +696,10 @@
                         <div class="text-xs text-gray-500">
                           <%= school.address.zip_code %> <%= school.address.city %>
                           <%= if Map.get(school, :distance_km) do %>
-                            • <%= Float.round(school.distance_km, 1) %> km
+                            <span class="text-gray-400">•</span> <%= Float.round(
+                              school.distance_km,
+                              1
+                            ) %> km
                           <% end %>
                         </div>
                       <% end %>
@@ -627,95 +732,120 @@
                 <% end %>
               </div>
 
-              <%= if MapSet.size(@selected_schools) > 0 do %>
-                <div class="mt-4 flex items-center justify-between">
-                  <span class="text-sm text-gray-600">
-                    <%= MapSet.size(@selected_schools) %> Schule(n) ausgewählt
-                  </span>
-                  <button
-                    type="button"
-                    phx-click="copy_ferientage"
-                    disabled={@copy_in_progress}
-                    class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    <%= if @copy_in_progress do %>
-                      <svg
-                        class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          class="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          stroke-width="4"
-                        >
-                        </circle>
-                        <path
-                          class="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        >
-                        </path>
-                      </svg>
-                      Kopiere...
-                    <% else %>
-                      <svg
-                        class="w-4 h-4 mr-2"
-                        fill="none"
+              <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pt-4 border-t border-gray-200">
+                <span class="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
+                  <span class="font-semibold"><%= MapSet.size(@selected_schools) %></span>
+                  Schule<%= if MapSet.size(@selected_schools) != 1, do: "n" %> ausgewählt
+                </span>
+                <button
+                  type="button"
+                  phx-click="show_copy_confirmation"
+                  disabled={@copy_in_progress || MapSet.size(@selected_schools) == 0}
+                  class={[
+                    "inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all w-full sm:w-auto",
+                    if(MapSet.size(@selected_schools) == 0,
+                      do: "bg-gray-300 text-gray-500 cursor-not-allowed",
+                      else:
+                        "bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                    )
+                  ]}
+                >
+                  <%= if @copy_in_progress do %>
+                    <svg
+                      class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
                         stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        stroke-width="4"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                        />
-                      </svg>
-                      Ferientage kopieren
-                    <% end %>
-                  </button>
-                </div>
-              <% end %>
+                      </circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      >
+                      </path>
+                    </svg>
+                    Kopiere...
+                  <% else %>
+                    <svg
+                      class="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                      />
+                    </svg>
+                    Ferientage kopieren
+                  <% end %>
+                </button>
+              </div>
             </div>
           <% end %>
         </div>
       <% end %>
     </div>
     <!-- Sidebar -->
-    <div class="space-y-6">
-      <!-- Daily Limit Info -->
-      <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
-        daily_changes: @daily_changes
-      ) %>
-      <!-- Statistics -->
-      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-4">
-        <h3 class="text-sm font-medium text-gray-900 mb-2">Statistik</h3>
-        <dl class="space-y-2 text-sm">
-          <div class="flex justify-between">
-            <dt class="text-gray-600">Ferientage gesamt:</dt>
-            <dd class="font-medium text-gray-900"><%= length(@bewegliche_ferientage) %></dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-gray-600">Zukünftige Tage:</dt>
-            <dd class="font-medium text-gray-900">
-              <%= Enum.count(@bewegliche_ferientage, fn ft ->
-                Date.compare(ft.starts_on, Date.utc_today()) != :lt
-              end) %>
-            </dd>
-          </div>
-        </dl>
+    <div class="lg:col-span-1">
+      <div class="space-y-4 sm:space-y-6">
+        <!-- Daily Limit Info -->
+        <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
+          daily_changes: @daily_changes
+        ) %>
+        <!-- Statistics -->
+        <div class="bg-white shadow-sm border border-gray-200 rounded-xl p-4">
+          <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+            <svg
+              class="w-4 h-4 mr-2 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
+            </svg>
+            Statistik
+          </h3>
+          <dl class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <dt class="text-gray-600">Ferientage gesamt:</dt>
+              <dd class="font-semibold text-gray-900 bg-gray-100 px-2 py-1 rounded">
+                <%= length(@bewegliche_ferientage) %>
+              </dd>
+            </div>
+            <div class="flex justify-between items-center">
+              <dt class="text-gray-600">Zukünftige Tage:</dt>
+              <dd class="font-semibold text-gray-900 bg-green-100 px-2 py-1 rounded text-green-800">
+                <%= Enum.count(@bewegliche_ferientage, fn ft ->
+                  Date.compare(ft.starts_on, Date.utc_today()) != :lt
+                end) %>
+              </dd>
+            </div>
+          </dl>
+        </div>
       </div>
     </div>
   </div>
   <!-- Back to School Link -->
-  <div class="mt-8 text-center">
+  <div class="mt-6 sm:mt-8 text-center border-t border-gray-200 pt-6 sm:pt-8">
     <a
       href={~p"/ferien/d/schule/#{@school.slug}"}
-      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      class="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover:shadow-md"
     >
       <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -728,4 +858,178 @@
       Zurück zur Schulseite
     </a>
   </div>
+  <!-- Copy Confirmation Modal -->
+  <%= if @show_copy_confirmation_modal do %>
+    <div
+      class="fixed inset-0 z-50 overflow-y-auto"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="flex items-end justify-center min-h-screen pt-4 px-2 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div
+          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          phx-click="close_copy_confirmation"
+          aria-hidden="true"
+        >
+        </div>
+        <!-- Modal panel -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+          &#8203;
+        </span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full max-w-lg mx-auto sm:my-8 sm:align-middle">
+          <div class="bg-white px-3 pt-4 pb-3 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                <svg
+                  class="h-5 w-5 text-blue-600 sm:h-6 sm:w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2m-6 0h8a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9a2 2 0 00-2 2v2"
+                  />
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                <h3
+                  class="text-base sm:text-lg leading-6 font-medium text-gray-900"
+                  id="modal-title"
+                >
+                  Bewegliche Ferientage kopieren
+                </h3>
+                <div class="mt-2">
+                  <p class="text-xs sm:text-sm text-gray-500">
+                    Sie sind dabei, bewegliche Ferientage zu kopieren. Bitte überprüfen Sie die Details:
+                  </p>
+
+                  <div class="mt-3 space-y-2 sm:mt-4 sm:space-y-3">
+                    <!-- Selected Ferientage -->
+                    <div class="bg-gray-50 p-2 sm:p-3 rounded-lg">
+                      <h4 class="text-xs sm:text-sm font-medium text-gray-900 mb-1 sm:mb-2">
+                        Ausgewählte Ferientage (<%= MapSet.size(@selected_ferientage) %>):
+                      </h4>
+                      <ul class="text-xs sm:text-sm text-gray-600 space-y-0.5 sm:space-y-1">
+                        <%= for ferientag <- @bewegliche_ferientage |> Enum.filter(& MapSet.member?(@selected_ferientage, &1.id)) |> Enum.take(3) do %>
+                          <li class="flex items-start">
+                            <svg
+                              class="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 mt-0.5 text-blue-500 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <span class="break-words">
+                              <%= DateFormatter.format_date_full(ferientag.starts_on) %>
+                              <%= if ferientag.memo do %>
+                                <span class="text-gray-500 block sm:inline sm:ml-1">
+                                  - <%= ferientag.memo %>
+                                </span>
+                              <% end %>
+                            </span>
+                          </li>
+                        <% end %>
+                        <%= if MapSet.size(@selected_ferientage) > 3 do %>
+                          <li class="text-gray-400 italic text-xs">
+                            und <%= MapSet.size(@selected_ferientage) - 3 %> weitere...
+                          </li>
+                        <% end %>
+                      </ul>
+                    </div>
+                    <!-- Target Schools -->
+                    <div class="bg-gray-50 p-2 sm:p-3 rounded-lg">
+                      <h4 class="text-xs sm:text-sm font-medium text-gray-900 mb-1 sm:mb-2">
+                        Zielschulen (<%= MapSet.size(@selected_schools) %>):
+                      </h4>
+                      <ul class="text-xs sm:text-sm text-gray-600 space-y-0.5 sm:space-y-1">
+                        <%= for school <- @search_results |> Enum.filter(& MapSet.member?(@selected_schools, &1.id)) |> Enum.take(3) do %>
+                          <li class="flex items-start">
+                            <svg
+                              class="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 mt-0.5 text-green-500 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                              />
+                            </svg>
+                            <div class="min-w-0">
+                              <div class="truncate"><%= school.name %></div>
+                              <%= if school.address do %>
+                                <span class="text-xs text-gray-500 block">
+                                  <%= school.address.zip_code %> <%= school.address.city %>
+                                </span>
+                              <% end %>
+                            </div>
+                          </li>
+                        <% end %>
+                        <%= if MapSet.size(@selected_schools) > 3 do %>
+                          <li class="text-gray-400 italic text-xs">
+                            und <%= MapSet.size(@selected_schools) - 3 %> weitere...
+                          </li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="mt-3 sm:mt-4 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div class="flex">
+                      <svg
+                        class="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                      <p class="ml-2 sm:ml-3 text-xs sm:text-sm text-yellow-700">
+                        <strong>Hinweis:</strong>
+                        Bereits vorhandene bewegliche Ferientage werden übersprungen.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-3 py-2 sm:px-6 sm:py-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+            <button
+              type="button"
+              phx-click="close_copy_confirmation"
+              class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-3 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto"
+            >
+              Abbrechen
+            </button>
+            <button
+              type="button"
+              phx-click="copy_ferientage"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-3 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:w-auto"
+            >
+              Ferientage kopieren
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

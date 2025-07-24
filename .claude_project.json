@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "file_access": {
+      "project": {
+        "read": true,
+        "write": true,
+        "pattern": "**/*"
+      },
+      "system": {
+        "read": true,
+        "write": false,
+        "pattern": "/**/*"
+      }
+    }
+  },
+  "project_info": {
+    "name": "mehr-schulferien.de",
+    "description": "Phoenix/Elixir web application for German school vacations and holidays",
+    "type": "phoenix_elixir"
+  }
+}

@@ -80,6 +80,39 @@ defmodule MehrSchulferienWeb.SchoolController do
     # Get nearby schools
     nearby_schools = Locations.list_nearby_schools(school, 3000)
 
+    # Get bewegliche Ferientage from this school and other schools with same zip code
+    school_bewegliche_ferientage =
+      MehrSchulferien.Periods.list_bewegliche_ferientage_for_school_in_range(
+        school.id,
+        full_start,
+        full_end
+      )
+
+    # Get other schools with same zip code and their bewegliche ferientage
+    other_schools_bewegliche_ferientage =
+      if school.address && school.address.zip_code do
+        # Get all schools with the same zip code (excluding current school)
+        schools_same_zip = Locations.find_schools_by_same_zip_code(school)
+
+        # Get bewegliche ferientage for each school and collect unique dates
+        schools_same_zip
+        |> Enum.flat_map(fn other_school ->
+          MehrSchulferien.Periods.list_bewegliche_ferientage_for_school_in_range(
+            other_school.id,
+            full_start,
+            full_end
+          )
+        end)
+        |> Enum.uniq_by(& &1.starts_on)
+        |> Enum.reject(fn period ->
+          # Exclude dates that the current school already has
+          Enum.any?(school_bewegliche_ferientage, &(&1.starts_on == period.starts_on))
+        end)
+        |> Enum.sort_by(& &1.starts_on)
+      else
+        []
+      end
+
     # Get FAQ data
     faq_data = CH.list_faq_data(location_ids, today)
 
@@ -105,7 +138,9 @@ defmodule MehrSchulferienWeb.SchoolController do
         today: today,
         has_data: has_data,
         nearby_schools: nearby_schools,
-        is_apple_device: is_apple_device
+        is_apple_device: is_apple_device,
+        school_bewegliche_ferientage: school_bewegliche_ferientage,
+        other_schools_bewegliche_ferientage: other_schools_bewegliche_ferientage
       }
       |> Map.merge(Map.new(faq_data))
     )
