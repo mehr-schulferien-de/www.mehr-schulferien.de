@@ -201,15 +201,6 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
   defp generate_doodles do
     # Add some simple doodles for authenticity
     doodles = [
-      # Star in top right
-      "<path d=\"M 340 50 L 343 57 L 350 57 L 344 62 L 347 69 L 340 64 L 333 69 L 336 62 L 330 57 L 337 57 Z\" fill=\"#FCD34D\" stroke=\"#F59E0B\" stroke-width=\"1\" transform=\"rotate(15 340 60)\"/>",
-
-      # Smiley face in bottom left
-      "<circle cx=\"75\" cy=\"280\" r=\"10\" fill=\"none\" stroke=\"#4B5563\" stroke-width=\"1.5\"/>",
-      "<circle cx=\"71\" cy=\"276\" r=\"1.5\" fill=\"#4B5563\"/>",
-      "<circle cx=\"79\" cy=\"276\" r=\"1.5\" fill=\"#4B5563\"/>",
-      "<path d=\"M 69 284 Q 75 287 81 284\" stroke=\"#4B5563\" stroke-width=\"1.5\" fill=\"none\"/>",
-
       # Small hearts
       "<path d=\"M 330 240 C 330 237, 327 234, 324 234 C 321 234, 318 237, 318 240 C 318 237, 315 234, 312 234 C 309 234, 306 237, 306 240 Q 306 248, 318 256 Q 330 248, 330 240 Z\" fill=\"#EF4444\" opacity=\"0.6\"/>"
     ]

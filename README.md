@@ -34,6 +34,18 @@ sudo tlmgr install pst-barcode
 # Install TeX Live and required packages
 sudo apt-get install texlive-latex-base texlive-latex-extra texlive-latex-recommended
 sudo apt-get install texlive-pstricks
+
+# Install ImageMagick for image processing (used by Mogrify)
+sudo apt-get install imagemagick
+
+# Install system dependencies for Resvg (SVG rendering)
+sudo apt-get install libfontconfig1-dev
+
+# Install WebP tools for WebP format support
+sudo apt-get install webp
+
+# Install Comic Neue font (used in image generation)
+sudo apt-get install fonts-comic-neue
 ```
 
 #### Windows
