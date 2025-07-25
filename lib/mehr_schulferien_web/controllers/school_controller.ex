@@ -113,6 +113,18 @@ defmodule MehrSchulferienWeb.SchoolController do
         []
       end
 
+    # Get federal state limit information
+    current_school_year_string = MehrSchulferien.Periods.get_school_year_for_date(today)
+
+    ferientage_limit =
+      MehrSchulferien.Periods.get_federal_state_ferientage_limit(
+        federal_state.id,
+        current_school_year_string
+      )
+
+    allows_bewegliche_ferientage =
+      ferientage_limit && ferientage_limit.max_bewegliche_ferientage > 0
+
     # Get FAQ data
     faq_data = CH.list_faq_data(location_ids, today)
 
@@ -140,7 +152,10 @@ defmodule MehrSchulferienWeb.SchoolController do
         nearby_schools: nearby_schools,
         is_apple_device: is_apple_device,
         school_bewegliche_ferientage: school_bewegliche_ferientage,
-        other_schools_bewegliche_ferientage: other_schools_bewegliche_ferientage
+        other_schools_bewegliche_ferientage: other_schools_bewegliche_ferientage,
+        allows_bewegliche_ferientage: allows_bewegliche_ferientage,
+        ferientage_limit: ferientage_limit,
+        current_school_year_string: current_school_year_string
       }
       |> Map.merge(Map.new(faq_data))
     )

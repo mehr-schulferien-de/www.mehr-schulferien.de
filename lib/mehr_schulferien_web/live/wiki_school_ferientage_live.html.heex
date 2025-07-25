@@ -43,8 +43,158 @@
       </nav>
     </div>
   </div>
+  <!-- Check if federal state allows bewegliche Ferientage at all -->
+  <%= if length(@school_years_data) == 0 do %>
+    <div class="max-w-3xl mx-auto">
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <h2 class="text-lg font-medium text-gray-900 mb-2">
+          Keine beweglichen Ferientage verfügbar
+        </h2>
+        <p class="text-gray-600">
+          <%= if @federal_state do %>
+            Im Bundesland <%= @federal_state.name %> sind keine beweglichen Ferientage vorgesehen.
+          <% else %>
+            Für diese Schule sind keine beweglichen Ferientage verfügbar.
+          <% end %>
+        </p>
+        <div class="mt-6">
+          <a
+            href={~p"/ferien/d/schule/#{@school.slug}"}
+            class="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover:shadow-md"
+          >
+            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Zurück zur Schulseite
+          </a>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <!-- Normal content when bewegliche Ferientage are allowed -->
+    <!-- School Year Selector -->
+    <div class="mb-6">
+      <div class="flex flex-col gap-4">
+        <!-- Year Navigation -->
+        <div class="flex justify-center">
+          <div class="inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm">
+            <!-- Previous Year Button -->
+            <button
+              type="button"
+              phx-click="navigate_year"
+              phx-value-direction="prev"
+              disabled={Enum.at(@school_years_data, 0).school_year == @selected_school_year}
+              class={[
+                "px-2 sm:px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-l-lg transition-colors border-r border-gray-300",
+                if(Enum.at(@school_years_data, 0).school_year == @selected_school_year,
+                  do: "opacity-50 cursor-not-allowed",
+                  else: ""
+                )
+              ]}
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <!-- Year Buttons -->
+            <%= for {year_data, index} <- Enum.with_index(@school_years_data) do %>
+              <% [start_year, end_year] = String.split(year_data.school_year, "/") %>
+              <button
+                type="button"
+                phx-click="select_school_year"
+                phx-value-school_year={year_data.school_year}
+                class={[
+                  "px-3 sm:px-6 py-2 font-medium transition-colors whitespace-nowrap",
+                  if(index > 0, do: "border-l border-gray-300", else: ""),
+                  if(year_data.school_year == @selected_school_year,
+                    do: "bg-blue-600 text-white",
+                    else: "text-gray-700 hover:bg-gray-50"
+                  )
+                ]}
+              >
+                <span class="sm:hidden">
+                  <%= String.slice(start_year, -2..-1) %>/<%= String.slice(end_year, -2..-1) %>
+                </span>
+                <span class="hidden sm:inline"><%= year_data.school_year %></span>
+              </button>
+            <% end %>
+            <!-- Next Year Button -->
+            <button
+              type="button"
+              phx-click="navigate_year"
+              phx-value-direction="next"
+              disabled={List.last(@school_years_data).school_year == @selected_school_year}
+              class={[
+                "px-2 sm:px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-r-lg transition-colors border-l border-gray-300",
+                if(List.last(@school_years_data).school_year == @selected_school_year,
+                  do: "opacity-50 cursor-not-allowed",
+                  else: ""
+                )
+              ]}
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Status Display -->
+        <div class="text-center">
+          <p class="text-sm text-gray-600">
+            <%= if @ferientage_limit do %>
+              <%= if @ferientage_limit.max_bewegliche_ferientage == 0 do %>
+                <span class="text-red-600 font-medium">
+                  Keine beweglichen Ferientage im Schuljahr <%= @selected_school_year %>
+                </span>
+              <% else %>
+                <span>
+                  <strong class="text-gray-900"><%= @current_ferientage_count %></strong>
+                  <span class="text-gray-500">von</span>
+                  <strong class="text-gray-900">
+                    <%= @ferientage_limit.max_bewegliche_ferientage %>
+                  </strong>
+                  <span class="text-gray-500">beweglichen Ferientagen angelegt</span>
+                </span>
+              <% end %>
+            <% else %>
+              <span class="text-gray-500 italic">
+                Keine Limite-Information für Schuljahr <%= @selected_school_year %> verfügbar
+              </span>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
     <!-- Main Content - Bewegliche Ferientage -->
     <div class="lg:col-span-2 space-y-4 sm:space-y-6">
       <!-- Info Section -->
@@ -76,6 +226,64 @@
           </div>
         </div>
       </div>
+      <!-- Federal State Limit Info - Only for selected year -->
+      <%= if @federal_state && @ferientage_limit do %>
+        <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 sm:p-5 shadow-sm">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg
+                class="h-5 w-5 sm:h-6 sm:w-6 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                />
+              </svg>
+            </div>
+            <div class="ml-3 flex-1">
+              <h3 class="text-sm font-semibold text-purple-900 mb-2">
+                Bewegliche Ferientage in <%= @federal_state.name %> - Schuljahr <%= @selected_school_year %>
+              </h3>
+              <%= if @ferientage_limit.max_bewegliche_ferientage == 0 do %>
+                <p class="text-sm text-gray-600">Keine beweglichen Ferientage vorgesehen</p>
+              <% else %>
+                <div class="grid grid-cols-3 gap-4">
+                  <div>
+                    <p class="text-xs text-gray-600">Maximum</p>
+                    <p class="text-lg font-bold text-purple-900">
+                      <%= @ferientage_limit.max_bewegliche_ferientage %>
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-600">Angelegt</p>
+                    <p class="text-lg font-bold text-purple-900">
+                      <%= @current_ferientage_count %>
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-600">Verfügbar</p>
+                    <p class={[
+                      "text-lg font-bold",
+                      cond do
+                        @remaining_ferientage == 0 -> "text-red-700"
+                        @remaining_ferientage && @remaining_ferientage > 0 -> "text-green-700"
+                        true -> "text-purple-900"
+                      end
+                    ]}>
+                      <%= @remaining_ferientage || 0 %>
+                    </p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
 
       <%= if @limit_reached do %>
         <div class="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
@@ -181,6 +389,24 @@
                 <p class="mt-1 text-xs text-gray-500">
                   Eine kurze Beschreibung hilft Eltern und Schülern, den Grund für den freien Tag zu verstehen.
                 </p>
+                <%= if @ferientage_limit && @ferientage_limit.max_bewegliche_ferientage > 0 && @remaining_ferientage && @remaining_ferientage <= 0 do %>
+                  <p class="mt-2 text-xs text-red-600 font-medium">
+                    <svg
+                      class="inline w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    Limit für dieses Schuljahr erreicht!
+                  </p>
+                <% end %>
               </div>
 
               <div class="flex justify-between items-center pt-2">
@@ -250,6 +476,24 @@
                 <p class="mt-1 text-xs text-gray-500">
                   Eine kurze Beschreibung hilft Eltern und Schülern, den Grund für den freien Tag zu verstehen.
                 </p>
+                <%= if @ferientage_limit && @ferientage_limit.max_bewegliche_ferientage > 0 && @remaining_ferientage && @remaining_ferientage <= 0 do %>
+                  <p class="mt-2 text-xs text-red-600 font-medium">
+                    <svg
+                      class="inline w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    Limit für dieses Schuljahr erreicht!
+                  </p>
+                <% end %>
               </div>
 
               <div class="pt-2">
@@ -371,108 +615,110 @@
         </div>
       <% end %>
       <!-- List of Bewegliche Ferientage -->
-      <div class="bg-white shadow-sm border border-gray-200 rounded-xl overflow-hidden">
-        <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
-          <h2 class="text-lg sm:text-xl font-semibold text-gray-900">
-            Aktuelle bewegliche Ferientage
-          </h2>
-        </div>
+      <%= if @ferientage_limit && @ferientage_limit.max_bewegliche_ferientage > 0 do %>
+        <div class="bg-white shadow-sm border border-gray-200 rounded-xl overflow-hidden">
+          <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-900">
+              Bewegliche Ferientage - Schuljahr <%= @selected_school_year %>
+            </h2>
+          </div>
 
-        <div class="p-4 sm:p-6">
-          <%= if @bewegliche_ferientage == [] do %>
-            <div class="text-center py-6 sm:py-8">
-              <svg
-                class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <p class="mt-2 text-sm sm:text-base text-gray-500">
-                Für diese Schule sind noch keine beweglichen Ferientage eingetragen.
-              </p>
-              <%= if not @limit_reached do %>
-                <p class="mt-1 text-xs sm:text-sm text-gray-400">
-                  Fügen Sie oben die ersten Ferientage hinzu.
+          <div class="p-4 sm:p-6">
+            <%= if @filtered_ferientage == [] do %>
+              <div class="text-center py-6 sm:py-8">
+                <svg
+                  class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <p class="mt-2 text-sm sm:text-base text-gray-500">
+                  Für diese Schule sind noch keine beweglichen Ferientage eingetragen.
                 </p>
-              <% end %>
-            </div>
-          <% else %>
-            <div class="space-y-2 sm:space-y-3">
-              <%= for ferientag <- @bewegliche_ferientage do %>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
-                  <div class="flex-1">
-                    <div class="flex items-start sm:items-center">
-                      <svg
-                        class="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5 sm:mt-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                <%= if not @limit_reached do %>
+                  <p class="mt-1 text-xs sm:text-sm text-gray-400">
+                    Fügen Sie oben die ersten Ferientage hinzu.
+                  </p>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="space-y-2 sm:space-y-3">
+                <%= for ferientag <- @filtered_ferientage do %>
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                    <div class="flex-1">
+                      <div class="flex items-start sm:items-center">
+                        <svg
+                          class="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5 sm:mt-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                        </path>
-                      </svg>
-                      <div class="flex-1">
-                        <span class="font-semibold text-sm sm:text-base text-gray-900">
-                          <%= DateFormatter.format_date_full(ferientag.starts_on) %>
-                        </span>
-                        <%= if Date.compare(ferientag.starts_on, Date.utc_today()) == :lt do %>
-                          <span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-                            Vergangen
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          >
+                          </path>
+                        </svg>
+                        <div class="flex-1">
+                          <span class="font-semibold text-sm sm:text-base text-gray-900">
+                            <%= DateFormatter.format_date_full(ferientag.starts_on) %>
                           </span>
-                        <% end %>
-                        <%= if ferientag.memo do %>
-                          <p class="text-xs sm:text-sm text-gray-600 mt-0.5">
-                            <%= ferientag.memo %>
-                          </p>
-                        <% end %>
+                          <%= if Date.compare(ferientag.starts_on, Date.utc_today()) == :lt do %>
+                            <span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                              Vergangen
+                            </span>
+                          <% end %>
+                          <%= if ferientag.memo do %>
+                            <p class="text-xs sm:text-sm text-gray-600 mt-0.5">
+                              <%= ferientag.memo %>
+                            </p>
+                          <% end %>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <%= if not @limit_reached do %>
-                    <button
-                      phx-click="delete_beweglicher_ferientag"
-                      phx-value-id={ferientag.id}
-                      data-confirm="Möchten Sie diesen beweglichen Ferientag wirklich löschen?"
-                      class="mt-2 sm:mt-0 sm:ml-4 inline-flex items-center px-2.5 sm:px-3 py-1.5 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-red-300 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors w-full sm:w-auto justify-center"
-                    >
-                      <svg
-                        class="w-4 h-4 mr-1.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <%= if not @limit_reached do %>
+                      <button
+                        phx-click="delete_beweglicher_ferientag"
+                        phx-value-id={ferientag.id}
+                        data-confirm="Möchten Sie diesen beweglichen Ferientag wirklich löschen?"
+                        class="mt-2 sm:mt-0 sm:ml-4 inline-flex items-center px-2.5 sm:px-3 py-1.5 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-red-300 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors w-full sm:w-auto justify-center"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        <svg
+                          class="w-4 h-4 mr-1.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                        </path>
-                      </svg>
-                      Löschen
-                    </button>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          >
+                          </path>
+                        </svg>
+                        Löschen
+                      </button>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
         </div>
-      </div>
+      <% end %>
       <!-- Copy Ferientage Section -->
-      <%= if length(@bewegliche_ferientage) > 0 and not @limit_reached do %>
+      <%= if length(@filtered_ferientage) > 0 and not @limit_reached do %>
         <div class="bg-white shadow-sm border border-gray-200 rounded-xl p-4 sm:p-6">
           <div class="mb-4">
             <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-start sm:items-center">
@@ -522,7 +768,7 @@
             </div>
 
             <div class="space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <%= for ferientag <- @bewegliche_ferientage do %>
+              <%= for ferientag <- @filtered_ferientage do %>
                 <label class="flex items-start p-2 hover:bg-white rounded cursor-pointer">
                   <input
                     type="checkbox"
@@ -823,15 +1069,15 @@
           </h3>
           <dl class="space-y-3 text-sm">
             <div class="flex justify-between items-center">
-              <dt class="text-gray-600">Ferientage gesamt:</dt>
+              <dt class="text-gray-600">Schuljahr <%= @selected_school_year %>:</dt>
               <dd class="font-semibold text-gray-900 bg-gray-100 px-2 py-1 rounded">
-                <%= length(@bewegliche_ferientage) %>
+                <%= length(@filtered_ferientage) %>
               </dd>
             </div>
             <div class="flex justify-between items-center">
-              <dt class="text-gray-600">Zukünftige Tage:</dt>
+              <dt class="text-gray-600">Davon zukünftig:</dt>
               <dd class="font-semibold text-gray-900 bg-green-100 px-2 py-1 rounded text-green-800">
-                <%= Enum.count(@bewegliche_ferientage, fn ft ->
+                <%= Enum.count(@filtered_ferientage, fn ft ->
                   Date.compare(ft.starts_on, Date.utc_today()) != :lt
                 end) %>
               </dd>
@@ -1067,5 +1313,6 @@
         </div>
       </div>
     </div>
+  <% end %>
   <% end %>
 </div>

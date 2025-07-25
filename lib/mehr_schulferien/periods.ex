@@ -385,30 +385,38 @@ defmodule MehrSchulferien.Periods do
         if existing do
           {:error, "Ein beweglicher Ferientag existiert bereits für dieses Datum"}
         else
-          attrs = %{
-            "location_id" => school_id,
-            "holiday_or_vacation_type_id" => beweglicher_type.id,
-            "starts_on" => date,
-            "ends_on" => date,
-            "memo" => memo,
-            "created_by_email_address" => "wiki@mehr-schulferien.de",
-            "display_priority" => beweglicher_type.default_display_priority || 7,
-            "html_class" => beweglicher_type.default_html_class || "success",
-            "is_listed_below_month" => beweglicher_type.default_is_listed_below_month || true,
-            "is_school_vacation" => beweglicher_type.default_is_school_vacation || false,
-            "is_public_holiday" => beweglicher_type.default_is_public_holiday || false,
-            "is_valid_for_students" => beweglicher_type.default_is_valid_for_students || true,
-            "is_valid_for_everybody" => beweglicher_type.default_is_valid_for_everybody || false
-          }
+          # Check federal state limit
+          case validate_bewegliche_ferientage_limit(school_id, date, memo) do
+            {:error, reason} ->
+              {:error, reason}
 
-          case create_period(attrs) do
-            {:ok, period} ->
-              # Track the change for daily limit
-              Wiki.increment_daily_change_count(Date.utc_today())
-              {:ok, period}
+            {:ok, _remaining} ->
+              attrs = %{
+                "location_id" => school_id,
+                "holiday_or_vacation_type_id" => beweglicher_type.id,
+                "starts_on" => date,
+                "ends_on" => date,
+                "memo" => memo,
+                "created_by_email_address" => "wiki@mehr-schulferien.de",
+                "display_priority" => beweglicher_type.default_display_priority || 7,
+                "html_class" => beweglicher_type.default_html_class || "success",
+                "is_listed_below_month" => beweglicher_type.default_is_listed_below_month || true,
+                "is_school_vacation" => beweglicher_type.default_is_school_vacation || false,
+                "is_public_holiday" => beweglicher_type.default_is_public_holiday || false,
+                "is_valid_for_students" => beweglicher_type.default_is_valid_for_students || true,
+                "is_valid_for_everybody" =>
+                  beweglicher_type.default_is_valid_for_everybody || false
+              }
 
-            error ->
-              error
+              case create_period(attrs) do
+                {:ok, period} ->
+                  # Track the change for daily limit
+                  Wiki.increment_daily_change_count(Date.utc_today())
+                  {:ok, period}
+
+                error ->
+                  error
+              end
           end
         end
     end
@@ -562,5 +570,127 @@ defmodule MehrSchulferien.Periods do
         Repo.rollback(:copy_failed)
       end
     end)
+  end
+
+  #
+  # School year and federal state limit functions
+  #
+
+  @doc """
+  Determines the school year for a given date.
+  School years in Germany typically run from August 1st to July 31st.
+  Returns a string in format "YYYY/YYYY" (e.g., "2024/2025").
+  """
+  def get_school_year_for_date(date) do
+    year = date.year
+
+    if date.month >= 8 do
+      "#{year}/#{year + 1}"
+    else
+      "#{year - 1}/#{year}"
+    end
+  end
+
+  @doc """
+  Gets the federal state for a given school.
+  Traverses up the location hierarchy to find the federal state.
+  """
+  def get_school_federal_state(school_id) do
+    alias MehrSchulferien.Locations
+
+    case Locations.get_location(school_id) do
+      nil -> nil
+      school -> find_federal_state_in_hierarchy(school)
+    end
+  end
+
+  defp find_federal_state_in_hierarchy(%{is_federal_state: true} = location), do: location
+  defp find_federal_state_in_hierarchy(%{parent_location_id: nil}), do: nil
+
+  defp find_federal_state_in_hierarchy(%{parent_location_id: parent_id}) do
+    alias MehrSchulferien.Locations
+
+    case Locations.get_location(parent_id) do
+      nil -> nil
+      parent -> find_federal_state_in_hierarchy(parent)
+    end
+  end
+
+  @doc """
+  Gets the bewegliche Ferientage limit for a federal state and school year.
+  Returns nil if no limit is defined.
+  """
+  def get_federal_state_ferientage_limit(federal_state_id, school_year) do
+    alias MehrSchulferien.Periods.FederalStateFerientageLimit
+
+    Repo.get_by(FederalStateFerientageLimit,
+      federal_state_id: federal_state_id,
+      school_year: school_year
+    )
+  end
+
+  @doc """
+  Counts bewegliche Ferientage for a school in a specific school year.
+  """
+  def count_bewegliche_ferientage_for_school_year(school_id, school_year) do
+    case get_beweglicher_ferientag_type() do
+      nil ->
+        0
+
+      beweglicher_type ->
+        # Parse school year to get date range
+        [start_year, end_year] = String.split(school_year, "/")
+        {start_year_int, _} = Integer.parse(start_year)
+        {end_year_int, _} = Integer.parse(end_year)
+
+        # School year runs from August 1st to July 31st
+        year_start = Date.new!(start_year_int, 8, 1)
+        year_end = Date.new!(end_year_int, 7, 31)
+
+        from(p in Period,
+          where:
+            p.location_id == ^school_id and
+              p.holiday_or_vacation_type_id == ^beweglicher_type.id and
+              p.starts_on >= ^year_start and
+              p.starts_on <= ^year_end,
+          select: count(p.id)
+        )
+        |> Repo.one()
+    end
+  end
+
+  @doc """
+  Validates if adding a beweglicher Ferientag would exceed the federal state limit.
+  Returns {:ok, remaining_count} if valid, {:error, reason} if not.
+  """
+  def validate_bewegliche_ferientage_limit(school_id, date, _memo) do
+    # Get school year for the date
+    school_year = get_school_year_for_date(date)
+
+    # Get federal state for the school
+    case get_school_federal_state(school_id) do
+      nil ->
+        {:error, "Bundesland für die Schule konnte nicht ermittelt werden"}
+
+      federal_state ->
+        # Get the limit for this federal state and school year
+        case get_federal_state_ferientage_limit(federal_state.id, school_year) do
+          nil ->
+            # No limit defined, allow creation
+            {:ok, nil}
+
+          limit ->
+            # Count existing bewegliche Ferientage for this school year
+            current_count = count_bewegliche_ferientage_for_school_year(school_id, school_year)
+
+            if current_count >= limit.max_bewegliche_ferientage do
+              {:error,
+               "Die maximale Anzahl von #{limit.max_bewegliche_ferientage} beweglichen Ferientagen für #{federal_state.name} im Schuljahr #{school_year} wurde bereits erreicht"}
+            else
+              remaining = limit.max_bewegliche_ferientage - current_count
+              {:ok, remaining}
+            end
+        end
+    end
   end
 end

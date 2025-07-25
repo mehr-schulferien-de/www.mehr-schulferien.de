@@ -28,6 +28,65 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
     # Get bewegliche Ferientage for the school
     bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
 
+    # Get federal state and limit information
+    federal_state = Periods.get_school_federal_state(school.id)
+    current_school_year = Periods.get_school_year_for_date(today)
+
+    # Get limits for current and next 2 school years
+    school_years_data =
+      case federal_state do
+        nil ->
+          []
+
+        _ ->
+          # Calculate next school years
+          current_year = if today.month >= 8, do: today.year, else: today.year - 1
+
+          school_years = [
+            "#{current_year}/#{current_year + 1}",
+            "#{current_year + 1}/#{current_year + 2}",
+            "#{current_year + 2}/#{current_year + 3}"
+          ]
+
+          school_years
+          |> Enum.map(fn school_year ->
+            limit = Periods.get_federal_state_ferientage_limit(federal_state.id, school_year)
+            count = Periods.count_bewegliche_ferientage_for_school_year(school.id, school_year)
+            remaining = if limit, do: limit.max_bewegliche_ferientage - count, else: nil
+
+            %{
+              school_year: school_year,
+              limit: limit,
+              count: count,
+              remaining: remaining,
+              is_current: school_year == current_school_year
+            }
+          end)
+          |> Enum.filter(fn year_data ->
+            year_data.limit && year_data.limit.max_bewegliche_ferientage > 0
+          end)
+      end
+
+    # Adjust selected school year if it's not in the filtered list
+    adjusted_selected_school_year =
+      if Enum.any?(school_years_data, &(&1.school_year == current_school_year)) do
+        current_school_year
+      else
+        # Select the first available year or keep current if no years available
+        case school_years_data do
+          [first | _] -> first.school_year
+          [] -> current_school_year
+        end
+      end
+
+    # Keep single values for backward compatibility (selected year)
+    selected_year_data =
+      Enum.find(school_years_data, &(&1.school_year == adjusted_selected_school_year)) ||
+        %{limit: nil, count: 0, remaining: nil}
+
+    {ferientage_limit, current_count, remaining_ferientage} =
+      {selected_year_data.limit, selected_year_data.count, selected_year_data.remaining}
+
     # Get bewegliche ferientage from other schools with same zip code
     other_schools_ferientage =
       if school.address && school.address.zip_code && bewegliche_ferientage == [] do
@@ -71,13 +130,28 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
         []
       end
 
+    # Add selected school year tracking
+    selected_school_year = adjusted_selected_school_year
+
+    # Filter bewegliche ferientage for the selected school year
+    filtered_ferientage =
+      filter_ferientage_by_school_year(bewegliche_ferientage, selected_school_year)
+
     {:ok,
      assign(socket,
        school: school,
        bewegliche_ferientage: bewegliche_ferientage,
+       filtered_ferientage: filtered_ferientage,
+       selected_school_year: selected_school_year,
        other_schools_ferientage: other_schools_ferientage,
        daily_changes: daily_changes,
        limit_reached: limit_reached,
+       federal_state: federal_state,
+       current_school_year: current_school_year,
+       ferientage_limit: ferientage_limit,
+       current_ferientage_count: current_count,
+       remaining_ferientage: remaining_ferientage,
+       school_years_data: school_years_data,
        simple_form_mode: true,
        copy_mode: true,
        search_params: initial_search_params,
@@ -155,9 +229,73 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                 # Reload bewegliche Ferientage
                 bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
 
+                # Recalculate federal state limit information
+                today = Date.utc_today()
+                current_school_year = Periods.get_school_year_for_date(today)
+
+                # Recalculate school years data
+                school_years_data =
+                  if socket.assigns.federal_state do
+                    current_year = if today.month >= 8, do: today.year, else: today.year - 1
+
+                    school_years = [
+                      "#{current_year}/#{current_year + 1}",
+                      "#{current_year + 1}/#{current_year + 2}",
+                      "#{current_year + 2}/#{current_year + 3}"
+                    ]
+
+                    school_years
+                    |> Enum.map(fn school_year ->
+                      limit =
+                        Periods.get_federal_state_ferientage_limit(
+                          socket.assigns.federal_state.id,
+                          school_year
+                        )
+
+                      count =
+                        Periods.count_bewegliche_ferientage_for_school_year(
+                          school.id,
+                          school_year
+                        )
+
+                      remaining = if limit, do: limit.max_bewegliche_ferientage - count, else: nil
+
+                      %{
+                        school_year: school_year,
+                        limit: limit,
+                        count: count,
+                        remaining: remaining,
+                        is_current: school_year == current_school_year
+                      }
+                    end)
+                    |> Enum.filter(fn year_data ->
+                      year_data.limit && year_data.limit.max_bewegliche_ferientage > 0
+                    end)
+                  else
+                    []
+                  end
+
+                # Get current year data for backward compatibility
+                current_year_data =
+                  Enum.find(school_years_data, & &1.is_current) || %{count: 0, remaining: nil}
+
+                {current_count, remaining_ferientage} =
+                  {current_year_data.count, current_year_data.remaining}
+
                 message =
                   if failed > 0 do
-                    "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden."
+                    # Check if any failures were due to limit
+                    limit_errors =
+                      Enum.filter(results, fn
+                        {:error, reason} -> String.contains?(reason, "maximale Anzahl")
+                        _ -> false
+                      end)
+
+                    if length(limit_errors) > 0 do
+                      "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden (Limit erreicht)."
+                    else
+                      "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden."
+                    end
                   else
                     if successful == 1 do
                       "Beweglicher Ferientag wurde erfolgreich hinzugefügt."
@@ -166,10 +304,23 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                     end
                   end
 
+                # Update filtered ferientage
+                filtered_ferientage =
+                  filter_ferientage_by_school_year(
+                    bewegliche_ferientage,
+                    socket.assigns.selected_school_year
+                  )
+
                 {:noreply,
                  socket
                  |> put_flash(:info, message)
-                 |> assign(bewegliche_ferientage: bewegliche_ferientage)}
+                 |> assign(
+                   bewegliche_ferientage: bewegliche_ferientage,
+                   filtered_ferientage: filtered_ferientage,
+                   current_ferientage_count: current_count,
+                   remaining_ferientage: remaining_ferientage,
+                   school_years_data: school_years_data
+                 )}
               else
                 {:noreply,
                  put_flash(socket, :error, "Fehler beim Hinzufügen der beweglichen Ferientage.")}
@@ -207,10 +358,61 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           # Reload bewegliche Ferientage
           bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
 
-          {:noreply,
-           socket
-           |> put_flash(:info, "Beweglicher Ferientag wurde gelöscht.")
-           |> assign(bewegliche_ferientage: bewegliche_ferientage)}
+          # Update filtered ferientage
+          filtered_ferientage =
+            filter_ferientage_by_school_year(
+              bewegliche_ferientage,
+              socket.assigns.selected_school_year
+            )
+
+          # Recalculate counts for current school year
+          current_year_data =
+            Enum.find(
+              socket.assigns.school_years_data,
+              &(&1.school_year == socket.assigns.selected_school_year)
+            )
+
+          if current_year_data do
+            updated_count =
+              Periods.count_bewegliche_ferientage_for_school_year(
+                school.id,
+                socket.assigns.selected_school_year
+              )
+
+            updated_remaining =
+              if current_year_data.limit,
+                do: current_year_data.limit.max_bewegliche_ferientage - updated_count,
+                else: nil
+
+            # Update school_years_data
+            updated_school_years_data =
+              Enum.map(socket.assigns.school_years_data, fn data ->
+                if data.school_year == socket.assigns.selected_school_year do
+                  %{data | count: updated_count, remaining: updated_remaining}
+                else
+                  data
+                end
+              end)
+
+            {:noreply,
+             socket
+             |> put_flash(:info, "Beweglicher Ferientag wurde gelöscht.")
+             |> assign(
+               bewegliche_ferientage: bewegliche_ferientage,
+               filtered_ferientage: filtered_ferientage,
+               current_ferientage_count: updated_count,
+               remaining_ferientage: updated_remaining,
+               school_years_data: updated_school_years_data
+             )}
+          else
+            {:noreply,
+             socket
+             |> put_flash(:info, "Beweglicher Ferientag wurde gelöscht.")
+             |> assign(
+               bewegliche_ferientage: bewegliche_ferientage,
+               filtered_ferientage: filtered_ferientage
+             )}
+          end
 
         {:error, _changeset} ->
           {:noreply, put_flash(socket, :error, "Fehler beim Löschen des beweglichen Ferientags.")}
@@ -268,19 +470,70 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                   # Reload bewegliche Ferientage
                   bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
 
+                  # Update filtered ferientage
+                  filtered_ferientage =
+                    filter_ferientage_by_school_year(
+                      bewegliche_ferientage,
+                      socket.assigns.selected_school_year
+                    )
+
                   # Update daily change count
                   today = Date.utc_today()
                   daily_changes = Wiki.get_daily_change_count(today)
                   limit_reached = daily_changes >= Config.daily_change_limit()
 
-                  {:noreply,
-                   socket
-                   |> put_flash(:info, "Beweglicher Ferientag wurde erfolgreich hinzugefügt.")
-                   |> assign(
-                     bewegliche_ferientage: bewegliche_ferientage,
-                     daily_changes: daily_changes,
-                     limit_reached: limit_reached
-                   )}
+                  # Recalculate counts for current school year
+                  current_year_data =
+                    Enum.find(
+                      socket.assigns.school_years_data,
+                      &(&1.school_year == socket.assigns.selected_school_year)
+                    )
+
+                  if current_year_data do
+                    updated_count =
+                      Periods.count_bewegliche_ferientage_for_school_year(
+                        school.id,
+                        socket.assigns.selected_school_year
+                      )
+
+                    updated_remaining =
+                      if current_year_data.limit,
+                        do: current_year_data.limit.max_bewegliche_ferientage - updated_count,
+                        else: nil
+
+                    # Update school_years_data
+                    updated_school_years_data =
+                      Enum.map(socket.assigns.school_years_data, fn data ->
+                        if data.school_year == socket.assigns.selected_school_year do
+                          %{data | count: updated_count, remaining: updated_remaining}
+                        else
+                          data
+                        end
+                      end)
+
+                    {:noreply,
+                     socket
+                     |> put_flash(:info, "Beweglicher Ferientag wurde erfolgreich hinzugefügt.")
+                     |> assign(
+                       bewegliche_ferientage: bewegliche_ferientage,
+                       filtered_ferientage: filtered_ferientage,
+                       daily_changes: daily_changes,
+                       limit_reached: limit_reached,
+                       current_ferientage_count: updated_count,
+                       remaining_ferientage: updated_remaining,
+                       school_years_data: updated_school_years_data
+                     )}
+                  else
+                    {:noreply,
+                     socket
+                     |> put_flash(:info, "Beweglicher Ferientag wurde erfolgreich hinzugefügt.")
+                     |> assign(
+                       bewegliche_ferientage: bewegliche_ferientage,
+                       filtered_ferientage: filtered_ferientage,
+                       daily_changes: daily_changes,
+                       limit_reached: limit_reached
+                     )}
+                  end
 
                 {:error, _changeset} ->
                   {:noreply,
@@ -482,6 +735,13 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           # Reload bewegliche Ferientage
           bewegliche_ferientage = Periods.list_bewegliche_ferientage_for_school(school.id)
 
+          # Update filtered ferientage
+          filtered_ferientage =
+            filter_ferientage_by_school_year(
+              bewegliche_ferientage,
+              socket.assigns.selected_school_year
+            )
+
           # Update daily change count
           daily_changes = Wiki.get_daily_change_count(today)
           limit_reached = daily_changes >= Config.daily_change_limit()
@@ -498,6 +758,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
            |> put_flash(:info, message)
            |> assign(
              bewegliche_ferientage: bewegliche_ferientage,
+             filtered_ferientage: filtered_ferientage,
              other_schools_ferientage: [],
              quick_copy_ferientage: MapSet.new(),
              daily_changes: daily_changes,
@@ -569,6 +830,64 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
            |> assign(copy_in_progress: true, show_copy_confirmation_modal: false)
            |> copy_ferientage_to_schools()}
       end
+    end
+  end
+
+  @impl true
+  def handle_event("select_school_year", %{"school_year" => school_year}, socket) do
+    # Update selected school year and filter ferientage
+    filtered_ferientage =
+      filter_ferientage_by_school_year(socket.assigns.bewegliche_ferientage, school_year)
+
+    # Get the selected year's data
+    selected_year_data =
+      Enum.find(socket.assigns.school_years_data, fn data ->
+        data.school_year == school_year
+      end)
+
+    {:noreply,
+     assign(socket,
+       selected_school_year: school_year,
+       filtered_ferientage: filtered_ferientage,
+       ferientage_limit: selected_year_data && selected_year_data.limit,
+       current_ferientage_count: (selected_year_data && selected_year_data.count) || 0,
+       remaining_ferientage: selected_year_data && selected_year_data.remaining
+     )}
+  end
+
+  @impl true
+  def handle_event("navigate_year", %{"direction" => direction}, socket) do
+    current_index =
+      Enum.find_index(socket.assigns.school_years_data, fn data ->
+        data.school_year == socket.assigns.selected_school_year
+      end)
+
+    new_index =
+      case direction do
+        "prev" -> max(0, current_index - 1)
+        "next" -> min(length(socket.assigns.school_years_data) - 1, current_index + 1)
+      end
+
+    new_year_data = Enum.at(socket.assigns.school_years_data, new_index)
+
+    if new_year_data && new_year_data.school_year != socket.assigns.selected_school_year do
+      # Reuse the select_school_year logic
+      filtered_ferientage =
+        filter_ferientage_by_school_year(
+          socket.assigns.bewegliche_ferientage,
+          new_year_data.school_year
+        )
+
+      {:noreply,
+       assign(socket,
+         selected_school_year: new_year_data.school_year,
+         filtered_ferientage: filtered_ferientage,
+         ferientage_limit: new_year_data.limit,
+         current_ferientage_count: new_year_data.count || 0,
+         remaining_ferientage: new_year_data.remaining
+       )}
+    else
+      {:noreply, socket}
     end
   end
 
@@ -720,7 +1039,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
   defp send_copy_notifications(results, source_school, selected_ferientage) do
     require Logger
-    
+
     # Build copy summary for the email
     copy_summary = build_copy_summary(results, source_school, selected_ferientage)
 
@@ -729,13 +1048,13 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
     # Send single summary email instead of individual emails
     email = Email.bewegliche_ferientage_bulk_copy_notification(source_school, copy_summary)
-    
+
     Logger.info("Email created: to=#{inspect(email.to)}, subject=#{email.subject}")
-    
+
     result = Mailer.deliver!(email)
-    
+
     Logger.info("Email delivery result: #{inspect(result)}")
-    
+
     result
   end
 
@@ -886,5 +1205,19 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
        search_results: enriched_results,
        selected_schools: updated_selected_schools
      )}
+  end
+
+  defp filter_ferientage_by_school_year(ferientage, school_year) do
+    [start_year_str, _end_year_str] = String.split(school_year, "/")
+    start_year = String.to_integer(start_year_str)
+
+    # School year runs from August 1st to July 31st
+    start_date = Date.new!(start_year, 8, 1)
+    end_date = Date.new!(start_year + 1, 7, 31)
+
+    Enum.filter(ferientage, fn ft ->
+      Date.compare(ft.starts_on, start_date) != :lt &&
+        Date.compare(ft.starts_on, end_date) != :gt
+    end)
   end
 end
