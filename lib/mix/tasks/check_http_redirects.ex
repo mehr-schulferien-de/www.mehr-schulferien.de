@@ -59,6 +59,15 @@ defmodule Mix.Tasks.CheckHttpRedirects do
     IO.puts("Results will be saved to: #{output_file}")
     if resume, do: IO.puts("Resuming from previous progress...")
     IO.puts("")
+    
+    # Initialize or load existing results file
+    _existing_results = if resume and File.exists?(output_file) do
+      load_existing_results(output_file)
+    else
+      # Initialize empty results file
+      File.write!(output_file, "[]")
+      []
+    end
 
     # Load previous progress if resuming
     {processed_ids, previous_results} = if resume do
@@ -99,13 +108,9 @@ defmodule Mix.Tasks.CheckHttpRedirects do
     else
       IO.puts("Found #{total_count} schools with HTTP URLs...\n")
 
-      results = check_redirects(schools_with_http, verbose, progress_file, previous_results)
+      results = check_redirects(schools_with_http, verbose, progress_file, output_file, previous_results)
       IO.puts("\n") # Clear the progress line
       all_results = previous_results ++ results
-      final_list = build_final_list(all_results)
-      
-      # Save final results
-      save_results(output_file, final_list)
       
       # Clean up progress file on completion
       File.rm(progress_file)
@@ -114,7 +119,9 @@ defmodule Mix.Tasks.CheckHttpRedirects do
       IO.puts("\nResults saved to: #{output_file}")
       IO.puts("Total schools processed: #{length(all_results)}")
       
-      with_https = Enum.count(final_list, fn {_, url} -> url != nil end)
+      # Read final results from file for summary
+      final_list = load_existing_results(output_file)
+      with_https = Enum.count(final_list, fn %{"new_url" => url} -> url != nil end)
       IO.puts("Schools with HTTPS URLs: #{with_https}")
       IO.puts("Schools without HTTPS option: #{length(final_list) - with_https}")
       
@@ -122,7 +129,7 @@ defmodule Mix.Tasks.CheckHttpRedirects do
     end
   end
 
-  defp check_redirects(schools, verbose, progress_file, previous_results) do
+  defp check_redirects(schools, verbose, progress_file, output_file, previous_results) do
     total_processed = length(previous_results)
     
     schools
@@ -188,6 +195,15 @@ defmodule Mix.Tasks.CheckHttpRedirects do
       # Save progress after each check
       result_entry = {school, final_result}
       save_progress(progress_file, previous_results ++ [result_entry])
+      
+      # Also save to results file incrementally
+      new_url = case final_result do
+        {:redirect_to_https, url} -> url
+        {:https_replacement_works, url} -> url
+        _ -> nil
+      end
+      
+      append_result(output_file, %{school_slug: school.school_slug, new_url: new_url})
       
       result_entry
     end)
@@ -314,18 +330,6 @@ defmodule Mix.Tasks.CheckHttpRedirects do
 
   defp percentage(_, _), do: 0.0
 
-  defp build_final_list(results) do
-    Enum.map(results, fn {school, result} ->
-      new_url = case result do
-        {:redirect_to_https, url} -> url
-        {:https_replacement_works, url} -> url
-        _ -> nil
-      end
-      
-      {school.school_slug, new_url}
-    end)
-  end
-
   
   defp load_progress(progress_file) do
     case File.read(progress_file) do
@@ -374,12 +378,27 @@ defmodule Mix.Tasks.CheckHttpRedirects do
     File.write!(progress_file, json)
   end
   
-  defp save_results(output_file, final_list) do
-    data = Enum.map(final_list, fn {slug, url} ->
-      %{school_slug: slug, new_url: url}
-    end)
+  
+  defp load_existing_results(output_file) do
+    case File.read(output_file) do
+      {:ok, content} ->
+        case Jason.decode(content) do
+          {:ok, data} -> data
+          {:error, _} -> []
+        end
+      {:error, _} -> []
+    end
+  end
+  
+  defp append_result(output_file, new_result) do
+    # Read existing results
+    existing = load_existing_results(output_file)
     
-    json = Jason.encode!(data, pretty: true)
+    # Append new result
+    updated = existing ++ [new_result]
+    
+    # Write back
+    json = Jason.encode!(updated, pretty: true)
     File.write!(output_file, json)
   end
 end
