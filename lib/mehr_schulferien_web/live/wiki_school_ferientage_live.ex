@@ -719,12 +719,24 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   end
 
   defp send_copy_notifications(results, source_school, selected_ferientage) do
+    require Logger
+    
     # Build copy summary for the email
     copy_summary = build_copy_summary(results, source_school, selected_ferientage)
 
+    Logger.info("Sending bulk copy notification email for school: #{source_school.name}")
+    Logger.info("Copy summary: #{inspect(copy_summary, pretty: true)}")
+
     # Send single summary email instead of individual emails
-    Email.bewegliche_ferientage_bulk_copy_notification(source_school, copy_summary)
-    |> Mailer.deliver!()
+    email = Email.bewegliche_ferientage_bulk_copy_notification(source_school, copy_summary)
+    
+    Logger.info("Email created: to=#{inspect(email.to)}, subject=#{email.subject}")
+    
+    result = Mailer.deliver!(email)
+    
+    Logger.info("Email delivery result: #{inspect(result)}")
+    
+    result
   end
 
   defp build_copy_summary(results, _source_school, selected_ferientage) do
@@ -774,7 +786,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
     %{
       ferientage_count: length(selected_ferientage),
-      total_schools: length(results),
+      total_schools: map_size(results),
       success_count: total_success,
       skip_count: total_skip,
       error_count: total_error,
