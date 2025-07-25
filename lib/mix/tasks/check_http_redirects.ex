@@ -30,7 +30,14 @@ defmodule Mix.Tasks.CheckHttpRedirects do
   def run(args) do
     # Suppress warnings by setting log level
     Logger.configure(level: :error)
-    Mix.Task.run("app.start")
+    
+    # Start the repo and other necessary apps without the endpoint
+    {:ok, _} = Application.ensure_all_started(:postgrex)
+    {:ok, _} = Application.ensure_all_started(:ecto)
+    {:ok, _} = Application.ensure_all_started(:req)
+    
+    # Start the Repo manually
+    {:ok, _} = MehrSchulferien.Repo.start_link()
     
     # Parse command line options
     {opts, _, _} = OptionParser.parse(args,
