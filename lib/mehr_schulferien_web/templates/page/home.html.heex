@@ -16,8 +16,8 @@
     </a>
   </div>
   <.text variant="base" class="mb-4 sm:mb-8">
-    Die Ferien und Feiertage der nächsten <%= @number_of_days %> Tage auf einen Blick<%= if @custom_start_date && Date.compare(@custom_start_date, Date.utc_today()) != :eq do %>
-      (ab dem <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@custom_start_date) %>)
+    Die Ferien und Feiertage der nächsten {@number_of_days} Tage auf einen Blick<%= if @custom_start_date && Date.compare(@custom_start_date, Date.utc_today()) != :eq do %>
+      (ab dem {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(@custom_start_date)})
     <% end %>.
   </.text>
 
@@ -46,14 +46,14 @@
             <.section_title title={federal_state.name} />
             <!-- Timeline visualization -->
             <div id={"#{component_id}"}>
-              <%= MehrSchulferienWeb.VacationTimelineComponent.render(
+              {MehrSchulferienWeb.VacationTimelineComponent.render(
                 days_to_show: @days,
                 months: @months,
                 all_periods: filtered_periods,
                 days_count: @days_to_display,
                 months_with_days: @months_with_days,
                 federal_state: federal_state
-              ) %>
+              )}
               <!-- Fallback text for test environment -->
               <div class="hidden" aria-hidden="true">
                 Ferien und Feiertage im angezeigten Zeitraum
@@ -70,7 +70,7 @@
                     size="sm"
                     class="w-full"
                   >
-                    <%= current_year %>
+                    {current_year}
                   </.button>
                   <.button
                     href={"/ferien/d/bundesland/#{federal_state.slug}/#{next_year}"}
@@ -78,7 +78,7 @@
                     size="sm"
                     class="w-full"
                   >
-                    <%= next_year %>
+                    {next_year}
                   </.button>
                 </div>
               </div>
@@ -167,25 +167,25 @@
                 Nächster Brückentag
               </.heading>
               <.text variant="small" class="mb-3">
-                <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
                   next_bridge_day.starts_on
-                ) %>
+                )}
                 <%= if Date.compare(next_bridge_day.starts_on, next_bridge_day.ends_on) != :eq do %>
-                  - <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                  - {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
                     next_bridge_day.ends_on
-                  ) %>
+                  )}
                 <% end %>
               </.text>
               <!-- Bridge Day Timeline -->
               <div class="mb-4">
-                <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+                {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
                   bridge_day: next_bridge_day,
                   periods: public_periods,
                   reference_date: reference_date,
                   vacation_days: vacation_days,
                   total_free_days: total_free_days,
                   efficiency_percentage: efficiency
-                }) %>
+                })}
               </div>
 
               <% # Find super bridge day
@@ -202,17 +202,17 @@
                     Bester Superbrückentag
                   </.heading>
                   <.text variant="small">
-                    <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                    {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
                       best_super_bridge_day.bridge_day.starts_on
-                    ) %> - <%= MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                    )} - {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
                       best_super_bridge_day.bridge_day.ends_on
-                    ) %>
+                    )}
                     <br />
                     <span class="text-xs text-gray-500">
-                      <%= best_super_bridge_day.vacation_days %> Urlaubstag<%= if best_super_bridge_day.vacation_days >
-                                                                                    1,
-                                                                                  do: "e",
-                                                                                  else: "" %> für <%= best_super_bridge_day.total_free_days %> freie Tage
+                      {best_super_bridge_day.vacation_days} Urlaubstag{if best_super_bridge_day.vacation_days >
+                                                                            1,
+                                                                          do: "e",
+                                                                          else: ""} für {best_super_bridge_day.total_free_days} freie Tage
                     </span>
                   </.text>
                 </div>
@@ -233,7 +233,7 @@
                     size="sm"
                     class="w-full"
                   >
-                    <%= current_year %>
+                    {current_year}
                   </.button>
                   <.button
                     href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}"}
@@ -241,7 +241,7 @@
                     size="sm"
                     class="w-full"
                   >
-                    <%= next_year %>
+                    {next_year}
                   </.button>
                 </div>
               </div>

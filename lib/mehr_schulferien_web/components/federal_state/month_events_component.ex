@@ -48,7 +48,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
               <.period_name period={period} />
             </span>
             <span class="text-gray-600 whitespace-nowrap">
-              <%= format_period_date(period) %>
+              {format_period_date(period)}
             </span>
           </li>
         <% end %>
@@ -61,20 +61,20 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
               <% effective_duration = ViewHelpers.calculate_effective_duration(period, @all_periods) %>
               <% difference = effective_duration - days %>
               <span class="font-normal ml-1">
-                (<%= days %>
+                ({days}
                 <%= if difference != 0 do %>
-                  <span class="text-gray-500">+ <%= difference %></span>
+                  <span class="text-gray-500">+ {difference}</span>
                 <% end %>
-                <%= if days == 1, do: "Tag", else: "Tage" %>)
+                {if days == 1, do: "Tag", else: "Tage"})
               </span>
               <%= if period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && period.memo && period.memo != "" do %>
                 <span class="text-xs text-gray-600 block mt-0.5">
-                  <%= period.memo %>
+                  {period.memo}
                 </span>
               <% end %>
             </span>
             <span class="text-gray-600 whitespace-nowrap">
-              <%= format_period_date(period) %>
+              {format_period_date(period)}
             </span>
           </li>
         <% end %>

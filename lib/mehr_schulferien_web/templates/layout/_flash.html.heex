@@ -8,7 +8,7 @@
           clip-rule="evenodd"
         />
       </svg>
-      <p class="text-green-800 font-medium"><%= Phoenix.Flash.get(@flash, :info) %></p>
+      <p class="text-green-800 font-medium">{Phoenix.Flash.get(@flash, :info)}</p>
     </div>
   </div>
 <% end %>
@@ -22,7 +22,7 @@
           clip-rule="evenodd"
         />
       </svg>
-      <p class="text-red-800 font-medium"><%= Phoenix.Flash.get(@flash, :error) %></p>
+      <p class="text-red-800 font-medium">{Phoenix.Flash.get(@flash, :error)}</p>
     </div>
   </div>
 <% end %>

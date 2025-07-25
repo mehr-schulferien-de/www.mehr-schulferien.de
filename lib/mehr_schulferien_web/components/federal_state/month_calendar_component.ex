@@ -75,7 +75,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                 ]}
                 colspan="7"
               >
-                <%= @month_name %> <%= @year %>
+                {@month_name} {@year}
                 <%= if @should_cross_out do %>
                   <span class="text-xs ml-2 text-gray-500 italic">(noch keine Daten)</span>
                 <% end %>
@@ -162,7 +162,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                       end
                     ]}>
                       <%= if day > 0 and day <= @days_in_month do %>
-                        <%= day %>.
+                        {day}.
                       <% end %>
                     </td>
                   <% end %>

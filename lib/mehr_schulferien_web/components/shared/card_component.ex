@@ -30,7 +30,7 @@ defmodule MehrSchulferienWeb.Shared.CardComponent do
 
     ~H"""
     <div class={@computed_class}>
-      <%= render_slot(@content) %>
+      {render_slot(@content)}
     </div>
     """
   end
@@ -59,17 +59,17 @@ defmodule MehrSchulferienWeb.Shared.CardComponent do
     <div class={@computed_class}>
       <%= if @header != [] do %>
         <div class="px-6 py-4 border-b border-gray-200">
-          <%= render_slot(@header) %>
+          {render_slot(@header)}
         </div>
       <% end %>
 
       <div class="px-6 py-4">
-        <%= render_slot(@content) %>
+        {render_slot(@content)}
       </div>
 
       <%= if @footer != [] do %>
         <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-          <%= render_slot(@footer) %>
+          {render_slot(@footer)}
         </div>
       <% end %>
     </div>

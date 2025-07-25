@@ -1,13 +1,13 @@
-<%= render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html") %>
+{render(MehrSchulferienWeb.LayoutView, "_google_analytics_code.html")}
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="csrf-token" content={Phoenix.HTML.Tag.csrf_token_value()} />
+<meta name="csrf-token" content={csrf_token_value()} />
 <%= if assigns[:conn] do %>
-  <%= render_existing(view_module(@conn), "meta." <> view_template(@conn), assigns) ||
-    render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
+  {render_existing(view_module(@conn), "meta." <> view_template(@conn), assigns) ||
+    render(MehrSchulferienWeb.LayoutView, "meta.html", assigns)}
 <% else %>
-  <%= render(MehrSchulferienWeb.LayoutView, "meta.html", assigns) %>
+  {render(MehrSchulferienWeb.LayoutView, "meta.html", assigns)}
 <% end %>
 <% conn_or_socket = assigns[:conn] || assigns[:socket] %>
 <link rel="stylesheet" href={static_path(conn_or_socket, "/assets/app.css")} />

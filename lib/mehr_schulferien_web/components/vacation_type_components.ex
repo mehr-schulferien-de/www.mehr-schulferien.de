@@ -74,13 +74,13 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
           <%= for {data, index} <- Enum.with_index(@vacation_data) do %>
             <tr id={data.state_slug} class={if rem(index, 2) == 0, do: "bg-white", else: "bg-gray-50"}>
               <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
-                <%= data.state_name %>
-                <span class="ml-1 text-xs text-gray-500">(<%= data.state_code %>)</span>
+                {data.state_name}
+                <span class="ml-1 text-xs text-gray-500">({data.state_code})</span>
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 <%= if data.period do %>
                   <time datetime={data.period.starts_on}>
-                    <%= data.start_date %>
+                    {data.start_date}
                   </time>
                 <% else %>
                   <span class="text-gray-400">-</span>
@@ -89,7 +89,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 <%= if data.period do %>
                   <time datetime={data.period.ends_on}>
-                    <%= data.end_date %>
+                    {data.end_date}
                   </time>
                 <% else %>
                   <span class="text-gray-400">-</span>
@@ -98,7 +98,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
                 <%= if data.duration > 0 do %>
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <%= data.duration %> Tage
+                    {data.duration} Tage
                   </span>
                 <% else %>
                   <span class="text-gray-400">-</span>
@@ -110,7 +110,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
                     href={~p"/#{@vacation_type}/#{data.state_slug}/#{@year}"}
                     class="text-blue-600 hover:text-blue-900"
                   >
-                    Details <span class="sr-only">für <%= data.state_name %></span>
+                    Details <span class="sr-only">für {data.state_name}</span>
                   </a>
                 <% end %>
               </td>
@@ -137,7 +137,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
       <div class="bg-white overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
           <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-            <%= @vacation_name %> auf einen Blick
+            {@vacation_name} auf einen Blick
           </h3>
           <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <div class="px-4 py-5 bg-gray-50 shadow rounded-lg overflow-hidden sm:p-6">
@@ -145,8 +145,8 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
                 Frühester Beginn
               </dt>
               <dd class="mt-1 text-lg font-semibold text-gray-900">
-                <%= @stats.earliest_date %>
-                <span class="text-sm font-normal text-gray-500">(<%= @stats.earliest_state %>)</span>
+                {@stats.earliest_date}
+                <span class="text-sm font-normal text-gray-500">({@stats.earliest_state})</span>
               </dd>
             </div>
 
@@ -155,8 +155,8 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
                 Spätester Beginn
               </dt>
               <dd class="mt-1 text-lg font-semibold text-gray-900">
-                <%= @stats.latest_date %>
-                <span class="text-sm font-normal text-gray-500">(<%= @stats.latest_state %>)</span>
+                {@stats.latest_date}
+                <span class="text-sm font-normal text-gray-500">({@stats.latest_state})</span>
               </dd>
             </div>
 
@@ -165,12 +165,12 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
                 Gesamtzeitraum
               </dt>
               <dd class="mt-1 text-lg font-semibold text-gray-900">
-                <%= @stats.total_days %> Tage
+                {@stats.total_days} Tage
                 <span class="text-sm font-normal text-gray-500">
                   (<%= if @stats.min_duration == @stats.max_duration do %>
-                    je <%= @stats.min_duration %> Tage Ferien
+                    je {@stats.min_duration} Tage Ferien
                   <% else %>
-                    <%= @stats.min_duration %>-<%= @stats.max_duration %> Tage Ferien
+                    {@stats.min_duration}-{@stats.max_duration} Tage Ferien
                   <% end %>)
                 </span>
               </dd>
@@ -257,7 +257,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
             <div class="mt-2 text-sm text-blue-700">
               <ul class="list-disc list-inside space-y-1">
                 <%= for tip <- @tips do %>
-                  <li><%= tip %></li>
+                  <li>{tip}</li>
                 <% end %>
               </ul>
             </div>

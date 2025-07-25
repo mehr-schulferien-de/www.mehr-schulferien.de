@@ -206,12 +206,12 @@
       <p class="mb-2">
         Alle API v2.1 Antworten folgen einem einheitlichen JSON-Format:
       </p>
-      <pre class="bg-gray-100 p-2 mb-4 rounded overflow-x-auto">{
+      <pre class="bg-gray-100 p-2 mb-4 rounded overflow-x-auto"><%= ~s|{
   "data": [ /* Array von Objekten oder einzelnes Objekt */ ],
   "meta": {
     "api_version": "2.1"
   }
-}</pre>
+}| %></pre>
 
       <.heading level={4} class="text-lg text-gray-700 mt-4 mb-2">Query Parameter</.heading>
       <div class="overflow-x-auto mb-6">

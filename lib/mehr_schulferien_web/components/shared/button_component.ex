@@ -58,11 +58,11 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
     ~H"""
     <%= if @href do %>
       <a href={@href} target={@target} class={@computed_class} onclick={@onclick}>
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </a>
     <% else %>
       <button type={@type} disabled={@disabled} class={@computed_class} onclick={@onclick}>
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </button>
     <% end %>
     """
@@ -80,7 +80,7 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
       target={@target}
       class={"text-blue-600 hover:text-blue-800 hover:underline cursor-pointer #{@class}"}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </a>
     """
   end

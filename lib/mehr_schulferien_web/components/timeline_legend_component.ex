@@ -21,7 +21,7 @@ defmodule MehrSchulferienWeb.TimelineLegendComponent do
       <%= for item <- @items do %>
         <li class="flex items-center space-x-3">
           <div class={[item.color, "w-4 h-4 flex-shrink-0"]}></div>
-          <span><%= item.label %></span>
+          <span>{item.label}</span>
         </li>
       <% end %>
     </ul>

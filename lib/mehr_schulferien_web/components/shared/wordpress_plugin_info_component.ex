@@ -43,15 +43,15 @@ defmodule MehrSchulferienWeb.Shared.WordPressPluginInfoComponent do
           </TypographyComponent.heading>
 
           <TypographyComponent.text variant="small" class="text-gray-700 mb-3">
-            Zeigen Sie die Schulferien von <%= @location_name %> auf Ihrer WordPress-Webseite an.
-            Unser Plugin ermöglicht es Ihnen, aktuelle Ferientermine für <%= (@location_type_de ==
-                                                                                "Schule" && "diese") ||
-              "dieses" %> <%= @location_type_de %> mit einem einfachen Shortcode einzubinden.
+            Zeigen Sie die Schulferien von {@location_name} auf Ihrer WordPress-Webseite an.
+            Unser Plugin ermöglicht es Ihnen, aktuelle Ferientermine für {(@location_type_de ==
+                                                                             "Schule" && "diese") ||
+              "dieses"} {@location_type_de} mit einem einfachen Shortcode einzubinden.
           </TypographyComponent.text>
 
           <div class="bg-gray-50 border border-gray-200 rounded-md p-3 mb-3">
             <p class="text-xs font-mono text-gray-800">
-              [schulferien location_type="<%= @location_type %>" location="<%= @location_slug %>" display="table"]
+              [schulferien location_type="{@location_type}" location="{@location_slug}" display="table"]
             </p>
           </div>
 

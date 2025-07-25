@@ -1,10 +1,8 @@
-{
-"@type": "Question",
-"name": "<%= @question %>",
-"acceptedAnswer": {
-"@type": "Answer",
-"text": "<%= @answer %>"
-}
-}<%= unless assigns[:last] && @last == true do %>
+<%= "{" %> "@type": "Question",
+"name": "{@question}",
+"acceptedAnswer": <%= "{" %> "@type": "Answer",
+"text": "{@answer}" <%= "}" %>
+<%= "}" %>
+<%= unless assigns[:last] && @last == true do %>
   ,
 <% end %>

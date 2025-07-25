@@ -18,10 +18,10 @@ defmodule MehrSchulferienWeb.VacationFaqComponent do
     <div class="mt-8 bg-white p-4 rounded-lg shadow-sm">
       <div class="mx-auto px-4 py-8 sm:py-12">
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4" id="faq">
-          Häufig gestellte Fragen zu <%= @vacation_name %> <%= @federal_state.name %>
+          Häufig gestellte Fragen zu {@vacation_name} {@federal_state.name}
         </h2>
         <p class="mt-3 max-w-3xl text-sm text-gray-600">
-          Antworten zu häufigen Fragen über <%= @vacation_name %> in <%= @federal_state.name %> <%= @year %>.
+          Antworten zu häufigen Fragen über {@vacation_name} in {@federal_state.name} {@year}.
         </p>
 
         <div class="mt-6">
@@ -80,10 +80,10 @@ defmodule MehrSchulferienWeb.VacationFaqComponent do
     ~H"""
     <div>
       <dt class="text-base font-semibold text-gray-900">
-        <%= @title %>
+        {@title}
       </dt>
       <dd class="mt-2 text-sm text-gray-600">
-        <%= raw(@answer) %>
+        {raw(@answer)}
       </dd>
     </div>
     """

@@ -17,8 +17,8 @@ defmodule MehrSchulferienWeb.FederalState.PartialDataComponent do
       <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 my-4" role="alert">
         <p class="font-bold">Hinweis zu den Feriendaten</p>
         <p>
-          Für das Jahr <%= @year %> sind aktuell nur die Ferien bis einschließlich der Sommerferien eingetragen.
-          Die Ferientermine für das Schuljahr <%= @year %>/<%= @year + 1 %> werden bald nachgetragen.
+          Für das Jahr {@year} sind aktuell nur die Ferien bis einschließlich der Sommerferien eingetragen.
+          Die Ferientermine für das Schuljahr {@year}/{@year + 1} werden bald nachgetragen.
         </p>
       </div>
       """

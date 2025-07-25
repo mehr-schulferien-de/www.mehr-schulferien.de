@@ -44,7 +44,7 @@ defmodule MehrSchulferienWeb.Shared.BadgeComponent do
 
     ~H"""
     <span class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </span>
     """
   end
@@ -63,7 +63,7 @@ defmodule MehrSchulferienWeb.Shared.BadgeComponent do
 
     ~H"""
     <.badge variant="default" size={@size} class={"border #{@badge_class} #{@class}"}>
-      <%= @text %>
+      {@text}
     </.badge>
     """
   end
@@ -82,7 +82,7 @@ defmodule MehrSchulferienWeb.Shared.BadgeComponent do
 
     ~H"""
     <.badge variant={@variant} size="sm" class={@class}>
-      <%= @display_count %>
+      {@display_count}
     </.badge>
     """
   end
@@ -104,7 +104,7 @@ defmodule MehrSchulferienWeb.Shared.BadgeComponent do
 
     ~H"""
     <.badge variant={@variant} class={@class}>
-      <%= @status %>
+      {@status}
     </.badge>
     """
   end
@@ -120,7 +120,7 @@ defmodule MehrSchulferienWeb.Shared.BadgeComponent do
     <.badge variant={@variant} class={"flex items-center gap-1 #{@class}"}>
       <.icon name={@icon_name} class="w-3 h-3" />
       <%= if @text do %>
-        <span><%= @text %></span>
+        <span>{@text}</span>
       <% end %>
     </.badge>
     """

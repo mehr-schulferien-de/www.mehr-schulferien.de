@@ -73,7 +73,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
                 style={"width: #{percentage_width}%"}
                 title={month_name}
               >
-                <%= display_name %>
+                {display_name}
               </th>
             <% end %>
           </tr>
@@ -122,13 +122,13 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
       </table>
     </div>
 
-    <%= render_vacation_status(
+    {render_vacation_status(
       @current_vacation,
       @days_remaining_in_vacation,
       @next_vacation,
       @days_until_next_vacation,
       Map.get(assigns, :federal_state)
-    ) %>
+    )}
 
     <div class="mt-4">
       <ul class="text-sm">
@@ -155,13 +155,13 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
                 href={link_url}
                 class="hover:underline focus:underline active:underline inline-block py-1 -my-1"
               >
-                <%= display_name %>
-                <%= render_period_dates(period, @has_multiple_years) %>
+                {display_name}
+                {render_period_dates(period, @has_multiple_years)}
               </a>
             <% else %>
               <span>
-                <%= display_name %>
-                <%= render_period_dates(period, @has_multiple_years) %>
+                {display_name}
+                {render_period_dates(period, @has_multiple_years)}
               </span>
             <% end %>
           </li>
@@ -309,14 +309,12 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <div class="flex items-center">
             <span class="text-gray-500">
               <%= if @days_remaining == 0 do %>
-                Aktuell sind <%= @display_name %><%= @location_text %> (letzter Tag).
+                Aktuell sind {@display_name}{@location_text} (letzter Tag).
               <% else %>
-                Aktuell sind <%= @display_name %><%= @location_text %> (noch <%= @days_remaining %> <%= if @days_remaining ==
-                                                                                                             1,
-                                                                                                           do:
-                                                                                                             "Tag",
-                                                                                                           else:
-                                                                                                             "Tage" %>).
+                Aktuell sind {@display_name}{@location_text} (noch {@days_remaining} {if @days_remaining ==
+                                                                                           1,
+                                                                                         do: "Tag",
+                                                                                         else: "Tage"}).
               <% end %>
             </span>
           </div>
@@ -351,9 +349,9 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           <div class="flex items-center">
             <span class="text-gray-500">
               <%= if @days_until == 1 do %>
-                1 Tag bis <%= @display_format %><%= @location_text %>.
+                1 Tag bis {@display_format}{@location_text}.
               <% else %>
-                <%= @days_until %> Tage bis <%= @display_format %><%= @location_text %>.
+                {@days_until} Tage bis {@display_format}{@location_text}.
               <% end %>
             </span>
           </div>

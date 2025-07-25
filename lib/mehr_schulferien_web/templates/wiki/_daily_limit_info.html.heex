@@ -2,12 +2,12 @@
   <h3 class="text-sm font-medium text-gray-900 mb-2">Tageslimit</h3>
   <div class="space-y-2 text-sm">
     <p class="text-gray-600">
-      Zum Schutz vor Missbrauch gibt es ein Tageslimit von <%= MehrSchulferien.Config.daily_change_limit() %> Änderungen.
+      Zum Schutz vor Missbrauch gibt es ein Tageslimit von {MehrSchulferien.Config.daily_change_limit()} Änderungen.
     </p>
     <div class="flex items-center justify-between">
       <span class="text-gray-600">Heutige Änderungen:</span>
       <span class={"font-medium #{if @daily_changes >= MehrSchulferien.Config.daily_change_limit(), do: "text-red-600", else: "text-gray-900"}"}>
-        <%= @daily_changes %> / <%= MehrSchulferien.Config.daily_change_limit() %>
+        {@daily_changes} / {MehrSchulferien.Config.daily_change_limit()}
       </span>
     </div>
     <div class="mt-2">

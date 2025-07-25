@@ -34,7 +34,7 @@
               </path>
             </svg>
             <%= link to: ~p"/ferien/#{@country.slug}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
-              <%= @country.name %>
+              {@country.name}
             <% end %>
           </div>
         </li>
@@ -55,7 +55,7 @@
               </path>
             </svg>
             <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
-              <%= @federal_state.name %>
+              {@federal_state.name}
             <% end %>
           </div>
         </li>
@@ -76,7 +76,7 @@
               </path>
             </svg>
             <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@current_year}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
-              <%= @city.name %>
+              {@city.name}
             <% end %>
           </div>
         </li>
@@ -97,7 +97,7 @@
               </path>
             </svg>
             <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2 truncate max-w-[120px] md:max-w-none", title: @school.name do %>
-              <%= @school.name %>
+              {@school.name}
             <% end %>
           </div>
         </li>
@@ -125,7 +125,7 @@
 
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
       <.heading level={1} class="text-left">
-        Vordrucke für <%= @school.name %>
+        Vordrucke für {@school.name}
       </.heading>
     </div>
     <!-- Disclaimer about unofficial service -->
@@ -199,11 +199,11 @@
                   </div>
                   <div class="ml-3">
                     <.text variant="small" class="font-medium text-gray-900">
-                      <%= @school.name %>
+                      {@school.name}
                     </.text>
                     <.text variant="muted">
-                      <%= @school.address.street %><br />
-                      <%= @school.address.zip_code %> <%= @school.address.city %>
+                      {@school.address.street}<br />
+                      {@school.address.zip_code} {@school.address.city}
                     </.text>
                   </div>
                 </div>
@@ -226,7 +226,7 @@
                       href={"tel:" <> String.replace(@school.address.phone_number, " ", "")}
                       class="ml-3 text-sm text-gray-500 hover:text-blue-600"
                     >
-                      <%= @school.address.phone_number %>
+                      {@school.address.phone_number}
                     </a>
                   </div>
                 <% end %>
@@ -249,7 +249,7 @@
                       href={"mailto:" <> @school.address.email_address}
                       class="ml-3 text-sm text-gray-500 hover:text-blue-600"
                     >
-                      <%= @school.address.email_address %>
+                      {@school.address.email_address}
                     </a>
                   </div>
                 <% end %>
@@ -274,8 +274,8 @@
                       rel="noopener noreferrer"
                       class="ml-3 text-sm text-gray-500 hover:text-blue-600"
                     >
-                      <%= URI.parse(@school.address.homepage_url).host ||
-                        @school.address.homepage_url %>
+                      {URI.parse(@school.address.homepage_url).host ||
+                        @school.address.homepage_url}
                     </a>
                   </div>
                 <% end %>
@@ -295,18 +295,18 @@
                     <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                       <div>
                         <.text variant="small" class="font-medium text-gray-900">
-                          <%= period.holiday_or_vacation_type.colloquial ||
-                            period.holiday_or_vacation_type.name %>
+                          {period.holiday_or_vacation_type.colloquial ||
+                            period.holiday_or_vacation_type.name}
                         </.text>
                         <.text variant="muted">
-                          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>
+                          {ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}
                         </.text>
                       </div>
                       <div class="text-right">
                         <% days_until = Date.diff(period.starts_on, @today) %>
                         <%= if days_until > 0 do %>
                           <span class="text-sm text-gray-600">
-                            in <%= days_until %> <%= if days_until == 1, do: "Tag", else: "Tagen" %>
+                            in {days_until} {if days_until == 1, do: "Tag", else: "Tagen"}
                           </span>
                         <% else %>
                           <% days_remaining = Date.diff(period.ends_on, @today) %>
@@ -498,18 +498,18 @@
                     <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                       <div>
                         <.text variant="small" class="font-medium text-gray-900">
-                          <%= period.holiday_or_vacation_type.colloquial ||
-                            period.holiday_or_vacation_type.name %>
+                          {period.holiday_or_vacation_type.colloquial ||
+                            period.holiday_or_vacation_type.name}
                         </.text>
                         <.text variant="muted">
-                          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %>
+                          {ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}
                         </.text>
                       </div>
                       <div class="text-right">
                         <% days_until = Date.diff(period.starts_on, @today) %>
                         <%= if days_until > 0 do %>
                           <span class="text-sm text-gray-600">
-                            in <%= days_until %> <%= if days_until == 1, do: "Tag", else: "Tagen" %>
+                            in {days_until} {if days_until == 1, do: "Tag", else: "Tagen"}
                           </span>
                         <% else %>
                           <% days_remaining = Date.diff(period.ends_on, @today) %>

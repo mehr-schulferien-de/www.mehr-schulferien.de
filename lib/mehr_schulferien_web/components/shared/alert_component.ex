@@ -38,10 +38,10 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
         <% end %>
         <div class={"#{if @icon, do: "ml-3"} flex-1"}>
           <%= if @title do %>
-            <h3 class="text-sm font-medium mb-1"><%= @title %></h3>
+            <h3 class="text-sm font-medium mb-1">{@title}</h3>
           <% end %>
           <div class="text-sm">
-            <%= render_slot(@inner_block) %>
+            {render_slot(@inner_block)}
           </div>
         </div>
         <%= if @dismissible do %>
@@ -88,7 +88,7 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
 
     ~H"""
     <p class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -115,7 +115,7 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
       <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
         <div class="pr-16 sm:text-center sm:px-16">
           <p class="font-medium">
-            <%= render_slot(@inner_block) %>
+            {render_slot(@inner_block)}
           </p>
         </div>
         <%= if @dismissible do %>
@@ -185,9 +185,9 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
               <.alert_icon variant={@variant} />
             </div>
             <div class="ml-3 w-0 flex-1 pt-0.5">
-              <p class="text-sm font-medium text-gray-900"><%= @title %></p>
+              <p class="text-sm font-medium text-gray-900">{@title}</p>
               <%= if @message do %>
-                <p class="mt-1 text-sm text-gray-500"><%= @message %></p>
+                <p class="mt-1 text-sm text-gray-500">{@message}</p>
               <% end %>
             </div>
             <div class="ml-4 flex-shrink-0 flex">

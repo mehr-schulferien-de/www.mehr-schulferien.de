@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">
-      Schul-Wiki: <%= @school.name %>
+      Schul-Wiki: {@school.name}
     </h1>
     <p class="text-gray-600">
       Bearbeiten Sie die Daten dieser Schule gemeinschaftlich. Alle Änderungen werden mit Ihrer IP-Adresse protokolliert.
@@ -77,8 +77,7 @@
             <p class="mt-1 text-sm text-gray-600">
               Verwalten Sie die beweglichen Ferientage dieser Schule.
               <%= if @bewegliche_ferientage_count > 0 do %>
-                <span class="font-medium"><%= @bewegliche_ferientage_count %> Tage</span>
-                eingetragen.
+                <span class="font-medium">{@bewegliche_ferientage_count} Tage</span> eingetragen.
               <% else %>
                 Noch keine Tage eingetragen.
               <% end %>
@@ -109,7 +108,7 @@
         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <dt class="text-sm font-medium text-gray-500">Schulname</dt>
-            <dd class="mt-1 text-sm text-gray-900"><%= @school.name %></dd>
+            <dd class="mt-1 text-sm text-gray-900">{@school.name}</dd>
           </div>
 
           <%= if @school.address do %>
@@ -117,10 +116,10 @@
               <dt class="text-sm font-medium text-gray-500">Adresse</dt>
               <dd class="mt-1 text-sm text-gray-900">
                 <%= if @school.address.street do %>
-                  <%= @school.address.street %><br />
+                  {@school.address.street}<br />
                 <% end %>
                 <%= if @school.address.zip_code || @school.address.city do %>
-                  <%= @school.address.zip_code %> <%= @school.address.city %>
+                  {@school.address.zip_code} {@school.address.city}
                 <% else %>
                   <span class="text-gray-400">Nicht angegeben</span>
                 <% end %>
@@ -130,14 +129,14 @@
             <%= if @school.address.phone_number do %>
               <div>
                 <dt class="text-sm font-medium text-gray-500">Telefon</dt>
-                <dd class="mt-1 text-sm text-gray-900"><%= @school.address.phone_number %></dd>
+                <dd class="mt-1 text-sm text-gray-900">{@school.address.phone_number}</dd>
               </div>
             <% end %>
 
             <%= if @school.address.email_address do %>
               <div>
                 <dt class="text-sm font-medium text-gray-500">E-Mail</dt>
-                <dd class="mt-1 text-sm text-gray-900"><%= @school.address.email_address %></dd>
+                <dd class="mt-1 text-sm text-gray-900">{@school.address.email_address}</dd>
               </div>
             <% end %>
 
@@ -150,7 +149,7 @@
                     target="_blank"
                     class="text-blue-600 hover:underline"
                   >
-                    <%= display_url(@school.address.homepage_url) %>
+                    {display_url(@school.address.homepage_url)}
                   </a>
                 </dd>
               </div>
@@ -159,21 +158,21 @@
             <%= if @school.address.students_count do %>
               <div>
                 <dt class="text-sm font-medium text-gray-500">Schülerzahl</dt>
-                <dd class="mt-1 text-sm text-gray-900"><%= @school.address.students_count %></dd>
+                <dd class="mt-1 text-sm text-gray-900">{@school.address.students_count}</dd>
               </div>
             <% end %>
 
             <%= if @school.address.founded_year do %>
               <div>
                 <dt class="text-sm font-medium text-gray-500">Gründungsjahr</dt>
-                <dd class="mt-1 text-sm text-gray-900"><%= @school.address.founded_year %></dd>
+                <dd class="mt-1 text-sm text-gray-900">{@school.address.founded_year}</dd>
               </div>
             <% end %>
 
             <%= if @school.address.description do %>
               <div class="sm:col-span-2">
                 <dt class="text-sm font-medium text-gray-500">Beschreibung</dt>
-                <dd class="mt-1 text-sm text-gray-900"><%= @school.address.description %></dd>
+                <dd class="mt-1 text-sm text-gray-900">{@school.address.description}</dd>
               </div>
             <% end %>
           <% else %>
@@ -195,9 +194,9 @@
     <!-- Sidebar -->
     <div class="space-y-6">
       <!-- Daily Limit Info -->
-      <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
+      {Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
         daily_changes: @daily_changes
-      ) %>
+      )}
       <!-- Help Box -->
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h4 class="text-sm font-medium text-blue-900 mb-2">

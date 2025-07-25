@@ -1,5 +1,5 @@
-<%= render(
+{render(
   MehrSchulferienWeb.LayoutView,
   MehrSchulferienWeb.LayoutView.select_layout_template(@conn, assigns),
   Map.put(assigns, :inner_content, @inner_content)
-) %>
+)}

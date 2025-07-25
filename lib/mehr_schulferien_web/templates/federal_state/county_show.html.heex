@@ -49,7 +49,7 @@
       </span>
 
       <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}", class: "text-gray-500 hover:text-gray-700" do %>
-        <%= @federal_state.name %>
+        {@federal_state.name}
       <% end %>
     </div>
   </div>
@@ -58,10 +58,10 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
   <div class="mb-8">
     <.heading level={1} class="text-3xl mb-2">
-      Landkreise und Städte in <%= @federal_state.name %>
+      Landkreise und Städte in {@federal_state.name}
     </.heading>
     <.text variant="lead" class="text-gray-600">
-      Alle Städte in <%= @federal_state.name %> mit mindestens einer Schule.
+      Alle Städte in {@federal_state.name} mit mindestens einer Schule.
     </.text>
   </div>
 
@@ -90,7 +90,7 @@
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <%= county.name %>
+            {county.name}
           </.heading>
         </div>
 
@@ -112,7 +112,7 @@
                       <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                     </svg>
                     <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{city_item.city_data.slug}", class: "text-gray-900 font-semibold text-lg hover:text-blue-700 transition-colors duration-200" do %>
-                      <%= city_item.city_data.name %>
+                      {city_item.city_data.name}
                     <% end %>
                   </div>
 
@@ -130,9 +130,9 @@
                       />
                     </svg>
                     <span class="text-sm text-gray-600">
-                      <span class="font-medium">PLZ:</span> <%= MehrSchulferienWeb.FederalStateView.format_zip_codes(
+                      <span class="font-medium">PLZ:</span> {MehrSchulferienWeb.FederalStateView.format_zip_codes(
                         city_item.city_data
-                      ) %>
+                      )}
                     </span>
                   </div>
 
@@ -146,7 +146,7 @@
                       <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                     </svg>
                     <span class="text-sm text-gray-600">
-                      <span class="font-medium">Schulen:</span> <%= city_item.school_count %>
+                      <span class="font-medium">Schulen:</span> {city_item.school_count}
                     </span>
                   </div>
 

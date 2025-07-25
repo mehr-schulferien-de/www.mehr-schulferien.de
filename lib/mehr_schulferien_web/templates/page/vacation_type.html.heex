@@ -2,10 +2,10 @@
   <!-- Header -->
   <div class="mb-8">
     <.heading level={1} class="text-3xl mb-4">
-      <%= @vacation_config.name %> <%= @current_year %> und <%= @next_year %> in Deutschland
+      {@vacation_config.name} {@current_year} und {@next_year} in Deutschland
     </.heading>
     <.text variant="lead" class="text-gray-700">
-      Alle Termine der <%= @vacation_config.name %> für alle 16 Bundesländer auf einen Blick. <%= @vacation_config.meta_focus %>
+      Alle Termine der {@vacation_config.name} für alle 16 Bundesländer auf einen Blick. {@vacation_config.meta_focus}
     </.text>
   </div>
   <!-- Statistics -->
@@ -16,7 +16,7 @@
   <!-- Current Year Section -->
   <section class="mt-8">
     <.heading level={2} class="text-2xl mb-4">
-      <%= @vacation_config.name %> <%= @current_year %>
+      {@vacation_config.name} {@current_year}
     </.heading>
 
     <MehrSchulferienWeb.VacationTypeComponents.vacation_overview_table
@@ -31,7 +31,7 @@
   <!-- Next Year Section -->
   <section class="mt-12">
     <.heading level={2} class="text-2xl mb-4">
-      <%= @vacation_config.name %> <%= @next_year %>
+      {@vacation_config.name} {@next_year}
     </.heading>
 
     <MehrSchulferienWeb.VacationTypeComponents.vacation_overview_table
@@ -44,7 +44,7 @@
   <!-- Additional Information -->
   <section class="mt-12 prose prose-lg max-w-none">
     <.heading level={3} class="text-xl mb-4">
-      Wissenswertes über <%= @vacation_config.name %>
+      Wissenswertes über {@vacation_config.name}
     </.heading>
 
     <%= case @vacation_type do %>

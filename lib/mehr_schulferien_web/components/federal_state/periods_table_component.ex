@@ -22,7 +22,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
       <table class="min-w-full bg-white border border-gray-200">
         <%= if assigns[:federal_state] && assigns[:year] do %>
           <caption class="sr-only">
-            Ferientermine <%= assigns.federal_state.name %> <%= assigns.year %> - Übersicht aller Schulferien mit Datum und Dauer
+            Ferientermine {assigns.federal_state.name} {assigns.year} - Übersicht aller Schulferien mit Datum und Dauer
           </caption>
         <% end %>
         <thead>

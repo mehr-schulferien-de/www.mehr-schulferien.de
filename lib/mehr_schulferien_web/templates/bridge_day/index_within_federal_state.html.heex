@@ -1,39 +1,39 @@
 <ol class="breadcrumb hidden-xs">
-  <li><%= link("Start", to: ~p"/") %></li>
-  <li><%= link(@country.name, to: ~p"/ferien/#{@country.slug}") %></li>
+  <li>{link("Start", to: ~p"/")}</li>
+  <li>{link(@country.name, to: ~p"/ferien/#{@country.slug}")}</li>
   <li>
-    <%= link(@federal_state.name,
+    {link(@federal_state.name,
       to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"
-    ) %>
+    )}
   </li>
   <li>
-    <%= link("Brückentage #{@federal_state.name}",
+    {link("Brückentage #{@federal_state.name}",
       to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}",
       class: "active"
-    ) %>
+    )}
   </li>
 </ol>
 
 <ol class="breadcrumb visible-xs-* hidden-sm hidden-md hidden-lg">
-  <li><%= link("Start", to: ~p"/") %></li>
-  <li><%= link(@country.code, to: ~p"/ferien/#{@country.slug}") %></li>
+  <li>{link("Start", to: ~p"/")}</li>
+  <li>{link(@country.code, to: ~p"/ferien/#{@country.slug}")}</li>
   <li>
-    <%= link(@federal_state.name,
+    {link(@federal_state.name,
       to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"
-    ) %>
+    )}
   </li>
   <li>
-    <%= link("Brückentage #{@federal_state.name}",
+    {link("Brückentage #{@federal_state.name}",
       to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}",
       class: "active"
-    ) %>
+    )}
   </li>
 </ol>
 
 <div class="page-header">
   <div class="row">
     <div class="col-md-12">
-      <.heading level={1}>Brückentage <%= @federal_state.name %></.heading>
+      <.heading level={1}>Brückentage {@federal_state.name}</.heading>
     </div>
   </div>
 </div>
@@ -45,9 +45,9 @@
       <%= for year <- @current_year..@current_year + 2 do %>
         <%= if MehrSchulferienWeb.BridgeDayController.has_bridge_days?([@country.id, @federal_state.id], year) do %>
           <li>
-            <%= link(year,
+            {link(year,
               to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}"
-            ) %>
+            )}
           </li>
         <% end %>
       <% end %>
@@ -61,18 +61,18 @@
       <.heading level={2}>
         Die
         <%= if @bridge_day_proposal_count > 1 do %>
-          <%= @bridge_day_proposal_count %>
-        <% end %>besten Brückentage für das Jahr (<%= @current_year %>)
+          {@bridge_day_proposal_count}
+        <% end %>besten Brückentage für das Jahr ({@current_year})
       </.heading>
       <.text>
         Wir finden mit unserem Spezialalgorithmus nicht nur die normalen Brückentage (meistens ein Freitag),
         sondern auch Konstellationen, in denen zwei oder mehr Tage zwischen einem Feiertag und einem Wochenende liegen.
         <%= if @bridge_day_proposal_count < 3 do %>
-          Allerdings können Sie mit Brückentagen im aktuellen Jahr (<%= @current_year %>) nicht mehr viel rausholen. Am besten Sie starten schon einmal die Urlaubsplanung für das
-          nächste Jahr: <%= link("Brückentage #{@current_year + 1}",
+          Allerdings können Sie mit Brückentagen im aktuellen Jahr ({@current_year}) nicht mehr viel rausholen. Am besten Sie starten schon einmal die Urlaubsplanung für das
+          nächste Jahr: {link("Brückentage #{@current_year + 1}",
             to:
               ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@current_year + 1}"
-          ) %>
+          )}
         <% end %>
       </.text>
     </div>
@@ -90,7 +90,7 @@
                 Normaler
               <% end %>
             <% else %>
-              <%= num - 1 %>er
+              {num - 1}er
             <% end %>
             <%= if Enum.count(@bridge_day_map[num]) > 1 do %>
               Brückentage
@@ -104,13 +104,13 @@
         <%= for bridge_day <- @bridge_day_map[num] do %>
           <% all_periods =
             MehrSchulferien.Periods.list_periods_with_bridge_day(@public_periods, bridge_day) %>
-          <%= render(MehrSchulferienWeb.PartialView, "_bridge_day_panel.html",
+          {render(MehrSchulferienWeb.PartialView, "_bridge_day_panel.html",
             all_periods: all_periods,
             bridge_day: bridge_day,
             country: @country,
             federal_state: @federal_state,
             year: @current_year
-          ) %>
+          )}
         <% end %>
       </div>
     <% end %>

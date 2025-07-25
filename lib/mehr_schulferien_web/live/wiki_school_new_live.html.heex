@@ -64,7 +64,7 @@
             />
             <%= if @changeset.action && @changeset.errors[:street] do %>
               <p class="mt-1 text-sm text-red-600">
-                <%= elem(@changeset.errors[:street], 0) %>
+                {elem(@changeset.errors[:street], 0)}
               </p>
             <% end %>
           </div>
@@ -87,9 +87,9 @@
                         clip-rule="evenodd"
                       />
                     </svg>
-                    <%= length(@existing_schools) %> <%= if length(@existing_schools) == 1,
+                    {length(@existing_schools)} {if length(@existing_schools) == 1,
                       do: "Schule vorhanden",
-                      else: "Schulen vorhanden" %>
+                      else: "Schulen vorhanden"}
                   </a>
                 <% end %>
               </div>
@@ -107,7 +107,7 @@
               />
               <%= if @changeset.action && @changeset.errors[:zip_code] do %>
                 <p class="mt-1 text-sm text-red-600">
-                  <%= elem(@changeset.errors[:zip_code], 0) %>
+                  {elem(@changeset.errors[:zip_code], 0)}
                 </p>
               <% end %>
               <%= if @zip_code_valid == false do %>
@@ -134,7 +134,7 @@
               />
               <%= if @changeset.action && @changeset.errors[:city] do %>
                 <p class="mt-1 text-sm text-red-600">
-                  <%= elem(@changeset.errors[:city], 0) %>
+                  {elem(@changeset.errors[:city], 0)}
                 </p>
               <% end %>
             </div>
@@ -155,7 +155,7 @@
             />
             <%= if @changeset.action && @changeset.errors[:email_address] do %>
               <p class="mt-1 text-sm text-red-600">
-                <%= elem(@changeset.errors[:email_address], 0) %>
+                {elem(@changeset.errors[:email_address], 0)}
               </p>
             <% end %>
           </div>
@@ -175,7 +175,7 @@
             />
             <%= if @changeset.action && @changeset.errors[:phone_number] do %>
               <p class="mt-1 text-sm text-red-600">
-                <%= elem(@changeset.errors[:phone_number], 0) %>
+                {elem(@changeset.errors[:phone_number], 0)}
               </p>
             <% end %>
           </div>
@@ -195,7 +195,7 @@
             />
             <%= if @changeset.action && @changeset.errors[:homepage_url] do %>
               <p class="mt-1 text-sm text-red-600">
-                <%= elem(@changeset.errors[:homepage_url], 0) %>
+                {elem(@changeset.errors[:homepage_url], 0)}
               </p>
             <% end %>
           </div>
@@ -215,7 +215,7 @@
             />
             <%= if @changeset.action && @changeset.errors[:wikipedia_url] do %>
               <p class="mt-1 text-sm text-red-600">
-                <%= elem(@changeset.errors[:wikipedia_url], 0) %>
+                {elem(@changeset.errors[:wikipedia_url], 0)}
               </p>
             <% end %>
           </div>
@@ -241,7 +241,7 @@
         >
           <div class="bg-amber-100 px-4 py-3 border-b border-amber-200">
             <h3 class="text-sm font-semibold text-amber-900">
-              Existierende Schulen (<%= length(@existing_schools) %>)
+              Existierende Schulen ({length(@existing_schools)})
             </h3>
           </div>
           <div class="p-4">
@@ -256,7 +256,7 @@
                   target="_blank"
                 >
                   <div class="font-medium text-sm text-gray-900">
-                    <%= school.name %>
+                    {school.name}
                   </div>
                   <%= if school.address do %>
                     <div class="mt-1 text-xs text-gray-600 flex items-start">
@@ -281,11 +281,11 @@
                       </svg>
                       <div>
                         <%= if school.address.street do %>
-                          <div><%= school.address.street %></div>
+                          <div>{school.address.street}</div>
                         <% end %>
                         <div>
-                          <%= school.address.zip_code || "" %>
-                          <%= school.address.city || school.parent_location.name %>
+                          {school.address.zip_code || ""}
+                          {school.address.city || school.parent_location.name}
                         </div>
                       </div>
                     </div>
@@ -311,7 +311,7 @@
                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
-                        <span><%= school.parent_location.name %></span>
+                        <span>{school.parent_location.name}</span>
                       <% end %>
                     </div>
                   <% end %>
@@ -349,7 +349,7 @@
           <div class="flex items-center justify-between">
             <span class="text-gray-600">Heutige Änderungen:</span>
             <span class="font-semibold text-gray-900">
-              <%= @daily_changes %> / 20
+              {@daily_changes} / 20
             </span>
           </div>
           <div class="mt-2">

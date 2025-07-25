@@ -50,7 +50,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
                   value={to_string(id)}
                   selected={@search_params["federal_state_id"] == to_string(id)}
                 >
-                  <%= name %>
+                  {name}
                 </option>
               <% end %>
             </select>
@@ -58,7 +58,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
         <% end %>
         <div>
           <label for="search_location" class="block text-sm font-medium text-gray-700 mb-2">
-            <%= @location_label %>
+            {@location_label}
           </label>
           <input
             type="text"
@@ -107,7 +107,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
       </div>
       <div class="mt-6 flex gap-3">
         <.button type="submit" variant="primary" disabled={@searching}>
-          <%= if @searching, do: "Suche läuft...", else: "Suchen" %>
+          {if @searching, do: "Suche läuft...", else: "Suchen"}
         </.button>
         <button
           type="button"
@@ -132,7 +132,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
           </span>
         </div>
       <% end %>
-      <%= render_slot(@below_form) %>
+      {render_slot(@below_form)}
     </form>
     """
   end

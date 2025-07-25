@@ -511,7 +511,7 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
               </div>
               <div class="ml-3">
                 <p class="text-sm text-blue-700">
-                  <%= format_number(@total_schools_found) %> Schulen gefunden. Bitte geben Sie genauere Suchkriterien ein.
+                  {format_number(@total_schools_found)} Schulen gefunden. Bitte geben Sie genauere Suchkriterien ein.
                 </p>
               </div>
             </div>
@@ -524,28 +524,28 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
                   <% String.length(@search_params["location"] || "") >= 1 and String.length(@search_params["school_name"] || "") >= 1 -> %>
                     Suchergebnisse für
                     <%= if SchoolSearchLogic.is_partial_or_full_zip_code?(@search_params["location"]) do %>
-                      PLZ <%= @search_params["location"] %>
+                      PLZ {@search_params["location"]}
                     <% else %>
-                      "<%= @search_params["location"] %>"
+                      "{@search_params["location"]}"
                     <% end %>
-                    und "<%= @search_params["school_name"] %>"
+                    und "{@search_params["school_name"]}"
                   <% String.length(@search_params["location"] || "") >= 1 -> %>
                     Suchergebnisse für
                     <%= if SchoolSearchLogic.is_partial_or_full_zip_code?(@search_params["location"]) do %>
-                      PLZ <%= @search_params["location"] %>
+                      PLZ {@search_params["location"]}
                     <% else %>
-                      "<%= @search_params["location"] %>"
+                      "{@search_params["location"]}"
                     <% end %>
                   <% String.length(@search_params["school_name"] || "") >= 1 -> %>
-                    Suchergebnisse für "<%= @search_params["school_name"] %>"
+                    Suchergebnisse für "{@search_params["school_name"]}"
                   <% @search_params["federal_state_id"] != "" -> %>
                     Suchergebnisse
                   <% true -> %>
                     Suchergebnisse
                 <% end %>
-                (<%= @total_schools_found %> <%= if @total_schools_found == 1,
+                ({@total_schools_found} {if @total_schools_found == 1,
                   do: "Schule",
-                  else: "Schulen" %> gefunden)
+                  else: "Schulen"} gefunden)
               </h2>
             </div>
             <table class="w-full divide-y divide-gray-200 table-fixed">
@@ -684,13 +684,13 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
                         class="text-blue-600 hover:text-blue-900 font-medium block truncate pr-2"
                         title={school.name}
                       >
-                        <%= school.name %>
+                        {school.name}
                       </a>
                     </td>
                     <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-900">
                       <%= if school.address do %>
                         <span class="block truncate pr-2" title={school.address.street}>
-                          <%= school.address.street %>
+                          {school.address.street}
                         </span>
                       <% else %>
                         <span class="text-gray-500">-</span>
@@ -698,7 +698,7 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-900">
                       <%= if school.address && school.address.zip_code do %>
-                        <%= school.address.zip_code %>
+                        {school.address.zip_code}
                       <% else %>
                         <span class="text-gray-500">-</span>
                       <% end %>
@@ -706,7 +706,7 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
                     <td class="px-4 py-3 text-sm text-gray-900">
                       <%= if school.parent_location do %>
                         <span class="block truncate pr-2" title={school.parent_location.name}>
-                          <%= school.parent_location.name %>
+                          {school.parent_location.name}
                         </span>
                       <% else %>
                         <span class="text-gray-500">-</span>

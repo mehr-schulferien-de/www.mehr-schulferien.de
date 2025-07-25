@@ -58,12 +58,12 @@ end %>
   <div class="flex flex-col items-start mb-6 sm:flex-row sm:justify-between">
     <div class="mb-4 sm:mb-0">
       <.heading level={1} class="text-3xl mb-2">
-        Brückentage <%= @year %> in <%= @federal_state.name %>
+        Brückentage {@year} in {@federal_state.name}
       </.heading>
       <.heading level={2} class="text-xl text-gray-700">
-        Die <%= @bridge_day_proposal_count %> besten Tipps für
+        Die {@bridge_day_proposal_count} besten Tipps für
         <%= if min_leave > 0 and max_free > 0 do %>
-          <%= round((max_free - min_leave) / min_leave * 100) %>%
+          {round((max_free - min_leave) / min_leave * 100)}%
         <% end %>
         mehr Urlaub.
       </.heading>
@@ -176,7 +176,7 @@ end %>
                 <%= for year <- years_to_show do %>
                   <%= if year == @year do %>
                     <span class="px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600 flex-1 text-center">
-                      <%= year %>
+                      {year}
                     </span>
                   <% else %>
                     <a
@@ -185,7 +185,7 @@ end %>
                         ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}"
                       }
                     >
-                      <%= year %>
+                      {year}
                     </a>
                   <% end %>
                 <% end %>
@@ -250,13 +250,13 @@ end %>
   <p class="text-gray-700 mb-8">
     Nicht nur klassische Brückentage, sondern auch Super-Brückentage, bei denen Sie noch mehr freie Tage herausholen können.
     <%= if Enum.any?(future_years) do %>
-      Entdecken Sie jetzt die besten Tipps für Ihre Urlaubsplanung <%= @year %> – und werfen Sie auch einen Blick auf
+      Entdecken Sie jetzt die besten Tipps für Ihre Urlaubsplanung {@year} – und werfen Sie auch einen Blick auf
       <%= for {year, idx} <- Enum.with_index(future_years) do %>
-        <%= if idx > 0, do: if(idx == length(future_years) - 1, do: " und ", else: ", ") %>
-        <%= link("Brückentage #{year}#{if idx == length(future_years) - 1, do: ".", else: ""}",
+        {if idx > 0, do: if(idx == length(future_years) - 1, do: " und ", else: ", ")}
+        {link("Brückentage #{year}#{if idx == length(future_years) - 1, do: ".", else: ""}",
           to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}",
           class: "text-blue-600 hover:underline"
-        ) %>
+        )}
       <% end %>
     <% end %>
   </p>
@@ -380,7 +380,7 @@ end %>
             Normaler
           <% end %>
         <% else %>
-          <%= num - 1 %>er
+          {num - 1}er
         <% end %>
         <%= if Enum.count(@bridge_day_map[num]) > 1 do %>
           <%= if num > 2 do %>
@@ -456,18 +456,18 @@ end %>
                   else: "text-xl font-semibold mb-4"
               }
             >
-              <%= MehrSchulferienWeb.BridgeDayView.format_month_header(
+              {MehrSchulferienWeb.BridgeDayView.format_month_header(
                 bridge_day.starts_on,
                 bridge_day.ends_on
-              ) %>
+              )}
               <%= if bridge_day.starts_on.year == bridge_day.ends_on.year && !String.contains?(MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on), Integer.to_string(bridge_day.starts_on.year)) do %>
                 <span class={if is_past_bridge_day, do: "text-gray-400", else: "text-gray-500"}>
-                  <%= bridge_day.starts_on.year %>
+                  {bridge_day.starts_on.year}
                 </span>
               <% end %>
             </.heading>
 
-            <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+            {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
               bridge_day: bridge_day,
               periods: adjacent_holidays,
               reference_date: reference_date,
@@ -475,7 +475,7 @@ end %>
               total_free_days: max_days,
               efficiency_percentage: efficiency_percentage,
               is_past: is_past_bridge_day
-            }) %>
+            })}
           </section>
         <% end %>
       </div>
@@ -493,19 +493,24 @@ end %>
         <dl class="divide-y divide-gray-200">
           <div class="py-4">
             <dt class="text-lg font-medium text-gray-800">
-              Wie viele Brückentage <%= @year %> <%= @federal_state.name %>?
+              Wie viele Brückentage {@year} {@federal_state.name}?
             </dt>
             <dd class="mt-2 text-gray-700">
-              In <%= @year %> gibt es in <%= @federal_state.name %> <%= Enum.count(
-                @bridge_day_map[2]
-              ) %> <%= if Enum.count(@bridge_day_map[2]) == 1,
-                do: "normalen Brückentag",
-                else: "normale Brückentage" %>.
-              Zusätzlich gibt es noch <%= @bridge_day_proposal_count -
-                Enum.count(@bridge_day_map[2]) %> <%= if @bridge_day_proposal_count -
-                                                           Enum.count(@bridge_day_map[2]) == 1,
-                                                         do: "Super-Brückentag",
-                                                         else: "Super-Brückentage" %>.
+              In {@year} gibt es in {@federal_state.name} {Enum.count(@bridge_day_map[2])} {if Enum.count(
+                                                                                                 @bridge_day_map[
+                                                                                                   2
+                                                                                                 ]
+                                                                                               ) ==
+                                                                                                 1,
+                                                                                               do:
+                                                                                                 "normalen Brückentag",
+                                                                                               else:
+                                                                                                 "normale Brückentage"}.
+              Zusätzlich gibt es noch {@bridge_day_proposal_count -
+                Enum.count(@bridge_day_map[2])} {if @bridge_day_proposal_count -
+                                                      Enum.count(@bridge_day_map[2]) == 1,
+                                                    do: "Super-Brückentag",
+                                                    else: "Super-Brückentage"}.
               <div class="mt-4">
                 <ul class="list-disc pl-5 space-y-2">
                   <% # Gather all bridge days with their related public holidays %>
@@ -592,9 +597,9 @@ end %>
                         else
                           MehrSchulferienWeb.Formatters.DateFormatter.format_date_short(bridge_day.starts_on) <> " - " <> MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(bridge_day.ends_on)
                         end
-                        date_string %></strong>: <%= type_name %><%= if holiday_name,
+                        date_string %></strong>: {type_name}{if holiday_name,
                         do: " (#{holiday_name})",
-                        else: "" %>
+                        else: ""}
                     </li>
                   <% end %>
                 </ul>
@@ -604,7 +609,7 @@ end %>
 
           <div class="py-4">
             <dt class="text-lg font-medium text-gray-800">
-              Was ist der beste Brückentag <%= @year %> in <%= @federal_state.name %>?
+              Was ist der beste Brückentag {@year} in {@federal_state.name}?
             </dt>
             <dd class="mt-2 text-gray-700">
               <% best_bridge_day =
@@ -625,10 +630,10 @@ end %>
               <% percentage =
                 round(
                   (max_days - best_bridge_day.number_days) / best_bridge_day.number_days * 100
-                ) %> Der beste Brückentag ist <%= ViewHelpers.format_date_range(
+                ) %> Der beste Brückentag ist {ViewHelpers.format_date_range(
                 best_bridge_day.starts_on,
                 best_bridge_day.ends_on
-              ) %>. Mit nur <%= best_bridge_day.number_days %> Urlaubstag(en) können Sie <%= max_days %> Tage frei machen - das sind <%= percentage %>% mehr Urlaub!
+              )}. Mit nur {best_bridge_day.number_days} Urlaubstag(en) können Sie {max_days} Tage frei machen - das sind {percentage}% mehr Urlaub!
             </dd>
           </div>
 
@@ -637,7 +642,7 @@ end %>
           <%= if show_next_bridge_day do %>
             <div class="py-4">
               <dt class="text-lg font-medium text-gray-800">
-                Wann ist der nächste Brückentag in <%= @federal_state.name %>?
+                Wann ist der nächste Brückentag in {@federal_state.name}?
               </dt>
               <dd class="mt-2 text-gray-700">
                 <% next_bridge_day =
@@ -686,12 +691,12 @@ end %>
 
                       true ->
                         nil
-                    end %> Der nächste Brückentag in <%= @federal_state.name %> ist am <%= ViewHelpers.format_date_range(
+                    end %> Der nächste Brückentag in {@federal_state.name} ist am {ViewHelpers.format_date_range(
                     next_bridge_day.starts_on,
                     next_bridge_day.ends_on
-                  ) %><%= if holiday_name, do: " (" <> holiday_name <> ")", else: "" %>.
+                  )}{if holiday_name, do: " (" <> holiday_name <> ")", else: ""}.
                 <% else %>
-                  Für dieses Jahr sind keine weiteren Brückentage in <%= @federal_state.name %> geplant.
+                  Für dieses Jahr sind keine weiteren Brückentage in {@federal_state.name} geplant.
                 <% end %>
               </dd>
             </div>

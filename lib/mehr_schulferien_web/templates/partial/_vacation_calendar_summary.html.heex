@@ -9,26 +9,26 @@
         ||  period.holiday_or_vacation_type.slug == "unterrichtsfrei"
         || (period.holiday_or_vacation_type.slug == "mariae-himmelfahrt" && ! period.is_valid_for_everybody)
         ) do %>
-          <%= period.holiday_or_vacation_type.colloquial %>
+          {period.holiday_or_vacation_type.colloquial}
         <% else %>
           <%= if period.location.is_federal_state do %>
-            <%= period.holiday_or_vacation_type.colloquial %>
+            {period.holiday_or_vacation_type.colloquial}
           <% else %>
-            <%= period.holiday_or_vacation_type.colloquial %><br />
+            {period.holiday_or_vacation_type.colloquial}<br />
             <%= if period.location.is_country do %>
-              <span class="text-gray-500 font-normal">(Land: <%= period.location.name %>)</span>
+              <span class="text-gray-500 font-normal">(Land: {period.location.name})</span>
             <% else %>
               <%= if period.location.is_county do %>
                 <span class="text-gray-500 font-normal">
-                  (Landkreis: <%= period.location.name %>)
+                  (Landkreis: {period.location.name})
                 </span>
               <% else %>
                 <%= if period.location.is_city do %>
                   <span class="text-gray-500 font-normal">
-                    (Ort: <%= period.location.name %>)
+                    (Ort: {period.location.name})
                   </span>
                 <% else %>
-                  <span class="text-gray-500 font-normal">(?: <%= period.location.name %>)</span>
+                  <span class="text-gray-500 font-normal">(?: {period.location.name})</span>
                 <% end %>
               <% end %>
             <% end %>
@@ -37,7 +37,7 @@
       </dt>
       <dd>
         <%= for period <- periods do %>
-          <%= ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil) %><br />
+          {ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}<br />
         <% end %>
         <% number_days = ViewHelpers.number_days(periods) %>
         <% css_class =
@@ -49,7 +49,7 @@
             _ -> "bg-gray-500 text-white"
           end %>
         <span class={"inline-block px-2 py-1 text-xs font-semibold rounded #{css_class}"}>
-          <%= number_days %> <%= if number_days == 1, do: "Tag", else: "Tage" %>
+          {number_days} {if number_days == 1, do: "Tag", else: "Tage"}
         </span>
       </dd>
     </dl>

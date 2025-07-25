@@ -15,15 +15,15 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
     ~H"""
     <fieldset class="border border-gray-300 rounded-lg p-6 mb-6">
       <legend class="text-lg font-semibold px-2">
-        <%= @translate_fn.("Sender", @locale) %>
+        {@translate_fn.("Sender", @locale)}
       </legend>
       <p class="text-sm text-gray-600 mb-4">
-        <%= @translate_fn.("Your personal information for the excuse letter", @locale) %>
+        {@translate_fn.("Your personal information for the excuse letter", @locale)}
       </p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("Title (optional)", @locale) %>
+            {@translate_fn.("Title (optional)", @locale)}
           </label>
           <input
             type="text"
@@ -37,7 +37,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div>
           <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("First Name", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("First Name", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -51,7 +51,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div>
           <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("Last Name", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("Last Name", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -65,7 +65,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div class="md:col-span-2">
           <label for="street" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("Street and House Number (optional)", @locale) %>
+            {@translate_fn.("Street and House Number (optional)", @locale)}
           </label>
           <input
             type="text"
@@ -78,7 +78,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div>
           <label for="zip_code" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("ZIP Code", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("ZIP Code", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -92,7 +92,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div>
           <label for="city" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("City", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("City", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -121,15 +121,15 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
     ~H"""
     <fieldset class="border border-gray-300 rounded-lg p-6 mb-6">
       <legend class="text-lg font-semibold px-2">
-        <%= @translate_fn.("School and Student Information", @locale) %>
+        {@translate_fn.("School and Student Information", @locale)}
       </legend>
       <p class="text-sm text-gray-600 mb-4">
-        <%= @translate_fn.("Information about the school and student", @locale) %>
+        {@translate_fn.("Information about the school and student", @locale)}
       </p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label for="teacher_salutation" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("#{@teacher_label} Salutation", @locale) %>
+            {@translate_fn.("#{@teacher_label} Salutation", @locale)}
           </label>
           <select
             id="teacher_salutation"
@@ -138,16 +138,16 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
             phx-change="validate"
           >
             <option value="Herr" selected={@form_data.teacher_salutation == "Herr"}>
-              <%= @translate_fn.("Mr.", @locale) %>
+              {@translate_fn.("Mr.", @locale)}
             </option>
             <option value="Frau" selected={@form_data.teacher_salutation == "Frau"}>
-              <%= @translate_fn.("Ms.", @locale) %>
+              {@translate_fn.("Ms.", @locale)}
             </option>
           </select>
         </div>
         <div>
           <label for="teacher_name" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("#{@teacher_label} Name", @locale) %>
+            {@translate_fn.("#{@teacher_label} Name", @locale)}
           </label>
           <input
             type="text"
@@ -160,7 +160,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div>
           <label for="name_of_student" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("Student Name", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("Student Name", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -174,7 +174,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div>
           <label for="class_name" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("Class", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("Class", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -189,7 +189,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            <%= @translate_fn.("My relationship to the student:", @locale) %>
+            {@translate_fn.("My relationship to the student:", @locale)}
           </label>
           <div class="space-y-2">
             <label class="inline-flex items-center">
@@ -201,7 +201,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
                 class="mr-2 text-blue-600 focus:ring-blue-500"
                 phx-change="validate"
               />
-              <span><%= @translate_fn.("my son", @locale) %></span>
+              <span>{@translate_fn.("my son", @locale)}</span>
             </label>
             <br />
             <label class="inline-flex items-center">
@@ -213,7 +213,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
                 class="mr-2 text-blue-600 focus:ring-blue-500"
                 phx-change="validate"
               />
-              <span><%= @translate_fn.("my daughter", @locale) %></span>
+              <span>{@translate_fn.("my daughter", @locale)}</span>
             </label>
             <br />
             <label class="inline-flex items-center">
@@ -226,7 +226,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
                 phx-change="validate"
               />
               <span>
-                <%= @translate_fn.("neither son nor daughter, but I have custody", @locale) %>
+                {@translate_fn.("neither son nor daughter, but I have custody", @locale)}
               </span>
             </label>
           </div>
@@ -250,7 +250,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
     <%= if @duration_type do %>
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-2">
-          <%= @translate_fn.("Duration Type:", @locale) %>
+          {@translate_fn.("Duration Type:", @locale)}
         </label>
         <div class="space-y-2">
           <label class="inline-flex items-center">
@@ -262,7 +262,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
               class="mr-2 text-blue-600 focus:ring-blue-500"
               phx-change="validate"
             />
-            <span><%= @translate_fn.("Single sports lesson", @locale) %></span>
+            <span>{@translate_fn.("Single sports lesson", @locale)}</span>
           </label>
           <br />
           <label class="inline-flex items-center">
@@ -274,7 +274,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
               class="mr-2 text-blue-600 focus:ring-blue-500"
               phx-change="validate"
             />
-            <span><%= @translate_fn.("Period of time", @locale) %></span>
+            <span>{@translate_fn.("Period of time", @locale)}</span>
           </label>
         </div>
       </div>
@@ -284,7 +284,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
       <%= if @single_date and @form_data[:duration_type] == "single_lesson" do %>
         <div class="md:col-span-2">
           <label for="single_date" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("Date", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("Date", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="date"
@@ -299,7 +299,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
       <% else %>
         <div>
           <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("Start Date", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("Start Date", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="date"
@@ -313,7 +313,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
         </div>
         <div>
           <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">
-            <%= @translate_fn.("End Date", @locale) %> <span class="text-red-500">*</span>
+            {@translate_fn.("End Date", @locale)} <span class="text-red-500">*</span>
           </label>
           <input
             type="date"
@@ -359,7 +359,7 @@ defmodule MehrSchulferienWeb.Components.DocumentFormComponent do
           >
           </path>
         </svg>
-        <%= @translate_fn.("Download PDF", @locale) %>
+        {@translate_fn.("Download PDF", @locale)}
       </button>
     </div>
     """

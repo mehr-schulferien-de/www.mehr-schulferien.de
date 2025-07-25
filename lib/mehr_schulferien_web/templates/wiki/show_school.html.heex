@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="mb-8">
     <.heading level={1} class="text-3xl mb-2">
-      Schul-Wiki: <%= @school.name %>
+      Schul-Wiki: {@school.name}
     </.heading>
     <.text class="text-gray-600">
       Bearbeiten Sie die Adressdaten dieser Schule. Alle Änderungen werden protokolliert und können rückgängig gemacht werden.
@@ -28,7 +28,7 @@
             </div>
           <% end %>
 
-          <%= render("_school_form.html",
+          {render("_school_form.html",
             changeset: @changeset,
             action: ~p"/wiki/schools/#{@school.slug}",
             method: :post,
@@ -39,7 +39,7 @@
             submit_text: "Änderungen speichern",
             submit_class: "bg-blue-600 hover:bg-blue-700",
             submit_focus_class: "focus:ring-blue-500"
-          ) %>
+          )}
         </:content>
       </.card>
       <!-- Current Data Display -->
@@ -50,14 +50,14 @@
             <div>
               <dt class="font-bold text-gray-700">Schulname:</dt>
               <dd class="text-gray-900">
-                <%= @school.name || "Nicht angegeben" %>
+                {@school.name || "Nicht angegeben"}
               </dd>
             </div>
             <%= if @school.address.street do %>
               <div>
                 <dt class="font-bold text-gray-700">Straße:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.street %>
+                  {@school.address.street}
                 </dd>
               </div>
             <% end %>
@@ -65,7 +65,7 @@
               <div>
                 <dt class="font-bold text-gray-700">PLZ:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.zip_code %>
+                  {@school.address.zip_code}
                 </dd>
               </div>
             <% end %>
@@ -73,7 +73,7 @@
               <div>
                 <dt class="font-bold text-gray-700">Stadt:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.city %>
+                  {@school.address.city}
                 </dd>
               </div>
             <% end %>
@@ -81,7 +81,7 @@
               <div>
                 <dt class="font-bold text-gray-700">E-Mail:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.email_address %>
+                  {@school.address.email_address}
                 </dd>
               </div>
             <% end %>
@@ -89,7 +89,7 @@
               <div>
                 <dt class="font-bold text-gray-700">Telefon:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.phone_number %>
+                  {@school.address.phone_number}
                 </dd>
               </div>
             <% end %>
@@ -102,7 +102,7 @@
                     target="_blank"
                     class="text-blue-600 hover:text-blue-800 underline"
                   >
-                    <%= display_url(@school.address.homepage_url) %>
+                    {display_url(@school.address.homepage_url)}
                   </a>
                 </dd>
               </div>
@@ -116,7 +116,7 @@
                     target="_blank"
                     class="text-blue-600 hover:text-blue-800 underline"
                   >
-                    <%= display_url(@school.address.wikipedia_url) %>
+                    {display_url(@school.address.wikipedia_url)}
                   </a>
                 </dd>
               </div>
@@ -125,7 +125,7 @@
               <div>
                 <dt class="font-bold text-gray-700">Schülerzahl:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.students_count %>
+                  {@school.address.students_count}
                 </dd>
               </div>
             <% end %>
@@ -133,7 +133,7 @@
               <div>
                 <dt class="font-bold text-gray-700">Gründungsjahr:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.founded_year %>
+                  {@school.address.founded_year}
                 </dd>
               </div>
             <% end %>
@@ -141,7 +141,7 @@
               <div>
                 <dt class="font-bold text-gray-700">Beschreibung:</dt>
                 <dd class="text-gray-900">
-                  <%= @school.address.description %>
+                  {@school.address.description}
                 </dd>
               </div>
             <% end %>
@@ -167,7 +167,7 @@
           <.heading level={2} class="text-xl flex items-center justify-between">
             Versionshistorie
             <span class="text-sm font-normal text-gray-500">
-              <%= length(@versions) %> Änderungen
+              {length(@versions)} Änderungen
             </span>
           </.heading>
         </:header>
@@ -183,23 +183,23 @@
                   <div class="flex justify-between items-start">
                     <div class="flex-1">
                       <p class="text-sm font-medium text-gray-900">
-                        Version #<%= version.id %>
+                        Version #{version.id}
                       </p>
                       <p class="text-xs text-gray-500 mt-1">
-                        <%= format_version_date(version) %> • <%= format_originator(version) %>
+                        {format_version_date(version)} • {format_originator(version)}
                       </p>
                       <.text variant="small" class="text-gray-700 mt-2">
-                        <%= version_summary(version, @versions) %>
+                        {version_summary(version, @versions)}
                       </.text>
                     </div>
                     <%= if version.id != List.first(@versions).id do %>
                       <%= form_for %{}, ~p"/wiki/schools/#{@school.slug}/rollback/#{version.id}", [method: :post, class: "inline"], fn _f -> %>
-                        <%= submit("Wiederherstellen",
+                        {submit("Wiederherstellen",
                           class:
                             "ml-4 px-3 py-1 text-xs font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500",
                           onclick:
                             "return confirm('Sind Sie sicher, dass Sie zu dieser Version zurückkehren möchten?')"
-                        ) %>
+                        )}
                       <% end %>
                     <% end %>
                   </div>
@@ -208,7 +208,7 @@
               <%= if length(@versions) > 5 do %>
                 <div class="p-4 text-center">
                   <.text variant="muted">
-                    Zeige die letzten 5 von <%= length(@versions) %> Änderungen
+                    Zeige die letzten 5 von {length(@versions)} Änderungen
                   </.text>
                 </div>
               <% end %>
@@ -217,7 +217,7 @@
         </:content>
       </.card_with_sections>
 
-      <%= render("_daily_limit_info.html", daily_changes: @daily_changes) %>
+      {render("_daily_limit_info.html", daily_changes: @daily_changes)}
     </div>
   </div>
   <!-- Back to School Link -->

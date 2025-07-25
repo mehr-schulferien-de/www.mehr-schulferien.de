@@ -65,7 +65,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Schulferien <%= @current_year %>
+              Schulferien {@current_year}
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -81,7 +81,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                     href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
-                    <%= display_name %>
+                    {display_name}
                   </a>
                 <% end %>
               </div>
@@ -93,7 +93,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Schulferien <%= @next_year %>
+              Schulferien {@next_year}
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -109,7 +109,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                     href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
-                    <%= display_name %>
+                    {display_name}
                   </a>
                 <% end %>
               </div>
@@ -121,7 +121,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Brückentage <%= @current_year %>
+              Brückentage {@current_year}
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -137,7 +137,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                     href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
-                    <%= display_name %>
+                    {display_name}
                   </a>
                 <% end %>
               </div>
@@ -149,7 +149,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
               type="button"
               class="dropdown-trigger flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900"
             >
-              Brückentage <%= @next_year %>
+              Brückentage {@next_year}
               <svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fill-rule="evenodd"
@@ -165,7 +165,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                     href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
                     class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
                   >
-                    <%= display_name %>
+                    {display_name}
                   </a>
                 <% end %>
               </div>
@@ -203,7 +203,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             <div class="mt-6 space-y-2">
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Schulferien <%= @current_year %>
+                  Schulferien {@current_year}
                 </summary>
                 <div class="ml-4 space-y-1">
                   <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
@@ -211,14 +211,14 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                       href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
-                      <%= display_name %>
+                      {display_name}
                     </a>
                   <% end %>
                 </div>
               </details>
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Schulferien <%= @next_year %>
+                  Schulferien {@next_year}
                 </summary>
                 <div class="ml-4 space-y-1">
                   <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
@@ -226,14 +226,14 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                       href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
-                      <%= display_name %>
+                      {display_name}
                     </a>
                   <% end %>
                 </div>
               </details>
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Brückentage <%= @current_year %>
+                  Brückentage {@current_year}
                 </summary>
                 <div class="ml-4 space-y-1">
                   <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
@@ -241,14 +241,14 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                       href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
-                      <%= display_name %>
+                      {display_name}
                     </a>
                   <% end %>
                 </div>
               </details>
               <details class="mobile-dropdown">
                 <summary class="font-semibold text-gray-900 py-2 cursor-pointer">
-                  Brückentage <%= @next_year %>
+                  Brückentage {@next_year}
                 </summary>
                 <div class="ml-4 space-y-1">
                   <%= for {federal_state, display_name} <- NavigationHelper.federal_states() do %>
@@ -256,7 +256,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
                       href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
                       class="block py-1 text-gray-700 hover:text-gray-900"
                     >
-                      <%= display_name %>
+                      {display_name}
                     </a>
                   <% end %>
                 </div>

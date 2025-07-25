@@ -25,7 +25,7 @@ defmodule MehrSchulferienWeb.LanguageSwitcherComponent do
           >
           </path>
         </svg>
-        <%= language_name(@current_locale) %>
+        {language_name(@current_locale)}
         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
           </path>
@@ -51,8 +51,8 @@ defmodule MehrSchulferienWeb.LanguageSwitcherComponent do
                 phx-target={@myself}
                 role="menuitem"
               >
-                <span class="mr-3 text-lg"><%= country_flag(locale) %></span>
-                <%= language_name(locale) %>
+                <span class="mr-3 text-lg">{country_flag(locale)}</span>
+                {language_name(locale)}
                 <%= if @current_locale == locale do %>
                   <svg class="w-4 h-4 ml-auto text-slate-500" fill="currentColor" viewBox="0 0 20 20">
                     <path

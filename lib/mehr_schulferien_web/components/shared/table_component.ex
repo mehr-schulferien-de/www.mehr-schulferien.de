@@ -19,7 +19,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
     ~H"""
     <div class="overflow-x-auto rounded-lg border border-gray-200">
       <table class={@computed_class}>
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </table>
     </div>
     """
@@ -31,7 +31,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
   def thead(assigns) do
     ~H"""
     <thead class={"bg-gray-50 #{@class}"}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </thead>
     """
   end
@@ -47,7 +47,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
 
     ~H"""
     <tbody class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </tbody>
     """
   end
@@ -90,7 +90,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
 
     ~H"""
     <th scope="col" class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </th>
     """
   end
@@ -133,7 +133,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
 
     ~H"""
     <td class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </td>
     """
   end
@@ -164,7 +164,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
 
     ~H"""
     <tr class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </tr>
     """
   end
@@ -176,7 +176,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
   def table_wrapper(assigns) do
     ~H"""
     <div class={"overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg #{@class}"}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -203,7 +203,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <p class="mt-2 text-sm"><%= @message %></p>
+          <p class="mt-2 text-sm">{@message}</p>
         </div>
       </td>
     </tr>

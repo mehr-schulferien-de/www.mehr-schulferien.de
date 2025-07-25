@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
   <head>
-    <%= render("_head_live.html", assigns) %>
+    {render("_head_live.html", assigns)}
     <script
       defer
       phx-track-static
@@ -15,9 +15,9 @@
     <.navigation socket={@socket} today={Date.utc_today()} />
 
     <main role="main" class="container mx-auto py-8">
-      <%= @inner_content %>
+      {@inner_content}
     </main>
 
-    <%= render("_footer_tailwind.html", assigns) %>
+    {render("_footer_tailwind.html", assigns)}
   </body>
 </html>

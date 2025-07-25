@@ -29,13 +29,13 @@
             <.section_title title={federal_state.name} />
             <!-- Timeline visualization -->
             <div id={"#{component_id}"}>
-              <%= MehrSchulferienWeb.VacationTimelineComponent.render(
+              {MehrSchulferienWeb.VacationTimelineComponent.render(
                 days_to_show: @days,
                 months: @months,
                 all_periods: filtered_periods,
                 days_count: @days_to_display,
                 months_with_days: @months_with_days
-              ) %>
+              )}
               <!-- Fallback text for test environment -->
               <div class="hidden" aria-hidden="true">
                 Ferien und Feiertage im angezeigten Zeitraum
@@ -49,7 +49,7 @@
                 size="sm"
                 class="w-full"
               >
-                Ferientermine <%= current_year %>
+                Ferientermine {current_year}
               </.button>
               <.button
                 href={"/ferien/d/bundesland/#{federal_state.slug}/#{next_year}"}
@@ -57,7 +57,7 @@
                 size="sm"
                 class="w-full"
               >
-                Ferientermine <%= next_year %>
+                Ferientermine {next_year}
               </.button>
             </div>
           </:content>
@@ -123,14 +123,14 @@
                 # Calculate the efficiency using SQL
                 efficiency_data = MehrSchulferien.BridgeDays.calculate_bridge_day_efficiency() %>
                 <!-- Bridge day timeline component -->
-                <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+                {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
                   bridge_day: next_bridge_day,
                   periods: related_periods,
                   reference_date: reference_date,
                   vacation_days: efficiency_data.vacation_days,
                   total_free_days: efficiency_data.total_free_days,
                   efficiency_percentage: efficiency_data.efficiency_percentage
-                }) %>
+                })}
               <% else %>
                 <.text variant="base" class="mb-4">Kein Brückentag in den nächsten Monaten</.text>
               <% end %>
@@ -143,7 +143,7 @@
 
                 <%= if best_bridge_day_result do %>
                   <!-- Super bridge day timeline component -->
-                  <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+                  {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
                     bridge_day: best_bridge_day_result.bridge_day,
                     periods: best_bridge_day_result.adjacent_periods,
                     reference_date: reference_date,
@@ -152,7 +152,7 @@
                     efficiency_percentage: best_bridge_day_result.efficiency_percentage,
                     is_super_bridge_day: true,
                     title: "Der optimale Brückentag der nächsten 12 Monate:"
-                  }) %>
+                  })}
                 <% else %>
                   <.text variant="base" class="mb-2">
                     Keine optimalen Brückentage in den nächsten 12 Monaten gefunden.
@@ -166,7 +166,7 @@
                   size="sm"
                   class="w-full"
                 >
-                  Brückentage <%= current_year %>
+                  Brückentage {current_year}
                 </.button>
                 <.button
                   href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}"}
@@ -174,7 +174,7 @@
                   size="sm"
                   class="w-full"
                 >
-                  Brückentage <%= next_year %>
+                  Brückentage {next_year}
                 </.button>
               </div>
             </:content>

@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   Provides standardized heading, paragraph, and text components.
   """
   use Phoenix.Component
+  use PhoenixHTMLHelpers
 
   attr :level, :integer, default: 1, values: [1, 2, 3, 4, 5, 6]
   attr :class, :string, default: ""
@@ -27,7 +28,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
 
     ~H"""
     <.dynamic tag={@tag} class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </.dynamic>
     """
   end
@@ -49,7 +50,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
 
     ~H"""
     <p class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -73,7 +74,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
 
     ~H"""
     <a href={@href} target={@target} rel={@rel} class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </a>
     """
   end
@@ -85,7 +86,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   def code(assigns) do
     ~H"""
     <code class={"px-1.5 py-0.5 text-sm font-mono bg-gray-100 text-gray-800 rounded #{@class}"}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </code>
     """
   end
@@ -98,9 +99,9 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   def page_title(assigns) do
     ~H"""
     <div class={"mb-6 #{@class}"}>
-      <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @title %></h1>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">{@title}</h1>
       <%= if @subtitle do %>
-        <p class="text-lg text-gray-600"><%= @subtitle %></p>
+        <p class="text-lg text-gray-600">{@subtitle}</p>
       <% end %>
     </div>
     """
@@ -114,7 +115,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   def section_title(assigns) do
     ~H"""
     <div class={"mb-4 #{@class}"}>
-      <h2 class="text-xl font-semibold text-gray-900"><%= @title %></h2>
+      <h2 class="text-xl font-semibold text-gray-900">{@title}</h2>
       <%= if @divider do %>
         <div class="mt-2 border-b border-gray-200"></div>
       <% end %>
@@ -129,7 +130,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
 
   defp dynamic(assigns) do
     ~H"""
-    <%= Phoenix.HTML.Tag.content_tag(@tag, render_slot(@inner_block), class: @class) %>
+    {content_tag(@tag, render_slot(@inner_block), class: @class)}
     """
   end
 end

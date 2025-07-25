@@ -36,7 +36,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
         <%= for {school_year, periods} <- @grouped_periods do %>
           <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-2">
-              Schuljahr <%= school_year %>/<%= school_year + 1 %>
+              Schuljahr {school_year}/{school_year + 1}
             </h3>
 
             <table class="min-w-full bg-white border border-gray-200 table-fixed">

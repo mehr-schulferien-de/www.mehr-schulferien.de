@@ -37,13 +37,13 @@
             <% end %>
             <li>
               <%= if path do %>
-                <%= link(label,
+                {link(label,
                   to: path,
                   class: "text-gray-600 hover:text-blue-600 text-sm"
-                ) %>
+                )}
               <% else %>
                 <span class="text-gray-700 font-medium text-sm">
-                  <%= label %>
+                  {label}
                 </span>
               <% end %>
             </li>
@@ -104,13 +104,13 @@
             <% end %>
             <li>
               <%= if path do %>
-                <%= link(label,
+                {link(label,
                   to: path,
                   class: "text-gray-600 hover:text-blue-600"
-                ) %>
+                )}
               <% else %>
                 <span class="text-gray-700 font-medium">
-                  <%= label %>
+                  {label}
                 </span>
               <% end %>
             </li>
@@ -129,10 +129,10 @@
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">
-        <%= translate("Sports Exemption Request", @locale) %>
+        {translate("Sports Exemption Request", @locale)}
       </h1>
       <p class="text-lg text-slate-600">
-        <%= translate("For %{school_name}", @locale, %{school_name: @school.name}) %>
+        {translate("For %{school_name}", @locale, %{school_name: @school.name})}
       </p>
     </div>
     <!-- Disclaimer -->
@@ -164,10 +164,10 @@
           <div class="flex-1 space-y-4">
             <div>
               <h2 class="text-xl font-semibold text-slate-900 mb-3">
-                <%= translate("Request sports exemption", @locale) %>
+                {translate("Request sports exemption", @locale)}
               </h2>
               <p class="text-slate-600 leading-relaxed">
-                <%= translate(
+                {translate(
                   "Generate a free sports exemption request according to %{standard}. You can print the PDF or sign it digitally and send it to the school by email.",
                   @locale,
                   %{
@@ -176,16 +176,16 @@
                         "<a href=\"https://de.wikipedia.org/wiki/DIN_5008\" class=\"text-blue-600 hover:text-blue-800 underline\">DIN 5008</a>"
                       )
                   }
-                ) %>
+                )}
               </p>
             </div>
 
             <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
-              <h3 class="font-semibold text-slate-900 mb-2"><%= @school.name %></h3>
+              <h3 class="font-semibold text-slate-900 mb-2">{@school.name}</h3>
               <%= if @school.address do %>
                 <div class="text-sm text-slate-600 space-y-1">
-                  <p><%= @school.address.street %></p>
-                  <p><%= @school.address.zip_code %> <%= @school.address.city %></p>
+                  <p>{@school.address.street}</p>
+                  <p>{@school.address.zip_code} {@school.address.city}</p>
                 </div>
               <% end %>
             </div>
@@ -200,7 +200,7 @@
                   class="w-full h-full object-contain"
                 />
               </div>
-              <p class="text-xs text-slate-500"><%= translate("Preview Example", @locale) %></p>
+              <p class="text-xs text-slate-500">{translate("Preview Example", @locale)}</p>
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@
               clip-rule="evenodd"
             />
           </svg>
-          <p><%= Phoenix.Flash.get(@flash, :info) %></p>
+          <p>{Phoenix.Flash.get(@flash, :info)}</p>
         </div>
       </div>
     <% end %>
@@ -232,7 +232,7 @@
               clip-rule="evenodd"
             />
           </svg>
-          <p><%= Phoenix.Flash.get(@flash, :error) %></p>
+          <p>{Phoenix.Flash.get(@flash, :error)}</p>
         </div>
       </div>
     <% end %>
@@ -276,7 +276,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label for="form_first_name" class="block text-sm font-medium text-slate-700 mb-2">
-                  <%= translate("First Name", @locale) %> <span class="text-red-500">*</span>
+                  {translate("First Name", @locale)} <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -289,7 +289,7 @@
               </div>
               <div>
                 <label for="form_last_name" class="block text-sm font-medium text-slate-700 mb-2">
-                  <%= translate("Last Name", @locale) %> <span class="text-red-500">*</span>
+                  {translate("Last Name", @locale)} <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -304,7 +304,7 @@
 
             <div>
               <label for="form_title" class="block text-sm font-medium text-slate-700 mb-2">
-                <%= translate("Title (optional)", @locale) %>
+                {translate("Title (optional)", @locale)}
               </label>
               <input
                 type="text"
@@ -318,7 +318,7 @@
 
             <div>
               <label for="form_street" class="block text-sm font-medium text-slate-700 mb-2">
-                <%= translate("Street and House Number (optional)", @locale) %>
+                {translate("Street and House Number (optional)", @locale)}
               </label>
               <input
                 type="text"
@@ -333,7 +333,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <div>
                 <label for="form_zip_code" class="block text-sm font-medium text-slate-700 mb-2">
-                  <%= translate("ZIP Code", @locale) %> <span class="text-red-500">*</span>
+                  {translate("ZIP Code", @locale)} <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -348,7 +348,7 @@
               </div>
               <div class="sm:col-span-2">
                 <label for="form_city" class="block text-sm font-medium text-slate-700 mb-2">
-                  <%= translate("City", @locale) %> <span class="text-red-500">*</span>
+                  {translate("City", @locale)} <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -382,10 +382,10 @@
                   />
                 </svg>
               </div>
-              <%= translate("School and Student Information", @locale) %>
+              {translate("School and Student Information", @locale)}
             </h2>
             <p class="text-sm text-slate-600 mt-1 ml-11">
-              <%= translate("Information about the school and student", @locale) %>
+              {translate("Information about the school and student", @locale)}
             </p>
           </div>
 
@@ -393,7 +393,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">
-                  <%= translate("Sports Teacher Salutation", @locale) %>
+                  {translate("Sports Teacher Salutation", @locale)}
                 </label>
                 <select
                   name="form[teacher_salutation]"
@@ -402,10 +402,10 @@
                   class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
                 >
                   <option value="Herr" selected={@form_data.teacher_salutation == "Herr"}>
-                    <%= translate("Mr.", @locale) %>
+                    {translate("Mr.", @locale)}
                   </option>
                   <option value="Frau" selected={@form_data.teacher_salutation == "Frau"}>
-                    <%= translate("Ms.", @locale) %>
+                    {translate("Ms.", @locale)}
                   </option>
                 </select>
               </div>
@@ -414,7 +414,7 @@
                   for="form_teacher_name"
                   class="block text-sm font-medium text-slate-700 mb-2"
                 >
-                  <%= translate("Sports Teacher Name", @locale) %>
+                  {translate("Sports Teacher Name", @locale)}
                 </label>
                 <input
                   type="text"
@@ -432,7 +432,7 @@
                 for="form_name_of_student"
                 class="block text-sm font-medium text-slate-700 mb-2"
               >
-                <%= translate("Student Name", @locale) %> <span class="text-red-500">*</span>
+                {translate("Student Name", @locale)} <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -447,7 +447,7 @@
 
             <div>
               <label for="form_class_name" class="block text-sm font-medium text-slate-700 mb-2">
-                <%= translate("Class", @locale) %> <span class="text-red-500">*</span>
+                {translate("Class", @locale)} <span class="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -462,7 +462,7 @@
 
             <div>
               <span class="block text-sm font-medium text-slate-700 mb-3">
-                <%= translate("My relationship to the student:", @locale) %>
+                {translate("My relationship to the student:", @locale)}
               </span>
               <div class="space-y-3">
                 <label class="flex items-center">
@@ -474,7 +474,7 @@
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
                   <span class="ml-3 text-sm text-slate-700">
-                    <%= translate("my son", @locale) %>
+                    {translate("my son", @locale)}
                   </span>
                 </label>
                 <label class="flex items-center">
@@ -486,7 +486,7 @@
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
                   <span class="ml-3 text-sm text-slate-700">
-                    <%= translate("my daughter", @locale) %>
+                    {translate("my daughter", @locale)}
                   </span>
                 </label>
                 <label class="flex items-center">
@@ -498,7 +498,7 @@
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
                   <span class="ml-3 text-sm text-slate-700">
-                    <%= translate("neither son nor daughter, but I have custody", @locale) %>
+                    {translate("neither son nor daughter, but I have custody", @locale)}
                   </span>
                 </label>
               </div>
@@ -524,17 +524,17 @@
                   />
                 </svg>
               </div>
-              <%= translate("Sports Exemption Details", @locale) %>
+              {translate("Sports Exemption Details", @locale)}
             </h2>
             <p class="text-sm text-slate-600 mt-1 ml-11">
-              <%= translate("Duration and reason for sports exemption", @locale) %>
+              {translate("Duration and reason for sports exemption", @locale)}
             </p>
           </div>
 
           <div class="space-y-6">
             <div>
               <span class="block text-sm font-medium text-slate-700 mb-3">
-                <%= translate("Duration Type:", @locale) %>
+                {translate("Duration Type:", @locale)}
               </span>
               <div class="space-y-3">
                 <label class="flex items-center">
@@ -549,7 +549,7 @@
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
                   <span class="ml-3 text-sm text-slate-700">
-                    <%= translate("Single sports lesson", @locale) %>
+                    {translate("Single sports lesson", @locale)}
                   </span>
                 </label>
                 <label class="flex items-center">
@@ -561,7 +561,7 @@
                     class="w-4 h-4 text-blue-600 border-2 border-slate-300 focus:ring-blue-500 focus:ring-2"
                   />
                   <span class="ml-3 text-sm text-slate-700">
-                    <%= translate("Period of time", @locale) %>
+                    {translate("Period of time", @locale)}
                   </span>
                 </label>
               </div>
@@ -572,7 +572,7 @@
               style={if @form_data.duration_type == "period", do: "display: none;", else: ""}
             >
               <label for="form_single_date" class="block text-sm font-medium text-slate-700 mb-2">
-                <%= translate("Date", @locale) %> <span class="text-red-500">*</span>
+                {translate("Date", @locale)} <span class="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -594,7 +594,7 @@
                     for="form_start_date"
                     class="block text-sm font-medium text-slate-700 mb-2"
                   >
-                    <%= translate("Start Date", @locale) %> <span class="text-red-500">*</span>
+                    {translate("Start Date", @locale)} <span class="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -607,7 +607,7 @@
                 </div>
                 <div>
                   <label for="form_end_date" class="block text-sm font-medium text-slate-700 mb-2">
-                    <%= translate("End Date", @locale) %> <span class="text-red-500">*</span>
+                    {translate("End Date", @locale)} <span class="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -623,23 +623,23 @@
 
             <div>
               <label for="medical_reasons" class="block text-sm font-medium text-slate-700 mb-2">
-                <%= translate("Common Medical Reasons (Optional)", @locale) %>
+                {translate("Common Medical Reasons (Optional)", @locale)}
               </label>
               <select
                 id="medical_reasons"
                 class="block w-full rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-sm h-12"
               >
                 <option value="">
-                  <%= translate("-- Select reason --", @locale) %>
+                  {translate("-- Select reason --", @locale)}
                 </option>
                 <%= for {name, reason} <- medical_reasons(@locale) do %>
                   <option value={reason}>
-                    <%= name %>
+                    {name}
                   </option>
                 <% end %>
               </select>
               <p class="mt-1 text-sm text-slate-500">
-                <%= translate("Select a common reason to auto-fill", @locale) %>
+                {translate("Select a common reason to auto-fill", @locale)}
               </p>
             </div>
 
@@ -656,7 +656,7 @@
                   class="w-4 h-4 text-blue-600 border-2 border-slate-300 rounded focus:ring-blue-500 focus:ring-2"
                 />
                 <span class="ml-3 text-sm text-slate-700">
-                  <%= translate("Medical certificate attached", @locale) %>
+                  {translate("Medical certificate attached", @locale)}
                 </span>
               </label>
             </div>
@@ -666,7 +666,7 @@
                 for="form_detailed_reason"
                 class="block text-sm font-medium text-slate-700 mb-2"
               >
-                <%= translate("Detailed Reason", @locale) %> <span class="text-red-500">*</span>
+                {translate("Detailed Reason", @locale)} <span class="text-red-500">*</span>
               </label>
               <textarea
                 name="form[detailed_reason]"
@@ -698,13 +698,13 @@
             </div>
             <div class="ml-3">
               <label for="form_save_in_cookie" class="text-sm text-gray-700">
-                <%= translate("Save data in cookie", @locale) %>
+                {translate("Save data in cookie", @locale)}
               </label>
               <p class="text-xs text-gray-500 mt-1">
-                <%= translate(
+                {translate(
                   "Your address and student information will be saved locally for future use",
                   @locale
-                ) %>
+                )}
               </p>
             </div>
           </div>
@@ -724,7 +724,7 @@
                   d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <%= translate("Download PDF", @locale) %>
+              {translate("Download PDF", @locale)}
             </button>
           </div>
         </div>

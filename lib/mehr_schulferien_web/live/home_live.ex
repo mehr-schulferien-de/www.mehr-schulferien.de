@@ -1064,9 +1064,9 @@ defmodule MehrSchulferienWeb.HomeLive do
           <.heading level={2} class="mb-3 sm:mb-4 text-lg sm:text-2xl">
             <%= cond do %>
               <% String.length(@search_params["location"] || "") >= 1 and String.length(@search_params["school_name"] || "") >= 1 -> %>
-                Suchergebnisse für "<%= @search_params["school_name"] %>" in
+                Suchergebnisse für "{@search_params["school_name"]}" in
                 <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
-                  PLZ <%= @search_params["location"] %>
+                  PLZ {@search_params["location"]}
                   <%= if length(@cities_with_schools) == 1 do %>
                     <% {city, _schools} = hd(@cities_with_schools) %> (<a
                       href={~p"/ferien/d/stadt/#{city.slug}"}
@@ -1074,15 +1074,15 @@ defmodule MehrSchulferienWeb.HomeLive do
                     ><%= city.name %></a>)
                   <% end %>
                 <% else %>
-                  "<%= @search_params["location"] %>"
+                  "{@search_params["location"]}"
                   <%= if @federal_state_overview do %>
-                    (<%= get_federal_state_name(@federal_state_overview) %>)
+                    ({get_federal_state_name(@federal_state_overview)})
                   <% end %>
                 <% end %>
               <% String.length(@search_params["location"] || "") >= 1 -> %>
                 Suchergebnisse für
                 <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
-                  PLZ <%= @search_params["location"] %>
+                  PLZ {@search_params["location"]}
                   <%= if length(@cities_with_schools) == 1 do %>
                     <% {city, _schools} = hd(@cities_with_schools) %> (<a
                       href={~p"/ferien/d/stadt/#{city.slug}"}
@@ -1090,18 +1090,18 @@ defmodule MehrSchulferienWeb.HomeLive do
                     ><%= city.name %></a>)
                   <% end %>
                 <% else %>
-                  "<%= @search_params["location"] %>"
+                  "{@search_params["location"]}"
                   <%= if @federal_state_overview do %>
-                    (<%= get_federal_state_name(@federal_state_overview) %>)
+                    ({get_federal_state_name(@federal_state_overview)})
                   <% end %>
                 <% end %>
               <% String.length(@search_params["school_name"] || "") >= 1 -> %>
-                Suchergebnisse für "<%= @search_params["school_name"] %>"
+                Suchergebnisse für "{@search_params["school_name"]}"
                 <%= if @federal_state_overview do %>
-                  in <%= get_federal_state_name(@federal_state_overview) %>
+                  in {get_federal_state_name(@federal_state_overview)}
                 <% end %>
               <% @federal_state_overview -> %>
-                Alle Städte und Schulen in <%= get_federal_state_name(@federal_state_overview) %>
+                Alle Städte und Schulen in {get_federal_state_name(@federal_state_overview)}
               <% true -> %>
                 Suchergebnisse
             <% end %>
@@ -1115,7 +1115,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                   <div>
                     <.text variant="small" class="text-xs sm:text-sm text-gray-600">Städte</.text>
                     <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                      <%= format_number(length(@cities_with_schools)) %>
+                      {format_number(length(@cities_with_schools))}
                     </.text>
                   </div>
                   <div>
@@ -1123,11 +1123,11 @@ defmodule MehrSchulferienWeb.HomeLive do
                       Schulen gesamt
                     </.text>
                     <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                      <%= format_number(
+                      {format_number(
                         Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
                           acc + length(schools)
                         end)
-                      ) %>
+                      )}
                     </.text>
                   </div>
                   <div>
@@ -1135,14 +1135,14 @@ defmodule MehrSchulferienWeb.HomeLive do
                       Ø Schulen pro Stadt
                     </.text>
                     <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                      <%= format_number(
+                      {format_number(
                         Float.round(
                           Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
                             acc + length(schools)
                           end) / length(@cities_with_schools),
                           1
                         )
-                      ) %>
+                      )}
                     </.text>
                   </div>
                   <div>
@@ -1155,7 +1155,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                           href={"#city-card-#{city.id}"}
                           class="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-800 hover:underline"
                         >
-                          <%= city.name %> (<%= format_number(length(schools)) %>)
+                          {city.name} ({format_number(length(schools))})
                         </a>
                       <% _ -> %>
                         <.text variant="base" class="text-sm sm:text-base font-semibold">-</.text>
@@ -1177,15 +1177,15 @@ defmodule MehrSchulferienWeb.HomeLive do
                     <div class="flex items-start justify-between gap-2">
                       <div class="flex-1 min-w-0">
                         <h3 class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
-                          <%= school.name %>
+                          {school.name}
                         </h3>
                         <%= if school.address do %>
                           <p class="text-xs text-gray-500">
                             <%= if school.address.street do %>
-                              <%= school.address.street %><br />
+                              {school.address.street}<br />
                             <% end %>
                             <%= if school.address.zip_code do %>
-                              <%= school.address.zip_code %> <%= city.name %>
+                              {school.address.zip_code} {city.name}
                             <% end %>
                           </p>
                         <% end %>
@@ -1223,17 +1223,17 @@ defmodule MehrSchulferienWeb.HomeLive do
                             href={~p"/ferien/d/stadt/#{city.slug}"}
                             class="text-sm sm:text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
                           >
-                            <%= city.name %>
+                            {city.name}
                           </a>
                         <% else %>
                           <h3 class="text-sm sm:text-lg font-semibold text-gray-900 truncate">
-                            <%= city.name %>
+                            {city.name}
                           </h3>
                         <% end %>
                         <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0 whitespace-nowrap">
-                          <%= format_number(length(schools)) %> <%= if length(schools) == 1,
+                          {format_number(length(schools))} {if length(schools) == 1,
                             do: "Schule",
-                            else: "Schulen" %>
+                            else: "Schulen"}
                         </span>
                       </div>
                       <% zip_codes =
@@ -1244,7 +1244,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                         |> Enum.sort() %>
                       <%= if length(zip_codes) > 0 do %>
                         <p class="text-sm text-gray-500 mt-1">
-                          PLZ-Bereich: <%= format_zip_codes_list(zip_codes) %>
+                          PLZ-Bereich: {format_zip_codes_list(zip_codes)}
                         </p>
                       <% end %>
                     </div>
@@ -1270,17 +1270,17 @@ defmodule MehrSchulferienWeb.HomeLive do
                               <div class="flex items-start justify-between gap-1">
                                 <div class="flex-1 min-w-0 pr-1">
                                   <p class="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                                    <%= school.name %>
+                                    {school.name}
                                   </p>
                                   <%= if school.address && school.address.street do %>
                                     <p class="text-xs text-gray-500 mt-0.5 truncate">
-                                      <%= school.address.street %>
+                                      {school.address.street}
                                       <%= if school.address.zip_code do %>
-                                        , <%= school.address.zip_code %> <%= String.slice(
+                                        , {school.address.zip_code} {String.slice(
                                           city.name,
                                           0,
                                           15
-                                        ) %><%= if String.length(city.name) > 15, do: "..." %>
+                                        )}{if String.length(city.name) > 15, do: "..."}
                                       <% end %>
                                     </p>
                                   <% end %>
@@ -1317,7 +1317,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             <%= if MapSet.member?(@expanded_cities, city.id) do %>
                               <span>Weniger anzeigen</span>
                             <% else %>
-                              <span>Alle <%= length(schools) %> Schulen anzeigen</span>
+                              <span>Alle {length(schools)} Schulen anzeigen</span>
                             <% end %>
                             <svg
                               class={"ml-0.5 sm:ml-1 w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 #{if MapSet.member?(@expanded_cities, city.id), do: "rotate-180", else: ""}"}
@@ -1354,9 +1354,9 @@ defmodule MehrSchulferienWeb.HomeLive do
             <.heading level={2} class="mb-2 sm:mb-0 text-lg sm:text-xl">
               <%= if length(@cities_with_schools) == 1 do %>
                 <% {city, _schools} = hd(@cities_with_schools) %>
-                <%= city.name %>, <%= @federal_state_overview.federal_state.name %>
+                {city.name}, {@federal_state_overview.federal_state.name}
               <% else %>
-                <%= @federal_state_overview.federal_state.name %>
+                {@federal_state_overview.federal_state.name}
               <% end %>
             </.heading>
             <div class="flex gap-4 text-sm text-gray-600">
@@ -1364,30 +1364,30 @@ defmodule MehrSchulferienWeb.HomeLive do
                 <% {_city, schools} = hd(@cities_with_schools) %>
                 <span>
                   <span class="font-semibold">
-                    <%= format_number(length(schools)) %>
+                    {format_number(length(schools))}
                   </span>
-                  <%= if length(schools) == 1,
+                  {if length(schools) == 1,
                     do: "Schule",
-                    else: "Schulen" %>
+                    else: "Schulen"}
                 </span>
               <% else %>
                 <span>
                   <span class="font-semibold">
-                    <%= format_number(@federal_state_overview.city_count) %>
+                    {format_number(@federal_state_overview.city_count)}
                   </span>
-                  <%= if @federal_state_overview.city_count ==
-                           1,
-                         do: "Stadt",
-                         else: "Städte" %>
+                  {if @federal_state_overview.city_count ==
+                        1,
+                      do: "Stadt",
+                      else: "Städte"}
                 </span>
                 <span>
                   <span class="font-semibold">
-                    <%= format_number(@federal_state_overview.school_count) %>
+                    {format_number(@federal_state_overview.school_count)}
                   </span>
-                  <%= if @federal_state_overview.school_count ==
-                           1,
-                         do: "Schule",
-                         else: "Schulen" %>
+                  {if @federal_state_overview.school_count ==
+                        1,
+                      do: "Schule",
+                      else: "Schulen"}
                 </span>
               <% end %>
             </div>
@@ -1403,12 +1403,12 @@ defmodule MehrSchulferienWeb.HomeLive do
                 <%= for vacation <- Enum.take(@federal_state_overview.next_vacations, 3) do %>
                   <div class="text-sm">
                     <div class="font-medium">
-                      <%= vacation.holiday_or_vacation_type.colloquial %>
+                      {vacation.holiday_or_vacation_type.colloquial}
                     </div>
                     <div class="text-gray-600">
-                      <%= DateFormatter.format_date_full(vacation.starts_on) %> - <%= DateFormatter.format_date_full(
+                      {DateFormatter.format_date_full(vacation.starts_on)} - {DateFormatter.format_date_full(
                         vacation.ends_on
-                      ) %>
+                      )}
                     </div>
                   </div>
                 <% end %>
@@ -1427,10 +1427,10 @@ defmodule MehrSchulferienWeb.HomeLive do
                 <%= for holiday <- Enum.take(@federal_state_overview.next_holidays, 3) do %>
                   <div class="text-sm">
                     <div class="font-medium">
-                      <%= holiday.holiday_or_vacation_type.colloquial %>
+                      {holiday.holiday_or_vacation_type.colloquial}
                     </div>
                     <div class="text-gray-600">
-                      <%= DateFormatter.format_date_full(holiday.starts_on) %>
+                      {DateFormatter.format_date_full(holiday.starts_on)}
                     </div>
                   </div>
                 <% end %>
@@ -1450,12 +1450,12 @@ defmodule MehrSchulferienWeb.HomeLive do
                   <%= for bridge_info <- Enum.take(@federal_state_overview.next_bridge_days, 3) do %>
                     <div class="text-sm">
                       <div class="font-medium">
-                        <%= bridge_info.vacation_days %> <%= if bridge_info.vacation_days == 1,
+                        {bridge_info.vacation_days} {if bridge_info.vacation_days == 1,
                           do: "Tag",
-                          else: "Tage" %> Urlaub
+                          else: "Tage"} Urlaub
                       </div>
                       <div class="text-gray-600">
-                        → <%= bridge_info.total_free_days %> Tage frei (×<%= bridge_info.gain_factor %>)
+                        → {bridge_info.total_free_days} Tage frei (×{bridge_info.gain_factor})
                       </div>
                     </div>
                   <% end %>
@@ -1478,7 +1478,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           <div class="bg-white shadow-sm rounded-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
               <.heading level={2}>
-                Suchergebnisse (<%= length(@schools) %> Schulen gefunden)
+                Suchergebnisse ({length(@schools)} Schulen gefunden)
               </.heading>
             </div>
             <div class="overflow-x-auto">
@@ -1567,26 +1567,26 @@ defmodule MehrSchulferienWeb.HomeLive do
                           href={"/ferien/d/schule/#{school.slug}"}
                           class="text-blue-600 hover:text-blue-900 font-medium"
                         >
-                          <%= school.name %>
+                          {school.name}
                         </a>
                       </td>
                       <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <%= if school.address do %>
-                          <%= school.address.street %>
+                          {school.address.street}
                         <% else %>
                           <span class="text-gray-500">-</span>
                         <% end %>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <%= if school.address && school.address.zip_code do %>
-                          <%= school.address.zip_code %>
+                          {school.address.zip_code}
                         <% else %>
                           <span class="text-gray-500">-</span>
                         <% end %>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <%= if school.parent_location do %>
-                          <%= school.parent_location.name %>
+                          {school.parent_location.name}
                         <% else %>
                           <span class="text-gray-500">-</span>
                         <% end %>
@@ -1601,7 +1601,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           <%= cond do %>
             <% @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" -> %>
               <.alert variant="info">
-                <%= format_number(@total_schools_in_system) %> Schulen gefunden. Bitte geben Sie genauere Suchkriterien ein.
+                {format_number(@total_schools_in_system)} Schulen gefunden. Bitte geben Sie genauere Suchkriterien ein.
               </.alert>
             <% true -> %>
               <.alert variant="info">
@@ -1633,7 +1633,7 @@ defmodule MehrSchulferienWeb.HomeLive do
             </a>
           </div>
           <.text variant="base" class="mb-4 sm:mb-8">
-            Die Ferien und Feiertage der nächsten <%= @vacation_number_of_days %> Tage auf einen Blick.
+            Die Ferien und Feiertage der nächsten {@vacation_number_of_days} Tage auf einen Blick.
           </.text>
 
           <.card_grid>
@@ -1659,14 +1659,14 @@ defmodule MehrSchulferienWeb.HomeLive do
                     <.section_title title={federal_state.name} />
                     <!-- Timeline visualization -->
                     <div id={"#{component_id}"}>
-                      <%= MehrSchulferienWeb.VacationTimelineComponent.render(
+                      {MehrSchulferienWeb.VacationTimelineComponent.render(
                         days_to_show: @vacation_days,
                         months: @vacation_months,
                         all_periods: filtered_periods,
                         days_count: @vacation_number_of_days,
                         months_with_days: @vacation_months_with_days,
                         federal_state: federal_state
-                      ) %>
+                      )}
                       <!-- Fallback text for test environment -->
                       <div class="hidden" aria-hidden="true">
                         Ferien und Feiertage im angezeigten Zeitraum
@@ -1683,7 +1683,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             size="sm"
                             class="w-full"
                           >
-                            <%= current_year %>
+                            {current_year}
                           </.button>
                           <.button
                             href={"/ferien/d/bundesland/#{federal_state.slug}/#{next_year}"}
@@ -1691,7 +1691,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             size="sm"
                             class="w-full"
                           >
-                            <%= next_year %>
+                            {next_year}
                           </.button>
                         </div>
                       </div>
@@ -1776,21 +1776,21 @@ defmodule MehrSchulferienWeb.HomeLive do
                         Nächster Brückentag
                       </.heading>
                       <.text variant="small" class="mb-3">
-                        <%= DateFormatter.format_date_full(next_bridge_day.starts_on) %>
+                        {DateFormatter.format_date_full(next_bridge_day.starts_on)}
                         <%= if Date.compare(next_bridge_day.starts_on, next_bridge_day.ends_on) != :eq do %>
-                          - <%= DateFormatter.format_date_full(next_bridge_day.ends_on) %>
+                          - {DateFormatter.format_date_full(next_bridge_day.ends_on)}
                         <% end %>
                       </.text>
                       <!-- Bridge Day Timeline -->
                       <div class="mb-4">
-                        <%= MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+                        {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
                           bridge_day: next_bridge_day,
                           periods: public_periods,
                           reference_date: reference_date,
                           vacation_days: vacation_days,
                           total_free_days: total_free_days,
                           efficiency_percentage: efficiency
-                        }) %>
+                        })}
                       </div>
 
                       <% # Find super bridge day
@@ -1807,17 +1807,17 @@ defmodule MehrSchulferienWeb.HomeLive do
                             Bester Superbrückentag
                           </.heading>
                           <.text variant="small">
-                            <%= DateFormatter.format_date_full(
+                            {DateFormatter.format_date_full(
                               best_super_bridge_day.bridge_day.starts_on
-                            ) %> - <%= DateFormatter.format_date_full(
+                            )} - {DateFormatter.format_date_full(
                               best_super_bridge_day.bridge_day.ends_on
-                            ) %>
+                            )}
                             <br />
                             <span class="text-xs text-gray-500">
-                              <%= best_super_bridge_day.vacation_days %> Urlaubstag<%= if best_super_bridge_day.vacation_days >
-                                                                                            1,
-                                                                                          do: "e",
-                                                                                          else: "" %> für <%= best_super_bridge_day.total_free_days %> freie Tage
+                              {best_super_bridge_day.vacation_days} Urlaubstag{if best_super_bridge_day.vacation_days >
+                                                                                    1,
+                                                                                  do: "e",
+                                                                                  else: ""} für {best_super_bridge_day.total_free_days} freie Tage
                             </span>
                           </.text>
                         </div>
@@ -1838,7 +1838,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             size="sm"
                             class="w-full"
                           >
-                            <%= current_year %>
+                            {current_year}
                           </.button>
                           <.button
                             href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}"}
@@ -1846,7 +1846,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             size="sm"
                             class="w-full"
                           >
-                            <%= next_year %>
+                            {next_year}
                           </.button>
                         </div>
                       </div>

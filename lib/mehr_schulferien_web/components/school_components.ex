@@ -5,8 +5,6 @@ defmodule MehrSchulferienWeb.SchoolComponents do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
-  import Phoenix.HTML.Link
-
   def no_data(assigns) do
     ~H"""
     <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
@@ -27,16 +25,18 @@ defmodule MehrSchulferienWeb.SchoolComponents do
         </div>
         <div class="ml-3">
           <p class="text-sm text-yellow-700">
-            Keine Feriendaten für <%= @school.name %> im Jahr <%= @year %> verfügbar.
+            Keine Feriendaten für {@school.name} im Jahr {@year} verfügbar.
             <%= if length(@years_with_data) > 0 do %>
               Bitte wählen Sie ein verfügbares Jahr:
               <ul class="mt-2 list-disc pl-5 space-y-1">
                 <%= for available_year <- @years_with_data do %>
                   <li>
-                    <%= link("#{available_year}",
-                      to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{available_year}",
-                      class: "font-medium text-blue-600 hover:text-blue-500"
-                    ) %>
+                    <.link
+                      navigate={~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{available_year}"}
+                      class="font-medium text-blue-600 hover:text-blue-500"
+                    >
+                      {available_year}
+                    </.link>
                   </li>
                 <% end %>
               </ul>

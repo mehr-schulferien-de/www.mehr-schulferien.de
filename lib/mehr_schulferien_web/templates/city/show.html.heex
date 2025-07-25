@@ -2,12 +2,12 @@
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 mt-4 sm:mt-6">
       <.heading level={1} class="text-left">
-        <span class="block">Schulferien <%= @city.name %></span>
+        <span class="block">Schulferien {@city.name}</span>
         <span class="block sm:inline sm:ml-1 text-lg sm:text-2xl font-normal text-gray-600">
-          <%= link(@federal_state.name,
+          {link(@federal_state.name,
             to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}",
             class: "text-blue-600 hover:text-blue-800 cursor-pointer"
-          ) %>
+          )}
         </span>
       </.heading>
 
@@ -79,12 +79,12 @@
                     <%= link to: "/api/#{api_version}/locations/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
                         download: "schulferien-#{@city.slug}-#{@current_year}.ics" do %>
-                      📅 <%= @current_year %>
+                      📅 {@current_year}
                     <% end %>
                     <%= link to: "/api/#{api_version}/locations/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year + 1}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
                         download: "schulferien-#{@city.slug}-#{@current_year + 1}.ics" do %>
-                      📅 <%= @current_year + 1 %>
+                      📅 {@current_year + 1}
                     <% end %>
                   </div>
                 </div>
@@ -128,12 +128,12 @@
                     />
                   </svg>
                   <div class="text-sm flex-1">
-                    <div class="font-medium text-gray-900"><%= @city.name %></div>
+                    <div class="font-medium text-gray-900">{@city.name}</div>
                     <div class="text-gray-600">
                       <%= if Enum.any?(@city.zip_codes) do %>
-                        <%= hd(@city.zip_codes).value %> <%= @city.name %><br />
+                        {hd(@city.zip_codes).value} {@city.name}<br />
                       <% end %>
-                      <%= @federal_state.name %>, <%= @country.name %>
+                      {@federal_state.name}, {@country.name}
                     </div>
                     <% map_query =
                       "#{@city.name}, #{@federal_state.name}, #{@country.name}" %>
@@ -201,7 +201,7 @@
                   <div class="text-sm text-gray-600 lg:hidden">
                     <a href="#faq" class="hover:text-blue-600">
                       <span class="text-gray-500">Schulen:</span>
-                      <span class="font-medium"><%= length(@schools) %></span>
+                      <span class="font-medium">{length(@schools)}</span>
                     </a>
                   </div>
                   <!-- Desktop: Show school list -->
@@ -209,7 +209,7 @@
                     <div class="text-sm text-gray-600 mb-2">
                       <a href="#faq" class="hover:text-blue-600">
                         <span class="text-gray-500">Schulen:</span>
-                        <span class="font-medium"><%= length(@schools) %></span>
+                        <span class="font-medium">{length(@schools)}</span>
                       </a>
                     </div>
                     <!-- School list sorted by name -->
@@ -222,7 +222,7 @@
                           <li class="text-xs py-0.5">
                             <%= link to: ~p"/ferien/#{@country.slug}/schule/#{school.slug}",
                                 class: "text-blue-600 hover:text-blue-800 hover:underline block" do %>
-                              <%= school.name %>
+                              {school.name}
                             <% end %>
                           </li>
                         <% end %>
@@ -252,7 +252,7 @@
         <.calendar_legend />
 
         <.heading level={3} class="text-lg text-gray-700 mt-4 mb-3">
-          <%= @current_year %>
+          {@current_year}
         </.heading>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -269,7 +269,7 @@
       </div>
 
       <div class="mt-8">
-        <.heading level={3} class="text-lg text-gray-700 mb-3"><%= @next_year %></.heading>
+        <.heading level={3} class="text-lg text-gray-700 mb-3">{@next_year}</.heading>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <%= for month <- 1..12 do %>
@@ -392,11 +392,11 @@
                     WordPress Plugin
                   </.heading>
                   <.text variant="small" class="text-gray-700 mb-4">
-                    Integrieren Sie die Schulferien von <%= @city.name %> direkt in Ihre WordPress-Website mit unserem kostenlosen Plugin.
+                    Integrieren Sie die Schulferien von {@city.name} direkt in Ihre WordPress-Website mit unserem kostenlosen Plugin.
                   </.text>
 
                   <div class="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 font-mono text-xs break-all">
-                    [schulferien location_type="city" location="<%= @city.slug %>" display="table"]
+                    [schulferien location_type="city" location="{@city.slug}" display="table"]
                   </div>
 
                   <a
@@ -447,10 +447,10 @@
 
                   <div class="space-y-2">
                     <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
-                      GET /api/v2.1/locations/<%= @city.slug %>/icalendar
+                      GET /api/v2.1/locations/{@city.slug}/icalendar
                     </div>
                     <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
-                      GET /api/v2.1/locations/<%= @city.slug %>/periods
+                      GET /api/v2.1/locations/{@city.slug}/periods
                     </div>
                   </div>
 

@@ -38,7 +38,7 @@ defmodule MehrSchulferienWeb.Shared.GridComponent do
 
     ~H"""
     <div class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -60,7 +60,7 @@ defmodule MehrSchulferienWeb.Shared.GridComponent do
 
     ~H"""
     <div class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -91,17 +91,17 @@ defmodule MehrSchulferienWeb.Shared.GridComponent do
     <div class={@container_classes}>
       <%= if @sidebar_position == "left" do %>
         <aside class={@sidebar_classes}>
-          <%= render_slot(@sidebar) %>
+          {render_slot(@sidebar)}
         </aside>
         <main class={@main_classes}>
-          <%= render_slot(@main) %>
+          {render_slot(@main)}
         </main>
       <% else %>
         <main class={@main_classes}>
-          <%= render_slot(@main) %>
+          {render_slot(@main)}
         </main>
         <aside class={@sidebar_classes}>
-          <%= render_slot(@sidebar) %>
+          {render_slot(@sidebar)}
         </aside>
       <% end %>
     </div>
@@ -134,7 +134,7 @@ defmodule MehrSchulferienWeb.Shared.GridComponent do
 
     ~H"""
     <div class={@computed_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -147,7 +147,7 @@ defmodule MehrSchulferienWeb.Shared.GridComponent do
   def stack(assigns) do
     ~H"""
     <div class={"space-y-#{@spacing} #{@class}"}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end

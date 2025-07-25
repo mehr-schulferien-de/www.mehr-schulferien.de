@@ -5,8 +5,6 @@ defmodule MehrSchulferienWeb.ICalPanelComponent do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
-  import Phoenix.HTML.Link
-
   attr :conn, :map, required: true
   attr :entity_slug, :string, required: true
   attr :entity_name, :string, required: true
@@ -34,19 +32,28 @@ defmodule MehrSchulferienWeb.ICalPanelComponent do
       </p>
       <ul class="space-y-2 list-disc pl-5 text-sm">
         <li>
-          <%= link to: @ical_urls.calendar_year, class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
-            iCal Schulferien <%= @entity_name %> <%= @year %>
-          <% end %>
+          <.link
+            href={@ical_urls.calendar_year}
+            class="text-blue-600 hover:text-blue-800 cursor-pointer"
+          >
+            iCal Schulferien {@entity_name} {@year}
+          </.link>
         </li>
         <li>
-          <%= link to: @ical_urls.school_year_previous, class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
-            iCal Schuljahr <%= @year - 1 %>/<%= @year %> <%= @entity_name %>
-          <% end %>
+          <.link
+            href={@ical_urls.school_year_previous}
+            class="text-blue-600 hover:text-blue-800 cursor-pointer"
+          >
+            iCal Schuljahr {@year - 1}/{@year} {@entity_name}
+          </.link>
         </li>
         <li>
-          <%= link to: @ical_urls.school_year_current, class: "text-blue-600 hover:text-blue-800 cursor-pointer" do %>
-            iCal Schuljahr <%= @year %>/<%= @year + 1 %> <%= @entity_name %>
-          <% end %>
+          <.link
+            href={@ical_urls.school_year_current}
+            class="text-blue-600 hover:text-blue-800 cursor-pointer"
+          >
+            iCal Schuljahr {@year}/{@year + 1} {@entity_name}
+          </.link>
         </li>
       </ul>
     </div>

@@ -3,7 +3,7 @@
   <%= if Phoenix.Flash.get(@flash, :info) do %>
     <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
       <p class="text-green-800">
-        <%= Phoenix.Flash.get(@flash, :info) %>
+        {Phoenix.Flash.get(@flash, :info)}
       </p>
     </div>
   <% end %>
@@ -11,14 +11,14 @@
   <%= if Phoenix.Flash.get(@flash, :error) do %>
     <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
       <p class="text-red-800">
-        <%= Phoenix.Flash.get(@flash, :error) %>
+        {Phoenix.Flash.get(@flash, :error)}
       </p>
     </div>
   <% end %>
   <!-- Header with Navigation -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">
-      Schul-Wiki: <%= @school.name %>
+      Schul-Wiki: {@school.name}
     </h1>
     <p class="text-gray-600 mb-4">
       Bearbeiten Sie die Adressdaten dieser Schule. Alle Änderungen werden mit Ihrer IP-Adresse protokolliert.
@@ -29,11 +29,11 @@
         <span class="border-b-2 border-blue-500 py-2 px-1 text-sm font-medium text-blue-600">
           Stammdaten
         </span>
-        <%= link("Bewegliche Ferientage",
+        {link("Bewegliche Ferientage",
           to: ~p"/wiki/schools/#{@school.slug}/ferientage",
           class:
             "border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-        ) %>
+        )}
       </nav>
     </div>
   </div>
@@ -110,7 +110,7 @@
           </div>
         <% end %>
 
-        <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_school_form.html",
+        {Phoenix.View.render(MehrSchulferienWeb.WikiView, "_school_form.html",
           changeset: @changeset,
           limit_reached: @limit_reached,
           school_name: Map.get(@changeset.data, :name) || @school.name || "",
@@ -119,7 +119,7 @@
           submit_text: "Änderungen speichern",
           submit_class: "bg-blue-600 hover:bg-blue-700",
           submit_focus_class: "focus:ring-blue-500"
-        ) %>
+        )}
       </div>
     </div>
     <!-- Right Column -->
@@ -131,17 +131,17 @@
           <dl class="space-y-2 text-sm">
             <div>
               <dt class="font-bold text-gray-700">Schulname:</dt>
-              <dd class="text-gray-900"><%= @school.name %></dd>
+              <dd class="text-gray-900">{@school.name}</dd>
             </div>
             <%= if @school.address.street || @school.address.zip_code || @school.address.city do %>
               <div>
                 <dt class="font-bold text-gray-700">Adresse:</dt>
                 <dd class="text-gray-900">
                   <%= if @school.address.street do %>
-                    <%= @school.address.street %><br />
+                    {@school.address.street}<br />
                   <% end %>
                   <%= if @school.address.zip_code || @school.address.city do %>
-                    <%= @school.address.zip_code || "" %> <%= @school.address.city || "" %>
+                    {@school.address.zip_code || ""} {@school.address.city || ""}
                   <% end %>
                 </dd>
               </div>
@@ -151,10 +151,10 @@
                 <dt class="font-bold text-gray-700">Kontakt:</dt>
                 <dd class="text-gray-900">
                   <%= if @school.address.phone_number do %>
-                    Tel: <%= @school.address.phone_number %><br />
+                    Tel: {@school.address.phone_number}<br />
                   <% end %>
                   <%= if @school.address.email_address do %>
-                    E-Mail: <%= @school.address.email_address %>
+                    E-Mail: {@school.address.email_address}
                   <% end %>
                 </dd>
               </div>
@@ -163,11 +163,11 @@
               <div>
                 <dt class="font-bold text-gray-700">Homepage:</dt>
                 <dd class="text-gray-900">
-                  <%= link(display_url(@school.address.homepage_url),
+                  {link(display_url(@school.address.homepage_url),
                     to: @school.address.homepage_url,
                     target: "_blank",
                     class: "text-blue-600 hover:underline"
-                  ) %>
+                  )}
                 </dd>
               </div>
             <% end %>
@@ -175,11 +175,11 @@
               <div>
                 <dt class="font-bold text-gray-700">Wikipedia:</dt>
                 <dd class="text-gray-900">
-                  <%= link(display_url(@school.address.wikipedia_url),
+                  {link(display_url(@school.address.wikipedia_url),
                     to: @school.address.wikipedia_url,
                     target: "_blank",
                     class: "text-blue-600 hover:underline"
-                  ) %>
+                  )}
                 </dd>
               </div>
             <% end %>
@@ -187,31 +187,31 @@
               <div>
                 <dt class="font-bold text-gray-700">Instagram:</dt>
                 <dd class="text-gray-900">
-                  <%= link(
+                  {link(
                     "@" <> (String.split(@school.address.instagram_url, "/") |> List.last()),
                     to: @school.address.instagram_url,
                     target: "_blank",
                     class: "text-blue-600 hover:underline"
-                  ) %>
+                  )}
                 </dd>
               </div>
             <% end %>
             <%= if @school.address.students_count do %>
               <div>
                 <dt class="font-bold text-gray-700">Schülerzahl:</dt>
-                <dd class="text-gray-900"><%= @school.address.students_count %></dd>
+                <dd class="text-gray-900">{@school.address.students_count}</dd>
               </div>
             <% end %>
             <%= if @school.address.founded_year do %>
               <div>
                 <dt class="font-bold text-gray-700">Gründungsjahr:</dt>
-                <dd class="text-gray-900"><%= @school.address.founded_year %></dd>
+                <dd class="text-gray-900">{@school.address.founded_year}</dd>
               </div>
             <% end %>
             <%= if @school.address.description do %>
               <div>
                 <dt class="font-bold text-gray-700">Beschreibung:</dt>
-                <dd class="text-gray-900"><%= @school.address.description %></dd>
+                <dd class="text-gray-900">{@school.address.description}</dd>
               </div>
             <% end %>
           </dl>
@@ -231,7 +231,7 @@
           <h2 class="text-xl font-semibold text-gray-900 flex items-center justify-between">
             Versionshistorie
             <span class="text-sm font-normal text-gray-500">
-              <%= length(@versions) %> Änderungen
+              {length(@versions)} Änderungen
             </span>
           </h2>
         </div>
@@ -248,32 +248,32 @@
                     <div class="flex-1">
                       <div class="flex items-center gap-2 mb-1">
                         <p class="text-sm font-medium text-gray-900">
-                          Version #<%= version.id %>
+                          Version #{version.id}
                         </p>
                         <%= if Map.get(version, :change_count, 0) > 0 do %>
                           <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            <%= Map.get(version, :change_count) %> <%= if Map.get(
-                                                                            version,
-                                                                            :change_count
-                                                                          ) == 1,
-                                                                          do: "Änderung",
-                                                                          else: "Änderungen" %>
+                            {Map.get(version, :change_count)} {if Map.get(
+                                                                    version,
+                                                                    :change_count
+                                                                  ) == 1,
+                                                                  do: "Änderung",
+                                                                  else: "Änderungen"}
                           </span>
                         <% end %>
                       </div>
 
                       <p class="text-xs text-gray-500 mb-2">
-                        <%= MehrSchulferienWeb.Formatters.DateFormatter.format_datetime(
+                        {MehrSchulferienWeb.Formatters.DateFormatter.format_datetime(
                           version.inserted_at
-                        ) %> • <%= Map.get(version, :originator) || "Unbekannt" %>
+                        )} • {Map.get(version, :originator) || "Unbekannt"}
                       </p>
 
                       <%= if Map.get(version, :change_summary) do %>
                         <p class="text-sm text-gray-700 mb-2">
-                          <span class="font-medium">Änderungen:</span> <%= Map.get(
+                          <span class="font-medium">Änderungen:</span> {Map.get(
                             version,
                             :change_summary
-                          ) %>
+                          )}
                         </p>
                       <% end %>
 
@@ -286,7 +286,7 @@
                             <%= for {field_name, {old_value, new_value}} <- Map.get(version, :changes) do %>
                               <div class="mb-3 text-xs">
                                 <span class="font-medium text-gray-700 block mb-1">
-                                  <%= field_name %>:
+                                  {field_name}:
                                 </span>
                                 <div class="ml-2 bg-gray-50 p-2 rounded border-l-2 border-gray-300">
                                   <%= if is_nil(old_value) or old_value == "" do %>
@@ -295,7 +295,7 @@
                                         + hinzugefügt:
                                       </span>
                                       <div class="text-green-800 mt-1 font-medium">
-                                        "<%= new_value %>"
+                                        "{new_value}"
                                       </div>
                                     </div>
                                   <% else %>
@@ -305,7 +305,7 @@
                                           - gelöscht:
                                         </span>
                                         <div class="text-red-800 mt-1 font-medium">
-                                          "<%= old_value %>"
+                                          "{old_value}"
                                         </div>
                                       </div>
                                     <% else %>
@@ -315,7 +315,7 @@
                                             - alt:
                                           </span>
                                           <div class="text-red-800 mt-1 font-medium">
-                                            "<%= old_value %>"
+                                            "{old_value}"
                                           </div>
                                         </div>
                                         <div class="bg-green-50 p-1 rounded">
@@ -323,7 +323,7 @@
                                             + neu:
                                           </span>
                                           <div class="text-green-800 mt-1 font-medium">
-                                            "<%= new_value %>"
+                                            "{new_value}"
                                           </div>
                                         </div>
                                       </div>
@@ -354,9 +354,9 @@
         </div>
       </div>
 
-      <%= Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
+      {Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
         daily_changes: @daily_changes
-      ) %>
+      )}
     </div>
   </div>
   <!-- Back to School Link -->
@@ -437,7 +437,7 @@
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Homepage</span>
                         <p class="text-sm text-gray-500">
-                          <%= display_url(@enrichment_data.homepage_url) %>
+                          {display_url(@enrichment_data.homepage_url)}
                         </p>
                       </div>
                     </label>
@@ -454,7 +454,7 @@
                       />
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Telefonnummer</span>
-                        <p class="text-sm text-gray-500"><%= @enrichment_data.phone_number %></p>
+                        <p class="text-sm text-gray-500">{@enrichment_data.phone_number}</p>
                       </div>
                     </label>
                   <% end %>
@@ -471,7 +471,7 @@
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Wikipedia</span>
                         <p class="text-sm text-gray-500">
-                          <%= display_url(@enrichment_data.wikipedia_url) %>
+                          {display_url(@enrichment_data.wikipedia_url)}
                         </p>
                       </div>
                     </label>
@@ -489,7 +489,7 @@
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Instagram</span>
                         <p class="text-sm text-gray-500">
-                          <%= display_url(@enrichment_data.instagram_url) %>
+                          {display_url(@enrichment_data.instagram_url)}
                         </p>
                       </div>
                     </label>
@@ -506,7 +506,7 @@
                       />
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Beschreibung</span>
-                        <p class="text-sm text-gray-500"><%= @enrichment_data.description %></p>
+                        <p class="text-sm text-gray-500">{@enrichment_data.description}</p>
                       </div>
                     </label>
                   <% end %>
@@ -522,7 +522,7 @@
                       />
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Straße</span>
-                        <p class="text-sm text-gray-500"><%= @enrichment_data.street %></p>
+                        <p class="text-sm text-gray-500">{@enrichment_data.street}</p>
                       </div>
                     </label>
                   <% end %>
@@ -538,7 +538,7 @@
                       />
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">PLZ</span>
-                        <p class="text-sm text-gray-500"><%= @enrichment_data.zip_code %></p>
+                        <p class="text-sm text-gray-500">{@enrichment_data.zip_code}</p>
                       </div>
                     </label>
                   <% end %>
@@ -554,7 +554,7 @@
                       />
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Stadt</span>
-                        <p class="text-sm text-gray-500"><%= @enrichment_data.city %></p>
+                        <p class="text-sm text-gray-500">{@enrichment_data.city}</p>
                       </div>
                     </label>
                   <% end %>
@@ -571,7 +571,7 @@
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Schülerzahl</span>
                         <p class="text-sm text-gray-500">
-                          <%= @enrichment_data.additional_info[:students_count] %>
+                          {@enrichment_data.additional_info[:students_count]}
                         </p>
                       </div>
                     </label>
@@ -589,7 +589,7 @@
                       <div class="ml-3">
                         <span class="text-sm font-medium text-gray-900">Gründungsjahr</span>
                         <p class="text-sm text-gray-500">
-                          <%= @enrichment_data.additional_info[:founded] %>
+                          {@enrichment_data.additional_info[:founded]}
                         </p>
                       </div>
                     </label>

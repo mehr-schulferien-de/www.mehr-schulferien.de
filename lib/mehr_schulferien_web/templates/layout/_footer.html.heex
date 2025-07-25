@@ -27,18 +27,18 @@
   <div class="bg-gray-200 py-4">
     <div class="max-w-6xl mx-auto px-4 text-center">
       <p class="text-gray-600 mb-2">
-        Version <%= ViewHelpers.version() %> - 2020 &copy; Stefan Wintermeyer
+        Version {ViewHelpers.version()} - 2020 &copy; Stefan Wintermeyer
       </p>
       <p class="mb-2">
-        <%= link("Impressum und Datenschutzerklärung",
+        {link("Impressum und Datenschutzerklärung",
           to: ~p"/impressum",
           class: "text-blue-600 hover:text-blue-800 underline"
-        ) %>
+        )}
         <span class="mx-2 text-gray-400">·</span>
-        <%= link("API für Entwickler",
+        {link("API für Entwickler",
           to: ~p"/developers",
           class: "text-blue-600 hover:text-blue-800 underline"
-        ) %>
+        )}
       </p>
       <p>
         <a

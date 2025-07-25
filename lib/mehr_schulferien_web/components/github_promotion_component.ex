@@ -79,13 +79,13 @@ defmodule MehrSchulferienWeb.Components.GitHubPromotionComponent do
           </svg>
         </div>
         <h3 class="text-lg font-semibold text-slate-900 mb-2">
-          <%= @translate_fn.("Open Source & Participation", @locale) %>
+          {@translate_fn.("Open Source & Participation", @locale)}
         </h3>
         <p class="text-slate-600 mb-4">
-          <%= @translate_fn.(
+          {@translate_fn.(
             "This project is open source and thrives on community participation. Do you have feedback or feature requests (other forms or letters)? Visit us on GitHub and create an issue!",
             @locale
-          ) %>
+          )}
         </p>
         <a
           href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de"
@@ -100,7 +100,7 @@ defmodule MehrSchulferienWeb.Components.GitHubPromotionComponent do
               clip-rule="evenodd"
             />
           </svg>
-          <%= @translate_fn.("Visit GitHub Project", @locale) %>
+          {@translate_fn.("Visit GitHub Project", @locale)}
         </a>
       </div>
     </div>

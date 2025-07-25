@@ -20,7 +20,7 @@ defmodule MehrSchulferienWeb.FederalState.LastUpdatedComponent do
           </path>
         </svg>
         <time datetime={@last_update} itemprop="dateModified">
-          Zuletzt aktualisiert: <%= Calendar.strftime(@last_update, "%d.%m.%Y") %>
+          Zuletzt aktualisiert: {Calendar.strftime(@last_update, "%d.%m.%Y")}
         </time>
         <meta itemprop="datePublished" content={@last_update} />
       </div>

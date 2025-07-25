@@ -2,15 +2,15 @@
   <div>
     <div class="mb-4 mt-4 sm:mt-6">
       <.heading level={1} class="text-left">
-        <span class="block">Schulferien <%= @school.name %></span>
+        <span class="block">Schulferien {@school.name}</span>
         <span class="block sm:inline sm:ml-1 text-lg sm:text-2xl font-normal text-gray-600">
-          <%= link(@city.name,
+          {link(@city.name,
             to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}",
             class: "text-blue-600 hover:text-blue-800 cursor-pointer"
-          ) %><%= ", " %><%= link(@federal_state.name,
+          )}{", "}{link(@federal_state.name,
             to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}",
             class: "text-blue-600 hover:text-blue-800 cursor-pointer"
-          ) %>
+          )}
         </span>
       </.heading>
     </div>
@@ -57,7 +57,7 @@
                   </svg>
                   <div class="flex-1">
                     <.text variant="small" class="text-blue-900 font-medium mb-1">
-                      Andere Schulen mit der gleichen Postleitzahl haben an folgenden Daten einen beweglichen Ferientag: <%= @other_schools_bewegliche_ferientage
+                      Andere Schulen mit der gleichen Postleitzahl haben an folgenden Daten einen beweglichen Ferientag: {@other_schools_bewegliche_ferientage
                       |> Enum.map(fn period ->
                         formatted_date =
                           MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
@@ -70,7 +70,7 @@
                           formatted_date
                         end
                       end)
-                      |> Enum.join(", ") %>
+                      |> Enum.join(", ")}
                     </.text>
                   </div>
                 </div>
@@ -134,28 +134,28 @@
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year}&calendar_year=true",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
                         download: "schulferien-#{@school.slug}-#{current_calendar_year}.ics" do %>
-                      📅 <%= current_calendar_year %>
+                      📅 {current_calendar_year}
                     <% end %>
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year + 1}&calendar_year=true",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
                         download: "schulferien-#{@school.slug}-#{current_calendar_year + 1}.ics" do %>
-                      📅 <%= current_calendar_year + 1 %>
+                      📅 {current_calendar_year + 1}
                     <% end %>
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@current_school_year}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
                         download: "schuljahr-#{@school.slug}-#{@current_school_year}-#{@current_school_year + 1}.ics" do %>
-                      📚 <%= @current_school_year %>/<%= String.slice(
+                      📚 {@current_school_year}/{String.slice(
                         to_string(@current_school_year + 1),
                         -2..-1
-                      ) %>
+                      )}
                     <% end %>
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@next_school_year}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
                         download: "schuljahr-#{@school.slug}-#{@next_school_year}-#{@next_school_year + 1}.ics" do %>
-                      📚 <%= @next_school_year %>/<%= String.slice(
+                      📚 {@next_school_year}/{String.slice(
                         to_string(@next_school_year + 1),
                         -2..-1
-                      ) %>
+                      )}
                     <% end %>
                   </div>
                 </div>
@@ -200,10 +200,10 @@
                       />
                     </svg>
                     <div class="text-sm flex-1">
-                      <div class="font-medium text-gray-900"><%= @school.name %></div>
+                      <div class="font-medium text-gray-900">{@school.name}</div>
                       <div class="text-gray-600">
-                        <%= @school.address.street %><br />
-                        <%= @school.address.zip_code %> <%= @school.address.city %>
+                        {@school.address.street}<br />
+                        {@school.address.zip_code} {@school.address.city}
                       </div>
                       <% map_query =
                         "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}" %>
@@ -288,7 +288,7 @@
                           phone
                         ) %>
                       <a href={tel_link} class="text-sm text-blue-600 hover:text-blue-800">
-                        <%= formatted_phone %>
+                        {formatted_phone}
                       </a>
                     </div>
                   <% end %>
@@ -314,7 +314,7 @@
                         href={"mailto:" <> email}
                         class="text-sm text-blue-600 hover:text-blue-800 break-all"
                       >
-                        <%= email %>
+                        {email}
                       </a>
                     </div>
                   <% end %>
@@ -341,7 +341,7 @@
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <%= ViewHelpers.extract_domain(homepage_url) || homepage_url %>
+                        {ViewHelpers.extract_domain(homepage_url) || homepage_url}
                       </a>
                     </div>
                   <% end %>
@@ -371,7 +371,7 @@
                 <%= if @school.address.description do %>
                   <div class="pt-3 border-t border-gray-100">
                     <p class="text-sm text-gray-700 leading-relaxed">
-                      <%= @school.address.description %>
+                      {@school.address.description}
                     </p>
                   </div>
                 <% end %>
@@ -381,14 +381,14 @@
                     <%= if @school.address.founded_year do %>
                       <div class="flex items-center gap-1">
                         <span class="text-gray-500">Gegründet:</span>
-                        <span class="font-medium"><%= @school.address.founded_year %></span>
+                        <span class="font-medium">{@school.address.founded_year}</span>
                       </div>
                     <% end %>
                     <%= if @school.address.students_count do %>
                       <div class="flex items-center gap-1">
                         <span class="text-gray-500">Schüler:</span>
                         <span class="font-medium">
-                          <%= ViewHelpers.format_number(@school.address.students_count) %>
+                          {ViewHelpers.format_number(@school.address.students_count)}
                         </span>
                       </div>
                     <% end %>
@@ -596,7 +596,7 @@
           <% school_year_periods = Map.get(periods_by_school_year, school_year, []) %>
           <%= if length(school_year_periods) > 0 do %>
             <.heading level={3} class="text-lg text-gray-800 mb-4 mt-6">
-              Schuljahr <%= school_year %>/<%= school_year + 1 %>
+              Schuljahr {school_year}/{school_year + 1}
             </.heading>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               <% # Show August to December of the school year
@@ -736,11 +736,11 @@
                     WordPress Plugin
                   </.heading>
                   <.text variant="small" class="text-gray-700 mb-4">
-                    Integrieren Sie die Schulferien von <%= @school.name %> direkt in Ihre WordPress-Website mit unserem kostenlosen Plugin.
+                    Integrieren Sie die Schulferien von {@school.name} direkt in Ihre WordPress-Website mit unserem kostenlosen Plugin.
                   </.text>
 
                   <div class="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 font-mono text-xs break-all">
-                    [schulferien location_type="school" location="<%= @school.slug %>" display="table"]
+                    [schulferien location_type="school" location="{@school.slug}" display="table"]
                   </div>
 
                   <a
@@ -791,10 +791,10 @@
 
                   <div class="space-y-2">
                     <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
-                      GET /api/v2.1/schools/<%= @school.slug %>/icalendar
+                      GET /api/v2.1/schools/{@school.slug}/icalendar
                     </div>
                     <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
-                      GET /api/v2.1/schools/<%= @school.slug %>/periods
+                      GET /api/v2.1/schools/{@school.slug}/periods
                     </div>
                   </div>
 

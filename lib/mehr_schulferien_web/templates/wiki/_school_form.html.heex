@@ -1,7 +1,7 @@
 <%= form_for @changeset, "#", [as: :address, phx_submit: "update_school", class: "space-y-4"], fn f -> %>
   <div>
-    <%= label(f, :name, "Schulname *", class: "block text-sm font-medium text-gray-700 mb-1") %>
-    <%= text_input(f, :name,
+    {label(f, :name, "Schulname *", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {text_input(f, :name,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
@@ -10,13 +10,13 @@
       autofocus: true,
       required: true,
       name: "name"
-    ) %>
-    <%= error_tag(f, :name, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :name, class: "mt-1 text-sm text-red-600")}
   </div>
 
   <div>
-    <%= label(f, :street, "Straße *", class: "block text-sm font-medium text-gray-700 mb-1") %>
-    <%= text_input(f, :street,
+    {label(f, :street, "Straße *", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {text_input(f, :street,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
@@ -24,14 +24,14 @@
       value: get_field_value(f, :street, @address),
       required: true,
       name: "address[street]"
-    ) %>
-    <%= error_tag(f, :street, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :street, class: "mt-1 text-sm text-red-600")}
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
-      <%= label(f, :zip_code, "PLZ *", class: "block text-sm font-medium text-gray-700 mb-1") %>
-      <%= text_input(f, :zip_code,
+      {label(f, :zip_code, "PLZ *", class: "block text-sm font-medium text-gray-700 mb-1")}
+      {text_input(f, :zip_code,
         class:
           "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
         disabled: @limit_reached || @disable_zip_code,
@@ -41,13 +41,13 @@
         pattern: "[0-9]{5}",
         title: "Bitte geben Sie eine gültige 5-stellige deutsche Postleitzahl ein",
         name: "address[zip_code]"
-      ) %>
-      <%= error_tag(f, :zip_code, class: "mt-1 text-sm text-red-600") %>
+      )}
+      {error_tag(f, :zip_code, class: "mt-1 text-sm text-red-600")}
     </div>
 
     <div>
-      <%= label(f, :city, "Stadt *", class: "block text-sm font-medium text-gray-700 mb-1") %>
-      <%= text_input(f, :city,
+      {label(f, :city, "Stadt *", class: "block text-sm font-medium text-gray-700 mb-1")}
+      {text_input(f, :city,
         class:
           "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
         disabled: @limit_reached,
@@ -55,42 +55,40 @@
         value: get_field_value(f, :city, @address),
         required: true,
         name: "address[city]"
-      ) %>
-      <%= error_tag(f, :city, class: "mt-1 text-sm text-red-600") %>
+      )}
+      {error_tag(f, :city, class: "mt-1 text-sm text-red-600")}
     </div>
   </div>
 
   <div>
-    <%= label(f, :email_address, "E-Mail", class: "block text-sm font-medium text-gray-700 mb-1") %>
-    <%= email_input(f, :email_address,
+    {label(f, :email_address, "E-Mail", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {email_input(f, :email_address,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
       placeholder: "z.B. info@schule.de",
       value: get_field_value(f, :email_address, @address),
       name: "address[email_address]"
-    ) %>
-    <%= error_tag(f, :email_address, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :email_address, class: "mt-1 text-sm text-red-600")}
   </div>
 
   <div>
-    <%= label(f, :phone_number, "Telefon", class: "block text-sm font-medium text-gray-700 mb-1") %>
-    <%= text_input(f, :phone_number,
+    {label(f, :phone_number, "Telefon", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {text_input(f, :phone_number,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
       placeholder: "z.B. +49 30 123456789",
       value: get_field_value(f, :phone_number, @address),
       name: "address[phone_number]"
-    ) %>
-    <%= error_tag(f, :phone_number, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :phone_number, class: "mt-1 text-sm text-red-600")}
   </div>
 
   <div>
-    <%= label(f, :homepage_url, "Homepage *",
-      class: "block text-sm font-medium text-gray-700 mb-1"
-    ) %>
-    <%= url_input(f, :homepage_url,
+    {label(f, :homepage_url, "Homepage *", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {url_input(f, :homepage_url,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
@@ -98,45 +96,39 @@
       value: get_field_value(f, :homepage_url, @address),
       required: true,
       name: "address[homepage_url]"
-    ) %>
-    <%= error_tag(f, :homepage_url, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :homepage_url, class: "mt-1 text-sm text-red-600")}
   </div>
 
   <div>
-    <%= label(f, :wikipedia_url, "Wikipedia",
-      class: "block text-sm font-medium text-gray-700 mb-1"
-    ) %>
-    <%= url_input(f, :wikipedia_url,
+    {label(f, :wikipedia_url, "Wikipedia", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {url_input(f, :wikipedia_url,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
       placeholder: "z.B. https://de.wikipedia.org/wiki/Beispiel-Schule",
       value: get_field_value(f, :wikipedia_url, @address),
       name: "address[wikipedia_url]"
-    ) %>
-    <%= error_tag(f, :wikipedia_url, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :wikipedia_url, class: "mt-1 text-sm text-red-600")}
   </div>
 
   <div>
-    <%= label(f, :instagram_url, "Instagram",
-      class: "block text-sm font-medium text-gray-700 mb-1"
-    ) %>
-    <%= url_input(f, :instagram_url,
+    {label(f, :instagram_url, "Instagram", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {url_input(f, :instagram_url,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
       placeholder: "z.B. https://www.instagram.com/schulename",
       value: get_field_value(f, :instagram_url, @address),
       name: "address[instagram_url]"
-    ) %>
-    <%= error_tag(f, :instagram_url, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :instagram_url, class: "mt-1 text-sm text-red-600")}
   </div>
 
   <div>
-    <%= label(f, :description, "Beschreibung",
-      class: "block text-sm font-medium text-gray-700 mb-1"
-    ) %>
-    <%= textarea(f, :description,
+    {label(f, :description, "Beschreibung", class: "block text-sm font-medium text-gray-700 mb-1")}
+    {textarea(f, :description,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
       disabled: @limit_reached,
@@ -145,8 +137,8 @@
       value: get_field_value(f, :description, @address),
       name: "address[description]",
       rows: 4
-    ) %>
-    <%= error_tag(f, :description, class: "mt-1 text-sm text-red-600") %>
+    )}
+    {error_tag(f, :description, class: "mt-1 text-sm text-red-600")}
     <p class="mt-1 text-xs text-gray-500">
       Eine kurze Beschreibung der Schule, ihrer Schwerpunkte und Besonderheiten.
     </p>
@@ -154,10 +146,10 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
-      <%= label(f, :students_count, "Schülerzahl",
+      {label(f, :students_count, "Schülerzahl",
         class: "block text-sm font-medium text-gray-700 mb-1"
-      ) %>
-      <%= number_input(f, :students_count,
+      )}
+      {number_input(f, :students_count,
         class:
           "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
         disabled: @limit_reached,
@@ -166,15 +158,15 @@
         name: "address[students_count]",
         min: 1,
         max: 10000
-      ) %>
-      <%= error_tag(f, :students_count, class: "mt-1 text-sm text-red-600") %>
+      )}
+      {error_tag(f, :students_count, class: "mt-1 text-sm text-red-600")}
     </div>
 
     <div>
-      <%= label(f, :founded_year, "Gründungsjahr",
+      {label(f, :founded_year, "Gründungsjahr",
         class: "block text-sm font-medium text-gray-700 mb-1"
-      ) %>
-      <%= number_input(f, :founded_year,
+      )}
+      {number_input(f, :founded_year,
         class:
           "mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400",
         disabled: @limit_reached,
@@ -183,16 +175,16 @@
         name: "address[founded_year]",
         min: 1200,
         max: Date.utc_today().year
-      ) %>
-      <%= error_tag(f, :founded_year, class: "mt-1 text-sm text-red-600") %>
+      )}
+      {error_tag(f, :founded_year, class: "mt-1 text-sm text-red-600")}
     </div>
   </div>
 
   <div class="pt-4">
-    <%= submit(@submit_text,
+    {submit(@submit_text,
       class:
         "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white #{@submit_class} focus:outline-none focus:ring-2 focus:ring-offset-2 #{@submit_focus_class} disabled:opacity-50 disabled:cursor-not-allowed",
       disabled: @limit_reached
-    ) %>
+    )}
   </div>
 <% end %>

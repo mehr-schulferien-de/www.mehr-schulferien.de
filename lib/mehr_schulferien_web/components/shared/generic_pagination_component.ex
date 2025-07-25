@@ -9,8 +9,6 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
-  import Phoenix.HTML.Link
-
   attr :conn, :map, required: true
   attr :country, :map, required: true
   attr :location, :map, required: true
@@ -61,8 +59,10 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
           <% # Mobile pagination (3 years) %>
           <div class="flex w-full">
             <%= if prev_year do %>
-              <%= link to: build_route_path(@conn, @location_type, @country, @location, prev_year), 
-                      class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg flex items-center" do %>
+              <.link
+                navigate={build_route_path(@conn, @location_type, @country, @location, prev_year)}
+                class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg flex items-center"
+              >
                 <svg
                   class="h-5 w-5"
                   fill="none"
@@ -78,7 +78,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                   >
                   </path>
                 </svg>
-              <% end %>
+              </.link>
             <% else %>
               <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-l-lg cursor-not-allowed flex items-center">
                 <svg
@@ -103,20 +103,24 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
               <%= for year <- mobile_visible_years do %>
                 <%= if year == @year do %>
                   <span class="px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600 flex-1 text-center">
-                    <%= year %>
+                    {year}
                   </span>
                 <% else %>
-                  <%= link to: build_route_path(@conn, @location_type, @country, @location, year), 
-                          class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center" do %>
-                    <%= year %>
-                  <% end %>
+                  <.link
+                    navigate={build_route_path(@conn, @location_type, @country, @location, year)}
+                    class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center"
+                  >
+                    {year}
+                  </.link>
                 <% end %>
               <% end %>
             </div>
 
             <%= if next_year do %>
-              <%= link to: build_route_path(@conn, @location_type, @country, @location, next_year), 
-                      class: "px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg flex items-center" do %>
+              <.link
+                navigate={build_route_path(@conn, @location_type, @country, @location, next_year)}
+                class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg flex items-center"
+              >
                 <svg
                   class="h-5 w-5"
                   fill="none"
@@ -132,7 +136,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                   >
                   </path>
                 </svg>
-              <% end %>
+              </.link>
             <% else %>
               <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-r-lg cursor-not-allowed flex items-center">
                 <svg
@@ -156,7 +160,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
         </div>
       <% else %>
         <span class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg">
-          <%= @year %>
+          {@year}
         </span>
       <% end %>
     </div>

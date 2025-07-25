@@ -9,19 +9,19 @@
     <div class="p-4">
       <header>
         <.heading level={3} class="text-lg mb-3" itemprop="name">
-          <%= MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day) %>
-          <small class="text-gray-500"><%= @year %></small>
+          {MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day)}
+          <small class="text-gray-500">{@year}</small>
         </.heading>
       </header>
       <!-- Mobile-friendly date range display -->
       <div class="block sm:hidden">
         <div class="mb-4 p-2 bg-gray-100 rounded text-center">
           <time datetime={first_day} itemprop="startDate">
-            <strong><%= ViewHelpers.format_date(first_day) %></strong>
+            <strong>{ViewHelpers.format_date(first_day)}</strong>
           </time>
           bis
           <time datetime={last_day} itemprop="endDate">
-            <strong><%= ViewHelpers.format_date(last_day) %></strong>
+            <strong>{ViewHelpers.format_date(last_day)}</strong>
           </time>
         </div>
       </div>
@@ -52,7 +52,7 @@
               <tr>
                 <%= for day <- week do %>
                   <td class={"text-right p-1 #{ViewHelpers.get_html_class(day, @all_periods)}#{if Enum.any?(@all_periods, fn p -> Date.compare(day, p.starts_on) != :lt and Date.compare(day, p.ends_on) != :gt end), do: " border-b-4 border-green-600", else: ""}"}>
-                    <time datetime={day}><%= day.day %></time>
+                    <time datetime={day}>{day.day}</time>
                   </td>
                 <% end %>
               </tr>
@@ -67,10 +67,10 @@
           <span></span>
           <span class="icon" style="grid-column: 3;">🎉</span>
           <span class="days-number urlaub" style="grid-column: 1;" itemprop="price">
-            <%= bridge_days_number %>
+            {bridge_days_number}
           </span>
           <span class="arrow" style="grid-column: 2;">➔</span>
-          <span class="days-number frei" style="grid-column: 3;"><%= max_days %></span>
+          <span class="days-number frei" style="grid-column: 3;">{max_days}</span>
         </div>
         <div class="deal-labels">
           <span class="days-label" style="grid-column: 1;" itemprop="description">
@@ -86,9 +86,9 @@
         <div class="joyful-text">
           Wow! Mit nur
           <b>
-            <%= bridge_days_number %> <%= if bridge_days_number == 1,
+            {bridge_days_number} {if bridge_days_number == 1,
               do: "Urlaubstag",
-              else: "Urlaubstagen" %>
+              else: "Urlaubstagen"}
           </b>
           bekommst du <b><%= max_days %> <%= if max_days == 1, do: "freien Tag", else: "freie Tage" %></b>! Super gemacht! 😎
         </div>

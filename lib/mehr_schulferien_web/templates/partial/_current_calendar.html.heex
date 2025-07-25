@@ -13,14 +13,14 @@
                 class="whitespace-nowrap border border-gray-300 p-1"
                 colspan={Date.diff(Enum.at(breakpoint_days, counter + 1), day) + 1}
               >
-                <%= @months[day.month] %> <%= day.year %>
+                {@months[day.month]} {day.year}
               </th>
             <% else %>
               <th
                 class="whitespace-nowrap border border-gray-300 p-1"
                 colspan={Date.diff(Enum.at(breakpoint_days, counter + 1), day)}
               >
-                <%= @months[day.month] %> <%= day.year %>
+                {@months[day.month]} {day.year}
               </th>
             <% end %>
           <% end %>
@@ -33,7 +33,7 @@
         <%= for day <- @days do %>
           <% day_of_week = Date.day_of_week(day) %>
           <td class={"text-right p-1 #{if day_of_week > 5, do: "bg-gray-100", else: ""}"}>
-            <small><%= @day_names[day_of_week] %><span class="hidden sm:inline">.</span></small>
+            <small>{@day_names[day_of_week]}<span class="hidden sm:inline">.</span></small>
           </td>
         <% end %>
       </tr>
@@ -41,7 +41,7 @@
         <%= for day <- @days do %>
           <% day_of_week = Date.day_of_week(day) %>
           <td class={"text-right #{if day_of_week > 5, do: "active", else: ""}"}>
-            <small><%= day.day %><span class="hidden-xs hidden-sm hidden-md">.</span></small>
+            <small>{day.day}<span class="hidden-xs hidden-sm hidden-md">.</span></small>
           </td>
         <% end %>
       </tr>
@@ -55,21 +55,21 @@
             <th rowspan="2" class="p-2 border border-gray-300">
               <%= if country.slug && federal_state.slug do %>
                 <span class="hidden sm:inline">
-                  <%= link(federal_state.name,
+                  {link(federal_state.name,
                     to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state.slug}",
                     class: "text-blue-600 hover:text-blue-800"
-                  ) %>
+                  )}
                 </span>
                 <span class="sm:hidden">
-                  <%= link("#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})",
+                  {link("#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})",
                     to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state.slug}",
                     class: "text-blue-600 hover:text-blue-800"
-                  ) %>
+                  )}
                 </span>
               <% else %>
-                <span class="hidden sm:inline"><%= federal_state.name %></span>
+                <span class="hidden sm:inline">{federal_state.name}</span>
                 <span class="sm:hidden">
-                  <%= "#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})" %>
+                  {"#{String.slice(federal_state.name, 0..3)}. (#{federal_state.code})"}
                 </span>
               <% end %>
             </th>
@@ -114,7 +114,7 @@
                     class={"#{ViewHelpers.get_html_class(day, [school_period])} border border-gray-300 p-1"}
                     colspan={colspan}
                   >
-                    <%= link(
+                    {link(
                       MehrSchulferien.PeriodDisplay.show_period_info(school_period, colspan),
                       title:
                         "#{school_period.holiday_or_vacation_type.colloquial} #{day.year} in #{federal_state.name}",
@@ -125,7 +125,7 @@
                               "##{String.downcase(@months[day.month])}#{day.year}",
                           else: "#"
                         )
-                    ) %>
+                    )}
                   </td>
                 <% else %>
                   <%= if non_school_period = MehrSchulferien.PeriodDisplay.get_non_school_period(day, school_period, current_day_periods) do %>

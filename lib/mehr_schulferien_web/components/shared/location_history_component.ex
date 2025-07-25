@@ -100,10 +100,10 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                 <div class={"flex-1 min-w-0 #{if show_full_info, do: "text-left", else: "text-center md:text-left"}"}>
                   <div class={"#{if show_full_info, do: "text-sm", else: "text-xs md:text-sm"} font-medium text-gray-900 group-hover:text-blue-600 #{if show_full_info, do: "", else: "truncate max-w-[80px] md:max-w-none"}"}>
                     <span class="md:hidden">
-                      <%= truncate_name(location.name, location.type, 15) %>
+                      {truncate_name(location.name, location.type, 15)}
                     </span>
                     <span class="hidden md:inline">
-                      <%= truncate_name(location.name, location.type, 23) %>
+                      {truncate_name(location.name, location.type, 23)}
                     </span>
                   </div>
                   <div class={"#{if show_full_info, do: "block", else: "hidden md:block"} text-xs text-gray-500"}>
@@ -113,7 +113,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                       <% :city -> %>
                         Stadt
                       <% :school -> %>
-                        <%= location.city_name %>
+                        {location.city_name}
                     <% end %>
                   </div>
                 </div>

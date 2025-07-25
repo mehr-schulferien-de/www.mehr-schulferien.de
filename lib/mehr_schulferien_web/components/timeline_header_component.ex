@@ -31,7 +31,7 @@ defmodule MehrSchulferienWeb.TimelineHeaderComponent do
             class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 bg-gray-50"
             colspan={length(days)}
           >
-            <%= @months_map[month] %> <%= year %>
+            {@months_map[month]} {year}
           </th>
         <% end %>
       </tr>
@@ -39,7 +39,7 @@ defmodule MehrSchulferienWeb.TimelineHeaderComponent do
         <%= for day <- @days do %>
           <% weekday = Date.day_of_week(day) %>
           <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center">
-            <%= DateHelpers.weekday(weekday, :short) %>
+            {DateHelpers.weekday(weekday, :short)}
           </td>
         <% end %>
       </tr>
