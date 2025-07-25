@@ -485,6 +485,25 @@ end %>
   <% next_bridge_day = assigns[:next_bridge_day] || nil %>
   <% bridgeday_list = assigns[:bridgeday_list] || "" %>
 
+  <% # Show handwritten date visualization if we have normal bridge days %>
+  <%= if @bridge_day_map[2] && Enum.count(@bridge_day_map[2]) > 0 do %>
+    <div class="mt-8 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+      <.heading level={3} class="text-lg text-gray-800 mb-3">
+        Brückentage als Notiz
+      </.heading>
+      <div class="w-full" style="max-width: 600px; margin: 0 auto;">
+        {Phoenix.HTML.raw(
+          MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage.generate_svg(
+            @bridge_day_map,
+            @federal_state.name,
+            @year,
+            @public_periods
+          )
+        )}
+      </div>
+    </div>
+  <% end %>
+
   <%= if @bridge_day_map[2] && Enum.count(@bridge_day_map[2]) > 0 do %>
     <div class="mt-12 mb-8">
       <.heading level={2} class="text-2xl mb-6">Brückentag-FAQ</.heading>

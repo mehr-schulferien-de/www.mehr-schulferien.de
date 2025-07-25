@@ -276,6 +276,17 @@ defmodule MehrSchulferienWeb.Router do
         BridgeDayController,
         :show_within_federal_state,
         constraints: [year: ~r/20[2-3][0-9]/]
+
+    # Bridge day handwritten image routes
+    get "/brueckentage/:country_slug/bundesland/:federal_state_slug/:year/handwritten.svg",
+        BridgeDayImageController,
+        :handwritten_svg,
+        constraints: [year: ~r/20[2-3][0-9]/]
+
+    get "/brueckentage/:country_slug/bundesland/:federal_state_slug/:year/handwritten.webp",
+        BridgeDayImageController,
+        :handwritten_webp,
+        constraints: [year: ~r/20[2-3][0-9]/]
   end
 
   # PDF download routes

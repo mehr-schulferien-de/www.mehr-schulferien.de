@@ -24,6 +24,20 @@
   property="og:description"
   content={"Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung."}
 />
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+<!-- OpenGraph Image -->
+<meta
+  property="og:image"
+  content={"https://www.mehr-schulferien.de/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}/handwritten.webp"}
+/>
+<meta property="og:image:type" content="image/webp" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta
+  property="og:image:alt"
+  content={"Normale Brückentage #{@federal_state.name} #{@year} - Handgeschriebene Übersicht"}
+/>
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta
@@ -37,6 +51,10 @@
 <meta
   property="twitter:description"
   content={"Entdecken Sie die #{@bridge_day_proposal_count} besten Brückentage für #{@federal_state.name} im Jahr #{@year}. Maximieren Sie Ihren Urlaub mit cleverer Planung."}
+/>
+<meta
+  property="twitter:image"
+  content={"https://www.mehr-schulferien.de/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}/handwritten.webp"}
 />
 
 <script type="application/ld+json">
