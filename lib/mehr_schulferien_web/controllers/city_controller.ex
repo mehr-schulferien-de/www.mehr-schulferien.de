@@ -41,8 +41,15 @@ defmodule MehrSchulferienWeb.CityController do
     {:ok, full_start} = Date.new(current_year, 1, 1)
     {:ok, full_end} = Date.new(current_year + 1, 12, 31)
 
+    # Calculate cutoff date (August 2 of next year)
+    {:ok, cutoff_date} = Date.new(current_year + 1, 8, 2)
+
     all_periods =
       MehrSchulferien.Periods.list_school_vacation_periods(location_ids, full_start, full_end)
+      |> Enum.filter(fn period ->
+        # Keep periods that start on or before August 2 of next year
+        Date.compare(period.starts_on, cutoff_date) != :gt
+      end)
 
     all_public_periods =
       MehrSchulferien.Periods.list_public_periods(location_ids, full_start, full_end)
