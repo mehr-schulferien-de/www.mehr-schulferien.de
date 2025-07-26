@@ -87,7 +87,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
       class={"hover:bg-gray-50 cursor-pointer #{if @is_current, do: "bg-yellow-100"} #{if @is_past, do: "text-gray-400"} #{if @is_next_year, do: "bg-gray-50"}"}
       onclick={"window.location.href='#{@row_href}'"}
     >
-      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium">
+      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium align-top">
         <%= if @period_link_builder do %>
           <a href={@period_link_builder.(@period)} class="text-blue-600 hover:text-blue-800 underline">
             {render_slot(@period_name) || render_period_name(assigns)}
@@ -102,14 +102,14 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
           </div>
         <% end %>
       </td>
-      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
+      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm align-top">
         <%= if @show_mobile_dates do %>
           <.mobile_date_display period={@period} is_next_year={@is_next_year} />
         <% else %>
           <.simple_date_display period={@period} is_next_year={@is_next_year} />
         <% end %>
       </td>
-      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm">
+      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-right align-top">
         {@effective_duration}
       </td>
     </tr>
@@ -151,14 +151,11 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     ~H"""
     <span class="whitespace-nowrap">
       <%= if Date.compare(@period.starts_on, @period.ends_on) == :eq do %>
-        {DateFormatter.format_date_short(@period.starts_on)}
+        {DateFormatter.format_date_with_short_year(@period.starts_on)}
       <% else %>
-        {DateFormatter.format_date_short(@period.starts_on)} - {DateFormatter.format_date_short(
+        {DateFormatter.format_date_with_short_year(@period.starts_on)} - {DateFormatter.format_date_with_short_year(
           @period.ends_on
         )}
-      <% end %>
-      <%= if @is_next_year do %>
-        <span class="text-xs text-gray-500 ml-1">({@period.starts_on.year})</span>
       <% end %>
     </span>
     """
@@ -175,28 +172,25 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     <span class="whitespace-nowrap">
       <%= if Date.compare(@period.starts_on, @period.ends_on) == :eq do %>
         <span class="sm:hidden">
-          {DateFormatter.format_date_short(@period.starts_on)}
+          {DateFormatter.format_date_with_short_year(@period.starts_on)}
         </span>
         <span class="hidden sm:inline">
           {DateFormatter.format_date_full(@period.starts_on)}
         </span>
       <% else %>
         <span class="sm:hidden">
-          {DateFormatter.format_date_short(@period.starts_on)}
+          {DateFormatter.format_date_with_short_year(@period.starts_on)}
         </span>
         <span class="hidden sm:inline">
           {DateFormatter.format_date_full(@period.starts_on)}
         </span>
         -
         <span class="sm:hidden">
-          {DateFormatter.format_date_short(@period.ends_on)}
+          {DateFormatter.format_date_with_short_year(@period.ends_on)}
         </span>
         <span class="hidden sm:inline">
           {DateFormatter.format_date_full(@period.ends_on)}
         </span>
-      <% end %>
-      <%= if @is_next_year do %>
-        <span class="text-xs text-gray-500 ml-1">({@period.starts_on.year})</span>
       <% end %>
     </span>
     """

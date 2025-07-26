@@ -7,7 +7,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
   # Generated from http_redirects_results.json
   # - Values that are strings: Update to new HTTPS URL
   # - Values that are nil: Clear the homepage URL (HTTPS not available)
-  @school_url_updates %{    "73430-theodor-heuss-gymnasium" => nil,
+  @school_url_updates %{
+    "73430-theodor-heuss-gymnasium" => nil,
     "73433-kopernikus-gymnasium-wasseralfingen" => nil,
     "71679-friedrich-list-gymnasium-asperg" => "https://flg-asperg.de/",
     "97980-deutschorden-gymnasium" => "https://www.dog-mgh.de/",
@@ -54,11 +55,13 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "76199-max-planck-gymnasium-rueppurr" => "https://www.mpg-ka.de/",
     "73642-limes-gymnasium" => nil,
     "70327-au-schule-sonderpaedagogisches-bildungs-und-beratungszentrum-mit-de" => nil,
-    "69151-erich-kaestner-schule-sonderpaedagogisches-bildungs-und-beratungszen" => "https://www.erich-kaestner-schule-neckargemuend.de/",
+    "69151-erich-kaestner-schule-sonderpaedagogisches-bildungs-und-beratungszen" =>
+      "https://www.erich-kaestner-schule-neckargemuend.de/",
     "74405-schenk-von-limpurg-gymnasium-gaildorf" => "https://www.svlg-gaildorf.de/",
     "75417-theodor-heuss-gymnasium" => "https://www.thgym-m.de/",
     "79822-kreisgymnasium-hochschwarzwald" => nil,
-    "71088-heinrich-harpprecht-schule-sonderpaedagogisches-bildungs-und-beratu" => "https://www.berkenschule.de/",
+    "71088-heinrich-harpprecht-schule-sonderpaedagogisches-bildungs-und-beratu" =>
+      "https://www.berkenschule.de/",
     "88400-wieland-gymnasium" => nil,
     "72116-flattich-schule-sonderpaedagogisches-bildungs-und-beratungszentrum" => nil,
     "70794-eduard-spranger-gymnasium-bernhausen" => nil,
@@ -71,7 +74,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "78549-gymnasium-spaichingen" => "https://www.gymnasium-spaichingen.de/",
     "88316-gymnasium" => "https://www.gisny.de/",
     "72574-wilhelmschule-sonderpaedagogisches-bildungs-und-beratungszentrum-mi" => nil,
-    "79650-johann-peter-hebel-schule-sonderpaedagogisches-bildungs-und-beratun" => "https://www.hebelschule-schopfheim.de/",
+    "79650-johann-peter-hebel-schule-sonderpaedagogisches-bildungs-und-beratun" =>
+      "https://www.hebelschule-schopfheim.de/",
     "69123-graf-von-galen-schule-sonderpaedagogisches-bildungs-und-beratungsze" => nil,
     "97922-josef-schmitt-realschule-lauda-kaenigshofen" => nil,
     "89079-albert-einstein-gymnasium" => nil,
@@ -82,7 +86,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "89079-albert-einstein-schule-realschule-schulzentrum-ulm-wiblingen" => nil,
     "88212-welfen-gymnasium" => nil,
     "97944-realschule-boxberg" => "https://umpfertalschule.de/",
-    "79104-sonderpaedagogisches-bildungs-und-beratungszentrum-mit-dem-faerdersc" => "https://www.klinikschule-freiburg.de/",
+    "79104-sonderpaedagogisches-bildungs-und-beratungszentrum-mit-dem-faerdersc" =>
+      "https://www.klinikschule-freiburg.de/",
     "70437-rilke-realschule-rot" => nil,
     "72574-graf-eberhard-gymnasium" => nil,
     "78628-gustav-werner-schule-sonderpaedagogisches-bildungs-und-beratungszen" => nil,
@@ -90,7 +95,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "71083-theodor-schuez-realschule" => "https://www.tsr-hbg.de/",
     "74321-realschule-bissingen" => "https://www.realschule-bissingen.de/",
     "88662-grundschule-lippertsreute-deisendorf" => "https://c12.hostmaschine.de:8443/",
-    "72160-pestalozzischule-sonderpaedagogisches-bildungs-und-beratungszentrum" => "https://www.ps-horb.de/",
+    "72160-pestalozzischule-sonderpaedagogisches-bildungs-und-beratungszentrum" =>
+      "https://www.ps-horb.de/",
     "72072-uhland-gymnasium" => nil,
     "68307-eugen-neter-schule-sonderpaedagogisches-bildungs-und-beratungszentr" => nil,
     "79183-heimschule-st-michael-staatliches-sonderpaedagogisches-bildungs-un" => nil,
@@ -103,13 +109,15 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "93449-volksschule-waldmuenchen" => nil,
     "80336-theresien-gymnasium-muenchen" => nil,
     "81241-staedtisches-elsa-braendstroem-gymnasium-muenchen" => nil,
-    "86179-eichendorff-volksschule-augsburg-haunstetten" => "https://www.eichendorffschule-augsburg.de/",
+    "86179-eichendorff-volksschule-augsburg-haunstetten" =>
+      "https://www.eichendorffschule-augsburg.de/",
     "80803-maximiliansgymnasium-muenchen" => nil,
     "85354-josef-hofmiller-gymnasium-freising" => "https://www.johogym-freising.de/",
     "91353-volksschule-hausen" => "https://www.schule-hausen.de/",
     "97737-volksschule-gemuenden-a-main" => nil,
     "90584-volksschule-allersberg-sybilla-maurer-grundschule" => nil,
-    "84034-gymnasium-der-schulstiftung-seligenthal-landshut" => "https://www.wirtschaftsschule.seligenthal.de/",
+    "84034-gymnasium-der-schulstiftung-seligenthal-landshut" =>
+      "https://www.wirtschaftsschule.seligenthal.de/",
     "84137-volksschule-vilsbiburg" => "https://www.grundschule-vilsbiburg.de/",
     "89269-illertal-gymnasium-voehringen" => nil,
     "73728-abendgymnasium-esslingen" => nil,
@@ -127,27 +135,32 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "90556-rangauschule-volksschule-cadolzburg-egersdorf" => nil,
     "90489-maria-ward-schule-grundschule-der-erzdioezese-bamberg-in-nuernberg" => nil,
     "91717-volksschule-wassertruedingen" => nil,
-    "91224-volksschule-pommelsbrunn-grundschule-am-lichtenstein" => "https://www.gs-pommelsbrunn.de/",
+    "91224-volksschule-pommelsbrunn-grundschule-am-lichtenstein" =>
+      "https://www.gs-pommelsbrunn.de/",
     "89231-volksschule-neu-ulm-in-der-stadtmitte" => nil,
     "90427-volksschule-nuernberg-reutleser-strasse" => "https://www.schulegrossgruendlach.de/",
     "87600-adalbert-stifter-volksschule-kaufbeuren-neugablonz" => nil,
     "86529-volksschule-schrobenhausen" => "https://www.grundschule-schrobenhausen.de/",
     "96237-volksschule-ebersdorf-b-coburg" => "https://www.vs-ebersdorf.de/",
-    "85368-volksschule-moosburg-a-d-isar-an-der-muenchener-strasse" => "https://www.anton-vitzthum-grundschule.de/",
+    "85368-volksschule-moosburg-a-d-isar-an-der-muenchener-strasse" =>
+      "https://www.anton-vitzthum-grundschule.de/",
     "97478-volksschule-knetzgau" => nil,
     "86169-volksschule-augsburg-hammmerschmiede" => "https://www.astrologieaugsburg.de/",
     "85276-theresia-gerhardinger-volksschule-pfaffenhofen-a-d-ilm" => nil,
     "85051-volksschule-ingolstadt-unsernherrn" => nil,
     "91477-volksschule-markt-bibart" => "https://gs-markt-bibart.de/",
     "97218-volksschule-gerbrunn" => "https://es-gerbrunn.de",
-    "85716-montessori-schule-clara-grunwald-priv-volksschule" => "https://montessori-unterschleissheim.de/",
+    "85716-montessori-schule-clara-grunwald-priv-volksschule" =>
+      "https://montessori-unterschleissheim.de/",
     "94315-volksschule-straubing-alburg-st-stephan" => nil,
-    "97816-georg-ludwig-rexroth-realschule-staatliche-realschule-lohr" => "https://www.domainmarkt.de/www.glrr.de",
+    "97816-georg-ludwig-rexroth-realschule-staatliche-realschule-lohr" =>
+      "https://www.domainmarkt.de/www.glrr.de",
     "86830-st-ulrich-volksschule-schwabmuenchen" => "https://www.grundschule-schwabmuenchen.de/",
     "87700-elsbethen-volksschule-memmingen-mitte" => "https://www.elsbethenschule-memmingen.de/",
     "97299-priv-montessori-volksschule" => nil,
     "95482-volksschule-gefrees" => nil,
-    "86179-johann-strauss-volksschule-augsburg-haunstetten" => "https://www.gs-johann-strauss.de/",
+    "86179-johann-strauss-volksschule-augsburg-haunstetten" =>
+      "https://www.gs-johann-strauss.de/",
     "97725-johannes-petri-volksschule-elfershausen-langendorf" => nil,
     "85748-volksschule-hochbrueck" => "https://www.grundschule-hochbrueck.de/",
     "85049-volksschule-ingolstadt-gerolfing" => "https://www.schule-gerolfing.de/",
@@ -158,14 +171,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "87538-volksschule-fischen-i-allgaeu" => "https://gsfo.edupage.org/",
     "86470-anton-hoefer-volksschule-thannhausen" => nil,
     "97708-volksschule-bad-bocklet" => "https://www.gms-badbocklet.de/",
-    "85051-volksschule-ingolstadt-an-der-muenchener-strasse" => "https://gs-muenchenerstrasse.de/",
+    "85051-volksschule-ingolstadt-an-der-muenchener-strasse" =>
+      "https://gs-muenchenerstrasse.de/",
     "86720-volksschule-noerdlingen-mitte" => nil,
     "97204-volksschule-hoechberg" => nil,
     "95683-fichtelnaabtalschule-ebnath-neusorg" => "https://fichtelnaabtalschule.de",
     "94099-volksschule-ruhstorf-a-d-rott" => "https://www.vs-ruhstorf.de",
     "94086-volksschule-bad-griesbach-i-rottal" => nil,
     "85132-volksschule-schernfeld" => "https://altmuehlnet.de/~an05058",
-    "95512-friedrich-von-ellrodt-volksschule-neudrossenfeld" => "https://www.schule-neudrossenfeld.de/",
+    "95512-friedrich-von-ellrodt-volksschule-neudrossenfeld" =>
+      "https://www.schule-neudrossenfeld.de/",
     "97906-volksschule-faulbach" => "https://www.vsfaulbach.de/",
     "97650-volksschule-fladungen" => nil,
     "95679-jobst-vom-brandt-schule-waldershof" => nil,
@@ -183,17 +198,20 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "96052-volksschule-bamberg-am-heidelsteig" => "https://www.heidelsteigschule.de/",
     "84494-volksschule-neumarkt-sankt-veit" => nil,
     "84489-hans-kammerer-volksschule-burghausen" => "https://www.hans-kammerer-schule.de/",
-    "97421-staedt-walther-rathenau-gymnasium-schweinfurt" => "https://www.walther-rathenau-sw.de/",
+    "97421-staedt-walther-rathenau-gymnasium-schweinfurt" =>
+      "https://www.walther-rathenau-sw.de/",
     "94104-wilhelm-niedermayer-volksschule-tittling" => nil,
     "83553-volksschule-frauenneuharting" => nil,
     "85049-volksschule-ingolstadt-auf-der-schanz" => nil,
     "94375-volksschule-stallwang" => nil,
     "84416-volksschule-taufkirchen" => nil,
     "84072-volksschule-au-i-d-hallertau" => nil,
-    "97688-jack-steinberger-gymnasium-bad-kissingen" => "https://www.jack-steinberger-gymnasium.de/joomla/index.php",
+    "97688-jack-steinberger-gymnasium-bad-kissingen" =>
+      "https://www.jack-steinberger-gymnasium.de/joomla/index.php",
     "94522-bischof-riccabona-volksschule-wallersdorf" => "https://www.vswallersdorf.de/",
     "93158-volksschule-teublitz" => "https://www.vs-teublitz.de/",
-    "93155-volksschule-moenchsberg-hemau" => "https://nicsell.com/domain/www.volksschule-hemau.de",
+    "93155-volksschule-moenchsberg-hemau" =>
+      "https://nicsell.com/domain/www.volksschule-hemau.de",
     "83370-volksschule-seeon" => nil,
     "96465-arnold-gymnasium-neustadt-bei-coburg" => "https://www.arnold-gymnasium.de/",
     "95183-volksschule-bayerisches-vogtland-feilitzsch" => nil,
@@ -208,12 +226,17 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "93426-volksschule-roding" => "https://notavailable.goneo.de/",
     "94110-adalbert-stifter-volksschule-wegscheid" => nil,
     "96047-clavius-gymnasium-bamberg" => nil,
-    "94051-johann-riederer-schule-staatliche-realschule-hauzenberg" => "https://wp-2023.realschule-hauzenberg.de/",
-    "97702-johann-phil-von-schoenborn-gymnasium-muennerstadt" => "https://www.schoenborn-gymnasium.com/",
-    "84034-private-volksschule-der-abtei-landshut-seligenthal" => "https://www.wirtschaftsschule.seligenthal.de/",
-    "97421-walther-rathenau-realschule-der-stadt-schweinfurt" => "https://www.walther-rathenau-sw.de/",
+    "94051-johann-riederer-schule-staatliche-realschule-hauzenberg" =>
+      "https://wp-2023.realschule-hauzenberg.de/",
+    "97702-johann-phil-von-schoenborn-gymnasium-muennerstadt" =>
+      "https://www.schoenborn-gymnasium.com/",
+    "84034-private-volksschule-der-abtei-landshut-seligenthal" =>
+      "https://www.wirtschaftsschule.seligenthal.de/",
+    "97421-walther-rathenau-realschule-der-stadt-schweinfurt" =>
+      "https://www.walther-rathenau-sw.de/",
     "95028-jean-paul-gymnasium-hof" => "https://www.jean-paul-gymnasium.de/",
-    "93413-maristen-realschule-cham-der-schulstiftung-der-dioezese-regensburg" => "https://www.maristen-realschule.de/",
+    "93413-maristen-realschule-cham-der-schulstiftung-der-dioezese-regensburg" =>
+      "https://www.maristen-realschule.de/",
     "91456-volksschule-diespeck" => nil,
     "97421-olympia-morata-gymnasium-schweinfurt" => nil,
     "84367-volksschule-zeilarn" => nil,
@@ -229,8 +252,10 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "95100-walter-gropius-gymnasium-selb" => "https://www.wggselb.de/wp/",
     "92342-jean-paul-egide-martini-schule-freystadt" => nil,
     "91320-volksschule-ebermannstadt" => nil,
-    "94447-conrad-graf-preysing-realschule-staatliche-realschule-plattling" => "https://www.realschule-plattling.de/",
-    "94330-angela-fraundorfer-realschule-fuer-maedchen-der-franziskanerinnen-ait" => "https://www.kloster-aiterhofen.de",
+    "94447-conrad-graf-preysing-realschule-staatliche-realschule-plattling" =>
+      "https://www.realschule-plattling.de/",
+    "94330-angela-fraundorfer-realschule-fuer-maedchen-der-franziskanerinnen-ait" =>
+      "https://www.kloster-aiterhofen.de",
     "84034-carl-orff-volksschule-landshut" => "https://gs-carl-orff.de/",
     "95336-volksschule-mainleus" => "https://www.schule-mainleus.net/",
     "84082-volksschule-laberweinting" => nil,
@@ -239,9 +264,12 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "96317-frankenwald-gymnasium-kronach" => nil,
     "94486-landgraf-leuchtenberg-realschule-staatl-realschule-fuer-knaben-oste" => nil,
     "96114-staatliche-realschule-hirschaid" => nil,
-    "97204-leopold-sonnemann-realschule-staatliche-realschule-hoechberg" => "https://www.realschule-hoechberg.de/",
-    "95445-alexander-von-humboldt-realschule-staatliche-realschule-bayreuth-i" => "https://www.r1-bayreuth.de/",
-    "92224-dr-johanna-decker-gymnasium-amberg-der-schulstiftung-der-dioezese-r" => "https://www.djds.de/",
+    "97204-leopold-sonnemann-realschule-staatliche-realschule-hoechberg" =>
+      "https://www.realschule-hoechberg.de/",
+    "95445-alexander-von-humboldt-realschule-staatliche-realschule-bayreuth-i" =>
+      "https://www.r1-bayreuth.de/",
+    "92224-dr-johanna-decker-gymnasium-amberg-der-schulstiftung-der-dioezese-r" =>
+      "https://www.djds.de/",
     "90427-volksschule-nuernberg-schule-im-knoblauchsland" => nil,
     "93073-gymnasium-neutraubling" => "https://www.gymnasium-neutraubling.de/",
     "92331-gymnasium-parsberg" => "https://www.gymnasium-parsberg.de/",
@@ -250,7 +278,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "92364-volksschule-deining" => "https://vs-deining.de/",
     "94481-landgraf-leuchtenberg-gymnasium-grafenau" => "https://www.llg-grafenau.de/",
     "95233-staatliche-realschule-helmbrechts" => "https://www.realschule-helmbrechts.de/",
-    "95447-johannes-kepler-realschule-staatliche-realschule-bayreuth-ii" => "https://www.jkr-bt.de/",
+    "95447-johannes-kepler-realschule-staatliche-realschule-bayreuth-ii" =>
+      "https://www.jkr-bt.de/",
     "96047-maria-ward-realschule-bamberg" => nil,
     "95100-staatliche-realschule-selb" => "https://www.rs-selb.de/",
     "93055-musikgymnasium-der-regensburger-domspatzen" => "https://www.domspatzen.de/",
@@ -267,7 +296,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "94078-staatliche-realschule-freyung" => "https://www.rs-freyung.de/",
     "82441-volksschule-ohlstadt" => "https://gsohlstadt.de",
     "91575-johann-sebastian-bach-gymnasium-windsbach-musikgymnasium" => "https://www.jsbg.de/",
-    "93047-maedchenrealschule-der-armen-schulschwestern-von-unserer-lieben-frau" => "https://www.niedermuenster.de/",
+    "93047-maedchenrealschule-der-armen-schulschwestern-von-unserer-lieben-frau" =>
+      "https://www.niedermuenster.de/",
     "92421-volksschule-dachelhofen" => "https://www.vs-dachelhofen.de/",
     "96317-maximilian-von-welsch-schule-staatliche-realschule-kronach-i" => nil,
     "96047-maria-ward-gymnasium-bamberg" => nil,
@@ -282,23 +312,29 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "94234-staatliche-realschule-viechtach" => "https://www.rsvit.de/",
     "96450-staatliche-realschule-coburg-i" => "https://www.rscoburg1.de/",
     "92637-augustinus-gymnasium-weiden" => "https://www.augustinus-gymnasium.de/",
-    "94315-johannes-turmair-gymnasium-straubing" => "https://www.turmair-gymnasium.de/index.php?id=index",
+    "94315-johannes-turmair-gymnasium-straubing" =>
+      "https://www.turmair-gymnasium.de/index.php?id=index",
     "95448-staedtisches-wirtschaftswissenschaftl-gymnasium-bayreuth" => nil,
     "83404-volksschule-feldkirchen-in-ainring" => nil,
     "93309-donau-gymnasium-kelheim" => "https://www.donau-gymnasium.de/",
     "91522-theresien-gymnasium-ansbach" => "https://www.thg-ansbach.de/",
-    "94034-auersperg-gymnasium-d-maria-ward-schulst-passau-freudenhain-mus" => "https://www.freudenhain.de/",
+    "94034-auersperg-gymnasium-d-maria-ward-schulst-passau-freudenhain-mus" =>
+      "https://www.freudenhain.de/",
     "83209-franziska-hager-volksschule-prien-a-chiemsee" => "https://www.fhm-prien.de",
-    "91583-maedchenrealschule-der-erzdioezese-bamberg-schillingsfuerst" => "https://mrs-schillingsfuerst.hier-im-netz.de/",
+    "91583-maedchenrealschule-der-erzdioezese-bamberg-schillingsfuerst" =>
+      "https://mrs-schillingsfuerst.hier-im-netz.de/",
     "91781-staatliche-realschule-weissenburg" => "https://www.rswug.de/",
     "91522-platen-gymnasium-ansbach" => "https://www.Platen-Gymnasium.de/",
-    "92660-lobkowitz-realschule-staatliche-realschule-neustadt-a-d-waldnaab" => "https://rs-new.de/",
-    "90473-volksschule-nuernberg-georg-ledebour-strasse" => "https://www.georg-ledebour-schule.de",
+    "92660-lobkowitz-realschule-staatliche-realschule-neustadt-a-d-waldnaab" =>
+      "https://rs-new.de/",
+    "90473-volksschule-nuernberg-georg-ledebour-strasse" =>
+      "https://www.georg-ledebour-schule.de",
     "91161-gymnasium-hilpoltstein" => nil,
     "82538-volksschule-geretsried-gartenberg" => "https://www.isardammschule.de/",
     "92526-ortenburg-gymnasium-oberviechtach" => "https://www.ortenburg-gymnasium.de/",
     "91717-staatliche-realschule-wassertruedingen" => "https://www.rs-wassertruedingen.de",
-    "93339-johann-simon-mayr-schule-staatliche-realschule-riedenburg" => "https://www.jsm-realschule.de/",
+    "93339-johann-simon-mayr-schule-staatliche-realschule-riedenburg" =>
+      "https://www.jsm-realschule.de/",
     "91126-wolfram-von-eschenbach-gymnasium-schwabach" => "https://www.weg-schwabach.de",
     "90489-maria-ward-schule-der-erzdioezese-bamberg-in-nuernberg-maedchenreals" => nil,
     "87700-voehlin-gymnasium-memmingen" => "https://www.voehlin.de/",
@@ -318,17 +354,20 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "85049-freiherr-von-ickstatt-schule-staatliche-realschule-ingolstadt-i" => nil,
     "92660-gymnasium-neustadt-a-d-waldnaab" => "https://www.gym-new.de/",
     "90513-staatliche-realschule-zirndorf" => nil,
-    "87439-maria-ward-schule-kempten-maedchenrealschule-d-schulwerks-d-dioezese" => "https://www.mw-kempten.de/",
+    "87439-maria-ward-schule-kempten-maedchenrealschule-d-schulwerks-d-dioezese" =>
+      "https://www.mw-kempten.de/",
     "86655-volksschule-harburg" => nil,
     "87733-volksschule-markt-rettenbach" => nil,
     "90471-staedtische-bertolt-brecht-schule-nuernberg-realschule" => nil,
     "87727-staatliche-realschule-babenhausen" => "https://www.realschule-babenhausen.de/",
-    "87600-marien-realschule-kaufbeuren-d-schulwerks-d-dioezese-augsburg" => "https://www.marien-realschule-kaufbeuren.de/",
+    "87600-marien-realschule-kaufbeuren-d-schulwerks-d-dioezese-augsburg" =>
+      "https://www.marien-realschule-kaufbeuren.de/",
     "86163-rudolf-diesel-gymnasium-augsburg" => "https://www.rdg-online.de/",
     "81375-volksschule-muenchen-an-der-grosshaderner-strasse" => nil,
     "86159-gymnasium-bei-st-anna-augsburg" => "https://www.gym-anna.de/cms/",
     "86343-via-claudia-realschule-staatliche-realschule-koenigsbrunn" => nil,
-    "91207-oskar-sembach-realschule-staatl-realschule-lauf-a-d-pegnitz" => "https://www.realschule-lauf.de/",
+    "91207-oskar-sembach-realschule-staatl-realschule-lauf-a-d-pegnitz" =>
+      "https://www.realschule-lauf.de/",
     "82377-buergermeister-prandl-volksschule-penzberg" => nil,
     "89407-johann-michael-sailer-gymnasium-dillingen" => "https://sailer-gymnasium.de/",
     "91217-paul-pfinzing-gymnasium-hersbruck" => "https://gymnasium-hersbruck.de/",
@@ -336,7 +375,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "81739-volksschule-muenchen-an-der-rennertstrasse" => nil,
     "87480-volksschule-weitnau" => nil,
     "90443-staedtisches-sigena-gymnasium-nuernberg" => nil,
-    "86609-knabenrealschule-hl-kreuz-donauwoerth-d-schulwerks-d-dioezese-augs" => "https://www.heiligkreuz-donauwoerth.de/",
+    "86609-knabenrealschule-hl-kreuz-donauwoerth-d-schulwerks-d-dioezese-augs" =>
+      "https://www.heiligkreuz-donauwoerth.de/",
     "81671-volksschule-muenchen-an-der-grafinger-strasse" => nil,
     "86150-maedchenrealschule-st-ursula-augsburg-des-schulwerks-der-dioezese-aug" => nil,
     "92237-staatliche-realschule-sulzbach-rosenberg" => "https://www.realschule-su-ro.de/",
@@ -350,42 +390,55 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "86732-albrecht-ernst-gymnasium-oettingen" => nil,
     "81377-volksschule-muenchen-am-canisiusplatz" => nil,
     "87439-carl-von-linde-gymnasium-kempten" => nil,
-    "86316-konradin-realschule-staatliche-realschule-friedberg" => "https://www.konradin-realschule.de/",
-    "85229-realschule-vinzenz-von-paul-der-erzdioezese-muenchen-und-freising-im" => "https://www.rs-indersdorf.de/",
-    "84137-maximilian-von-montgelas-gymnasium-vilsbiburg" => "https://www.montgelas-gymnasium.de/",
+    "86316-konradin-realschule-staatliche-realschule-friedberg" =>
+      "https://www.konradin-realschule.de/",
+    "85229-realschule-vinzenz-von-paul-der-erzdioezese-muenchen-und-freising-im" =>
+      "https://www.rs-indersdorf.de/",
+    "84137-maximilian-von-montgelas-gymnasium-vilsbiburg" =>
+      "https://www.montgelas-gymnasium.de/",
     "91550-gymnasium-dinkelsbuehl" => nil,
-    "91074-staatliche-realschule-herzogenaurach" => "https://ts.domainname.de/realschule-herzogenaurach.de",
+    "91074-staatliche-realschule-herzogenaurach" =>
+      "https://ts.domainname.de/realschule-herzogenaurach.de",
     "92318-staatliche-realschule-fuer-knaben-neumarkt-i-d-opf" => nil,
     "89290-volksschule-buch" => nil,
     "91126-staatliche-realschule-schwabach" => "https://www.rs-schwabach.de/",
-    "90762-leopold-ullstein-realschule-staatliche-realschule-fuerth" => "https://www.ullstein-realschule-fuerth.de/",
+    "90762-leopold-ullstein-realschule-staatliche-realschule-fuerth" =>
+      "https://www.ullstein-realschule-fuerth.de/",
     "81925-volksschule-muenchen-an-der-oberfoehringer-strasse" => nil,
     "90489-maria-ward-schule-nuernberg-sprachliches-gymnasium-wirtsch-u-soz" => nil,
-    "89358-st-thomas-gymnasium-wettenhausen-d-schulwerks-d-dioezese-augsburg" => "https://www.thomas-gymnasium.de/",
-    "87719-maristenkolleg-mindelheim-gymnasium-des-schulwerks-der-dioezese-au" => "https://www.maristenkolleg.de/",
+    "89358-st-thomas-gymnasium-wettenhausen-d-schulwerks-d-dioezese-augsburg" =>
+      "https://www.thomas-gymnasium.de/",
+    "87719-maristenkolleg-mindelheim-gymnasium-des-schulwerks-der-dioezese-au" =>
+      "https://www.maristenkolleg.de/",
     "91161-staatliche-realschule-hilpoltstein" => nil,
     "91257-staatliche-realschule-pegnitz" => nil,
     "81929-volksschule-muenchen-an-der-fritz-lutz-strasse" => nil,
     "81539-volksschule-muenchen-an-der-weissenseestrasse" => nil,
     "81476-volksschule-muenchen-an-der-berner-strasse" => "https://gsberner.musin.de/",
-    "84183-realschule-der-dominikanerinnen-st-maria-a-d-isar-niederviehbach" => "https://www.realschule-stmaria.de/",
+    "84183-realschule-der-dominikanerinnen-st-maria-a-d-isar-niederviehbach" =>
+      "https://www.realschule-stmaria.de/",
     "81927-volksschule-muenchen-an-der-ostpreussenstrasse" => nil,
     "90547-gymnasium-stein" => nil,
-    "91056-realschule-am-europakanal-staatliche-realschule-erlangen-ii" => "https://www.real-euro.de",
+    "91056-realschule-am-europakanal-staatliche-realschule-erlangen-ii" =>
+      "https://www.real-euro.de",
     "86919-volksschule-utting-a-ammersee" => nil,
-    "87719-maristenkolleg-mindelheim-realschule-fuer-knaben-des-schulwerks-de" => "https://www.maristenkolleg.de/",
+    "87719-maristenkolleg-mindelheim-realschule-fuer-knaben-des-schulwerks-de" =>
+      "https://www.maristenkolleg.de/",
     "86663-volksschule-asbach-baeumenheim" => nil,
     "86381-staatliche-realschule-krumbach" => "https://www.realschule-krumbach.de/",
     "86150-holbein-gymnasium-augsburg" => "https://www.holbein-gymnasium.de/",
-    "86551-wittelsbacher-realschule-staatliche-realschule-aichach" => "https://www.domainmarkt.de/www.realschule-aichach.de",
+    "86551-wittelsbacher-realschule-staatliche-realschule-aichach" =>
+      "https://www.domainmarkt.de/www.realschule-aichach.de",
     "85614-gymnasium-kirchseeon" => "https://www.bfw-muenchen.de/",
     "91154-gymnasium-roth" => "https://www.gymnasium-roth.de/",
     "91438-georg-wilhelm-steller-gymnasium-bad-windsheim" => nil,
-    "91054-staedtisches-marie-therese-gymnasium-erlangen" => "https://www.mtg-erlangen.de:443/hp/",
+    "91054-staedtisches-marie-therese-gymnasium-erlangen" =>
+      "https://www.mtg-erlangen.de:443/hp/",
     "82205-private-montessorischule-gilching" => "https://www.montessorischule-gilching.de/",
     "81827-volksschule-muenchen-an-der-turnerstrasse" => nil,
     "86444-volksschule-affing" => nil,
-    "85435-maedchenrealschule-heilig-blut-erding-der-erzdioezese-muenchen-und-fre" => "https://www.mrs-erding.de/",
+    "85435-maedchenrealschule-heilig-blut-erding-der-erzdioezese-muenchen-und-fre" =>
+      "https://www.mrs-erding.de/",
     "81735-volksschule-muenchen-am-karl-marx-ring" => "https://karli.musin.de/wordpress/",
     "81737-volksschule-muenchen-an-der-kafkastrasse" => nil,
     "85716-carl-orff-gymnasium-unterschleissheim" => "https://www.carl-orff-gym.de/",
@@ -404,18 +457,22 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "86609-maedchenrealschule-st-ursula-donauwoerth-des-schulwerks-der-dioezese" => nil,
     "81369-volksschule-muenchen-an-der-plinganserstrasse" => nil,
     "86199-gymnasium-maria-stern-augsburg-des-schulwerks-der-dioezese-augsburg" => nil,
-    "86152-staedtisches-jakob-fugger-gymnasium-augsburg" => "https://www.jakob-fugger-gymnasium.de/",
+    "86152-staedtisches-jakob-fugger-gymnasium-augsburg" =>
+      "https://www.jakob-fugger-gymnasium.de/",
     "92648-staatliche-realschule-vohenstrauss" => "https://www.realschule-vohenstrauss.de/",
-    "91541-oskar-von-miller-realschule-staatliche-realschule-rothenburg-o-d-ta" => "https://rs-rothenburg.de/index_0.php?id=sites/2.php",
+    "91541-oskar-von-miller-realschule-staatliche-realschule-rothenburg-o-d-ta" =>
+      "https://rs-rothenburg.de/index_0.php?id=sites/2.php",
     "90403-staedtisches-johannes-scharrer-gymnasium-nuernberg" => "https://www.jsg-nuernberg.de/",
     "82140-volksschule-grasslfing" => "https://www.schule-grasslfing.de/",
     "81735-volksschule-muenchen-am-strehleranger" => nil,
     "87439-hildegardis-gymnasium-kempten" => "https://hildegardis-gymnasium.de/",
     "86830-leonhard-wagner-gymnasium-schwabmuenchen" => "https://www.lwg-smue.de/",
-    "87509-staatliche-realschule-fuer-knaben-immenstadt" => "https://www.gymnasium-immenstadt.de/",
+    "87509-staatliche-realschule-fuer-knaben-immenstadt" =>
+      "https://www.gymnasium-immenstadt.de/",
     "81679-volksschule-muenchen-an-der-gebelestrasse" => nil,
     "86529-gymnasium-schrobenhausen" => nil,
-    "86830-leonhard-wagner-realschule-staatl-realschule-schwabmuenchen" => "https://lwrs-smue.de/",
+    "86830-leonhard-wagner-realschule-staatl-realschule-schwabmuenchen" =>
+      "https://lwrs-smue.de/",
     "81547-volksschule-muenchen-an-der-rotbuchenstrasse" => nil,
     "85391-volksschule-allershausen" => "https://www.schule-allershausen.de/",
     "85521-gymnasium-ottobrunn" => nil,
@@ -424,38 +481,47 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "91054-christian-ernst-gymnasium-erlangen" => nil,
     "90409-hans-sachs-gymnasium-nuernberg" => "https://www.hans-sachs-gymnasium.de/",
     "89231-lessing-gymnasium-neu-ulm" => "https://www.lgnu.de/",
-    "86825-pfarrer-kneipp-volksschule-bad-woerishofen" => "https://www.pfarrer-kneipp-grund-und-mittelschule.de/",
+    "86825-pfarrer-kneipp-volksschule-bad-woerishofen" =>
+      "https://www.pfarrer-kneipp-grund-und-mittelschule.de/",
     "89269-staatliche-realschule-voehringen" => nil,
-    "86720-realschule-maria-stern-noerdlingen-des-schulwerks-der-dioezese-augsburg" => "https://www.mariastern.de/",
+    "86720-realschule-maria-stern-noerdlingen-des-schulwerks-der-dioezese-augsburg" =>
+      "https://www.mariastern.de/",
     "86609-gymnasium-donauwoerth" => "https://www.gym-don.de/",
     "87616-gymnasium-marktoberdorf" => "https://www.gymnasium-marktoberdorf.de/",
     "87435-allgaeu-gymnasium-kempten" => "https://www.AllgaeuGymnasium.de/",
     "86157-hans-adlhoch-volksschule-augsburg-pfersee" => "https://www.adlhochschule.de",
-    "86152-staedtische-agnes-bernauer-schule-augsburg-realschule-fuer-maedchen" => "https://www.agnes.de/",
-    "81669-volksschule-muenchen-an-der-bazeillesstrasse" => "https://gsbazi.musin.de/website-2023/",
-    "85077-realschule-am-keltenwall-staatliche-realschule-manching" => "https://www.rs-manching.de/",
+    "86152-staedtische-agnes-bernauer-schule-augsburg-realschule-fuer-maedchen" =>
+      "https://www.agnes.de/",
+    "81669-volksschule-muenchen-an-der-bazeillesstrasse" =>
+      "https://gsbazi.musin.de/website-2023/",
+    "85077-realschule-am-keltenwall-staatliche-realschule-manching" =>
+      "https://www.rs-manching.de/",
     "81541-volksschule-muenchen-an-der-st-martin-strasse" => nil,
     "85049-reuchlin-gymnasium-ingolstadt" => nil,
     "81479-volksschule-muenchen-an-der-herterichstrasse" => nil,
-    "85716-therese-giehse-realschule-staatl-realschule-unterschleissheim" => "https://www.therese-giehse-realschule.de",
+    "85716-therese-giehse-realschule-staatl-realschule-unterschleissheim" =>
+      "https://www.therese-giehse-realschule.de",
     "85104-volksschule-pfoerring" => nil,
     "91522-staedtische-wirtschaftsschule-ansbach" => nil,
     "84056-realschule-der-salesianerinnen-oberroning" => nil,
     "84174-volksschule-kronwinkl-in-eching" => nil,
-    "84066-nardini-realschule-f-maedch-d-ordensgemeinschaft-d-armen-franzis" => "https://www.nardini-realschule.de/",
+    "84066-nardini-realschule-f-maedch-d-ordensgemeinschaft-d-armen-franzis" =>
+      "https://www.nardini-realschule.de/",
     "80933-volksschule-muenchen-an-der-ittlingerstrasse" => nil,
     "84048-gabelsberger-gymnasium-mainburg" => "https://www.gabelsberger-gymnasium.de/",
     "80686-volksschule-muenchen-an-der-droste-huelshoff-strasse" => nil,
     "81369-private-neuhof-realschule-muenchen" => "https://www.neuhof-schulen.de/",
     "84152-volksschule-aitrachtal-mengkofen" => "https://www.vs-aitrachtal.de/",
     "83700-volksschule-rottach-egern" => nil,
-    "85665-priv-montessori-volksschule-moosach-niederseeon" => "https://montessori-schule-niederseeon.de",
+    "85665-priv-montessori-volksschule-moosach-niederseeon" =>
+      "https://montessori-schule-niederseeon.de",
     "84478-gymnasium-waldkraiburg" => "https://www.gymnasiumwaldkraiburg.de/",
     "84056-staatliche-realschule-rottenburg" => "https://www.rs-rottenburg.de/",
     "81377-priv-immanuel-volksschule" => "https://www.immanuel-schule.de/",
     "80997-volksschule-muenchen-an-der-manzostrasse" => nil,
     "84030-staatliche-realschule-ergolding" => "https://www.rsergolding.de",
-    "83043-wilhelm-leibl-schule-staatliche-realschule-bad-aibling" => "https://realschule-bad-aibling.com/",
+    "83043-wilhelm-leibl-schule-staatliche-realschule-bad-aibling" =>
+      "https://realschule-bad-aibling.com/",
     "82377-gymnasium-penzberg" => "https://www.gymnasium-penzberg.de/",
     "63825-volksschule-sommerkahl" => "https://www.grundschule-sommerkahl.de",
     "90443-private-wirtschaftsschule-sabel-nuernberg" => "https://sabel.com/",
@@ -472,13 +538,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "80796-volksschule-muenchen-an-der-farinellistrasse" => "https://farinelli.edupage.org/",
     "80336-private-staatl-anerk-wirtschaftsschule-sabel-muenchen" => "https://www.sabel.com/",
     "81737-staedtische-wilhelm-roentgen-realschule-muenchen" => "https://wrrs.musin.de/",
-    "82327-benedictus-realschule-tutzing-des-schulwerks-der-dioezese-augsburg" => "https://www.rs-tutzing.de",
+    "82327-benedictus-realschule-tutzing-des-schulwerks-der-dioezese-augsburg" =>
+      "https://www.rs-tutzing.de",
     "81371-staedtische-maria-probst-realschule-muenchen" => "https://mpr.musin.de/",
     "80999-staedtische-carl-spitzweg-realschule-muenchen" => nil,
     "81677-max-josef-stift-muenchen" => "https://www.maxjosefstift.de/",
     "80801-staedtische-ricarda-huch-realschule-muenchen" => nil,
-    "63897-johannes-hartung-realschule-staatliche-realschule-miltenberg" => "https://www.realschule-miltenberg.de/",
-    "85737-johann-andreas-schmeller-realschule-staatliche-realschule-ismaning" => "https://www.rs-ismaning.de/",
+    "63897-johannes-hartung-realschule-staatliche-realschule-miltenberg" =>
+      "https://www.realschule-miltenberg.de/",
+    "85737-johann-andreas-schmeller-realschule-staatliche-realschule-ismaning" =>
+      "https://www.rs-ismaning.de/",
     "81377-volksschule-muenchen-an-der-werdenfelsstrasse" => "https://gs-werdenfels.musin.de/",
     "84453-ruperti-gymnasium-muehldorf-a-inn" => "https://www.ruperti-gymnasium.org/",
     "80995-volksschule-muenchen-an-der-feldmochinger-strasse" => nil,
@@ -491,17 +560,21 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "81241-staedtische-anne-frank-realschule-muenchen" => nil,
     "83646-volksschule-bad-toelz-sued" => "https://www.volksschule-sued.de/",
     "82152-feodor-lynen-gymnasium-planegg" => "https://www.flg-online.de/",
-    "81479-private-hans-hofer-realschule-muenchen-des-st-anna-schulverbunds-ggmbh" => "https://www.rs-gutwarnberg.de/",
-    "80336-private-staatl-genehmigte-wirtschaftsschule-sabel-muenchen" => "https://www.sabel.com/",
+    "81479-private-hans-hofer-realschule-muenchen-des-st-anna-schulverbunds-ggmbh" =>
+      "https://www.rs-gutwarnberg.de/",
+    "80336-private-staatl-genehmigte-wirtschaftsschule-sabel-muenchen" =>
+      "https://www.sabel.com/",
     "81539-staedtische-elly-heuss-realschule-muenchen" => nil,
     "81547-staedtisches-theodolinden-gymnasium-muenchen" => "https://tlg.musin.de/",
     "81241-private-wirtschaftsschule-kermess-e-v-muenchen" => "https://www.kermess.de/",
     "63825-volksschule-schoellkrippen" => nil,
-    "81245-volksschule-muenchen-an-der-schaeferwiese" => "https://www.grundschule-schaeferwiese.de/",
+    "81245-volksschule-muenchen-an-der-schaeferwiese" =>
+      "https://www.grundschule-schaeferwiese.de/",
     "85072-willibald-gymnasium-eichstaett" => "https://altmuehlnet.de/~wg/",
     "84095-maristen-gymnasium-furth" => "https://www.maristen-gymnasium.de/",
     "84503-koenig-karlmann-gymnasium-altoetting" => "https://www.koenig-karlmann-gymnasium.de/",
-    "83339-landschulheim-schloss-ising-am-chiemsee-des-zweckverbands-bayerische" => "https://www.lsh-schloss-ising.de/",
+    "83339-landschulheim-schloss-ising-am-chiemsee-des-zweckverbands-bayerische" =>
+      "https://www.lsh-schloss-ising.de/",
     "84375-volksschule-kirchdorf-a-inn" => "https://www.vs-kirchdorf.de/",
     "83512-anton-heilingbrunner-schule-staatliche-realschule-wasserburg" => nil,
     "81673-staedtische-ludwig-thoma-realschule-muenchen" => nil,
@@ -514,25 +587,32 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "80802-volksschule-muenchen-an-der-haimhauser-strasse" => nil,
     "80939-volksschule-muenchen-an-der-keilberthstrasse" => "https://www.keilberthschule.de/",
     "82327-gymnasium-tutzing" => "https://www.gym-tutzing.de/",
-    "82515-kolleg-des-erzbischoeflichen-spaetberufenenseminars-st-matthias-wolf" => "https://sankt-matthias.de/",
+    "82515-kolleg-des-erzbischoeflichen-spaetberufenenseminars-st-matthias-wolf" =>
+      "https://sankt-matthias.de/",
     "82110-carl-spitzweg-gymnasium-unterpfaffenhofen" => "https://www.csg-germering.de/",
-    "81539-muenchenkolleg-staedt-institut-zur-erlangung-der-hochschulreife-am" => "https://mk.musin.de/",
+    "81539-muenchenkolleg-staedt-institut-zur-erlangung-der-hochschulreife-am" =>
+      "https://mk.musin.de/",
     "83317-volksschule-teisendorf" => "https://www.schuleteisendorf.de/",
     "81479-reinhard-wallbrecher-schule-muenchen-priv-volksschule" => nil,
     "80809-volksschule-muenchen-an-der-nadistrasse" => nil,
     "83684-gymnasium-tegernsee" => nil,
     "80995-volksschule-muenchen-an-der-lerchenauer-strasse" => nil,
     "96450-staatliche-wirtschaftsschule-coburg-cortendorf" => nil,
-    "80935-volksschule-muenchen-an-der-waldmeisterstrasse" => "https://www.waldmeisterschule-muenchen.de",
+    "80935-volksschule-muenchen-an-der-waldmeisterstrasse" =>
+      "https://www.waldmeisterschule-muenchen.de",
     "84056-volksschule-rottenburg-a-d-laaber" => "https://www.volksschule-rottenburg.de/",
-    "80331-theresia-gerhardinger-grundschule-am-anger-der-armen-schulschwester" => "https://www.gs-am-anger.de/",
+    "80331-theresia-gerhardinger-grundschule-am-anger-der-armen-schulschwester" =>
+      "https://www.gs-am-anger.de/",
     "80933-staedtische-erich-kaestner-realschule-muenchen" => nil,
-    "83623-private-montessori-volksschule-dietramszell" => "https://www.montessori-dietramszell.de/",
-    "81673-maria-ward-maedchenrealschule-der-erzdioezese-muenchen-und-freising-m" => "https://www.mariaward-bal.de/",
+    "83623-private-montessori-volksschule-dietramszell" =>
+      "https://www.montessori-dietramszell.de/",
+    "81673-maria-ward-maedchenrealschule-der-erzdioezese-muenchen-und-freising-m" =>
+      "https://www.mariaward-bal.de/",
     "80686-georg-buechner-schule-staatliche-realschule-muenchen-i" => nil,
     "81247-obermenzinger-gymnasium-muenchen" => "https://www.obermenzinger.de/",
     "81671-michaeli-gymnasium-muenchen" => "https://www.michaeli-gymnasium.de",
-    "80798-volksschule-muenchen-an-der-schwindstrasse-zentnerstrasse" => "https://schwindschule.edupage.org/",
+    "80798-volksschule-muenchen-an-der-schwindstrasse-zentnerstrasse" =>
+      "https://schwindschule.edupage.org/",
     "84307-stefan-krumenauer-schule-staatliche-realschule-eggenfelden" => nil,
     "85276-schyren-gymnasium-pfaffenhofen-a-d-ilm" => "https://schyren-gymnasium.de/",
     "84359-tassilo-gymnasium-simbach-a-inn" => nil,
@@ -542,22 +622,30 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "82380-staatliche-realschule-peissenberg" => nil,
     "81241-staatl-wirtschaftsschule-muenchen" => nil,
     "82362-staatliche-realschule-weilheim" => "https://www.rswm.de/",
-    "81541-theresia-gerhardinger-maedchenrealschule-der-erzdioezese-muenchen-und" => "https://www.rs-au.de/",
-    "82256-ferdinand-von-miller-schule-staatliche-realschule-fuerstenfeldbruck" => "https://www.realschule-ffb.de/",
+    "81541-theresia-gerhardinger-maedchenrealschule-der-erzdioezese-muenchen-und" =>
+      "https://www.rs-au.de/",
+    "82256-ferdinand-von-miller-schule-staatliche-realschule-fuerstenfeldbruck" =>
+      "https://www.realschule-ffb.de/",
     "81241-private-wirtschaftsschule-begemann-e-v-muenchen" => "https://www.begemann-schule.de",
-    "80638-maria-ward-realschule-nymphenburg-der-erzdioezese-muenchen-und-freisi" => "https://www.emwgym.de",
-    "83278-maria-ward-maedchenrealschule-der-erzdioezese-muenchen-und-freising-tr" => "https://www.sparz.de/",
+    "80638-maria-ward-realschule-nymphenburg-der-erzdioezese-muenchen-und-freisi" =>
+      "https://www.emwgym.de",
+    "83278-maria-ward-maedchenrealschule-der-erzdioezese-muenchen-und-freising-tr" =>
+      "https://www.sparz.de/",
     "83471-gymnasium-berchtesgaden" => "https://www.gymbgd.de/",
     "81737-staedtische-wilhelm-busch-realschule-muenchen" => nil,
-    "80634-staedtische-rudolf-diesel-realschule-muenchen" => "https://rudolf-diesel-realschule.de/",
-    "90443-nws-neue-wirtschaftsschule-nuernberg-staatl-gen-d-rudolf-sabel" => "https://sabel.com/",
+    "80634-staedtische-rudolf-diesel-realschule-muenchen" =>
+      "https://rudolf-diesel-realschule.de/",
+    "90443-nws-neue-wirtschaftsschule-nuernberg-staatl-gen-d-rudolf-sabel" =>
+      "https://sabel.com/",
     "80339-volksschule-muenchen-an-der-guldeinstrasse" => "https://gsg.musin.de",
     "63768-staatliche-realschule-hoesbach" => "https://www.hanns-seidel-gymnasium.de/",
-    "80331-sinai-grundschule-d-israelitischen-kultusgemeinde-muenchen-u-obb" => "https://www.ikg-m.de",
+    "80331-sinai-grundschule-d-israelitischen-kultusgemeinde-muenchen-u-obb" =>
+      "https://www.ikg-m.de",
     "87477-volksschule-sulzberg" => nil,
     "80809-volksschule-muenchen-an-der-hanselmannstrasse" => nil,
     "81243-volksschule-muenchen-an-der-limesstrasse" => "https://gslimes.musin.de/",
-    "84028-ursulinen-realschule-der-erzdioezese-muenchen-und-freising-in-landshut" => "https://www.ursla.de",
+    "84028-ursulinen-realschule-der-erzdioezese-muenchen-und-freising-in-landshut" =>
+      "https://www.ursla.de",
     "80999-volksschule-muenchen-an-der-eversbuschstrasse" => nil,
     "80939-volksschule-muenchen-an-der-burmesterstrasse" => nil,
     "84371-volksschule-triftern" => "https://lgms-triftern.jimdo.com",
@@ -565,16 +653,21 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "84513-comenius-volksschule-toeging-a-inn" => nil,
     "83308-staatliche-realschule-trostberg" => "https://www.rs-trostberg.de/",
     "84175-volksschule-gerzen" => nil,
-    "82515-spaetberufenengymnasium-des-erzbischoeflichen-spaetberufenenseminars-s" => "https://sankt-matthias.de/",
+    "82515-spaetberufenengymnasium-des-erzbischoeflichen-spaetberufenenseminars-s" =>
+      "https://sankt-matthias.de/",
     "83413-volksschule-salzachtal-in-fridolfing" => "https://www.vs-fridolfing.de/",
     "81247-staedtische-realschule-an-der-blutenburg-muenchen" => "https://rsb.musin.de/",
-    "84034-private-wirtschaftsschule-der-schulstiftung-seligenthal-in-landshut" => "https://www.wirtschaftsschule.seligenthal.de/",
+    "84034-private-wirtschaftsschule-der-schulstiftung-seligenthal-in-landshut" =>
+      "https://www.wirtschaftsschule.seligenthal.de/",
     "83527-volksschule-haag-i-ob" => "https://www.vs-haag.de/",
     "86316-johann-peter-ring-volksschule-ottmaring" => nil,
-    "80331-staedtische-salvator-realschule-muenchen" => "https://www.realschulabschlussnachholen.de/",
+    "80331-staedtische-salvator-realschule-muenchen" =>
+      "https://www.realschulabschlussnachholen.de/",
     "81825-priv-pestalozzi-realschule-muenchen" => nil,
-    "63755-edith-stein-schule-staatliche-realschule-alzenau" => "https://www.realschule-alzenau.de:443/",
-    "81369-private-novalis-realschule-der-neuhof-schulen-muenchen" => "https://www.neuhof-schulen.de/",
+    "63755-edith-stein-schule-staatliche-realschule-alzenau" =>
+      "https://www.realschule-alzenau.de:443/",
+    "81369-private-novalis-realschule-der-neuhof-schulen-muenchen" =>
+      "https://www.neuhof-schulen.de/",
     "83368-volksschule-st-georgen" => nil,
     "80804-staedtisches-willi-graf-gymnasium-muenchen" => "https://wgg.musin.de/",
     "81371-dante-gymnasium-muenchen" => "https://www.dante-gymnasium.de/",
@@ -582,12 +675,14 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "81377-erasmus-grasser-gymnasium-muenchen" => nil,
     "80538-wilhelmsgymnasium-muenchen" => "https://www.wilhelmsgymnasium.de/",
     "96050-staatliche-fachoberschule-bamberg" => nil,
-    "83071-otfried-preussler-volksschule-stephanskirchen" => "https://www.ops-stephanskirchen.de/",
+    "83071-otfried-preussler-volksschule-stephanskirchen" =>
+      "https://www.ops-stephanskirchen.de/",
     "63911-dr-konrad-wiegand-volksschule-klingenberg-a-main" => nil,
     "89231-staatliche-berufsoberschule-neu-ulm" => "https://www.fosbos.neu-ulm.de/",
     "82041-gymnasium-oberhaching" => "https://www.gymnasium-oberhaching.de/",
     "81927-staedtische-helen-keller-realschule-muenchen" => nil,
-    "80687-lukas-schule-muenchen-priv-staatl-anerkannte-evang-realschule" => "https://lukas-schule.de/",
+    "80687-lukas-schule-muenchen-priv-staatl-anerkannte-evang-realschule" =>
+      "https://lukas-schule.de/",
     "63820-mozart-volksschule-elsenfeld" => "https://www.mozartschule.de/",
     "80538-luitpold-gymnasium-muenchen" => nil,
     "81371-klenze-gymnasium-muenchen" => "https://klenzegymnasium.de/",
@@ -595,16 +690,20 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "63739-kronberg-gymnasium-aschaffenburg" => "https://kronberg-gymnasium.de/",
     "80687-lukas-schule-private-evang-volksschule-muenchen" => "https://lukas-schule.de/",
     "80337-staatl-fachoberschule-fuer-wirtschaft-verwaltung-und-rechtspflege" => nil,
-    "86169-freie-waldorfschule-augsburg-der-freien-waldorf-schule-und-waldorf" => "https://www.waldorf-augsburg.de/",
+    "86169-freie-waldorfschule-augsburg-der-freien-waldorf-schule-und-waldorf" =>
+      "https://www.waldorf-augsburg.de/",
     "82178-gymnasium-puchheim" => "https://www.gymnasium-puchheim.de/",
     "81541-pestalozzi-gymnasium-muenchen" => nil,
-    "81377-kleines-privates-lehrinstitut-derksen-muenchen-gymnasium" => "https://www.derksen-gym.de/",
+    "81377-kleines-privates-lehrinstitut-derksen-muenchen-gymnasium" =>
+      "https://www.derksen-gym.de/",
     "83075-leo-von-welden-volksschule-bad-feilnbach" => "https://www.leo-von-welden-schule.de/",
     "80636-staedtisches-adolf-weber-gymnasium-muenchen" => "https://awg.m-bildung.de/",
-    "80992-samuel-heinicke-schule-priv-realschule-zur-sonderpaed-foerd-foerd" => "https://www.augustinum-schulen.de/",
+    "80992-samuel-heinicke-schule-priv-realschule-zur-sonderpaed-foerd-foerd" =>
+      "https://www.augustinum-schulen.de/",
     "80538-staedtisches-st-anna-gymnasium-muenchen" => "https://sag.musin.de/",
     "80803-oskar-von-miller-gymnasium-muenchen" => "https://www.ovmg.de/",
-    "83209-freie-waldorfschule-chiemgau-in-prien-a-chiemsee" => "https://www.waldorfschule-chiemgau.de/",
+    "83209-freie-waldorfschule-chiemgau-in-prien-a-chiemsee" =>
+      "https://www.waldorfschule-chiemgau.de/",
     "81667-kath-romano-guardini-fachoberschule-fuer-sozialwesen-muenchen" => nil,
     "90491-rudolf-steiner-schule-nuernberg" => nil,
     "81475-gymnasium-muenchen-fuerstenried-west" => "https://www.kerbalspaceprogram.net/",
@@ -614,10 +713,13 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "81477-staedtisches-thomas-mann-gymnasium-muenchen" => nil,
     "63897-johannes-butzbach-gymnasium-miltenberg" => "https://jbg-miltenberg.de/",
     "97318-d-paul-eber-volksschule-kitzingen" => "https://www.paul-eber-schule.de/",
-    "80336-marieluise-fleisser-realschule-staatl-realschule-muenchen-iii" => "https://www.mfrs-schule.de",
-    "63785-main-limes-realschule-staatliche-realschule-obernburg" => "https://main-limes-realschule-obernburg.de/",
+    "80336-marieluise-fleisser-realschule-staatl-realschule-muenchen-iii" =>
+      "https://www.mfrs-schule.de",
+    "63785-main-limes-realschule-staatliche-realschule-obernburg" =>
+      "https://main-limes-realschule-obernburg.de/",
     "80807-staedtisches-lion-feuchtwanger-gymnasium-muenchen" => nil,
-    "80333-staedtisches-luisengymnasium-muenchen" => "https://www.staedtisches-luisengymnasium.de/",
+    "80333-staedtisches-luisengymnasium-muenchen" =>
+      "https://www.staedtisches-luisengymnasium.de/",
     "81667-staatliche-fachoberschule-fuer-technik-muenchen" => "https://www.fosbosmuenchen.de/",
     "63872-volksschule-elsavatal-heimbuchenthal" => nil,
     "81371-japanische-internationale-schule-muenchen-priv-volksschule" => nil,
@@ -629,31 +731,37 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "80335-wittelsbacher-gymnasium-muenchen" => "https://www.wittelsbacher-gymnasium.de/",
     "83093-volksschule-bad-endorf" => nil,
     "82256-volksschule-fuerstenfeldbruck-an-der-theodor-heuss-str" => nil,
-    "80939-staedtische-berufsoberschule-muenchen-ausbildungsrichtung-wirtschaft" => "https://bos-wirtschaft-muenchen.de/",
+    "80939-staedtische-berufsoberschule-muenchen-ausbildungsrichtung-wirtschaft" =>
+      "https://bos-wirtschaft-muenchen.de/",
     "89231-staatliche-fachoberschule-neu-ulm" => "https://www.fosbos.neu-ulm.de/",
-    "81929-berufsschule-zur-sonderpaedagog-foerderung-foerder-schwerpunkt-hoere" => "https://www.bbw-muenchen.de/",
+    "81929-berufsschule-zur-sonderpaedagog-foerderung-foerder-schwerpunkt-hoere" =>
+      "https://www.bbw-muenchen.de/",
     "82131-priv-berufsschule-zur-sonderpaed-foerd-in-gauting-foerderschwerpunk" => nil,
     "97828-volksschule-marktheidenfeld" => nil,
     "81739-staedtisches-heinrich-heine-gymnasium-muenchen" => "https://hhg-muenchen.de/",
     "81667-edith-stein-gymnasium-der-erzdioezese-muenchen-und-freising" => nil,
     "81539-asam-gymnasium-muenchen" => "https://www.asam-gymnasium.de/",
     "81241-max-planck-gymnasium-muenchen" => "https://www.mpg-muenchen.de/",
-    "80469-isar-gymnasium-muenchen-schule-in-freier-traegerschaft" => "https://www.schulverbund.de/",
+    "80469-isar-gymnasium-muenchen-schule-in-freier-traegerschaft" =>
+      "https://www.schulverbund.de/",
     "81243-karlsgymnasium-muenchen-pasing" => "https://www.karlsgymnasium.de",
-    "81369-privates-novalis-gymnasium-der-neuhof-schulen-muenchen" => "https://www.neuhof-schulen.de/",
+    "81369-privates-novalis-gymnasium-der-neuhof-schulen-muenchen" =>
+      "https://www.neuhof-schulen.de/",
     "80639-staedtisches-kaethe-kollwitz-gymnasium-muenchen" => nil,
     "80331-theresia-gerhardinger-gymnasium-am-anger-muenchen" => "https://www.tggaa.de/",
     "63906-hermann-staudinger-gymnasium-erlenbach-a-main" => nil,
     "81667-staatliche-berufsoberschule-fuer-technik-muenchen" => "https://www.fosbosmuenchen.de/",
     "80992-volksschule-muenchen-an-der-leipziger-strasse" => nil,
     "63785-johannes-obernburger-volksschule-obernburg-a-main" => nil,
-    "80636-staedt-franz-auweck-abendschule-muenchen-abendrealschule-f-berufst" => "https://fas.musin.de/",
+    "80636-staedt-franz-auweck-abendschule-muenchen-abendrealschule-f-berufst" =>
+      "https://fas.musin.de/",
     "83224-volksschule-grassau" => nil,
     "81369-privates-neuhof-gymnasium-muenchen" => "https://www.neuhof-schulen.de/",
     "80993-gymnasium-muenchen-moosach" => nil,
     "80337-staedt-robert-bosch-fachoberschule-fuer-wirtschaft-verwaltung-und-r" => nil,
     "82110-kerschensteiner-volksschule-germering" => "https://www.kerschenstein.de/",
-    "90574-volksschule-rosstal-4959fcfc-b970-11e7-ab5b-001ec9cdab18" => "https://mittelschule-rosstal.de/",
+    "90574-volksschule-rosstal-4959fcfc-b970-11e7-ab5b-001ec9cdab18" =>
+      "https://mittelschule-rosstal.de/",
     "94526-volksschule-metten" => nil,
     "95326-hans-edelmann-volksschule-kulmbach" => nil,
     "89346-volksschule-bibertal" => nil,
@@ -665,7 +773,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "90530-freie-waldorfschule-wendelstein" => "https://www.waldorfschule-wendelstein.de/",
     "86899-freie-waldorfschule-landsberg" => "https://www.waldorf-landsberg.de/",
     "63924-volksschule-kleinheubach" => nil,
-    "63834-priv-montessori-volksschule-sulzbach" => "https://www.montessorischule-aschaffenburg.de/",
+    "63834-priv-montessori-volksschule-sulzbach" =>
+      "https://www.montessorischule-aschaffenburg.de/",
     "96317-gottfried-neukam-volksschule-kronach" => nil,
     "80796-staedtisches-sophie-scholl-gymnasium-muenchen" => "https://ssg.musin.de/",
     "85757-fachoberschule-dachau-e-v-in-karlsfeld" => "https://fos-karlsfeld.de/",
@@ -674,27 +783,34 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "80337-staatl-berufsoberschule-fuer-wirtschaft-muenchen" => nil,
     "63814-ascapha-volksschule-mainaschaff" => "https://schule-mainaschaff.de/",
     "80802-rudolf-steiner-schule-muenchen-schwabing" => "https://waldorfschule-schwabing.de/",
-    "81241-evang-friedrich-oberlin-fachoberschule-f-sozial-wesen-u-wirtscha" => "https://www.friedrich-oberlin.de/",
+    "81241-evang-friedrich-oberlin-fachoberschule-f-sozial-wesen-u-wirtscha" =>
+      "https://www.friedrich-oberlin.de/",
     "87629-anton-sturm-volksschule-fuessen" => nil,
-    "94060-volksschule-pocking-499bfaee-b970-11e7-8958-001ec9cdab18" => "https://www.mittelschule--pocking.de/",
+    "94060-volksschule-pocking-499bfaee-b970-11e7-8958-001ec9cdab18" =>
+      "https://www.mittelschule--pocking.de/",
     "95448-albert-schweitzer-volksschule" => "https://www.ass-bayreuth.de/",
     "92281-volksschule-neukirchen-koenigstein" => nil,
     "92237-kroetensee-volksschule-sulzbach-rosenberg" => nil,
-    "95615-private-schule-zur-lernfoerderung-in-marktredwitz-d-vereins-hilfe" => "https://www.grundschule-mak.de/",
+    "95615-private-schule-zur-lernfoerderung-in-marktredwitz-d-vereins-hilfe" =>
+      "https://www.grundschule-mak.de/",
     "63820-janusz-korczak-schule-zur-lernfoerderung-grund-und-hauptschulstufe" => nil,
-    "80809-adolf-kolping-berufsschule-priv-berufsschule-zur-sonderpaed-foerde" => "https://www.akb-muenchen.de/",
+    "80809-adolf-kolping-berufsschule-priv-berufsschule-zur-sonderpaed-foerde" =>
+      "https://www.akb-muenchen.de/",
     "97616-volksschule-bad-neustadt-a-d-saale" => "https://www.mittelschule-badneustadt.de/",
     "94481-propst-seyberer-volksschule-grafenau" => nil,
     "97271-volksschule-kleinrinderfeld" => nil,
-    "94234-volksschule-viechtach-4997d4e6-b970-11e7-ac33-001ec9cdab18" => "https://hs-vit.repage5.de/",
+    "94234-volksschule-viechtach-4997d4e6-b970-11e7-ac33-001ec9cdab18" =>
+      "https://hs-vit.repage5.de/",
     "97230-volksschule-kuernachtal-in-estenfeld" => nil,
     "91541-valentin-ickelsamer-volksschule-rothenburg-ob-der-tauber" => nil,
     "90584-volksschule-allersberg" => nil,
     "95643-johann-andreas-schmeller-volksschule-tirschenreuth" => nil,
-    "90471-berufl-schulzentrum-zur-sonderpaed-foerd-foerder-schwerpunkt-sehe" => "https://bbs-nuernberg.de/traeger",
+    "90471-berufl-schulzentrum-zur-sonderpaed-foerd-foerder-schwerpunkt-sehe" =>
+      "https://bbs-nuernberg.de/traeger",
     "94065-emerenz-meier-hauptschule-waldkirchen" => nil,
     "91322-volksschule-graefenberg-49cbecc2-b970-11e7-9496-001ec9cdab18" => nil,
-    "97453-foerderzentrum-foerderschwerpunkt-koerperliche-u-motorische-entwickl" => "https://www.lebenshilfe-sw.de/schule",
+    "97453-foerderzentrum-foerderschwerpunkt-koerperliche-u-motorische-entwickl" =>
+      "https://www.lebenshilfe-sw.de/schule",
     "91126-karl-dehm-volksschule-schwabach" => "https://www.karl-dehm-schule.de/",
     "86152-abendrealschule-fuer-berufstaetige-der-stadt-augsburg" => "https://www.agnes.de/",
     "94239-volksschule-ruhmannsfelden-49972924-b970-11e7-bf59-001ec9cdab18" => nil,
@@ -703,41 +819,54 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "93413-johann-brunner-volksschule-cham" => nil,
     "91080-ernst-penzoldt-volksschule-erlangen-spardorf" => "https://www.evbg.de/",
     "89423-volksschule-am-schlachtegg-gundelfingen-a-d-donau" => nil,
-    "86807-volksschule-buchloe-4a3fe6f4-b970-11e7-83fe-001ec9cdab18" => "https://www.mittelschule-buchloe.de/",
-    "97318-volksschule-kitzingen-siedlung-4973f724-b970-11e7-bb22-001ec9cdab18" => "https://www.gs-kt-siedlung.de",
+    "86807-volksschule-buchloe-4a3fe6f4-b970-11e7-83fe-001ec9cdab18" =>
+      "https://www.mittelschule-buchloe.de/",
+    "97318-volksschule-kitzingen-siedlung-4973f724-b970-11e7-bb22-001ec9cdab18" =>
+      "https://www.gs-kt-siedlung.de",
     "97421-frieden-volksschule-schweinfurt" => "https://www.friedenschule.de/",
     "94094-volksschule-rotthalmuenster-4999a118-b970-11e7-8fa9-001ec9cdab18" => nil,
     "94419-maximus-von-imhof-volksschule-reisbach" => nil,
     "87616-volksschule-marktoberdorf" => nil,
-    "95448-markgrafenschule-schule-zur-sprachfoerderung-bayreuth-grund-und-h" => "https://www.bezirk-oberfranken.de/bildung-und-jugend/schulen/markgrafenschule-bayreuth/",
+    "95448-markgrafenschule-schule-zur-sprachfoerderung-bayreuth-grund-und-h" =>
+      "https://www.bezirk-oberfranken.de/bildung-und-jugend/schulen/markgrafenschule-bayreuth/",
     "89264-volksschule-weissenhorn" => nil,
     "89312-maria-theresia-volksschule-guenzburg" => "https://www.mittelschule-guenzburg.de/",
     "94034-st-severin-schule-priv-foerderzentrum-foerderschwerpunkt-geistige" => nil,
-    "81539-staedtisches-abendgymnasium-fuer-berufstaetige-im-anton-fingerle-bildu" => "https://ag.musin.de/",
+    "81539-staedtisches-abendgymnasium-fuer-berufstaetige-im-anton-fingerle-bildu" =>
+      "https://ag.musin.de/",
     "96110-volksschule-schesslitz" => nil,
     "94566-volksschule-riedlhuette" => nil,
-    "96465-glockenbergschule-priv-schule-zur-lernfoerderung-in-neustadt-b-cob" => "https://home.t-online.de/home/Glockenberg/",
-    "91717-volksschule-wassertruedingen-49bfc816-b970-11e7-ab29-001ec9cdab18" => "https://www.betty-staedtler-schule.de/",
+    "96465-glockenbergschule-priv-schule-zur-lernfoerderung-in-neustadt-b-cob" =>
+      "https://home.t-online.de/home/Glockenberg/",
+    "91717-volksschule-wassertruedingen-49bfc816-b970-11e7-ab29-001ec9cdab18" =>
+      "https://www.betty-staedtler-schule.de/",
     "91074-volksschule-herzogenaurach-49def0f6-b970-11e7-8445-001ec9cdab18" => nil,
-    "86551-geschwister-scholl-volksschule-aichach" => "https://contixmedia.de/webagentur-webdesign-schulhomepage/",
+    "86551-geschwister-scholl-volksschule-aichach" =>
+      "https://contixmedia.de/webagentur-webdesign-schulhomepage/",
     "94327-herzog-ludwig-volksschule-bogen" => nil,
     "92331-volksschule-parsberg-49b2dec6-b970-11e7-8515-001ec9cdab18" => nil,
     "93309-wittelsbacher-volksschule-kelheim" => nil,
-    "94315-priv-foerderzentrum-foerderschwerpunkt-koerperliche-und-motorische-e" => "https://www.papstbenediktschule.de/",
-    "93128-sonderpaedagogisches-foerderzentrum-regenstauf" => "https://www.foerderzentrum-regenstauf.de/",
+    "94315-priv-foerderzentrum-foerderschwerpunkt-koerperliche-und-motorische-e" =>
+      "https://www.papstbenediktschule.de/",
+    "93128-sonderpaedagogisches-foerderzentrum-regenstauf" =>
+      "https://www.foerderzentrum-regenstauf.de/",
     "94034-priv-foerderzentrum-foerderschwerpunkt-koerperliche-und-motorische-e" => nil,
-    "87727-volksschule-babenhausen-4a21f4c8-b970-11e7-b356-001ec9cdab18" => "https://www.realschule-babenhausen.de/",
+    "87727-volksschule-babenhausen-4a21f4c8-b970-11e7-b356-001ec9cdab18" =>
+      "https://www.realschule-babenhausen.de/",
     "96215-herzog-otto-volksschule-lichtenfels-an-der-friedenslinde" => nil,
     "91058-eichendorff-volksschule-erlangen" => nil,
     "96049-von-lerchenfeld-schule-privates-foerder-zentrum-foerderschwerpunkt" => nil,
     "94060-sonderpaedagogisches-foerderzentrum-pocking" => nil,
-    "86405-volksschule-meitingen-4a4de2a4-b970-11e7-9dd0-001ec9cdab18" => "https://ms-meitingen.de/",
-    "93413-schule-am-regenbogen-sonderpaedagogisches-foerderzentrum-cham" => "https://sfzcham.de/",
+    "86405-volksschule-meitingen-4a4de2a4-b970-11e7-9dd0-001ec9cdab18" =>
+      "https://ms-meitingen.de/",
+    "93413-schule-am-regenbogen-sonderpaedagogisches-foerderzentrum-cham" =>
+      "https://sfzcham.de/",
     "87700-lindenschule-volksschule-memmingen" => "https://www.lindenschule-mm.de/",
     "87600-joerg-lederer-volksschule-kaufbeuren" => nil,
     "95615-alexander-von-humboldt-volksschule-marktredwitz" => "https://www.ohg-marktredwitz.de/",
     "90403-volksschule-nuernberg-insel-schuett-4a0bb8ca-b970-11e7-8f56-001ec9cdab18" => nil,
-    "96126-dom-savio-schule-priv-sonderpaed-foerderzentrum-pfaffendorf-d-dt" => "https://www.dominikus-savio-schule.de/",
+    "96126-dom-savio-schule-priv-sonderpaed-foerderzentrum-pfaffendorf-d-dt" =>
+      "https://www.dominikus-savio-schule.de/",
     "93149-sonderpaedagogisches-foerderzentrum-nittenau" => "https://www.sfz-nittenau.de/",
     "86368-volksschule-gersthofen" => nil,
     "84571-volksschule-reischach" => nil,
@@ -747,58 +876,80 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "90459-volksschule-nuernberg-hummelsteiner-weg" => nil,
     "91567-wolfhard-schule-sonderpaed-foerderzentrum-herrieden" => nil,
     "89231-peter-schoellhorn-volksschule-neu-ulm-mitte" => nil,
-    "91220-priv-schule-zur-erziehungshilfe-schnaittach-caritasverband-nuernbe" => "https://www.caritas-nuernberg.de/einrichtungen/jugendhilfezentrum-schnaittach#modal-services-645_6",
-    "86343-volksschule-koenigsbrunn-sued-4a51f038-b970-11e7-bb2b-001ec9cdab18" => "https://notavailable.goneo.de/",
+    "91220-priv-schule-zur-erziehungshilfe-schnaittach-caritasverband-nuernbe" =>
+      "https://www.caritas-nuernberg.de/einrichtungen/jugendhilfezentrum-schnaittach#modal-services-645_6",
+    "86343-volksschule-koenigsbrunn-sued-4a51f038-b970-11e7-bb2b-001ec9cdab18" =>
+      "https://notavailable.goneo.de/",
     "85757-volksschule-karlsfeld-4a5d8df8-b970-11e7-90aa-001ec9cdab18" => nil,
     "85375-volksschule-neufahrn-b-freising" => nil,
     "84183-volksschule-niederviehbach" => "https://www.hs-niederviehbach.de/",
     "81667-volksschule-muenchen-an-der-woerthstrasse" => nil,
     "81241-sonderpaedagogisches-foerderzentrum-schererplatz-muenchen-west" => nil,
-    "90607-schule-am-dachsberg-priv-foerderzentrum-foerder-schwerpunkt-sehen" => "https://www.blindeninstitut.de/",
+    "90607-schule-am-dachsberg-priv-foerderzentrum-foerder-schwerpunkt-sehen" =>
+      "https://www.blindeninstitut.de/",
     "82131-paul-hey-volksschule-gauting" => nil,
-    "86513-dominikus-ringeisen-werk-ursberg-privates-foerder-zentrum-foerders" => "https://sfz-ursberg.de/",
-    "80933-otto-steiner-schule-priv-foerderzentrum-foerderschwerpunkt-geistig" => "https://www.augustinium.de",
+    "86513-dominikus-ringeisen-werk-ursberg-privates-foerder-zentrum-foerders" =>
+      "https://sfz-ursberg.de/",
+    "80933-otto-steiner-schule-priv-foerderzentrum-foerderschwerpunkt-geistig" =>
+      "https://www.augustinium.de",
     "96142-staatl-gesamtschule-hollfeld" => "https://www.gsh-hollfeld.de/",
     "80335-sonderpaedagogisches-foerderzentrum-dachauer-strasse-98-nadistrasse" => nil,
     "84503-weiss-ferdl-volksschule-altoetting" => "https://www.weiss-ferdl-schule.de/",
     "91207-sonderpaedagogisches-foerderzentrum-lauf" => nil,
-    "87437-agnes-wyssach-schule-kempten-priv-sonderpaed-foerderzentrum-der-s" => "https://www.sfz-kempten.de/",
-    "80933-wichern-schule-private-schule-zur-erziehungshilfe-gs-stufe-muench" => "https://www.quicklebendig-ev.de/",
+    "87437-agnes-wyssach-schule-kempten-priv-sonderpaed-foerderzentrum-der-s" =>
+      "https://www.sfz-kempten.de/",
+    "80933-wichern-schule-private-schule-zur-erziehungshilfe-gs-stufe-muench" =>
+      "https://www.quicklebendig-ev.de/",
     "12161-rheingau-gymnasium" => nil,
-    "90471-priv-foerderzentrum-foerderschwerpunkt-sehen-nuernberg-blindenanst" => "https://bbs-nuernberg.de/traeger",
+    "90471-priv-foerderzentrum-foerderschwerpunkt-sehen-nuernberg-blindenanst" =>
+      "https://bbs-nuernberg.de/traeger",
     "84036-volksschule-landshut-schoenbrunn" => nil,
-    "87437-sonderpaedagogisches-foerderzentrum-kempten-allgaeu-teilzentrum-ii" => "https://www.sfz-kempten.de/",
-    "83737-priv-sonderpaedagog-foerderzentrum-irschenberg-teilzentrum-im-carit" => "https://foerderzentrum-irschenberg.de/",
-    "84503-konrad-von-parzham-schule-altoetting-priv-foerder-zentrum-foerders" => "https://www.konrad-von-parzham-schule.de/",
+    "87437-sonderpaedagogisches-foerderzentrum-kempten-allgaeu-teilzentrum-ii" =>
+      "https://www.sfz-kempten.de/",
+    "83737-priv-sonderpaedagog-foerderzentrum-irschenberg-teilzentrum-im-carit" =>
+      "https://foerderzentrum-irschenberg.de/",
+    "84503-konrad-von-parzham-schule-altoetting-priv-foerder-zentrum-foerders" =>
+      "https://www.konrad-von-parzham-schule.de/",
     "80939-volksschule-muenchen-an-der-situlistrasse" => "https://www.hs-situli.de.tl/",
     "81539-volksschule-muenchen-an-der-perlacher-strasse" => nil,
-    "81539-schule-an-der-heckscher-klinik-muenchen-gs-und-hs-stufe" => "https://itbo.jweiland.cloud/",
+    "81539-schule-an-der-heckscher-klinik-muenchen-gs-und-hs-stufe" =>
+      "https://itbo.jweiland.cloud/",
     "63791-volksschule-karlstein-a-main-verbandsschule" => nil,
     "12355-clay-schule" => nil,
-    "87439-tom-mutters-schule-priv-foerderzentrum-foerderschwerpunkt-geist-en" => "https://www.tom-mutters-schule-ke.de/",
-    "86343-fritz-felsenstein-schule-koenigsbrunn-priv-foerder-zentrum-foerders" => "https://www.felsenstein.org/",
+    "87439-tom-mutters-schule-priv-foerderzentrum-foerderschwerpunkt-geist-en" =>
+      "https://www.tom-mutters-schule-ke.de/",
+    "86343-fritz-felsenstein-schule-koenigsbrunn-priv-foerder-zentrum-foerders" =>
+      "https://www.felsenstein.org/",
     "80809-volksschule-muenchen-an-der-schleissheimer-strasse" => nil,
-    "83512-volksschule-wasserburg-a-inn-4aa61794-b970-11e7-8c48-001ec9cdab18" => "https://mittelschule.ws/",
-    "81925-phoenix-schule-muenchen-priv-foerderzentrum-foerderschwerpunkt-koerp" => "https://www.phoenix-kf.de/",
+    "83512-volksschule-wasserburg-a-inn-4aa61794-b970-11e7-8c48-001ec9cdab18" =>
+      "https://mittelschule.ws/",
+    "81925-phoenix-schule-muenchen-priv-foerderzentrum-foerderschwerpunkt-koerp" =>
+      "https://www.phoenix-kf.de/",
     "80935-staedt-willy-brandt-gesamtschule-muenchen" => "https://wbg.m-bildung.de/",
     "14195-biesalski-schule" => nil,
-    "80639-maria-ludwig-ferdinand-schule-priv-foerderzentrum-foerderschwerp-s" => "https://www.blindeninstitut.de/",
+    "80639-maria-ludwig-ferdinand-schule-priv-foerderzentrum-foerderschwerp-s" =>
+      "https://www.blindeninstitut.de/",
     "10825-rueckert-gymnasium" => nil,
-    "81929-friedel-eder-schule-muenchen-priv-foerderzentrum-foerderschwerpunkt" => "https://www.friedel-eder-schule.de/",
+    "81929-friedel-eder-schule-muenchen-priv-foerderzentrum-foerderschwerpunkt" =>
+      "https://www.friedel-eder-schule.de/",
     "12277-solling-schule" => "https://home.t-online.de/home/solling-oberschule-berlin",
     "12159-friedrich-bergius-schule" => "https://www.friedrich-bergius-schule.de/",
     "12353-schule-am-hasenhegerweg" => nil,
     "13086-marcel-breuer-schule-osz-holztechnik-glastechnik-und-design" => nil,
     "91438-sonderpaedagogisches-foerderzentrum-teilzentrum-ii-bad-windsheim" => nil,
     "84130-volksschule-dingolfing" => "https://www.dingolfing.org/members/schulamt/hs-dgf.htm",
-    "80935-volksschule-muenchen-an-der-eduard-spranger-strasse-4ae877b0-b970-11e7-a796-001ec9cdab18" => nil,
-    "81249-priv-foerderzentrum-foerderschwerpunkt-geistige-entwicklung-u-weit" => "https://www.helfende-haende.org/",
+    "80935-volksschule-muenchen-an-der-eduard-spranger-strasse-4ae877b0-b970-11e7-a796-001ec9cdab18" =>
+      nil,
+    "81249-priv-foerderzentrum-foerderschwerpunkt-geistige-entwicklung-u-weit" =>
+      "https://www.helfende-haende.org/",
     "14165-emil-molt-schule" => "https://www.emil-molt-schule.de/",
     "10823-gustav-langenscheidt-schule" => nil,
     "80995-schule-zur-lernfoerderung-muenchen-an-der-rothwiesenstrasse-gs-und-h" => nil,
-    "10115-berlin-metropolitan-school-integrierte-sekundarschule" => "https://metropolitanschool.com/",
+    "10115-berlin-metropolitan-school-integrierte-sekundarschule" =>
+      "https://metropolitanschool.com/",
     "12279-gustav-heinemann-oberschule" => "https://www.gho-berlin.cidsnet.de/",
-    "86513-dominikus-ringeisen-schulen-private-schule-fuer-mehrfachbeh-gehoerl" => "https://sfz-ursberg.de/",
+    "86513-dominikus-ringeisen-schulen-private-schule-fuer-mehrfachbeh-gehoerl" =>
+      "https://sfz-ursberg.de/",
     "80999-volksschule-muenchen-an-der-franz-nissl-strasse" => nil,
     "81243-volksschule-muenchen-an-der-reichenaustrasse" => nil,
     "63776-ivo-zeiger-volksschule-moembris" => "https://www.ivo-zeiger-schule.de/",
@@ -811,10 +962,12 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "10115-grundschule-am-arkonaplatz" => nil,
     "10825-sternberg-grundschule" => nil,
     "10717-goethe-gymnasium" => nil,
-    "89407-regens-wagner-schule-privates-foerderzentrum-foerde-schwerpunkt-geis" => "https://www.dillingen.regens-wagner-schule.de/",
+    "89407-regens-wagner-schule-privates-foerderzentrum-foerde-schwerpunkt-geis" =>
+      "https://www.dillingen.regens-wagner-schule.de/",
     "84056-privatschule-der-salesianerinnen-oberroning-hauptschule-mit-ganztag" => nil,
     "82362-wilhelm-conrad-roentgen-volksschule-weilheim" => nil,
-    "82110-eugen-papst-schule-sonderpaedagog-foerderzentrum-unterpfaffenhofen" => "https://www.eugen-papst-schule.de/",
+    "82110-eugen-papst-schule-sonderpaedagog-foerderzentrum-unterpfaffenhofen" =>
+      "https://www.eugen-papst-schule.de/",
     "12207-giesensdorfer-grundschule" => "https://www.giesensdorfer-grundschule.de",
     "13187-freie-integrative-montessori-grundschule-pankow" => nil,
     "12103-maria-montessori-grundschule" => nil,
@@ -824,7 +977,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "85567-georg-huber-volksschule-grafing-b-muenchen" => nil,
     "82319-volksschule-starnberg-4ab9e0e4-b970-11e7-9707-001ec9cdab18" => nil,
     "63906-barbarossa-volksschule-erlenbach-a-main" => nil,
-    "81829-christophorus-schule-private-schule-zur-erziehungshilfe-muenchen-g" => "https://www.christophorus-schulverein.de/",
+    "81829-christophorus-schule-private-schule-zur-erziehungshilfe-muenchen-g" =>
+      "https://www.christophorus-schulverein.de/",
     "14195-gail-s-halvorsen-integrierte-sekundarschule" => nil,
     "12247-alt-lankwitzer-grundschule" => "https://www.alt-lankwitzer-grundschule.de",
     "80686-schule-zur-sprachfoerderung-muenchen-an-der-droste-huelshoff-strasse-g" => nil,
@@ -833,7 +987,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "12353-hermann-von-helmholtz-schule" => nil,
     "13627-anna-freud-schule-osz-sozialwesen" => nil,
     "81825-volksschule-muenchen-am-inzeller-weg" => "https://www.inzellerweg.de/",
-    "80937-silvia-goerres-schule-priv-foerderzentrum-foerderschwerpunkt-geist" => "https://www.lebenshilfe-muenchen.de/",
+    "80937-silvia-goerres-schule-priv-foerderzentrum-foerderschwerpunkt-geist" =>
+      "https://www.lebenshilfe-muenchen.de/",
     "63755-karl-amberg-volksschule-alzenau-i-ufr" => nil,
     "63762-volksschule-grossostheim-4b02aea0-b970-11e7-be35-001ec9cdab18" => nil,
     "10713-peter-a-silbermann-schule" => "https://www.abendgymnasium.de/",
@@ -842,10 +997,12 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "12249-katholische-schule-sankt-alfons-grundschule" => "https://kssa.de",
     "81737-schule-zur-sprachfoerderung-muenchen-am-theodor-heuss-platz-grundsch" => nil,
     "10999-3-schulpraktisches-seminar-friedrichshain-kreuzberg-unbesetzt" => nil,
-    "80804-ernst-barlach-schule-priv-foerderzentrum-foerder-schwerpunkt-koerp" => "https://ebs-m.org/",
+    "80804-ernst-barlach-schule-priv-foerderzentrum-foerder-schwerpunkt-koerp" =>
+      "https://ebs-m.org/",
     "12524-anne-frank-gymnasium" => "https://anne-frank-schule-berlin.de/",
     "14163-waldschule-gerdes-grundschule" => "https://www.waldschule-gerdes.de",
-    "13407-6-schulpraktisches-seminar-reinickendorf" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-6-schulpraktisches-seminar-reinickendorf" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "13581-schule-am-gartenfeld" => nil,
     "13051-gruener-campus-malchow-gemeinschaftsschule" => "https://www.grundschulen.info/",
     "12101-grundschule-auf-dem-tempelhofer-feld" => nil,
@@ -870,22 +1027,27 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "10249-spartacus-grundschule" => nil,
     "10245-emanuel-lasker-schule" => nil,
     "10553-heinrich-von-stephan-schule-gemeinschaftsschule" => "https://www.hvstephan.de",
-    "13407-4-schulpraktisches-seminar-reinickendorf" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-4-schulpraktisches-seminar-reinickendorf" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "13086-martin-wagner-schule-osz-bautechnik-ii" => nil,
     "10961-carl-von-ossietzky-schule-gemeinschaftsschule" => "https://cvo-berlin.de/",
     "10999-2-schulpraktisches-seminar-friedrichshain-kreuzberg" => nil,
-    "10365-schule-am-gruenen-grund" => "https://home.t-online.de/home/schule-am-gruenen-grund.cids/",
+    "10365-schule-am-gruenen-grund" =>
+      "https://home.t-online.de/home/schule-am-gruenen-grund.cids/",
     "10243-dathe-gymnasium" => nil,
     "10405-helene-haeusler-schule" => "https://www.helene-haeusler-schule.de",
     "10777-finow-grundschule" => nil,
     "12559-flatow-oberschule" => "https://flatow-os.de/",
-    "13407-2-schulpraktisches-seminar-reinickendorf" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-2-schulpraktisches-seminar-reinickendorf" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "13439-maerkische-grundschule" => "https://www.staatliche-europa-schule.de/",
-    "13581-carlo-schmid-oberschule-integrierte-sekundarschule" => "https://www.carlo-schmid-oberschule.de/",
+    "13581-carlo-schmid-oberschule-integrierte-sekundarschule" =>
+      "https://www.carlo-schmid-oberschule.de/",
     "14089-hans-carossa-gymnasium" => nil,
     "12305-georg-buechner-gymnasium" => "https://www.gbo-berlin.de/",
     "10999-1-schulpraktisches-seminar-friedrichshain-kreuzberg" => nil,
-    "10409-staatliche-ballettschule-berlin-und-schule-fuer-artistik" => "https://home.t-online.de/home/sbb.sfa.cids",
+    "10409-staatliche-ballettschule-berlin-und-schule-fuer-artistik" =>
+      "https://home.t-online.de/home/sbb.sfa.cids",
     "13585-kant-gymnasium" => "https://www.kant-gymnasium-berlin.de/",
     "10963-hector-peterson-schule" => "https://www.hpo-berlin.de/",
     "14055-wald-gymnasium" => nil,
@@ -895,7 +1057,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "13359-carl-kraemer-grundschule" => nil,
     "13467-wiesengrund-schule" => nil,
     "13469-katholische-schule-salvator" => "https://salvator.net/",
-    "13589-martin-buber-oberschule-integrierte-sekundarschule" => "https://www.martin-buber-oberschule.de/",
+    "13589-martin-buber-oberschule-integrierte-sekundarschule" =>
+      "https://www.martin-buber-oberschule.de/",
     "13086-schule-am-hamburger-platz-grundschule" => "https://www.schule-am-hamburger-platz.de/",
     "10999-6-schulpraktisches-seminar-friedrichshain-kreuzberg" => nil,
     "13591-astrid-lindgren-grundschule" => "https://www.lindgrenschule.de/",
@@ -909,7 +1072,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "13509-toulouse-lautrec-schule" => nil,
     "14089-mary-poppins-grundschule" => nil,
     "12355-michael-ende-schule-grundschule" => nil,
-    "13407-1-schulpraktisches-seminar-pankow" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-1-schulpraktisches-seminar-pankow" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "14055-katholische-schule-herz-jesu-grundschule" => "https://herz-jesu-schule.de/",
     "13587-grundschule-am-eichenwald" => nil,
     "13125-grundschule-im-panketal" => nil,
@@ -938,12 +1102,14 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "12045-elbe-schule-grundschule" => "https://www.adolf-reichwein-schule.com",
     "12057-sonnen-schule-grundschule" => nil,
     "16356-friedrich-von-canitz-grundschule-blumberg" => "https://www.grundschule-blumberg.de/",
-    "13407-3-schulpraktisches-seminar-mitte" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-3-schulpraktisches-seminar-mitte" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "13053-schule-am-breiten-luch" => nil,
     "13403-mark-twain-grundschule" => "https://www.twainweb.de/",
     "12683-wilhelm-von-siemens-gymnasium" => "https://www.siemens-gymnasium.de",
     "12349-leonardo-da-vinci-gymnasium" => "https://www.leonardo-da-vinci-gymnasium.de/",
-    "13407-8-schulpraktisches-seminar-reinickendorf" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-8-schulpraktisches-seminar-reinickendorf" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "10318-richard-wagner-schule-grundschule" => nil,
     "13439-thomas-mann-gymnasium" => nil,
     "12207-willi-graf-gymnasium" => "https://home.t-online.de/home/willi-graf-oberschule.cids",
@@ -953,7 +1119,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "10999-7a-schulpraktisches-seminar-friedrichshain-kreuzberg-unbesetzt" => nil,
     "16259-gymnasium-bertolt-brecht" => "https://www.gymnasium-bad-freienwalde.de/",
     "14480-schiller-gymnasium" => "https://grundschule.schiller.schule/",
-    "13407-5-schulpraktisches-seminar-reinickendorf" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-5-schulpraktisches-seminar-reinickendorf" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "15834-seeoberschule-rangsdorf-anerkannte-ersatzschule" => "https://www.seeschule.de/",
     "16792-exin-oberschule-zehdenick" => "https://www.exin-oberschule.de/",
     "13435-bettina-von-arnim-schule" => "https://www.cidsnet.de",
@@ -961,22 +1128,32 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "12359-bruno-taut-schule-grundschule" => nil,
     "14806-flaeming-gymnasium" => "https://www.gymbel.de/",
     "12169-helene-lange-schule-integrierte-sekundarschule" => nil,
-    "15745-gymnasium-villa-elisabeth-anerkannte-ersatzschule-schule-mit-in" => "https://privatschulen-ve.de/gymnasium-villa-elisabeth/",
+    "15745-gymnasium-villa-elisabeth-anerkannte-ersatzschule-schule-mit-in" =>
+      "https://privatschulen-ve.de/gymnasium-villa-elisabeth/",
     "12689-johann-julius-hecker-schule" => nil,
     "10555-g-a-l-b-foerderung-ggmbh" => nil,
-    "13407-7-schulpraktisches-seminar-reinickendorf-unbesetzt" => "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
+    "13407-7-schulpraktisches-seminar-reinickendorf-unbesetzt" =>
+      "https://home.t-online.de/home/paul-loebe-oberschule.cids/",
     "10999-8-schulpraktisches-seminar-friedrichshain-kreuzberg" => nil,
     "13581-freie-georgschule-grundschule" => nil,
-    "15834-freies-gymnasium-rangsdorf-internationale-ganztagsschule-mit-intern" => "https://www.seeschule.de/",
-    "14478-freie-schule-potsdam-des-vereins-freie-schule-potsdam-e-v" => "https://www.freie-schule-potsdam.de/",
-    "15738-musikbetonte-gesamtschule-paul-dessau-zeuthen" => "https://www.gesamtschule-zeuthen.de/",
-    "15837-freie-oberschule-baruth-anerkannte-ersatzschule" => "https://www.freie-oberschule-baruth.de/",
-    "16278-freie-schule-angermuende-oberschule-anerkannte-ersatzschule" => "https://lerntpolnisch.de/",
-    "16341-gymnasium-panketal-freie-stadtrandschule-im-gruenen-anerkannte-ersat" => "https://www.gymnasium-panketal.de/",
-    "16816-evanglische-schule-neuruppin-grundschule-anerkannte-ersatzschule" => "https://gymnasium-neuruppin.de/",
+    "15834-freies-gymnasium-rangsdorf-internationale-ganztagsschule-mit-intern" =>
+      "https://www.seeschule.de/",
+    "14478-freie-schule-potsdam-des-vereins-freie-schule-potsdam-e-v" =>
+      "https://www.freie-schule-potsdam.de/",
+    "15738-musikbetonte-gesamtschule-paul-dessau-zeuthen" =>
+      "https://www.gesamtschule-zeuthen.de/",
+    "15837-freie-oberschule-baruth-anerkannte-ersatzschule" =>
+      "https://www.freie-oberschule-baruth.de/",
+    "16278-freie-schule-angermuende-oberschule-anerkannte-ersatzschule" =>
+      "https://lerntpolnisch.de/",
+    "16341-gymnasium-panketal-freie-stadtrandschule-im-gruenen-anerkannte-ersat" =>
+      "https://www.gymnasium-panketal.de/",
+    "16816-evanglische-schule-neuruppin-grundschule-anerkannte-ersatzschule" =>
+      "https://gymnasium-neuruppin.de/",
     "14542-ernst-haeckel-gymnasium" => "https://www.ehg-werder.de/",
     "15344-theodor-fontane-gymnasium-strausberg" => "https://gymnasium-strausberg.de/",
-    "15898-rahn-education-freies-gymnasium-im-stift-neuzelle-staatlich-aner" => "https://rahn.education/",
+    "15898-rahn-education-freies-gymnasium-im-stift-neuzelle-staatlich-aner" =>
+      "https://rahn.education/",
     "14469-evangelische-grundschule-potsdam" => nil,
     "16356-europaschule-werneuchen" => nil,
     "16816-evangelische-schule-neuruppin-gymnasium" => "https://gymnasium-neuruppin.de/",
@@ -985,24 +1162,29 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "15806-grundschule-zossen-dabendorf" => "https://www.grundschule-dabendorf.de/",
     "15306-kleeblatt-schule-schule-mit-dem-sonderpaedagogischen-foerderschwerpun" => nil,
     "16928-friedrich-ludwig-jahn-schule-pritzwalk" => nil,
-    "15517-rahn-education-freie-grundschule-fuerstenwalde-staatlich-genehmig" => "https://www.rahndittrich.de/gs-fw",
+    "15517-rahn-education-freie-grundschule-fuerstenwalde-staatlich-genehmig" =>
+      "https://www.rahndittrich.de/gs-fw",
     "16230-grundschule-gruental" => "https://www.grundschulegruental.de",
     "14467-rosa-luxemburg-schule" => nil,
     "14482-grundschule-bruno-h-buergel" => "https://www.buergel-grundschule.de/",
     "16515-adventschule-oberhavel-oberschule-mit-grundschulteil" => nil,
     "14473-evangelisches-gymnasium-hermannswerder-mit-internat" => nil,
-    "15738-grundschule-am-wald-zeuthen" => "https://www.lehrer-online.de/medienkompetenz/home/gawzeuthen",
+    "15738-grundschule-am-wald-zeuthen" =>
+      "https://www.lehrer-online.de/medienkompetenz/home/gawzeuthen",
     "16727-linden-grundschule-velten" => "https://www.linden-grundschule-velten.de/",
-    "16928-johann-wolfgang-von-goethe-gymnasium-pritzwalk" => "https://www.gymnasium-pritzwalk.de",
+    "16928-johann-wolfgang-von-goethe-gymnasium-pritzwalk" =>
+      "https://www.gymnasium-pritzwalk.de",
     "15859-europaschule-storkow-grund-und-oberschule" => "https://www.schule-storkow.de/",
     "16928-freiherr-von-rochow-schule-oberschule" => nil,
-    "14712-gesamtschule-bruno-h-buergel-sportprofilierte-ganztagsschule-mi" => "https://www.buergelschule.de/",
+    "14712-gesamtschule-bruno-h-buergel-sportprofilierte-ganztagsschule-mi" =>
+      "https://www.buergelschule.de/",
     "14469-grundschule-ludwig-renn" => nil,
     "14473-humboldt-gymnasium" => "https://www.humboldtgym.de/",
     "14467-einstein-gymnasium-potsdam" => "https://www.einsteingymnasium-potsdam.de/",
     "16348-gymnasium-wandlitz" => "https://www.gymnasium-wandlitz.de/",
     "14542-carl-von-ossietzky-oberschule-mit-angegliederter-primarstufe" => nil,
-    "14621-grundschule-menschenskinder-verlaessliche-halbtagsgrundschule-schoe" => "https://menschenskinder.grundschul-webportal.de/",
+    "14621-grundschule-menschenskinder-verlaessliche-halbtagsgrundschule-schoe" =>
+      "https://menschenskinder.grundschul-webportal.de/",
     "19348-rolandschule-grundschule-perleberg" => nil,
     "15806-geschwister-scholl-schule-gesamtschule-mit-gost-zossen-ot-dabendorf" => nil,
     "14478-weidenhof-grundschule" => nil,
@@ -1011,12 +1193,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "15344-grundschule-am-annatal" => nil,
     "14473-grundschule-am-humboldtring" => "https://www.lenne-schule.de/",
     "14467-hermann-von-helmholtz-gymnasium-europaschule" => "https://www.helmholtzschule.de/",
-    "15366-schule-am-amselsteg-schule-mit-dem-sonderpaed-foerderschwerpunkt-gei" => "https://www.digitalwerke.com",
+    "15366-schule-am-amselsteg-schule-mit-dem-sonderpaed-foerderschwerpunkt-gei" =>
+      "https://www.digitalwerke.com",
     "14552-wolkenberg-gymnasium" => "https://www.wolkenberg-gymnasium.de/",
     "16766-goethe-grundschule-kremmen" => "https://www.goethe-grundschule-kremmen.de/",
-    "14480-gesamtschule-potsdam-drewitzer-modellschule-genehmigte-ersatzsc" => "https://grundschule.schiller.schule/",
-    "16515-kinderschule-oberhavel-grundschule-anerkannte-ersatzschule" => "https://www.kinderschule-oberhavel.de/",
-    "16909-staedtisches-gymnasium-wittstock-dosse" => "https://www.gymnasium-wittstock-dosse.de/cms/",
+    "14480-gesamtschule-potsdam-drewitzer-modellschule-genehmigte-ersatzsc" =>
+      "https://grundschule.schiller.schule/",
+    "16515-kinderschule-oberhavel-grundschule-anerkannte-ersatzschule" =>
+      "https://www.kinderschule-oberhavel.de/",
+    "16909-staedtisches-gymnasium-wittstock-dosse" =>
+      "https://www.gymnasium-wittstock-dosse.de/cms/",
     "15320-oderbruch-oberschule-neutrebbin" => nil,
     "15345-grundschule-eggersdorf" => nil,
     "15374-oberschule-muencheberg" => nil,
@@ -1024,11 +1210,14 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "14612-oberschule-falkensee" => nil,
     "16321-barnim-gymnasium-bernau-waldfrieden" => "https://www.barnim-gymnasium.de/",
     "15711-friedrich-schiller-gymnasium" => nil,
-    "14662-kooperationsschule-friesack-mit-primarstufe" => "https://kooperationsschule-friesack.de/",
-    "15230-grundschule-am-botanischen-garten" => "https://www.grundschule-am-botanischen-garten.de",
+    "14662-kooperationsschule-friesack-mit-primarstufe" =>
+      "https://kooperationsschule-friesack.de/",
+    "15230-grundschule-am-botanischen-garten" =>
+      "https://www.grundschule-am-botanischen-garten.de",
     "16775-werner-von-siemens-schule-gransee" => "https://siemensschule-gransee.de/",
     "28755-schule-faehrer-flur" => nil,
-    "15232-oberschule-ulrich-von-hutten-frankfurt-oder" => "https://www.huttenschule-frankfurt-o.de",
+    "15232-oberschule-ulrich-von-hutten-frankfurt-oder" =>
+      "https://www.huttenschule-frankfurt-o.de",
     "14532-weinberg-gymnasium" => nil,
     "15890-albert-schweitzer-gymnasium" => "https://www.asg-ehst.de/",
     "15890-grundschule-erich-weinert" => nil,
@@ -1036,24 +1225,28 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "15537-morus-oberschule-erkner" => "https://www.oberschule-erkner.de/",
     "14797-grund-und-gesamtschule-lehnin-heinrich-julius-bruns" => nil,
     "15757-elisabeth-von-schlieben-grundschule" => "https://www.grundschule-halbe.de/",
-    "15234-sportschule-frankfurt-oder-gesamtschule-mit-gymnasialer-oberstufe" => "https://www.sportschule-ff.de",
+    "15234-sportschule-frankfurt-oder-gesamtschule-mit-gymnasialer-oberstufe" =>
+      "https://www.sportschule-ff.de",
     "14943-friedrich-ludwig-jahn-oberschule-oberschule-mit-sportbetonung" => nil,
     "14547-sally-bein-gymnasium" => nil,
     "14806-krause-tschetschog-oberschule" => "https://www.oberschule-belzig.de/",
     "15907-paul-gerhardt-gymnasium-luebben" => "https://www.paul-gerhardt-gymnasium.de/",
     "15754-grundschule-heidesee" => nil,
     "14624-marie-curie-gymnasium" => nil,
-    "15837-schulzentrum-baruther-urstromtal-grundschule-baruth-mark" => "https://www.freie-oberschule-baruth.de/",
+    "15837-schulzentrum-baruther-urstromtal-grundschule-baruth-mark" =>
+      "https://www.freie-oberschule-baruth.de/",
     "21107-katholische-bonifatiusschule" => "https://www.bonifatiusschule.org/",
     "27572-paula-modersohn-schule" => "https://www.paula-modersohn-schule.de/",
     "15938-grundschule-golssen" => nil,
-    "16547-integrativ-kooperative-pestalozzi-grundschule-birkenwerder" => "https://www.grundschule-birkenwerder.de/",
+    "16547-integrativ-kooperative-pestalozzi-grundschule-birkenwerder" =>
+      "https://www.grundschule-birkenwerder.de/",
     "16227-kreisvolkshochschule-barnim" => "https://gymnasium-finow.barnim.de/",
     "14943-friedrich-gymnasium-luckenwalde" => "https://www.abitur.info/brandenburg/",
     "15749-grundschule-toepchin" => "https://www.grundschule-toepchin.de/",
     "15711-brandenburgische-schule-fuer-blinde-und-sehbehinderte-schule-mit-dem" => nil,
     "16761-biber-grundschule-nieder-neuendorf" => nil,
-    "15517-kreisvolkshochschule-oder-spree-geschaeftsstelle-fuerstenwalde" => "https://www.schollgym.de/",
+    "15517-kreisvolkshochschule-oder-spree-geschaeftsstelle-fuerstenwalde" =>
+      "https://www.schollgym.de/",
     "16818-grundschule-wustrau" => nil,
     "14656-hans-klakow-oberschule" => nil,
     "14770-luckenberger-schule" => "https://www.luckenberger-schule.de/",
@@ -1129,7 +1322,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "63477-grundschule-villa-kunterbunt" => "https://www.aes-maintal.de/",
     "63667-mittelstufenschule-nidda" => nil,
     "64354-dilsbachschule" => nil,
-    "64572-grundschule-worfelden" => "https://www.buettelborn.de/firmen/branche.php?menuid=760&topmenu=25&keepmenu=inactive",
+    "64572-grundschule-worfelden" =>
+      "https://www.buettelborn.de/firmen/branche.php?menuid=760&topmenu=25&keepmenu=inactive",
     "63477-wilhelm-busch-schule" => nil,
     "64380-justin-wagner-schule" => "https://www.jws-rossdorf.de/",
     "60488-lycee-francais-victor-hugo" => nil,
@@ -1280,7 +1474,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "34132-pestalozzischule" => "https://www.pestalozzischule-kassel.de",
     "37235-freiherr-vom-stein-schule" => "https://fvss.de/",
     "35260-astrid-lindgren-schule" => nil,
-    "35037-freie-waldorfschule-marburg" => "https://www.waldorfmarburg.de/freie-waldorf-schule-marburg/",
+    "35037-freie-waldorfschule-marburg" =>
+      "https://www.waldorfmarburg.de/freie-waldorf-schule-marburg/",
     "37213-johannisberg-schule-witzenhausen" => nil,
     "35279-martin-von-tours-schule" => nil,
     "36037-marienschule-fulda" => "https://www.marienschule-fulda.de/",
@@ -1338,26 +1533,32 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "17489-regionale-schule-ernst-moritz-arndt-greifswald" => nil,
     "37581-roswitha-gymnasium-bad-gandersheim" => "https://www.roswitha-gymnasium.de/",
     "17235-gymnasium-carolinum-neustrelitz" => "https://www.carolinum.de/",
-    "18437-integrierte-gesamtschule-gruenthal-mit-gymnasialer-oberstufe-stra" => "https://www.igs-gruenthal.de/",
+    "18437-integrierte-gesamtschule-gruenthal-mit-gymnasialer-oberstufe-stra" =>
+      "https://www.igs-gruenthal.de/",
     "18437-regionale-schule-hermann-burmeister-stralsund" => nil,
-    "19246-regionale-schule-mit-grundschule-fritz-reuter-zarrentin" => "https://www.schule-zarrentin.de",
+    "19246-regionale-schule-mit-grundschule-fritz-reuter-zarrentin" =>
+      "https://www.schule-zarrentin.de",
     "17036-grundschule-ost-h-ch-andersen-europaschule-neubrandenburg" => "https://www.gs-nb.de/",
     "17033-grundschule-mitte-uns-huesung-neubrandenburg" => nil,
     "23936-regionale-schule-wasserturm-grevesmuehlen" => "https://www.wasserturmschule.de",
     "17192-regionale-schule-waren" => nil,
     "23923-regionale-schule-mit-grundschule-schoenberg" => "https://www.schule-schoenberg.de/",
     "29308-grundschule-winsen-aller" => nil,
-    "38440-eichendorff-schule-staatlich-anerkanntes-gymnasium-i-f-t" => "https://www.schulen.wolfsburg.de/eichendorff/",
+    "38440-eichendorff-schule-staatlich-anerkanntes-gymnasium-i-f-t" =>
+      "https://www.schulen.wolfsburg.de/eichendorff/",
     "29308-oberschule-winsen-mit-gymn-angebot" => nil,
-    "38690-schule-am-harly-foes-schwerpunkt-geistige-entwicklung" => "https://home.t-online.de/home/schule-am-harly",
-    "19217-regionale-schule-mit-grundschule-kaethe-kollwitz-rehna" => "https://www.schule-rehna.de/",
+    "38690-schule-am-harly-foes-schwerpunkt-geistige-entwicklung" =>
+      "https://home.t-online.de/home/schule-am-harly",
+    "19217-regionale-schule-mit-grundschule-kaethe-kollwitz-rehna" =>
+      "https://www.schule-rehna.de/",
     "29549-fritz-reuter-schule-kgs-bevensen" => "https://home.t-online.de/home/KGSBB/",
     "18581-grundschule-putbus" => nil,
     "21423-igs-winsen-roydorf" => "https://www.igs-winsen.de/",
     "17192-richard-wossidlo-gymnasium" => nil,
     "28844-kooperative-gesamtschule-leeste" => "https://www.kgs-leeste.de/",
     "26386-grundschule-stadtmitte" => "https://www.wasserturmschule.de/",
-    "19063-sonderpaedagogisches-foerderzentrum-am-fernsehturm-schwerin-schul" => "https://www.schule-am-fernsehturm.de/",
+    "19063-sonderpaedagogisches-foerderzentrum-am-fernsehturm-schwerin-schul" =>
+      "https://www.schule-am-fernsehturm.de/",
     "18437-grundschule-hermann-burmeister-stralsund" => nil,
     "26434-oberschule-hohenkirchen" => nil,
     "38159-julius-spiegelberg-gymnasium" => "https://www.gymnasium-vechelde.de/",
@@ -1367,7 +1568,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "26340-integrierte-gesamtschule-friesland-sued" => nil,
     "38300-igs-wallstrasse-wolfenbuettel" => "https://ts.domainname.de/wallstr.de",
     "21776-prof-hermann-rauhe-schule-offene-ganztagsgrundschule" => nil,
-    "26624-hinnerk-haidjer-schule-foerderschule-schwerpunkt-lernen" => "https://www.slh-moordorf.de/",
+    "26624-hinnerk-haidjer-schule-foerderschule-schwerpunkt-lernen" =>
+      "https://www.slh-moordorf.de/",
     "26203-grundschule-wardenburg-vgs" => "https://www.gswardenburg.de/",
     "23992-gymnasium-am-sonnenkamp-neukloster" => "https://www.gymnasium-neukloster.de/",
     "17491-gymnasium-alexander-von-humboldt-greifswald" => "https://www.humboldt-greifswald.de/",
@@ -1377,11 +1579,13 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "27283-realschule-verden" => "https://www.realschule-verden.de/",
     "21218-gymnasium-hittfeld" => "https://www.gymnasium-hittfeld.de/",
     "38259-dr-klaus-schmidt-hauptschule" => nil,
-    "18461-sonnenblumenschule-franzburg-schule-mit-dem-foerderschwerpunkt-g" => "https://www.sonnenblumenschule-franzburg.de/",
+    "18461-sonnenblumenschule-franzburg-schule-mit-dem-foerderschwerpunkt-g" =>
+      "https://www.sonnenblumenschule-franzburg.de/",
     "38446-hellwinkelschule-grundschule" => nil,
     "49377-liobaschule-grundschule" => nil,
     "29525-lessing-gymnasium" => "https://www.leg-uelzen.de/",
-    "29690-wilhelm-roepke-schule-kooperative-gesamtschule-schwarmstedt" => "https://kgs-schwarmstedt.de/",
+    "29690-wilhelm-roepke-schule-kooperative-gesamtschule-schwarmstedt" =>
+      "https://kgs-schwarmstedt.de/",
     "26683-grundschule-ramsloh-f-schueler-kath-bek" => nil,
     "38259-grundschule-ringelheim" => "https://www.gs-ringelheim.de/",
     "27619-diedrich-schultze-schule-grundschule-spaden" => "https://grundschule-spaden.de/",
@@ -1397,18 +1601,21 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "28876-haupt-und-realschule-oyten" => nil,
     "21423-hanseschule-winsen-grund-und-hauptschule" => "https://ts.domainname.de/hanseschule.de",
     "18439-hansa-gymnasium-stralsund" => "https://www.hansagymnasium-stralsund.de/",
-    "38440-eichendorffschule-oberschule-in-kirchl-traeg" => "https://www.schulen.wolfsburg.de/eichendorff/",
+    "38440-eichendorffschule-oberschule-in-kirchl-traeg" =>
+      "https://www.schulen.wolfsburg.de/eichendorff/",
     "21255-schule-am-duevelshoepen-hauptschule-tostedt" => "https://hsto.de/",
     "26203-integrierte-gesamtschule-am-everkamp" => nil,
     "48480-johannes-grundschule" => nil,
     "26474-hermann-lietz-schule-gymnasium-in-freier-traegerschaft" => nil,
-    "26624-astrid-lindgren-schule-moordorf-foerderschule-schwpt-geist-entwick" => "https://www.slh-moordorf.de/",
+    "26624-astrid-lindgren-schule-moordorf-foerderschule-schwpt-geist-entwick" =>
+      "https://www.slh-moordorf.de/",
     "27383-beekeschule-oberschule" => nil,
     "38259-grundschule-am-ziesberg" => nil,
     "26954-grundschule-einswarden" => "https://home.t-online.de/home/gseinswarden",
     "49080-graf-stauffenberg-gymnasium" => "https://gsg-os.de/",
     "29525-herzog-ernst-gymnasium" => "https://www.heg-portal.de/hp/",
-    "49377-kolleg-st-thomas-gymnasium-in-freier-traegerschaft" => "https://www.kolleg-st-thomas.de/",
+    "49377-kolleg-st-thomas-gymnasium-in-freier-traegerschaft" =>
+      "https://www.kolleg-st-thomas.de/",
     "49377-alexanderschule-vechta-grundschule-f-schueler-kath-bek" => "https://marlex-vechta.de",
     "38173-haupt-und-realschule-sickte" => nil,
     "31224-gymnasium-am-silberkamp" => nil,
@@ -1416,14 +1623,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "49080-bertha-von-suttner-realschule" => "https://gsg-os.de/",
     "26122-caecilienschule-gymnasium" => "https://www.caeci.de/",
     "49074-gymnasium-carolinum" => "https://carolinum-osnabrueck.de/",
-    "31171-marienbergschule-nordstemmen-oberschule-m-aussenstelle" => "https://home.t-online.de/home/marienbergschule",
+    "31171-marienbergschule-nordstemmen-oberschule-m-aussenstelle" =>
+      "https://home.t-online.de/home/marienbergschule",
     "26486-grundschule-wangerooge" => nil,
     "26624-haupt-und-realschule-suedbrookmerland" => nil,
     "31592-gymnasium-stolzenau" => "https://www.gymnasium-stolzenau.de/",
     "31020-schule-am-kanstein-kooperative-gesamtschule" => "https://wordpress.nibis.de/kgssalzh/",
     "27619-schule-am-feldkamp-foerderschule-schwerpunkt-lernen" => nil,
     "37520-grundschule-roeddenberg" => nil,
-    "49377-liebfrauenschule-vechta-gymnasium-in-freier-traegerschaft" => "https://liebfrauenschule-vechta.de",
+    "49377-liebfrauenschule-vechta-gymnasium-in-freier-traegerschaft" =>
+      "https://liebfrauenschule-vechta.de",
     "27412-kgs-tarmstedt-europaschule" => "https://www.kgs-tarmstedt.de/",
     "26871-kirchschule-verlaessliche-grundschule" => nil,
     "38228-gottfried-linke-realschule" => nil,
@@ -1450,7 +1659,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "38471-grundschule-ruehen" => nil,
     "37520-tilman-riemenschneider-gymnasium" => nil,
     "26122-altes-gymnasium" => nil,
-    "26506-schule-am-moortief-foerderschule-schwpt-geist-entwicklun" => "https://home.t-online.de/home/schule.am.moortief/",
+    "26506-schule-am-moortief-foerderschule-schwpt-geist-entwicklun" =>
+      "https://home.t-online.de/home/schule.am.moortief/",
     "27637-grundschule-nordholz" => "https://www.grundschule-nordholz.de/",
     "26802-grundschule-oldersum" => nil,
     "31535-kgs-neustadt-kooperative-gesamtschule-neustadt" => "https://www.kgs-neustadt.de/",
@@ -1463,26 +1673,32 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "31275-igs-lehrte" => nil,
     "21266-grundschule-jesteburg" => "https://www.gsjesteburg.de/",
     "49451-oberschule-holdorf" => nil,
-    "30559-schule-f-taubblinde-foes-schwpt-hoeren-u-sehen-i-fr-tr" => "https://www.taubblindenwerk.de/",
-    "26802-freie-christliche-schule-ostfriesland-mit-gesamtschulcharakter-i-fr" => "https://www.fcso.de/",
+    "30559-schule-f-taubblinde-foes-schwpt-hoeren-u-sehen-i-fr-tr" =>
+      "https://www.taubblindenwerk.de/",
+    "26802-freie-christliche-schule-ostfriesland-mit-gesamtschulcharakter-i-fr" =>
+      "https://www.fcso.de/",
     "37191-oberschule-katlenburg-lindau" => nil,
     "30161-ricarda-huch-schule-gymnasium" => "https://www.rhs-hannover.de/",
     "31134-josephinum-gymnasium" => "https://www.josephinum-hildesheim.de/",
     "30167-grundschule-auf-dem-loh" => nil,
-    "26121-grundschule-harlingerstrasse-f-schueler-kath-bek" => "https://www.gs-harlingerstrasse.de/",
-    "49324-wiehengebirgsschule-foes-schwpt-lernen-u-geist-entwicklu" => "https://www.wiehengebirgsschule.de/",
+    "26121-grundschule-harlingerstrasse-f-schueler-kath-bek" =>
+      "https://www.gs-harlingerstrasse.de/",
+    "49324-wiehengebirgsschule-foes-schwpt-lernen-u-geist-entwicklu" =>
+      "https://www.wiehengebirgsschule.de/",
     "30880-erich-kaestner-gymnasium" => nil,
     "31241-realschule-gross-ilsede" => "https://www.gymnasium-gross-ilsede.de/",
     "30539-integrierte-gesamtschule-kronsberg" => nil,
     "30175-kaiser-wilhelm-und-ratsgymnasium" => nil,
-    "37079-geschwister-scholl-gesamtschule-kooperative-gesamtschule-goettingen-5b49728a-b970-11e7-a391-001ec9cdab18" => nil,
+    "37079-geschwister-scholl-gesamtschule-kooperative-gesamtschule-goettingen-5b49728a-b970-11e7-a391-001ec9cdab18" =>
+      nil,
     "21339-hermann-loens-schule-verlaessliche-grundschule" => nil,
     "26441-mariengymnasium-jever" => "https://www.mariengymnasium.eu",
     "21337-grundschule-luene-verlaessliche-grundschule" => "https://www.grundschule-luene.de/",
     "28865-gymnasium-lilienthal" => "https://www.gymnasium-lilienthal.de/",
     "30173-tellkampfschule-gymnasium" => "https://www.tellkampfschule.de/",
     "37081-heinrich-heine-schule-hauptschule" => nil,
-    "37079-geschwister-scholl-gesamtschule-kooperative-gesamtschule-goettingen-5b48dc12-b970-11e7-bce5-001ec9cdab18" => nil,
+    "37079-geschwister-scholl-gesamtschule-kooperative-gesamtschule-goettingen-5b48dc12-b970-11e7-bce5-001ec9cdab18" =>
+      nil,
     "37083-heinrich-boell-schule-foes-schwpt-koerp-u-motor-entwicklun" => nil,
     "37186-loewenzahnschule-grundschule-moringen" => "https://kgsmoringen.de/",
     "38165-oberschule-lehre" => nil,
@@ -1497,18 +1713,22 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "30853-integrierte-gesamtschule-langenhagen" => nil,
     "26759-haupt-und-realschule-hinte" => "https://home.t-online.de/home/GS-Hinte",
     "37412-ernst-moritz-arndt-gymnasium" => "https://www.ema-gym.de/",
-    "30173-ludwig-windthorst-schule-oberschule-in-kirchl-traegerschaft" => "https://www.nibis.de/~hrosluwi/",
+    "30173-ludwig-windthorst-schule-oberschule-in-kirchl-traegerschaft" =>
+      "https://www.nibis.de/~hrosluwi/",
     "37079-geschwister-scholl-gesamtschule-kooperative-gesamtschule-goettingen" => nil,
-    "37079-geschwister-scholl-gesamtschule-kooperative-gesamtschule-goettingen-5b4a2aa4-b970-11e7-8c7f-001ec9cdab18" => nil,
+    "37079-geschwister-scholl-gesamtschule-kooperative-gesamtschule-goettingen-5b4a2aa4-b970-11e7-8c7f-001ec9cdab18" =>
+      nil,
     "49124-antoniusschule-grundschule" => "https://www.antoniusschule.de/",
-    "26789-greta-schoon-schule-foerderschule-schwpt-geist-entwicklun" => "https://home.t-online.de/home/spahi.SchuleamDeich",
+    "26789-greta-schoon-schule-foerderschule-schwpt-geist-entwicklun" =>
+      "https://home.t-online.de/home/spahi.SchuleamDeich",
     "38350-gymnasium-am-boetschenberg" => "https://www.gaboe.de/",
     "38518-isetal-schule-grundschule" => "https://isetal.de/",
     "30165-grundschule-alemannstrasse" => "https://www.gsalemannstrasse.de/",
     "49124-realschule-georgsmarienhuette" => nil,
     "31134-andreanum-gymnasium-in-freier-traegerschaft" => "https://www.andreanum.de/",
     "27729-verlaessliche-grundschule-stroehe" => nil,
-    "31785-berufsbildende-schulen-des-landkreises-hameln-pyrmont-handelslehra" => "https://rbs-hameln.de/",
+    "31785-berufsbildende-schulen-des-landkreises-hameln-pyrmont-handelslehra" =>
+      "https://rbs-hameln.de/",
     "37079-geschwister-scholl-gesamtschule" => nil,
     "26931-grundschule-moorriem" => nil,
     "26759-grundschule-hinte" => "https://home.t-online.de/home/GS-Hinte",
@@ -1525,12 +1745,14 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "37081-astrid-lindgren-schule-grundschule" => nil,
     "38640-ratsgymnasium-goslar" => nil,
     "29471-grund-und-oberschule-gartow" => "https://home.t-online.de/home/elbtalschule",
-    "26188-astrid-lindgren-schule-sonderpaedagogisches-foerderzentrum" => "https://www.als-edewecht.de",
+    "26188-astrid-lindgren-schule-sonderpaedagogisches-foerderzentrum" =>
+      "https://www.als-edewecht.de",
     "27777-oberschule-ganderkesee" => nil,
     "37077-wilhelm-henneberg-schule-grundschule" => nil,
     "38518-europaschule-humboldt-gymnasium" => "https://www.humboldtgymnasium.de/",
     "48488-liudger-realschule" => nil,
-    "21717-geestlandschule-oberschule-mit-gym-angebot" => "https://www.geestlandschulefredenbeck.de/",
+    "21717-geestlandschule-oberschule-mit-gym-angebot" =>
+      "https://www.geestlandschulefredenbeck.de/",
     "38518-albert-schweitzer-schule-grundschule" => "https://www.ass-gf.de/",
     "26188-grundschule-osterscheps" => nil,
     "31234-realschule-edemissen" => nil,
@@ -1540,13 +1762,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "26721-grundschule-fruechteburgschule" => nil,
     "49356-realschule-diepholz" => "https://www.realschule-diepholz.de",
     "26188-obs-edewecht" => nil,
-    "29451-fritz-reuter-gymnasium-m-aussenstelle-in-clenze" => "https://ts.domainname.de/f-r-g.de",
+    "29451-fritz-reuter-gymnasium-m-aussenstelle-in-clenze" =>
+      "https://ts.domainname.de/f-r-g.de",
     "29225-wietzenbruchschule-grundschule" => "https://wordpress.nibis.de/gswiebru",
     "49201-hauptschule-dissen-offene-ganztagsschule" => "https://www.hsdissen.de/",
     "29229-grundschule-gross-hehlen" => "https://ghs-gross-hehlen-celle.de/",
-    "26219-st-martin-schule-boesel-grundschule-fuer-schueler-kath-bekenntnisses" => "https://www.st-martin-schule-boesel.de/",
+    "26219-st-martin-schule-boesel-grundschule-fuer-schueler-kath-bekenntnisses" =>
+      "https://www.st-martin-schule-boesel.de/",
     "21244-gymnasium-am-kattenberge" => "https://www.gak-buchholz.de/",
-    "37441-gymnasium-paedagogium-bad-sachsa-gymnasium-in-freier-traegerschaft" => "https://www.internats-gymnasium.de/",
+    "37441-gymnasium-paedagogium-bad-sachsa-gymnasium-in-freier-traegerschaft" =>
+      "https://www.internats-gymnasium.de/",
     "26409-alexander-von-humboldt-schule-kgs-wittmund" => nil,
     "38302-grundschule-am-geitelplatz" => "https://geitelschule.de/",
     "26340-haupt-und-realschule-zetel" => nil,
@@ -1554,7 +1779,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "26203-grundschule-hundsmuehlen" => "https://gshundsmuehlen.de/",
     "49429-oberschule-visbeck-benedikt-schule" => nil,
     "49413-grundschule-hoener-mark-f-schueler-kath-bek" => nil,
-    "31812-herderschule-grund-und-hauptschule" => "https://people.freenet.de/Herderschule.BadPyrmont.de",
+    "31812-herderschule-grund-und-hauptschule" =>
+      "https://people.freenet.de/Herderschule.BadPyrmont.de",
     "26160-gymnasium-bad-zwischenahn-edewecht" => nil,
     "26689-grundschule-augustfehn-i" => "https://wordpress.nibis.de/gsaugustfehn/",
     "31515-igs-wunstorf" => nil,
@@ -1572,12 +1798,15 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "30938-gymnasium-grossburgwedel" => "https://www.gymnasium-grossburgwedel.de/",
     "49456-st-johannes-schule-oberschule" => "https://johannes-schule-bakum.de",
     "49844-grundschule-bawinkel" => nil,
-    "38300-peter-raeuber-schule-foerderschule-schwpt-geist-entwicklung" => "https://www.peter-raeuber-schule.de/",
+    "38300-peter-raeuber-schule-foerderschule-schwpt-geist-entwicklung" =>
+      "https://www.peter-raeuber-schule.de/",
     "21737-nils-holgersson-grundschule" => "https://bildungshaus-wischhafen.de/",
     "38176-aueschule-wendeburg-oberschule" => "https://www.aueschule-wendeburg.de/",
-    "38118-oswald-berkhan-schule-foerderschule-schwpt-geist-entwicklung" => "https://www.nibis.de/~obssfgb",
+    "38118-oswald-berkhan-schule-foerderschule-schwpt-geist-entwicklung" =>
+      "https://www.nibis.de/~obssfgb",
     "29227-oberschule-westercelle" => nil,
-    "49565-johannesschule-foes-fuer-le-ese-und-ge" => "https://www.johannes-schule-evinghausen.de/",
+    "49565-johannesschule-foes-fuer-le-ese-und-ge" =>
+      "https://www.johannes-schule-evinghausen.de/",
     "37441-grundschule-bad-sachsa" => nil,
     "26607-grundschule-sandhorst" => nil,
     "49751-huemmling-gymnasium" => "https://api.netbeat.de/",
@@ -1598,7 +1827,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "27793-hauptschule-wildeshausen" => "https://www.gymnasium-wildeshausen.de/",
     "49419-grundschule-stroehen" => "https://www.gs-stroehen.de",
     "27474-amandus-abendroth-gymnasium" => "https://www.aag-cuxhaven.de/",
-    "38678-haupt-und-realschule-clausthal-zellerfeld" => "https://home.t-online.de/home/OS.Clausthal",
+    "38678-haupt-und-realschule-clausthal-zellerfeld" =>
+      "https://home.t-online.de/home/OS.Clausthal",
     "21614-ehem-realschule-nord-buxtehude" => "https://www.hauptschule-nord-buxtehude.de/",
     "26386-grundschule-altengroden" => nil,
     "26215-oberschule-wiefelstede-mit-gymnasialem-angebot" => nil,
@@ -1618,12 +1848,14 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "37136-grundschule-seeburg-seulingen" => nil,
     "31655-wilhelm-busch-gymnasium" => "https://www.igsschaumburg.de/",
     "26817-gymnasium-rhauderfehn" => nil,
-    "27619-max-eyth-schule-berufsbildende-schulen-schiffdorf" => "https://home.t-online.de/home/hs-rs-os-schiffdorf",
+    "27619-max-eyth-schule-berufsbildende-schulen-schiffdorf" =>
+      "https://home.t-online.de/home/hs-rs-os-schiffdorf",
     "27711-schule-am-klosterplatz-foerderschule-schwpt-geist-entwicklun" => nil,
     "26122-herbartgymnasium" => nil,
     "31582-marion-doenhoff-gymnasium" => "https://www.mdg-nienburg.de/",
     "26135-freie-waldorfschule-oldenburg-in-freier-traegerschaft" => nil,
-    "31592-regenbogenschule-stolzenau-grundschule" => "https://www.regenbogenschule-stolzenau.de/",
+    "31592-regenbogenschule-stolzenau-grundschule" =>
+      "https://www.regenbogenschule-stolzenau.de/",
     "21680-montessori-grundschule-altlaender-viertel" => "https://www.montessorischule-stade.de/",
     "37124-heinrich-grupe-schule-grundschule" => "https://www.heinrich-grupe-schule.de/",
     "31157-grundschule-kastanienhof" => "https://www.gs-kastanienhof.de/",
@@ -1671,14 +1903,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "31319-kgs-sehnde-kooperative-gesamtschule-sehnde" => "https://kgssehnde.de/",
     "27619-oberschule-schiffdorf" => "https://home.t-online.de/home/hs-rs-os-schiffdorf",
     "48499-oberschule-salzbergen" => nil,
-    "30952-selma-lagerloef-schule-foerderschule-schwpt-geist-entwicklun" => "https://selmalagerloefschule.de/",
+    "30952-selma-lagerloef-schule-foerderschule-schwpt-geist-entwicklun" =>
+      "https://selmalagerloefschule.de/",
     "26506-schule-im-spiet-grundschule-i-norden" => "https://wordpress.nibis.de/gsimspiet/",
     "27809-eschhofschule-oberschule" => nil,
     "30853-gymnasium-langenhagen" => nil,
     "31840-grundschule-am-rosenbusch" => "https://gs-am-rosenbusch.de/",
     "31157-regenbogenschule-grundschule" => nil,
     "38268-igs-lengede" => nil,
-    "31137-schule-im-bockfeld-foes-schwpt-geist-koerp-u-motor-ent" => "https://www.schule-im-bockfeld.de/",
+    "31137-schule-im-bockfeld-foes-schwpt-geist-koerp-u-motor-ent" =>
+      "https://www.schule-im-bockfeld.de/",
     "21394-grundschule-kirchgellersen" => nil,
     "27721-grundschule-ihlpohl" => "https://www.grundschule-ihlpohl.de/",
     "27711-gymnasium-osterholz-scharmbeck" => "https://gymnasium-ohz.de/",
@@ -1691,8 +1925,10 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "49326-grundschule-gesmold" => nil,
     "26789-friesenschule-realschule" => "https://friesenschule.eu/",
     "30916-gymnasium-isernhagen" => nil,
-    "30966-carl-friedrich-gauss-schule-kooperative-gesamtschule-hemmingen" => "https://home.t-online.de/home/UNaedler/",
-    "31137-michelsenschule-gymnasium-und-berufsbildende-schulen" => "https://home.t-online.de/home/michelsenschule",
+    "30966-carl-friedrich-gauss-schule-kooperative-gesamtschule-hemmingen" =>
+      "https://home.t-online.de/home/UNaedler/",
+    "31137-michelsenschule-gymnasium-und-berufsbildende-schulen" =>
+      "https://home.t-online.de/home/michelsenschule",
     "26135-foerderschule-borchersweg-foes-schwpt-koerp-u-motor-entwicklun" => nil,
     "29439-gymnasium-luechow" => "https://www.gymnasium-luechow.de/",
     "31141-scharnhorstgymnasium" => "https://www.scharnhorstgymnasium.de",
@@ -1701,12 +1937,14 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "30451-grundschule-salzmannstrasse" => nil,
     "30161-werner-von-siemens-schule-realschule" => nil,
     "30539-grundschule-an-der-feldbuschwende" => nil,
-    "37181-weperschule-foerderschule-schwpt-geist-entwicklun" => "https://weperschule.hier-im-netz.de/",
+    "37181-weperschule-foerderschule-schwpt-geist-entwicklun" =>
+      "https://weperschule.hier-im-netz.de/",
     "30163-integrierte-gesamtschule-hannover-list" => nil,
     "34346-grotefend-gymnasium-muenden" => nil,
     "26129-gymnasium-eversten" => "https://www.gymnasium-eversten.de/",
     "31698-magister-nothold-schule-oberschule" => nil,
-    "27299-helene-grulke-schule-foerderschule-schwpt-geist-entw-i-fr" => "https://www.helene-grulke-schule.de/",
+    "27299-helene-grulke-schule-foerderschule-schwpt-geist-entw-i-fr" =>
+      "https://www.helene-grulke-schule.de/",
     "30880-albert-einstein-gesamtschule-kgs-laatzen" => "https://www.aes-laatzen.de/",
     "31195-grundschule-lamspringe" => nil,
     "26632-hermann-tempel-schule-igs-ihlow" => nil,
@@ -1725,7 +1963,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "21339-herderschule-gymnasium" => nil,
     "21406-gymnasium-lueneburger-heide-in-freier-traegerschaft" => "https://www.glh.de/",
     "21335-hanseschule-oedeme-oberschule" => nil,
-    "49733-maximilianschule-ruetenbrock-grund-und-oberschule" => "https://maximilianschule.edupage.org/",
+    "49733-maximilianschule-ruetenbrock-grund-und-oberschule" =>
+      "https://maximilianschule.edupage.org/",
     "30167-goetheschule-hannover-gymnasium" => "https://www.goetheschule.de/",
     "30173-bismarckschule-gymnasium" => "https://www.bismarckschule.de/",
     "21698-selma-lagerloef-oberschule-harsefeld" => "https://home.t-online.de/home/hs-harsefeld",
@@ -1741,7 +1980,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "49393-stegemannschule-lohne-hauptschule-mit-ganztagsangebot" => nil,
     "31241-gymnasium-gross-ilsede" => "https://www.gymnasium-gross-ilsede.de/",
     "49777-grundschule-sued-huemmling" => nil,
-    "31134-marienschule-gymnasium-in-freier-traegerschaft" => "https://home.t-online.de/home/Marienschule.Hildesheim",
+    "31134-marienschule-gymnasium-in-freier-traegerschaft" =>
+      "https://home.t-online.de/home/Marienschule.Hildesheim",
     "37075-theodor-heuss-gymnasium-europaschule-goettingen" => "https://www.thg-goettingen.de/",
     "37085-hainberg-gymnasium-unesco-projektschule" => nil,
     "31629-grundschule-schuenebusch" => nil,
@@ -1757,20 +1997,23 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "38678-grundschule-zellerfeld" => nil,
     "26209-waldschule-hatten-oberschule" => "https://www.waldschule-hatten.de/",
     "31622-grund-und-oberschule-heemsen-obs-zweig-auslaufend-01-08-15" => nil,
-    "30169-international-school-hannover-region-int-schule-hannover-region-gmbh" => "https://is-hr.de/",
+    "30169-international-school-hannover-region-int-schule-hannover-region-gmbh" =>
+      "https://is-hr.de/",
     "27753-grundschule-deichhorst" => "https://www.gs-deichhorst.de",
     "27749-gymnasium-an-der-willmsstrasse" => "https://www.dk-online.de/",
     "58849-grundschule-herscheid" => nil,
     "31303-waldschule-ramlingen-ehlershausen-grundschule" => nil,
     "31134-goethegymnasium-hildesheim" => "https://www.goethegym.de",
-    "30171-st-ursula-schule-gymnasium-in-freier-traegerschaft" => "https://www.st-ursula-schule-hannover.de/",
+    "30171-st-ursula-schule-gymnasium-in-freier-traegerschaft" =>
+      "https://www.st-ursula-schule-hannover.de/",
     "37079-regenbogenschule" => nil,
     "37077-freie-waldorfschule-goettingen-in-freier-traegerschaft" => nil,
     "37073-max-planck-gymnasium" => nil,
     "38644-christian-von-dohm-gymnasium" => nil,
     "27624-schule-an-der-muehle-oberschule" => nil,
     "31234-igs-edemissen" => nil,
-    "49413-kardinal-von-galen-schule-dinklage-grundschule-f-schueler-kath-bek" => "https://www.kardinal-von-galen-schule.de/",
+    "49413-kardinal-von-galen-schule-dinklage-grundschule-f-schueler-kath-bek" =>
+      "https://www.kardinal-von-galen-schule.de/",
     "37083-georg-chr-lichtenberg-schule-integrierte-gesamtschule" => nil,
     "38518-otto-hahn-gymnasium-gifhorn" => "https://home.t-online.de/home/053719875/",
     "49584-igs-fuerstenau" => nil,
@@ -1796,18 +2039,21 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "37133-grundschule-friedland-volle-halbtagsschule" => nil,
     "27749-max-planck-gymnasium" => "https://www.maxe-online.de/",
     "31073-oberschule-delligsen-mit-aussenstelle-duingen" => nil,
-    "26969-zinzendorfschule-tossens-gymnasium-in-freier-traegerschaft" => "https://www.zinzendorfschule.de/",
+    "26969-zinzendorfschule-tossens-gymnasium-in-freier-traegerschaft" =>
+      "https://www.zinzendorfschule.de/",
     "29459-drawehn-schule-clenze-kooperative-gesamtschule" => "https://www.drawehn-schule.de/",
     "21614-gymnasium-buxtehude-sued" => nil,
     "27432-gymnasium-bremervoerde" => "https://www.gymnasium-bremervoerde.de/neu",
-    "38120-freie-waldorfschule-braunschweig-in-freier-traegerschaft" => "https://www.waldorfschule-bs.de/",
+    "38120-freie-waldorfschule-braunschweig-in-freier-traegerschaft" =>
+      "https://www.waldorfschule-bs.de/",
     "31167-grundschule-bockenem" => "https://www.gs-bockenem.de/",
     "47119-ggs-ruhrort" => nil,
     "37075-brueder-grimm-schule-goettingen-gs-mit-integrations-sprachfoerder-u" => nil,
     "30823-hauptschule-nikolaus-kopernikus" => nil,
     "49685-grundschule-halen-f-schueler-kath-bek" => nil,
     "38274-grundschule-elbe" => nil,
-    "49143-grundschule-bissendorf-mit-foerderschulklasse-schwerpkt-sprac" => "https://www.grundschulebissendorf.de/",
+    "49143-grundschule-bissendorf-mit-foerderschulklasse-schwerpkt-sprac" =>
+      "https://www.grundschulebissendorf.de/",
     "49626-oberschule-am-sonnenberg" => "https://www.obs-am-sonnenberg.de/",
     "38124-landesbildungszentrum-fuer-hoergesch-foerderschule-schwerpunkt-hoeren" => nil,
     "51375-comeniusschule" => "https://www.comeniusschule.net",
@@ -1826,8 +2072,10 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "51105-ggs-lohmarer-strasse" => nil,
     "26721-grundschule-gruener-weg" => "https://home.t-online.de/home/gs-gruenerweg/haupt.htm",
     "38118-hoffmann-von-fallersleben-schule-gymnasium" => "https://www.hvf-bs.net",
-    "26969-obs-zinzendorfschule-tossens-oberschule-in-fr-tr" => "https://www.zinzendorfschule.de/",
-    "27211-grundschule-petermoor-bassum" => "https://wordpress.nibis.de/gspetermoor/?cn-reloaded=1",
+    "26969-obs-zinzendorfschule-tossens-oberschule-in-fr-tr" =>
+      "https://www.zinzendorfschule.de/",
+    "27211-grundschule-petermoor-bassum" =>
+      "https://wordpress.nibis.de/gspetermoor/?cn-reloaded=1",
     "45279-astrid-lindgren-schule" => nil,
     "45326-bueckmannshofschule" => "https://bueckmannshofschule.de/",
     "47229-ggs-am-borgschenhof" => "https://www.grundschule-amborgschenhof.de/",
@@ -1835,8 +2083,10 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "29223-grundschule-klein-hehlen" => "https://www.gs-kleinhehlen.de/",
     "38104-igs-franzsches-feld" => "https://www.freie-schule-braunschweig.de/",
     "38102-grundschule-comeniusstrasse" => "https://www.domainmarkt.de/www.gscomenius.de",
-    "31061-diakonisches-bildungszentrum-fuer-gesundheits-und-sozialberufe" => "https://www.alfeld.de/stadt/schulen/hauptschule/SHSHome_ie.htm",
-    "31162-burgbergschule-bad-salzdetfurth-foes-schwpt-sprache-u-lernen-i-fr" => "https://home.t-online.de/home/burgbergschule-bad/burgberg.htm",
+    "31061-diakonisches-bildungszentrum-fuer-gesundheits-und-sozialberufe" =>
+      "https://www.alfeld.de/stadt/schulen/hauptschule/SHSHome_ie.htm",
+    "31162-burgbergschule-bad-salzdetfurth-foes-schwpt-sprache-u-lernen-i-fr" =>
+      "https://home.t-online.de/home/burgbergschule-bad/burgberg.htm",
     "49577-august-benninghaus-schule-oberschule" => nil,
     "41199-schule-im-burgbongert" => nil,
     "40629-ggs-knittkuhl" => nil,
@@ -1880,7 +2130,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "32549-grundschule-eidinghausen" => nil,
     "59494-johannesschule" => "https://www.johannesschule-soest.de/",
     "50226-ggs-burgschule" => "https://www.burgschule-frechen.de/",
-    "58710-josefschule-lendringsen-staedische-katholische-grundschule" => "https://www.josefschule-lendringsen.de/",
+    "58710-josefschule-lendringsen-staedische-katholische-grundschule" =>
+      "https://www.josefschule-lendringsen.de/",
     "51467-staedt-realschule-im-kleefeld" => nil,
     "59609-pankratius-grundschule" => nil,
     "59494-georgschule" => "https://georgschule-soest.de/",
@@ -1896,7 +2147,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "45721-marienschule-haltern-am-see" => "https://marienschule-haltern.de/",
     "47533-staedtische-realschule-hoffmannallee" => nil,
     "50968-gemeinschaftsgrundschule-annastrasse" => nil,
-    "52525-pestalozzischule-kath-grundschule-heinsberg-iv-oberbruch" => "https://www.pestalozzischule-heinsberg.de",
+    "52525-pestalozzischule-kath-grundschule-heinsberg-iv-oberbruch" =>
+      "https://www.pestalozzischule-heinsberg.de",
     "47058-gemeinschaftsgrundschule-tonstrasse" => "https://tonschule.de/0031.htm",
     "50181-anton-heinen-schule" => "https://www.ahs-kirdorf.de/",
     "50189-katholische-grundschule-elsdorf" => "https://www.kgselsdorf.de/",
@@ -1935,7 +2187,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "53225-josefschule" => "https://www.josefschule-bonn.de/",
     "45276-carl-humann-gymnasium" => "https://carl-humann.de/",
     "51063-katholische-grundschule-langemass" => nil,
-    "31855-verlaessliche-grundschule-aerzen-mit-foerderschulkl-schwerpkt-sprache" => "https://www.grundschule-aerzen.de/",
+    "31855-verlaessliche-grundschule-aerzen-mit-foerderschulkl-schwerpkt-sprache" =>
+      "https://www.grundschule-aerzen.de/",
     "40670-martinus-schule" => "https://www.martinus-schule-mb.de/",
     "59368-wiehagenschule" => "https://www.wiehagenschule.de/",
     "41352-andreas-schule" => "https://www.andreas-schule.de/",
@@ -1974,7 +2227,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "41564-matthias-claudius-schule" => nil,
     "26605-schule-am-extumer-weg-foerderschule-schwerpunkt-lernen" => nil,
     "21702-schule-am-auetal-oberschule" => nil,
-    "41472-st-stephanus-schule-staedt-kath-bekenntnisschule-der-primarstufe" => "https://www.st-stephanus-schule.de/",
+    "41472-st-stephanus-schule-staedt-kath-bekenntnisschule-der-primarstufe" =>
+      "https://www.st-stephanus-schule.de/",
     "51069-dellbruecker-hauptstrasse" => "https://www.ggs-dellbruecker-hauptstrasse.de",
     "42929-staedtische-katholische-grundschule-sankt-michael-wermelskirchen" => nil,
     "52538-katholische-grundschule-gangelt-1-breberen" => "https://www.grundschule-breberen.de",
@@ -2030,12 +2284,15 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "48565-nikomedesschule" => nil,
     "57399-gemeinschaftshauptschule-kirchhundem" => nil,
     "40822-ghs-anne-frank" => nil,
-    "53773-gemeinschaftshauptschule-der-stadt-hennef-sieg" => "https://www.hauptschule.schulen-hennef.de/",
-    "46284-erich-klausener-realschule" => "https://ts.domainname.de/erich-klausener-realschule.de",
+    "53773-gemeinschaftshauptschule-der-stadt-hennef-sieg" =>
+      "https://www.hauptschule.schulen-hennef.de/",
+    "46284-erich-klausener-realschule" =>
+      "https://ts.domainname.de/erich-klausener-realschule.de",
     "47051-gustav-heinemann-realschule" => nil,
     "40721-dietrich-bonhoeffer-gymnasium" => nil,
     "57223-staedtische-ernst-moritz-arndt-realschule" => "https://www.realschule-kreuztal.de",
-    "45276-carl-humann-gymnasium-684228d8-b970-11e7-986a-001ec9cdab18" => "https://carl-humann.de/",
+    "45276-carl-humann-gymnasium-684228d8-b970-11e7-986a-001ec9cdab18" =>
+      "https://carl-humann.de/",
     "40225-martin-luther-schule" => nil,
     "51107-heinrich-heine-gymnasium" => nil,
     "44149-wilhelm-busch-realschule" => nil,
@@ -2051,7 +2308,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "40217-staedt-gem-grundschule-kronprinzenstrasse" => "https://www.kronprinzenschule.de/",
     "41334-gemeinschaftsgrundschule-lobberich" => "https://www.ggs-lobberich.de/",
     "45133-graf-spee-schule" => "https://graf-spee-schule.de/",
-    "40545-don-bosco-schule-staedt-gemeinschaftsgrundschule-mit-montessorizweig" => "https://www.don-bosco-grundschule.de/",
+    "40545-don-bosco-schule-staedt-gemeinschaftsgrundschule-mit-montessorizweig" =>
+      "https://www.don-bosco-grundschule.de/",
     "48163-ludgerusschule-albachten" => nil,
     "33142-ggs-josefschule-bueren" => nil,
     "44869-hauptschule-preins-feld" => nil,
@@ -2061,7 +2319,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "59494-grundschule-hellweg" => nil,
     "32805-gs-horn" => "https://www.gshorn.de/",
     "51545-ghs-waldbroel" => nil,
-    "52511-gemeinschaftsgrundschule-geilenkirchen-europa-grundschule" => "https://www.ggs-geilenkirchen.de/",
+    "52511-gemeinschaftsgrundschule-geilenkirchen-europa-grundschule" =>
+      "https://www.ggs-geilenkirchen.de/",
     "44866-ggs-guennigfeld" => "https://www.ogs-guennigfeld.de/",
     "52441-realschule-linnich" => "https://www.realschule-linnich.de",
     "52428-gemeinschaftshauptschule-ruraue" => nil,
@@ -2089,9 +2348,11 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "46325-gymnasium-remigianum" => nil,
     "47495-amplonius-gymnasium" => "https://www.amplonius.de/",
     "58135-christian-rohlfs-gymnasium" => nil,
-    "53604-berufsfachschulen-haus-rheinfrieden" => "https://jovita-rheinland.de/berufskolleg-und-internat",
+    "53604-berufsfachschulen-haus-rheinfrieden" =>
+      "https://jovita-rheinland.de/berufskolleg-und-internat",
     "48565-arnoldinum-steinfurt" => "https://www.arnoldinum.de/",
-    "59955-geschwister-scholl-gymnasium-winterberg" => "https://www.gymnasium-winterberg-medebach.de/",
+    "59955-geschwister-scholl-gymnasium-winterberg" =>
+      "https://www.gymnasium-winterberg-medebach.de/",
     "50226-gymnasium-der-stadt-frechen" => "https://homepage.gymnasium-frechen.de/",
     "59368-die-freiherr-vom-stein-berufsschule" => nil,
     "40670-staedt-meerbusch-gymnasium" => "https://www.smg-meerbusch.de/",
@@ -2134,7 +2395,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "49477-anne-frank-realschule-ibbenbueren" => "https://www.afrank-ibb.de/",
     "47798-fichte-gymnasium" => "https://www.fichte.de",
     "46325-nuenning-realschule" => nil,
-    "33178-rudolf-steiner-schule-schloss-hamborn" => "https://schloss-hamborn.net/site/rudolf-steiner-schule/home.html",
+    "33178-rudolf-steiner-schule-schloss-hamborn" =>
+      "https://schloss-hamborn.net/site/rudolf-steiner-schule/home.html",
     "51065-hoelderlin-gymnasium" => nil,
     "46282-st-ursula-realschule" => "https://www.rs-stursula.de/",
     "51429-albertus-magnus-gymnasium-bensberg" => "https://www.amg-bensberg.de/",
@@ -2183,7 +2445,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "42897-albert-schweitzer-realschule" => "https://www.asrs.de/",
     "53173-otto-kuehne-schule" => "https://www.abitur.info/abitur-hilfe/",
     "51069-realschule-dellbrueck" => nil,
-    "58332-dietrich-bonhoeffer-realschule" => "https://sedo.com/search/details/?domain=rs-schwelm.de",
+    "58332-dietrich-bonhoeffer-realschule" =>
+      "https://sedo.com/search/details/?domain=rs-schwelm.de",
     "46459-gymnasium-aspel" => "https://www.gymnasiumaspel.de/",
     "51379-theodor-heuss-realschule" => nil,
     "33397-staedtische-realschule-rietberg" => nil,
@@ -2198,10 +2461,12 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "45964-heisenberg-gymnasium" => nil,
     "48496-hueberts-sche-privatschule" => "https://www.hueberts.de/",
     "44225-helene-lange-gymnasium" => "https://www.hlg-do.de/",
-    "47546-staedtisches-gymnasium-kalkar" => "https://nachhilfe-lernengel.de/mathe-nachhilfe-kalkar-niederrhein/",
+    "47546-staedtisches-gymnasium-kalkar" =>
+      "https://nachhilfe-lernengel.de/mathe-nachhilfe-kalkar-niederrhein/",
     "32339-soederblom-gymnasium" => "https://www.soederblom.de/",
     "46286-gesamtschule-wulfen" => nil,
-    "52355-staedtische-gemeinschaftsgrundschule-burg-birgel" => "https://www.grundschule-burg-birgel.de/",
+    "52355-staedtische-gemeinschaftsgrundschule-burg-birgel" =>
+      "https://www.grundschule-burg-birgel.de/",
     "48149-theresienschule" => "https://theresienschule-ms.de/",
     "33611-plass-schule-bielefeld" => "https://plassschule.de/",
     "59929-verbundschule-alme-madfeld-thuelen" => "https://c194.briit.de/",
@@ -2262,14 +2527,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "44379-widey-grundschule" => nil,
     "44135-ricarda-huch-realschule" => nil,
     "44319-josef-grundschule" => nil,
-    "58332-gemeinschaftsgrundschule-engelbertstrasse" => "https://grundschule-engelbertstrasse.de/",
+    "58332-gemeinschaftsgrundschule-engelbertstrasse" =>
+      "https://grundschule-engelbertstrasse.de/",
     "48308-joseph-haydn-gymnasium" => "https://",
     "46045-anne-frank-realschule" => nil,
     "44652-freiherr-vom-stein-haupschule" => nil,
     "40721-theresienschule" => "https://www.theresienschule-hilden.de/",
     "50829-bertha-von-suttner-realschule" => "https://suttnerschule-koeln.de/",
     "45133-grashof-gymnasium" => "https://www.grashof-gymnasium.de/",
-    "59348-staedt-gemeinschaftshauptschule-luedinghausen" => "https://www.luedinghausen.de/schulen/ghslh/index.htm",
+    "59348-staedt-gemeinschaftshauptschule-luedinghausen" =>
+      "https://www.luedinghausen.de/schulen/ghslh/index.htm",
     "40235-staedtische-thomas-edison-realschule" => nil,
     "33102-georgschule" => nil,
     "46446-staedtische-hanse-realschule-emmerich" => nil,
@@ -2286,7 +2553,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "59872-staedtische-realschule-meschede" => "https://www.realschule-meschede.de/",
     "45470-luisenschule" => nil,
     "52223-goethe-gymnasium" => "https://goethe-gymnasium-stolberg.de/",
-    "53937-bisch-clara-fey-gymnasium" => "https://versichere-dich.de/berufshaftpflicht/lehrer-und-erzieher/",
+    "53937-bisch-clara-fey-gymnasium" =>
+      "https://versichere-dich.de/berufshaftpflicht/lehrer-und-erzieher/",
     "59368-gymnasium-st-christophorus" => nil,
     "50321-max-ernst-gymnasium" => nil,
     "46397-euregio-gymnasium" => "https://euregio-gymnasium.bocholt.de/",
@@ -2317,7 +2585,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "51399-evangelische-realschule-burscheid" => nil,
     "45141-helen-keller-schule" => "https://www.hks-essen.de/",
     "57072-ganztagshauptschule-achenbach" => "https://gthsa-siegen.de/",
-    "50933-anna-freud-schule-rheinische-schule-fuer-koerperbehinderte-im-bildun" => "https://www.anna-freud-schule.de/",
+    "50933-anna-freud-schule-rheinische-schule-fuer-koerperbehinderte-im-bildun" =>
+      "https://www.anna-freud-schule.de/",
     "53937-staedtische-realschule-schleiden" => nil,
     "40211-humboldt-gymnasium-duesseldorf" => "https://www.humboldt-duesseldorf.de/",
     "58285-staedtische-realschule-gevelsberg" => "https://www.rs-gevelsberg.de/",
@@ -2406,7 +2675,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     "41379-gesamtschule-brueggen" => "https://gesamtschule-brueggen.jimdofree.com/",
     "45894-gesamtschule-buer-mitte" => "https://gbm-ge.de/",
     "53332-alexander-von-humboldt-gymnasium" => "https://www.avh-gymnasium.de/",
-    "59929-roman-herzog-schule-6a87123e-b970-11e7-93a9-001ec9cdab18" => "https://www.roman-herzog-schule.de/",
+    "59929-roman-herzog-schule-6a87123e-b970-11e7-93a9-001ec9cdab18" =>
+      "https://www.roman-herzog-schule.de/",
     "40667-maria-montessori-gesamtschule" => nil,
     "66953-pirminiusschule" => "https://www.hk-stiftung.de",
     "58706-walram-gymnasium" => "https://ts.domainname.de/walram.de"
@@ -2416,18 +2686,19 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsToHttps do
     total_schools = map_size(@school_url_updates)
     https_schools = Enum.count(@school_url_updates, fn {_, url} -> url != nil end)
     no_https_schools = total_schools - https_schools
-    
+
     IO.puts("Processing #{total_schools} schools with HTTP URLs...")
     IO.puts("- #{https_schools} schools with HTTPS URLs available")
     IO.puts("- #{no_https_schools} schools without HTTPS option (will clear URL)")
-    
-    {updated_count, cleared_count} = Enum.reduce(@school_url_updates, {0, 0}, fn {school_slug, new_url}, {updated, cleared} ->
-      case update_school_homepage_url(school_slug, new_url) do
-        {1, _, :updated} -> {updated + 1, cleared}
-        {1, _, :cleared} -> {updated, cleared + 1}
-        _ -> {updated, cleared}
-      end
-    end)
+
+    {updated_count, cleared_count} =
+      Enum.reduce(@school_url_updates, {0, 0}, fn {school_slug, new_url}, {updated, cleared} ->
+        case update_school_homepage_url(school_slug, new_url) do
+          {1, _, :updated} -> {updated + 1, cleared}
+          {1, _, :cleared} -> {updated, cleared + 1}
+          _ -> {updated, cleared}
+        end
+      end)
 
     IO.puts("
 Migration completed:")
@@ -2443,25 +2714,28 @@ Migration completed:")
 
   defp update_school_homepage_url(school_slug, new_url) do
     # First, find the school location by slug
-    school_query = from l in "locations",
-      where: l.slug == ^school_slug and l.is_school == true,
-      select: l.id
+    school_query =
+      from(l in "locations",
+        where: l.slug == ^school_slug and l.is_school == true,
+        select: l.id
+      )
 
     case Repo.one(school_query) do
       nil ->
         IO.puts("ERROR: School not found: #{school_slug}")
         {0, nil, :not_found}
-      
+
       school_id ->
         # Update the homepage_url in the addresses table
         action = if new_url == nil, do: :cleared, else: :updated
-        
-        result = from(a in "addresses",
-          where: a.school_location_id == ^school_id,
-          update: [set: [homepage_url: ^new_url, updated_at: fragment("NOW()")]]
-        )
-        |> Repo.update_all([])
-        
+
+        result =
+          from(a in "addresses",
+            where: a.school_location_id == ^school_id,
+            update: [set: [homepage_url: ^new_url, updated_at: fragment("NOW()")]]
+          )
+          |> Repo.update_all([])
+
         case result do
           {count, _} when count > 0 -> {count, nil, action}
           _ -> {0, nil, :not_updated}

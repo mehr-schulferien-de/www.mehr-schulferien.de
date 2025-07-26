@@ -41,7 +41,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "45657-marie-curie-gymnasium" => nil,
     "32657-engelbert-kaempfer-gymnasium" => "https://ekg-lemgo.de/",
     "52428-stephanus-schule" => nil,
-    "48249-clemens-brentano-gymnasium" => "https://cbg.duelmen.org/cbghp/_rubric/index.php?rubric=Startseite",
+    "48249-clemens-brentano-gymnasium" =>
+      "https://cbg.duelmen.org/cbghp/_rubric/index.php?rubric=Startseite",
     "59457-marien-gymnasium" => "https://mg-werl.de/",
     "48149-freie-waldorfschule-in-muenster" => "https://www.waldorfschule-muenster.de/",
     "42107-gesamtschule-else-lasker-schueler" => "https://www.ges-else.de/",
@@ -83,12 +84,14 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "40789-otto-hahn-gymnasium" => "https://www.ohg.monheim.de/",
     "48249-privatschulen-schloss-buldern" => "https://www.schloss-buldern.com",
     "44359-heinrich-heine-gymnasium" => nil,
-    "42929-staedtisches-gymnasium-wermelskirchen" => "https://www.staedtisches-gymnasium-wermelskirchen.de/",
+    "42929-staedtisches-gymnasium-wermelskirchen" =>
+      "https://www.staedtisches-gymnasium-wermelskirchen.de/",
     "32423-ratsgymnasium" => "https://www.ratsgymnasium.de/",
     "45141-hauptschule-am-stoppenberg" => nil,
     "53842-staedtische-gesamtschule-troisdorf-europaschule" => nil,
     "58706-walburgisgymnasium" => "https://walburgisgymnasium.smmp.de/wbg/",
-    "59494-lwl-berufskolleg-soest-foerderschule-foerderschwerpunkt-sehen" => "https://www.lwl.org/LWL/Jugend/bksoest",
+    "59494-lwl-berufskolleg-soest-foerderschule-foerderschwerpunkt-sehen" =>
+      "https://www.lwl.org/LWL/Jugend/bksoest",
     "44135-stadtgymnasium" => "https://www.stadtgymnasium.com/",
     "52080-kleebachschule" => "https://www.kleebach-schule.de/",
     "51647-freie-christliche-bekenntnisschule" => "https://www.fcbg.de/",
@@ -145,7 +148,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "51149-lise-meitner-gesamtschule" => nil,
     "45968-erich-kaestner-realschule" => "https://www.ekr-gladbeck.de/",
     "52372-gymnasium-der-gemeinde-kreuzau" => nil,
-    "42699-geschwister-scholl-schule-staedtische-gesamtschule-ohligs" => "https://gesamtschule-ohligs.de/",
+    "42699-geschwister-scholl-schule-staedtische-gesamtschule-ohligs" =>
+      "https://gesamtschule-ohligs.de/",
     "53332-europaschule-bornheim" => "https://europaschule-bornheim.eu/",
     "45657-freiherr-vom-stein-gymnasium" => "https://www.freiherr.de/",
     "52477-gustav-heinemann-gesamtschule" => "https://www.ghg-alsdorf.de/",
@@ -236,20 +240,23 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "53125-gemeinschaftsgrundschule-brueser-berg" => nil,
     "59494-staedtische-gesamtschule-soest" => "https://www.gesamtschule-soest.de/",
     "45657-wolfgang-borchert-gesamtschule" => "https://www.woboge.schulen-re.de",
-    "59759-franz-stock-gymnasium-6ac9c00c-b970-11e7-ae16-001ec9cdab18" => "https://www.fsg-arnsberg.de/",
+    "59759-franz-stock-gymnasium-6ac9c00c-b970-11e7-ae16-001ec9cdab18" =>
+      "https://www.fsg-arnsberg.de/",
     "48268-justin-kleinwaechter-realschule" => "https://www.justin-kleinwaechter-realschule.de",
     "32805-gymnasium-horn-bad-meinberg" => "https://www.gym-hbm.de/",
     "67317-heimschule-st-rafael" => nil,
     "56288-theodor-heuss-schule" => nil,
     "46562-gesamtschule-voerde" => nil,
-    "55595-grundschule-bockenau" => "https://www.vg-ruedesheim.de/rathaus-verwaltung/schulen/grundschule-bockenau/grundschule-bockenau-homepage/",
+    "55595-grundschule-bockenau" =>
+      "https://www.vg-ruedesheim.de/rathaus-verwaltung/schulen/grundschule-bockenau/grundschule-bockenau-homepage/",
     "57627-schule-am-rothenberg" => "https://www.schule-am-rothenberg.de/",
     "66849-foerderschule" => "https://www.reha-westpfalz.de/rw/397.html",
     "56112-freiherr-vom-stein-schule" => nil,
     "67098-valentin-ostertag-schule" => nil,
     "67271-grundschule-burgenlaendchen" => nil,
     "76863-st-laurentius-schule" => nil,
-    "56422-katharina-kasper-schule" => "https://www.caritas-westerwald-rhein-lahn.de/hilfeundberatung/menschenmitbehinderungen/katharina-kasper-schule/schule/",
+    "56422-katharina-kasper-schule" =>
+      "https://www.caritas-westerwald-rhein-lahn.de/hilfeundberatung/menschenmitbehinderungen/katharina-kasper-schule/schule/",
     "56462-wilhelm-albrecht-schule-hoehn" => nil,
     "67598-grundschule-gundersheim" => "https://grundschule-gundersheim.de/",
     "48159-geschwister-scholl-gymnasium" => nil,
@@ -305,13 +312,15 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "55232-nibelungenschule" => "https://www.nibelungenschule-alzey.de/",
     "67098-pestalozzischule" => nil,
     "67169-grundschule-kallstadt" => "https://www.gskallstadt.de/",
-    "55593-grundschule-am-rosengarten" => "https://www.vg-ruedesheim.de/rathaus-verwaltung/schulen/grundschule-ruedesheim/grundschule-am-rosengarten-ruedesheim-homepage/",
+    "55593-grundschule-am-rosengarten" =>
+      "https://www.vg-ruedesheim.de/rathaus-verwaltung/schulen/grundschule-ruedesheim/grundschule-am-rosengarten-ruedesheim-homepage/",
     "67823-grundschule-obermoschel" => "https://www.landsbergschule-obermoschel.de/",
     "54673-grundschule-karlshausen" => "https://grundschule-karlshausen.blogspot.com/",
     "76870-ludwig-riedinger-grundschule" => nil,
     "54634-grundschule-bitburg-nord" => nil,
     "41464-realschule-suedstadt-neuss" => nil,
-    "67578-prof-jakob-muth-grundschule" => "https://www.vg-eich.de/Leben-Wohnen/Verbandsgemeinde/Ortsgemeinden-/Gimbsheim",
+    "67578-prof-jakob-muth-grundschule" =>
+      "https://www.vg-eich.de/Leben-Wohnen/Verbandsgemeinde/Ortsgemeinden-/Gimbsheim",
     "67146-grundschule-deidesheim" => nil,
     "55286-neubornschule" => "https://www.neubornschule.de/",
     "66482-mauritius-schule" => "https://www.mauritiusschule-zw.de/",
@@ -339,7 +348,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "67098-salierschule" => "https://www.salierschule.de/",
     "54518-grundschule-hupperath" => "https://www.gshupperath.de/",
     "54516-georg-meistermann-grundschule" => "https://www.gm-grundschule.de/",
-    "67304-grundschule-kerzenheim" => "https://www.vg-eisenberg.de/rathaus/kinder-jugend-und-soziales/schulen/grundschule-kerzenheim/",
+    "67304-grundschule-kerzenheim" =>
+      "https://www.vg-eisenberg.de/rathaus/kinder-jugend-und-soziales/schulen/grundschule-kerzenheim/",
     "66851-grundschule-queidersbach" => nil,
     "66904-grundschule-bruecken" => "https://www.grundschule-bruecken.de/",
     "56072-grundschule-guels" => "https://gs-guels.de/",
@@ -426,7 +436,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "67292-grundschule-kirchheimbolanden" => "https://www.grundschule-kirchheimbolanden.de/",
     "67661-grundschule-hohenecken" => nil,
     "67659-grundschule-erlenbach" => "https://www.gs-kl-erlenbach.de/",
-    "55596-grundschule-waldboeckelheim" => "https://www.vg-ruedesheim.de/rathaus-verwaltung/schulen/grundschule-waldboeckelheim/grundschule-waldboeckelheim-homepage/",
+    "55596-grundschule-waldboeckelheim" =>
+      "https://www.vg-ruedesheim.de/rathaus-verwaltung/schulen/grundschule-waldboeckelheim/grundschule-waldboeckelheim-homepage/",
     "54533-grundschule-laufeld" => nil,
     "57562-grundschule-herdorf" => "https://www.grundschule-herdorf.de/",
     "67596-von-dalberg-schule" => "https://von-dalberg-schule.de/",
@@ -553,7 +564,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "55425-grundschule-waldalgesheim" => "https://www.gswaldalgesheim.de/",
     "56564-sonnenlandschule" => nil,
     "56727-grundschule-kuerrenberg" => "https://www.grundschule-kuerrenberg.de/",
-    "56567-grundschule-irlich" => "https://www.neuwied.de/stadtleben/rathaus/aemter-und-abteilungen/detail/grundschule-irlich-neuwied-243775865",
+    "56567-grundschule-irlich" =>
+      "https://www.neuwied.de/stadtleben/rathaus/aemter-und-abteilungen/detail/grundschule-irlich-neuwied-243775865",
     "55411-grundschule-an-der-burg-klopp" => "https://www.gs-bingen.de",
     "55129-theodor-heuss-schule" => "https://www.ths-mainz.de",
     "55118-leibniz-schule" => "https://www.leibnizschule-mainz.de/",
@@ -619,7 +631,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "66954-montessori-schule-pirmasens" => "https://www.montessori-pirmasens.de/",
     "56348-josef-guggenmos-grundschule" => nil,
     "67134-albertine-scherer-schule" => nil,
-    "67166-grundschule-otterstadt" => "https://www.vg-rheinauen.de/ortsgemeinden/otterstadt/grundschule-otterstadt/",
+    "67166-grundschule-otterstadt" =>
+      "https://www.vg-rheinauen.de/ortsgemeinden/otterstadt/grundschule-otterstadt/",
     "67489-grundschule-kirrweiler" => "https://www.grundschule-kirrweiler.de/",
     "54290-ausonius-grundschule" => "https://www.ausonius-grundschule.de/",
     "54296-grundschule-irsch" => "https://www.grundschule-trier-irsch.de/",
@@ -633,7 +646,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "56412-eisenbachtal-grundschule" => "https://eisenbachtal.grundschule-girod.de/",
     "67098-werner-heisenberg-gymnasium" => "https://whgonline.de/",
     "54293-grundschule-quint" => nil,
-    "54451-grundschule-irsch-saar" => "https://irsch-saar.de/bildungseinrichtungen/grundschule-irsch",
+    "54451-grundschule-irsch-saar" =>
+      "https://irsch-saar.de/bildungseinrichtungen/grundschule-irsch",
     "54589-grundschule-stadtkyll" => nil,
     "56472-grundschule-hof" => "https://www.grundschule-hof.de/",
     "56459-grundschule-stockum-pueschen" => nil,
@@ -641,7 +655,8 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "67295-priv-gymnasium" => "https://www.weierhof.de/",
     "67346-freie-reformschule-speyer" => "https://www.reformschule-speyer.de/",
     "54439-grundschule-st-laurentius" => nil,
-    "56130-ernst-born-schule" => "https://www.vgben.de/bildung-soziales/schulen-und-kindergaerten/grundschule-ernst-born-schule-bad-ems/",
+    "56130-ernst-born-schule" =>
+      "https://www.vgben.de/bildung-soziales/schulen-und-kindergaerten/grundschule-ernst-born-schule-bad-ems/",
     "54570-grundschule-neroth" => nil,
     "56340-willy-brandt-grundschule" => nil,
     "66894-carl-orff-grundschule" => "https://www.grundschule-wiesbach.de",
@@ -717,18 +732,24 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "24768-schule-mastbrook" => nil,
     "23627-waldschule-gross-groenau" => nil,
     "24147-grund-und-gemeinschaftsschule-der-stadt-kiel-in-kiel" => "https://www.hls-kiel.de/",
-    "24536-gemeinschaftsschule-neumuenster-brachenfeld" => "https://gemeinschaftsschule-neumuenster-brachenfeld.de/",
+    "24536-gemeinschaftsschule-neumuenster-brachenfeld" =>
+      "https://gemeinschaftsschule-neumuenster-brachenfeld.de/",
     "24943-max-von-der-gruen-schule-foerderzentrum-mit-dem-schwerpunkt-koerperl" => nil,
-    "22941-dietrich-bonhoeffer-schule-gemeinschaftsschule-mit-oberstufe-i-e" => "https://www.emil-nolde-schule.de/",
+    "22941-dietrich-bonhoeffer-schule-gemeinschaftsschule-mit-oberstufe-i-e" =>
+      "https://www.emil-nolde-schule.de/",
     "99092-staatliches-gymnasium-johann-gutenberg-erfurt" => "https://www.gutenberg-erfurt.de",
     "24106-ernst-barlach-gymnasium" => "https://nicsell.com/domain/www.ebg-kiel.de",
-    "24143-gemeinschaftsschule-der-landeshauptstadt-kiel-in-kiel" => "https://froebelschule-kiel.lernnetz.de/",
-    "96515-staatliches-gymnasium-hermann-pistor-sonneberg" => "https://www.gymnasium-sonneberg.de/",
+    "24143-gemeinschaftsschule-der-landeshauptstadt-kiel-in-kiel" =>
+      "https://froebelschule-kiel.lernnetz.de/",
+    "96515-staatliches-gymnasium-hermann-pistor-sonneberg" =>
+      "https://www.gymnasium-sonneberg.de/",
     "99192-von-buelow-gymnasium-neudietendorf-staatliches-gymnasium" => nil,
-    "96515-buergerschule-sonneberg-staatliche-regelschule" => "https://www.buergerschule-sonneberg.de/clickandbuilds/",
+    "96515-buergerschule-sonneberg-staatliche-regelschule" =>
+      "https://www.buergerschule-sonneberg.de/clickandbuilds/",
     "24576-juergen-fuhlendorf-schule" => "https://www.jfs-bramstedt.de/",
     "98593-staatliche-regelschule-floh" => "https://www.rs-floh.de/",
-    "99955-thepra-foerderzentrum-am-fernebach-foerderschwerpunkt-geistige-ent" => "https://thepra.info/bild_anfsens4.htm",
+    "99955-thepra-foerderzentrum-am-fernebach-foerderschwerpunkt-geistige-ent" =>
+      "https://thepra.info/bild_anfsens4.htm",
     "99706-staatliche-regelschule-johann-karl-wezel-oestertal" => "https://www.wezelschule.de",
     "99869-staatliche-grundschule-immertal-friemar" => "https://www.gs-friemar.de:443/",
     "99880-salzmannschule-schnepfenthal-staatliches-spezialgymnasium-fuer-spra" => nil,
@@ -737,15 +758,19 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "98554-staatliche-grundschule-benshausen" => "https://www.grundschule-benshausen.de/",
     "99423-staatliche-gemeinschaftsschule-weimar" => nil,
     "99425-freie-waldorfschule-weimar" => "https://waldorf-weimar.de/",
-    "99817-martin-luther-gymnasium-staatlich-anerkannte-ersatzschule" => "https://www.martin-luther-gymnasium.com/",
+    "99817-martin-luther-gymnasium-staatlich-anerkannte-ersatzschule" =>
+      "https://www.martin-luther-gymnasium.com/",
     "98527-friedrich-koenig-gymnasium-suhl-staatliches-gymnasium" => "https://www.eulegym.de/",
     "78628-leibniz-gymnasium" => "https://ww6.leibniz-gymnasium-rw.de/",
-    "91052-pestalozzi-volksschule-erlangen" => "https://www.pestalozzischule-erlangen.de/?i=index",
-    "99084-evangelisches-ratsgymnasium-erfurt-staatlich-anerkanntes-gymnasium" => "https://www.evrg-erfurt.de/",
+    "91052-pestalozzi-volksschule-erlangen" =>
+      "https://www.pestalozzischule-erlangen.de/?i=index",
+    "99084-evangelisches-ratsgymnasium-erfurt-staatlich-anerkanntes-gymnasium" =>
+      "https://www.evrg-erfurt.de/",
     "99867-ernestinum-gotha-staatliches-gymnasium" => "https://www.ernestinum-gotha.de/",
     "99089-cjd-christophorusschule-erfurt-staatlich-anerkannte-foerderschule" => nil,
     "89415-carolina-friess-volksschule-lauingen" => "https://grundschule.lauingen.de",
-    "72622-theodor-eisenlohr-schule-sonderpaedagogisches-bildungs-und-beratung" => "https://www.tes-nuertingen.de/startseite/",
+    "72622-theodor-eisenlohr-schule-sonderpaedagogisches-bildungs-und-beratung" =>
+      "https://www.tes-nuertingen.de/startseite/",
     "21502-foerderschule-geesthacht" => "https://foerderzentrum.foerderschule-geesthacht.de/",
     "56424-evangelische-grundschule" => "https://gsmogendorf.de/",
     "99089-otto-lilienthal-schule-erfurt-staatliche-grundschule" => nil,
@@ -753,13 +778,16 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "22880-johann-rist-gymnasium" => "https://jrg-wedel.de/startseite.html",
     "99817-staatliches-gymnasium-ernst-abbe-eisenach" => nil,
     "21502-otto-hahn-gymnasium" => "https://www.ohg-geesthacht.de/",
-    "97424-albert-schweitzer-volksschule-schweinfurt" => "https://albert-schweitzer-mittelschule-schweinfurt.de/",
-    "86514-volksschule-ustersbach" => "https://www.ustersbach.de/leben-in-ustersbach/kinderbetreuung-bildung/schulen/",
+    "97424-albert-schweitzer-volksschule-schweinfurt" =>
+      "https://albert-schweitzer-mittelschule-schweinfurt.de/",
+    "86514-volksschule-ustersbach" =>
+      "https://www.ustersbach.de/leben-in-ustersbach/kinderbetreuung-bildung/schulen/",
     "67550-dalbergschule" => "https://www.worms.de/neu-de/schulen/dalbergschule",
     "56235-astrid-lindgren-schule" => "https://grundschule-ransbach-baumbach.de/",
     "55232-gymnasium-am-roemerkastell" => nil,
     "96528-staatliche-gemeinschaftsschule-johann-wolfgang-von-goethe-schalkau" => nil,
-    "99087-heinrich-hertz-gymnasium-erfurt-staatliches-gymnasium" => "https://www.heinrich-hertz-gymnasium.de/",
+    "99087-heinrich-hertz-gymnasium-erfurt-staatliches-gymnasium" =>
+      "https://www.heinrich-hertz-gymnasium.de/",
     "83022-ignaz-guenther-gymnasium-rosenheim" => "https://www.ignaz-guenther-gymnasium.de/",
     "67346-zeppelinschule-speyer" => "https://www.zeppelinschule-speyer.de/",
     "67657-albert-schweitzer-gymnasium" => nil,
@@ -770,8 +798,10 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     "83022-finsterwalder-gymnasium-rosenheim" => "https://www.sfg-rosenheim.de/",
     "47137-max-planck-gymnasium" => "https://www.max-planck-gymnasium.eu/",
     "46240-willy-brandt-gesamtschule-bottrop" => "https://www.wbg-bottrop.de/",
-    "70599-paracelsus-gymnasium-hohenheim-plieningen-birkach" => "https://www.paracelsus-gymnasium.de/",
-    "76185-erich-kaestner-schule-sonderpaedagogisches-bildungs-und-beratungszen" => "https://www.eks-ka.de/",
+    "70599-paracelsus-gymnasium-hohenheim-plieningen-birkach" =>
+      "https://www.paracelsus-gymnasium.de/",
+    "76185-erich-kaestner-schule-sonderpaedagogisches-bildungs-und-beratungszen" =>
+      "https://www.eks-ka.de/",
     "66482-canadaschule" => "https://canadaschule.de/",
     "74821-clemens-brentano-schule-grundschule-neckarelz" => "https://www.cbs-mosbach.de/"
   }
@@ -780,52 +810,57 @@ defmodule MehrSchulferien.Repo.Migrations.UpdateSchoolHomepageUrlsBatch2 do
     total_schools = map_size(@school_url_updates)
     https_schools = Enum.count(@school_url_updates, fn {_, url} -> url != nil end)
     no_https_schools = total_schools - https_schools
-    
+
     IO.puts("Processing #{total_schools} schools from batch 2...")
     IO.puts("- #{https_schools} schools with HTTPS URLs available")
     IO.puts("- #{no_https_schools} schools without HTTPS option (will clear URL)")
-    
-    {updated_count, cleared_count} = Enum.reduce(@school_url_updates, {0, 0}, fn {school_slug, new_url}, {updated, cleared} ->
-      case update_school_homepage_url(school_slug, new_url) do
-        {1, _, :updated} -> {updated + 1, cleared}
-        {1, _, :cleared} -> {updated, cleared + 1}
-        _ -> {updated, cleared}
-      end
-    end)
-    
+
+    {updated_count, cleared_count} =
+      Enum.reduce(@school_url_updates, {0, 0}, fn {school_slug, new_url}, {updated, cleared} ->
+        case update_school_homepage_url(school_slug, new_url) do
+          {1, _, :updated} -> {updated + 1, cleared}
+          {1, _, :cleared} -> {updated, cleared + 1}
+          _ -> {updated, cleared}
+        end
+      end)
+
     IO.puts("\nMigration completed:")
     IO.puts("- #{updated_count} schools updated with HTTPS URLs")
     IO.puts("- #{cleared_count} schools had their URLs cleared")
   end
-  
+
   defp update_school_homepage_url(school_slug, new_url) do
     # First, find the school location by slug
-    school_query = from l in "locations",
-      where: l.slug == ^school_slug and l.is_school == true,
-      select: l.id
-    
+    school_query =
+      from(l in "locations",
+        where: l.slug == ^school_slug and l.is_school == true,
+        select: l.id
+      )
+
     case Repo.one(school_query) do
       nil ->
         IO.puts("ERROR: School not found: #{school_slug}")
         {0, nil, :not_found}
-      
+
       school_id ->
         # Update the homepage_url in the addresses table
         action = if new_url == nil, do: :cleared, else: :updated
-        
-        result = from(a in "addresses",
-          where: a.school_location_id == ^school_id,
-          update: [set: [homepage_url: ^new_url, updated_at: fragment("NOW()")]]
-        )
-        |> Repo.update_all([])
-        
+
+        result =
+          from(a in "addresses",
+            where: a.school_location_id == ^school_id,
+            update: [set: [homepage_url: ^new_url, updated_at: fragment("NOW()")]]
+          )
+          |> Repo.update_all([])
+
         case result do
           {0, _} ->
             IO.puts("WARNING: No address found for school: #{school_slug} (id: #{school_id})")
             {0, nil, :no_address}
+
           {1, _} ->
             verb = if new_url == nil, do: "Cleared", else: "Updated"
-            IO.puts("#{verb}: #{school_slug} => #{new_url || "[removed]"}") 
+            IO.puts("#{verb}: #{school_slug} => #{new_url || "[removed]"}")
             {1, nil, action}
         end
     end

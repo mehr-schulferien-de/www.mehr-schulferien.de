@@ -37,9 +37,9 @@ defmodule MehrSchulferienWeb.CityController do
 
     location_ids = [country.id, federal_state.id, county.id, city.id]
 
-    # Get all periods in one query from current school year start to next school year end
-    {:ok, full_start} = Date.new(current_school_year, 8, 1)
-    {:ok, full_end} = Date.new(next_school_year + 1, 7, 31)
+    # Get all periods for current calendar year and next year
+    {:ok, full_start} = Date.new(current_year, 1, 1)
+    {:ok, full_end} = Date.new(current_year + 1, 12, 31)
 
     all_periods =
       MehrSchulferien.Periods.list_school_vacation_periods(location_ids, full_start, full_end)

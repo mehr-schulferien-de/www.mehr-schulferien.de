@@ -33,7 +33,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
             <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
               Termin
             </th>
-            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
               Tage*
             </th>
           </tr>
