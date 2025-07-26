@@ -2438,7 +2438,7 @@ Migration completed:")
   def down do
     # This migration is not easily reversible as we do not store the old URLs
     # You would need to restore from a backup if reversal is needed
-    Mix.shell().info("This migration cannot be automatically reversed. Manual restoration required.")
+    IO.puts("This migration cannot be automatically reversed. Manual restoration required.")
   end
 
   defp update_school_homepage_url(school_slug, new_url) do
@@ -2449,7 +2449,7 @@ Migration completed:")
 
     case Repo.one(school_query) do
       nil ->
-        Mix.shell().error("School not found: #{school_slug}")
+        IO.puts("ERROR: School not found: #{school_slug}")
         {0, nil, :not_found}
       
       school_id ->
