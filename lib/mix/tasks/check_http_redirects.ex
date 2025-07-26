@@ -210,6 +210,9 @@ defmodule Mix.Tasks.CheckHttpRedirects do
   end
 
   defp check_single_redirect(url) do
+    # Properly encode the URL to handle non-ASCII characters
+    encoded_url = URI.encode(url)
+    
     # Configure Req to not follow redirects automatically
     options = [
       redirect: false,
@@ -218,7 +221,7 @@ defmodule Mix.Tasks.CheckHttpRedirects do
       receive_timeout: 10_000
     ]
 
-    case Req.get(url, options) do
+    case Req.get(encoded_url, options) do
       {:ok, %{status: status} = response} when status in 301..303 ->
         # Check Location header
         case Req.Response.get_header(response, "location") do
@@ -258,13 +261,16 @@ defmodule Mix.Tasks.CheckHttpRedirects do
   defp format_error(reason), do: inspect(reason)
 
   defp check_https_availability(url) do
+    # Properly encode the URL to handle non-ASCII characters
+    encoded_url = URI.encode(url)
+    
     options = [
       retry: false,
       connect_options: [timeout: 3_000],
       receive_timeout: 10_000
     ]
 
-    case Req.get(url, options) do
+    case Req.get(encoded_url, options) do
       {:ok, %{status: status}} when status in 200..299 ->
         {:ok, status}
 
