@@ -1,8 +1,8 @@
 <!-- Breadcrumb navigation -->
-<nav class="bg-white shadow-sm mb-6">
+<nav class="bg-white dark:bg-gray-800 shadow-sm mb-6">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center space-x-2 py-3 text-sm">
-      <%= link to: ~p"/", class: "text-gray-500 hover:text-gray-700" do %>
+      <%= link to: ~p"/", class: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" do %>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4 inline"
@@ -14,7 +14,7 @@
         <span>Start</span>
       <% end %>
 
-      <span class="text-gray-400">
+      <span class="text-gray-400 dark:text-gray-500">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-3 w-3 inline"
@@ -29,11 +29,11 @@
         </svg>
       </span>
 
-      <%= link to: ~p"/ferien/#{@country.slug}", class: "text-gray-500 hover:text-gray-700" do %>
+      <%= link to: ~p"/ferien/#{@country.slug}", class: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" do %>
         Deutschland
       <% end %>
 
-      <span class="text-gray-400">
+      <span class="text-gray-400 dark:text-gray-500">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-3 w-3 inline"
@@ -48,7 +48,7 @@
         </svg>
       </span>
 
-      <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}", class: "text-gray-500 hover:text-gray-700" do %>
+      <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}", class: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" do %>
         {@federal_state.name}
       <% end %>
     </div>
@@ -60,14 +60,14 @@
     <.heading level={1} class="text-3xl mb-2">
       Landkreise und Städte in {@federal_state.name}
     </.heading>
-    <.text variant="lead" class="text-gray-600">
+    <.text variant="lead" class="text-gray-600 dark:text-gray-400">
       Alle Städte in {@federal_state.name} mit mindestens einer Schule.
     </.text>
   </div>
 
   <div>
     <%= for {county, cities} <- @counties_with_cities do %>
-      <div class="mb-10 bg-white rounded-xl shadow-md overflow-hidden">
+      <div class="mb-10 bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
         <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
           <.heading level={2} class="text-xl text-white flex items-center">
             <svg
@@ -97,29 +97,29 @@
         <div class="p-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <%= for city_item <- Enum.reverse(cities) do %>
-              <div class="group relative bg-white border border-gray-200 rounded-lg transition-all duration-300 hover:shadow-lg hover:border-blue-300 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 </div>
 
                 <div class="relative p-4">
                   <div class="flex items-center mb-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 text-blue-600 mr-2"
+                      class="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
                       <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                     </svg>
-                    <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{city_item.city_data.slug}", class: "text-gray-900 font-semibold text-lg hover:text-blue-700 transition-colors duration-200" do %>
+                    <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{city_item.city_data.slug}", class: "text-gray-900 dark:text-gray-100 font-semibold text-lg hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-200" do %>
                       {city_item.city_data.name}
                     <% end %>
                   </div>
 
-                  <div class="mt-2 flex items-center bg-gray-50 rounded-md p-2">
+                  <div class="mt-2 flex items-center bg-gray-50 dark:bg-gray-700 rounded-md p-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-500 mr-2 flex-shrink-0"
+                      class="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2 flex-shrink-0"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -129,29 +129,29 @@
                         clip-rule="evenodd"
                       />
                     </svg>
-                    <span class="text-sm text-gray-600">
+                    <span class="text-sm text-gray-600 dark:text-gray-300">
                       <span class="font-medium">PLZ:</span> {MehrSchulferienWeb.FederalStateView.format_zip_codes(
                         city_item.city_data
                       )}
                     </span>
                   </div>
 
-                  <div class="mt-2 flex items-center bg-gray-50 rounded-md p-2">
+                  <div class="mt-2 flex items-center bg-gray-50 dark:bg-gray-700 rounded-md p-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-500 mr-2 flex-shrink-0"
+                      class="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2 flex-shrink-0"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
                       <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                     </svg>
-                    <span class="text-sm text-gray-600">
+                    <span class="text-sm text-gray-600 dark:text-gray-300">
                       <span class="font-medium">Schulen:</span> {city_item.school_count}
                     </span>
                   </div>
 
                   <div class="mt-4 text-right">
-                    <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{city_item.city_data.slug}", class: "inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800" do %>
+                    <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{city_item.city_data.slug}", class: "inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" do %>
                       Details anzeigen
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

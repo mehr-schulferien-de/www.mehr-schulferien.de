@@ -28,18 +28,21 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
     <form
       phx-submit="search"
       phx-change="validate"
-      class="mb-6 sm:mb-8 bg-white shadow-sm rounded-lg p-4 sm:p-6"
+      class="mb-6 sm:mb-8 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 sm:p-6"
     >
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         <%= if @show_federal_state && length(@federal_states) > 0 do %>
           <div>
-            <label for="search_federal_state" class="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              for="search_federal_state"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Bundesland
             </label>
             <select
               name="search[federal_state_id]"
               id="search_federal_state"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[42px]"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[42px]"
               phx-change="validate"
               value={@search_params["federal_state_id"] || ""}
               autofocus={@autofocus_field == :federal_state}
@@ -57,14 +60,17 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
           </div>
         <% end %>
         <div>
-          <label for="search_location" class="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            for="search_location"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             {@location_label}
           </label>
           <input
             type="text"
             name={if @show_federal_state, do: "search[location]", else: "search[zip_code]"}
             value={get_location_value(@search_params, @show_federal_state)}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500"
             placeholder={@location_placeholder}
             id="search_location"
             phx-debounce="300"
@@ -75,14 +81,17 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
         </div>
         <%= if !@show_federal_state do %>
           <div>
-            <label for="search_city" class="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              for="search_city"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Stadt
             </label>
             <input
               type="text"
               name="search[city]"
               value={@search_params["city"] || ""}
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500"
               placeholder="z.B. Berlin"
               id="search_city"
               phx-debounce="300"
@@ -90,14 +99,17 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
           </div>
         <% end %>
         <div>
-          <label for="search_school_name" class="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            for="search_school_name"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Schulname
           </label>
           <input
             type="text"
             name="search[school_name]"
             value={@search_params["school_name"] || ""}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500"
             placeholder="z.B. Gymnasium oder Real*"
             id="search_school_name"
             phx-debounce="300"
@@ -112,13 +124,13 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
         <button
           type="button"
           phx-click="reset"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
         >
           Zurücksetzen
         </button>
       </div>
       <%= if @search_params["location"] == "" and @search_params["school_name"] == "" do %>
-        <div class="mt-3 text-xs text-gray-500">
+        <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
           <span class="inline-flex items-center gap-1">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path

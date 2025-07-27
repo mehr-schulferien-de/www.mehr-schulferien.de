@@ -52,10 +52,10 @@ defmodule MehrSchulferienWeb.FaqComponent do
       |> assign(:location_prep, location_prep)
 
     ~H"""
-    <div class="mt-8 bg-white p-4 rounded-lg shadow-sm">
+    <div class="mt-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
       <div class="mx-auto px-4 py-8 sm:py-12">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4" id="faq">Ferien FAQ</h2>
-        <p class="mt-3 max-w-3xl text-sm text-gray-600">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" id="faq">Ferien FAQ</h2>
+        <p class="mt-3 max-w-3xl text-sm text-gray-600 dark:text-gray-400">
           Antworten zu häufigen Fragen zum Thema Schulferien und Feiertagen {@location_prep} {@location.name}.
         </p>
 
@@ -122,10 +122,10 @@ defmodule MehrSchulferienWeb.FaqComponent do
   defp faq_question(assigns) do
     ~H"""
     <div>
-      <dt class="text-base font-semibold text-gray-900">
+      <dt class="text-base font-semibold text-gray-900 dark:text-gray-100">
         {@question.title}
       </dt>
-      <dd class="mt-2 text-sm text-gray-600">
+      <dd class="mt-2 text-sm text-gray-600 dark:text-gray-400">
         {raw(@question.answer)}
       </dd>
     </div>
@@ -136,7 +136,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
   defp section_header(assigns) do
     ~H"""
     <div class="sm:col-span-2 mt-8">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">{@title}</h3>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{@title}</h3>
     </div>
     """
   end
@@ -147,14 +147,14 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
     ~H"""
     <div>
-      <dt class="text-base font-semibold text-gray-900">
+      <dt class="text-base font-semibold text-gray-900 dark:text-gray-100">
         {@schools_question.title}
       </dt>
-      <dd class="mt-2 text-sm text-gray-600">
+      <dd class="mt-2 text-sm text-gray-600 dark:text-gray-400">
         <%= if length(@sorted_schools) == 1 do %>
           <.link
             navigate={~p"/ferien/#{@country.slug}/schule/#{hd(@sorted_schools).slug}"}
-            class="text-blue-600 hover:text-blue-500"
+            class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
           >
             {hd(@sorted_schools).name}
           </.link>
@@ -163,7 +163,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
           <%= for {school, index} <- Enum.with_index(schools_except_last) do %>
             <.link
               navigate={~p"/ferien/#{@country.slug}/schule/#{school.slug}"}
-              class="text-blue-600 hover:text-blue-500"
+              class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
             >
               {school.name}
             </.link>
@@ -174,7 +174,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
           <% end %>
           <.link
             navigate={~p"/ferien/#{@country.slug}/schule/#{last_school.slug}"}
-            class="text-blue-600 hover:text-blue-500"
+            class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
           >
             {last_school.name}
           </.link>
@@ -192,15 +192,15 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
     ~H"""
     <div>
-      <dt class="text-base font-semibold text-gray-900">
+      <dt class="text-base font-semibold text-gray-900 dark:text-gray-100">
         {@nearby_schools_question.title}
       </dt>
-      <dd class="mt-2 text-sm text-gray-600">
+      <dd class="mt-2 text-sm text-gray-600 dark:text-gray-400">
         <%= if length(@sorted_schools) == 1 do %>
           <% {school, distance} = hd(@sorted_schools) %>
           <.link
             navigate={~p"/ferien/#{@country.slug}/schule/#{school.slug}"}
-            class="text-blue-600 hover:text-blue-500"
+            class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
           >
             {school.name}
           </.link>
@@ -210,7 +210,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
           <%= for {{school, distance}, index} <- Enum.with_index(schools_except_last) do %>
             <.link
               navigate={~p"/ferien/#{@country.slug}/schule/#{school.slug}"}
-              class="text-blue-600 hover:text-blue-500"
+              class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
             >
               {school.name}
             </.link>
@@ -225,7 +225,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
           <% {last_school, last_distance} = last_school_tuple %>
           <.link
             navigate={~p"/ferien/#{@country.slug}/schule/#{last_school.slug}"}
-            class="text-blue-600 hover:text-blue-500"
+            class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
           >
             {last_school.name}
           </.link>
@@ -239,15 +239,15 @@ defmodule MehrSchulferienWeb.FaqComponent do
   defp cities_in_federal_state(assigns) do
     ~H"""
     <div>
-      <dt class="text-base font-semibold text-gray-900">
+      <dt class="text-base font-semibold text-gray-900 dark:text-gray-100">
         Für welche Städte in {@federal_state.name} gelten diese Feriendaten?
       </dt>
-      <dd class="mt-2 text-sm text-gray-600">
+      <dd class="mt-2 text-sm text-gray-600 dark:text-gray-400">
         <.link
           navigate={
             ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/landkreise-und-staedte"
           }
-          class="font-semibold text-blue-600 hover:text-blue-500"
+          class="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
         >
           Liste der Landkreise und Städte in {@federal_state.name}.
         </.link>

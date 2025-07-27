@@ -18,9 +18,9 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
   def location_history(assigns) do
     ~H"""
     <%= if @show and length(@recent_locations) > 0 do %>
-      <div class="mt-6 pt-5 border-t border-gray-200">
+      <div class="mt-6 pt-5 border-t border-gray-200 dark:border-gray-700">
         <div class="flex flex-col gap-3">
-          <div class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <div class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Zuletzt besucht
           </div>
           <!-- Mobile: horizontal flex, Desktop: grid -->
@@ -31,12 +31,12 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
               <% show_on_mobile = location in mobile_locations %>
               <a
                 href={get_location_url(location)}
-                class={"group #{if show_on_mobile, do: "flex", else: "hidden md:flex"} #{if show_full_info, do: "flex-row items-center", else: "md:flex-row flex-col items-center md:items-center"} gap-1 md:gap-3 p-2 md:p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex-1 md:flex-initial"}
+                class={"group #{if show_on_mobile, do: "flex", else: "hidden md:flex"} #{if show_full_info, do: "flex-row items-center", else: "md:flex-row flex-col items-center md:items-center"} gap-1 md:gap-3 p-2 md:p-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors flex-1 md:flex-initial"}
               >
                 <div class="hidden md:block flex-shrink-0">
                   <%= case location.type do %>
                     <% :federal_state -> %>
-                      <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                      <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center">
                         <svg
                           class="w-4 h-4 md:w-5 md:h-5"
                           fill="none"
@@ -52,7 +52,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                         </svg>
                       </div>
                     <% :city -> %>
-                      <div class="w-8 h-8 md:w-10 md:h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                      <div class="w-8 h-8 md:w-10 md:h-10 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg flex items-center justify-center">
                         <svg
                           class="w-4 h-4 md:w-5 md:h-5"
                           fill="none"
@@ -68,7 +68,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                         </svg>
                       </div>
                     <% :school -> %>
-                      <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+                      <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center">
                         <svg
                           class="w-4 h-4 md:w-5 md:h-5"
                           fill="none"
@@ -98,7 +98,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                   <% end %>
                 </div>
                 <div class={"flex-1 min-w-0 #{if show_full_info, do: "text-left", else: "text-center md:text-left"}"}>
-                  <div class={"#{if show_full_info, do: "text-sm", else: "text-xs md:text-sm"} font-medium text-gray-900 group-hover:text-blue-600 #{if show_full_info, do: "", else: "truncate max-w-[80px] md:max-w-none"}"}>
+                  <div class={"#{if show_full_info, do: "text-sm", else: "text-xs md:text-sm"} font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 #{if show_full_info, do: "", else: "truncate max-w-[80px] md:max-w-none"}"}>
                     <span class="md:hidden">
                       {truncate_name(location.name, location.type, 15)}
                     </span>
@@ -106,7 +106,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                       {truncate_name(location.name, location.type, 23)}
                     </span>
                   </div>
-                  <div class={"#{if show_full_info, do: "block", else: "hidden md:block"} text-xs text-gray-500"}>
+                  <div class={"#{if show_full_info, do: "block", else: "hidden md:block"} text-xs text-gray-500 dark:text-gray-400"}>
                     <%= case location.type do %>
                       <% :federal_state -> %>
                         Bundesland
@@ -118,7 +118,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                   </div>
                 </div>
                 <svg
-                  class="hidden md:block w-4 h-4 text-gray-400 group-hover:text-gray-600 flex-shrink-0"
+                  class="hidden md:block w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

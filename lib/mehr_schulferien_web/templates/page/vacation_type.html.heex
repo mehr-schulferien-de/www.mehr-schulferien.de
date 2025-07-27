@@ -4,7 +4,7 @@
     <.heading level={1} class="text-3xl mb-4">
       {@vacation_config.name} {@current_year} und {@next_year} in Deutschland
     </.heading>
-    <.text variant="lead" class="text-gray-700">
+    <.text variant="lead" class="text-gray-700 dark:text-gray-300">
       Alle Termine der {@vacation_config.name} für alle 16 Bundesländer auf einen Blick. {@vacation_config.meta_focus}
     </.text>
   </div>
@@ -42,7 +42,7 @@
     />
   </section>
   <!-- Additional Information -->
-  <section class="mt-12 prose prose-lg max-w-none">
+  <section class="mt-12 prose prose-lg dark:prose-invert max-w-none">
     <.heading level={3} class="text-xl mb-4">
       Wissenswertes über {@vacation_config.name}
     </.heading>
@@ -122,7 +122,7 @@
     <% end %>
   </section>
   <!-- Links to other vacation types -->
-  <section class="mt-12 bg-gray-50 rounded-lg p-6">
+  <section class="mt-12 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
     <.heading level={3} class="text-lg mb-4">Weitere Ferientermine</.heading>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
       <%= if @vacation_type != "sommer" do %>

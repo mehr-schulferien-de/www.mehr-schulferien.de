@@ -62,16 +62,16 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
       )
 
     ~H"""
-    <section class="bg-white rounded shadow p-6 h-full" id={@month_id}>
+    <section class="bg-white dark:bg-gray-800 rounded shadow p-6 h-full" id={@month_id}>
       <div class={["bridge-day-timeline", @should_cross_out && "opacity-40"]}>
         <table class="border-collapse w-full table-fixed">
           <thead>
             <tr>
               <th
                 class={[
-                  "text-left py-0.5 pl-1 pr-0 font-semibold text-base border border-gray-200",
-                  @should_cross_out && "bg-gray-200 text-gray-500",
-                  !@should_cross_out && "bg-gray-50"
+                  "text-left py-0.5 pl-1 pr-0 font-semibold text-base border border-gray-200 dark:border-gray-700",
+                  @should_cross_out && "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400",
+                  !@should_cross_out && "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 ]}
                 colspan="7"
               >
@@ -82,25 +82,25 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
               </th>
             </tr>
             <tr>
-              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
                 Mo
               </th>
-              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
                 Di
               </th>
-              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
                 Mi
               </th>
-              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
                 Do
               </th>
-              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
                 Fr
               </th>
-              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
                 Sa
               </th>
-              <th class="border border-gray-200 text-center bg-gray-50 text-xs p-0.5 font-medium">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
                 So
               </th>
             </tr>
@@ -146,7 +146,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                       end %>
 
                     <td class={[
-                      "border border-gray-200 text-center py-1 w-1/12 text-xs h-[30px]",
+                      "border border-gray-200 dark:border-gray-700 text-center py-1 w-1/12 text-xs h-[30px]",
                       cond do
                         is_public_holiday ->
                           MehrSchulferien.StyleConfig.get_class(:holiday, true)

@@ -73,7 +73,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     html = """
     <div class="bridge-day-timeline">
       #{if title do
-      "<div class=\"text-sm text-gray-600 mt-2 mb-3\">#{title}</div>"
+      "<div class=\"text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3\">#{title}</div>"
     else
       ""
     end}
@@ -86,13 +86,13 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       is_weekend = Date.day_of_week(day) > 5
       highest_priority_period = find_period_for_day(assigns.timeline_periods, day)
       cell_bg_class = cond do
-        highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-purple-600 text-white"
-        highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600 text-white"
-        is_weekend -> "bg-gray-100"
+        highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-purple-600 dark:bg-purple-500 text-white"
+        highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600 dark:bg-blue-500 text-white"
+        is_weekend -> "bg-gray-100 dark:bg-gray-700"
         true -> ""
       end
 
-      "<td class=\"border border-gray-200 text-center py-1 w-1/12 text-xs h-[30px] #{cell_bg_class}\">#{day.day}.</td>"
+      "<td class=\"border border-gray-200 dark:border-gray-700 text-center py-1 w-1/12 text-xs h-[30px] #{cell_bg_class}\">#{day.day}.</td>"
     end) |> Enum.join("")}
           </tr>
         </tbody>
@@ -100,7 +100,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       
       #{if !is_super_bridge_day do
       """
-      <p class="text-sm text-gray-600 mt-2 mb-3">
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
         #{if !assigns.is_future_reference && assigns.days_until > 0 do
         bridge_day_term = if Date.diff(assigns.bridge_day.ends_on, assigns.bridge_day.starts_on) > 0, do: "nächsten Super-Brückentagen", else: "nächsten Brückentag"
         "Noch #{assigns.days_until} Tage bis zum #{bridge_day_term}."
@@ -126,7 +126,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       
       #{render_legend(assigns.legend_items)}
       
-      <p class="text-sm text-gray-800 mt-3">
+      <p class="text-sm text-gray-800 dark:text-gray-200 mt-3">
         #{assigns.vacation_days} #{if assigns.vacation_days == 1, do: "eingereichten Urlaubstag", else: "eingereichte Urlaubstage"} = 
         <span class="font-medium">#{assigns.total_free_days} freie Tage #{if is_super_bridge_day, do: "🎉", else: ""}</span>
         #{if !is_super_bridge_day do
@@ -184,7 +184,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
                  elem(Enum.at(sorted_month_groups, index - 1), 0) |> elem(0))
 
         """
-        <th class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 bg-gray-50" colspan="#{length(month_days)}">
+        <th class="text-left py-0.5 pl-1 pr-0 font-semibold text-xs border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" colspan="#{length(month_days)}">
           #{month_name}#{if show_year, do: " #{year}", else: ""}
         </th>
         """
@@ -197,7 +197,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         weekday_abbr = DateHelpers.weekday(weekday, :short)
 
         """
-        <td class="bg-gray-50 text-[11px] p-0.5 font-normal h-5 border border-gray-200 text-center w-1/12">#{weekday_abbr}</td>
+        <td class="bg-gray-50 dark:bg-gray-800 text-[11px] p-0.5 font-normal h-5 border border-gray-200 dark:border-gray-700 text-center w-1/12 text-gray-900 dark:text-gray-100">#{weekday_abbr}</td>
         """
       end)
       |> Enum.join("")
@@ -228,7 +228,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       |> Enum.join("")
 
     """
-    <ul class="text-sm space-y-1 mt-4">
+    <ul class="text-sm space-y-1 mt-4 text-gray-900 dark:text-gray-100">
       #{legend_items}
     </ul>
     """
@@ -248,7 +248,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     bridge_label =
       "#{bridge_period.holiday_or_vacation_type.name} (#{format_date_range(bridge_period)})"
 
-    legend_items = [%{color: "bg-purple-600", label: bridge_label}]
+    legend_items = [%{color: "bg-purple-600 dark:bg-purple-500", label: bridge_label}]
 
     # Add other periods (holidays)
     holiday_items =

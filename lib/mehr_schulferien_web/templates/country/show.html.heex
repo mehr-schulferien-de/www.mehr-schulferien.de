@@ -1,12 +1,12 @@
 <!-- Breadcrumb navigation -->
-<nav class="bg-white shadow-sm mb-6">
+<nav class="bg-white dark:bg-gray-800 shadow-sm mb-6">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center space-x-2 py-3 text-sm">
-      <%= link to: ~p"/", class: "text-gray-500 hover:text-gray-700 transition-colors duration-200" do %>
+      <%= link to: ~p"/", class: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200" do %>
         <span>Start</span>
       <% end %>
-      <span class="text-gray-400">/</span>
-      <span class="text-gray-700 font-semibold">{@country.name}</span>
+      <span class="text-gray-400 dark:text-gray-500">/</span>
+      <span class="text-gray-700 dark:text-gray-300 font-semibold">{@country.name}</span>
     </div>
   </div>
 </nav>

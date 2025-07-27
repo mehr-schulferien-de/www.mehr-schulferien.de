@@ -3,13 +3,15 @@
     <div class="mb-4 mt-4 sm:mt-6">
       <.heading level={1} class="text-left">
         <span class="block">Schulferien {@school.name}</span>
-        <span class="block sm:inline sm:ml-1 text-lg sm:text-2xl font-normal text-gray-600">
+        <span class="block sm:inline sm:ml-1 text-lg sm:text-2xl font-normal text-gray-600 dark:text-gray-400">
           {link(@city.name,
             to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}",
-            class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+            class:
+              "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer"
           )}{", "}{link(@federal_state.name,
             to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}",
-            class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+            class:
+              "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer"
           )}
         </span>
       </.heading>
@@ -40,7 +42,7 @@
             <% end %>
             <!-- Bewegliche Ferientage from other schools with same zip code -->
             <%= if @school_bewegliche_ferientage == [] && @other_schools_bewegliche_ferientage != [] do %>
-              <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <div class="flex items-start">
                   <svg
                     class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"
@@ -56,7 +58,10 @@
                     />
                   </svg>
                   <div class="flex-1">
-                    <.text variant="small" class="text-blue-900 font-medium mb-1">
+                    <.text
+                      variant="small"
+                      class="text-blue-900 dark:text-blue-100 font-medium mb-1"
+                    >
                       Andere Schulen mit der gleichen Postleitzahl haben an folgenden Daten einen beweglichen Ferientag: {@other_schools_bewegliche_ferientage
                       |> Enum.map(fn period ->
                         formatted_date =
@@ -79,7 +84,7 @@
             <!-- Bewegliche Ferientage Section -->
             <%= if @allows_bewegliche_ferientage do %>
               <!-- Contribute Data Note - Subtle -->
-              <div class="mt-6 flex items-center gap-2 text-xs text-gray-500">
+              <div class="mt-6 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <svg
                   class="w-4 h-4 flex-shrink-0"
                   fill="none"
@@ -95,7 +100,7 @@
                 </svg>
                 <span>
                   <%= link to: "/wiki/schools/#{@school.slug}/ferientage",
-                      class: "text-blue-600 hover:text-blue-800 font-medium ml-1" do %>
+                      class: "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium ml-1" do %>
                     Bewegliche Ferientage hinzufügen
                   <% end %>
                 </span>
@@ -103,14 +108,14 @@
             <% end %>
             <!-- iCal Export Box -->
             <%= if @has_data do %>
-              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+              <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-4">
                 <div>
                   <.heading
                     level={3}
-                    class="text-sm font-medium text-gray-900 mb-1 flex items-center"
+                    class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1 flex items-center"
                   >
                     <svg
-                      class="w-4 h-4 mr-2 text-gray-600"
+                      class="w-4 h-4 mr-2 text-gray-600 dark:text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -132,17 +137,17 @@
                     <% base_path = if @school.is_school, do: "schools", else: "locations" %>
                     <% current_calendar_year = @today.year %>
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year}&calendar_year=true",
-                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@school.slug}-#{current_calendar_year}.ics" do %>
                       📅 {current_calendar_year}
                     <% end %>
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year + 1}&calendar_year=true",
-                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@school.slug}-#{current_calendar_year + 1}.ics" do %>
                       📅 {current_calendar_year + 1}
                     <% end %>
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@current_school_year}",
-                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schuljahr-#{@school.slug}-#{@current_school_year}-#{@current_school_year + 1}.ics" do %>
                       📚 {@current_school_year}/{String.slice(
                         to_string(@current_school_year + 1),
@@ -150,7 +155,7 @@
                       )}
                     <% end %>
                     <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@next_school_year}",
-                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schuljahr-#{@school.slug}-#{@next_school_year}-#{@next_school_year + 1}.ics" do %>
                       📚 {@next_school_year}/{String.slice(
                         to_string(@next_school_year + 1),
@@ -170,8 +175,8 @@
           <:content>
             <%= if @school.address do %>
               <!-- Header -->
-              <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                <.heading level={2} class="text-lg m-0">Schulinformationen</.heading>
+              <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <.heading level={2} class="text-lg m-0 text-gray-900 dark:text-gray-100">Schulinformationen</.heading>
               </div>
 
               <div class="p-4 space-y-4">
@@ -181,7 +186,7 @@
                   <div class="flex items-start">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
+                      class="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 mr-3 flex-shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -200,8 +205,10 @@
                       />
                     </svg>
                     <div class="text-sm flex-1">
-                      <div class="font-medium text-gray-900">{@school.name}</div>
-                      <div class="text-gray-600">
+                      <div class="font-medium text-gray-900 dark:text-gray-100">
+                        {@school.name}
+                      </div>
+                      <div class="text-gray-600 dark:text-gray-400">
                         {@school.address.street}<br />
                         {@school.address.zip_code} {@school.address.city}
                       </div>
@@ -209,7 +216,7 @@
                         "#{@school.name}, #{@school.address.street}, #{@school.address.zip_code} #{@school.address.city}" %>
                       <div class="flex flex-wrap gap-2 mt-1">
                         <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.google_maps_url(map_query),
-                            class: "inline-flex items-center text-xs text-blue-600 hover:text-blue-800",
+                            class: "inline-flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300",
                             target: "_blank",
                             rel: "noopener noreferrer" do %>
                           <svg
@@ -235,7 +242,7 @@
                         <% end %>
                         <%= if @is_apple_device do %>
                           <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.apple_maps_url(map_query),
-                              class: "inline-flex items-center text-xs text-blue-600 hover:text-blue-800",
+                              class: "inline-flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300",
                               target: "_blank",
                               rel: "noopener noreferrer" do %>
                             <svg
@@ -268,7 +275,7 @@
                     <div class="flex items-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                        class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-3 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -287,7 +294,7 @@
                         MehrSchulferienWeb.Helpers.PhoneFormatterHelpers.format_phone_number(
                           phone
                         ) %>
-                      <a href={tel_link} class="text-sm text-blue-600 hover:text-blue-800">
+                      <a href={tel_link} class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                         {formatted_phone}
                       </a>
                     </div>
@@ -297,7 +304,7 @@
                     <div class="flex items-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                        class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-3 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -312,7 +319,7 @@
                       <% email = @school.address.email_address %>
                       <a
                         href={"mailto:" <> email}
-                        class="text-sm text-blue-600 hover:text-blue-800 break-all"
+                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 break-all"
                       >
                         {email}
                       </a>
@@ -322,7 +329,7 @@
                     <div class="flex items-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                        class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-3 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -337,7 +344,7 @@
                       <% homepage_url = @school.address.homepage_url %>
                       <a
                         href={homepage_url}
-                        class="text-sm text-blue-600 hover:text-blue-800 break-all"
+                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 break-all"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -348,9 +355,9 @@
                 </div>
                 <!-- Export vCard - directly below contact details -->
                 <div class="mt-3">
-                  <div class="text-xs text-gray-500 mb-1">Kontaktdaten exportieren:</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Kontaktdaten exportieren:</div>
                   <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/vcard",
-                      class: "inline-flex items-center text-sm text-blue-600 hover:text-blue-800" do %>
+                      class: "inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" do %>
                     <svg
                       class="h-4 w-4 mr-1.5"
                       fill="none"
@@ -369,24 +376,24 @@
                 </div>
                 <!-- Description (if available) -->
                 <%= if @school.address.description do %>
-                  <div class="pt-3 border-t border-gray-100">
-                    <p class="text-sm text-gray-700 leading-relaxed">
+                  <div class="pt-3 border-t border-gray-100 dark:border-gray-700">
+                    <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                       {@school.address.description}
                     </p>
                   </div>
                 <% end %>
                 <!-- Key Facts (if available) - less prominent at bottom -->
                 <%= if @school.address.students_count || @school.address.founded_year do %>
-                  <div class="pt-3 border-t border-gray-100 flex gap-4 text-sm text-gray-600">
+                  <div class="pt-3 border-t border-gray-100 dark:border-gray-700 flex gap-4 text-sm text-gray-600 dark:text-gray-400">
                     <%= if @school.address.founded_year do %>
                       <div class="flex items-center gap-1">
-                        <span class="text-gray-500">Gegründet:</span>
+                        <span class="text-gray-500 dark:text-gray-500">Gegründet:</span>
                         <span class="font-medium">{@school.address.founded_year}</span>
                       </div>
                     <% end %>
                     <%= if @school.address.students_count do %>
                       <div class="flex items-center gap-1">
-                        <span class="text-gray-500">Schüler:</span>
+                        <span class="text-gray-500 dark:text-gray-500">Schüler:</span>
                         <span class="font-medium">
                           {ViewHelpers.format_number(@school.address.students_count)}
                         </span>
@@ -395,24 +402,24 @@
                   </div>
                 <% end %>
                 <!-- Actions -->
-                <div class="pt-4 border-t border-gray-100">
+                <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
                   <!-- Contribute Data -->
-                  <div class="text-xs text-gray-500">
+                  <div class="text-xs text-gray-500 dark:text-gray-400">
                     <span>Daten verbessern:</span>
                     <%= link to: "/wiki/schools/#{@school.slug}/edit",
-                        class: "text-blue-600 hover:text-blue-800 ml-1" do %>
+                        class: "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 ml-1" do %>
                       Schulinfos bearbeiten
                     <% end %>
                   </div>
                 </div>
                 <!-- Social Media & Web Links -->
                 <%= if @school.address.instagram_url || @school.address.wikipedia_url do %>
-                  <div class="pt-3 border-t border-gray-100 space-y-2">
+                  <div class="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2">
                     <%= if @school.address.instagram_url do %>
                       <div class="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                          class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-3 flex-shrink-0"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -421,7 +428,7 @@
                         <% instagram_url = @school.address.instagram_url %>
                         <a
                           href={instagram_url}
-                          class="text-sm text-blue-600 hover:text-blue-800"
+                          class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -434,7 +441,7 @@
                       <div class="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          class="h-4 w-4 text-gray-400 mr-3 flex-shrink-0"
+                          class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-3 flex-shrink-0"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -442,7 +449,7 @@
                         </svg>
                         <a
                           href={@school.address.wikipedia_url}
-                          class="text-sm text-blue-600 hover:text-blue-800"
+                          class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -456,10 +463,10 @@
             <% else %>
               <!-- No Contact Data -->
               <div class="p-8 text-center">
-                <div class="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <div class="w-12 h-12 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-gray-400"
+                    class="h-6 w-6 text-gray-400 dark:text-gray-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -472,9 +479,9 @@
                     />
                   </svg>
                 </div>
-                <p class="text-sm text-gray-500 mb-4">Keine Schulinformationen verfügbar</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Keine Schulinformationen verfügbar</p>
                 <%= link to: "/wiki/schools/#{@school.slug}", 
-                   class: "inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-md transition-colors" do %>
+                   class: "inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md transition-colors" do %>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-4 w-4 mr-1.5"
@@ -498,10 +505,10 @@
         <!-- Documents & Letters Card -->
         <.card padding="p-4" class="mt-4">
           <:content>
-            <.heading level={3} class="text-lg mb-3 flex items-center">
+            <.heading level={3} class="text-lg mb-3 flex items-center text-gray-900 dark:text-gray-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-teal-600"
+                class="h-5 w-5 mr-2 text-teal-600 dark:text-teal-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -517,10 +524,10 @@
             </.heading>
             <div class="grid grid-cols-1 gap-2">
               <%= link to: "/briefe/#{@school.slug}/entschuldigung",
-                 class: "flex items-center px-3 py-2 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors group" do %>
+                 class: "flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition-colors group" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 mr-2 text-gray-400 group-hover:text-teal-600"
+                  class="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500 group-hover:text-teal-600 dark:group-hover:text-teal-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -532,13 +539,13 @@
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                   />
                 </svg>
-                <span class="group-hover:text-gray-900">Entschuldigung schreiben</span>
+                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">Entschuldigung schreiben</span>
               <% end %>
               <%= link to: "/briefe/#{@school.slug}/beurlaubung",
-                 class: "flex items-center px-3 py-2 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors group" do %>
+                 class: "flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition-colors group" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 mr-2 text-gray-400 group-hover:text-blue-600"
+                  class="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -550,13 +557,13 @@
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <span class="group-hover:text-gray-900">Beurlaubung beantragen</span>
+                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">Beurlaubung beantragen</span>
               <% end %>
               <%= link to: "/briefe/#{@school.slug}/sportbefreiung",
-                 class: "flex items-center px-3 py-2 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors group" do %>
+                 class: "flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition-colors group" do %>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 mr-2 text-gray-400 group-hover:text-purple-600"
+                  class="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500 group-hover:text-purple-600 dark:group-hover:text-purple-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -568,7 +575,7 @@
                     d="M13 10V3L4 14h7v7l9-11h-7z"
                   />
                 </svg>
-                <span class="group-hover:text-gray-900">Sportbefreiung beantragen</span>
+                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">Sportbefreiung beantragen</span>
               <% end %>
             </div>
           </:content>
@@ -595,7 +602,7 @@
         <%= for school_year <- [@current_school_year, @next_school_year] do %>
           <% school_year_periods = Map.get(periods_by_school_year, school_year, []) %>
           <%= if length(school_year_periods) > 0 do %>
-            <.heading level={3} class="text-lg text-gray-800 mb-4 mt-6">
+            <.heading level={3} class="text-lg text-gray-800 dark:text-gray-200 mb-4 mt-6">
               Schuljahr {school_year}/{school_year + 1}
             </.heading>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -706,7 +713,7 @@
       country={@country}
     />
     <!-- Developer Section -->
-    <div class="mt-12 border-t border-gray-200">
+    <div class="mt-12 border-t border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <.heading level={2} class="text-2xl text-center mb-8">
           Für Entwickler
@@ -719,7 +726,7 @@
               <div class="flex items-start">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-8 w-8 text-blue-600 mr-4 flex-shrink-0"
+                  class="h-8 w-8 text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -735,17 +742,17 @@
                   <.heading level={3} class="text-lg mb-2">
                     WordPress Plugin
                   </.heading>
-                  <.text variant="small" class="text-gray-700 mb-4">
+                  <.text variant="small" class="text-gray-700 dark:text-gray-300 mb-4">
                     Integrieren Sie die Schulferien von {@school.name} direkt in Ihre WordPress-Website mit unserem kostenlosen Plugin.
                   </.text>
 
-                  <div class="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 font-mono text-xs break-all">
+                  <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 mb-4 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
                     [schulferien location_type="school" location="{@school.slug}" display="table"]
                   </div>
 
                   <a
                     href="https://github.com/mehr-schulferien-de/mehr-schulferien-wordpress-plugin"
-                    class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                    class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -769,7 +776,7 @@
               <div class="flex items-start">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-8 w-8 text-green-600 mr-4 flex-shrink-0"
+                  class="h-8 w-8 text-green-600 dark:text-green-400 mr-4 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -785,15 +792,15 @@
                   <.heading level={3} class="text-lg mb-2">
                     API Zugriff
                   </.heading>
-                  <.text variant="small" class="text-gray-700 mb-4">
+                  <.text variant="small" class="text-gray-700 dark:text-gray-300 mb-4">
                     Nutzen Sie unsere REST API, um Feriendaten in Ihre eigenen Anwendungen zu integrieren.
                   </.text>
 
                   <div class="space-y-2">
-                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
+                    <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
                       GET /api/v2.1/schools/{@school.slug}/icalendar
                     </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
+                    <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
                       GET /api/v2.1/schools/{@school.slug}/periods
                     </div>
                   </div>
@@ -810,7 +817,7 @@
         <div class="mt-8">
           <MehrSchulferienWeb.Components.GitHubPromotionComponent.github_promotion
             locale="de"
-            wrapper_class="bg-gray-50 rounded-lg px-6 py-8 sm:px-8"
+            wrapper_class="bg-gray-50 dark:bg-gray-800 rounded-lg px-6 py-8 sm:px-8"
           />
         </div>
       </div>

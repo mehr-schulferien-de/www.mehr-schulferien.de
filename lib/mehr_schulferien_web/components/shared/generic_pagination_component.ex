@@ -61,7 +61,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
             <%= if prev_year do %>
               <.link
                 navigate={build_route_path(@conn, @location_type, @country, @location, prev_year)}
-                class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-l-lg flex items-center"
+                class="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-blue-700 dark:hover:text-blue-400 rounded-l-lg flex items-center"
               >
                 <svg
                   class="h-5 w-5"
@@ -80,7 +80,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                 </svg>
               </.link>
             <% else %>
-              <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-l-lg cursor-not-allowed flex items-center">
+              <span class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-600 rounded-l-lg cursor-not-allowed flex items-center">
                 <svg
                   class="h-5 w-5"
                   fill="none"
@@ -108,7 +108,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                 <% else %>
                   <.link
                     navigate={build_route_path(@conn, @location_type, @country, @location, year)}
-                    class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 flex-1 text-center"
+                    class="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-blue-700 dark:hover:text-blue-400 flex-1 text-center"
                   >
                     {year}
                   </.link>
@@ -119,7 +119,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
             <%= if next_year do %>
               <.link
                 navigate={build_route_path(@conn, @location_type, @country, @location, next_year)}
-                class="px-4 py-2 text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 rounded-r-lg flex items-center"
+                class="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-blue-700 dark:hover:text-blue-400 rounded-r-lg flex items-center"
               >
                 <svg
                   class="h-5 w-5"
@@ -138,7 +138,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                 </svg>
               </.link>
             <% else %>
-              <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 border border-gray-200 rounded-r-lg cursor-not-allowed flex items-center">
+              <span class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-600 rounded-r-lg cursor-not-allowed flex items-center">
                 <svg
                   class="h-5 w-5"
                   fill="none"

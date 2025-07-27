@@ -5,7 +5,7 @@
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Home - Always visible -->
         <li class="inline-flex items-center">
-          <%= link to: "/", class: "text-gray-700 hover:text-blue-600" do %>
+          <%= link to: "/", class: "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" do %>
             <svg
               class="w-4 h-4"
               fill="currentColor"
@@ -21,7 +21,7 @@
         <li class="hidden md:inline-flex">
           <div class="flex items-center">
             <svg
-              class="w-6 h-6 text-gray-400"
+              class="w-6 h-6 text-gray-400 dark:text-gray-500"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@
               >
               </path>
             </svg>
-            <%= link to: ~p"/ferien/#{@country.slug}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
+            <%= link to: ~p"/ferien/#{@country.slug}", class: "ml-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2" do %>
               {@country.name}
             <% end %>
           </div>
@@ -42,7 +42,7 @@
         <li class="hidden md:inline-flex">
           <div class="flex items-center">
             <svg
-              class="w-6 h-6 text-gray-400"
+              class="w-6 h-6 text-gray-400 dark:text-gray-500"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -54,7 +54,7 @@
               >
               </path>
             </svg>
-            <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
+            <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}", class: "ml-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2" do %>
               {@federal_state.name}
             <% end %>
           </div>
@@ -63,7 +63,7 @@
         <li class="hidden md:inline-flex">
           <div class="flex items-center">
             <svg
-              class="w-6 h-6 text-gray-400"
+              class="w-6 h-6 text-gray-400 dark:text-gray-500"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,7 @@
               >
               </path>
             </svg>
-            <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@current_year}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2" do %>
+            <%= link to: ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{@current_year}", class: "ml-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2" do %>
               {@city.name}
             <% end %>
           </div>
@@ -84,7 +84,7 @@
         <li>
           <div class="flex items-center">
             <svg
-              class="w-6 h-6 text-gray-400"
+              class="w-6 h-6 text-gray-400 dark:text-gray-500"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +96,7 @@
               >
               </path>
             </svg>
-            <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", class: "ml-1 text-gray-700 hover:text-blue-600 md:ml-2 truncate max-w-[120px] md:max-w-none", title: @school.name do %>
+            <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", class: "ml-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2 truncate max-w-[120px] md:max-w-none", title: @school.name do %>
               {@school.name}
             <% end %>
           </div>
@@ -105,7 +105,7 @@
         <li aria-current="page">
           <div class="flex items-center">
             <svg
-              class="w-6 h-6 text-gray-400"
+              class="w-6 h-6 text-gray-400 dark:text-gray-500"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -117,7 +117,7 @@
               >
               </path>
             </svg>
-            <span class="ml-1 text-gray-500 md:ml-2">Vordrucke</span>
+            <span class="ml-1 text-gray-500 dark:text-gray-400 md:ml-2">Vordrucke</span>
           </div>
         </li>
       </ol>
@@ -129,7 +129,7 @@
       </.heading>
     </div>
     <!-- Disclaimer about unofficial service -->
-    <div class="mb-6 bg-amber-50 border-l-4 border-amber-400 p-4">
+    <div class="mb-6 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 dark:border-amber-600 p-4">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
@@ -141,7 +141,7 @@
           </svg>
         </div>
         <div class="ml-3">
-          <.text variant="small" class="text-amber-700">
+          <.text variant="small" class="text-amber-700 dark:text-amber-300">
             <strong>Hinweis:</strong>
             Dies ist ein kostenloser Service von mehr-schulferien.de zur Erstellung von Vordrucken.
             Wir sind nicht die offizielle Schulwebseite. Die erstellten PDFs sind vorausgefüllte Formulare, die Sie
@@ -161,7 +161,7 @@
                 Schulinformationen
               </.heading>
               <%= link to: "/wiki/schools/#{@school.slug}", 
-                       class: "absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors",
+                       class: "absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors",
                        title: "Schulinformationen bearbeiten" do %>
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -178,7 +178,7 @@
                 <div class="flex items-start">
                   <div class="flex-shrink-0">
                     <svg
-                      class="h-6 w-6 text-gray-400"
+                      class="h-6 w-6 text-gray-400 dark:text-gray-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -198,7 +198,7 @@
                     </svg>
                   </div>
                   <div class="ml-3">
-                    <.text variant="small" class="font-medium text-gray-900">
+                    <.text variant="small" class="font-medium text-gray-900 dark:text-gray-100">
                       {@school.name}
                     </.text>
                     <.text variant="muted">
@@ -210,7 +210,7 @@
                 <%= if @school.address.phone_number do %>
                   <div class="flex items-center">
                     <svg
-                      class="h-5 w-5 text-gray-400"
+                      class="h-5 w-5 text-gray-400 dark:text-gray-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -224,7 +224,7 @@
                     </svg>
                     <a
                       href={"tel:" <> String.replace(@school.address.phone_number, " ", "")}
-                      class="ml-3 text-sm text-gray-500 hover:text-blue-600"
+                      class="ml-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                     >
                       {@school.address.phone_number}
                     </a>
@@ -233,7 +233,7 @@
                 <%= if @school.address.email_address do %>
                   <div class="flex items-center">
                     <svg
-                      class="h-5 w-5 text-gray-400"
+                      class="h-5 w-5 text-gray-400 dark:text-gray-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -247,7 +247,7 @@
                     </svg>
                     <a
                       href={"mailto:" <> @school.address.email_address}
-                      class="ml-3 text-sm text-gray-500 hover:text-blue-600"
+                      class="ml-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                     >
                       {@school.address.email_address}
                     </a>
@@ -256,7 +256,7 @@
                 <%= if @school.address.homepage_url do %>
                   <div class="flex items-center">
                     <svg
-                      class="h-5 w-5 text-gray-400"
+                      class="h-5 w-5 text-gray-400 dark:text-gray-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -272,7 +272,7 @@
                       href={@school.address.homepage_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="ml-3 text-sm text-gray-500 hover:text-blue-600"
+                      class="ml-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                     >
                       {URI.parse(@school.address.homepage_url).host ||
                         @school.address.homepage_url}
@@ -292,9 +292,12 @@
               <%= if @vacation_periods != [] do %>
                 <div class="space-y-3 mb-4">
                   <%= for period <- @vacation_periods do %>
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
                       <div>
-                        <.text variant="small" class="font-medium text-gray-900">
+                        <.text
+                          variant="small"
+                          class="font-medium text-gray-900 dark:text-gray-100"
+                        >
                           {period.holiday_or_vacation_type.colloquial ||
                             period.holiday_or_vacation_type.name}
                         </.text>
@@ -305,7 +308,7 @@
                       <div class="text-right">
                         <% days_until = Date.diff(period.starts_on, @today) %>
                         <%= if days_until > 0 do %>
-                          <span class="text-sm text-gray-600">
+                          <span class="text-sm text-gray-600 dark:text-gray-400">
                             in {days_until} {if days_until == 1, do: "Tag", else: "Tagen"}
                           </span>
                         <% else %>
@@ -327,7 +330,7 @@
               <% end %>
 
               <%= link to: "/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", 
-                       class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" do %>
+                       class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 dark:text-teal-100 bg-teal-100 dark:bg-teal-800 hover:bg-teal-200 dark:hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" do %>
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
@@ -348,7 +351,7 @@
           <:content>
             <.heading level={2} class="text-xl mb-4">Verfügbare Vordrucke</.heading>
             <div class="space-y-4">
-              <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                   <div class="flex items-start">
                     <div class="flex-shrink-0">
@@ -393,7 +396,7 @@
                   <% end %>
                 </div>
               </div>
-              <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                   <div class="flex items-start">
                     <div class="flex-shrink-0">
@@ -438,7 +441,7 @@
                   <% end %>
                 </div>
               </div>
-              <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                   <div class="flex items-start">
                     <div class="flex-shrink-0">
@@ -495,9 +498,12 @@
               <%= if @vacation_periods != [] do %>
                 <div class="space-y-3 mb-4">
                   <%= for period <- @vacation_periods do %>
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
                       <div>
-                        <.text variant="small" class="font-medium text-gray-900">
+                        <.text
+                          variant="small"
+                          class="font-medium text-gray-900 dark:text-gray-100"
+                        >
                           {period.holiday_or_vacation_type.colloquial ||
                             period.holiday_or_vacation_type.name}
                         </.text>
@@ -508,7 +514,7 @@
                       <div class="text-right">
                         <% days_until = Date.diff(period.starts_on, @today) %>
                         <%= if days_until > 0 do %>
-                          <span class="text-sm text-gray-600">
+                          <span class="text-sm text-gray-600 dark:text-gray-400">
                             in {days_until} {if days_until == 1, do: "Tag", else: "Tagen"}
                           </span>
                         <% else %>
@@ -530,7 +536,7 @@
               <% end %>
 
               <%= link to: "/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", 
-                       class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" do %>
+                       class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-teal-700 dark:text-teal-100 bg-teal-100 dark:bg-teal-800 hover:bg-teal-200 dark:hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" do %>
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"

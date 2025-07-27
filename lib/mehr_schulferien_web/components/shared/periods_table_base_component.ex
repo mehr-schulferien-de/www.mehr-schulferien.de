@@ -84,12 +84,12 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
 
     ~H"""
     <tr
-      class={"hover:bg-gray-50 cursor-pointer #{if @is_current, do: "bg-yellow-100"} #{if @is_past, do: "text-gray-400"} #{if @is_next_year, do: "bg-gray-50"}"}
+      class={"hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer #{if @is_current, do: "bg-yellow-100 dark:bg-yellow-900"} #{if @is_past, do: "text-gray-400 dark:text-gray-500"} #{if @is_next_year, do: "bg-gray-50 dark:bg-gray-900"}"}
       onclick={"window.location.href='#{@row_href}'"}
     >
       <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium align-top">
         <%= if @period_link_builder do %>
-          <a href={@period_link_builder.(@period)} class="text-blue-600 hover:text-blue-800 underline">
+          <a href={@period_link_builder.(@period)} class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
             {render_slot(@period_name) || render_period_name(assigns)}
           </a>
         <% else %>
@@ -97,7 +97,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
         <% end %>
 
         <%= if @show_memo && @period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && @period.memo && @period.memo != "" do %>
-          <div class="text-xs text-gray-600 mt-1">
+          <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
             {clean_beweglicher_ferientag_memo(@period.memo)}
           </div>
         <% end %>
@@ -134,7 +134,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
 
     ~H"""
     <%= if @has_differences do %>
-      <div class="text-xs text-gray-500 mt-2">
+      <div class="text-xs text-gray-500 dark:text-gray-400 mt-2">
         * Die effektive Dauer in Tagen enthält an die Ferien angrenzende Wochenenden und Feiertage.
       </div>
     <% end %>

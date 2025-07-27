@@ -1,28 +1,28 @@
 <div class="overflow-x-auto">
-  <table class="min-w-full divide-y divide-gray-200">
+  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
     <% all_periods = List.flatten(Map.values(@periods)) %>
     <% unique_periods = MehrSchulferien.Periods.list_periods_by_vacation_names(all_periods) %>
-    <thead class="bg-gray-50">
+    <thead class="bg-gray-50 dark:bg-gray-800">
       <tr>
         <% num_unique_periods = length(unique_periods) %>
         <% colspan =
           Enum.find_index(unique_periods, &(&1.starts_on.month > 7)) || num_unique_periods %>
         <th
           scope="col"
-          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
         >
         </th>
         <th
           scope="col"
           colspan={colspan}
-          class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+          class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
         >
           Schuljahr {@current_year - 1}/{@current_year}
         </th>
         <th
           scope="col"
           colspan={num_unique_periods - colspan}
-          class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+          class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
         >
           Schuljahr {@current_year}/{@current_year + 1}
         </th>
@@ -30,24 +30,24 @@
       <tr>
         <th
           scope="col"
-          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
         >
         </th>
         <%= for period <- unique_periods do %>
           <th
             scope="col"
-            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
           >
             {MehrSchulferienWeb.PeriodView.vacation_type_name(period)}
           </th>
         <% end %>
       </tr>
     </thead>
-    <tbody class="bg-white divide-y divide-gray-200">
+    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
       <%= for federal_state <- @federal_states do %>
-        <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-            <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{federal_state.slug}", class: "hover:text-blue-600 transition-colors duration-200" do %>
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+            <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{federal_state.slug}", class: "hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" do %>
               {ViewHelpers.abbreviate(federal_state.name, 12)}
             <% end %>
           </td>
@@ -59,10 +59,10 @@
                 &(&1.holiday_or_vacation_type.name == header_period.holiday_or_vacation_type.name)
               ) %>
             <%= if period = Enum.at(periods, 0) do %>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                 <span>
                   <% month = @months[period.starts_on.month] %>
-                  <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{federal_state.slug}" <> "##{String.downcase(month)}#{period.starts_on.year}", class: "hover:text-blue-600 transition-colors duration-200" do %>
+                  <%= link to: ~p"/ferien/#{@country.slug}/bundesland/#{federal_state.slug}" <> "##{String.downcase(month)}#{period.starts_on.year}", class: "hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" do %>
                     <%= for period <- periods do %>
                       {ViewHelpers.format_date_range(period.starts_on, period.ends_on, :short)}<br />
                     <% end %>
@@ -70,7 +70,8 @@
                 </span>
               </td>
             <% else %>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              </td>
             <% end %>
           <% end %>
         </tr>

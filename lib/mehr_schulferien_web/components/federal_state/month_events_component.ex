@@ -40,14 +40,14 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
 
   def month_events(assigns) do
     ~H"""
-    <div class="mt-3 text-xs border-t border-gray-200 pt-2">
+    <div class="mt-3 text-xs border-t border-gray-200 dark:border-gray-700 pt-2">
       <ul class="space-y-1">
         <%= for period <- @month_public_periods do %>
           <li class="flex justify-between items-start">
-            <span class="font-medium text-blue-700 flex-1 pr-2">
+            <span class="font-medium text-blue-700 dark:text-blue-400 flex-1 pr-2">
               <.period_name period={period} />
             </span>
-            <span class="text-gray-600 whitespace-nowrap">
+            <span class="text-gray-600 dark:text-gray-400 whitespace-nowrap">
               {format_period_date(period)}
             </span>
           </li>
@@ -55,7 +55,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
 
         <%= for period <- @month_periods do %>
           <li class="flex justify-between items-start">
-            <span class="font-medium text-green-700 flex-1 pr-2">
+            <span class="font-medium text-green-700 dark:text-green-400 flex-1 pr-2">
               <.period_name period={period} />
               <% days = Date.diff(period.ends_on, period.starts_on) + 1 %>
               <% effective_duration = ViewHelpers.calculate_effective_duration(period, @all_periods) %>
@@ -63,17 +63,17 @@ defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
               <span class="font-normal ml-1">
                 ({days}
                 <%= if difference != 0 do %>
-                  <span class="text-gray-500">+ {difference}</span>
+                  <span class="text-gray-500 dark:text-gray-500">+ {difference}</span>
                 <% end %>
                 {if days == 1, do: "Tag", else: "Tage"})
               </span>
               <%= if period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && period.memo && period.memo != "" do %>
-                <span class="text-xs text-gray-600 block mt-0.5">
+                <span class="text-xs text-gray-600 dark:text-gray-400 block mt-0.5">
                   {period.memo}
                 </span>
               <% end %>
             </span>
-            <span class="text-gray-600 whitespace-nowrap">
+            <span class="text-gray-600 dark:text-gray-400 whitespace-nowrap">
               {format_period_date(period)}
             </span>
           </li>

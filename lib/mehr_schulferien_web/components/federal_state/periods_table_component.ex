@@ -19,7 +19,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
     ~H"""
     <div class="overflow-x-auto" itemscope itemtype="https://schema.org/Table">
       <meta itemprop="about" content={table_about_content(assigns)} />
-      <table class="min-w-full bg-white border border-gray-200">
+      <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
         <%= if assigns[:federal_state] && assigns[:year] do %>
           <caption class="sr-only">
             Ferientermine {assigns.federal_state.name} {assigns.year} - Übersicht aller Schulferien mit Datum und Dauer
@@ -27,18 +27,18 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
         <% end %>
         <thead>
           <tr>
-            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
               Name
             </th>
-            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
               Termin
             </th>
-            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+            <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
               Tage*
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
           <%= for period <- @periods do %>
             <.period_row
               period={period}

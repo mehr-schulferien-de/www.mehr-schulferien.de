@@ -35,11 +35,11 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
       <div class="overflow-x-auto">
         <%= for {school_year, periods} <- @grouped_periods do %>
           <div class="mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
               Schuljahr {school_year}/{school_year + 1}
             </h3>
 
-            <table class="min-w-full bg-white border border-gray-200 table-fixed">
+            <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 table-fixed">
               <colgroup>
                 <col class="w-1/2" />
                 <col class="w-1/3" />
@@ -47,18 +47,18 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
               </colgroup>
               <thead>
                 <tr>
-                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Name
                   </th>
-                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Termin
                   </th>
-                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Tage*
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200">
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <%= for period <- Enum.sort_by(periods, & &1.starts_on, Date) do %>
                   <.period_row
                     period={period}

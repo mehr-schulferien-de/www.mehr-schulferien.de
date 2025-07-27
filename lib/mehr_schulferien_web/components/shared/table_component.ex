@@ -12,12 +12,12 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
   slot :inner_block, required: true
 
   def table(assigns) do
-    base_classes = "min-w-full divide-y divide-gray-200"
+    base_classes = "min-w-full divide-y divide-gray-200 dark:divide-gray-700"
 
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")
 
     ~H"""
-    <div class="overflow-x-auto rounded-lg border border-gray-200">
+    <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
       <table class={@computed_class}>
         {render_slot(@inner_block)}
       </table>
@@ -30,7 +30,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
 
   def thead(assigns) do
     ~H"""
-    <thead class={"bg-gray-50 #{@class}"}>
+    <thead class={"bg-gray-50 dark:bg-gray-800 #{@class}"}>
       {render_slot(@inner_block)}
     </thead>
     """
@@ -41,7 +41,7 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
   slot :inner_block, required: true
 
   def tbody(assigns) do
-    base_classes = "bg-white divide-y divide-gray-200"
+    base_classes = "bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"
 
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")
 
@@ -63,8 +63,8 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
 
     variant_classes =
       case assigns.variant do
-        "default" -> "text-gray-500"
-        "header" -> "text-gray-700"
+        "default" -> "text-gray-500 dark:text-gray-400"
+        "header" -> "text-gray-700 dark:text-gray-300"
       end
 
     align_classes =
@@ -106,8 +106,8 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
 
     variant_classes =
       case assigns.variant do
-        "default" -> "text-gray-900"
-        "strong" -> "text-gray-900 font-medium"
+        "default" -> "text-gray-900 dark:text-gray-100"
+        "strong" -> "text-gray-900 dark:text-gray-100 font-medium"
       end
 
     align_classes =
@@ -146,11 +146,13 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
   def tr(assigns) do
     base_classes = ""
 
-    hover_classes = if assigns.hover, do: "hover:bg-gray-50", else: ""
+    hover_classes = if assigns.hover, do: "hover:bg-gray-50 dark:hover:bg-gray-800", else: ""
 
     striped_classes =
       if assigns.striped_index do
-        if rem(assigns.striped_index, 2) == 0, do: "bg-gray-50", else: "bg-white"
+        if rem(assigns.striped_index, 2) == 0,
+          do: "bg-gray-50 dark:bg-gray-800",
+          else: "bg-white dark:bg-gray-900"
       else
         ""
       end

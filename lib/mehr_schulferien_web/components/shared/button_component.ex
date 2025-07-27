@@ -33,19 +33,19 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
     variant_classes =
       case assigns.variant do
         "primary" ->
-          "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+          "text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
 
         "secondary" ->
-          "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:ring-blue-500"
+          "text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-blue-500 dark:focus:ring-blue-400"
 
         "teal" ->
-          "text-white bg-teal-600 hover:bg-teal-700 focus:ring-teal-500"
+          "text-white bg-teal-600 dark:bg-teal-500 hover:bg-teal-700 dark:hover:bg-teal-600 focus:ring-teal-500 dark:focus:ring-teal-400"
 
         "purple" ->
-          "text-white bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
+          "text-white bg-purple-600 dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-600 focus:ring-purple-500 dark:focus:ring-purple-400"
 
         "danger" ->
-          "text-white bg-red-600 hover:bg-red-700 focus:ring-red-500"
+          "text-white bg-red-600 dark:bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 focus:ring-red-500 dark:focus:ring-red-400"
       end
 
     assigns =
@@ -78,7 +78,7 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
     <a
       href={@href}
       target={@target}
-      class={"text-blue-600 hover:text-blue-800 hover:underline cursor-pointer #{@class}"}
+      class={"text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline cursor-pointer #{@class}"}
     >
       {render_slot(@inner_block)}
     </a>

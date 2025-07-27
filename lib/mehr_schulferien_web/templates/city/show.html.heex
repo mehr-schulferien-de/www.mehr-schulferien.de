@@ -3,10 +3,11 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 mt-4 sm:mt-6">
       <.heading level={1} class="text-left">
         <span class="block">Schulferien {@city.name}</span>
-        <span class="block sm:inline sm:ml-1 text-lg sm:text-2xl font-normal text-gray-600">
+        <span class="block sm:inline sm:ml-1 text-lg sm:text-2xl font-normal text-gray-600 dark:text-gray-400">
           {link(@federal_state.name,
             to: ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}",
-            class: "text-blue-600 hover:text-blue-800 cursor-pointer"
+            class:
+              "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer"
           )}
         </span>
       </.heading>
@@ -50,14 +51,14 @@
             <% end %>
             <!-- iCal Export Box -->
             <%= if @has_data do %>
-              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+              <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-4">
                 <div>
                   <.heading
                     level={3}
-                    class="text-sm font-medium text-gray-900 mb-1 flex items-center"
+                    class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1 flex items-center"
                   >
                     <svg
-                      class="w-4 h-4 mr-2 text-gray-600"
+                      class="w-4 h-4 mr-2 text-gray-600 dark:text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -77,12 +78,12 @@
                   <div class="grid grid-cols-2 gap-2">
                     <% api_version = "v2.1" %>
                     <%= link to: "/api/#{api_version}/locations/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year}",
-                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@city.slug}-#{@current_year}.ics" do %>
                       📅 {@current_year}
                     <% end %>
                     <%= link to: "/api/#{api_version}/locations/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year + 1}",
-                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 rounded-md transition-colors",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@city.slug}-#{@current_year + 1}.ics" do %>
                       📅 {@current_year + 1}
                     <% end %>
@@ -98,7 +99,7 @@
         <.card padding="p-0" class="overflow-hidden">
           <:content>
             <!-- Header -->
-            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+            <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
               <.heading level={2} class="text-lg m-0">Stadtinformationen</.heading>
             </div>
 
@@ -109,7 +110,7 @@
                 <div class="flex items-start">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
+                    class="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 mr-3 flex-shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -128,8 +129,8 @@
                     />
                   </svg>
                   <div class="text-sm flex-1">
-                    <div class="font-medium text-gray-900">{@city.name}</div>
-                    <div class="text-gray-600">
+                    <div class="font-medium text-gray-900 dark:text-gray-100">{@city.name}</div>
+                    <div class="text-gray-600 dark:text-gray-400">
                       <%= if Enum.any?(@city.zip_codes) do %>
                         {hd(@city.zip_codes).value} {@city.name}<br />
                       <% end %>
@@ -139,7 +140,7 @@
                       "#{@city.name}, #{@federal_state.name}, #{@country.name}" %>
                     <div class="flex flex-wrap gap-2 mt-1">
                       <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.google_maps_url(map_query),
-                          class: "inline-flex items-center text-xs text-blue-600 hover:text-blue-800",
+                          class: "inline-flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300",
                           target: "_blank",
                           rel: "noopener noreferrer" do %>
                         <svg
@@ -165,7 +166,7 @@
                       <% end %>
                       <%= if @is_apple_device do %>
                         <%= link to: MehrSchulferienWeb.Helpers.UrlHelpers.apple_maps_url(map_query),
-                            class: "inline-flex items-center text-xs text-blue-600 hover:text-blue-800",
+                            class: "inline-flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300",
                             target: "_blank",
                             rel: "noopener noreferrer" do %>
                           <svg
@@ -196,32 +197,32 @@
               </div>
               <!-- Key Facts (if any schools available) -->
               <%= if length(@schools) > 0 do %>
-                <div class="pt-3 border-t border-gray-100">
+                <div class="pt-3 border-t border-gray-100 dark:border-gray-700">
                   <!-- Mobile: Just show count -->
-                  <div class="text-sm text-gray-600 lg:hidden">
-                    <a href="#faq" class="hover:text-blue-600">
-                      <span class="text-gray-500">Schulen:</span>
+                  <div class="text-sm text-gray-600 dark:text-gray-400 lg:hidden">
+                    <a href="#faq" class="hover:text-blue-600 dark:hover:text-blue-400">
+                      <span class="text-gray-500 dark:text-gray-400">Schulen:</span>
                       <span class="font-medium">{length(@schools)}</span>
                     </a>
                   </div>
                   <!-- Desktop: Show school list -->
                   <div class="hidden lg:block">
-                    <div class="text-sm text-gray-600 mb-2">
-                      <a href="#faq" class="hover:text-blue-600">
-                        <span class="text-gray-500">Schulen:</span>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      <a href="#faq" class="hover:text-blue-600 dark:hover:text-blue-400">
+                        <span class="text-gray-500 dark:text-gray-400">Schulen:</span>
                         <span class="font-medium">{length(@schools)}</span>
                       </a>
                     </div>
                     <!-- School list sorted by name -->
                     <div
-                      class="max-h-64 overflow-y-auto border border-gray-200 rounded-md bg-gray-50 p-2"
+                      class="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 p-2"
                       style="scrollbar-width: thin; scrollbar-color: #9ca3af #f3f4f6;"
                     >
                       <ul class="space-y-1">
                         <%= for school <- Enum.sort_by(@schools, & &1.name) do %>
                           <li class="text-xs py-0.5">
                             <%= link to: ~p"/ferien/#{@country.slug}/schule/#{school.slug}",
-                                class: "text-blue-600 hover:text-blue-800 hover:underline block" do %>
+                                class: "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline block" do %>
                               {school.name}
                             <% end %>
                           </li>
@@ -230,7 +231,7 @@
                     </div>
                     <!-- Scroll hint -->
                     <%= if length(@schools) > 12 do %>
-                      <div class="text-xs text-gray-500 mt-1 text-center">
+                      <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
                         ↓ Scrollen für weitere Schulen
                       </div>
                     <% end %>
@@ -251,7 +252,7 @@
 
         <.calendar_legend />
 
-        <.heading level={3} class="text-lg text-gray-700 mt-4 mb-3">
+        <.heading level={3} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-3">
           {@current_year}
         </.heading>
 
@@ -362,7 +363,7 @@
       country={@country}
     />
     <!-- Developer Section -->
-    <div class="mt-12 border-t border-gray-200">
+    <div class="mt-12 border-t border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <.heading level={2} class="text-2xl text-center mb-8">
           Für Entwickler
@@ -375,7 +376,7 @@
               <div class="flex items-start">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-8 w-8 text-blue-600 mr-4 flex-shrink-0"
+                  class="h-8 w-8 text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -391,17 +392,17 @@
                   <.heading level={3} class="text-lg mb-2">
                     WordPress Plugin
                   </.heading>
-                  <.text variant="small" class="text-gray-700 mb-4">
+                  <.text variant="small" class="text-gray-700 dark:text-gray-300 mb-4">
                     Integrieren Sie die Schulferien von {@city.name} direkt in Ihre WordPress-Website mit unserem kostenlosen Plugin.
                   </.text>
 
-                  <div class="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 font-mono text-xs break-all">
+                  <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 mb-4 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
                     [schulferien location_type="city" location="{@city.slug}" display="table"]
                   </div>
 
                   <a
                     href="https://github.com/mehr-schulferien-de/mehr-schulferien-wordpress-plugin"
-                    class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                    class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -425,7 +426,7 @@
               <div class="flex items-start">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-8 w-8 text-green-600 mr-4 flex-shrink-0"
+                  class="h-8 w-8 text-green-600 dark:text-green-400 mr-4 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -441,15 +442,15 @@
                   <.heading level={3} class="text-lg mb-2">
                     API Zugriff
                   </.heading>
-                  <.text variant="small" class="text-gray-700 mb-4">
+                  <.text variant="small" class="text-gray-700 dark:text-gray-300 mb-4">
                     Nutzen Sie unsere REST API, um Feriendaten in Ihre eigenen Anwendungen zu integrieren.
                   </.text>
 
                   <div class="space-y-2">
-                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
+                    <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
                       GET /api/v2.1/locations/{@city.slug}/icalendar
                     </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3 font-mono text-xs break-all">
+                    <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
                       GET /api/v2.1/locations/{@city.slug}/periods
                     </div>
                   </div>
@@ -466,7 +467,7 @@
         <div class="mt-8">
           <MehrSchulferienWeb.Components.GitHubPromotionComponent.github_promotion
             locale="de"
-            wrapper_class="bg-gray-50 rounded-lg px-6 py-8 sm:px-8"
+            wrapper_class="bg-gray-50 dark:bg-gray-800 rounded-lg px-6 py-8 sm:px-8"
           />
         </div>
       </div>

@@ -1070,7 +1070,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                   <%= if length(@cities_with_schools) == 1 do %>
                     <% {city, _schools} = hd(@cities_with_schools) %> (<a
                       href={~p"/ferien/d/stadt/#{city.slug}"}
-                      class="text-blue-600 hover:text-blue-800 underline"
+                      class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
                     ><%= city.name %></a>)
                   <% end %>
                 <% else %>
@@ -1086,7 +1086,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                   <%= if length(@cities_with_schools) == 1 do %>
                     <% {city, _schools} = hd(@cities_with_schools) %> (<a
                       href={~p"/ferien/d/stadt/#{city.slug}"}
-                      class="text-blue-600 hover:text-blue-800 underline"
+                      class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
                     ><%= city.name %></a>)
                   <% end %>
                 <% else %>
@@ -1110,16 +1110,18 @@ defmodule MehrSchulferienWeb.HomeLive do
           <%= if length(@cities_with_schools) > 0 do %>
             <!-- Summary Statistics -->
             <%= if length(@cities_with_schools) > 1 do %>
-              <div class="mb-4 sm:mb-6 bg-gray-50 rounded-lg p-3 sm:p-4">
+              <div class="mb-4 sm:mb-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
                   <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">Städte</.text>
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                      Städte
+                    </.text>
                     <.text variant="lead" class="font-bold text-lg sm:text-2xl">
                       {format_number(length(@cities_with_schools))}
                     </.text>
                   </div>
                   <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Schulen gesamt
                     </.text>
                     <.text variant="lead" class="font-bold text-lg sm:text-2xl">
@@ -1131,7 +1133,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                     </.text>
                   </div>
                   <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Ø Schulen pro Stadt
                     </.text>
                     <.text variant="lead" class="font-bold text-lg sm:text-2xl">
@@ -1146,7 +1148,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                     </.text>
                   </div>
                   <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600">
+                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Größte Stadt
                     </.text>
                     <%= case Enum.max_by(@cities_with_schools, fn {_city, schools} -> length(schools) end, fn -> nil end) do %>
@@ -1212,11 +1214,11 @@ defmodule MehrSchulferienWeb.HomeLive do
               <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                 <%= for {city, schools} <- @cities_with_schools do %>
                   <div
-                    class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200"
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200"
                     id={"city-card-#{city.id}"}
                   >
                     <!-- City Header -->
-                    <div class="px-3 sm:px-5 py-2.5 sm:py-4 border-b border-gray-200">
+                    <div class="px-3 sm:px-5 py-2.5 sm:py-4 border-b border-gray-200 dark:border-gray-700">
                       <div class="flex items-baseline justify-between gap-2">
                         <%= if Map.has_key?(city, :slug) do %>
                           <a
@@ -1269,7 +1271,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             >
                               <div class="flex items-start justify-between gap-1">
                                 <div class="flex-1 min-w-0 pr-1">
-                                  <p class="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                  <p class="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                                     {school.name}
                                   </p>
                                   <%= if school.address && school.address.street do %>
@@ -1287,7 +1289,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                                 </div>
                                 <div class="flex-shrink-0">
                                   <svg
-                                    class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-600 transition-colors mt-0.5"
+                                    class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mt-0.5"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -1307,7 +1309,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                       </ul>
                       <!-- Expand/Collapse Button -->
                       <%= if length(schools) > 10 do %>
-                        <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100">
+                        <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-gray-700">
                           <button
                             phx-click="toggle_city"
                             phx-value-city-id={city.id}
@@ -1349,7 +1351,7 @@ defmodule MehrSchulferienWeb.HomeLive do
       <% end %>
 
       <%= if @federal_state_overview do %>
-        <div class="mb-6 sm:mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
+        <div class="mb-6 sm:mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
             <.heading level={2} class="mb-2 sm:mb-0 text-lg sm:text-xl">
               <%= if length(@cities_with_schools) == 1 do %>
@@ -1359,7 +1361,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                 {@federal_state_overview.federal_state.name}
               <% end %>
             </.heading>
-            <div class="flex gap-4 text-sm text-gray-600">
+            <div class="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
               <%= if length(@cities_with_schools) == 1 do %>
                 <% {_city, schools} = hd(@cities_with_schools) %>
                 <span>
@@ -1396,7 +1398,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
             <a
               href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <.text variant="base" class="font-semibold mb-2">Nächste Schulferien</.text>
               <div class="space-y-1">
@@ -1405,7 +1407,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                     <div class="font-medium">
                       {vacation.holiday_or_vacation_type.colloquial}
                     </div>
-                    <div class="text-gray-600">
+                    <div class="text-gray-600 dark:text-gray-400">
                       {DateFormatter.format_date_full(vacation.starts_on)} - {DateFormatter.format_date_full(
                         vacation.ends_on
                       )}
@@ -1413,14 +1415,14 @@ defmodule MehrSchulferienWeb.HomeLive do
                   </div>
                 <% end %>
               </div>
-              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
+              <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                 Mehr anzeigen →
               </div>
             </a>
 
             <a
               href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <.text variant="base" class="font-semibold mb-2">Nächste Feiertage</.text>
               <div class="space-y-1">
@@ -1429,20 +1431,20 @@ defmodule MehrSchulferienWeb.HomeLive do
                     <div class="font-medium">
                       {holiday.holiday_or_vacation_type.colloquial}
                     </div>
-                    <div class="text-gray-600">
+                    <div class="text-gray-600 dark:text-gray-400">
                       {DateFormatter.format_date_full(holiday.starts_on)}
                     </div>
                   </div>
                 <% end %>
               </div>
-              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
+              <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                 Mehr anzeigen →
               </div>
             </a>
 
             <a
               href={"/brueckentage/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <.text variant="base" class="font-semibold mb-2">Nächste Brückentage</.text>
               <div class="space-y-1">
@@ -1454,18 +1456,18 @@ defmodule MehrSchulferienWeb.HomeLive do
                           do: "Tag",
                           else: "Tage"} Urlaub
                       </div>
-                      <div class="text-gray-600">
+                      <div class="text-gray-600 dark:text-gray-400">
                         → {bridge_info.total_free_days} Tage frei (×{bridge_info.gain_factor})
                       </div>
                     </div>
                   <% end %>
                 <% else %>
-                  <div class="text-sm text-gray-500">
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
                     Keine Brückentage in nächster Zeit
                   </div>
                 <% end %>
               </div>
-              <div class="mt-3 text-xs text-blue-600 hover:text-blue-800">
+              <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                 Mehr anzeigen →
               </div>
             </a>
@@ -1475,15 +1477,15 @@ defmodule MehrSchulferienWeb.HomeLive do
 
       <%= if !@show_all_schools do %>
         <%= if length(@schools) > 0 do %>
-          <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
+          <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <.heading level={2}>
                 Suchergebnisse ({length(@schools)} Schulen gefunden)
               </.heading>
             </div>
             <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
                   <tr>
                     <th
                       class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -1613,14 +1615,14 @@ defmodule MehrSchulferienWeb.HomeLive do
 
       <%= if @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" do %>
         <!-- Separator between school search and vacation timeline -->
-        <div class="mt-12 mb-8 border-t-2 border-gray-200"></div>
+        <div class="mt-12 mb-8 border-t-2 border-gray-200 dark:border-gray-700"></div>
         <!-- Vacation Timeline Section -->
         <div class="mt-8">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
             <.heading level={2} class="mb-3 sm:mb-0">Schulferien Deutschland</.heading>
             <a
               href="/briefe"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               Entschuldigungen, Beurlaubungen und Sportbefreiungen als PDF generieren
               <svg class="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -1675,7 +1677,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
                     <div class="mt-4">
                       <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-600">Ferientermine:</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Ferientermine:</span>
                         <div class="flex-1 grid grid-cols-2 gap-3">
                           <.button
                             href={"/ferien/d/bundesland/#{federal_state.slug}/#{current_year}"}
@@ -1738,8 +1740,13 @@ defmodule MehrSchulferienWeb.HomeLive do
                         )
 
                       # Calculate efficiency
-                      vacation_days = max(next_bridge_day.number_days - 1, 1)
-                      total_free_days = next_bridge_day.number_days
+                      vacation_days = next_bridge_day.number_days
+                      # Calculate the actual total consecutive free days
+                      total_free_days =
+                        MehrSchulferien.BridgeDayCalculations.calculate_total_consecutive_free_days(
+                          next_bridge_day,
+                          public_periods
+                        )
 
                       efficiency =
                         if vacation_days > 0,
@@ -1802,8 +1809,8 @@ defmodule MehrSchulferienWeb.HomeLive do
                         ) %>
 
                       <%= if best_super_bridge_day do %>
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                          <.heading level={6} class="text-gray-700 mb-2">
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                          <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
                             Bester Superbrückentag
                           </.heading>
                           <.text variant="small">
@@ -1830,7 +1837,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
                     <div class="mt-4">
                       <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-600">Brückentage:</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Brückentage:</span>
                         <div class="flex-1 grid grid-cols-2 gap-3">
                           <.button
                             href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}"}

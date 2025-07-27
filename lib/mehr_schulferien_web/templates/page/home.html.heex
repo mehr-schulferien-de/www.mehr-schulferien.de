@@ -3,7 +3,7 @@
     <.heading level={1} class="mb-3 sm:mb-0">Schulferien Deutschland</.heading>
     <a
       href="/briefe"
-      class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400"
     >
       Entschuldigungen, Beurlaubungen und Sportbefreiungen als PDF generieren
       <svg class="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -62,7 +62,7 @@
 
             <div class="mt-4">
               <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600">Ferientermine:</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">Ferientermine:</span>
                 <div class="flex-1 grid grid-cols-2 gap-3">
                   <.button
                     href={"/ferien/d/bundesland/#{federal_state.slug}/#{current_year}"}
@@ -98,8 +98,9 @@
         <% # Find next bridge day for the federal state
         reference_date = @custom_start_date || DateHelpers.today_berlin()
 
-        next_bridge_day =
-          MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
+        # Use find_best_bridge_day with a short time window to get the next bridge day with all calculations
+        next_bridge_day_data =
+          MehrSchulferien.BridgeDays.find_best_bridge_day(federal_state, reference_date, 3)
 
         # Set up variables for year links
         current_year =
@@ -110,12 +111,18 @@
           <:content>
             <.section_title title={federal_state.name} />
 
-            <%= if next_bridge_day do %>
-              <% # Get related periods to find the public holiday
+            <%= if next_bridge_day_data do %>
+              <% # Extract the bridge day and calculated values
+              next_bridge_day = next_bridge_day_data.bridge_day
+              vacation_days = next_bridge_day_data.vacation_days
+              total_free_days = next_bridge_day_data.total_free_days
+              efficiency = next_bridge_day_data.efficiency_percentage
+
+              # Get related periods for display
               country = Locations.get_location!(federal_state.parent_location_id)
               location_ids = [country.id, federal_state.id]
 
-              # Fetch public periods for this window to find the holiday that creates the bridge day
+              # Fetch public periods for timeline display
               window_start = Date.add(next_bridge_day.starts_on, -5)
               window_end = Date.add(next_bridge_day.starts_on, 5)
 
@@ -125,17 +132,6 @@
                   window_start,
                   window_end
                 )
-
-              # Calculate efficiency
-              # Bridge days have number_days which is the total span (vacation days + weekends/holidays)
-              # Vacation days is typically number_days - 1 (the actual vacation day needed)
-              vacation_days = max(next_bridge_day.number_days - 1, 1)
-              total_free_days = next_bridge_day.number_days
-
-              efficiency =
-                if vacation_days > 0,
-                  do: round((total_free_days - vacation_days) / vacation_days * 100),
-                  else: 0
 
               # Get timeline days for the bridge day
               timeline_start = Date.add(next_bridge_day.starts_on, -10)
@@ -163,7 +159,7 @@
                   {month_name, days_count, year, month}
                 end) %>
 
-              <.heading level={6} class="text-gray-700 mb-2">
+              <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
                 Nächster Brückentag
               </.heading>
               <.text variant="small" class="mb-3">
@@ -197,8 +193,8 @@
                 ) %>
 
               <%= if best_super_bridge_day do %>
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                  <.heading level={6} class="text-gray-700 mb-2">
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
                     Bester Superbrückentag
                   </.heading>
                   <.text variant="small">
@@ -208,7 +204,7 @@
                       best_super_bridge_day.bridge_day.ends_on
                     )}
                     <br />
-                    <span class="text-xs text-gray-500">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
                       {best_super_bridge_day.vacation_days} Urlaubstag{if best_super_bridge_day.vacation_days >
                                                                             1,
                                                                           do: "e",
@@ -225,7 +221,7 @@
 
             <div class="mt-4">
               <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600">Brückentage:</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">Brückentage:</span>
                 <div class="flex-1 grid grid-cols-2 gap-3">
                   <.button
                     href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}"}

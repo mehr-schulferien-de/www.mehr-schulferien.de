@@ -52,11 +52,11 @@ defmodule MehrSchulferienWeb.Shared.DesignTokens do
   # Text colors
   def text_colors do
     %{
-      primary: "text-blue-600",
-      primary_hover: "text-blue-800",
-      heading: "text-gray-900",
-      body: "text-gray-700",
-      muted: "text-gray-500",
+      primary: "text-blue-600 dark:text-blue-400",
+      primary_hover: "text-blue-800 dark:text-blue-300",
+      heading: "text-gray-900 dark:text-gray-100",
+      body: "text-gray-700 dark:text-gray-300",
+      muted: "text-gray-500 dark:text-gray-400",
       white: "text-white"
     }
   end
@@ -107,28 +107,32 @@ defmodule MehrSchulferienWeb.Shared.DesignTokens do
   def component_styles do
     %{
       card: %{
-        base: "bg-white rounded-lg shadow-sm",
-        enhanced: "bg-white rounded-lg shadow-sm border border-gray-200",
-        compact: "bg-white rounded-md shadow-sm p-4",
-        spacious: "bg-white rounded-lg shadow-sm p-6"
+        base: "bg-white dark:bg-gray-800 rounded-lg shadow-sm",
+        enhanced:
+          "bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700",
+        compact: "bg-white dark:bg-gray-800 rounded-md shadow-sm p-4",
+        spacious: "bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
       },
       button: %{
         base:
           "inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2",
-        primary: "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500",
+        primary:
+          "text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400",
         secondary:
-          "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 focus:ring-blue-500"
+          "text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-blue-500 dark:focus:ring-blue-400"
       },
       link: %{
-        primary: "text-blue-600 hover:text-blue-800 hover:underline transition-colors",
-        muted: "text-gray-500 hover:text-gray-700 hover:underline transition-colors"
+        primary:
+          "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors",
+        muted:
+          "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors"
       },
       badge: %{
         default: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-        primary: "bg-blue-100 text-blue-800",
-        success: "bg-green-100 text-green-800",
-        warning: "bg-yellow-100 text-yellow-800",
-        danger: "bg-red-100 text-red-800"
+        primary: "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300",
+        success: "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300",
+        warning: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
+        danger: "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300"
       }
     }
   end
@@ -136,15 +140,15 @@ defmodule MehrSchulferienWeb.Shared.DesignTokens do
   # Typography scale
   def typography do
     %{
-      h1: "text-3xl sm:text-4xl font-bold text-gray-900",
-      h2: "text-2xl sm:text-3xl font-bold text-gray-900",
-      h3: "text-xl sm:text-2xl font-semibold text-gray-900",
-      h4: "text-lg sm:text-xl font-semibold text-gray-900",
-      h5: "text-base sm:text-lg font-medium text-gray-900",
-      h6: "text-sm sm:text-base font-medium text-gray-900",
-      body: "text-base text-gray-700",
-      small: "text-sm text-gray-600",
-      muted: "text-sm text-gray-500"
+      h1: "text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100",
+      h2: "text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100",
+      h3: "text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100",
+      h4: "text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100",
+      h5: "text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100",
+      h6: "text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100",
+      body: "text-base text-gray-700 dark:text-gray-300",
+      small: "text-sm text-gray-600 dark:text-gray-400",
+      muted: "text-sm text-gray-500 dark:text-gray-400"
     }
   end
 
@@ -185,28 +189,28 @@ defmodule MehrSchulferienWeb.Shared.DesignTokens do
   def day_type_colors do
     %{
       holiday: %{
-        background: "bg-blue-600",
-        light_background: "bg-blue-100",
-        text: "text-blue-800",
-        border: "border-blue-200"
+        background: "bg-blue-600 dark:bg-blue-500",
+        light_background: "bg-blue-100 dark:bg-blue-900/30",
+        text: "text-blue-800 dark:text-blue-300",
+        border: "border-blue-200 dark:border-blue-800"
       },
       vacation: %{
-        background: "bg-green-600",
-        light_background: "bg-green-100",
-        text: "text-green-800",
-        border: "border-green-200"
+        background: "bg-green-600 dark:bg-green-500",
+        light_background: "bg-green-100 dark:bg-green-900/30",
+        text: "text-green-800 dark:text-green-300",
+        border: "border-green-200 dark:border-green-800"
       },
       weekend: %{
-        background: "bg-gray-100",
-        light_background: "bg-gray-50",
-        text: "text-gray-700",
-        border: "border-gray-200"
+        background: "bg-gray-100 dark:bg-gray-700",
+        light_background: "bg-gray-50 dark:bg-gray-800",
+        text: "text-gray-700 dark:text-gray-300",
+        border: "border-gray-200 dark:border-gray-600"
       },
       bridge_day: %{
-        background: "bg-yellow-500",
-        light_background: "bg-yellow-100",
-        text: "text-yellow-800",
-        border: "border-yellow-200"
+        background: "bg-yellow-500 dark:bg-yellow-600",
+        light_background: "bg-yellow-100 dark:bg-yellow-900/30",
+        text: "text-yellow-800 dark:text-yellow-300",
+        border: "border-yellow-200 dark:border-yellow-800"
       }
     }
   end

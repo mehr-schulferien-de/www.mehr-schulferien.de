@@ -69,7 +69,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
               display_name = get_month_display_name(month_name, days_count, percentage_width) %>
               <th
                 colspan={days_count}
-                class="border border-gray-200 text-xs font-semibold text-left pl-1 overflow-hidden whitespace-nowrap"
+                class="border border-gray-200 dark:border-gray-700 text-xs font-semibold text-left pl-1 overflow-hidden whitespace-nowrap text-gray-900 dark:text-gray-100"
                 style={"width: #{percentage_width}%"}
                 title={month_name}
               >
@@ -100,7 +100,10 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
                 end %>
 
               <%= if has_link do %>
-                <td class={"border border-gray-200 #{bg_class} p-0"} style={"width: #{cell_width}%"}>
+                <td
+                  class={"border border-gray-200 dark:border-gray-700 #{bg_class} p-0"}
+                  style={"width: #{cell_width}%"}
+                >
                   <a
                     href={link_url}
                     class="block h-5 sm:h-5 min-h-[20px] w-full hover:opacity-80 focus:opacity-80 touch-manipulation"
@@ -111,7 +114,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
                 </td>
               <% else %>
                 <td
-                  class={"h-5 sm:h-5 min-h-[20px] border border-gray-200 #{bg_class}"}
+                  class={"h-5 sm:h-5 min-h-[20px] border border-gray-200 dark:border-gray-700 #{bg_class}"}
                   style={"width: #{cell_width}%"}
                 >
                 </td>
@@ -131,7 +134,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     )}
 
     <div class="mt-4">
-      <ul class="text-sm">
+      <ul class="text-sm text-gray-900 dark:text-gray-100">
         <%= for period <- @sorted_periods do %>
           <% holiday_type = Map.get(period, :holiday_or_vacation_type, %{})
           is_school_vacation = Map.get(period, :is_school_vacation, false)
@@ -140,7 +143,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
           marker_color =
             if is_school_vacation,
-              do: "bg-green-600",
+              do: StyleConfig.get_class(:vacation),
               else: StyleConfig.get_class(:holiday) %>
           <li class="flex items-center space-x-2 mb-1">
             <div class={marker_color <> " w-3 h-3 rounded-sm flex-shrink-0"}></div>
@@ -153,13 +156,13 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
               link_url = "/ferien/d/bundesland/#{federal_state.slug}/#{period_year}##{anchor}" %>
               <a
                 href={link_url}
-                class="hover:underline focus:underline active:underline inline-block py-1 -my-1"
+                class="text-gray-900 dark:text-gray-100 hover:underline focus:underline active:underline inline-block py-1 -my-1"
               >
                 {display_name}
                 {render_period_dates(period, @has_multiple_years)}
               </a>
             <% else %>
-              <span>
+              <span class="text-gray-900 dark:text-gray-100">
                 {display_name}
                 {render_period_dates(period, @has_multiple_years)}
               </span>
@@ -263,8 +266,8 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
       # Period is a school vacation
       Map.get(period, :is_school_vacation, false) ->
-        # Force green color for school vacations
-        "bg-green-600"
+        # Use StyleConfig for school vacations
+        StyleConfig.get_class(:vacation)
 
       # Period is a public holiday  
       Map.get(period, :is_public_holiday, false) ->
@@ -307,7 +310,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         ~H"""
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
-            <span class="text-gray-500">
+            <span class="text-gray-500 dark:text-gray-400">
               <%= if @days_remaining == 0 do %>
                 Aktuell sind {@display_name}{@location_text} (letzter Tag).
               <% else %>
@@ -347,7 +350,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         ~H"""
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
-            <span class="text-gray-500">
+            <span class="text-gray-500 dark:text-gray-400">
               <%= if @days_until == 1 do %>
                 1 Tag bis {@display_format}{@location_text}.
               <% else %>

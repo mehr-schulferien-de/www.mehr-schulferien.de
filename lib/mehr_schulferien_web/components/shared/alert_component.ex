@@ -19,10 +19,17 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
 
     variant_classes =
       case assigns.variant do
-        "info" -> "bg-blue-50 text-blue-800 border border-blue-200"
-        "success" -> "bg-green-50 text-green-800 border border-green-200"
-        "warning" -> "bg-yellow-50 text-yellow-800 border border-yellow-200"
-        "error" -> "bg-red-50 text-red-800 border border-red-200"
+        "info" ->
+          "bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+
+        "success" ->
+          "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800"
+
+        "warning" ->
+          "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800"
+
+        "error" ->
+          "bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800"
       end
 
     assigns =
@@ -48,7 +55,7 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
           <div class="ml-auto pl-3">
             <button
               type="button"
-              class="inline-flex rounded-md p-1.5 hover:bg-white hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-offset-2"
+              class="inline-flex rounded-md p-1.5 hover:bg-white dark:hover:bg-gray-700 hover:bg-opacity-20 dark:hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2"
               onclick="this.closest('[role=alert]').remove()"
             >
               <span class="sr-only">Dismiss</span>
@@ -77,10 +84,10 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
 
     variant_classes =
       case assigns.variant do
-        "info" -> "text-blue-700"
-        "success" -> "text-green-700"
-        "warning" -> "text-yellow-700"
-        "error" -> "text-red-700"
+        "info" -> "text-blue-700 dark:text-blue-400"
+        "success" -> "text-green-700 dark:text-green-400"
+        "warning" -> "text-yellow-700 dark:text-yellow-400"
+        "error" -> "text-red-700 dark:text-red-400"
       end
 
     assigns =
@@ -102,10 +109,10 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
   def banner_alert(assigns) do
     variant_classes =
       case assigns.variant do
-        "info" -> "bg-blue-600 text-white"
-        "success" -> "bg-green-600 text-white"
-        "warning" -> "bg-yellow-500 text-white"
-        "error" -> "bg-red-600 text-white"
+        "info" -> "bg-blue-600 dark:bg-blue-500 text-white"
+        "success" -> "bg-green-600 dark:bg-green-500 text-white"
+        "warning" -> "bg-yellow-500 dark:bg-yellow-600 text-white"
+        "error" -> "bg-red-600 dark:bg-red-500 text-white"
       end
 
     assigns = assign(assigns, :variant_classes, variant_classes)
@@ -178,22 +185,22 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
       x-transition:leave-start="opacity-100"
       x-transition:leave-end="opacity-0"
     >
-      <div class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+      <div class="max-w-sm w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto ring-1 ring-black dark:ring-gray-700 ring-opacity-5 dark:ring-opacity-100 overflow-hidden">
         <div class="p-4">
           <div class="flex items-start">
             <div class="flex-shrink-0">
               <.alert_icon variant={@variant} />
             </div>
             <div class="ml-3 w-0 flex-1 pt-0.5">
-              <p class="text-sm font-medium text-gray-900">{@title}</p>
+              <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{@title}</p>
               <%= if @message do %>
-                <p class="mt-1 text-sm text-gray-500">{@message}</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{@message}</p>
               <% end %>
             </div>
             <div class="ml-4 flex-shrink-0 flex">
               <button
                 @click="show = false"
-                class="rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                class="rounded-md inline-flex text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               >
                 <span class="sr-only">Close</span>
                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

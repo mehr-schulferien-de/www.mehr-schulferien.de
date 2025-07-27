@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="h-full">
   <head>
     {render("_head_live.html", assigns)}
     <script
@@ -11,7 +11,7 @@
     </script>
   </head>
 
-  <body class="min-h-screen bg-gray-100">
+  <body class="min-h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
     <.navigation socket={@socket} today={Date.utc_today()} />
 
     <main role="main" class="container mx-auto py-8">

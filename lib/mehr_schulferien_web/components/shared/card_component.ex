@@ -11,14 +11,14 @@ defmodule MehrSchulferienWeb.Shared.CardComponent do
   attr :padding, :string, default: "p-4", values: ["p-2", "p-3", "p-4", "p-5", "p-6", "p-8"]
 
   def card(assigns) do
-    base_classes = "bg-white"
+    base_classes = "bg-white dark:bg-gray-800"
 
     variant_classes =
       case assigns.variant do
         "basic" -> "rounded-lg shadow-sm"
-        "enhanced" -> "rounded-lg shadow-sm border border-gray-200"
+        "enhanced" -> "rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
         "rounded" -> "rounded-xl shadow-md"
-        "border" -> "rounded-lg border border-gray-200"
+        "border" -> "rounded-lg border border-gray-200 dark:border-gray-700"
       end
 
     assigns =
@@ -42,14 +42,14 @@ defmodule MehrSchulferienWeb.Shared.CardComponent do
   attr :variant, :string, default: "basic"
 
   def card_with_sections(assigns) do
-    base_classes = "bg-white overflow-hidden"
+    base_classes = "bg-white dark:bg-gray-800 overflow-hidden"
 
     variant_classes =
       case assigns.variant do
         "basic" -> "rounded-lg shadow-sm"
-        "enhanced" -> "rounded-lg shadow-sm border border-gray-200"
+        "enhanced" -> "rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
         "rounded" -> "rounded-xl shadow-md"
-        "border" -> "rounded-lg border border-gray-200"
+        "border" -> "rounded-lg border border-gray-200 dark:border-gray-700"
       end
 
     assigns =
@@ -58,7 +58,7 @@ defmodule MehrSchulferienWeb.Shared.CardComponent do
     ~H"""
     <div class={@computed_class}>
       <%= if @header != [] do %>
-        <div class="px-6 py-4 border-b border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           {render_slot(@header)}
         </div>
       <% end %>
@@ -68,7 +68,7 @@ defmodule MehrSchulferienWeb.Shared.CardComponent do
       </div>
 
       <%= if @footer != [] do %>
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
           {render_slot(@footer)}
         </div>
       <% end %>

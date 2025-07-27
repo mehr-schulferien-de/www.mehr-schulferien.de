@@ -314,9 +314,53 @@ defmodule MehrSchulferien.BridgeDays do
           bridge_days
           |> Enum.filter(&DateComparison.is_after?(&1.starts_on, start_date))
           |> Enum.map(fn bridge_day ->
-            periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
-            total_free_days = BridgeDayCalculations.get_number_max_days(periods)
+            # Calculate total free days by properly counting all consecutive free days
+            # including weekends and holidays adjacent to the bridge day
+
+            # Helper function to check if a date is free (weekend or holiday)
+            is_free_day = fn date ->
+              is_weekend = Date.day_of_week(date) > 5
+
+              is_holiday =
+                Enum.any?(public_periods, fn p ->
+                  Date.compare(date, p.starts_on) != :lt &&
+                    Date.compare(date, p.ends_on) != :gt
+                end)
+
+              is_weekend || is_holiday
+            end
+
+            # Find the actual start by going backwards from bridge day start
+            actual_start =
+              1..10
+              |> Enum.map(fn days -> Date.add(bridge_day.starts_on, -days) end)
+              |> Enum.reverse()
+              |> Enum.reduce_while(bridge_day.starts_on, fn date, _acc ->
+                if is_free_day.(date) do
+                  {:cont, date}
+                else
+                  {:halt, Date.add(date, 1)}
+                end
+              end)
+
+            # Find the actual end by going forwards from bridge day end
+            actual_end =
+              1..10
+              |> Enum.map(fn days -> Date.add(bridge_day.ends_on, days) end)
+              |> Enum.reduce_while(bridge_day.ends_on, fn date, _acc ->
+                if is_free_day.(date) do
+                  {:cont, date}
+                else
+                  {:halt, Date.add(date, -1)}
+                end
+              end)
+
+            # Calculate the total free days
+            total_free_days = Date.diff(actual_end, actual_start) + 1
             efficiency_percentage = round((total_free_days - vacation_days) / vacation_days * 100)
+
+            # Get the periods for display purposes
+            periods = Grouping.list_periods_with_bridge_day(public_periods, bridge_day)
 
             %{
               bridge_day: bridge_day,
