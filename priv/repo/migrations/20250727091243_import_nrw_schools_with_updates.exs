@@ -10,8 +10,8 @@ defmodule MehrSchulferien.Repo.Migrations.ImportNrwSchoolsWithUpdates do
   @disable_migration_lock true
 
   def up do
-    # Check if we're in dev mode
-    dev_mode = Mix.env() == :dev
+    # Check if we're in dev mode based on log level
+    dev_mode = Logger.level() == :debug
     
     # Get NRW federal state
     nrw = Repo.one(
