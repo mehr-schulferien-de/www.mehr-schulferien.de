@@ -12,8 +12,6 @@ See the [contributing guide](https://github.com/mehr-schulferien-de/www.mehr-sch
 for more information about setting up your development environment and opening pull
 requests.
 
-For a comprehensive code review with improvement recommendations, see [CODE_REVIEW_FINDINGS.md](CODE_REVIEW_FINDINGS.md).
-
 ## Required Dependencies
 
 ### LaTeX Packages for PDF Generation
@@ -138,7 +136,7 @@ Periods store the actual holiday and vacation dates. Each period is associated w
 
 ## Centralized Style Configuration
 
-The application uses a centralized style configuration module (`MehrSchulferien.StyleConfig`) to manage consistent colors and styles for different types of days (holidays, vacations, weekends, bridge days) across both Bootstrap and Tailwind CSS frameworks.
+The application uses a centralized style configuration module (`MehrSchulferien.StyleConfig`) to manage consistent colors and styles for different types of days (holidays, vacations, weekends, bridge days) with the Tailwind CSS framework.
 
 ### Using StyleConfig
 
@@ -166,78 +164,6 @@ The system uses the following standard day types with their associated colors:
 | `:vacation` | Schulferien | `success` (green)| `bg-green-600` | `bg-green-100` |
 | `:weekend`  | Wochenenden | `active` (gray) | `bg-gray-100`  | `bg-gray-100`  |
 | `:bridge_day`| Brückentage | `warning` (yellow)| `bg-yellow-500`| `bg-yellow-100`|
-
-## CSS Framework Migration
-
-The application is in the process of migrating from Bootstrap to Tailwind CSS. During this transition period, both frameworks are supported:
-
-- Bootstrap is used by default (legacy system)
-- Tailwind CSS can be enabled for specific views
-
-### How to Switch Between CSS Frameworks
-
-#### Global Configuration
-
-The default CSS framework is configured in `config/config.exs`:
-
-```elixir
-config :mehr_schulferien,
-  ecto_repos: [MehrSchulferien.Repo],
-  # Set to :bootstrap for legacy CSS or :tailwind for new CSS implementation
-  css_framework: :bootstrap
-```
-
-To change the default for the entire application, update the `css_framework` value to either `:bootstrap` or `:tailwind`.
-
-### Per-View Configuration
-
-You can override the default CSS framework for individual views by passing the `css_framework` option to the render function:
-
-```elixir
-# Use Tailwind CSS for this view
-def developers(conn, _params) do
-  render(conn, "developers.html", css_framework: :tailwind)
-end
-
-# Use Bootstrap CSS for this view
-def some_action(conn, _params) do
-  render(conn, "some_template.html", css_framework: :bootstrap)
-end
-```
-
-### Implementation Details
-
-The CSS framework is determined by a helper function in `MehrSchulferienWeb.LayoutView`:
-
-```elixir
-def use_bootstrap?(_conn, assigns) do
-  cond do
-    # Check if the current view has explicitly specified which CSS framework to use
-    Map.has_key?(assigns, :css_framework) ->
-      assigns.css_framework == :bootstrap
-
-    # Fall back to application config
-    Application.get_env(:mehr_schulferien, :css_framework) ->
-      Application.get_env(:mehr_schulferien, :css_framework) == :bootstrap
-
-    # Default to Bootstrap during the migration period
-    true ->
-      true
-  end
-end
-```
-
-The layout file checks this function to determine which CSS to include:
-
-```elixir
-<%= if use_bootstrap?(@conn, assigns) do %>
-  <style>
-  <%= render(MehrSchulferienWeb.LayoutView, "_purified_css.html") %>
-  </style>
-<% else %>
-  <link rel="stylesheet" href="<%= static_path(@conn, "/assets/app.css") %>"/>
-<% end %>
-```
 
 # Development Setup
 
@@ -276,3 +202,15 @@ The search functionality is used by the `mix search_school` task to enrich schoo
 - School descriptions
 
 If the API key is not set, the search functionality will return an error message.
+
+## Database Restore in Development
+
+Get a current backup file and replace the following:
+s/mehr_schulferien_2020_prod/mehr_schulferien_dev/g
+s/mehrschul2020/postgres/g
+
+And add a 
+DROP DATABASE mehr_schulferien_dev;
+
+psql -U postgres -f mehr_schulferien_2020_prod_2025-07-26_06h25m.Samstag.sql
+

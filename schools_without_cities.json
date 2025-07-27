@@ -1,0 +1,1280 @@
+[
+  {
+    "code": "181778",
+    "name": "Lorenz-Burmann-Schule Berufskolleg Dachdecker Berufs- und Fachschule",
+    "address": "Böttenbergstr. 20",
+    "form": "Berufskolleg",
+    "city": "Eslohe (Sauerland)",
+    "plz": "59889",
+    "website": "http://www.dachdeckerschule.de/"
+  },
+  {
+    "code": "196605",
+    "name": "Rhein-Sieg-Akademie-Kunstkolleg,Priv.Be- rufskolleg,Berufl.Gymn.f.Kunst u.Gestal- tung d.Rhein-Sieg-Akad.-Kunstkoll. gGmbH",
+    "address": "Wehrstr. 143-145",
+    "form": "Berufskolleg",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.rsak.de/"
+  },
+  {
+    "code": "175894",
+    "name": "Carl-Reuther-Berufskolleg des Rhein-Sieg-Kreises in Hennef",
+    "address": "Fritz-Jacobi-Str. 20",
+    "form": "Berufskolleg",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.bk-hennef.de/"
+  },
+  {
+    "code": "178792",
+    "name": "Berufskolleg Halle (Westf.) des Kreises Gütersloh – Sekundarstufe II -",
+    "address": "Kättkenstr. 14",
+    "form": "Berufskolleg",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "http://www.berufskolleg-halle.de/"
+  },
+  {
+    "code": "181511",
+    "name": "Placida Viel-Berufskolleg Menden Staatlich genehmigte Ersatzschule der SMMP Walburgisschule gGmbH in Bestwig",
+    "address": "Dechant-Röper-Str. 47",
+    "form": "Berufskolleg",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.placida-berufskolleg.de/"
+  },
+  {
+    "code": "181500",
+    "name": "Hönne-Berufskolleg des Märkischen Kreises in Menden Sekundarstufe II",
+    "address": "Werler Str. 4",
+    "form": "Berufskolleg",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.hoenne-berufskolleg.de/"
+  },
+  {
+    "code": "176382",
+    "name": "Berufskolleg Simmerath/Stolberg der Städteregion Aachen – Sekundarstufe II -",
+    "address": "Am Obersteinfeld 8",
+    "form": "Berufskolleg",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "http://www.bksimmerathstolberg.de/"
+  },
+  {
+    "code": "153849",
+    "name": "Förderzentrum Grunewald, Förderschule d. Kr.Kleve m.d.FSP SQ-Primarstufe-,LE u.ES -Primar.u.Sek.I- i. integr. Verbund",
+    "address": "Hinter dem Kapaunenberg 3",
+    "form": "Förderschule",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "https://www.fzg.schule/"
+  },
+  {
+    "code": "186181",
+    "name": "Johannesschule Förderschule für Geistige Entwicklung der Diakonischen Stiftung Wittekindshof",
+    "address": "Marschallstr. 60",
+    "form": "Förderschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "http://www.johannesschule-wittekindshof.de/"
+  },
+  {
+    "code": "191747",
+    "name": "Brüder-Grimm-Schule Förderschule des Hochsauerlandkreises mit dem Förderschwerpunkt Sprache",
+    "address": "Schulstr. 5",
+    "form": "Förderschule",
+    "city": "Eslohe (Sauerland)",
+    "plz": "59889",
+    "website": "http://www.brueder-grimm-schule-eslohe.de/"
+  },
+  {
+    "code": "186429",
+    "name": "Kardinal-von-Galen-Schule, Förderschule mit dem Förderschwerp. Geistige Entwick- lung des Caritasverbandes Meschede e.V.",
+    "address": "Hauptstr. 11",
+    "form": "Förderschule",
+    "city": "Eslohe (Sauerland)",
+    "plz": "59889",
+    "website": "http://www.kvg-eslohe.de/"
+  },
+  {
+    "code": "186879",
+    "name": "Richard-Schirrmann-Schule Förderschule des Rhein-Sieg-Kreises Förderschwerp. Emotion.u.soz. Entwickl.",
+    "address": "Im Bröltal 7",
+    "form": "Förderschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://rss-hennef.de/"
+  },
+  {
+    "code": "155007",
+    "name": "Schule in der Geisbach, Förderschule d. Stadt Hennef m. d. FSP Lernen u. Emotionale u. soz. Entw. i. Verbund",
+    "address": "Hanftalstr. 31",
+    "form": "Förderschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "https://www.schule-in-der-geisbach.de/"
+  },
+  {
+    "code": "155019",
+    "name": "St. Ansgar-Schule, Priv. Förderschule der Caritas-Jugendhilfe GmbH, Förder- schwerp. Emotion.u.soz. Entwickl.(Sek.I)",
+    "address": "Siebengebirgsweg 25",
+    "form": "Förderschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.cjg-sta-schule.de/"
+  },
+  {
+    "code": "100151",
+    "name": "Bernsteinschule Förderschule d. Kr. Gütersloh mit den FSP LE und EZ -Primar- u. Sekundarstufe I-",
+    "address": "Bredenstr. 3",
+    "form": "Förderschule",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "[ Website]"
+  },
+  {
+    "code": "183428",
+    "name": "Martin-Buber-Schule, Förderschule des Rheinisch-Bergischen Kr. Förderschwerp. Geistige Entwicklung i.Leichlingen Kuhle",
+    "address": "Kuhlenweg 29",
+    "form": "Förderschule",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "http://martin-buber-schule.com/"
+  },
+  {
+    "code": "153916",
+    "name": "Schule an der Virneburg Förderschule des Kreises Mettmann Förderschwerpunkt Geistige Entwicklung",
+    "address": "Virneburgstr. 17",
+    "form": "Förderschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://www.virneburgschule.de/"
+  },
+  {
+    "code": "183659",
+    "name": "LVR-Paul-Klee-Schule Förderschule mit dem Förderschwerpunkt Körperliche und motorische Entwicklung",
+    "address": "Albert-Einstein-Str. 11a",
+    "form": "Förderschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "https://paul-klee-schule.lvr.de/"
+  },
+  {
+    "code": "153096",
+    "name": "Janusz-Korczak-Schule, Fördersch. d. Kr. Wesel m. d. FSP Lernen u. Emot. u. soz. Entwicklung im integr. Verbund",
+    "address": "Peerdsbuschweg 54",
+    "form": "Förderschule",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "http://www.janusz-korczak-schule-voerde.de/"
+  },
+  {
+    "code": "100136",
+    "name": "Schule Talstraße, Fördersch. im Verbund der Kupferstadt Stolberg, Primar- u. SI Förderschwerpunkte LE, ES und SQ",
+    "address": "Talstr. 26",
+    "form": "Förderschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52223",
+    "website": "https://schule-talstrasse.de/"
+  },
+  {
+    "code": "189765",
+    "name": "LVR-Förderschule Stolberg Gutenberg-Schule Förderschwerpunkt Sprache – Sek.I -",
+    "address": "Rhein-Nassau-Weg 4",
+    "form": "Förderschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "http://www.gutenberg-schule.de/"
+  },
+  {
+    "code": "184597",
+    "name": "Regenbogenschule Förderschule der Städteregion Aachen Förderschwerpunkt Geistige Entwicklung",
+    "address": "Stettiner Str. 42",
+    "form": "Förderschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "http://www.regenbogenschule.org/"
+  },
+  {
+    "code": "175882",
+    "name": "CJG St.Ansgar Berufskolleg der Caritas Jugendhilfe Gesellschaft mbH, Förder- schwerp. Emotion.u.soz.Entwickl.(Sek.II)",
+    "address": "Siebengebirgsweg 25",
+    "form": "Förderschule im Bereich des Berufskollegs",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.cjg-sta-berufskolleg.de/"
+  },
+  {
+    "code": "164290",
+    "name": "Städt. Gesamtschule Fröndenberg – Sekundarstufen I und II -",
+    "address": "Im Wiesengrund 7",
+    "form": "Gesamtschule",
+    "city": "Fröndenberg/Ruhr",
+    "plz": "58730",
+    "website": "http://www.gesamtschulefroendenberg.de/"
+  },
+  {
+    "code": "198730",
+    "name": "Städt. Gesamtschule Emmerich am Rhein – Sekundarstufen I und II -",
+    "address": "Brink 1",
+    "form": "Gesamtschule",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "http://www.ge-emmerich.de/"
+  },
+  {
+    "code": "196599",
+    "name": "Rhein-Sieg-Akademie-Kunstkolleg, Private Gesamtschule, Sekundarstufe I d. Rhein-Sieg-Akademie-Kunstkolleg gGmbH",
+    "address": "Wehrstr. 143–145",
+    "form": "Gesamtschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "https://kunstkolleg-hennef.de/"
+  },
+  {
+    "code": "197737",
+    "name": "Gesamtschule Hennef-West der Stadt Hennef",
+    "address": "Wehrstr. 80",
+    "form": "Gesamtschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.gesamtschule-hennef-west.de/"
+  },
+  {
+    "code": "193240",
+    "name": "Gesamtschule Hennef-Meiersheide der Stadt Hennef – Sekundarstufen I und II -",
+    "address": "Meiersheide 20",
+    "form": "Gesamtschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "https://www.ge-hennef.de/"
+  },
+  {
+    "code": "198973",
+    "name": "Gesamtschule der Stadt Halle (Westf.) – Sekundarstufe I und II -",
+    "address": "Wasserwerkstr. 1",
+    "form": "Gesamtschule",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "http://www.gesamtschule-halle.de/"
+  },
+  {
+    "code": "199163",
+    "name": "Gesamtschule Gronau",
+    "address": "Laubstiege 25",
+    "form": "Gesamtschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://ge.gronau.de/"
+  },
+  {
+    "code": "100024",
+    "name": "Euregioschule Gesamtschule der Stadt Gronau, Sekundarstufe I und II",
+    "address": "Gildehauser Damm 49",
+    "form": "Gesamtschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "http://eu.schule.gronau.de/"
+  },
+  {
+    "code": "197907",
+    "name": "Prismaschule Langenfeld, Städtische Gesamtschule Schule der Sekundarstufe I und II",
+    "address": "Fröbelstr. 25",
+    "form": "Gesamtschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://www.prismaschule.de/"
+  },
+  {
+    "code": "191000",
+    "name": "Bettine-von-Arnim-Gesamtschule – Sekundarstufen I und II -",
+    "address": "Hildener Str. 3",
+    "form": "Gesamtschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://bva-gesamtschule.de/"
+  },
+  {
+    "code": "190020",
+    "name": "Robert-Jungk-Gesamtschule, Städt. Gesamtschule – Sekundarstufen I und II -",
+    "address": "Reepenweg 40 & Rahmerkirchweg 19",
+    "form": "Gesamtschule",
+    "city": "Krefeld & Kerken",
+    "plz": "47839 & 47648",
+    "website": "http://www.robert-jungk.de/"
+  },
+  {
+    "code": "197312",
+    "name": "Städtische Gesamtschule Menden, Sekundarstufen I und II",
+    "address": "Windthorststr. 36a",
+    "form": "Gesamtschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.gesamtschulemenden.de/"
+  },
+  {
+    "code": "199497",
+    "name": "Comenius-Gesamtschule der Stadt Voerde (Niederrhein) – Sekundarstufen I und II -",
+    "address": "Allee 1",
+    "form": "Gesamtschule",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "http://www.nge-voerde.de/"
+  },
+  {
+    "code": "196721",
+    "name": "Städtische Gesamtschule Stolberg (SGS) Auf der Liester",
+    "address": "Sperberweg 1",
+    "form": "Gesamtschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52223",
+    "website": "http://www.gesamtschule-stolberg.de/"
+  },
+  {
+    "code": "100016",
+    "name": "Kupferstädter Gesamtschule – Sekundarstufe I und II -",
+    "address": "Breslauer Str. 1",
+    "form": "Gesamtschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "http://kupferstädter-gesamtschule.de/"
+  },
+  {
+    "code": "109861",
+    "name": "Liebfrauenschule Katholische Grundschule der Stadt Emmerich am Rhein -Primarstufe",
+    "address": "Speelberger Str. 215",
+    "form": "Grundschule",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "http://www.liebfrauen-grundschule.de/"
+  },
+  {
+    "code": "109897",
+    "name": "Leegmeerschule Katholische Grundschule der Stadt Emmerich am Rhein -Primarstufe",
+    "address": "Hansastr. 56",
+    "form": "Grundschule",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "http://leegmeerschule.de/"
+  },
+  {
+    "code": "109850",
+    "name": "Rheinschule Gemeinschaftsgrundschule der Stadt Emmerich am Rhein -Primarstufe",
+    "address": "Hinter dem Mühlenberg 1",
+    "form": "Grundschule",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "http://www.rheinschule-emmerich.de/"
+  },
+  {
+    "code": "109873",
+    "name": "Michaelschule Gemeinschaftsgrundschule der Stadt Emmerich am Rhein -Primarstufe",
+    "address": "Sulenstr. 46-48",
+    "form": "Grundschule",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "http://www.michael-grundschule.de/"
+  },
+  {
+    "code": "109885",
+    "name": "Regenbogenschule Katholische Grundschule mit Gem.Standort d. St. Emmerich am Rhein",
+    "address": "Georgstr. 2",
+    "form": "Grundschule",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "http://www.grundschule-huethum.de/"
+  },
+  {
+    "code": "133980",
+    "name": "Raphael-Schule Kath. Grundschule",
+    "address": "Schulstr. 5",
+    "form": "Grundschule",
+    "city": "Eslohe (Sauerland)",
+    "plz": "59889",
+    "website": "https://www.grundschule.eslohe-schulen.de/"
+  },
+  {
+    "code": "135902",
+    "name": "SonnenbergSchule Ardey-Langschede",
+    "address": "Sonnenbergstr. 18",
+    "form": "Grundschule",
+    "city": "Fröndenberg/Ruhr",
+    "plz": "58730",
+    "website": "https://www.sonnenbergschule-froendenberg.de/"
+  },
+  {
+    "code": "135896",
+    "name": "Overbergschule Fröndenberg",
+    "address": "Overbergstr. 18",
+    "form": "Grundschule",
+    "city": "Fröndenberg/Ruhr",
+    "plz": "58730",
+    "website": "https://www.overberg.schule/"
+  },
+  {
+    "code": "135884",
+    "name": "Grundschule Fröndenberg",
+    "address": "Friedhofstr. 13",
+    "form": "Grundschule",
+    "city": "Fröndenberg/Ruhr",
+    "plz": "58730",
+    "website": "http://www.ggs-froendenberg.de/"
+  },
+  {
+    "code": "120224",
+    "name": "Martin-Luther-Schule Grundschule",
+    "address": "Herzogstr. 26",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "http://mls.schule.gronau.de/"
+  },
+  {
+    "code": "120236",
+    "name": "ButerlandSchule",
+    "address": "Beckerhookstr. 85",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://bls.schule.gronau.de/"
+  },
+  {
+    "code": "120376",
+    "name": "Georgschule Epe",
+    "address": "Auf der Sunhaar 55",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://gs.schule.gronau.de/"
+  },
+  {
+    "code": "120200",
+    "name": "Viktoriaschule Grundschule",
+    "address": "Gildehauser Str. 114",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "http://www.viktoriaschule-gronau.de/"
+  },
+  {
+    "code": "120248",
+    "name": "Eilermarkschule Grundschule",
+    "address": "Albrechtstr. 27",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://ems.schule.gronau.de/"
+  },
+  {
+    "code": "100178",
+    "name": "Grüne-Aue-Schule Städtische Gemeinschaftsgrundschule",
+    "address": "Grünstiege 64",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": ""
+  },
+  {
+    "code": "120388",
+    "name": "Bernhard-Overberg-Schule",
+    "address": "Kottker Esch 1",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://bos.schule.gronau.de/"
+  },
+  {
+    "code": "120390",
+    "name": "Hermann-Löns-Schule",
+    "address": "Gildehauser Damm 12",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://hls.schule.gronau.de/"
+  },
+  {
+    "code": "120250",
+    "name": "Lindenschule Grundschule d. Stadt Gronau",
+    "address": "Sparenbergstr. 14",
+    "form": "Grundschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://ls.schule.gronau.de/"
+  },
+  {
+    "code": "185541",
+    "name": "Lindenschule Gem.Grundschule der Stadt Halle (Westf.)",
+    "address": "Bismarckstr. 8",
+    "form": "Grundschule",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "http://www.lindenschule-halle.de/"
+  },
+  {
+    "code": "125295",
+    "name": "Grundschule Gartnisch Gem.Grundschule der Stadt Halle (Westf.)",
+    "address": "Bredenstr. 1",
+    "form": "Grundschule",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "http://www.grundschule-gartnisch.de/"
+  },
+  {
+    "code": "125301",
+    "name": "Grundschule Hörste",
+    "address": "Ruthebachstr. 8",
+    "form": "Grundschule",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "http://www.gshoerste.de/"
+  },
+  {
+    "code": "125313",
+    "name": "Grundschule Künsebeck",
+    "address": "Teutoburger Str. 14",
+    "form": "Grundschule",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "https://bid-web.coactum.de/portal/index/42337"
+  },
+  {
+    "code": "115563",
+    "name": "RegenbogenSchule",
+    "address": "Am Schmalen Patt 25",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.regenbogenschule-happerschoss.de/"
+  },
+  {
+    "code": "194098",
+    "name": "Gemeinschaftsgrundschule Siegtal",
+    "address": "Astrid-Lindgren-Str. 1",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://ggs-siegtal.de/"
+  },
+  {
+    "code": "100141",
+    "name": "Freie Schule Rhein-Sieg, Staatl. gen. priv. Ersatzschule der Freie Schule Rhein-Sieg gGmbH",
+    "address": "Schulstr. 38",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "https://www.freie-schule-rhein-sieg.de/"
+  },
+  {
+    "code": "115540",
+    "name": "Kastanienschule Grundschule Obergemeinde der Stadt Hennef",
+    "address": "Am Frohnhof 62",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "https://kastanienschulehennef.de/"
+  },
+  {
+    "code": "115538",
+    "name": "Gemeinschaftsgrundschule Gartenstraße der Stadt Hennef",
+    "address": "Gartenstr. 17",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.ggs-gartenstrasse.de/"
+  },
+  {
+    "code": "115514",
+    "name": "Grundschule Am Steimel Hennef-Uckerath",
+    "address": "Finkenweg 25",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.grundschule-uckerath.de/"
+  },
+  {
+    "code": "115575",
+    "name": "Kath. Grundschule",
+    "address": "Wehrstr. 84",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.kgs-hennef.de/"
+  },
+  {
+    "code": "196526",
+    "name": "Freie Christl. Bekenntnisschule Hennef Evangelische Bekenntnisgrundschule des Fr.Christl. Bekenntnisschule Hennef e.V.",
+    "address": "Heidestr. 2",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "https://fcb-hennef.de/"
+  },
+  {
+    "code": "115551",
+    "name": "Grundschule Hanftal Gemeinschaftsgrundschule der Stadt Hennef ( Sieg ) – Primarstufe-",
+    "address": "Hanftalstr. 33",
+    "form": "Grundschule",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.grundschule-hanftal.de/"
+  },
+  {
+    "code": "110449",
+    "name": "Grundschule Uferstraße",
+    "address": "Schulstr. 1",
+    "form": "Grundschule",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "http://www.ggs-uferstrasse.de/"
+  },
+  {
+    "code": "110437",
+    "name": "Leichlingen",
+    "address": "Kirchstr. 29",
+    "form": "Grundschule",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "https://www.kgsleichlingen.de/"
+  },
+  {
+    "code": "110670",
+    "name": "Grundschule Witzhelden",
+    "address": "Schulweg 45",
+    "form": "Grundschule",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "http://ggs-witzhelden.de/"
+  },
+  {
+    "code": "110425",
+    "name": "Grundschule Büscherhof",
+    "address": "Am Hammer 8",
+    "form": "Grundschule",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "http://www.ggs-buescherhof.de/"
+  },
+  {
+    "code": "192867",
+    "name": "Grundschule Bennert",
+    "address": "Oberschmitte 11",
+    "form": "Grundschule",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "http://www.grundschule-bennert.de/"
+  },
+  {
+    "code": "110395",
+    "name": "Erich Kästner-Schule",
+    "address": "Fahlerweg 25-27",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "https://www.ekslangenfeld.de/"
+  },
+  {
+    "code": "110334",
+    "name": "Don-Bosco-Schule",
+    "address": "Fröbelstr. 15",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://www.kgs-don-bosco-langenfeld.de/"
+  },
+  {
+    "code": "110383",
+    "name": "Grundschule Richrath-Mitte Städtische Gemeinschaftsgrundschule",
+    "address": "Jahnstr. 113",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://www.langenfeld.de/schulen/richrath-mitte"
+  },
+  {
+    "code": "110360",
+    "name": "Paulus-Schule",
+    "address": "Treibstr. 34",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "https://www.paulusschulelangenfeld.de/"
+  },
+  {
+    "code": "110358",
+    "name": "Grundschule Am Brückentor",
+    "address": "Am Brückentor 6-8",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "https://ggs-brueckentor.langenfeld.de/"
+  },
+  {
+    "code": "110346",
+    "name": "Christopherus-Schule",
+    "address": "Fahlerweg 25-27",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "https://www.christopherus-schule-langenfeld.de/"
+  },
+  {
+    "code": "110401",
+    "name": "Peter-Härtling-Schule",
+    "address": "Gieslenberger Str. 51-53",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "https://www.grundschule-gieslenberg.de/"
+  },
+  {
+    "code": "110309",
+    "name": "Friedrich-Fröbel-Schule",
+    "address": "Fröbelstr. 15",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://www.froebelschule-langenfeld.de/"
+  },
+  {
+    "code": "110310",
+    "name": "Grundschule Götscher Weg",
+    "address": "Götscher Weg 64-66",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://grundschule-goetscherweg.de/"
+  },
+  {
+    "code": "110322",
+    "name": "Grundschule Wiescheid",
+    "address": "Parkstr. 54",
+    "form": "Grundschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "https://www.ggswiescheid.de/"
+  },
+  {
+    "code": "124084",
+    "name": "MarienSchule Marienfeld",
+    "address": "Klosterstr. 11",
+    "form": "Grundschule",
+    "city": "Marienfeld",
+    "plz": "33428",
+    "website": "https://gsmarienschule-marienfeld.de/"
+  },
+  {
+    "code": "133322",
+    "name": "Albert-Schweitzer-Schule Lahrfeld Grundschule Primarstufe",
+    "address": "Beethovenstr. 2",
+    "form": "Grundschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.albert-schweitzer-schule-lahrfeld.de/"
+  },
+  {
+    "code": "193112",
+    "name": "Städtische Gemeinschaftsgrundschule Anne-Frank-Schule",
+    "address": "Robert-Leusmann-Str. 2",
+    "form": "Grundschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58708",
+    "website": ""
+  },
+  {
+    "code": "133565",
+    "name": "Josefschule Lendringsen Grundschule",
+    "address": "Friedhofstr. 6",
+    "form": "Grundschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58710",
+    "website": "http://www.josefschule-lendringsen.de/"
+  },
+  {
+    "code": "100198",
+    "name": "Städtische Gemeinschaftsgrundschule Bodelschwinghschule",
+    "address": "Malvenweg 2",
+    "form": "Grundschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58708",
+    "website": ""
+  },
+  {
+    "code": "133530",
+    "name": "Bischof-von-Ketteler-Schule mit Teilstandort Hüingsen Grundschule",
+    "address": "Salzweg 45",
+    "form": "Grundschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58710",
+    "website": "https://www.bvk-menden.de/"
+  },
+  {
+    "code": "133516",
+    "name": "Nikolaus-Groß-Schule Bösperde Grundschule Primarstufe",
+    "address": "Bahnhofstraße in Bösperde 3",
+    "form": "Grundschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58708",
+    "website": "http://www.nikolaus-gross-schule.de/"
+  },
+  {
+    "code": "133309",
+    "name": "Josefschule Menden Grundschule Primarstufe",
+    "address": "Werringser Str. 2",
+    "form": "Grundschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.josefschule-menden.de/"
+  },
+  {
+    "code": "132081",
+    "name": "Hachen der Stadt Sundern",
+    "address": "Schulstr. 12",
+    "form": "Grundschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "http://www.grundschule-hachen.de/"
+  },
+  {
+    "code": "132172",
+    "name": "Allendorf der Stadt Sundern",
+    "address": "Kaspar-Kellermann-Str. 4",
+    "form": "Grundschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "https://www.grundschule-allendorf.de/"
+  },
+  {
+    "code": "132202",
+    "name": "Sebastianschule der Stadt Sundern",
+    "address": "Am Wenne 8",
+    "form": "Grundschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "https://www.sebastianschule-stockum.de/"
+  },
+  {
+    "code": "132226",
+    "name": "Marienschule der Stadt Sundern",
+    "address": "Silmecke 23",
+    "form": "Grundschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "http://www.marienschule-sundern.de/"
+  },
+  {
+    "code": "199643",
+    "name": "Freie Schule am See Langscheid Priv. Grundschule als Ersatzschule",
+    "address": "Ringstr. 51",
+    "form": "Grundschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "http://www.freie-schule-am-see.de/"
+  },
+  {
+    "code": "132214",
+    "name": "Johannesschule der Stadt Sundern",
+    "address": "Grünewaldstr. 13",
+    "form": "Grundschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "http://www.johannesschulesundern.de/"
+  },
+  {
+    "code": "117183",
+    "name": "Grundschule Mausbach",
+    "address": "Im Hahn 1",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52224",
+    "website": "http://www.oggsmausbach.de/"
+  },
+  {
+    "code": "117171",
+    "name": "Gem. Grundschule",
+    "address": "Rote Erde 6",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52224",
+    "website": "http://www.ggsgressenich.de/"
+  },
+  {
+    "code": "117092",
+    "name": "Gemeinschaftsgrundschule Donnerberg",
+    "address": "Höhenstr. 25",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "http://www.oggs-donnerberg.de/"
+  },
+  {
+    "code": "117195",
+    "name": "Grundschule Zweifall",
+    "address": "Kornbendstr. 34",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52224",
+    "website": "http://www.grundschule-zweifall.de/"
+  },
+  {
+    "code": "117109",
+    "name": "Grundschule Breinig",
+    "address": "Stefanstr. 32",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52223",
+    "website": "https://www.oggsbreinig.de/"
+  },
+  {
+    "code": "117158",
+    "name": "Gemeinschaftsgrundschule Grüntal",
+    "address": "Grüntalstr. 9",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "http://www.ggsgruental.de/"
+  },
+  {
+    "code": "117122",
+    "name": "Grundschule Prämienstraße",
+    "address": "Prämienstr. 199",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52223",
+    "website": "https://www.ggspraemienstrasse.de/"
+  },
+  {
+    "code": "117146",
+    "name": "Grundschule Hermannstraße – Internationale Begegnungsschule -",
+    "address": "Hermannstr. 5",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "https://www.hermannschule.de/"
+  },
+  {
+    "code": "117160",
+    "name": "Bischofstraße",
+    "address": "Bischofstr. 29-31",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52223",
+    "website": "https://www.kgs-bischofstrasse.com/"
+  },
+  {
+    "code": "117110",
+    "name": "Kath. Grundschule",
+    "address": "Würselener Str. 57",
+    "form": "Grundschule",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "https://www.kgs-atsch.de/"
+  },
+  {
+    "code": "106367",
+    "name": "Regenbogenschule Möllen Grundschule der Stadt Voerde",
+    "address": "Auf dem Bünder 25",
+    "form": "Grundschule",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "http://ggs-moellen.de/"
+  },
+  {
+    "code": "185486",
+    "name": "Erich Kästner Schule Gemeinschaftsgrundschule",
+    "address": "Rönskenstr. 52a",
+    "form": "Grundschule",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "http://www.eks-voerde.de/"
+  },
+  {
+    "code": "106355",
+    "name": "Grundschule Friedrichsfeld Gemeinschaftsgrundschule der Stadt Voerde",
+    "address": "Hugo-Mueller-Str. 23",
+    "form": "Grundschule",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "http://gs-friedrichsfeld.de/"
+  },
+  {
+    "code": "106343",
+    "name": "Otto-Willmann-Schule Städtische Gemeinschaftsgrundschule",
+    "address": "Sternbuschweg 36",
+    "form": "Grundschule",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "http://www.otto-willmann.schule/"
+  },
+  {
+    "code": "106331",
+    "name": "Astrid Lindgren-Schule Gemeinschaftsgrundschule der Stadt Voerde",
+    "address": "Weseler Str. 18",
+    "form": "Grundschule",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "http://astrid-lindgren-schule-voerde.de/"
+  },
+  {
+    "code": "135598",
+    "name": "Engelhardschule Grundschule",
+    "address": "Kirchstr. 49",
+    "form": "Grundschule",
+    "city": "Wickede (Ruhr)",
+    "plz": "58739",
+    "website": "http://www.engelhardschule-wickede.de/"
+  },
+  {
+    "code": "135586",
+    "name": "MelanchthonSchule",
+    "address": "Friedhofstr. 4",
+    "form": "Grundschule",
+    "city": "Wickede (Ruhr)",
+    "plz": "58739",
+    "website": "http://melanchthonschulewickede.de/"
+  },
+  {
+    "code": "125398",
+    "name": "Grundschule Werther-Langenheide Grundschulverbund",
+    "address": "Mühlenstr. 8",
+    "form": "Grundschule",
+    "city": "Werther (Westf.)",
+    "plz": "33824",
+    "website": "http://www.grundschule-werther.de/"
+  },
+  {
+    "code": "166091",
+    "name": "Willibrord-Gymnasium Emmerich am Rhein",
+    "address": "Hansastr. 3",
+    "form": "Gymnasium",
+    "city": "Emmerich am Rhein",
+    "plz": "46446",
+    "website": "http://www.willibrord-gymnasium-emmerich.de/"
+  },
+  {
+    "code": "167149",
+    "name": "Städtisches Gymnasium Hennef",
+    "address": "Fritz-Jacobi-Str. 18",
+    "form": "Gymnasium",
+    "city": "Hennef (Sieg)",
+    "plz": "53773",
+    "website": "http://www.gymnasium-hennef.de/"
+  },
+  {
+    "code": "168713",
+    "name": "Kreisgymnasium Halle",
+    "address": "Neustädter Str. 2",
+    "form": "Gymnasium",
+    "city": "Halle (Westf.)",
+    "plz": "33790",
+    "website": "http://www.kreisgymnasium-halle.de/"
+  },
+  {
+    "code": "167990",
+    "name": "Werner-von-Siemens-Gymnasium (Gronau)",
+    "address": "Laubstiege 21",
+    "form": "Gymnasium",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "http://www.wvsg-gronau.de/"
+  },
+  {
+    "code": "165700",
+    "name": "Kardinal-von-Galen-Gymnasium (Kevelaer)",
+    "address": "47623",
+    "form": "Gymnasium",
+    "city": "www.kvgg.de",
+    "plz": "Kevelaer",
+    "website": "655"
+  },
+  {
+    "code": "166157",
+    "name": "Gymnasium Leichlingen",
+    "address": "Am Hammer 2",
+    "form": "Gymnasium",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "http://www.gymnasium-leichlingen.de/"
+  },
+  {
+    "code": "166145",
+    "name": "Konrad-Adenauer-Gymnasium (Langenfeld)",
+    "address": "Auf dem Sändchen 24",
+    "form": "Gymnasium",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://www.kag-langenfeld.de/"
+  },
+  {
+    "code": "170069",
+    "name": "Walburgisgymnasium Menden, Staatl. gen. Ersatzschule der SMMP Walburgisschule gGmbH in Bestwig",
+    "address": "Schwitter Weg 22",
+    "form": "Gymnasium",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.walburgisgymnasium.de/"
+  },
+  {
+    "code": "199631",
+    "name": "Gymnasium an der Hönne Menden",
+    "address": "Walramstr. 2",
+    "form": "Gymnasium",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.gymnasium-hoenne.de/"
+  },
+  {
+    "code": "165529",
+    "name": "Gymnasium der Stadt Voerde",
+    "address": "Am Hallenbad 33",
+    "form": "Gymnasium",
+    "city": "Voerde (Niederrhein)",
+    "plz": "46562",
+    "website": "https://gymnasium-voerde.de/"
+  },
+  {
+    "code": "169894",
+    "name": "Gymnasium Sundern",
+    "address": "Berliner Str. 55",
+    "form": "Gymnasium",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "http://www.gymnasium-sundern.de/"
+  },
+  {
+    "code": "167460",
+    "name": "Ritzefeld-Gymnasium Stolberg",
+    "address": "Ritzefeldstr. 59",
+    "form": "Gymnasium",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52222",
+    "website": "https://www.ritzefeld.eu/"
+  },
+  {
+    "code": "167472",
+    "name": "Goethe-Gymnasium Stolberg",
+    "address": "Lerchenweg 5",
+    "form": "Gymnasium",
+    "city": "Stolberg (Rhld.)",
+    "plz": "52223",
+    "website": "https://www.goethe-gymnasium-stolberg.de/"
+  },
+  {
+    "code": "168737",
+    "name": "Evangelisches Gymnasium Werther, Staatl. genehmigtes Gymnasium in priv. Trägerschaft",
+    "address": "Grünstr. 10",
+    "form": "Gymnasium",
+    "city": "Werther (Westf.)",
+    "plz": "33824",
+    "website": "http://www.egwerther.de/"
+  },
+  {
+    "code": "149913",
+    "name": "Christine-Koch-Hauptschule Gem. Hauptschule",
+    "address": "Schulstr. 7",
+    "form": "Hauptschule",
+    "city": "Eslohe (Sauerland)",
+    "plz": "59889",
+    "website": "http://www.eslohe-schulen.de/hs-eslohe/"
+  },
+  {
+    "code": "149214",
+    "name": "Hauptschule Sundern Gem. Hauptschule der Stadt Sundern",
+    "address": "Berliner Str. 57",
+    "form": "Hauptschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "http://www.hauptschule-sundern.de"
+  },
+  {
+    "code": "163480",
+    "name": "Realschule Eslohe",
+    "address": "Schulstr. 6",
+    "form": "Realschule",
+    "city": "Eslohe (Sauerland)",
+    "plz": "59889",
+    "website": "http://realschule.eslohe-schulen.de/"
+  },
+  {
+    "code": "161317",
+    "name": "Fridtjof-Nansen-Realschule",
+    "address": "Eschweg 7",
+    "form": "Realschule",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "https://fnrs.gronau.de/"
+  },
+  {
+    "code": "159876",
+    "name": "Kopernikus-Realschule Langenfeld",
+    "address": "Immigrather Str. 61",
+    "form": "Realschule",
+    "city": "Langenfeld (Rheinland)",
+    "plz": "40764",
+    "website": "http://www.kopernikus-realschule.de/"
+  },
+  {
+    "code": "198407",
+    "name": "Walburgisrealschule Menden",
+    "address": "Schwitter Weg 22",
+    "form": "Realschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.walburgisgymnasium.de/"
+  },
+  {
+    "code": "163375",
+    "name": "Menden Sekundarstufe I",
+    "address": "Klosterstr. 20",
+    "form": "Realschule",
+    "city": "Menden (Sauerland)",
+    "plz": "58706",
+    "website": "http://www.realschule-menden.de/"
+  },
+  {
+    "code": "163247",
+    "name": "Realschule Sundern",
+    "address": "Rotbuschweg 28",
+    "form": "Realschule",
+    "city": "Sundern (Sauerland)",
+    "plz": "59846",
+    "website": "http://www.realschule-sundern.de/"
+  },
+  {
+    "code": "199461",
+    "name": "Sekundarschule der Stadt Leichlingen",
+    "address": "Am Hammer 1",
+    "form": "Sekundarschule",
+    "city": "Leichlingen (Rheinland)",
+    "plz": "42799",
+    "website": "http://www.sekundarschule-leichlingen.de/"
+  },
+  {
+    "code": "197051",
+    "name": "Sekundarschule Wickede (Ruhr)",
+    "address": "Ludgerusstr. 1",
+    "form": "Sekundarschule",
+    "city": "Wickede (Ruhr)",
+    "plz": "58739",
+    "website": "http://www.sk-wickede.de/"
+  },
+  {
+    "code": "191073",
+    "name": "Weiterbildungskolleg der Stadt Gronau Driland-Kolleg – Abendrealschule, Abendgymnasium, Kolleg",
+    "address": "Konrad-Adenauer-Str. 85",
+    "form": "Weiterbildungskolleg",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "http://www.driland-kolleg.de/"
+  },
+  {
+    "code": "191073",
+    "name": "Weiterbildungskolleg der Stadt Gronau Driland-Kolleg – Abendrealschule, Abendgymnasium, Kolleg",
+    "address": "Konrad-Adenauer-Str. 85",
+    "form": "Weiterbildungskolleg",
+    "city": "Gronau (Westf.)",
+    "plz": "48599",
+    "website": "http://www.driland-kolleg.de/"
+  }
+]
