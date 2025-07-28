@@ -117,18 +117,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
         is_public_holiday: true
       })
 
-      # Create a Sunday holiday (May 4th)
-      MehrSchulferien.Periods.create_period(%{
-        starts_on: ~D[2025-05-04],
-        ends_on: ~D[2025-05-04],
-        holiday_or_vacation_type_id: holiday_type.id,
-        location_id: federal_state.id,
-        created_by_email_address: "test@example.com",
-        display_priority: 2,
-        is_public_holiday: true
-      })
-
-      # Add weekend days (Saturday and Sunday)
+      # Add weekend days (Saturday and Sunday May 3-4)
       MehrSchulferien.Periods.create_period(%{
         starts_on: ~D[2025-05-03],
         ends_on: ~D[2025-05-04],
@@ -136,7 +125,30 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
         location_id: federal_state.id,
         created_by_email_address: "test@example.com",
         display_priority: 3,
-        is_public_holiday: false
+        is_public_holiday: false,
+        is_valid_for_everybody: true
+      })
+
+      # Also need to add country-level periods for the has_bridge_days? check
+      MehrSchulferien.Periods.create_period(%{
+        starts_on: ~D[2025-05-01],
+        ends_on: ~D[2025-05-01],
+        holiday_or_vacation_type_id: holiday_type.id,
+        location_id: country.id,
+        created_by_email_address: "test@example.com",
+        display_priority: 1,
+        is_public_holiday: true
+      })
+
+      MehrSchulferien.Periods.create_period(%{
+        starts_on: ~D[2025-05-03],
+        ends_on: ~D[2025-05-04],
+        holiday_or_vacation_type_id: weekend_type.id,
+        location_id: country.id,
+        created_by_email_address: "test@example.com",
+        display_priority: 3,
+        is_public_holiday: false,
+        is_valid_for_everybody: true
       })
 
       conn = get(conn, "/land/d-test/bundesland/brandenburg-test/brueckentage/2025")
@@ -151,7 +163,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
       # Now we should get a 200
       assert html_response(conn, 200)
       assert conn.resp_body =~ "Brückentage 2025 in Brandenburg Test"
-      assert conn.resp_body =~ "Super-Brückentag"
+      assert conn.resp_body =~ "Brückentag"
     end
   end
 

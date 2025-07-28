@@ -176,8 +176,10 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
           end
 
         # Only show the year when there are multiple years and at year changes
+        # But avoid showing year for months with very few days (1-2 days)
         show_year =
           has_multiple_years &&
+            length(month_days) > 2 &&
             (index == 0 ||
                index == length(sorted_month_groups) - 1 ||
                elem(Enum.at(sorted_month_groups, index), 0) |> elem(0) !=

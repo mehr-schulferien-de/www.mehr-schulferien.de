@@ -49,51 +49,51 @@ defmodule MehrSchulferien.BridgeDayCalculationsTest do
       refute BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
     end
 
-    test "2 vacation days requires at least 4 free days" do
+    test "2 vacation days requires more than 100% gain" do
       bridge_day = %{number_days: 2}
 
-      # 4 free days - meets minimum
-      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-04]}]
+      # 5 free days = 150% gain - meets minimum
+      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-05]}]
       assert BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
 
-      # 3 free days - doesn't meet minimum
-      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-03]}]
+      # 4 free days = 100% gain - doesn't meet minimum (must be MORE than 100%)
+      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-04]}]
       refute BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
     end
 
-    test "3 vacation days requires at least 5 free days" do
+    test "3 vacation days requires more than 100% gain" do
       bridge_day = %{number_days: 3}
 
-      # 5 free days - meets minimum
-      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-05]}]
+      # 7 free days = 133% gain - meets minimum
+      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-07]}]
       assert BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
 
-      # 4 free days - doesn't meet minimum
-      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-04]}]
+      # 6 free days = 100% gain - doesn't meet minimum
+      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-06]}]
       refute BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
     end
 
-    test "4 vacation days requires at least 6 free days" do
+    test "4 vacation days requires more than 100% gain" do
       bridge_day = %{number_days: 4}
 
-      # 6 free days - meets minimum
-      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-06]}]
-      assert BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
-
-      # 5 free days - doesn't meet minimum
-      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-05]}]
-      refute BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
-    end
-
-    test "fallback rule: vacation days + 2 for other values" do
-      bridge_day = %{number_days: 7}
-
-      # 9 free days (7 + 2) - meets minimum
+      # 9 free days = 125% gain - meets minimum
       periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-09]}]
       assert BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
 
-      # 8 free days - doesn't meet minimum
+      # 8 free days = 100% gain - doesn't meet minimum
       periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-08]}]
+      refute BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
+    end
+
+    test "fallback rule: more than 100% gain for other values" do
+      bridge_day = %{number_days: 7}
+
+      # 15 free days = 114% gain - meets minimum
+      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-15]}]
+      assert BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
+
+      # 14 free days = 100% gain - doesn't meet minimum
+      periods = [%{starts_on: ~D[2024-01-01], ends_on: ~D[2024-01-14]}]
       refute BridgeDayCalculations.meets_minimum_gain?(bridge_day, periods)
     end
   end

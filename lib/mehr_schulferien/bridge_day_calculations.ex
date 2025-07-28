@@ -100,7 +100,7 @@ defmodule MehrSchulferien.BridgeDayCalculations do
   Determines if a bridge day opportunity meets the minimum gain threshold.
 
   The minimum gain is based on how many vacation days you take versus
-  how many total free days you get.
+  how many total free days you get. Must deliver more than 100% gain.
   """
   def meets_minimum_gain?(bridge_day, periods) do
     vacation_days = bridge_day.number_days
@@ -114,20 +114,15 @@ defmodule MehrSchulferien.BridgeDayCalculations do
         get_number_max_days(periods)
       end
 
-    minimum_free_days =
-      case vacation_days do
-        # 1 day off → at least 3 free days (more reasonable)
-        1 -> 3
-        # 2 days off → at least 4 free days
-        2 -> 4
-        # 3 days off → at least 5 free days
-        3 -> 5
-        # 4 days off → at least 6 free days
-        4 -> 6
-        # Fallback for other values
-        _ -> vacation_days + 2
+    # Calculate the gain percentage
+    gain_percentage =
+      if vacation_days > 0 do
+        (total_free_days - vacation_days) / vacation_days * 100
+      else
+        0
       end
 
-    total_free_days >= minimum_free_days
+    # Must have more than 100% gain
+    gain_percentage > 100
   end
 end
