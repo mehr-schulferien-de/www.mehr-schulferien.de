@@ -36,8 +36,6 @@ meta_description =
   content={"#{@vacation_config.name} #{@current_year}, #{@next_year} Deutschland"}
 />
 <meta property="twitter:description" content={meta_description} />
-<!-- Canonical URL -->
-<link rel="canonical" href={"https://www.mehr-schulferien.de/#{@vacation_type}ferien"} />
 <!-- Breadcrumb Navigation -->
 <script type="application/ld+json">
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([

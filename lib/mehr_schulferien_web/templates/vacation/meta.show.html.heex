@@ -55,11 +55,6 @@ handwritten_meta_tags =
 />
 <meta property="twitter:title" content={@page_title} />
 <meta property="twitter:description" content={meta_description} />
-<!-- Canonical URL -->
-<link
-  rel="canonical"
-  href={"https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"}
-/>
 <!-- Breadcrumb Navigation -->
 <script type="application/ld+json">
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([

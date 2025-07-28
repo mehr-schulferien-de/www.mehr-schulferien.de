@@ -9,7 +9,6 @@
   name="keywords"
   content={"Schulferien, #{@city.name}, #{@federal_state.name}, #{@current_year}, #{@next_year}, Ferientermine, Osterferien, Sommerferien, Herbstferien, Weihnachtsferien"}
 />
-<link rel="canonical" href={url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}")} />
 <%= if assigns[:noindex] do %>
   <meta name="robots" content="noindex,nofollow" />
 <% end %>
