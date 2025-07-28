@@ -1,9 +1,10 @@
 defmodule MehrSchulferienWeb.VacationTypePagesTest do
   use MehrSchulferienWeb.ConnCase
+  import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
     # Create test data
-    country = insert(:country, %{slug: "d", name: "Deutschland", code: "DE", is_country: true})
+    country = get_or_create_deutschland()
 
     # Create some federal states
     bayern =

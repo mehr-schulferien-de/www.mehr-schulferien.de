@@ -273,10 +273,14 @@ defmodule MehrSchulferien.Periods do
   Returns nil if not found (e.g., in test environment).
   """
   def get_beweglicher_ferientag_type do
-    case Repo.get_by(HolidayOrVacationType, slug: "beweglicher-ferientag") do
-      nil -> nil
-      type -> type
-    end
+    import Ecto.Query
+
+    query =
+      from h in HolidayOrVacationType,
+        where: h.slug == "beweglicher-ferientag",
+        limit: 1
+
+    Repo.one(query)
   end
 
   @doc """

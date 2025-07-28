@@ -1,6 +1,7 @@
 defmodule MehrSchulferienWeb.BridgeDayControllerTest do
   use MehrSchulferienWeb.ConnCase
   import Phoenix.ConnTest
+  import MehrSchulferien.TestHelpers
 
   alias MehrSchulferien.Calendars.DateHelpers
 
@@ -155,7 +156,7 @@ defmodule MehrSchulferienWeb.BridgeDayControllerTest do
   end
 
   defp add_federal_state(_) do
-    country = insert(:country, %{slug: "d"})
+    country = get_or_create_deutschland()
     federal_state = insert(:federal_state, %{parent_location_id: country.id, slug: "berlin"})
     {:ok, %{country: country, federal_state: federal_state}}
   end

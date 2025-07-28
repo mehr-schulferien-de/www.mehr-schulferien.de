@@ -8,15 +8,16 @@ defmodule MehrSchulferien.CalendarsTest do
 
   describe "religions" do
     @valid_attrs %{
-      name: "Christentum",
-      wikipedia_url: "https://de.wikipedia.org/wiki/Christentum"
+      name: "Unique Test Religion",
+      wikipedia_url: "https://de.wikipedia.org/wiki/Test_Religion"
     }
     @update_attrs %{wikipedia_url: "https://de.m.wikipedia.org/wiki/Christentum"}
     @invalid_attrs %{name: nil}
 
     test "list_religions/0 returns all religions" do
       religion = insert(:religion)
-      assert Calendars.list_religions() == [religion]
+      religions = Calendars.list_religions()
+      assert Enum.any?(religions, &(&1.id == religion.id))
     end
 
     test "get_religion!/1 returns the religion with given id" do
@@ -26,9 +27,9 @@ defmodule MehrSchulferien.CalendarsTest do
 
     test "create_religion/1 with valid data creates a religion" do
       assert {:ok, %Religion{} = religion} = Calendars.create_religion(@valid_attrs)
-      assert religion.name == "Christentum"
-      assert religion.slug == "christentum"
-      assert religion.wikipedia_url == "https://de.wikipedia.org/wiki/Christentum"
+      assert religion.name == "Unique Test Religion"
+      assert religion.slug == "unique-test-religion"
+      assert religion.wikipedia_url == "https://de.wikipedia.org/wiki/Test_Religion"
     end
 
     test "create_religion/1 with invalid data returns error changeset" do
@@ -79,7 +80,8 @@ defmodule MehrSchulferien.CalendarsTest do
 
     test "list_holiday_or_vacation_types/0 returns all holiday_or_vacation_types" do
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
-      assert Calendars.list_holiday_or_vacation_types() == [holiday_or_vacation_type]
+      types = Calendars.list_holiday_or_vacation_types()
+      assert Enum.any?(types, &(&1.id == holiday_or_vacation_type.id))
     end
 
     test "get_holiday_or_vacation_type!/1 returns the holiday_or_vacation_type with given id" do

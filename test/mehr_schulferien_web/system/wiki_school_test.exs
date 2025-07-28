@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
   import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   describe "wiki school street update functionality" do
     setup [:create_school_with_address]
@@ -87,9 +88,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
     test "user can update street when no existing address exists", %{conn: conn} do
       # Test the case where school has no address initially
       # Use existing country or create if needed
-      country =
-        MehrSchulferien.Repo.get_by(MehrSchulferien.Locations.Location, slug: "d") ||
-          insert(:country, %{slug: "d"})
+      country = get_or_create_deutschland()
 
       federal_state = insert(:federal_state, %{parent_location_id: country.id})
       city = insert(:city, %{parent_location_id: federal_state.id})
@@ -208,7 +207,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
 
   defp create_school_with_address(_) do
     # Create a test school with the specific slug mentioned by the user
-    country = insert(:country, %{slug: "d", name: "Deutschland"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

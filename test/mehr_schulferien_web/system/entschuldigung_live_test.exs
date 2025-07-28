@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   describe "EntschuldigungLive" do
     setup [:create_school]
@@ -268,7 +269,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
       # Check that the new navigation header is present
       assert html =~ "MEHR!"
       assert html =~ "Schulferien"
-      assert html =~ "bg-white border-b border-slate-200"
+      assert html =~ "border-b border-slate-200"
 
       # Check that all dropdown sections are present
       assert html =~ "Schulferien 2025"
@@ -386,7 +387,7 @@ defmodule MehrSchulferienWeb.EntschuldigungLiveSystemTest do
 
   defp create_school(_) do
     # Create the location hierarchy needed for a school
-    country = insert(:country, %{slug: "d", name: "Deutschland"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

@@ -1,11 +1,12 @@
 defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
   use MehrSchulferienWeb.ConnCase
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   describe "coordinate updates on address change" do
     setup do
       # Create test data hierarchy
-      country = insert(:country, %{slug: "d", name: "Deutschland", is_country: true})
+      country = get_or_create_deutschland()
       federal_state = insert(:federal_state, %{parent_location_id: country.id, name: "Berlin"})
 
       # Create two cities with different coordinates

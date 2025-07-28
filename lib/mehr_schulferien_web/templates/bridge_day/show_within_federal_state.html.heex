@@ -450,7 +450,8 @@ end %>
 
           <section class={
             if is_past_bridge_day,
-              do: "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded shadow p-6 h-full",
+              do:
+                "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded shadow p-6 h-full",
               else: "bg-white dark:bg-gray-800 rounded shadow p-6 h-full"
           }>
             <.heading
@@ -466,7 +467,11 @@ end %>
                 bridge_day.ends_on
               )}
               <%= if bridge_day.starts_on.year == bridge_day.ends_on.year && !String.contains?(MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on), Integer.to_string(bridge_day.starts_on.year)) do %>
-                <span class={if is_past_bridge_day, do: "text-gray-400 dark:text-gray-500", else: "text-gray-500 dark:text-gray-400"}>
+                <span class={
+                  if is_past_bridge_day,
+                    do: "text-gray-400 dark:text-gray-500",
+                    else: "text-gray-500 dark:text-gray-400"
+                }>
                   {bridge_day.starts_on.year}
                 </span>
               <% end %>

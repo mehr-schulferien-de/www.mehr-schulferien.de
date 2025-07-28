@@ -1,8 +1,9 @@
 defmodule MehrSchulferienWeb.FederalStateControllerTest do
   use MehrSchulferienWeb.ConnCase
+  import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
-    country = insert(:country, %{slug: "deutschland"})
+    country = get_or_create_deutschland()
     federal_state = insert(:federal_state, %{slug: "bayern", parent_location_id: country.id})
 
     {:ok, %{conn: conn, country: country, federal_state: federal_state}}

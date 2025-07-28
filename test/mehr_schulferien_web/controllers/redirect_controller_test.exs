@@ -1,11 +1,12 @@
 defmodule MehrSchulferienWeb.RedirectControllerTest do
   use MehrSchulferienWeb.ConnCase
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   describe "cities redirects" do
     setup do
       # Create test data hierarchy
-      country = insert(:country, %{slug: "deutschland", name: "Deutschland"})
+      country = get_or_create_deutschland()
 
       federal_state =
         insert(:federal_state, %{parent_location_id: country.id, name: "Nordrhein-Westfalen"})

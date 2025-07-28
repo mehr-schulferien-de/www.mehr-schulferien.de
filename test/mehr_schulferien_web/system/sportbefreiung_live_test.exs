@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.SportbefreiungLiveSystemTest do
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   describe "SportbefreiungLive" do
     setup [:create_school]
@@ -314,7 +315,7 @@ defmodule MehrSchulferienWeb.SportbefreiungLiveSystemTest do
 
   defp create_school(_) do
     # Create the location hierarchy needed for a school
-    country = insert(:country, %{slug: "d", name: "Deutschland"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

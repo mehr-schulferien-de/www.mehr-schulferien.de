@@ -1,11 +1,12 @@
 defmodule MehrSchulferienWeb.VacationUrlGenerationTest do
   use MehrSchulferienWeb.ConnCase, async: true
+  import MehrSchulferien.TestHelpers
   alias MehrSchulferien.Calendars.VacationTypes
 
   describe "generated vacation URLs are routable" do
     setup do
       # Create test data
-      country = insert(:country, %{slug: "d", name: "Deutschland", code: "DE", is_country: true})
+      country = get_or_create_deutschland()
 
       federal_state =
         insert(:federal_state, %{
@@ -16,15 +17,24 @@ defmodule MehrSchulferienWeb.VacationUrlGenerationTest do
           is_federal_state: true
         })
 
-      # Create some vacation types for testing
+      # Get or create vacation type for testing
       vacation_type =
-        insert(:holiday_or_vacation_type, %{
-          country_location_id: country.id,
-          name: "Sommer",
-          slug: "sommer",
-          colloquial: "Sommerferien",
-          default_is_school_vacation: true
-        })
+        case MehrSchulferien.Repo.get_by(MehrSchulferien.Calendars.HolidayOrVacationType,
+               slug: "sommer",
+               default_is_school_vacation: true
+             ) do
+          nil ->
+            insert(:holiday_or_vacation_type, %{
+              country_location_id: country.id,
+              name: "Sommer",
+              slug: "sommer",
+              colloquial: "Sommerferien",
+              default_is_school_vacation: true
+            })
+
+          existing ->
+            existing
+        end
 
       # Create periods for year 2025
       insert(:period, %{

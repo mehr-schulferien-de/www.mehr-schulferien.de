@@ -89,8 +89,12 @@ defmodule MehrSchulferien.Maps do
   Raises `Ecto.NoResultsError` if the zip code does not exist.
   """
   def get_zip_code_by_value!(zip_code_value) do
-    ZipCode
-    |> Repo.get_by!(value: zip_code_value)
+    import Ecto.Query
+
+    query = from z in ZipCode, where: z.value == ^zip_code_value, limit: 1
+
+    query
+    |> Repo.one!()
     |> Repo.preload([:locations])
   end
 

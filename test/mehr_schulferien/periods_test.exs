@@ -287,12 +287,13 @@ defmodule MehrSchulferien.PeriodsTest do
       vacation_type = insert(:holiday_or_vacation_type)
 
       period =
-        create_period(%{
+        insert(:period, %{
           ends_on: ~D[2020-07-10],
           location_id: federal_state.id,
           starts_on: ~D[2020-07-07],
-          vacation_type_id: vacation_type.id
+          holiday_or_vacation_type_id: vacation_type.id
         })
+        |> Repo.preload(:holiday_or_vacation_type)
 
       ical_content = CustomICal.generate([period], federal_state)
 
@@ -329,9 +330,8 @@ defmodule MehrSchulferien.PeriodsTest do
     vacation_period_3 = Enum.at(vacation_periods, 2)
 
     other_period =
-      insert(:period, %{
-        is_school_vacation: true,
-        is_valid_for_students: true,
+      insert(:school_vacation, %{
+        location_id: federal_state.id,
         starts_on: ~D[2020-10-31],
         ends_on: ~D[2020-10-31]
       })
@@ -346,23 +346,5 @@ defmodule MehrSchulferien.PeriodsTest do
        vacation_period_3: vacation_period_3,
        other_period: other_period
      }}
-  end
-
-  defp create_period(%{
-         ends_on: ends_on,
-         location_id: location_id,
-         starts_on: starts_on,
-         vacation_type_id: vacation_type_id
-       }) do
-    {:ok, period} =
-      Periods.create_period(%{
-        created_by_email_address: "froderick@example.com",
-        location_id: location_id,
-        holiday_or_vacation_type_id: vacation_type_id,
-        starts_on: starts_on,
-        ends_on: ends_on
-      })
-
-    Periods.get_period!(period.id)
   end
 end

@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.FederalStateCountiesCitiesSystemTest do
   import Phoenix.ConnTest
 
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
     {:ok, %{conn: conn}}
@@ -11,7 +12,7 @@ defmodule MehrSchulferienWeb.FederalStateCountiesCitiesSystemTest do
   describe "counties and cities page" do
     test "shows counties and cities for a federal state", %{conn: conn} do
       # Create test data
-      country = insert(:country, %{slug: "d", name: "Deutschland"})
+      country = get_or_create_deutschland()
 
       federal_state =
         insert(:federal_state, %{

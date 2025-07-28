@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.BridgeDaySystemTest do
   import Phoenix.ConnTest
 
   import MehrSchulferien.Factory
-
+  import MehrSchulferien.TestHelpers
   @current_year Date.utc_today().year
   @future_year @current_year + 1
   @past_year @current_year - 100
@@ -57,7 +57,7 @@ defmodule MehrSchulferienWeb.BridgeDaySystemTest do
   end
 
   defp add_federal_state(_) do
-    country = insert(:country, %{slug: "d"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

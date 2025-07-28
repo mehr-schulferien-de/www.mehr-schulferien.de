@@ -1,8 +1,10 @@
 defmodule MehrSchulferienWeb.PageControllerTest do
   use MehrSchulferienWeb.ConnCase
 
+  import MehrSchulferien.TestHelpers
+
   setup %{conn: conn} do
-    country = insert(:country, %{slug: "d"})
+    country = get_or_create_deutschland()
     # Insert NRW as required for the teaser
     nrw = insert(:federal_state, %{slug: "nordrhein-westfalen", parent_location_id: country.id})
     # Insert a holiday_or_vacation_type and a period for the current year

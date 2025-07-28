@@ -1,6 +1,8 @@
 <%= form_for @changeset, "#", [as: :address, phx_submit: "update_school", class: "space-y-4"], fn f -> %>
   <div>
-    {label(f, :name, "Schulname *", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :name, "Schulname *",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {text_input(f, :name,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -15,7 +17,9 @@
   </div>
 
   <div>
-    {label(f, :street, "Straße *", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :street, "Straße *",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {text_input(f, :street,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -30,7 +34,9 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
-      {label(f, :zip_code, "PLZ *", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+      {label(f, :zip_code, "PLZ *",
+        class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      )}
       {text_input(f, :zip_code,
         class:
           "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -46,7 +52,9 @@
     </div>
 
     <div>
-      {label(f, :city, "Stadt *", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+      {label(f, :city, "Stadt *",
+        class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      )}
       {text_input(f, :city,
         class:
           "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -61,7 +69,9 @@
   </div>
 
   <div>
-    {label(f, :email_address, "E-Mail", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :email_address, "E-Mail",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {email_input(f, :email_address,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -74,7 +84,9 @@
   </div>
 
   <div>
-    {label(f, :phone_number, "Telefon", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :phone_number, "Telefon",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {text_input(f, :phone_number,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -87,7 +99,9 @@
   </div>
 
   <div>
-    {label(f, :homepage_url, "Homepage *", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :homepage_url, "Homepage *",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {url_input(f, :homepage_url,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -101,7 +115,9 @@
   </div>
 
   <div>
-    {label(f, :wikipedia_url, "Wikipedia", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :wikipedia_url, "Wikipedia",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {url_input(f, :wikipedia_url,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -114,7 +130,9 @@
   </div>
 
   <div>
-    {label(f, :instagram_url, "Instagram", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :instagram_url, "Instagram",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {url_input(f, :instagram_url,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
@@ -127,7 +145,9 @@
   </div>
 
   <div>
-    {label(f, :description, "Beschreibung", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")}
+    {label(f, :description, "Beschreibung",
+      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+    )}
     {textarea(f, :description,
       class:
         "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",

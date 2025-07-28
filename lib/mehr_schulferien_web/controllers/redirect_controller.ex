@@ -61,8 +61,9 @@ defmodule MehrSchulferienWeb.RedirectController do
     alias MehrSchulferien.Locations.Location
     alias MehrSchulferien.Maps.{ZipCode, ZipCodeMapping}
 
-    # Find the zip code
-    zip = Repo.get_by!(ZipCode, value: zip_code)
+    # Find the zip code - use limit 1 to handle duplicates
+    zip_query = from z in ZipCode, where: z.value == ^zip_code, limit: 1
+    zip = Repo.one!(zip_query)
 
     # Find the city associated with this zip code
     city_query =

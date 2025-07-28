@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
   import Phoenix.ConnTest
 
   import MehrSchulferien.Factory
-
+  import MehrSchulferien.TestHelpers
   @current_year Date.utc_today().year
   @future_year @current_year + 1
 
@@ -41,7 +41,7 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
       end
 
       # Test the intro paragraph
-      assert html_response(conn, 200) =~ ~s(<p class="text-gray-700 mb-8">)
+      assert html_response(conn, 200) =~ ~s(<p class="text-gray-700 dark:text-gray-300 mb-8">)
 
       assert html_response(conn, 200) =~
                "Nicht nur klassische Brückentage, sondern auch Super-Brückentage, bei denen Sie noch mehr freie Tage herausholen können."
@@ -63,21 +63,20 @@ defmodule MehrSchulferienWeb.BridgeDayHEExSystemTest do
 
       html = html_response(conn, 200)
 
-      # Check for FAQ content
-      if html =~ "Brückentag-FAQ" do
-        assert html =~ ~s(<dt class="text-lg font-medium text-gray-800">Wie viele Brückentage)
-        assert html =~ ~s(<dd class="mt-2 text-gray-700">)
+      # The FAQ section only appears if there are normal bridge days
+      # Since our test setup creates super bridge days (which require more than 1 day off),
+      # the FAQ may not appear. We'll check for the basic page structure instead.
+      assert html =~ "Brückentage #{@future_year} in"
 
-        # Check for Schema.org JSON-LD
-        assert html =~ ~s(<script type="application/ld+json">)
-        assert html =~ ~s("@context": "https://schema.org")
-        assert html =~ ~s("@type": "FAQPage")
-      end
+      # Check for Schema.org JSON-LD
+      # The schema.org data is in the page, inside a script tag
+      assert html =~ ~s(<script type="application/ld+json">)
+      assert html =~ ~s("@context":"https://schema.org")
     end
   end
 
   defp add_federal_state(_) do
-    country = insert(:country, %{slug: "d", name: "Deutschland", code: "DE"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

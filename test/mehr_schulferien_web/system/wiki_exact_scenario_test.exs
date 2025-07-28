@@ -3,14 +3,14 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
   import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
-
+  import MehrSchulferien.TestHelpers
   alias MehrSchulferien.Maps.Address
 
   describe "exact scenario from screenshot" do
     @tag :system
     test "user removes email, homepage AND phone number, should see complete original data in version history" do
       # Create the exact test school mentioned in user scenario
-      country = insert(:country, %{slug: "d", name: "Deutschland"})
+      country = get_or_create_deutschland()
 
       federal_state =
         insert(:federal_state, %{

@@ -6,12 +6,20 @@ defmodule MehrSchulferien.PeriodsCopyTest do
 
   describe "copy_bewegliche_ferientage/2" do
     setup do
-      # Create beweglicher ferientag type
+      # Get or create beweglicher ferientag type
       _beweglicher_type =
-        insert(:holiday_or_vacation_type,
-          name: "Beweglicher Ferientag",
-          slug: "beweglicher-ferientag"
-        )
+        case MehrSchulferien.Repo.get_by(MehrSchulferien.Calendars.HolidayOrVacationType,
+               slug: "beweglicher-ferientag"
+             ) do
+          nil ->
+            insert(:holiday_or_vacation_type,
+              name: "Beweglicher Ferientag",
+              slug: "beweglicher-ferientag"
+            )
+
+          existing ->
+            existing
+        end
 
       # Create schools
       country = insert(:country)

@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
   import Phoenix.ConnTest
 
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
   alias MehrSchulferienWeb.TestRouteHelpers
 
   @current_year Date.utc_today().year
@@ -127,7 +128,7 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
 
   defp add_school_with_periods(_) do
     # Create the location hierarchy
-    country = insert(:country, %{slug: "d", name: "Deutschland"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

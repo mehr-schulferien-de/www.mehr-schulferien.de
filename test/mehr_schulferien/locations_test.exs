@@ -2,6 +2,7 @@ defmodule MehrSchulferien.LocationsTest do
   use MehrSchulferien.DataCase
 
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   alias MehrSchulferien.{Locations, Locations.Flag, Locations.Location}
   alias MehrSchulferien.Repo
@@ -303,8 +304,9 @@ defmodule MehrSchulferien.LocationsTest do
     end
   end
 
+  # This helper is already using the factory pattern correctly
   defp add_country_cities(slug) do
-    country = insert(:country, slug: slug)
+    country = get_or_create_country(slug)
     federal_states = insert_list(3, :federal_state, %{parent_location_id: country.id})
     counties = Enum.map(federal_states, &insert(:county, %{parent_location_id: &1.id}))
     Enum.map(counties, &insert(:city, %{parent_location_id: &1.id}))

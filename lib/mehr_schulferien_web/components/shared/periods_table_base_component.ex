@@ -89,7 +89,10 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     >
       <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium align-top">
         <%= if @period_link_builder do %>
-          <a href={@period_link_builder.(@period)} class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
+          <a
+            href={@period_link_builder.(@period)}
+            class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+          >
             {render_slot(@period_name) || render_period_name(assigns)}
           </a>
         <% else %>

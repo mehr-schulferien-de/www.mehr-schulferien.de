@@ -28,6 +28,9 @@ defmodule MehrSchulferien.Factory do
     # Check if name already has "ferien" suffix
     colloquial = if String.ends_with?(name, "ferien"), do: name, else: "#{name}ferien"
 
+    # Generate unique slug if not provided
+    slug = attrs[:slug] || sequence("#{String.downcase(name)}-vacation")
+
     holiday_or_vacation_type = %HolidayOrVacationType{
       name: name,
       colloquial: colloquial,
@@ -36,7 +39,7 @@ defmodule MehrSchulferien.Factory do
       default_is_listed_below_month: true,
       default_is_school_vacation: true,
       default_is_valid_for_students: true,
-      slug: String.downcase(name),
+      slug: slug,
       wikipedia_url: "https://de.wikipedia.org/wiki/Schulferien##{name}ferien",
       country_location_id: country_id
     }
@@ -44,8 +47,15 @@ defmodule MehrSchulferien.Factory do
     merge_attributes(holiday_or_vacation_type, attrs)
   end
 
-  def country_factory do
-    %Location{name: "Deutschland", code: "D", is_country: true}
+  def country_factory(attrs \\ %{}) do
+    country = %Location{
+      name: "Deutschland",
+      code: "D",
+      is_country: true,
+      slug: sequence("deutschland")
+    }
+
+    merge_attributes(country, attrs)
   end
 
   def federal_state_factory(attrs) do
@@ -69,7 +79,8 @@ defmodule MehrSchulferien.Factory do
       name: sequence("Koblenz"),
       code: "KO",
       is_county: true,
-      parent_location_id: federal_state_id
+      parent_location_id: federal_state_id,
+      slug: sequence("koblenz")
     }
 
     merge_attributes(county, attrs)
@@ -82,7 +93,8 @@ defmodule MehrSchulferien.Factory do
       name: sequence("Dresden"),
       code: "DR",
       is_city: true,
-      parent_location_id: county_id
+      parent_location_id: county_id,
+      slug: sequence("dresden")
     }
 
     merge_attributes(city, attrs)
@@ -92,9 +104,10 @@ defmodule MehrSchulferien.Factory do
     city_id = attrs[:parent_location_id] || insert(:city).id
 
     school = %Location{
-      name: "Kopernikus-Gymnasium",
+      name: sequence("Kopernikus-Gymnasium"),
       is_school: true,
-      parent_location_id: city_id
+      parent_location_id: city_id,
+      slug: sequence("kopernikus-gymnasium")
     }
 
     merge_attributes(school, attrs)
@@ -123,11 +136,12 @@ defmodule MehrSchulferien.Factory do
   end
 
   def religion_factory do
-    name = Enum.random(["Christentum", "Judentum", "Islam"])
+    unique_suffix = System.unique_integer([:positive])
+    name = "Test Religion #{unique_suffix}"
 
     %Religion{
       name: name,
-      wikipedia_url: "https://de.wikipedia.org/wiki/#{name}"
+      wikipedia_url: "https://de.wikipedia.org/wiki/Religion"
     }
   end
 
@@ -161,6 +175,103 @@ defmodule MehrSchulferien.Factory do
     }
 
     merge_attributes(bridge_day, attrs)
+  end
+
+  # Factory for creating holiday types commonly used in tests
+  def holiday_type_factory(attrs) do
+    name = attrs[:name] || "Feiertag"
+    country_id = attrs[:country_location_id] || insert(:country).id
+
+    # Generate unique slug if not provided
+    slug = attrs[:slug] || sequence("#{String.downcase(name)}-holiday")
+
+    holiday_type = %HolidayOrVacationType{
+      name: name,
+      colloquial: name,
+      default_display_priority: 1,
+      default_html_class: "red",
+      default_is_listed_below_month: false,
+      default_is_school_vacation: false,
+      default_is_valid_for_students: true,
+      slug: slug,
+      country_location_id: country_id
+    }
+
+    merge_attributes(holiday_type, attrs)
+  end
+
+  # Factory for creating weekend type
+  def weekend_type_factory(attrs) do
+    country_id = attrs[:country_location_id] || insert(:country).id
+
+    # Generate unique slug if not provided
+    slug = attrs[:slug] || sequence("wochenende")
+
+    weekend_type = %HolidayOrVacationType{
+      name: "Wochenende",
+      colloquial: "Wochenende",
+      default_display_priority: 3,
+      default_html_class: "gray",
+      default_is_listed_below_month: false,
+      default_is_school_vacation: false,
+      default_is_valid_for_students: false,
+      slug: slug,
+      country_location_id: country_id
+    }
+
+    merge_attributes(weekend_type, attrs)
+  end
+
+  # Factory for creating public holiday periods
+  def public_holiday_factory(attrs) do
+    location = attrs[:location_id] || insert(:federal_state).id
+    holiday_type = attrs[:holiday_or_vacation_type] || build(:holiday_type)
+
+    period = %Period{
+      created_by_email_address: "test@example.com",
+      display_priority: 1,
+      starts_on: attrs[:starts_on] || Date.utc_today(),
+      ends_on: attrs[:ends_on] || attrs[:starts_on] || Date.utc_today(),
+      location_id: location,
+      is_public_holiday: true,
+      is_school_vacation: false
+    }
+
+    # Only add the association if no ID is provided
+    period =
+      if Map.has_key?(attrs, :holiday_or_vacation_type_id) do
+        period
+      else
+        Map.put(period, :holiday_or_vacation_type, holiday_type)
+      end
+
+    merge_attributes(period, attrs)
+  end
+
+  # Factory for creating school vacation periods
+  def school_vacation_factory(attrs) do
+    location = attrs[:location_id] || insert(:federal_state).id
+    vacation_type = attrs[:holiday_or_vacation_type] || build(:holiday_or_vacation_type)
+
+    period = %Period{
+      created_by_email_address: "test@example.com",
+      display_priority: 3,
+      starts_on: attrs[:starts_on] || Date.utc_today(),
+      ends_on: attrs[:ends_on] || Date.add(Date.utc_today(), 7),
+      location_id: location,
+      is_public_holiday: false,
+      is_school_vacation: true
+    }
+
+    # Only add the association if no ID is provided
+    period =
+      if Map.has_key?(attrs, :holiday_or_vacation_type_id) do
+        period
+      else
+        Map.put(period, :holiday_or_vacation_type, vacation_type)
+      end
+
+    merge_attributes(period, attrs)
   end
 
   def add_school_periods(%{location: location}) do
@@ -207,16 +318,18 @@ defmodule MehrSchulferien.Factory do
   end
 
   defp create_bridge_day_periods(location_id, year) do
+    unique_suffix = System.unique_integer([:positive])
+
     holiday_type =
       insert(:holiday_or_vacation_type, %{
-        name: "Test Holiday",
-        slug: "test-holiday-#{year}-#{System.unique_integer([:positive])}"
+        name: "Test Holiday #{unique_suffix}",
+        slug: "test-holiday-#{year}-#{unique_suffix}"
       })
 
     weekend_type =
       insert(:holiday_or_vacation_type, %{
-        name: "Wochenende",
-        slug: "wochenende-#{year}-#{System.unique_integer([:positive])}"
+        name: "Wochenende #{unique_suffix}",
+        slug: "wochenende-#{year}-#{unique_suffix}"
       })
 
     # Create a bridge day scenario that meets minimum gain requirements:
@@ -247,6 +360,7 @@ defmodule MehrSchulferien.Factory do
     # Weekend days (Saturday and Sunday)
     create_period(%{
       is_public_holiday: false,
+      is_valid_for_everybody: true,
       location_id: location_id,
       holiday_or_vacation_type_id: weekend_type.id,
       starts_on: Date.new!(year, 5, 3),
@@ -259,5 +373,109 @@ defmodule MehrSchulferien.Factory do
   defp create_period(attrs) do
     {:ok, period} = MehrSchulferien.Periods.create_period(attrs)
     period
+  end
+
+  # Helper function to create test periods for a specific year
+  def create_test_periods(country_id, location_id, year \\ nil) do
+    year = year || Date.utc_today().year
+
+    # Create holiday types with unique names
+    unique_suffix = System.unique_integer([:positive])
+
+    holiday_type =
+      insert(:holiday_type, %{
+        name: "Test Holiday #{unique_suffix}",
+        slug: "test-holiday-#{year}-#{unique_suffix}",
+        country_location_id: country_id
+      })
+
+    weekend_type =
+      insert(:weekend_type, %{
+        name: "Wochenende #{unique_suffix}",
+        slug: "wochenende-#{year}-#{unique_suffix}",
+        country_location_id: country_id
+      })
+
+    # Create holidays for bridge day scenarios
+    # Labor Day (May 1)
+    insert(:public_holiday, %{
+      holiday_or_vacation_type_id: holiday_type.id,
+      location_id: location_id,
+      starts_on: Date.new!(year, 5, 1),
+      ends_on: Date.new!(year, 5, 1),
+      display_priority: 1
+    })
+
+    # Weekend (May 3-4)
+    insert(:period, %{
+      holiday_or_vacation_type_id: weekend_type.id,
+      location_id: location_id,
+      starts_on: Date.new!(year, 5, 3),
+      ends_on: Date.new!(year, 5, 4),
+      is_public_holiday: false,
+      is_valid_for_everybody: true,
+      display_priority: 3
+    })
+
+    # Ascension Day (May 29)
+    insert(:public_holiday, %{
+      holiday_or_vacation_type_id: holiday_type.id,
+      location_id: location_id,
+      starts_on: Date.new!(year, 5, 29),
+      ends_on: Date.new!(year, 5, 29),
+      display_priority: 1
+    })
+
+    # Weekend (May 31 - June 1)
+    insert(:period, %{
+      holiday_or_vacation_type_id: weekend_type.id,
+      location_id: location_id,
+      starts_on: Date.new!(year, 5, 31),
+      ends_on: Date.new!(year, 6, 1),
+      is_public_holiday: false,
+      is_valid_for_everybody: true,
+      display_priority: 3
+    })
+  end
+
+  # Helper to create periods for multiple years
+  def create_periods_for_years(location_id, years, country_id \\ nil) do
+    # If country_id is not provided, assume the location is a federal state
+    # and get its parent (which should be the country)
+    country_id =
+      if country_id do
+        country_id
+      else
+        location = MehrSchulferien.Locations.get_location!(location_id)
+        location.parent_location_id
+      end
+
+    Enum.each(years, fn year ->
+      create_test_periods(country_id, location_id, year)
+    end)
+  end
+
+  # Helper to create vacation periods with specific types
+  def create_vacation_periods(location_id, vacation_data) do
+    # vacation_data is a list of {type_atom, starts_on, ends_on}
+    vacation_types = %{
+      oster: insert(:holiday_or_vacation_type, %{name: "Oster", slug: "oster"}),
+      herbst: insert(:holiday_or_vacation_type, %{name: "Herbst", slug: "herbst"}),
+      weihnachts: insert(:holiday_or_vacation_type, %{name: "Weihnachts", slug: "weihnachts"}),
+      winter: insert(:holiday_or_vacation_type, %{name: "Winter", slug: "winter"}),
+      sommer: insert(:holiday_or_vacation_type, %{name: "Sommer", slug: "sommer"}),
+      pfingst: insert(:holiday_or_vacation_type, %{name: "Pfingst", slug: "pfingst"})
+    }
+
+    for {type_atom, starts_on, ends_on} <- vacation_data do
+      vacation_type = Map.get(vacation_types, type_atom)
+
+      insert(:school_vacation, %{
+        location_id: location_id,
+        holiday_or_vacation_type_id: vacation_type.id,
+        starts_on: starts_on,
+        ends_on: ends_on
+      })
+    end
   end
 end

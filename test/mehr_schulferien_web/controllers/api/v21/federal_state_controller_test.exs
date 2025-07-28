@@ -2,10 +2,11 @@ defmodule MehrSchulferienWeb.Api.V21.FederalStateControllerTest do
   use MehrSchulferienWeb.ConnCase
 
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
     # Create a country first
-    country = insert(:country, %{name: "Deutschland", slug: "deutschland"})
+    country = get_or_create_deutschland()
 
     # Create multiple federal states
     federal_states = [

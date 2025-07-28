@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
-
+  import MehrSchulferien.TestHelpers
   @moduletag :system
 
   describe "PDF generation and download" do
@@ -302,7 +302,7 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
 
   defp create_school(_) do
     # Create the location hierarchy needed for a school
-    country = insert(:country, %{slug: "d", name: "Deutschland"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

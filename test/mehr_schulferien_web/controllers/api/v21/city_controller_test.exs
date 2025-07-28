@@ -2,10 +2,11 @@ defmodule MehrSchulferienWeb.Api.V21.CityControllerTest do
   use MehrSchulferienWeb.ConnCase
 
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
     # Create location hierarchy
-    country = insert(:country, %{name: "Deutschland", slug: "deutschland"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

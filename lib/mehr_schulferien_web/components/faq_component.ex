@@ -54,7 +54,9 @@ defmodule MehrSchulferienWeb.FaqComponent do
     ~H"""
     <div class="mt-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
       <div class="mx-auto px-4 py-8 sm:py-12">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" id="faq">Ferien FAQ</h2>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" id="faq">
+          Ferien FAQ
+        </h2>
         <p class="mt-3 max-w-3xl text-sm text-gray-600 dark:text-gray-400">
           Antworten zu häufigen Fragen zum Thema Schulferien und Feiertagen {@location_prep} {@location.name}.
         </p>

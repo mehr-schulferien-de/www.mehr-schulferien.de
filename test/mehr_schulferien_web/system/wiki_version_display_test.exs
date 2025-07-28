@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
   import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
-
+  import MehrSchulferien.TestHelpers
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Maps.Address
 
@@ -109,7 +109,7 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
   defp create_school_with_initial_data(_) do
     # Create a school with initial complete data (name, street, zip_code, city)
     # but without email address initially
-    country = insert(:country, %{slug: "d", name: "Deutschland"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{

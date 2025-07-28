@@ -2,23 +2,8 @@
 #
 #     mix run priv/repo/seeds.exs
 #
-# Import all seed files in the correct order
+# Empty seed file - no default data is seeded
+# All test data should be created within the tests themselves
 
-IO.puts("Starting seed import...")
-
-# Initialize lookup maps for cross-file references
-religion_lookup = %{}
-location_lookup = %{}
-holiday_type_lookup = %{}
-zip_code_lookup = %{}
-
-# Import in dependency order
-Code.require_file("religions.exs", "priv/repo/seeds")
-Code.require_file("locations.exs", "priv/repo/seeds")
-Code.require_file("holiday_or_vacation_types.exs", "priv/repo/seeds")
-Code.require_file("zip_codes.exs", "priv/repo/seeds")
-Code.require_file("zip_code_mappings.exs", "priv/repo/seeds")
-Code.require_file("addresses.exs", "priv/repo/seeds")
-Code.require_file("periods.exs", "priv/repo/seeds")
-
-IO.puts("All seeds imported successfully!")
+IO.puts("Seeds file is empty - no default data will be loaded.")
+IO.puts("Tests should create their own data as needed.")

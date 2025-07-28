@@ -21,12 +21,20 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
 
   describe "federal state limit validation" do
     setup do
-      # Create beweglicher ferientag type
+      # Get or create beweglicher ferientag type
       beweglicher_type =
-        insert(:holiday_or_vacation_type,
-          name: "Beweglicher Ferientag",
-          slug: "beweglicher-ferientag"
-        )
+        case MehrSchulferien.Repo.get_by(MehrSchulferien.Calendars.HolidayOrVacationType,
+               slug: "beweglicher-ferientag"
+             ) do
+          nil ->
+            insert(:holiday_or_vacation_type,
+              name: "Beweglicher Ferientag",
+              slug: "beweglicher-ferientag"
+            )
+
+          existing ->
+            existing
+        end
 
       # Create location hierarchy
       country = insert(:country)

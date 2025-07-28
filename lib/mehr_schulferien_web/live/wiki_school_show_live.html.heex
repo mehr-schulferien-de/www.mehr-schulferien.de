@@ -32,7 +32,9 @@
             </div>
           </div>
           <div class="ml-4 flex-1">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Stammdaten bearbeiten</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Stammdaten bearbeiten
+            </h2>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Adresse, Kontaktdaten und weitere Informationen der Schule bearbeiten oder automatisch anreichern.
             </p>
@@ -73,7 +75,9 @@
             </div>
           </div>
           <div class="ml-4 flex-1">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Bewegliche Ferientage</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Bewegliche Ferientage
+            </h2>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Verwalten Sie die beweglichen Ferientage dieser Schule.
               <%= if @bewegliche_ferientage_count > 0 do %>
@@ -103,7 +107,9 @@
     <!-- School Info -->
     <div class="lg:col-span-2">
       <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Schulinformationen</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+          Schulinformationen
+        </h3>
 
         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -129,14 +135,18 @@
             <%= if @school.address.phone_number do %>
               <div>
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Telefon</dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.phone_number}</dd>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                  {@school.address.phone_number}
+                </dd>
               </div>
             <% end %>
 
             <%= if @school.address.email_address do %>
               <div>
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">E-Mail</dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.email_address}</dd>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                  {@school.address.email_address}
+                </dd>
               </div>
             <% end %>
 
@@ -158,21 +168,29 @@
             <%= if @school.address.students_count do %>
               <div>
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Schülerzahl</dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.students_count}</dd>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                  {@school.address.students_count}
+                </dd>
               </div>
             <% end %>
 
             <%= if @school.address.founded_year do %>
               <div>
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Gründungsjahr</dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.founded_year}</dd>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Gründungsjahr
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                  {@school.address.founded_year}
+                </dd>
               </div>
             <% end %>
 
             <%= if @school.address.description do %>
               <div class="sm:col-span-2">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Beschreibung</dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.description}</dd>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                  {@school.address.description}
+                </dd>
               </div>
             <% end %>
           <% else %>

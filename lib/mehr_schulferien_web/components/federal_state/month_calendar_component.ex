@@ -70,7 +70,8 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
               <th
                 class={[
                   "text-left py-0.5 pl-1 pr-0 font-semibold text-base border border-gray-200 dark:border-gray-700",
-                  @should_cross_out && "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400",
+                  @should_cross_out &&
+                    "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400",
                   !@should_cross_out && "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 ]}
                 colspan="7"

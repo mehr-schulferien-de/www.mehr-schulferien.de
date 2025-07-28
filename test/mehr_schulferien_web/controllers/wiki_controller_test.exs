@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
   use MehrSchulferienWeb.ConnCase
 
   import Phoenix.ConnTest
+  import MehrSchulferien.TestHelpers
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Maps.Address
 
@@ -303,7 +304,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
   end
 
   defp create_school_with_address(_context) do
-    country = insert(:country, %{slug: "d"})
+    country = get_or_create_deutschland()
     federal_state = insert(:federal_state, %{parent_location_id: country.id})
     county = insert(:county, %{parent_location_id: federal_state.id})
     city = insert(:city, %{parent_location_id: county.id})

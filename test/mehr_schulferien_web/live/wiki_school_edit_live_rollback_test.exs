@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
   use MehrSchulferienWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
   import Ecto.Query
 
   alias MehrSchulferien.{Wiki, Locations}
@@ -9,7 +10,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
   describe "Version Rollback Functionality" do
     setup do
       # Create test data using factory
-      country = insert(:country, %{slug: "d", name: "Deutschland"})
+      country = get_or_create_deutschland()
 
       federal_state =
         insert(:federal_state, %{

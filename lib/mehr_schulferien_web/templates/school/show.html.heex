@@ -176,7 +176,9 @@
             <%= if @school.address do %>
               <!-- Header -->
               <div class="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                <.heading level={2} class="text-lg m-0 text-gray-900 dark:text-gray-100">Schulinformationen</.heading>
+                <.heading level={2} class="text-lg m-0 text-gray-900 dark:text-gray-100">
+                  Schulinformationen
+                </.heading>
               </div>
 
               <div class="p-4 space-y-4">
@@ -294,7 +296,10 @@
                         MehrSchulferienWeb.Helpers.PhoneFormatterHelpers.format_phone_number(
                           phone
                         ) %>
-                      <a href={tel_link} class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                      <a
+                        href={tel_link}
+                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                      >
                         {formatted_phone}
                       </a>
                     </div>
@@ -355,7 +360,9 @@
                 </div>
                 <!-- Export vCard - directly below contact details -->
                 <div class="mt-3">
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Kontaktdaten exportieren:</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Kontaktdaten exportieren:
+                  </div>
                   <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/vcard",
                       class: "inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300" do %>
                     <svg
@@ -479,7 +486,9 @@
                     />
                   </svg>
                 </div>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Keine Schulinformationen verfügbar</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Keine Schulinformationen verfügbar
+                </p>
                 <%= link to: "/wiki/schools/#{@school.slug}", 
                    class: "inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md transition-colors" do %>
                   <svg
@@ -505,7 +514,10 @@
         <!-- Documents & Letters Card -->
         <.card padding="p-4" class="mt-4">
           <:content>
-            <.heading level={3} class="text-lg mb-3 flex items-center text-gray-900 dark:text-gray-100">
+            <.heading
+              level={3}
+              class="text-lg mb-3 flex items-center text-gray-900 dark:text-gray-100"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5 mr-2 text-teal-600 dark:text-teal-400"
@@ -539,7 +551,9 @@
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                   />
                 </svg>
-                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">Entschuldigung schreiben</span>
+                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">
+                  Entschuldigung schreiben
+                </span>
               <% end %>
               <%= link to: "/briefe/#{@school.slug}/beurlaubung",
                  class: "flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition-colors group" do %>
@@ -557,7 +571,9 @@
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">Beurlaubung beantragen</span>
+                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">
+                  Beurlaubung beantragen
+                </span>
               <% end %>
               <%= link to: "/briefe/#{@school.slug}/sportbefreiung",
                  class: "flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition-colors group" do %>
@@ -575,7 +591,9 @@
                     d="M13 10V3L4 14h7v7l9-11h-7z"
                   />
                 </svg>
-                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">Sportbefreiung beantragen</span>
+                <span class="group-hover:text-gray-900 dark:group-hover:text-gray-100">
+                  Sportbefreiung beantragen
+                </span>
               <% end %>
             </div>
           </:content>

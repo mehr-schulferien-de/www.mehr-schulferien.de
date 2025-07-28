@@ -3,10 +3,11 @@ defmodule MehrSchulferienWeb.HomeLiveTest do
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
+  import MehrSchulferien.TestHelpers
 
   setup do
     # Create Germany country that the HomeLive expects
-    country = insert(:country, name: "Deutschland", slug: "d", code: "DE")
+    country = get_or_create_deutschland()
 
     # Create some federal states
     bayern =

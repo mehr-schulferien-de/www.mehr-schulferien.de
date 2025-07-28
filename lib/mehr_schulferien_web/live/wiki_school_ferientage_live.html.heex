@@ -131,7 +131,8 @@
                   if(index > 0, do: "border-l border-gray-300 dark:border-gray-600", else: ""),
                   if(year_data.school_year == @selected_school_year,
                     do: "bg-blue-600 dark:bg-blue-500 text-white",
-                    else: "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    else:
+                      "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                   )
                 ]}
               >
@@ -176,12 +177,16 @@
                 </span>
               <% else %>
                 <span>
-                  <strong class="text-gray-900 dark:text-gray-100">{@current_ferientage_count}</strong>
+                  <strong class="text-gray-900 dark:text-gray-100">
+                    {@current_ferientage_count}
+                  </strong>
                   <span class="text-gray-500 dark:text-gray-400">von</span>
                   <strong class="text-gray-900 dark:text-gray-100">
                     {@ferientage_limit.max_bewegliche_ferientage}
                   </strong>
-                  <span class="text-gray-500 dark:text-gray-400">beweglichen Ferientagen angelegt</span>
+                  <span class="text-gray-500 dark:text-gray-400">
+                    beweglichen Ferientagen angelegt
+                  </span>
                 </span>
               <% end %>
             <% else %>
@@ -250,7 +255,9 @@
                   Bewegliche Ferientage in {@federal_state.name} - Schuljahr {@selected_school_year}
                 </h3>
                 <%= if @ferientage_limit.max_bewegliche_ferientage == 0 do %>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Keine beweglichen Ferientage vorgesehen</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Keine beweglichen Ferientage vorgesehen
+                  </p>
                 <% else %>
                   <div class="grid grid-cols-3 gap-4">
                     <div>

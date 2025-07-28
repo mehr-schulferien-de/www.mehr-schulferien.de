@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.RobotsSystemTest do
   import Phoenix.ConnTest
 
   import MehrSchulferien.Factory
-
+  import MehrSchulferien.TestHelpers
   @current_year Date.utc_today().year
   @next_year @current_year + 1
   @past_year @current_year - 2
@@ -44,7 +44,7 @@ defmodule MehrSchulferienWeb.RobotsSystemTest do
   end
 
   defp add_federal_state(_) do
-    country = insert(:country, %{slug: "d"})
+    country = get_or_create_deutschland()
 
     federal_state =
       insert(:federal_state, %{
@@ -63,43 +63,32 @@ defmodule MehrSchulferienWeb.RobotsSystemTest do
     holiday_type = insert(:holiday_or_vacation_type, %{name: "Test Holiday"})
 
     # Past year period
-    create_period(%{
-      is_public_holiday: true,
+    insert(:public_holiday, %{
       location_id: federal_state.id,
       holiday_or_vacation_type_id: holiday_type.id,
       starts_on: Date.new!(@past_year, 5, 1),
       ends_on: Date.new!(@past_year, 5, 1),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
+      display_priority: 1
     })
 
     # Current year period
-    create_period(%{
-      is_public_holiday: true,
+    insert(:public_holiday, %{
       location_id: federal_state.id,
       holiday_or_vacation_type_id: holiday_type.id,
       starts_on: Date.new!(@current_year, 5, 1),
       ends_on: Date.new!(@current_year, 5, 1),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
+      display_priority: 1
     })
 
     # Next year period
-    create_period(%{
-      is_public_holiday: true,
+    insert(:public_holiday, %{
       location_id: federal_state.id,
       holiday_or_vacation_type_id: holiday_type.id,
       starts_on: Date.new!(@next_year, 5, 1),
       ends_on: Date.new!(@next_year, 5, 1),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
+      display_priority: 1
     })
 
     {:ok, %{federal_state: federal_state}}
-  end
-
-  defp create_period(attrs) do
-    {:ok, period} = MehrSchulferien.Periods.create_period(attrs)
-    period
   end
 end
