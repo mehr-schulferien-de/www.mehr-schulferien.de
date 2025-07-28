@@ -1,38 +1,38 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-    <a href="/" class="hover:text-gray-700">
+  <nav class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-gray-700 dark:hover:text-gray-200">
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
       </svg>
     </a>
-    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
       <path
         fill-rule="evenodd"
         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
         clip-rule="evenodd"
       />
     </svg>
-    <a href="/briefe" class="hover:text-gray-700">Schule suchen</a>
-    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+    <a href="/briefe" class="hover:text-gray-700 dark:hover:text-gray-200">Schule suchen</a>
+    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
       <path
         fill-rule="evenodd"
         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
         clip-rule="evenodd"
       />
     </svg>
-    <span class="text-gray-700">Neue Schule anlegen</span>
+    <span class="text-gray-700 dark:text-gray-300">Neue Schule anlegen</span>
   </nav>
 
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">Neue Schule anlegen</h1>
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Neue Schule anlegen</h1>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div class="lg:col-span-2">
-      <div class="bg-white shadow-sm rounded-lg p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">Schuldaten</h2>
+      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Schuldaten</h2>
 
         <form phx-submit="save" phx-change="validate" class="space-y-4">
           <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Schulname *
             </label>
             <input
@@ -40,7 +40,7 @@
               id="name"
               name="name"
               value={@school_name}
-              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               disabled={@limit_reached}
               placeholder="z.B. Max-Mustermann-Gymnasium"
               autofocus
@@ -49,7 +49,7 @@
           </div>
 
           <div>
-            <label for="street" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="street" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Straße *
             </label>
             <input
@@ -57,7 +57,7 @@
               id="street"
               name="address[street]"
               value={@changeset.data.street || @changeset.changes[:street] || ""}
-              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               disabled={@limit_reached}
               placeholder="z.B. Musterstraße 123"
               required
@@ -72,13 +72,13 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label for="zip_code" class="text-sm font-medium text-gray-700">
+                <label for="zip_code" class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   PLZ *
                 </label>
                 <%= if length(@existing_schools) > 0 do %>
                   <a
                     href="#existing-schools"
-                    class="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1"
+                    class="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 flex items-center gap-1"
                   >
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path
@@ -98,7 +98,7 @@
                 id="zip_code"
                 name="address[zip_code]"
                 value={@changeset.data.zip_code || @changeset.changes[:zip_code] || ""}
-                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                 disabled={@limit_reached}
                 placeholder="z.B. 12345"
                 required
@@ -116,7 +116,7 @@
             </div>
 
             <div>
-              <label for="city" class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Stadt *
               </label>
               <input
@@ -127,7 +127,7 @@
                   @changeset.changes[:city] ||
                     if(@city_from_zip, do: @city_from_zip.name, else: @changeset.data.city || "")
                 }
-                class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+                class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                 disabled={@limit_reached}
                 placeholder="z.B. Berlin"
                 required
@@ -141,7 +141,7 @@
           </div>
 
           <div>
-            <label for="email_address" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="email_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               E-Mail
             </label>
             <input
@@ -149,7 +149,7 @@
               id="email_address"
               name="address[email_address]"
               value={@changeset.data.email_address || @changeset.changes[:email_address] || ""}
-              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               disabled={@limit_reached}
               placeholder="z.B. info@schule.de"
             />
@@ -161,7 +161,7 @@
           </div>
 
           <div>
-            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Telefon
             </label>
             <input
@@ -169,7 +169,7 @@
               id="phone_number"
               name="address[phone_number]"
               value={@changeset.data.phone_number || @changeset.changes[:phone_number] || ""}
-              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               disabled={@limit_reached}
               placeholder="z.B. +49 30 123456789"
             />
@@ -181,7 +181,7 @@
           </div>
 
           <div>
-            <label for="homepage_url" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="homepage_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Homepage
             </label>
             <input
@@ -189,7 +189,7 @@
               id="homepage_url"
               name="address[homepage_url]"
               value={@changeset.data.homepage_url || @changeset.changes[:homepage_url] || ""}
-              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               disabled={@limit_reached}
               placeholder="z.B. https://www.schule.de (optional)"
             />
@@ -201,7 +201,7 @@
           </div>
 
           <div>
-            <label for="wikipedia_url" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="wikipedia_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Wikipedia
             </label>
             <input
@@ -209,7 +209,7 @@
               id="wikipedia_url"
               name="address[wikipedia_url]"
               value={@changeset.data.wikipedia_url || @changeset.changes[:wikipedia_url] || ""}
-              class="mt-1 block w-full rounded-md border-2 border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400"
+              class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               disabled={@limit_reached}
               placeholder="z.B. https://de.wikipedia.org/wiki/Beispiel-Schule"
             />
@@ -223,7 +223,7 @@
           <div class="pt-4">
             <button
               type="submit"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={@limit_reached}
             >
               Schule anlegen
@@ -237,31 +237,31 @@
       <%= if length(@existing_schools) > 0 do %>
         <div
           id="existing-schools"
-          class="bg-amber-50 border border-amber-200 rounded-lg overflow-hidden"
+          class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg overflow-hidden"
         >
-          <div class="bg-amber-100 px-4 py-3 border-b border-amber-200">
-            <h3 class="text-sm font-semibold text-amber-900">
+          <div class="bg-amber-100 dark:bg-amber-900/30 px-4 py-3 border-b border-amber-200 dark:border-amber-800">
+            <h3 class="text-sm font-semibold text-amber-900 dark:text-amber-200">
               Existierende Schulen ({length(@existing_schools)})
             </h3>
           </div>
           <div class="p-4">
-            <p class="text-xs text-amber-700 mb-3">
+            <p class="text-xs text-amber-700 dark:text-amber-300 mb-3">
               Bitte prüfen Sie, ob Ihre Schule bereits vorhanden ist:
             </p>
             <div class="space-y-2">
               <%= for school <- @existing_schools do %>
                 <a
                   href={"/briefe/#{school.slug}"}
-                  class="block bg-white rounded border border-amber-200 p-3 hover:border-amber-300 hover:shadow-sm transition-all"
+                  class="block bg-white dark:bg-gray-800 rounded border border-amber-200 dark:border-amber-700 p-3 hover:border-amber-300 dark:hover:border-amber-600 hover:shadow-sm transition-all"
                   target="_blank"
                 >
-                  <div class="font-medium text-sm text-gray-900">
+                  <div class="font-medium text-sm text-gray-900 dark:text-gray-100">
                     {school.name}
                   </div>
                   <%= if school.address do %>
-                    <div class="mt-1 text-xs text-gray-600 flex items-start">
+                    <div class="mt-1 text-xs text-gray-600 dark:text-gray-400 flex items-start">
                       <svg
-                        class="w-3 h-3 text-gray-400 mr-1 mt-0.5 flex-shrink-0"
+                        class="w-3 h-3 text-gray-400 dark:text-gray-500 mr-1 mt-0.5 flex-shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -290,10 +290,10 @@
                       </div>
                     </div>
                   <% else %>
-                    <div class="mt-1 text-xs text-gray-500 flex items-start">
+                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-start">
                       <%= if school.parent_location do %>
                         <svg
-                          class="w-3 h-3 text-gray-400 mr-1 mt-0.5 flex-shrink-0"
+                          class="w-3 h-3 text-gray-400 dark:text-gray-500 mr-1 mt-0.5 flex-shrink-0"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -321,11 +321,11 @@
           </div>
         </div>
       <% else %>
-        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-3">Hinweise</h3>
-          <p class="text-sm text-gray-700 flex items-start">
+        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Hinweise</h3>
+          <p class="text-sm text-gray-700 dark:text-gray-300 flex items-start">
             <svg
-              class="h-5 w-5 text-gray-400 mr-2 mt-0.5 flex-shrink-0"
+              class="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2 mt-0.5 flex-shrink-0"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -340,20 +340,20 @@
         </div>
       <% end %>
 
-      <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-4">
-        <h3 class="text-lg font-medium text-gray-900 mb-3">Tageslimit</h3>
+      <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mt-4">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Tageslimit</h3>
         <div class="space-y-2 text-sm">
-          <p class="text-gray-700">
+          <p class="text-gray-700 dark:text-gray-300">
             Zum Schutz vor Missbrauch gibt es ein Tageslimit von 20 Änderungen.
           </p>
           <div class="flex items-center justify-between">
-            <span class="text-gray-600">Heutige Änderungen:</span>
-            <span class="font-semibold text-gray-900">
+            <span class="text-gray-600 dark:text-gray-400">Heutige Änderungen:</span>
+            <span class="font-semibold text-gray-900 dark:text-gray-100">
               {@daily_changes} / 20
             </span>
           </div>
           <div class="mt-2">
-            <div class="bg-gray-200 rounded-full h-2">
+            <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div
                 class={"h-2 rounded-full #{if @limit_reached, do: "bg-red-600", else: "bg-green-600"}"}
                 style={"width: #{min(@daily_changes / 20 * 100, 100)}%"}

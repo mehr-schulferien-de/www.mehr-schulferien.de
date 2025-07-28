@@ -1,23 +1,23 @@
 <div class="max-w-4xl mx-auto py-6">
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
       Schul-Wiki: {@school.name}
     </h1>
-    <p class="text-gray-600">
+    <p class="text-gray-600 dark:text-gray-400">
       Bearbeiten Sie die Daten dieser Schule gemeinschaftlich. Alle Änderungen werden mit Ihrer IP-Adresse protokolliert.
     </p>
   </div>
   <!-- Action Cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <!-- Basic Data Card -->
-    <div class="bg-white shadow-sm border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+    <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
       <a href={~p"/wiki/schools/#{@school.slug}/edit"} class="block p-6">
         <div class="flex items-start">
           <div class="flex-shrink-0">
-            <div class="bg-blue-100 rounded-full p-3">
+            <div class="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
               <svg
-                class="w-6 h-6 text-blue-600"
+                class="w-6 h-6 text-blue-600 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -32,11 +32,11 @@
             </div>
           </div>
           <div class="ml-4 flex-1">
-            <h2 class="text-lg font-semibold text-gray-900">Stammdaten bearbeiten</h2>
-            <p class="mt-1 text-sm text-gray-600">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Stammdaten bearbeiten</h2>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Adresse, Kontaktdaten und weitere Informationen der Schule bearbeiten oder automatisch anreichern.
             </p>
-            <div class="mt-3 flex items-center text-blue-600">
+            <div class="mt-3 flex items-center text-blue-600 dark:text-blue-400">
               <span class="text-sm font-medium">Stammdaten verwalten</span>
               <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -52,13 +52,13 @@
       </a>
     </div>
     <!-- Bewegliche Ferientage Card -->
-    <div class="bg-white shadow-sm border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+    <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
       <a href={~p"/wiki/schools/#{@school.slug}/ferientage"} class="block p-6">
         <div class="flex items-start">
           <div class="flex-shrink-0">
-            <div class="bg-green-100 rounded-full p-3">
+            <div class="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
               <svg
-                class="w-6 h-6 text-green-600"
+                class="w-6 h-6 text-green-600 dark:text-green-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -73,8 +73,8 @@
             </div>
           </div>
           <div class="ml-4 flex-1">
-            <h2 class="text-lg font-semibold text-gray-900">Bewegliche Ferientage</h2>
-            <p class="mt-1 text-sm text-gray-600">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Bewegliche Ferientage</h2>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Verwalten Sie die beweglichen Ferientage dieser Schule.
               <%= if @bewegliche_ferientage_count > 0 do %>
                 <span class="font-medium">{@bewegliche_ferientage_count} Tage</span> eingetragen.
@@ -82,7 +82,7 @@
                 Noch keine Tage eingetragen.
               <% end %>
             </p>
-            <div class="mt-3 flex items-center text-green-600">
+            <div class="mt-3 flex items-center text-green-600 dark:text-green-400">
               <span class="text-sm font-medium">Ferientage verwalten</span>
               <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -102,52 +102,52 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- School Info -->
     <div class="lg:col-span-2">
-      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Schulinformationen</h3>
+      <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Schulinformationen</h3>
 
         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <dt class="text-sm font-medium text-gray-500">Schulname</dt>
-            <dd class="mt-1 text-sm text-gray-900">{@school.name}</dd>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Schulname</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.name}</dd>
           </div>
 
           <%= if @school.address do %>
             <div>
-              <dt class="text-sm font-medium text-gray-500">Adresse</dt>
-              <dd class="mt-1 text-sm text-gray-900">
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Adresse</dt>
+              <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                 <%= if @school.address.street do %>
                   {@school.address.street}<br />
                 <% end %>
                 <%= if @school.address.zip_code || @school.address.city do %>
                   {@school.address.zip_code} {@school.address.city}
                 <% else %>
-                  <span class="text-gray-400">Nicht angegeben</span>
+                  <span class="text-gray-400 dark:text-gray-500">Nicht angegeben</span>
                 <% end %>
               </dd>
             </div>
 
             <%= if @school.address.phone_number do %>
               <div>
-                <dt class="text-sm font-medium text-gray-500">Telefon</dt>
-                <dd class="mt-1 text-sm text-gray-900">{@school.address.phone_number}</dd>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Telefon</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.phone_number}</dd>
               </div>
             <% end %>
 
             <%= if @school.address.email_address do %>
               <div>
-                <dt class="text-sm font-medium text-gray-500">E-Mail</dt>
-                <dd class="mt-1 text-sm text-gray-900">{@school.address.email_address}</dd>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">E-Mail</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.email_address}</dd>
               </div>
             <% end %>
 
             <%= if @school.address.homepage_url do %>
               <div>
-                <dt class="text-sm font-medium text-gray-500">Homepage</dt>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Homepage</dt>
                 <dd class="mt-1 text-sm">
                   <a
                     href={@school.address.homepage_url}
                     target="_blank"
-                    class="text-blue-600 hover:underline"
+                    class="text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     {display_url(@school.address.homepage_url)}
                   </a>
@@ -157,31 +157,31 @@
 
             <%= if @school.address.students_count do %>
               <div>
-                <dt class="text-sm font-medium text-gray-500">Schülerzahl</dt>
-                <dd class="mt-1 text-sm text-gray-900">{@school.address.students_count}</dd>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Schülerzahl</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.students_count}</dd>
               </div>
             <% end %>
 
             <%= if @school.address.founded_year do %>
               <div>
-                <dt class="text-sm font-medium text-gray-500">Gründungsjahr</dt>
-                <dd class="mt-1 text-sm text-gray-900">{@school.address.founded_year}</dd>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Gründungsjahr</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.founded_year}</dd>
               </div>
             <% end %>
 
             <%= if @school.address.description do %>
               <div class="sm:col-span-2">
-                <dt class="text-sm font-medium text-gray-500">Beschreibung</dt>
-                <dd class="mt-1 text-sm text-gray-900">{@school.address.description}</dd>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Beschreibung</dt>
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{@school.address.description}</dd>
               </div>
             <% end %>
           <% else %>
             <div class="sm:col-span-2">
-              <p class="text-sm text-gray-500 italic">
+              <p class="text-sm text-gray-500 dark:text-gray-400 italic">
                 Noch keine Adressdaten vorhanden.
                 <a
                   href={~p"/wiki/schools/#{@school.slug}/edit"}
-                  class="text-blue-600 hover:underline"
+                  class="text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   Jetzt hinzufügen
                 </a>
@@ -198,8 +198,8 @@
         daily_changes: @daily_changes
       )}
       <!-- Help Box -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 class="text-sm font-medium text-blue-900 mb-2">
+      <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <h4 class="text-sm font-medium text-blue-900 dark:text-blue-200 mb-2">
           <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -210,7 +210,7 @@
           </svg>
           Wie funktioniert das Wiki?
         </h4>
-        <ul class="text-sm text-blue-800 space-y-1">
+        <ul class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
           <li>• Alle können Schulinformationen bearbeiten</li>
           <li>• Änderungen werden protokolliert</li>
           <li>• Tägliches Limit verhindert Missbrauch</li>
@@ -223,7 +223,7 @@
   <div class="mt-8 text-center">
     <a
       href={~p"/ferien/d/schule/#{@school.slug}"}
-      class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
     >
       <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path

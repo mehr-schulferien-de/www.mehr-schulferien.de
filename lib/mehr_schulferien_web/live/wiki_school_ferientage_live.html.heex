@@ -5,16 +5,16 @@
 >
   <!-- Flash messages -->
   <%= if Phoenix.Flash.get(@flash, :info) do %>
-    <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-      <p class="text-green-800">
+    <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+      <p class="text-green-800 dark:text-green-300">
         {Phoenix.Flash.get(@flash, :info)}
       </p>
     </div>
   <% end %>
 
   <%= if Phoenix.Flash.get(@flash, :error) do %>
-    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-      <p class="text-red-800">
+    <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+      <p class="text-red-800 dark:text-red-300">
         {Phoenix.Flash.get(@flash, :error)}
       </p>
     </div>
@@ -22,22 +22,22 @@
   <!-- Header with Navigation -->
   <div class="mb-6 sm:mb-8">
     <div class="mb-4 sm:mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-        Schul-Wiki: <span class="text-blue-600">{@school.name}</span>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+        Schul-Wiki: <span class="text-blue-600 dark:text-blue-400">{@school.name}</span>
       </h1>
-      <p class="text-sm sm:text-base text-gray-600">
+      <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
         Verwalten Sie die beweglichen Ferientage dieser Schule.
       </p>
     </div>
     <!-- Navigation Tabs -->
-    <div class="border-b border-gray-200 -mx-4 sm:mx-0">
+    <div class="border-b border-gray-200 dark:border-gray-700 -mx-4 sm:mx-0">
       <nav class="-mb-px flex space-x-4 sm:space-x-8 px-4 sm:px-0">
         {link("Stammdaten",
           to: ~p"/wiki/schools/#{@school.slug}/edit",
           class:
-            "whitespace-nowrap border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
+            "whitespace-nowrap border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
         )}
-        <span class="whitespace-nowrap border-b-2 border-blue-500 py-3 px-1 text-sm font-medium text-blue-600">
+        <span class="whitespace-nowrap border-b-2 border-blue-500 py-3 px-1 text-sm font-medium text-blue-600 dark:text-blue-400">
           Bewegliche Ferientage
         </span>
       </nav>
@@ -46,9 +46,9 @@
   <!-- Check if federal state allows bewegliche Ferientage at all -->
   <%= if length(@school_years_data) == 0 do %>
     <div class="max-w-3xl mx-auto">
-      <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+      <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center">
         <svg
-          class="mx-auto h-12 w-12 text-gray-400 mb-4"
+          class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -60,10 +60,10 @@
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <h2 class="text-lg font-medium text-gray-900 mb-2">
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
           Keine beweglichen Ferientage verfügbar
         </h2>
-        <p class="text-gray-600">
+        <p class="text-gray-600 dark:text-gray-400">
           <%= if @federal_state do %>
             Im Bundesland {@federal_state.name} sind keine beweglichen Ferientage vorgesehen.
           <% else %>
@@ -73,7 +73,7 @@
         <div class="mt-6">
           <a
             href={~p"/ferien/d/schule/#{@school.slug}"}
-            class="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover:shadow-md"
+            class="inline-flex items-center px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover:shadow-md"
           >
             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -95,7 +95,7 @@
       <div class="flex flex-col gap-4">
         <!-- Year Navigation -->
         <div class="flex justify-center">
-          <div class="inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm">
+          <div class="inline-flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm">
             <!-- Previous Year Button -->
             <button
               type="button"
@@ -103,7 +103,7 @@
               phx-value-direction="prev"
               disabled={Enum.at(@school_years_data, 0).school_year == @selected_school_year}
               class={[
-                "px-2 sm:px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-l-lg transition-colors border-r border-gray-300",
+                "px-2 sm:px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-l-lg transition-colors border-r border-gray-300 dark:border-gray-600",
                 if(Enum.at(@school_years_data, 0).school_year == @selected_school_year,
                   do: "opacity-50 cursor-not-allowed",
                   else: ""
@@ -128,10 +128,10 @@
                 phx-value-school_year={year_data.school_year}
                 class={[
                   "px-3 sm:px-6 py-2 font-medium transition-colors whitespace-nowrap",
-                  if(index > 0, do: "border-l border-gray-300", else: ""),
+                  if(index > 0, do: "border-l border-gray-300 dark:border-gray-600", else: ""),
                   if(year_data.school_year == @selected_school_year,
-                    do: "bg-blue-600 text-white",
-                    else: "text-gray-700 hover:bg-gray-50"
+                    do: "bg-blue-600 dark:bg-blue-500 text-white",
+                    else: "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                   )
                 ]}
               >
@@ -148,7 +148,7 @@
               phx-value-direction="next"
               disabled={List.last(@school_years_data).school_year == @selected_school_year}
               class={[
-                "px-2 sm:px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-r-lg transition-colors border-l border-gray-300",
+                "px-2 sm:px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-r-lg transition-colors border-l border-gray-300 dark:border-gray-600",
                 if(List.last(@school_years_data).school_year == @selected_school_year,
                   do: "opacity-50 cursor-not-allowed",
                   else: ""
@@ -168,24 +168,24 @@
         </div>
         <!-- Status Display -->
         <div class="text-center">
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
             <%= if @ferientage_limit do %>
               <%= if @ferientage_limit.max_bewegliche_ferientage == 0 do %>
-                <span class="text-red-600 font-medium">
+                <span class="text-red-600 dark:text-red-400 font-medium">
                   Keine beweglichen Ferientage im Schuljahr {@selected_school_year}
                 </span>
               <% else %>
                 <span>
-                  <strong class="text-gray-900">{@current_ferientage_count}</strong>
-                  <span class="text-gray-500">von</span>
-                  <strong class="text-gray-900">
+                  <strong class="text-gray-900 dark:text-gray-100">{@current_ferientage_count}</strong>
+                  <span class="text-gray-500 dark:text-gray-400">von</span>
+                  <strong class="text-gray-900 dark:text-gray-100">
                     {@ferientage_limit.max_bewegliche_ferientage}
                   </strong>
-                  <span class="text-gray-500">beweglichen Ferientagen angelegt</span>
+                  <span class="text-gray-500 dark:text-gray-400">beweglichen Ferientagen angelegt</span>
                 </span>
               <% end %>
             <% else %>
-              <span class="text-gray-500 italic">
+              <span class="text-gray-500 dark:text-gray-400 italic">
                 Keine Limite-Information für Schuljahr {@selected_school_year} verfügbar
               </span>
             <% end %>
@@ -198,11 +198,11 @@
       <!-- Main Content - Bewegliche Ferientage -->
       <div class="lg:col-span-2 space-y-4 sm:space-y-6">
         <!-- Info Section -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 sm:p-5 shadow-sm">
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 sm:p-5 shadow-sm">
           <div class="flex items-start">
             <div class="flex-shrink-0">
               <svg
-                class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500"
+                class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -216,10 +216,10 @@
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-semibold text-blue-900 mb-1">
+              <h3 class="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-1">
                 Was sind bewegliche Ferientage?
               </h3>
-              <p class="text-xs sm:text-sm text-blue-800 leading-relaxed">
+              <p class="text-xs sm:text-sm text-blue-800 dark:text-blue-300 leading-relaxed">
                 Bewegliche Ferientage sind zusätzliche freie Tage, die Schulen eigenständig festlegen können.
                 Diese Tage werden oft für pädagogische Konferenzen, Brückentage oder andere schulische Zwecke genutzt.
               </p>
@@ -228,11 +228,11 @@
         </div>
         <!-- Federal State Limit Info - Only for selected year -->
         <%= if @federal_state && @ferientage_limit do %>
-          <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 sm:p-5 shadow-sm">
+          <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 sm:p-5 shadow-sm">
             <div class="flex items-start">
               <div class="flex-shrink-0">
                 <svg
-                  class="h-5 w-5 sm:h-6 sm:w-6 text-purple-500"
+                  class="h-5 w-5 sm:h-6 sm:w-6 text-purple-500 dark:text-purple-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -246,22 +246,22 @@
                 </svg>
               </div>
               <div class="ml-3 flex-1">
-                <h3 class="text-sm font-semibold text-purple-900 mb-2">
+                <h3 class="text-sm font-semibold text-purple-900 dark:text-purple-200 mb-2">
                   Bewegliche Ferientage in {@federal_state.name} - Schuljahr {@selected_school_year}
                 </h3>
                 <%= if @ferientage_limit.max_bewegliche_ferientage == 0 do %>
-                  <p class="text-sm text-gray-600">Keine beweglichen Ferientage vorgesehen</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Keine beweglichen Ferientage vorgesehen</p>
                 <% else %>
                   <div class="grid grid-cols-3 gap-4">
                     <div>
-                      <p class="text-xs text-gray-600">Maximum</p>
-                      <p class="text-lg font-bold text-purple-900">
+                      <p class="text-xs text-gray-600 dark:text-gray-400">Maximum</p>
+                      <p class="text-lg font-bold text-purple-900 dark:text-purple-200">
                         {@ferientage_limit.max_bewegliche_ferientage}
                       </p>
                     </div>
                     <div>
                       <p class="text-xs text-gray-600">Angelegt</p>
-                      <p class="text-lg font-bold text-purple-900">
+                      <p class="text-lg font-bold text-purple-900 dark:text-purple-200">
                         {@current_ferientage_count}
                       </p>
                     </div>

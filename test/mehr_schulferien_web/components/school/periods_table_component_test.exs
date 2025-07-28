@@ -36,7 +36,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       # Check table structure
       assert html =~ "<table"
       assert html =~ "<thead>"
-      assert html =~ "<tbody class=\"divide-y divide-gray-200\">"
+      assert html =~ "<tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">"
       assert html =~ "Name"
       assert html =~ "Termin"
       assert html =~ "Tage*"
@@ -69,7 +69,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       # Check that the memo is displayed
       assert html =~ "Beweglicher Ferientag"
       assert html =~ "Tag nach Christi Himmelfahrt"
-      assert html =~ "text-xs text-gray-600 mt-1"
+      assert html =~ "text-xs text-gray-600 dark:text-gray-400 mt-1"
     end
 
     test "does not display memo for non-Beweglicher Ferientag periods" do
@@ -209,7 +209,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       # Count occurrences of the memo div styling
       memo_div_count =
         html
-        |> String.split("text-xs text-gray-600 mt-1")
+        |> String.split("text-xs text-gray-600 dark:text-gray-400 mt-1")
         |> length()
         |> Kernel.-(1)
 
@@ -238,8 +238,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       # Check for highlighting class for current period
       assert html =~ "bg-yellow-100"
 
-      # Periods from past calendar years are filtered out
-      refute html =~ "text-gray-400"
+      # Periods from past calendar years are filtered out - check for past period class combination
+      refute html =~ "text-gray-400 dark:text-gray-500"
     end
 
     test "calculates effective duration correctly" do
