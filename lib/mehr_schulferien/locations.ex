@@ -1187,4 +1187,63 @@ defmodule MehrSchulferien.Locations do
 
     earth_radius * c
   end
+
+  @doc """
+  Generates a slug for a school based on zip code and school name.
+  
+  ## Examples
+  
+      iex> generate_school_slug("Gymnasium München", "80331")
+      "80331-gymnasium-muenchen"
+      
+      iex> generate_school_slug("Schöne Schule", "12345")
+      "12345-schoene-schule"
+  """
+  def generate_school_slug(school_name, zip_code) when is_binary(school_name) and is_binary(zip_code) do
+    base_slug = MehrSchulferien.SlugGenerator.slugify_downcase(school_name)
+    "#{zip_code}-#{base_slug}"
+  end
+
+  def generate_school_slug(school_name, nil) when is_binary(school_name) do
+    # Fallback for schools without zip code
+    MehrSchulferien.SlugGenerator.slugify_downcase(school_name)
+  end
+
+  @doc """
+  Generates a unique school slug by checking for duplicates and adding a counter if needed.
+  
+  ## Examples
+  
+      iex> generate_unique_school_slug("Gymnasium München", "80331")
+      {:ok, "80331-gymnasium-muenchen"}
+      
+      # If slug already exists, it adds a counter
+      iex> generate_unique_school_slug("Gymnasium München", "80331")
+      {:ok, "80331-gymnasium-muenchen-1"}
+  """
+  def generate_unique_school_slug(school_name, zip_code, school_id \\ nil) do
+    base_slug = generate_school_slug(school_name, zip_code)
+    
+    case find_unique_slug(base_slug, school_id, 0) do
+      {:ok, slug} -> {:ok, slug}
+      error -> error
+    end
+  end
+
+  defp find_unique_slug(base_slug, school_id, counter) do
+    test_slug = if counter == 0, do: base_slug, else: "#{base_slug}-#{counter}"
+    
+    query = 
+      from(l in Location,
+        where: l.is_school == true and l.slug == ^test_slug
+      )
+    
+    # Exclude current school if updating
+    query = if school_id, do: where(query, [l], l.id != ^school_id), else: query
+    
+    case Repo.exists?(query) do
+      false -> {:ok, test_slug}
+      true -> find_unique_slug(base_slug, school_id, counter + 1)
+    end
+  end
 end

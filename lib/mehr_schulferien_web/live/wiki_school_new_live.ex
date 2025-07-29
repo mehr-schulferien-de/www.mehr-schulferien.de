@@ -163,10 +163,11 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   defp validate_and_get_city_from_zip(_), do: {:error, :invalid_zip_code}
 
   defp create_school_with_address(school_name, address_params, city, socket) do
-    # Generate slug with zip code prefix
+    # Generate unique slug with zip code prefix
     zip_code = Map.get(address_params, "zip_code", "")
-    base_slug = MehrSchulferien.SlugGenerator.slugify_downcase(school_name)
-    school_slug = "#{zip_code}-#{base_slug}"
+    
+    # Use centralized function to generate unique slug
+    {:ok, school_slug} = Locations.generate_unique_school_slug(school_name, zip_code)
 
     # Create school location attrs
     school_attrs = %{
