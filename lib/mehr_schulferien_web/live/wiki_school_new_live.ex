@@ -165,7 +165,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   defp create_school_with_address(school_name, address_params, city, socket) do
     # Generate unique slug with zip code prefix
     zip_code = Map.get(address_params, "zip_code", "")
-    
+
     # Use centralized function to generate unique slug
     {:ok, school_slug} = Locations.generate_unique_school_slug(school_name, zip_code)
 
