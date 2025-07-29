@@ -899,7 +899,7 @@ defmodule MehrSchulferien.Locations do
           city_data: city,
           school_count: count(school.id)
         },
-        order_by: [desc: city.name]
+        order_by: [asc: city.name]
 
     cities_with_school_counts = Repo.all(cities_with_school_counts_query)
 
@@ -925,7 +925,10 @@ defmodule MehrSchulferien.Locations do
     cities_by_county = Enum.group_by(cities_with_school_counts, & &1.city_data.parent_location_id)
 
     # Create the final result by mapping counties to their cities
-    Enum.map(counties, fn county ->
+    # Sort counties alphabetically by name
+    counties
+    |> Enum.sort_by(& &1.name)
+    |> Enum.map(fn county ->
       cities = Map.get(cities_by_county, county.id, [])
       {county, cities}
     end)

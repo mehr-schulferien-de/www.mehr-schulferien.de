@@ -83,5 +83,117 @@ defmodule MehrSchulferienWeb.FederalStateCountiesCitiesSystemTest do
       assert html_response(conn, 200) =~
                "href=\"#{~p"/ferien/#{country.slug}/stadt/#{city2.slug}"}\""
     end
+
+    test "sorts counties and cities alphabetically", %{conn: conn} do
+      # Create test data
+      country = get_or_create_deutschland()
+
+      federal_state =
+        insert(:federal_state, %{
+          parent_location_id: country.id,
+          slug: "test-state",
+          name: "Test State"
+        })
+
+      # Create counties in non-alphabetical order
+      county_z =
+        insert(:county, %{
+          parent_location_id: federal_state.id,
+          slug: "z-county",
+          name: "Z County"
+        })
+
+      county_a =
+        insert(:county, %{
+          parent_location_id: federal_state.id,
+          slug: "a-county",
+          name: "A County"
+        })
+
+      county_m =
+        insert(:county, %{
+          parent_location_id: federal_state.id,
+          slug: "m-county",
+          name: "M County"
+        })
+
+      # Create cities in non-alphabetical order for county A
+      city_z =
+        insert(:city, %{
+          parent_location_id: county_a.id,
+          slug: "z-city",
+          name: "Z City"
+        })
+
+      insert(:school, %{parent_location_id: city_z.id, name: "School Z"})
+
+      city_a =
+        insert(:city, %{
+          parent_location_id: county_a.id,
+          slug: "a-city",
+          name: "A City"
+        })
+
+      insert(:school, %{parent_location_id: city_a.id, name: "School A"})
+
+      city_m =
+        insert(:city, %{
+          parent_location_id: county_a.id,
+          slug: "m-city",
+          name: "M City"
+        })
+
+      insert(:school, %{parent_location_id: city_m.id, name: "School M"})
+
+      # Add cities with schools to other counties so they appear
+      city_in_m =
+        insert(:city, %{
+          parent_location_id: county_m.id,
+          slug: "city-in-m",
+          name: "City in M"
+        })
+
+      insert(:school, %{parent_location_id: city_in_m.id, name: "School in M"})
+
+      city_in_z =
+        insert(:city, %{
+          parent_location_id: county_z.id,
+          slug: "city-in-z",
+          name: "City in Z"
+        })
+
+      insert(:school, %{parent_location_id: city_in_z.id, name: "School in Z"})
+
+      # Visit the counties and cities page
+      conn =
+        get(
+          conn,
+          "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/landkreise-und-staedte"
+        )
+
+      # Get the HTML response
+      html = html_response(conn, 200)
+
+      # Check that counties appear in alphabetical order
+      # Find the main content div first to avoid false matches in navigation
+      main_content_start = String.split(html, "Landkreise und Städte in") |> List.last()
+
+      # Using regex to check the order of appearance
+      {a_pos, _} = :binary.match(main_content_start, "A County")
+      {m_pos, _} = :binary.match(main_content_start, "M County")
+      {z_pos, _} = :binary.match(main_content_start, "Z County")
+
+      assert a_pos < m_pos
+      assert m_pos < z_pos
+
+      # Check that cities within a county appear in alphabetical order
+      # Since all three test cities are in A County, they should appear in order: A City, M City, Z City
+      {a_city_pos, _} = :binary.match(main_content_start, "A City")
+      {m_city_pos, _} = :binary.match(main_content_start, "M City")
+      {z_city_pos, _} = :binary.match(main_content_start, "Z City")
+
+      assert a_city_pos < m_city_pos
+      assert m_city_pos < z_city_pos
+    end
   end
 end

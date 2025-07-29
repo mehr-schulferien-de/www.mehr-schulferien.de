@@ -96,7 +96,7 @@
 
         <div class="p-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <%= for city_item <- Enum.reverse(cities) do %>
+            <%= for city_item <- cities do %>
               <div class="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 </div>
