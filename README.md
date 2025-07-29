@@ -1,10 +1,7 @@
 # mehr-schulferien.de
 
-This project is the 2020 (last update 2024) version of 
-https://www.mehr-schulferien.de
-
 The webpage provides information about school vacations and public holidays
-in Germany.
+in Germany. Find the production version on https://www.mehr-schulferien.de
 
 # Developers
 
