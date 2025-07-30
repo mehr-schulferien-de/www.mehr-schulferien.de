@@ -531,6 +531,42 @@ defmodule MehrSchulferien.Locations do
     |> Repo.preload([:address])
   end
 
+  @doc """
+  Returns the list of schools for a certain city filtered by zip code prefix.
+  Only returns schools whose zip codes start with the same first 4 digits as any of the city's zip codes.
+  """
+  def list_schools_by_zip_prefix(city) do
+    # First, get the city with its zip codes
+    city_with_zips = Repo.preload(city, :zip_codes)
+
+    # Get the first 4 digits of all city zip codes
+    city_zip_prefixes =
+      city_with_zips.zip_codes
+      |> Enum.map(fn zip -> String.slice(zip.value, 0, 4) end)
+      |> Enum.uniq()
+
+    # Get all schools in the city
+    schools = list_schools(city)
+
+    # Filter schools by zip code prefix
+    Enum.filter(schools, fn school ->
+      case school.address do
+        nil ->
+          false
+
+        %{zip_code: nil} ->
+          false
+
+        %{zip_code: school_zip} when is_binary(school_zip) ->
+          school_zip_prefix = String.slice(school_zip, 0, 4)
+          Enum.member?(city_zip_prefixes, school_zip_prefix)
+
+        _ ->
+          false
+      end
+    end)
+  end
+
   def combine_school_periods(schools, cities) do
     Enum.map(schools, fn school ->
       city = Enum.find(cities, &(&1.id == school.parent_location_id))

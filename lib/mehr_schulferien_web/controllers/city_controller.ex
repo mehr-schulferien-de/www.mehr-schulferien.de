@@ -25,8 +25,8 @@ defmodule MehrSchulferienWeb.CityController do
     %{country: country, federal_state: federal_state, county: county, city: city} =
       Locations.show_city_to_country_map(country_slug, city_slug)
 
-    # Get schools in this city for display
-    schools = Locations.list_schools(city)
+    # Get schools in this city for display, filtered by zip code prefix
+    schools = Locations.list_schools_by_zip_prefix(city)
 
     today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
