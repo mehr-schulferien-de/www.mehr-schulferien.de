@@ -339,7 +339,7 @@
                   <p class="mt-1 text-xs text-gray-500">
                     Eine kurze Beschreibung hilft Eltern und Schülern, den Grund für den freien Tag zu verstehen.
                   </p>
-                  <%= if @ferientage_limit && @ferientage_limit.max_bewegliche_ferientage > 0 && @remaining_ferientage && @remaining_ferientage <= 0 do %>
+                  <%= if @ferientage_limit && @ferientage_limit.max_bewegliche_ferientage > 0 && @current_ferientage_count >= (@ferientage_limit.max_bewegliche_ferientage * 2) do %>
                     <p class="mt-2 text-xs text-red-600 font-medium">
                       <svg
                         class="inline w-4 h-4 mr-1"
@@ -434,7 +434,7 @@
                   <p class="mt-1 text-xs text-gray-500">
                     Eine kurze Beschreibung hilft Eltern und Schülern, den Grund für den freien Tag zu verstehen.
                   </p>
-                  <%= if @ferientage_limit && @ferientage_limit.max_bewegliche_ferientage > 0 && @remaining_ferientage && @remaining_ferientage <= 0 do %>
+                  <%= if @ferientage_limit && @ferientage_limit.max_bewegliche_ferientage > 0 && @current_ferientage_count >= (@ferientage_limit.max_bewegliche_ferientage * 2) do %>
                     <p class="mt-2 text-xs text-red-600 font-medium">
                       <svg
                         class="inline w-4 h-4 mr-1"

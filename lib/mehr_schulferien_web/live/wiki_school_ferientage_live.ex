@@ -52,7 +52,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           |> Enum.map(fn school_year ->
             limit = Periods.get_federal_state_ferientage_limit(federal_state.id, school_year)
             count = Periods.count_bewegliche_ferientage_for_school_year(school.id, school_year)
-            remaining = if limit, do: limit.max_bewegliche_ferientage - count, else: nil
+            remaining = if limit, do: (limit.max_bewegliche_ferientage * 2) - count, else: nil
 
             %{
               school_year: school_year,
@@ -258,7 +258,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                           school_year
                         )
 
-                      remaining = if limit, do: limit.max_bewegliche_ferientage - count, else: nil
+                      remaining = if limit, do: (limit.max_bewegliche_ferientage * 2) - count, else: nil
 
                       %{
                         school_year: school_year,
@@ -381,7 +381,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
             updated_remaining =
               if current_year_data.limit,
-                do: current_year_data.limit.max_bewegliche_ferientage - updated_count,
+                do: (current_year_data.limit.max_bewegliche_ferientage * 2) - updated_count,
                 else: nil
 
             # Update school_years_data
@@ -498,7 +498,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
                     updated_remaining =
                       if current_year_data.limit,
-                        do: current_year_data.limit.max_bewegliche_ferientage - updated_count,
+                        do: (current_year_data.limit.max_bewegliche_ferientage * 2) - updated_count,
                         else: nil
 
                     # Update school_years_data

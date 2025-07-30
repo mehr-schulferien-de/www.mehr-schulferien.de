@@ -123,7 +123,7 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
       assert {:error, reason} =
                Periods.validate_bewegliche_ferientage_limit(school.id, ~D[2025-03-01], "Test 7")
 
-      assert String.contains?(reason, "maximale Anzahl von 3")
+      assert String.contains?(reason, "maximale Anzahl von 6")
     end
 
     test "create_beweglicher_ferientag_for_school/3 respects limit", %{school: school} do

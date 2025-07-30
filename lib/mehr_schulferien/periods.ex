@@ -692,9 +692,9 @@ defmodule MehrSchulferien.Periods do
 
             if current_count >= effective_limit do
               {:error,
-               "Die maximale Anzahl von #{limit.max_bewegliche_ferientage} beweglichen Ferientagen für #{federal_state.name} im Schuljahr #{school_year} wurde bereits erreicht"}
+               "Die maximale Anzahl von #{effective_limit} beweglichen Ferientagen für #{federal_state.name} im Schuljahr #{school_year} wurde bereits erreicht"}
             else
-              remaining = limit.max_bewegliche_ferientage - current_count
+              remaining = effective_limit - current_count
               {:ok, remaining}
             end
         end
