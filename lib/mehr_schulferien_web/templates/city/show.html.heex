@@ -201,7 +201,14 @@
                   <!-- Mobile: Just show count -->
                   <div class="text-sm text-gray-600 dark:text-gray-400 lg:hidden">
                     <a href="#faq" class="hover:text-blue-600 dark:hover:text-blue-400">
-                      <span class="text-gray-500 dark:text-gray-400">Schulen:</span>
+                      <span class="text-gray-500 dark:text-gray-400">
+                        {Gettext.ngettext(
+                          MehrSchulferienWeb.Gettext,
+                          "Schule:",
+                          "Schulen:",
+                          length(@schools)
+                        )}
+                      </span>
                       <span class="font-medium">{length(@schools)}</span>
                     </a>
                   </div>
@@ -209,7 +216,14 @@
                   <div class="hidden lg:block">
                     <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                       <a href="#faq" class="hover:text-blue-600 dark:hover:text-blue-400">
-                        <span class="text-gray-500 dark:text-gray-400">Schulen:</span>
+                        <span class="text-gray-500 dark:text-gray-400">
+                          {Gettext.ngettext(
+                            MehrSchulferienWeb.Gettext,
+                            "Schule:",
+                            "Schulen:",
+                            length(@schools)
+                          )}
+                        </span>
                         <span class="font-medium">{length(@schools)}</span>
                       </a>
                     </div>
