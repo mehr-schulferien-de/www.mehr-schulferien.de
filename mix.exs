@@ -27,6 +27,7 @@ defmodule MehrSchulferien.MixProject do
 
   defp deps do
     [
+      {:claude, "~> 0.2", only: [:dev], runtime: false},
       {:usage_rules, "~> 0.1", only: [:dev]},
       {:phoenix, "~> 1.7.21"},
       {:phoenix_ecto, "~> 4.6.4"},

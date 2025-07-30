@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "cd $CLAUDE_PROJECT_DIR && elixir .claude/hooks/elixir_formatter.exs",
+            "type": "command"
+          },
+          {
+            "command": "cd $CLAUDE_PROJECT_DIR && elixir .claude/hooks/compilation_checker.exs",
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "cd $CLAUDE_PROJECT_DIR && elixir .claude/hooks/pre_commit_check.exs",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ]
+  }
+}
