@@ -1,0 +1,46 @@
+<main class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-16">
+    <div class="max-w-2xl mx-auto text-center">
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <div class="mb-6">
+          <svg
+            class="mx-auto h-16 w-16 text-yellow-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+            />
+          </svg>
+        </div>
+
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">
+          Datenbank ist leer
+        </h1>
+
+        <p class="text-gray-600 mb-6">
+          Die Datenbank enthält derzeit keine Daten. Bitte stellen Sie sicher, dass die Datenbank korrekt eingerichtet wurde und alle erforderlichen Daten geladen sind.
+        </p>
+
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p class="text-sm text-yellow-800">
+            <strong>Für Administratoren:</strong>
+            Führen Sie <code class="bg-yellow-100 px-2 py-1 rounded">mix ecto.setup</code>
+            aus, um die Datenbank zu initialisieren und mit Daten zu füllen.
+          </p>
+        </div>
+
+        <a
+          href="/"
+          class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+        >
+          Zur Startseite
+        </a>
+      </div>
+    </div>
+  </div>
+</main>

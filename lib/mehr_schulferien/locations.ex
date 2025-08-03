@@ -751,12 +751,29 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Gets a single country by querying for the slug.
+
+  Returns the country if found, or nil if not.
+  """
+  def get_country_by_slug(country_slug) do
+    Repo.get_by(Location, slug: country_slug, is_country: true)
+  end
+
+  @doc """
   Gets a single federal_state by querying for the slug.
 
   Raises `Ecto.NoResultsError` if the federal state does not exist.
   """
   def get_federal_state_by_slug!(federal_state_slug, country) do
     Repo.get_by!(Location,
+      slug: federal_state_slug,
+      is_federal_state: true,
+      parent_location_id: country.id
+    )
+  end
+
+  def get_federal_state_by_slug(federal_state_slug, country) do
+    Repo.get_by(Location,
       slug: federal_state_slug,
       is_federal_state: true,
       parent_location_id: country.id
@@ -787,6 +804,29 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Gets both a country and its federal_state in a single query by their slugs.
+
+  Returns `{:ok, {federal_state, country}}` if found, or `{:error, :not_found}` if not.
+  """
+  def get_federal_state_and_country_by_slug(country_slug, federal_state_slug) do
+    query =
+      from fs in Location,
+        join: c in Location,
+        on: fs.parent_location_id == c.id,
+        where:
+          c.slug == ^country_slug and
+            c.is_country == true and
+            fs.slug == ^federal_state_slug and
+            fs.is_federal_state == true,
+        select: {fs, c}
+
+    case Repo.one(query) do
+      {federal_state, country} -> {:ok, {federal_state, country}}
+      nil -> {:error, :not_found}
+    end
+  end
+
+  @doc """
   Gets a single county by querying for the slug.
 
   Raises `Ecto.NoResultsError` if the county does not exist.
@@ -810,6 +850,15 @@ defmodule MehrSchulferien.Locations do
     |> Repo.preload([:zip_codes])
   end
 
+  def get_city_by_slug(city_slug) do
+    Location
+    |> Repo.get_by(slug: city_slug, is_city: true)
+    |> case do
+      nil -> nil
+      city -> Repo.preload(city, [:zip_codes])
+    end
+  end
+
   @doc """
   Gets a single school by querying for the slug.
 
@@ -819,6 +868,15 @@ defmodule MehrSchulferien.Locations do
     Location
     |> Repo.get_by!(slug: school_slug, is_school: true)
     |> Repo.preload([:address])
+  end
+
+  def get_school_by_slug(school_slug) do
+    Location
+    |> Repo.get_by(slug: school_slug, is_school: true)
+    |> case do
+      nil -> nil
+      school -> Repo.preload(school, [:address])
+    end
   end
 
   @doc """
@@ -878,6 +936,21 @@ defmodule MehrSchulferien.Locations do
     %{country: country, federal_state: federal_state, county: county, city: city}
   end
 
+  def show_city_to_country_map_safe(country_slug, city_slug) do
+    with country when not is_nil(country) <- get_country_by_slug(country_slug),
+         city when not is_nil(city) <- get_city_by_slug(city_slug),
+         county when not is_nil(county) <- get_location(city.parent_location_id),
+         federal_state when not is_nil(federal_state) <- get_location(county.parent_location_id) do
+      if country.id == federal_state.parent_location_id do
+        {:ok, %{country: country, federal_state: federal_state, county: county, city: city}}
+      else
+        {:error, :invalid_hierarchy}
+      end
+    else
+      _ -> {:error, :not_found}
+    end
+  end
+
   @doc """
   Shows a map for the related locations from school -> country.
   """
@@ -893,6 +966,29 @@ defmodule MehrSchulferien.Locations do
     end
 
     %{country: country, federal_state: federal_state, county: county, city: city, school: school}
+  end
+
+  def show_school_to_country_map_safe(country_slug, school_slug) do
+    with country when not is_nil(country) <- get_country_by_slug(country_slug),
+         school when not is_nil(school) <- get_school_by_slug(school_slug),
+         city when not is_nil(city) <- get_location(school.parent_location_id),
+         county when not is_nil(county) <- get_location(city.parent_location_id),
+         federal_state when not is_nil(federal_state) <- get_location(county.parent_location_id) do
+      if country.id == federal_state.parent_location_id do
+        {:ok,
+         %{
+           country: country,
+           federal_state: federal_state,
+           county: county,
+           city: city,
+           school: school
+         }}
+      else
+        {:error, :invalid_hierarchy}
+      end
+    else
+      _ -> {:error, :not_found}
+    end
   end
 
   def with_periods(locations) do

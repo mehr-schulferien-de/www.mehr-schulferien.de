@@ -12,19 +12,35 @@ defmodule MehrSchulferienWeb.CityController do
         "city_slug" => city_slug,
         "year" => _year
       }) do
-    %{country: country} =
-      Locations.show_city_to_country_map(country_slug, city_slug)
+    case Locations.show_city_to_country_map_safe(country_slug, city_slug) do
+      {:ok, %{country: country}} ->
+        # Redirect to the city page without year (301 permanent redirect for SEO)
+        conn
+        |> put_status(:moved_permanently)
+        |> redirect(to: ~p"/ferien/#{country.slug}/stadt/#{city_slug}")
 
-    # Redirect to the city page without year (301 permanent redirect for SEO)
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country.slug}/stadt/#{city_slug}")
+      {:error, _} ->
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
+    end
   end
 
   def show(conn, %{"country_slug" => country_slug, "city_slug" => city_slug}) do
-    %{country: country, federal_state: federal_state, county: county, city: city} =
-      Locations.show_city_to_country_map(country_slug, city_slug)
+    case Locations.show_city_to_country_map_safe(country_slug, city_slug) do
+      {:ok, %{country: country, federal_state: federal_state, county: county, city: city}} ->
+        show_city_page(conn, country, federal_state, county, city)
 
+      {:error, _} ->
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
+    end
+  end
+
+  defp show_city_page(conn, country, federal_state, county, city) do
     # Get schools in this city for display, filtered by zip code prefix
     schools = Locations.list_schools_by_zip_prefix(city)
 

@@ -19,37 +19,42 @@ defmodule MehrSchulferienWeb.HomeLive do
     # Get federal states for dropdown
     federal_states = get_federal_states()
 
-    # Get total school count for the initial display
-    total_schools = get_total_school_count()
+    # Check if database is empty
+    if federal_states == [] do
+      {:ok, assign(socket, :empty_database, true)}
+    else
+      # Get total school count for the initial display
+      total_schools = get_total_school_count()
 
-    socket =
-      socket
-      |> assign(:current_year, current_year)
-      |> assign(:next_year, next_year)
-      |> assign(:today, today)
-      |> assign(:page_title, "Schulferien und Feiertage")
-      |> assign(:federal_states, federal_states)
-      |> assign(:search_params, %{
-        "location" => "",
-        "school_name" => "",
-        "federal_state_id" => ""
-      })
-      |> assign(:schools, [])
-      |> assign(:searching, false)
-      |> assign(:sort_by, nil)
-      |> assign(:sort_order, :asc)
-      |> assign(:federal_state_overview, nil)
-      |> assign(:cities_with_schools, [])
-      |> assign(:show_all_schools, false)
-      |> assign(:expanded_cities, MapSet.new())
-      |> assign(:total_school_count, 0)
-      |> assign(:total_city_count, 0)
-      |> assign(:total_schools_in_system, total_schools)
-      |> assign(:show_vacation_timeline, true)
-      |> assign(:recent_locations, recent_locations)
-      |> load_vacation_timeline_data()
+      socket =
+        socket
+        |> assign(:current_year, current_year)
+        |> assign(:next_year, next_year)
+        |> assign(:today, today)
+        |> assign(:page_title, "Schulferien und Feiertage")
+        |> assign(:federal_states, federal_states)
+        |> assign(:search_params, %{
+          "location" => "",
+          "school_name" => "",
+          "federal_state_id" => ""
+        })
+        |> assign(:schools, [])
+        |> assign(:searching, false)
+        |> assign(:sort_by, nil)
+        |> assign(:sort_order, :asc)
+        |> assign(:federal_state_overview, nil)
+        |> assign(:cities_with_schools, [])
+        |> assign(:show_all_schools, false)
+        |> assign(:expanded_cities, MapSet.new())
+        |> assign(:total_school_count, 0)
+        |> assign(:total_city_count, 0)
+        |> assign(:total_schools_in_system, total_schools)
+        |> assign(:show_vacation_timeline, true)
+        |> assign(:recent_locations, recent_locations)
+        |> load_vacation_timeline_data()
 
-    {:ok, socket}
+      {:ok, socket}
+    end
   end
 
   @impl true
@@ -176,11 +181,15 @@ defmodule MehrSchulferienWeb.HomeLive do
   end
 
   defp get_federal_states do
-    country = Locations.get_country_by_slug!("d")
+    case Locations.get_country_by_slug("d") do
+      nil ->
+        []
 
-    Locations.list_federal_states(country)
-    |> Enum.map(fn state -> {state.name, state.id} end)
-    |> Enum.sort_by(&elem(&1, 0))
+      country ->
+        Locations.list_federal_states(country)
+        |> Enum.map(fn state -> {state.name, state.id} end)
+        |> Enum.sort_by(&elem(&1, 0))
+    end
   end
 
   defp load_location_history_from_session(session) do
@@ -1040,832 +1049,895 @@ defmodule MehrSchulferienWeb.HomeLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="mt-4 sm:mt-8 px-4 sm:px-0" id="test-page-container" phx-hook="MaintainScroll">
-      <.heading level={1} class="mb-6 sm:mb-8">
-        Schulferien und Feiertage
-      </.heading>
+    <%= if assigns[:empty_database] do %>
+      <main class="min-h-screen bg-gray-50">
+        <div class="container mx-auto px-4 py-16">
+          <div class="max-w-2xl mx-auto text-center">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+              <div class="mb-6">
+                <svg
+                  class="mx-auto h-16 w-16 text-yellow-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+              </div>
 
-      <.school_search_form
-        federal_states={@federal_states}
-        show_federal_state={true}
-        search_params={@search_params}
-        searching={@searching}
-      >
-        <:below_form>
-          <.location_history
-            recent_locations={@recent_locations}
-            show={should_show_recent_locations(@search_params)}
-          />
-        </:below_form>
-      </.school_search_form>
+              <h1 class="text-3xl font-bold text-gray-900 mb-4">
+                Datenbank ist leer
+              </h1>
 
-      <%= if @show_all_schools do %>
-        <div class="mb-8">
-          <.heading level={2} class="mb-3 sm:mb-4 text-lg sm:text-2xl">
-            <%= cond do %>
-              <% String.length(@search_params["location"] || "") >= 1 and String.length(@search_params["school_name"] || "") >= 1 -> %>
-                Suchergebnisse für "{@search_params["school_name"]}" in
-                <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
-                  PLZ {@search_params["location"]}
-                  <%= if length(@cities_with_schools) == 1 do %>
-                    <% {city, _schools} = hd(@cities_with_schools) %> (<a
-                      href={~p"/ferien/d/stadt/#{city.slug}"}
-                      class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
-                    ><%= city.name %></a>)
+              <p class="text-gray-600 mb-6">
+                Die Datenbank enthält derzeit keine Daten. Bitte stellen Sie sicher, dass die Datenbank korrekt eingerichtet wurde und alle erforderlichen Daten geladen sind.
+              </p>
+
+              <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <p class="text-sm text-yellow-800">
+                  <strong>Für Administratoren:</strong>
+                  Führen Sie <code class="bg-yellow-100 px-2 py-1 rounded">mix ecto.setup</code>
+                  aus, um die Datenbank zu initialisieren und mit Daten zu füllen.
+                </p>
+              </div>
+
+              <a
+                href="/"
+                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              >
+                Zur Startseite
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+    <% else %>
+      <div class="mt-4 sm:mt-8 px-4 sm:px-0" id="test-page-container" phx-hook="MaintainScroll">
+        <.heading level={1} class="mb-6 sm:mb-8">
+          Schulferien und Feiertage
+        </.heading>
+
+        <.school_search_form
+          federal_states={@federal_states}
+          show_federal_state={true}
+          search_params={@search_params}
+          searching={@searching}
+        >
+          <:below_form>
+            <.location_history
+              recent_locations={@recent_locations}
+              show={should_show_recent_locations(@search_params)}
+            />
+          </:below_form>
+        </.school_search_form>
+
+        <%= if @show_all_schools do %>
+          <div class="mb-8">
+            <.heading level={2} class="mb-3 sm:mb-4 text-lg sm:text-2xl">
+              <%= cond do %>
+                <% String.length(@search_params["location"] || "") >= 1 and String.length(@search_params["school_name"] || "") >= 1 -> %>
+                  Suchergebnisse für "{@search_params["school_name"]}" in
+                  <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
+                    PLZ {@search_params["location"]}
+                    <%= if length(@cities_with_schools) == 1 do %>
+                      <% {city, _schools} = hd(@cities_with_schools) %> (<a
+                        href={~p"/ferien/d/stadt/#{city.slug}"}
+                        class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                      ><%= city.name %></a>)
+                    <% end %>
+                  <% else %>
+                    "{@search_params["location"]}"
+                    <%= if @federal_state_overview do %>
+                      ({get_federal_state_name(@federal_state_overview)})
+                    <% end %>
                   <% end %>
-                <% else %>
-                  "{@search_params["location"]}"
+                <% String.length(@search_params["location"] || "") >= 1 -> %>
+                  Suchergebnisse für
+                  <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
+                    PLZ {@search_params["location"]}
+                    <%= if length(@cities_with_schools) == 1 do %>
+                      <% {city, _schools} = hd(@cities_with_schools) %> (<a
+                        href={~p"/ferien/d/stadt/#{city.slug}"}
+                        class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                      ><%= city.name %></a>)
+                    <% end %>
+                  <% else %>
+                    "{@search_params["location"]}"
+                    <%= if @federal_state_overview do %>
+                      ({get_federal_state_name(@federal_state_overview)})
+                    <% end %>
+                  <% end %>
+                <% String.length(@search_params["school_name"] || "") >= 1 -> %>
+                  Suchergebnisse für "{@search_params["school_name"]}"
                   <%= if @federal_state_overview do %>
-                    ({get_federal_state_name(@federal_state_overview)})
+                    in {get_federal_state_name(@federal_state_overview)}
                   <% end %>
-                <% end %>
-              <% String.length(@search_params["location"] || "") >= 1 -> %>
-                Suchergebnisse für
-                <%= if is_partial_or_full_zip_code?(@search_params["location"]) do %>
-                  PLZ {@search_params["location"]}
-                  <%= if length(@cities_with_schools) == 1 do %>
-                    <% {city, _schools} = hd(@cities_with_schools) %> (<a
-                      href={~p"/ferien/d/stadt/#{city.slug}"}
-                      class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
-                    ><%= city.name %></a>)
-                  <% end %>
-                <% else %>
-                  "{@search_params["location"]}"
-                  <%= if @federal_state_overview do %>
-                    ({get_federal_state_name(@federal_state_overview)})
-                  <% end %>
-                <% end %>
-              <% String.length(@search_params["school_name"] || "") >= 1 -> %>
-                Suchergebnisse für "{@search_params["school_name"]}"
-                <%= if @federal_state_overview do %>
-                  in {get_federal_state_name(@federal_state_overview)}
-                <% end %>
-              <% @federal_state_overview -> %>
-                Alle Städte und Schulen in {get_federal_state_name(@federal_state_overview)}
-              <% true -> %>
-                Suchergebnisse
-            <% end %>
-          </.heading>
+                <% @federal_state_overview -> %>
+                  Alle Städte und Schulen in {get_federal_state_name(@federal_state_overview)}
+                <% true -> %>
+                  Suchergebnisse
+              <% end %>
+            </.heading>
 
-          <%= if length(@cities_with_schools) > 0 do %>
-            <!-- Summary Statistics -->
-            <%= if length(@cities_with_schools) > 1 do %>
-              <div class="mb-4 sm:mb-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
-                  <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                      Städte
-                    </.text>
-                    <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                      {format_number(length(@cities_with_schools))}
-                    </.text>
-                  </div>
-                  <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                      Schulen gesamt
-                    </.text>
-                    <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                      {format_number(
-                        Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
-                          acc + length(schools)
-                        end)
-                      )}
-                    </.text>
-                  </div>
-                  <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                      Ø Schulen pro Stadt
-                    </.text>
-                    <.text variant="lead" class="font-bold text-lg sm:text-2xl">
-                      {format_number(
-                        Float.round(
+            <%= if length(@cities_with_schools) > 0 do %>
+              <!-- Summary Statistics -->
+              <%= if length(@cities_with_schools) > 1 do %>
+                <div class="mb-4 sm:mb-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
+                  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
+                    <div>
+                      <.text
+                        variant="small"
+                        class="text-xs sm:text-sm text-gray-600 dark:text-gray-400"
+                      >
+                        Städte
+                      </.text>
+                      <.text variant="lead" class="font-bold text-lg sm:text-2xl">
+                        {format_number(length(@cities_with_schools))}
+                      </.text>
+                    </div>
+                    <div>
+                      <.text
+                        variant="small"
+                        class="text-xs sm:text-sm text-gray-600 dark:text-gray-400"
+                      >
+                        Schulen gesamt
+                      </.text>
+                      <.text variant="lead" class="font-bold text-lg sm:text-2xl">
+                        {format_number(
                           Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
                             acc + length(schools)
-                          end) / length(@cities_with_schools),
-                          1
-                        )
-                      )}
-                    </.text>
-                  </div>
-                  <div>
-                    <.text variant="small" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                      Größte Stadt
-                    </.text>
-                    <%= case Enum.max_by(@cities_with_schools, fn {_city, schools} -> length(schools) end, fn -> nil end) do %>
-                      <% {city, schools} -> %>
-                        <a
-                          href={"#city-card-#{city.id}"}
-                          class="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-800 hover:underline"
-                        >
-                          {city.name} ({format_number(length(schools))})
-                        </a>
-                      <% _ -> %>
-                        <.text variant="base" class="text-sm sm:text-base font-semibold">-</.text>
-                    <% end %>
+                          end)
+                        )}
+                      </.text>
+                    </div>
+                    <div>
+                      <.text
+                        variant="small"
+                        class="text-xs sm:text-sm text-gray-600 dark:text-gray-400"
+                      >
+                        Ø Schulen pro Stadt
+                      </.text>
+                      <.text variant="lead" class="font-bold text-lg sm:text-2xl">
+                        {format_number(
+                          Float.round(
+                            Enum.reduce(@cities_with_schools, 0, fn {_city, schools}, acc ->
+                              acc + length(schools)
+                            end) / length(@cities_with_schools),
+                            1
+                          )
+                        )}
+                      </.text>
+                    </div>
+                    <div>
+                      <.text
+                        variant="small"
+                        class="text-xs sm:text-sm text-gray-600 dark:text-gray-400"
+                      >
+                        Größte Stadt
+                      </.text>
+                      <%= case Enum.max_by(@cities_with_schools, fn {_city, schools} -> length(schools) end, fn -> nil end) do %>
+                        <% {city, schools} -> %>
+                          <a
+                            href={"#city-card-#{city.id}"}
+                            class="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            {city.name} ({format_number(length(schools))})
+                          </a>
+                        <% _ -> %>
+                          <.text variant="base" class="text-sm sm:text-base font-semibold">-</.text>
+                      <% end %>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <% end %>
-            <!-- Cities Grid / School List -->
-            <%= if length(@cities_with_schools) == 1 do %>
-              <!-- Single city: show schools in a 3-column grid -->
-              <% {city, schools} = hd(@cities_with_schools) %>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                <%= for school <- schools do %>
-                  <a
-                    href={"/ferien/d/schule/#{school.slug}"}
-                    class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-4 group block"
-                  >
-                    <div class="flex items-start justify-between gap-2">
-                      <div class="flex-1 min-w-0">
-                        <h3 class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
-                          {school.name}
-                        </h3>
-                        <%= if school.address do %>
-                          <p class="text-xs text-gray-500">
-                            <%= if school.address.street do %>
-                              {school.address.street}<br />
-                            <% end %>
-                            <%= if school.address.zip_code do %>
-                              {school.address.zip_code} {city.name}
-                            <% end %>
+              <% end %>
+              <!-- Cities Grid / School List -->
+              <%= if length(@cities_with_schools) == 1 do %>
+                <!-- Single city: show schools in a 3-column grid -->
+                <% {city, schools} = hd(@cities_with_schools) %>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                  <%= for school <- schools do %>
+                    <a
+                      href={"/ferien/d/schule/#{school.slug}"}
+                      class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-4 group block"
+                    >
+                      <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                          <h3 class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
+                            {school.name}
+                          </h3>
+                          <%= if school.address do %>
+                            <p class="text-xs text-gray-500">
+                              <%= if school.address.street do %>
+                                {school.address.street}<br />
+                              <% end %>
+                              <%= if school.address.zip_code do %>
+                                {school.address.zip_code} {city.name}
+                              <% end %>
+                            </p>
+                          <% end %>
+                        </div>
+                        <svg
+                          class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 mt-0.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </div>
+                    </a>
+                  <% end %>
+                </div>
+              <% else %>
+                <!-- Multiple cities: show cities with schools in cards -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                  <%= for {city, schools} <- @cities_with_schools do %>
+                    <div
+                      class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200"
+                      id={"city-card-#{city.id}"}
+                    >
+                      <!-- City Header -->
+                      <div class="px-3 sm:px-5 py-2.5 sm:py-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-baseline justify-between gap-2">
+                          <%= if Map.has_key?(city, :slug) do %>
+                            <a
+                              href={~p"/ferien/d/stadt/#{city.slug}"}
+                              class="text-sm sm:text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
+                            >
+                              {city.name}
+                            </a>
+                          <% else %>
+                            <h3 class="text-sm sm:text-lg font-semibold text-gray-900 truncate">
+                              {city.name}
+                            </h3>
+                          <% end %>
+                          <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0 whitespace-nowrap">
+                            {format_number(length(schools))} {if length(schools) == 1,
+                              do: "Schule",
+                              else: "Schulen"}
+                          </span>
+                        </div>
+                        <% zip_codes =
+                          schools
+                          |> Enum.map(&(&1.address && &1.address.zip_code))
+                          |> Enum.filter(& &1)
+                          |> Enum.uniq()
+                          |> Enum.sort() %>
+                        <%= if length(zip_codes) > 0 do %>
+                          <p class="text-sm text-gray-500 mt-1">
+                            PLZ-Bereich: {format_zip_codes_list(zip_codes)}
                           </p>
                         <% end %>
                       </div>
-                      <svg
-                        class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
-                  </a>
-                <% end %>
-              </div>
-            <% else %>
-              <!-- Multiple cities: show cities with schools in cards -->
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                <%= for {city, schools} <- @cities_with_schools do %>
-                  <div
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200"
-                    id={"city-card-#{city.id}"}
-                  >
-                    <!-- City Header -->
-                    <div class="px-3 sm:px-5 py-2.5 sm:py-4 border-b border-gray-200 dark:border-gray-700">
-                      <div class="flex items-baseline justify-between gap-2">
-                        <%= if Map.has_key?(city, :slug) do %>
-                          <a
-                            href={~p"/ferien/d/stadt/#{city.slug}"}
-                            class="text-sm sm:text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
-                          >
-                            {city.name}
-                          </a>
-                        <% else %>
-                          <h3 class="text-sm sm:text-lg font-semibold text-gray-900 truncate">
-                            {city.name}
-                          </h3>
-                        <% end %>
-                        <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0 whitespace-nowrap">
-                          {format_number(length(schools))} {if length(schools) == 1,
-                            do: "Schule",
-                            else: "Schulen"}
-                        </span>
-                      </div>
-                      <% zip_codes =
-                        schools
-                        |> Enum.map(&(&1.address && &1.address.zip_code))
-                        |> Enum.filter(& &1)
-                        |> Enum.uniq()
-                        |> Enum.sort() %>
-                      <%= if length(zip_codes) > 0 do %>
-                        <p class="text-sm text-gray-500 mt-1">
-                          PLZ-Bereich: {format_zip_codes_list(zip_codes)}
-                        </p>
-                      <% end %>
-                    </div>
-                    <!-- Schools List -->
-                    <div class="px-3 sm:px-5 py-2 sm:py-4">
-                      <ul class="space-y-1.5 sm:space-y-3">
-                        <% is_expanded = MapSet.member?(@expanded_cities, city.id) %>
-                        <% visible_schools =
-                          if length(schools) > 10 && !is_expanded,
-                            do: Enum.take(schools, 10),
-                            else: schools %>
-                        <!-- Schools list -->
-                        <%= for {school, index} <- Enum.with_index(visible_schools) do %>
-                          <li class={
-                            if index < length(visible_schools) - 1,
-                              do: "pb-1.5 sm:pb-3 border-b border-gray-100",
-                              else: ""
-                          }>
-                            <a
-                              href={"/ferien/d/schule/#{school.slug}"}
-                              class="group block hover:translate-x-1 transition-transform duration-150 py-0.5"
-                            >
-                              <div class="flex items-start justify-between gap-1">
-                                <div class="flex-1 min-w-0 pr-1">
-                                  <p class="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                                    {school.name}
-                                  </p>
-                                  <%= if school.address && school.address.street do %>
-                                    <p class="text-xs text-gray-500 mt-0.5 truncate">
-                                      {school.address.street}
-                                      <%= if school.address.zip_code do %>
-                                        , {school.address.zip_code} {String.slice(
-                                          city.name,
-                                          0,
-                                          15
-                                        )}{if String.length(city.name) > 15, do: "..."}
-                                      <% end %>
+                      <!-- Schools List -->
+                      <div class="px-3 sm:px-5 py-2 sm:py-4">
+                        <ul class="space-y-1.5 sm:space-y-3">
+                          <% is_expanded = MapSet.member?(@expanded_cities, city.id) %>
+                          <% visible_schools =
+                            if length(schools) > 10 && !is_expanded,
+                              do: Enum.take(schools, 10),
+                              else: schools %>
+                          <!-- Schools list -->
+                          <%= for {school, index} <- Enum.with_index(visible_schools) do %>
+                            <li class={
+                              if index < length(visible_schools) - 1,
+                                do: "pb-1.5 sm:pb-3 border-b border-gray-100",
+                                else: ""
+                            }>
+                              <a
+                                href={"/ferien/d/schule/#{school.slug}"}
+                                class="group block hover:translate-x-1 transition-transform duration-150 py-0.5"
+                              >
+                                <div class="flex items-start justify-between gap-1">
+                                  <div class="flex-1 min-w-0 pr-1">
+                                    <p class="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                                      {school.name}
                                     </p>
-                                  <% end %>
+                                    <%= if school.address && school.address.street do %>
+                                      <p class="text-xs text-gray-500 mt-0.5 truncate">
+                                        {school.address.street}
+                                        <%= if school.address.zip_code do %>
+                                          , {school.address.zip_code} {String.slice(
+                                            city.name,
+                                            0,
+                                            15
+                                          )}{if String.length(city.name) > 15, do: "..."}
+                                        <% end %>
+                                      </p>
+                                    <% end %>
+                                  </div>
+                                  <div class="flex-shrink-0">
+                                    <svg
+                                      class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mt-0.5"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 5l7 7-7 7"
+                                      />
+                                    </svg>
+                                  </div>
                                 </div>
-                                <div class="flex-shrink-0">
-                                  <svg
-                                    class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mt-0.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M9 5l7 7-7 7"
-                                    />
-                                  </svg>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                        <% end %>
-                      </ul>
-                      <!-- Expand/Collapse Button -->
-                      <%= if length(schools) > 10 do %>
-                        <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-gray-700">
-                          <button
-                            phx-click="toggle_city"
-                            phx-value-city-id={city.id}
-                            class="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center w-full justify-center group py-1"
-                            id={"toggle-city-#{city.id}"}
-                          >
-                            <%= if MapSet.member?(@expanded_cities, city.id) do %>
-                              <span>Weniger anzeigen</span>
-                            <% else %>
-                              <span>Alle {length(schools)} Schulen anzeigen</span>
-                            <% end %>
-                            <svg
-                              class={"ml-0.5 sm:ml-1 w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 #{if MapSet.member?(@expanded_cities, city.id), do: "rotate-180", else: ""}"}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                              </a>
+                            </li>
+                          <% end %>
+                        </ul>
+                        <!-- Expand/Collapse Button -->
+                        <%= if length(schools) > 10 do %>
+                          <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-100 dark:border-gray-700">
+                            <button
+                              phx-click="toggle_city"
+                              phx-value-city-id={city.id}
+                              class="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center w-full justify-center group py-1"
+                              id={"toggle-city-#{city.id}"}
                             >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      <% end %>
+                              <%= if MapSet.member?(@expanded_cities, city.id) do %>
+                                <span>Weniger anzeigen</span>
+                              <% else %>
+                                <span>Alle {length(schools)} Schulen anzeigen</span>
+                              <% end %>
+                              <svg
+                                class={"ml-0.5 sm:ml-1 w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 #{if MapSet.member?(@expanded_cities, city.id), do: "rotate-180", else: ""}"}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        <% end %>
+                      </div>
                     </div>
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-          <% else %>
-            <.alert variant="info">
-              Keine Städte mit Schulen gefunden für dieses Bundesland.
-            </.alert>
-          <% end %>
-        </div>
-      <% end %>
-
-      <%= if @federal_state_overview do %>
-        <div class="mb-6 sm:mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-            <.heading level={2} class="mb-2 sm:mb-0 text-lg sm:text-xl">
-              <%= if length(@cities_with_schools) == 1 do %>
-                <% {city, _schools} = hd(@cities_with_schools) %>
-                {city.name}, {@federal_state_overview.federal_state.name}
-              <% else %>
-                {@federal_state_overview.federal_state.name}
+                  <% end %>
+                </div>
               <% end %>
-            </.heading>
-            <div class="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-              <%= if length(@cities_with_schools) == 1 do %>
-                <% {_city, schools} = hd(@cities_with_schools) %>
-                <span>
-                  <span class="font-semibold">
-                    {format_number(length(schools))}
-                  </span>
-                  {if length(schools) == 1,
-                    do: "Schule",
-                    else: "Schulen"}
-                </span>
-              <% else %>
-                <span>
-                  <span class="font-semibold">
-                    {format_number(@federal_state_overview.city_count)}
-                  </span>
-                  {if @federal_state_overview.city_count ==
-                        1,
-                      do: "Stadt",
-                      else: "Städte"}
-                </span>
-                <span>
-                  <span class="font-semibold">
-                    {format_number(@federal_state_overview.school_count)}
-                  </span>
-                  {if @federal_state_overview.school_count ==
-                        1,
+            <% else %>
+              <.alert variant="info">
+                Keine Städte mit Schulen gefunden für dieses Bundesland.
+              </.alert>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%= if @federal_state_overview do %>
+          <div class="mb-6 sm:mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <.heading level={2} class="mb-2 sm:mb-0 text-lg sm:text-xl">
+                <%= if length(@cities_with_schools) == 1 do %>
+                  <% {city, _schools} = hd(@cities_with_schools) %>
+                  {city.name}, {@federal_state_overview.federal_state.name}
+                <% else %>
+                  {@federal_state_overview.federal_state.name}
+                <% end %>
+              </.heading>
+              <div class="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
+                <%= if length(@cities_with_schools) == 1 do %>
+                  <% {_city, schools} = hd(@cities_with_schools) %>
+                  <span>
+                    <span class="font-semibold">
+                      {format_number(length(schools))}
+                    </span>
+                    {if length(schools) == 1,
                       do: "Schule",
                       else: "Schulen"}
-                </span>
-              <% end %>
+                  </span>
+                <% else %>
+                  <span>
+                    <span class="font-semibold">
+                      {format_number(@federal_state_overview.city_count)}
+                    </span>
+                    {if @federal_state_overview.city_count ==
+                          1,
+                        do: "Stadt",
+                        else: "Städte"}
+                  </span>
+                  <span>
+                    <span class="font-semibold">
+                      {format_number(@federal_state_overview.school_count)}
+                    </span>
+                    {if @federal_state_overview.school_count ==
+                          1,
+                        do: "Schule",
+                        else: "Schulen"}
+                  </span>
+                <% end %>
+              </div>
             </div>
-          </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-            <a
-              href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <.text variant="base" class="font-semibold mb-2">Nächste Schulferien</.text>
-              <div class="space-y-1">
-                <%= for vacation <- Enum.take(@federal_state_overview.next_vacations, 3) do %>
-                  <div class="text-sm">
-                    <div class="font-medium">
-                      {vacation.holiday_or_vacation_type.colloquial}
-                    </div>
-                    <div class="text-gray-600 dark:text-gray-400">
-                      {DateFormatter.format_date_full(vacation.starts_on)} - {DateFormatter.format_date_full(
-                        vacation.ends_on
-                      )}
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-              <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                Mehr anzeigen →
-              </div>
-            </a>
-
-            <a
-              href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <.text variant="base" class="font-semibold mb-2">Nächste Feiertage</.text>
-              <div class="space-y-1">
-                <%= for holiday <- Enum.take(@federal_state_overview.next_holidays, 3) do %>
-                  <div class="text-sm">
-                    <div class="font-medium">
-                      {holiday.holiday_or_vacation_type.colloquial}
-                    </div>
-                    <div class="text-gray-600 dark:text-gray-400">
-                      {DateFormatter.format_date_full(holiday.starts_on)}
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-              <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                Mehr anzeigen →
-              </div>
-            </a>
-
-            <a
-              href={"/brueckentage/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
-              class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <.text variant="base" class="font-semibold mb-2">Nächste Brückentage</.text>
-              <div class="space-y-1">
-                <%= if length(@federal_state_overview.next_bridge_days) > 0 do %>
-                  <%= for bridge_info <- Enum.take(@federal_state_overview.next_bridge_days, 3) do %>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+              <a
+                href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
+                class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <.text variant="base" class="font-semibold mb-2">Nächste Schulferien</.text>
+                <div class="space-y-1">
+                  <%= for vacation <- Enum.take(@federal_state_overview.next_vacations, 3) do %>
                     <div class="text-sm">
                       <div class="font-medium">
-                        {bridge_info.vacation_days} {if bridge_info.vacation_days == 1,
-                          do: "Tag",
-                          else: "Tage"} Urlaub
+                        {vacation.holiday_or_vacation_type.colloquial}
                       </div>
                       <div class="text-gray-600 dark:text-gray-400">
-                        → {bridge_info.total_free_days} Tage frei (×{bridge_info.gain_factor})
+                        {DateFormatter.format_date_full(vacation.starts_on)} - {DateFormatter.format_date_full(
+                          vacation.ends_on
+                        )}
                       </div>
                     </div>
                   <% end %>
-                <% else %>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">
-                    Keine Brückentage in nächster Zeit
-                  </div>
-                <% end %>
-              </div>
-              <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                Mehr anzeigen →
-              </div>
-            </a>
-          </div>
-        </div>
-      <% end %>
+                </div>
+                <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                  Mehr anzeigen →
+                </div>
+              </a>
 
-      <%= if !@show_all_schools do %>
-        <%= if length(@schools) > 0 do %>
-          <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <.heading level={2}>
-                Suchergebnisse ({length(@schools)} Schulen gefunden)
-              </.heading>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-900">
-                  <tr>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      phx-click="sort"
-                      phx-value-field="name"
-                    >
-                      <div class="flex items-center space-x-1">
-                        <span>Schulname</span>
-                        <%= if @sort_by == :name do %>
-                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <%= if @sort_order == :asc do %>
-                              <path d="M5 12l5-5 5 5H5z" />
-                            <% else %>
-                              <path d="M15 8l-5 5-5-5h10z" />
-                            <% end %>
-                          </svg>
-                        <% end %>
+              <a
+                href={"/ferien/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
+                class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <.text variant="base" class="font-semibold mb-2">Nächste Feiertage</.text>
+                <div class="space-y-1">
+                  <%= for holiday <- Enum.take(@federal_state_overview.next_holidays, 3) do %>
+                    <div class="text-sm">
+                      <div class="font-medium">
+                        {holiday.holiday_or_vacation_type.colloquial}
                       </div>
-                    </th>
-                    <th
-                      class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      phx-click="sort"
-                      phx-value-field="street"
-                    >
-                      <div class="flex items-center space-x-1">
-                        <span>Straße</span>
-                        <%= if @sort_by == :street do %>
-                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <%= if @sort_order == :asc do %>
-                              <path d="M5 12l5-5 5 5H5z" />
-                            <% else %>
-                              <path d="M15 8l-5 5-5-5h10z" />
-                            <% end %>
-                          </svg>
-                        <% end %>
+                      <div class="text-gray-600 dark:text-gray-400">
+                        {DateFormatter.format_date_full(holiday.starts_on)}
                       </div>
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      phx-click="sort"
-                      phx-value-field="zip_code"
-                    >
-                      <div class="flex items-center space-x-1">
-                        <span>PLZ</span>
-                        <%= if @sort_by == :zip_code do %>
-                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <%= if @sort_order == :asc do %>
-                              <path d="M5 12l5-5 5 5H5z" />
-                            <% else %>
-                              <path d="M15 8l-5 5-5-5h10z" />
-                            <% end %>
-                          </svg>
-                        <% end %>
-                      </div>
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      phx-click="sort"
-                      phx-value-field="city"
-                    >
-                      <div class="flex items-center space-x-1">
-                        <span>Stadt</span>
-                        <%= if @sort_by == :city do %>
-                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <%= if @sort_order == :asc do %>
-                              <path d="M5 12l5-5 5 5H5z" />
-                            <% else %>
-                              <path d="M15 8l-5 5-5-5h10z" />
-                            <% end %>
-                          </svg>
-                        <% end %>
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <%= for school <- @schools do %>
-                    <tr class="hover:bg-gray-50">
-                      <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <a
-                          href={"/ferien/d/schule/#{school.slug}"}
-                          class="text-blue-600 hover:text-blue-900 font-medium"
-                        >
-                          {school.name}
-                        </a>
-                      </td>
-                      <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <%= if school.address do %>
-                          {school.address.street}
-                        <% else %>
-                          <span class="text-gray-500">-</span>
-                        <% end %>
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <%= if school.address && school.address.zip_code do %>
-                          {school.address.zip_code}
-                        <% else %>
-                          <span class="text-gray-500">-</span>
-                        <% end %>
-                      </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <%= if school.parent_location do %>
-                          {school.parent_location.name}
-                        <% else %>
-                          <span class="text-gray-500">-</span>
-                        <% end %>
-                      </td>
-                    </tr>
+                    </div>
                   <% end %>
-                </tbody>
-              </table>
+                </div>
+                <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                  Mehr anzeigen →
+                </div>
+              </a>
+
+              <a
+                href={"/brueckentage/d/bundesland/#{@federal_state_overview.federal_state.slug}/#{@today.year}"}
+                class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <.text variant="base" class="font-semibold mb-2">Nächste Brückentage</.text>
+                <div class="space-y-1">
+                  <%= if length(@federal_state_overview.next_bridge_days) > 0 do %>
+                    <%= for bridge_info <- Enum.take(@federal_state_overview.next_bridge_days, 3) do %>
+                      <div class="text-sm">
+                        <div class="font-medium">
+                          {bridge_info.vacation_days} {if bridge_info.vacation_days == 1,
+                            do: "Tag",
+                            else: "Tage"} Urlaub
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-400">
+                          → {bridge_info.total_free_days} Tage frei (×{bridge_info.gain_factor})
+                        </div>
+                      </div>
+                    <% end %>
+                  <% else %>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                      Keine Brückentage in nächster Zeit
+                    </div>
+                  <% end %>
+                </div>
+                <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                  Mehr anzeigen →
+                </div>
+              </a>
             </div>
           </div>
-        <% else %>
-          <%= cond do %>
-            <% @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" -> %>
-              <.alert variant="info">
-                {format_number(@total_schools_in_system)} Schulen gefunden. Bitte geben Sie genauere Suchkriterien ein.
-              </.alert>
-            <% true -> %>
-              <.alert variant="info">
-                Keine Schulen gefunden. Bitte versuchen Sie es mit anderen Suchkriterien.
-              </.alert>
+        <% end %>
+
+        <%= if !@show_all_schools do %>
+          <%= if length(@schools) > 0 do %>
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <.heading level={2}>
+                  Suchergebnisse ({length(@schools)} Schulen gefunden)
+                </.heading>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-900">
+                    <tr>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        phx-click="sort"
+                        phx-value-field="name"
+                      >
+                        <div class="flex items-center space-x-1">
+                          <span>Schulname</span>
+                          <%= if @sort_by == :name do %>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <%= if @sort_order == :asc do %>
+                                <path d="M5 12l5-5 5 5H5z" />
+                              <% else %>
+                                <path d="M15 8l-5 5-5-5h10z" />
+                              <% end %>
+                            </svg>
+                          <% end %>
+                        </div>
+                      </th>
+                      <th
+                        class="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        phx-click="sort"
+                        phx-value-field="street"
+                      >
+                        <div class="flex items-center space-x-1">
+                          <span>Straße</span>
+                          <%= if @sort_by == :street do %>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <%= if @sort_order == :asc do %>
+                                <path d="M5 12l5-5 5 5H5z" />
+                              <% else %>
+                                <path d="M15 8l-5 5-5-5h10z" />
+                              <% end %>
+                            </svg>
+                          <% end %>
+                        </div>
+                      </th>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        phx-click="sort"
+                        phx-value-field="zip_code"
+                      >
+                        <div class="flex items-center space-x-1">
+                          <span>PLZ</span>
+                          <%= if @sort_by == :zip_code do %>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <%= if @sort_order == :asc do %>
+                                <path d="M5 12l5-5 5 5H5z" />
+                              <% else %>
+                                <path d="M15 8l-5 5-5-5h10z" />
+                              <% end %>
+                            </svg>
+                          <% end %>
+                        </div>
+                      </th>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                        phx-click="sort"
+                        phx-value-field="city"
+                      >
+                        <div class="flex items-center space-x-1">
+                          <span>Stadt</span>
+                          <%= if @sort_by == :city do %>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <%= if @sort_order == :asc do %>
+                                <path d="M5 12l5-5 5 5H5z" />
+                              <% else %>
+                                <path d="M15 8l-5 5-5-5h10z" />
+                              <% end %>
+                            </svg>
+                          <% end %>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <%= for school <- @schools do %>
+                      <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                          <a
+                            href={"/ferien/d/schule/#{school.slug}"}
+                            class="text-blue-600 hover:text-blue-900 font-medium"
+                          >
+                            {school.name}
+                          </a>
+                        </td>
+                        <td class="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <%= if school.address do %>
+                            {school.address.street}
+                          <% else %>
+                            <span class="text-gray-500">-</span>
+                          <% end %>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <%= if school.address && school.address.zip_code do %>
+                            {school.address.zip_code}
+                          <% else %>
+                            <span class="text-gray-500">-</span>
+                          <% end %>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <%= if school.parent_location do %>
+                            {school.parent_location.name}
+                          <% else %>
+                            <span class="text-gray-500">-</span>
+                          <% end %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          <% else %>
+            <%= cond do %>
+              <% @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" -> %>
+                <.alert variant="info">
+                  {format_number(@total_schools_in_system)} Schulen gefunden. Bitte geben Sie genauere Suchkriterien ein.
+                </.alert>
+              <% true -> %>
+                <.alert variant="info">
+                  Keine Schulen gefunden. Bitte versuchen Sie es mit anderen Suchkriterien.
+                </.alert>
+            <% end %>
           <% end %>
         <% end %>
-      <% end %>
 
-      <%= if @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" do %>
-        <!-- Separator between school search and vacation timeline -->
-        <div class="mt-12 mb-8 border-t-2 border-gray-200 dark:border-gray-700"></div>
-        <!-- Vacation Timeline Section -->
-        <div class="mt-8">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-            <.heading level={2} class="mb-3 sm:mb-0">Schulferien Deutschland</.heading>
-            <a
-              href="/briefe"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-            >
-              Entschuldigungen, Beurlaubungen und Sportbefreiungen als PDF generieren
-              <svg class="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </a>
+        <%= if @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" do %>
+          <!-- Separator between school search and vacation timeline -->
+          <div class="mt-12 mb-8 border-t-2 border-gray-200 dark:border-gray-700"></div>
+          <!-- Vacation Timeline Section -->
+          <div class="mt-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+              <.heading level={2} class="mb-3 sm:mb-0">Schulferien Deutschland</.heading>
+              <a
+                href="/briefe"
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+              >
+                Entschuldigungen, Beurlaubungen und Sportbefreiungen als PDF generieren
+                <svg class="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </a>
+            </div>
+            <.text variant="base" class="mb-4 sm:mb-8">
+              Die Ferien und Feiertage der nächsten {@vacation_number_of_days} Tage auf einen Blick.
+            </.text>
+
+            <.card_grid>
+              <%= for {%{country: _country, federal_states: federal_states, periods: periods}, country_index} <- Enum.with_index(@vacation_countries) do %>
+                <%= for {federal_state, fs_index} <- Enum.with_index(federal_states) do %>
+                  <% # Get federal state periods and filter them
+                  federal_state_periods =
+                    Enum.find(periods, fn {state, _} -> state.id == federal_state.id end) |> elem(1)
+
+                  filtered_periods =
+                    Enum.filter(federal_state_periods, fn period ->
+                      period.is_school_vacation || period.is_public_holiday
+                    end)
+
+                  component_id = "timeline-#{country_index}-#{fs_index}"
+
+                  # Set up variables for year links
+                  current_year = @vacation_current_year
+                  next_year = current_year + 1 %>
+                  <!-- Card for each federal state -->
+                  <.card padding="p-6" class="h-full">
+                    <:content>
+                      <.section_title title={federal_state.name} />
+                      <!-- Timeline visualization -->
+                      <div id={"#{component_id}"}>
+                        {MehrSchulferienWeb.VacationTimelineComponent.render(
+                          days_to_show: @vacation_days,
+                          months: @vacation_months,
+                          all_periods: filtered_periods,
+                          days_count: @vacation_number_of_days,
+                          months_with_days: @vacation_months_with_days,
+                          federal_state: federal_state
+                        )}
+                        <!-- Fallback text for test environment -->
+                        <div class="hidden" aria-hidden="true">
+                          Ferien und Feiertage im angezeigten Zeitraum
+                        </div>
+                      </div>
+
+                      <div class="mt-4">
+                        <div class="flex items-center gap-3">
+                          <span class="text-sm text-gray-600 dark:text-gray-400">Ferientermine:</span>
+                          <div class="flex-1 grid grid-cols-2 gap-3">
+                            <.button
+                              href={"/ferien/d/bundesland/#{federal_state.slug}/#{current_year}"}
+                              variant="primary"
+                              size="sm"
+                              class="w-full"
+                            >
+                              {current_year}
+                            </.button>
+                            <.button
+                              href={"/ferien/d/bundesland/#{federal_state.slug}/#{next_year}"}
+                              variant="secondary"
+                              size="sm"
+                              class="w-full"
+                            >
+                              {next_year}
+                            </.button>
+                          </div>
+                        </div>
+                      </div>
+                    </:content>
+                  </.card>
+                <% end %>
+              <% end %>
+            </.card_grid>
           </div>
-          <.text variant="base" class="mb-4 sm:mb-8">
-            Die Ferien und Feiertage der nächsten {@vacation_number_of_days} Tage auf einen Blick.
-          </.text>
 
-          <.card_grid>
-            <%= for {%{country: _country, federal_states: federal_states, periods: periods}, country_index} <- Enum.with_index(@vacation_countries) do %>
-              <%= for {federal_state, fs_index} <- Enum.with_index(federal_states) do %>
-                <% # Get federal state periods and filter them
-                federal_state_periods =
-                  Enum.find(periods, fn {state, _} -> state.id == federal_state.id end) |> elem(1)
+          <.stack spacing="8" class="mt-12">
+            <.heading level={2}>Brückentage</.heading>
+            <.card_grid>
+              <%= for {%{country: _country, federal_states: federal_states}, _country_index} <- Enum.with_index(@vacation_countries) do %>
+                <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
+                  <% # Find next bridge day for the federal state
+                  reference_date = @today
 
-                filtered_periods =
-                  Enum.filter(federal_state_periods, fn period ->
-                    period.is_school_vacation || period.is_public_holiday
-                  end)
+                  next_bridge_day =
+                    MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
 
-                component_id = "timeline-#{country_index}-#{fs_index}"
+                  # Set up variables for year links
+                  current_year = @vacation_current_year
+                  next_year = current_year + 1 %>
+                  <.card padding="p-6" class="h-full">
+                    <:content>
+                      <.section_title title={federal_state.name} />
 
-                # Set up variables for year links
-                current_year = @vacation_current_year
-                next_year = current_year + 1 %>
-                <!-- Card for each federal state -->
-                <.card padding="p-6" class="h-full">
-                  <:content>
-                    <.section_title title={federal_state.name} />
-                    <!-- Timeline visualization -->
-                    <div id={"#{component_id}"}>
-                      {MehrSchulferienWeb.VacationTimelineComponent.render(
-                        days_to_show: @vacation_days,
-                        months: @vacation_months,
-                        all_periods: filtered_periods,
-                        days_count: @vacation_number_of_days,
-                        months_with_days: @vacation_months_with_days,
-                        federal_state: federal_state
-                      )}
-                      <!-- Fallback text for test environment -->
-                      <div class="hidden" aria-hidden="true">
-                        Ferien und Feiertage im angezeigten Zeitraum
-                      </div>
-                    </div>
+                      <%= if next_bridge_day do %>
+                        <% # Get related periods to find the public holiday
+                        country = Locations.get_location!(federal_state.parent_location_id)
+                        location_ids = [country.id, federal_state.id]
 
-                    <div class="mt-4">
-                      <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Ferientermine:</span>
-                        <div class="flex-1 grid grid-cols-2 gap-3">
-                          <.button
-                            href={"/ferien/d/bundesland/#{federal_state.slug}/#{current_year}"}
-                            variant="primary"
-                            size="sm"
-                            class="w-full"
-                          >
-                            {current_year}
-                          </.button>
-                          <.button
-                            href={"/ferien/d/bundesland/#{federal_state.slug}/#{next_year}"}
-                            variant="secondary"
-                            size="sm"
-                            class="w-full"
-                          >
-                            {next_year}
-                          </.button>
+                        # Fetch public periods for this window to find the holiday that creates the bridge day
+                        window_start = Date.add(next_bridge_day.starts_on, -5)
+                        window_end = Date.add(next_bridge_day.starts_on, 5)
+
+                        public_periods =
+                          MehrSchulferien.Periods.list_public_everybody_periods(
+                            location_ids,
+                            window_start,
+                            window_end
+                          )
+
+                        # Calculate efficiency
+                        vacation_days = next_bridge_day.number_days
+                        # Calculate the actual total consecutive free days
+                        total_free_days =
+                          MehrSchulferien.BridgeDayCalculations.calculate_total_consecutive_free_days(
+                            next_bridge_day,
+                            public_periods
+                          )
+
+                        efficiency =
+                          if vacation_days > 0,
+                            do: round((total_free_days - vacation_days) / vacation_days * 100),
+                            else: 0
+
+                        # Get timeline days for the bridge day
+                        timeline_start = Date.add(next_bridge_day.starts_on, -10)
+                        timeline_end = Date.add(next_bridge_day.ends_on, 10)
+                        _timeline_days = Date.diff(timeline_end, timeline_start) + 1
+
+                        days_range = Date.range(timeline_start, timeline_end)
+
+                        # Group days by month
+                        timeline_months =
+                          days_range
+                          |> Enum.to_list()
+                          |> Enum.group_by(fn day ->
+                            month_name = DateHelpers.get_months_map()[day.month]
+                            {month_name, day.year, day.month}
+                          end)
+                          |> Enum.sort_by(fn {{_name, year, month}, _days} -> {year, month} end)
+                          |> Enum.map(fn {{month_name, _year, _month}, days} ->
+                            {month_name, days}
+                          end)
+
+                        # Create month groups with correct day counts
+                        _months_with_days =
+                          Enum.map(timeline_months, fn {month_name, days} ->
+                            days_count = length(days)
+                            {year, month} = {List.first(days).year, List.first(days).month}
+                            {month_name, days_count, year, month}
+                          end) %>
+
+                        <.heading level={6} class="text-gray-700 mb-2">
+                          Nächster Brückentag
+                        </.heading>
+                        <.text variant="small" class="mb-3">
+                          {DateFormatter.format_date_full(next_bridge_day.starts_on)}
+                          <%= if Date.compare(next_bridge_day.starts_on, next_bridge_day.ends_on) != :eq do %>
+                            - {DateFormatter.format_date_full(next_bridge_day.ends_on)}
+                          <% end %>
+                        </.text>
+                        <!-- Bridge Day Timeline -->
+                        <div class="mb-4">
+                          {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
+                            bridge_day: next_bridge_day,
+                            periods: public_periods,
+                            reference_date: reference_date,
+                            vacation_days: vacation_days,
+                            total_free_days: total_free_days,
+                            efficiency_percentage: efficiency
+                          })}
                         </div>
-                      </div>
-                    </div>
-                  </:content>
-                </.card>
-              <% end %>
-            <% end %>
-          </.card_grid>
-        </div>
 
-        <.stack spacing="8" class="mt-12">
-          <.heading level={2}>Brückentage</.heading>
-          <.card_grid>
-            <%= for {%{country: _country, federal_states: federal_states}, _country_index} <- Enum.with_index(@vacation_countries) do %>
-              <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
-                <% # Find next bridge day for the federal state
-                reference_date = @today
+                        <% # Find super bridge day
+                        best_super_bridge_day =
+                          MehrSchulferien.BridgeDays.find_best_bridge_day(
+                            federal_state,
+                            reference_date,
+                            12
+                          ) %>
 
-                next_bridge_day =
-                  MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
-
-                # Set up variables for year links
-                current_year = @vacation_current_year
-                next_year = current_year + 1 %>
-                <.card padding="p-6" class="h-full">
-                  <:content>
-                    <.section_title title={federal_state.name} />
-
-                    <%= if next_bridge_day do %>
-                      <% # Get related periods to find the public holiday
-                      country = Locations.get_location!(federal_state.parent_location_id)
-                      location_ids = [country.id, federal_state.id]
-
-                      # Fetch public periods for this window to find the holiday that creates the bridge day
-                      window_start = Date.add(next_bridge_day.starts_on, -5)
-                      window_end = Date.add(next_bridge_day.starts_on, 5)
-
-                      public_periods =
-                        MehrSchulferien.Periods.list_public_everybody_periods(
-                          location_ids,
-                          window_start,
-                          window_end
-                        )
-
-                      # Calculate efficiency
-                      vacation_days = next_bridge_day.number_days
-                      # Calculate the actual total consecutive free days
-                      total_free_days =
-                        MehrSchulferien.BridgeDayCalculations.calculate_total_consecutive_free_days(
-                          next_bridge_day,
-                          public_periods
-                        )
-
-                      efficiency =
-                        if vacation_days > 0,
-                          do: round((total_free_days - vacation_days) / vacation_days * 100),
-                          else: 0
-
-                      # Get timeline days for the bridge day
-                      timeline_start = Date.add(next_bridge_day.starts_on, -10)
-                      timeline_end = Date.add(next_bridge_day.ends_on, 10)
-                      _timeline_days = Date.diff(timeline_end, timeline_start) + 1
-
-                      days_range = Date.range(timeline_start, timeline_end)
-
-                      # Group days by month
-                      timeline_months =
-                        days_range
-                        |> Enum.to_list()
-                        |> Enum.group_by(fn day ->
-                          month_name = DateHelpers.get_months_map()[day.month]
-                          {month_name, day.year, day.month}
-                        end)
-                        |> Enum.sort_by(fn {{_name, year, month}, _days} -> {year, month} end)
-                        |> Enum.map(fn {{month_name, _year, _month}, days} -> {month_name, days} end)
-
-                      # Create month groups with correct day counts
-                      _months_with_days =
-                        Enum.map(timeline_months, fn {month_name, days} ->
-                          days_count = length(days)
-                          {year, month} = {List.first(days).year, List.first(days).month}
-                          {month_name, days_count, year, month}
-                        end) %>
-
-                      <.heading level={6} class="text-gray-700 mb-2">
-                        Nächster Brückentag
-                      </.heading>
-                      <.text variant="small" class="mb-3">
-                        {DateFormatter.format_date_full(next_bridge_day.starts_on)}
-                        <%= if Date.compare(next_bridge_day.starts_on, next_bridge_day.ends_on) != :eq do %>
-                          - {DateFormatter.format_date_full(next_bridge_day.ends_on)}
+                        <%= if best_super_bridge_day do %>
+                          <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
+                              Bester Superbrückentag
+                            </.heading>
+                            <.text variant="small">
+                              {DateFormatter.format_date_full(
+                                best_super_bridge_day.bridge_day.starts_on
+                              )} - {DateFormatter.format_date_full(
+                                best_super_bridge_day.bridge_day.ends_on
+                              )}
+                              <br />
+                              <span class="text-xs text-gray-500">
+                                {best_super_bridge_day.vacation_days} Urlaubstag{if best_super_bridge_day.vacation_days >
+                                                                                      1,
+                                                                                    do: "e",
+                                                                                    else: ""} für {best_super_bridge_day.total_free_days} freie Tage
+                              </span>
+                            </.text>
+                          </div>
                         <% end %>
-                      </.text>
-                      <!-- Bridge Day Timeline -->
-                      <div class="mb-4">
-                        {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
-                          bridge_day: next_bridge_day,
-                          periods: public_periods,
-                          reference_date: reference_date,
-                          vacation_days: vacation_days,
-                          total_free_days: total_free_days,
-                          efficiency_percentage: efficiency
-                        })}
-                      </div>
-
-                      <% # Find super bridge day
-                      best_super_bridge_day =
-                        MehrSchulferien.BridgeDays.find_best_bridge_day(
-                          federal_state,
-                          reference_date,
-                          12
-                        ) %>
-
-                      <%= if best_super_bridge_day do %>
-                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                          <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
-                            Bester Superbrückentag
-                          </.heading>
-                          <.text variant="small">
-                            {DateFormatter.format_date_full(
-                              best_super_bridge_day.bridge_day.starts_on
-                            )} - {DateFormatter.format_date_full(
-                              best_super_bridge_day.bridge_day.ends_on
-                            )}
-                            <br />
-                            <span class="text-xs text-gray-500">
-                              {best_super_bridge_day.vacation_days} Urlaubstag{if best_super_bridge_day.vacation_days >
-                                                                                    1,
-                                                                                  do: "e",
-                                                                                  else: ""} für {best_super_bridge_day.total_free_days} freie Tage
-                            </span>
-                          </.text>
-                        </div>
+                      <% else %>
+                        <.text variant="small">
+                          Keine Brückentage in den nächsten Tagen gefunden
+                        </.text>
                       <% end %>
-                    <% else %>
-                      <.text variant="small">
-                        Keine Brückentage in den nächsten Tagen gefunden
-                      </.text>
-                    <% end %>
 
-                    <div class="mt-4">
-                      <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Brückentage:</span>
-                        <div class="flex-1 grid grid-cols-2 gap-3">
-                          <.button
-                            href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}"}
-                            variant="primary"
-                            size="sm"
-                            class="w-full"
-                          >
-                            {current_year}
-                          </.button>
-                          <.button
-                            href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}"}
-                            variant="secondary"
-                            size="sm"
-                            class="w-full"
-                          >
-                            {next_year}
-                          </.button>
+                      <div class="mt-4">
+                        <div class="flex items-center gap-3">
+                          <span class="text-sm text-gray-600 dark:text-gray-400">Brückentage:</span>
+                          <div class="flex-1 grid grid-cols-2 gap-3">
+                            <.button
+                              href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}"}
+                              variant="primary"
+                              size="sm"
+                              class="w-full"
+                            >
+                              {current_year}
+                            </.button>
+                            <.button
+                              href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{next_year}"}
+                              variant="secondary"
+                              size="sm"
+                              class="w-full"
+                            >
+                              {next_year}
+                            </.button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </:content>
-                </.card>
+                    </:content>
+                  </.card>
+                <% end %>
               <% end %>
-            <% end %>
-          </.card_grid>
-        </.stack>
-      <% end %>
-    </div>
+            </.card_grid>
+          </.stack>
+        <% end %>
+      </div>
+    <% end %>
     """
   end
 

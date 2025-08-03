@@ -23,30 +23,50 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    with {:ok, year} <- check_year(conn, year),
-         country <- Locations.get_country_by_slug!(country_slug),
-         federal_state <- Locations.get_federal_state_by_slug!(federal_state_slug, country),
-         {:ok, start_date} <- Date.new(year, 1, 1),
-         {:ok, end_date} <- Date.new(year, 12, 31),
-         true <- has_bridge_days?([country.id, federal_state.id], year) do
-      assigns =
-        [country: country, federal_state: federal_state, year: year] ++
-          list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
+    country = Locations.get_country_by_slug(country_slug)
 
-      render(conn, "show_within_federal_state.html", assigns ++ [css_framework: :tailwind_new])
+    if is_nil(country) do
+      conn
+      |> put_status(:service_unavailable)
+      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> render("empty_database.html")
     else
-      # No bridge days for this year
-      false ->
-        conn = Plug.Conn.put_status(conn, :not_found)
-        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+      federal_state = Locations.get_federal_state_by_slug(federal_state_slug, country)
 
-      {:error, :invalid_year} ->
-        conn = Plug.Conn.put_status(conn, :not_found)
-        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+      if is_nil(federal_state) do
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
+      else
+        with {:ok, year} <- check_year(conn, year),
+             {:ok, start_date} <- Date.new(year, 1, 1),
+             {:ok, end_date} <- Date.new(year, 12, 31),
+             true <- has_bridge_days?([country.id, federal_state.id], year) do
+          assigns =
+            [country: country, federal_state: federal_state, year: year] ++
+              list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
 
-      _ ->
-        conn = Plug.Conn.put_status(conn, :not_found)
-        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+          render(
+            conn,
+            "show_within_federal_state.html",
+            assigns ++ [css_framework: :tailwind_new]
+          )
+        else
+          # No bridge days for this year
+          false ->
+            conn = Plug.Conn.put_status(conn, :not_found)
+            raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+
+          {:error, :invalid_year} ->
+            conn = Plug.Conn.put_status(conn, :not_found)
+            raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+
+          _ ->
+            conn = Plug.Conn.put_status(conn, :not_found)
+            raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+        end
+      end
     end
   end
 

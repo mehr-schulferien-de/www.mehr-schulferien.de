@@ -12,19 +12,42 @@ defmodule MehrSchulferienWeb.SchoolController do
         "school_slug" => school_slug,
         "year" => _year
       }) do
-    %{country: country} =
-      Locations.show_school_to_country_map(country_slug, school_slug)
+    case Locations.show_school_to_country_map_safe(country_slug, school_slug) do
+      {:ok, %{country: country}} ->
+        # Redirect to the school page without year (301 permanent redirect for SEO)
+        conn
+        |> put_status(:moved_permanently)
+        |> redirect(to: ~p"/ferien/#{country.slug}/schule/#{school_slug}")
 
-    # Redirect to the school page without year (301 permanent redirect for SEO)
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country.slug}/schule/#{school_slug}")
+      {:error, _} ->
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
+    end
   end
 
   def show(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do
-    %{country: country, federal_state: federal_state, county: county, city: city, school: school} =
-      Locations.show_school_to_country_map(country_slug, school_slug)
+    case Locations.show_school_to_country_map_safe(country_slug, school_slug) do
+      {:ok,
+       %{
+         country: country,
+         federal_state: federal_state,
+         county: county,
+         city: city,
+         school: school
+       }} ->
+        show_school_page(conn, country, federal_state, county, city, school)
 
+      {:error, _} ->
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
+    end
+  end
+
+  defp show_school_page(conn, country, federal_state, county, city, school) do
     today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
 

@@ -14,37 +14,52 @@ defmodule MehrSchulferienWeb.VacationController do
         "year" => year
       }) do
     # Load locations
-    country = Locations.get_country_by_slug!("d")
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+    country = Locations.get_country_by_slug("d")
 
-    # Extract and load vacation type
-    vacation_type_slug = String.replace(vacation_slug, "ferien", "")
-    vacation_type_record = get_vacation_type_record(vacation_type_slug)
-
-    # Handle invalid vacation type
-    if is_nil(vacation_type_record) do
-      redirect_to_federal_state(
-        conn,
-        "Diese Ferienart existiert nicht.",
-        country,
-        federal_state_slug,
-        year,
-        :error
-      )
+    if is_nil(country) do
+      conn
+      |> put_status(:service_unavailable)
+      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> render("empty_database.html")
     else
-      # Check if vacation type is valid for the state
-      if not VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
-        message = "#{vacation_type_record.colloquial} gibt es in #{federal_state.name} nicht."
-        redirect_to_federal_state(conn, message, country, federal_state_slug, year, :info)
+      federal_state = Locations.get_federal_state_by_slug(federal_state_slug, country)
+
+      if is_nil(federal_state) do
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
       else
-        # Prepare and render vacation data
-        render_vacation_page(conn, %{
-          country: country,
-          federal_state: federal_state,
-          vacation_slug: vacation_slug,
-          vacation_type_record: vacation_type_record,
-          year: year
-        })
+        # Extract and load vacation type
+        vacation_type_slug = String.replace(vacation_slug, "ferien", "")
+        vacation_type_record = get_vacation_type_record(vacation_type_slug)
+
+        # Handle invalid vacation type
+        if is_nil(vacation_type_record) do
+          redirect_to_federal_state(
+            conn,
+            "Diese Ferienart existiert nicht.",
+            country,
+            federal_state_slug,
+            year,
+            :error
+          )
+        else
+          # Check if vacation type is valid for the state
+          if not VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
+            message = "#{vacation_type_record.colloquial} gibt es in #{federal_state.name} nicht."
+            redirect_to_federal_state(conn, message, country, federal_state_slug, year, :info)
+          else
+            # Prepare and render vacation data
+            render_vacation_page(conn, %{
+              country: country,
+              federal_state: federal_state,
+              vacation_slug: vacation_slug,
+              vacation_type_record: vacation_type_record,
+              year: year
+            })
+          end
+        end
       end
     end
   end

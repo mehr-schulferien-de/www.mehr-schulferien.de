@@ -40,15 +40,26 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    {federal_state, country} =
-      Locations.get_federal_state_and_country_by_slug!(country_slug, federal_state_slug)
+    # Try to get the federal state and country, handle empty database case
+    case Locations.get_federal_state_and_country_by_slug(country_slug, federal_state_slug) do
+      {:ok, {federal_state, country}} ->
+        # Check if year is "brueckentage" and handle special case
+        if year == "brueckentage" do
+          conn = Plug.Conn.put_status(conn, :not_found)
+          raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+        end
 
-    # Check if year is "brueckentage" and handle special case
-    if year == "brueckentage" do
-      conn = Plug.Conn.put_status(conn, :not_found)
-      raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+        show_year_with_data(conn, federal_state, country, year)
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
     end
+  end
 
+  defp show_year_with_data(conn, federal_state, country, year) do
     today = DateHelpers.get_today_or_custom_date(conn)
     location_ids = [country.id, federal_state.id]
 
@@ -97,24 +108,32 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug
       }) do
-    country = Locations.get_country_by_slug!(country_slug)
-    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+    try do
+      country = Locations.get_country_by_slug!(country_slug)
+      federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
-    # Use the optimized function to get counties with cities having schools
-    counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state)
+      # Use the optimized function to get counties with cities having schools
+      counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state)
 
-    location_ids = [country.id, federal_state.id]
-    today = DateHelpers.get_today_or_custom_date(conn)
+      location_ids = [country.id, federal_state.id]
+      today = DateHelpers.get_today_or_custom_date(conn)
 
-    assigns =
-      [
-        counties_with_cities: counties_with_cities,
-        country: country,
-        federal_state: federal_state,
-        css_framework: :tailwind_new
-      ] ++
-        CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
+      assigns =
+        [
+          counties_with_cities: counties_with_cities,
+          country: country,
+          federal_state: federal_state,
+          css_framework: :tailwind_new
+        ] ++
+          CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
 
-    render(conn, "county_show.html", assigns)
+      render(conn, "county_show.html", assigns)
+    rescue
+      Ecto.NoResultsError ->
+        conn
+        |> put_status(:service_unavailable)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("empty_database.html")
+    end
   end
 end
