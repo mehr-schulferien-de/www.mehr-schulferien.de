@@ -113,15 +113,15 @@ defmodule MehrSchulferienWeb.ViewHelpers do
 
   # Helper to determine the appropriate class based on the period
   defp get_html_class_for_period(period) do
-    # If html_class is not in standard format, return it as-is for backward compatibility
-    day_type = StyleConfig.html_class_to_day_type(period.html_class)
+    # Determine day type based on period attributes
+    day_type = StyleConfig.period_to_day_type(period)
 
     if day_type do
-      # Use the new StyleConfig for standard day types
+      # Use the StyleConfig for standard day types
       StyleConfig.get_class(day_type, true)
     else
-      # Keep original html_class for non-standard values
-      period.html_class
+      # Default to empty string if no day type matches
+      ""
     end
   end
 

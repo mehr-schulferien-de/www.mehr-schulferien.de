@@ -70,21 +70,6 @@ defmodule MehrSchulferien.StyleConfig do
     Map.get(tailwind_classes(), day_type, "")
   end
 
-  # Helper function to convert html_class from database to day_type
-  # This maintains backward compatibility with data stored using Bootstrap class names
-  @doc """
-  Converts a saved html_class value to the corresponding day_type
-  """
-  @spec html_class_to_day_type(String.t()) :: day_type() | nil
-  def html_class_to_day_type(html_class) do
-    case html_class do
-      "success" -> :vacation
-      "danger" -> :holiday
-      "active" -> :weekend
-      "warning" -> :bridge_day
-      _ -> nil
-    end
-  end
 
   # Helper function to convert period to day_type
   @doc """
@@ -95,8 +80,9 @@ defmodule MehrSchulferien.StyleConfig do
     cond do
       Map.get(period, :is_school_vacation, false) -> :vacation
       Map.get(period, :is_public_holiday, false) -> :holiday
-      Map.get(period, :html_class) == "warning" -> :bridge_day
-      Map.get(period, :html_class) == "active" -> :weekend
+      # Bridge days are determined by special logic, not stored in database
+      Map.get(period, :__struct__) == MehrSchulferien.Periods.BridgeDayPeriod -> :bridge_day
+      # Weekends are determined by date, not stored as periods
       true -> nil
     end
   end

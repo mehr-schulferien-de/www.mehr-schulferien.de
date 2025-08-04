@@ -25,7 +25,6 @@ defmodule MehrSchulferien.Periods.Period do
     field :display_priority, :integer
 
     # Display configuration
-    field :html_class, :string
     field :is_listed_below_month, :boolean, default: false
 
     # Period type flags
@@ -59,7 +58,6 @@ defmodule MehrSchulferien.Periods.Period do
       :starts_on,
       :ends_on,
       :created_by_email_address,
-      :html_class,
       :is_listed_below_month,
       :is_public_holiday,
       :is_school_vacation,

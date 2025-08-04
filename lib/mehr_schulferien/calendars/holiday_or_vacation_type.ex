@@ -24,7 +24,6 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
     field :wikipedia_url, :string
 
     # Display settings
-    field :default_html_class, :string
     field :default_is_listed_below_month, :boolean, default: false
     field :default_display_priority, :integer
 
@@ -58,7 +57,6 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
     |> cast(attrs, [
       :name,
       :colloquial,
-      :default_html_class,
       :default_is_listed_below_month,
       :default_is_public_holiday,
       :default_is_school_vacation,

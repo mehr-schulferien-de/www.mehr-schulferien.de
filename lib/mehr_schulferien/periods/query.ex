@@ -208,7 +208,6 @@ defmodule MehrSchulferien.Periods.Query do
           starts_on: p.starts_on,
           ends_on: p.ends_on,
           location_id: p.location_id,
-          html_class: p.html_class,
           display_priority: p.display_priority,
           is_public_holiday: p.is_public_holiday,
           is_school_vacation: p.is_school_vacation,

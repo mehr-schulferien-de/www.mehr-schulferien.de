@@ -37,7 +37,6 @@ defmodule MehrSchulferien.Periods do
         starts_on: p.starts_on,
         ends_on: p.ends_on,
         location_id: p.location_id,
-        html_class: p.html_class,
         display_priority: p.display_priority,
         is_public_holiday: p.is_public_holiday,
         is_school_vacation: p.is_school_vacation,
@@ -70,7 +69,6 @@ defmodule MehrSchulferien.Periods do
         starts_on: p.starts_on,
         ends_on: p.ends_on,
         location_id: p.location_id,
-        html_class: p.html_class,
         display_priority: p.display_priority,
         is_public_holiday: p.is_public_holiday,
         is_school_vacation: p.is_school_vacation,
@@ -110,7 +108,6 @@ defmodule MehrSchulferien.Periods do
       when not is_nil(holiday_or_vacation_type_id) do
     %HolidayOrVacationType{
       id: id,
-      default_html_class: html_class,
       default_is_listed_below_month: is_listed_below_month,
       default_is_public_holiday: is_public_holiday,
       default_is_school_vacation: is_school_vacation,
@@ -124,7 +121,6 @@ defmodule MehrSchulferien.Periods do
       Map.merge(
         %{
           "holiday_or_vacation_type_id" => id,
-          "html_class" => html_class,
           "is_listed_below_month" => is_listed_below_month,
           "is_public_holiday" => is_public_holiday,
           "is_school_vacation" => is_school_vacation,
@@ -403,7 +399,6 @@ defmodule MehrSchulferien.Periods do
                 "memo" => memo,
                 "created_by_email_address" => "wiki@mehr-schulferien.de",
                 "display_priority" => beweglicher_type.default_display_priority || 7,
-                "html_class" => beweglicher_type.default_html_class || "success",
                 "is_listed_below_month" => beweglicher_type.default_is_listed_below_month || true,
                 "is_school_vacation" => beweglicher_type.default_is_school_vacation || false,
                 "is_public_holiday" => beweglicher_type.default_is_public_holiday || false,

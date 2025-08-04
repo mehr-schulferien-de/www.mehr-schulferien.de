@@ -195,7 +195,6 @@ defmodule MehrSchulferien.Locations do
             starts_on: period.starts_on,
             ends_on: period.ends_on,
             created_by_email_address: period.created_by_email_address,
-            html_class: period.html_class,
             is_listed_below_month: period.is_listed_below_month,
             is_public_holiday: period.is_public_holiday,
             is_school_vacation: period.is_school_vacation,

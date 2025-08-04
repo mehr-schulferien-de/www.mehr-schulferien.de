@@ -11,7 +11,6 @@ defmodule MehrSchulferien.Periods.BridgeDayPeriod do
   defstruct display_priority: 20,
             ends_on: nil,
             holiday_or_vacation_type: %HolidayOrVacationType{name: "Brückentag"},
-            html_class: "warning",
             is_public_holiday: false,
             is_school_vacation: false,
             last_period_id: nil,
