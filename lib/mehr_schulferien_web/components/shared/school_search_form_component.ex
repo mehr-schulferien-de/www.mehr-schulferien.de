@@ -129,21 +129,34 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
           Zurücksetzen
         </button>
       </div>
-      <%= if @search_params["location"] == "" and @search_params["school_name"] == "" do %>
-        <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-          <span class="inline-flex items-center gap-1">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Tipp: Verwenden Sie * für erweiterte Suchen (z.B. *dorf findet alle Orte die auf "dorf" enden)
-          </span>
-        </div>
-      <% end %>
+      <div class="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <%= if @search_params["location"] == "" and @search_params["school_name"] == "" do %>
+          <div class="text-xs text-gray-500 dark:text-gray-400">
+            <span class="inline-flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Tipp: Verwenden Sie * für erweiterte Suchen (z.B. *dorf findet alle Orte die auf "dorf" enden)
+            </span>
+          </div>
+        <% else %>
+          <div></div>
+        <% end %>
+        <a
+          href="/wiki/schools/new"
+          class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline inline-flex items-center gap-1"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Schule nicht gefunden? Hier anlegen
+        </a>
+      </div>
       {render_slot(@below_form)}
     </form>
     """

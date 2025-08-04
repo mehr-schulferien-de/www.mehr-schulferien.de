@@ -76,7 +76,11 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
           email_address: address_params["email_address"] || "",
           phone_number: address_params["phone_number"] || "",
           homepage_url: address_params["homepage_url"] || "",
-          wikipedia_url: address_params["wikipedia_url"] || ""
+          wikipedia_url: address_params["wikipedia_url"] || "",
+          instagram_url: address_params["instagram_url"] || "",
+          description: address_params["description"] || "",
+          students_count: parse_int(address_params["students_count"]),
+          founded_year: parse_int(address_params["founded_year"])
         }
     }
 
@@ -84,7 +88,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   end
 
   @impl true
-  def handle_event("save", params, socket) do
+  def handle_event("save", %{"name" => school_name, "address" => address_params}, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
        put_flash(
@@ -93,8 +97,6 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
          "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
        )}
     else
-      school_name = Map.get(params, "name", "")
-      address_params = Map.get(params, "address", %{})
       zip_code = Map.get(address_params, "zip_code", "")
 
       # Validate zip code and get city
@@ -326,4 +328,17 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
     limit_reached = daily_changes >= Config.daily_change_limit()
     {daily_changes, limit_reached}
   end
+
+  defp parse_int(nil), do: nil
+  defp parse_int(""), do: nil
+
+  defp parse_int(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, ""} -> int
+      _ -> nil
+    end
+  end
+
+  defp parse_int(value) when is_integer(value), do: value
+  defp parse_int(_), do: nil
 end
