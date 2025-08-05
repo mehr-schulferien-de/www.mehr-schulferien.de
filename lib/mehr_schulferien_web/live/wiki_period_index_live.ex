@@ -44,6 +44,9 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
       |> assign(:selected_vacation_type_ids, selected_vacation_type_ids)
       |> assign(:selected_years, selected_years)
       |> assign(:periods, [])
+      |> assign(:federal_state_counts, %{})
+      |> assign(:vacation_type_counts, %{})
+      |> assign(:year_counts, %{})
       |> assign(:show_filters, true)
       |> assign(:sort_by, [:federal_state, :vacation_type, :starts_on])
       |> assign(:sort_direction, :asc)
@@ -266,7 +269,16 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
       |> preload([:location, :holiday_or_vacation_type])
       |> Repo.all()
 
-    assign(socket, :periods, periods)
+    # Calculate the additional count for each unchecked item
+    federal_state_counts = calculate_federal_state_counts(socket.assigns)
+    vacation_type_counts = calculate_vacation_type_counts(socket.assigns)
+    year_counts = calculate_year_counts(socket.assigns)
+
+    socket
+    |> assign(:periods, periods)
+    |> assign(:federal_state_counts, federal_state_counts)
+    |> assign(:vacation_type_counts, vacation_type_counts)
+    |> assign(:year_counts, year_counts)
   end
 
   defp apply_sorting(query, [:federal_state | rest], direction) do
@@ -304,13 +316,21 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
   defp apply_sorting(query, [], _direction), do: query
 
   defp build_query(assigns) do
-    Period
-    |> where([p], p.is_school_vacation == true)
-    |> join(:inner, [p], l in assoc(p, :location))
-    |> where([p, l], l.is_federal_state == true)
-    |> filter_by_federal_states(assigns.selected_federal_state_ids)
-    |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
-    |> filter_by_years(assigns.selected_years)
+    # Return empty query if any of the selections is empty
+    if assigns.selected_federal_state_ids == [] or
+         assigns.selected_vacation_type_ids == [] or
+         assigns.selected_years == [] do
+      # Return a query that will always return empty results
+      from(p in Period, where: false)
+    else
+      Period
+      |> where([p], p.is_school_vacation == true)
+      |> join(:inner, [p], l in assoc(p, :location))
+      |> where([p, l], l.is_federal_state == true)
+      |> filter_by_federal_states(assigns.selected_federal_state_ids)
+      |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
+      |> filter_by_years(assigns.selected_years)
+    end
   end
 
   defp filter_by_federal_states(query, []), do: query
@@ -411,6 +431,152 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
     |> Enum.concat([current_year, next_year])
     |> Enum.uniq()
     |> Enum.sort(:desc)
+  end
+
+  defp calculate_federal_state_counts(assigns) do
+    # Only calculate if there are selections in vacation types and years
+    if assigns.selected_vacation_type_ids == [] or assigns.selected_years == [] do
+      %{}
+    else
+      # Only calculate counts for unchecked federal states
+      unchecked_ids =
+        assigns.federal_states
+        |> Enum.map(& &1.id)
+        |> Enum.reject(&(&1 in assigns.selected_federal_state_ids))
+
+      # Get current count with existing selections
+      current_count =
+        if assigns.selected_federal_state_ids == [] do
+          0
+        else
+          Period
+          |> where([p], p.is_school_vacation == true)
+          |> join(:inner, [p], l in assoc(p, :location))
+          |> where([p, l], l.is_federal_state == true)
+          |> filter_by_federal_states(assigns.selected_federal_state_ids)
+          |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
+          |> filter_by_years(assigns.selected_years)
+          |> Repo.aggregate(:count)
+        end
+
+      unchecked_ids
+      |> Enum.map(fn fs_id ->
+        # Build query with this federal state added to current selection
+        test_selection = [fs_id | assigns.selected_federal_state_ids]
+
+        count =
+          Period
+          |> where([p], p.is_school_vacation == true)
+          |> join(:inner, [p], l in assoc(p, :location))
+          |> where([p, l], l.is_federal_state == true)
+          |> where([p, l], p.location_id in ^test_selection)
+          |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
+          |> filter_by_years(assigns.selected_years)
+          |> Repo.aggregate(:count)
+
+        additional = count - current_count
+
+        {fs_id, additional}
+      end)
+      |> Enum.into(%{})
+    end
+  end
+
+  defp calculate_vacation_type_counts(assigns) do
+    # Only calculate if there are selections in federal states and years
+    if assigns.selected_federal_state_ids == [] or assigns.selected_years == [] do
+      %{}
+    else
+      # Only calculate counts for unchecked vacation types
+      unchecked_ids =
+        assigns.vacation_types
+        |> Enum.map(& &1.id)
+        |> Enum.reject(&(&1 in assigns.selected_vacation_type_ids))
+
+      # Get current count with existing selections
+      current_count =
+        if assigns.selected_vacation_type_ids == [] do
+          0
+        else
+          Period
+          |> where([p], p.is_school_vacation == true)
+          |> join(:inner, [p], l in assoc(p, :location))
+          |> where([p, l], l.is_federal_state == true)
+          |> filter_by_federal_states(assigns.selected_federal_state_ids)
+          |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
+          |> filter_by_years(assigns.selected_years)
+          |> Repo.aggregate(:count)
+        end
+
+      unchecked_ids
+      |> Enum.map(fn vt_id ->
+        # Build query with this vacation type added to current selection
+        test_selection = [vt_id | assigns.selected_vacation_type_ids]
+
+        count =
+          Period
+          |> where([p], p.is_school_vacation == true)
+          |> join(:inner, [p], l in assoc(p, :location))
+          |> where([p, l], l.is_federal_state == true)
+          |> filter_by_federal_states(assigns.selected_federal_state_ids)
+          |> where([p, l], p.holiday_or_vacation_type_id in ^test_selection)
+          |> filter_by_years(assigns.selected_years)
+          |> Repo.aggregate(:count)
+
+        additional = count - current_count
+
+        {vt_id, additional}
+      end)
+      |> Enum.into(%{})
+    end
+  end
+
+  defp calculate_year_counts(assigns) do
+    # Only calculate if there are selections in federal states and vacation types
+    if assigns.selected_federal_state_ids == [] or assigns.selected_vacation_type_ids == [] do
+      %{}
+    else
+      # Only calculate counts for unchecked years
+      unchecked_years =
+        assigns.available_years
+        |> Enum.reject(&(&1 in assigns.selected_years))
+
+      # Get current count with existing selections
+      current_count =
+        if assigns.selected_years == [] do
+          0
+        else
+          Period
+          |> where([p], p.is_school_vacation == true)
+          |> join(:inner, [p], l in assoc(p, :location))
+          |> where([p, l], l.is_federal_state == true)
+          |> filter_by_federal_states(assigns.selected_federal_state_ids)
+          |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
+          |> filter_by_years(assigns.selected_years)
+          |> Repo.aggregate(:count)
+        end
+
+      unchecked_years
+      |> Enum.map(fn year ->
+        # Build query with this year added to current selection
+        test_selection = [year | assigns.selected_years]
+
+        count =
+          Period
+          |> where([p], p.is_school_vacation == true)
+          |> join(:inner, [p], l in assoc(p, :location))
+          |> where([p, l], l.is_federal_state == true)
+          |> filter_by_federal_states(assigns.selected_federal_state_ids)
+          |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
+          |> filter_by_years(test_selection)
+          |> Repo.aggregate(:count)
+
+        additional = count - current_count
+
+        {year, additional}
+      end)
+      |> Enum.into(%{})
+    end
   end
 
   defp render_sort_indicator(sort_by, sort_direction, field) do
@@ -533,6 +699,12 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
                         class="ml-2 text-sm text-gray-700 dark:text-gray-300"
                       >
                         {fs.name}
+                        <%= if fs.id not in @selected_federal_state_ids do %>
+                          <% count = Map.get(@federal_state_counts, fs.id, 0) %>
+                          <%= if count > 0 do %>
+                            <span class="text-gray-500">(+{count})</span>
+                          <% end %>
+                        <% end %>
                       </label>
                       <button
                         type="button"
@@ -569,7 +741,7 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
                       </button>
                     </div>
                   </div>
-                  <div class="space-y-2 max-h-48 overflow-y-auto">
+                  <div class="space-y-2">
                     <div :for={vt <- @vacation_types} class="flex items-center group">
                       <input
                         type="checkbox"
@@ -584,6 +756,12 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
                         class="ml-2 text-sm text-gray-700 dark:text-gray-300"
                       >
                         {vt.name}
+                        <%= if vt.id not in @selected_vacation_type_ids do %>
+                          <% count = Map.get(@vacation_type_counts, vt.id, 0) %>
+                          <%= if count > 0 do %>
+                            <span class="text-gray-500">(+{count})</span>
+                          <% end %>
+                        <% end %>
                       </label>
                       <button
                         type="button"
@@ -620,7 +798,7 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
                       </button>
                     </div>
                   </div>
-                  <div class="space-y-2 max-h-48 overflow-y-auto">
+                  <div class="space-y-2">
                     <div :for={year <- @available_years} class="flex items-center group">
                       <input
                         type="checkbox"
@@ -635,6 +813,12 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
                         class="ml-2 text-sm text-gray-700 dark:text-gray-300"
                       >
                         {year}
+                        <%= if year not in @selected_years do %>
+                          <% count = Map.get(@year_counts, year, 0) %>
+                          <%= if count > 0 do %>
+                            <span class="text-gray-500">(+{count})</span>
+                          <% end %>
+                        <% end %>
                       </label>
                       <button
                         type="button"
