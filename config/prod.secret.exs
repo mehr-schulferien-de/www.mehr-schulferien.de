@@ -26,7 +26,8 @@ secret_key_base =
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
   secret_key_base: secret_key_base,
-  debug_errors: true
+  debug_errors: true,
+  server: true
 
 # ## Using releases (Elixir v1.9+)
 #
