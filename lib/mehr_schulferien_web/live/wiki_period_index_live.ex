@@ -21,6 +21,18 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
     # Get all years that have periods
     available_years = get_available_years()
 
+    # Preselect all federal states and vacation types
+    selected_federal_state_ids = Enum.map(federal_states, & &1.id)
+    selected_vacation_type_ids = Enum.map(vacation_types, & &1.id)
+
+    # Preselect current and next year
+    current_year = Date.utc_today().year
+    next_year = current_year + 1
+
+    selected_years =
+      [current_year, next_year]
+      |> Enum.filter(&(&1 in available_years))
+
     socket =
       socket
       |> assign(:page_title, "Ferientermine verwalten - Wiki")
@@ -28,11 +40,13 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
       |> assign(:federal_states, federal_states)
       |> assign(:vacation_types, vacation_types)
       |> assign(:available_years, available_years)
-      |> assign(:selected_federal_state_id, nil)
-      |> assign(:selected_vacation_type_id, nil)
-      |> assign(:selected_year, Date.utc_today().year)
+      |> assign(:selected_federal_state_ids, selected_federal_state_ids)
+      |> assign(:selected_vacation_type_ids, selected_vacation_type_ids)
+      |> assign(:selected_years, selected_years)
       |> assign(:periods, [])
       |> assign(:show_filters, true)
+      |> assign(:sort_by, [:federal_state, :vacation_type, :starts_on])
+      |> assign(:sort_direction, :asc)
 
     {:ok, socket}
   end
@@ -40,22 +54,51 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
   @impl true
   def handle_params(params, _url, socket) do
     socket =
+      if map_size(params) == 0 do
+        # No params - use the preselected values from mount
+        socket
+        |> load_periods()
+      else
+        # Apply filters from params
+        socket
+        |> apply_filters(params)
+        |> load_periods()
+      end
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("filter_changed", params, socket) do
+    socket =
       socket
-      |> apply_filters(params)
+      |> update_filters(params)
       |> load_periods()
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_event("filter_changed", %{"filters" => filters}, socket) do
-    params = %{
-      "federal_state_id" => filters["federal_state_id"],
-      "vacation_type_id" => filters["vacation_type_id"],
-      "year" => filters["year"]
-    }
+  def handle_event("sort_by", %{"field" => field}, socket) do
+    field_atom = String.to_existing_atom(field)
 
-    {:noreply, push_patch(socket, to: ~p"/wiki/periods?#{params}")}
+    {sort_by, sort_direction} =
+      if socket.assigns.sort_by == [field_atom] do
+        # If clicking the same field, toggle direction
+        direction = if socket.assigns.sort_direction == :asc, do: :desc, else: :asc
+        {[field_atom], direction}
+      else
+        # New field, use ascending
+        {[field_atom], :asc}
+      end
+
+    socket =
+      socket
+      |> assign(:sort_by, sort_by)
+      |> assign(:sort_direction, sort_direction)
+      |> load_periods()
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -63,70 +106,247 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
     {:noreply, assign(socket, :show_filters, !socket.assigns.show_filters)}
   end
 
-  defp apply_filters(socket, params) do
-    socket
-    |> assign(:selected_federal_state_id, parse_id(params["federal_state_id"]))
-    |> assign(:selected_vacation_type_id, parse_id(params["vacation_type_id"]))
-    |> assign(:selected_year, parse_year(params["year"]))
+  @impl true
+  def handle_event("select_all_federal_states", _params, socket) do
+    all_ids = Enum.map(socket.assigns.federal_states, & &1.id)
+
+    socket =
+      socket
+      |> assign(:selected_federal_state_ids, all_ids)
+      |> load_periods()
+
+    {:noreply, socket}
   end
 
-  defp parse_id(nil), do: nil
-  defp parse_id(""), do: nil
-  defp parse_id(id) when is_binary(id), do: String.to_integer(id)
-  defp parse_id(id), do: id
+  @impl true
+  def handle_event("select_none_federal_states", _params, socket) do
+    socket =
+      socket
+      |> assign(:selected_federal_state_ids, [])
+      |> load_periods()
 
-  defp parse_year(nil), do: Date.utc_today().year
-  defp parse_year(""), do: Date.utc_today().year
-  defp parse_year(year) when is_binary(year), do: String.to_integer(year)
-  defp parse_year(year), do: year
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("select_all_vacation_types", _params, socket) do
+    all_ids = Enum.map(socket.assigns.vacation_types, & &1.id)
+
+    socket =
+      socket
+      |> assign(:selected_vacation_type_ids, all_ids)
+      |> load_periods()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("select_none_vacation_types", _params, socket) do
+    socket =
+      socket
+      |> assign(:selected_vacation_type_ids, [])
+      |> load_periods()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("select_all_years", _params, socket) do
+    socket =
+      socket
+      |> assign(:selected_years, socket.assigns.available_years)
+      |> load_periods()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("select_none_years", _params, socket) do
+    socket =
+      socket
+      |> assign(:selected_years, [])
+      |> load_periods()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("select_only_federal_state", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+
+    socket =
+      socket
+      |> assign(:selected_federal_state_ids, [id])
+      |> load_periods()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("select_only_vacation_type", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+
+    socket =
+      socket
+      |> assign(:selected_vacation_type_ids, [id])
+      |> load_periods()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("select_only_year", %{"year" => year}, socket) do
+    year = String.to_integer(year)
+
+    socket =
+      socket
+      |> assign(:selected_years, [year])
+      |> load_periods()
+
+    {:noreply, socket}
+  end
+
+  defp apply_filters(socket, params) do
+    socket
+    |> assign(:selected_federal_state_ids, parse_ids(params["federal_state_ids"]))
+    |> assign(:selected_vacation_type_ids, parse_ids(params["vacation_type_ids"]))
+    |> assign(:selected_years, parse_years(params["years"]))
+  end
+
+  defp update_filters(socket, params) do
+    federal_state_ids = get_checkbox_values(params, "federal_state_")
+    vacation_type_ids = get_checkbox_values(params, "vacation_type_")
+    years = get_checkbox_values(params, "year_")
+
+    socket
+    |> assign(:selected_federal_state_ids, federal_state_ids)
+    |> assign(:selected_vacation_type_ids, vacation_type_ids)
+    |> assign(:selected_years, years)
+  end
+
+  defp get_checkbox_values(params, prefix) do
+    params
+    |> Enum.filter(fn {key, value} -> String.starts_with?(key, prefix) && value == "true" end)
+    |> Enum.map(fn {key, _} ->
+      value = String.replace(key, prefix, "")
+      if String.match?(value, ~r/^\d+$/), do: String.to_integer(value), else: value
+    end)
+  end
+
+  defp parse_ids(nil), do: []
+
+  defp parse_ids(ids) when is_binary(ids) do
+    ids
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.map(&String.to_integer/1)
+  end
+
+  defp parse_ids(ids) when is_list(ids), do: ids
+
+  defp parse_years(nil), do: [Date.utc_today().year]
+
+  defp parse_years(years) when is_binary(years) do
+    years
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.map(&String.to_integer/1)
+  end
+
+  defp parse_years(years) when is_list(years), do: years
 
   defp load_periods(socket) do
     query = build_query(socket.assigns)
 
     periods =
       query
-      |> order_by([p], asc: p.starts_on)
+      |> apply_sorting(socket.assigns.sort_by, socket.assigns.sort_direction)
       |> preload([:location, :holiday_or_vacation_type])
       |> Repo.all()
 
     assign(socket, :periods, periods)
   end
 
+  defp apply_sorting(query, [:federal_state | rest], direction) do
+    query
+    |> order_by([p, l], [{^direction, l.name}])
+    |> apply_sorting(rest, direction)
+  end
+
+  defp apply_sorting(query, [:vacation_type | rest], direction) do
+    # Check if vacation_type is already joined
+    if has_named_binding?(query, :vacation_type) do
+      query
+      |> order_by([p, l, vacation_type: vt], [{^direction, vt.name}])
+      |> apply_sorting(rest, direction)
+    else
+      query
+      |> join(:inner, [p, l], vt in assoc(p, :holiday_or_vacation_type), as: :vacation_type)
+      |> order_by([p, l, vacation_type: vt], [{^direction, vt.name}])
+      |> apply_sorting(rest, direction)
+    end
+  end
+
+  defp apply_sorting(query, [:starts_on | rest], direction) do
+    query
+    |> order_by([p], [{^direction, p.starts_on}])
+    |> apply_sorting(rest, direction)
+  end
+
+  defp apply_sorting(query, [:ends_on | rest], direction) do
+    query
+    |> order_by([p], [{^direction, p.ends_on}])
+    |> apply_sorting(rest, direction)
+  end
+
+  defp apply_sorting(query, [], _direction), do: query
+
   defp build_query(assigns) do
     Period
     |> where([p], p.is_school_vacation == true)
     |> join(:inner, [p], l in assoc(p, :location))
     |> where([p, l], l.is_federal_state == true)
-    |> filter_by_federal_state(assigns.selected_federal_state_id)
-    |> filter_by_vacation_type(assigns.selected_vacation_type_id)
-    |> filter_by_year(assigns.selected_year)
+    |> filter_by_federal_states(assigns.selected_federal_state_ids)
+    |> filter_by_vacation_types(assigns.selected_vacation_type_ids)
+    |> filter_by_years(assigns.selected_years)
   end
 
-  defp filter_by_federal_state(query, nil), do: query
+  defp filter_by_federal_states(query, []), do: query
 
-  defp filter_by_federal_state(query, federal_state_id) do
-    where(query, [p, l], p.location_id == ^federal_state_id)
+  defp filter_by_federal_states(query, federal_state_ids) do
+    where(query, [p, l], p.location_id in ^federal_state_ids)
   end
 
-  defp filter_by_vacation_type(query, nil), do: query
+  defp filter_by_vacation_types(query, []), do: query
 
-  defp filter_by_vacation_type(query, vacation_type_id) do
-    where(query, [p, l], p.holiday_or_vacation_type_id == ^vacation_type_id)
+  defp filter_by_vacation_types(query, vacation_type_ids) do
+    where(query, [p, l], p.holiday_or_vacation_type_id in ^vacation_type_ids)
   end
 
-  defp filter_by_year(query, nil), do: query
+  defp filter_by_years(query, []), do: query
 
-  defp filter_by_year(query, year) do
-    start_date = Date.new!(year, 1, 1)
-    end_date = Date.new!(year, 12, 31)
+  defp filter_by_years(query, years) do
+    year_conditions =
+      Enum.map(years, fn year ->
+        start_date = Date.new!(year, 1, 1)
+        end_date = Date.new!(year, 12, 31)
 
-    where(
-      query,
-      [p, l],
-      (p.starts_on >= ^start_date and p.starts_on <= ^end_date) or
-        (p.ends_on >= ^start_date and p.ends_on <= ^end_date) or
-        (p.starts_on <= ^start_date and p.ends_on >= ^end_date)
-    )
+        dynamic(
+          [p, l],
+          (p.starts_on >= ^start_date and p.starts_on <= ^end_date) or
+            (p.ends_on >= ^start_date and p.ends_on <= ^end_date) or
+            (p.starts_on <= ^start_date and p.ends_on >= ^end_date)
+        )
+      end)
+
+    combined_condition =
+      Enum.reduce(year_conditions, false, fn condition, acc ->
+        dynamic([p, l], ^acc or ^condition)
+      end)
+
+    where(query, ^combined_condition)
   end
 
   defp format_date(date) do
@@ -183,13 +403,38 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
       |> Repo.all()
       |> Enum.uniq()
 
-    # Ensure current year is included even if no periods exist
+    # Ensure current year and next year are included even if no periods exist
     current_year = Date.utc_today().year
+    next_year = current_year + 1
 
     years
-    |> Enum.concat([current_year])
+    |> Enum.concat([current_year, next_year])
     |> Enum.uniq()
     |> Enum.sort(:desc)
+  end
+
+  defp render_sort_indicator(sort_by, sort_direction, field) do
+    if sort_by == [field] do
+      if sort_direction == :asc do
+        Phoenix.HTML.raw("""
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18" />
+        </svg>
+        """)
+      else
+        Phoenix.HTML.raw("""
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25L12 21m0 0l-3.75-3.75M12 21V3" />
+        </svg>
+        """)
+      end
+    else
+      Phoenix.HTML.raw("""
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-400">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+      </svg>
+      """)
+    end
   end
 
   @impl true
@@ -249,73 +494,158 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
 
           <div :if={@show_filters} class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <form phx-change="filter_changed">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label
-                    for="federal_state_id"
-                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Bundesland
-                  </label>
-                  <select
-                    name="filters[federal_state_id]"
-                    id="federal_state_id"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  >
-                    <option value="">Alle Bundesländer</option>
-                    <option
-                      :for={fs <- @federal_states}
-                      value={fs.id}
-                      selected={fs.id == @selected_federal_state_id}
-                    >
-                      {fs.name}
-                    </option>
-                  </select>
+                  <div class="flex justify-between items-center mb-3">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Bundesländer
+                    </label>
+                    <div class="flex gap-2">
+                      <button
+                        type="button"
+                        phx-click="select_all_federal_states"
+                        class="text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Alle
+                      </button>
+                      <span class="text-xs text-gray-400">/</span>
+                      <button
+                        type="button"
+                        phx-click="select_none_federal_states"
+                        class="text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Keine
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <div :for={fs <- @federal_states} class="flex items-center group">
+                      <input
+                        type="checkbox"
+                        id={"federal_state_#{fs.id}"}
+                        name={"federal_state_#{fs.id}"}
+                        value="true"
+                        checked={fs.id in @selected_federal_state_ids}
+                        class="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                      />
+                      <label
+                        for={"federal_state_#{fs.id}"}
+                        class="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        {fs.name}
+                      </label>
+                      <button
+                        type="button"
+                        phx-click="select_only_federal_state"
+                        phx-value-id={fs.id}
+                        class="text-xs text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity ml-3"
+                      >
+                        nur
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
-                  <label
-                    for="vacation_type_id"
-                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Ferienart
-                  </label>
-                  <select
-                    name="filters[vacation_type_id]"
-                    id="vacation_type_id"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  >
-                    <option value="">Alle Ferienarten</option>
-                    <option
-                      :for={vt <- @vacation_types}
-                      value={vt.id}
-                      selected={vt.id == @selected_vacation_type_id}
-                    >
-                      {vt.name}
-                    </option>
-                  </select>
+                  <div class="flex justify-between items-center mb-3">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Ferienarten
+                    </label>
+                    <div class="flex gap-2">
+                      <button
+                        type="button"
+                        phx-click="select_all_vacation_types"
+                        class="text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Alle
+                      </button>
+                      <span class="text-xs text-gray-400">/</span>
+                      <button
+                        type="button"
+                        phx-click="select_none_vacation_types"
+                        class="text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Keine
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-2 max-h-48 overflow-y-auto">
+                    <div :for={vt <- @vacation_types} class="flex items-center group">
+                      <input
+                        type="checkbox"
+                        id={"vacation_type_#{vt.id}"}
+                        name={"vacation_type_#{vt.id}"}
+                        value="true"
+                        checked={vt.id in @selected_vacation_type_ids}
+                        class="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                      />
+                      <label
+                        for={"vacation_type_#{vt.id}"}
+                        class="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        {vt.name}
+                      </label>
+                      <button
+                        type="button"
+                        phx-click="select_only_vacation_type"
+                        phx-value-id={vt.id}
+                        class="text-xs text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity ml-3"
+                      >
+                        nur
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
-                  <label
-                    for="year"
-                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
-                    Jahr
-                  </label>
-                  <select
-                    name="filters[year]"
-                    id="year"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  >
-                    <option
-                      :for={year <- @available_years}
-                      value={year}
-                      selected={year == @selected_year}
-                    >
-                      {year}
-                    </option>
-                  </select>
+                  <div class="flex justify-between items-center mb-3">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Jahre
+                    </label>
+                    <div class="flex gap-2">
+                      <button
+                        type="button"
+                        phx-click="select_all_years"
+                        class="text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Alle
+                      </button>
+                      <span class="text-xs text-gray-400">/</span>
+                      <button
+                        type="button"
+                        phx-click="select_none_years"
+                        class="text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+                      >
+                        Keine
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-2 max-h-48 overflow-y-auto">
+                    <div :for={year <- @available_years} class="flex items-center group">
+                      <input
+                        type="checkbox"
+                        id={"year_#{year}"}
+                        name={"year_#{year}"}
+                        value="true"
+                        checked={year in @selected_years}
+                        class="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                      />
+                      <label
+                        for={"year_#{year}"}
+                        class="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        {year}
+                      </label>
+                      <button
+                        type="button"
+                        phx-click="select_only_year"
+                        phx-value-year={year}
+                        class="text-xs text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity ml-3"
+                      >
+                        nur
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </form>
@@ -416,10 +746,46 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
               <.table>
                 <.thead>
                   <.tr>
-                    <.th>Bundesland</.th>
-                    <.th>Ferienart</.th>
-                    <.th>Beginn</.th>
-                    <.th>Ende</.th>
+                    <.th>
+                      <button
+                        type="button"
+                        phx-click="sort_by"
+                        phx-value-field="federal_state"
+                        class="flex items-center gap-1 hover:text-primary-600"
+                      >
+                        Bundesland {render_sort_indicator(@sort_by, @sort_direction, :federal_state)}
+                      </button>
+                    </.th>
+                    <.th>
+                      <button
+                        type="button"
+                        phx-click="sort_by"
+                        phx-value-field="vacation_type"
+                        class="flex items-center gap-1 hover:text-primary-600"
+                      >
+                        Ferienart {render_sort_indicator(@sort_by, @sort_direction, :vacation_type)}
+                      </button>
+                    </.th>
+                    <.th>
+                      <button
+                        type="button"
+                        phx-click="sort_by"
+                        phx-value-field="starts_on"
+                        class="flex items-center gap-1 hover:text-primary-600"
+                      >
+                        Beginn {render_sort_indicator(@sort_by, @sort_direction, :starts_on)}
+                      </button>
+                    </.th>
+                    <.th>
+                      <button
+                        type="button"
+                        phx-click="sort_by"
+                        phx-value-field="ends_on"
+                        class="flex items-center gap-1 hover:text-primary-600"
+                      >
+                        Ende {render_sort_indicator(@sort_by, @sort_direction, :ends_on)}
+                      </button>
+                    </.th>
                     <.th>Dauer</.th>
                     <.th>Aktionen</.th>
                   </.tr>

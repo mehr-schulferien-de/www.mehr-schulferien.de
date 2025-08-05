@@ -100,10 +100,10 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       # Verify page title
       assert has_element?(view, "h1", "Ferientermine verwalten")
 
-      # Verify filter controls
-      assert has_element?(view, "select[name='filters[federal_state_id]']")
-      assert has_element?(view, "select[name='filters[vacation_type_id]']")
-      assert has_element?(view, "select[name='filters[year]']")
+      # Verify filter controls - now checkboxes
+      assert has_element?(view, "input[type='checkbox'][name='federal_state_#{bayern.id}']")
+      assert has_element?(view, "input[type='checkbox'][name='vacation_type_#{sommerferien.id}']")
+      assert has_element?(view, "input[type='checkbox'][name='year_#{Date.utc_today().year}']")
 
       # Verify all periods are shown initially
       assert has_element?(view, "td", "Bayern")
@@ -111,18 +111,20 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       assert has_element?(view, "td", "Sommerferien")
       assert has_element?(view, "td", "Winterferien")
 
-      # Test filtering by federal state
+      # Test filtering by federal state - click the nur button for Bayern
       view
-      |> form("form", filters: %{federal_state_id: bayern.id})
-      |> render_change()
+      |> render_click("select_only_federal_state", %{"id" => to_string(bayern.id)})
 
       assert has_element?(view, "td", "Bayern")
       refute has_element?(view, "td", "Hessen")
 
-      # Test filtering by vacation type
+      # Reset to all federal states
       view
-      |> form("form", filters: %{federal_state_id: "", vacation_type_id: sommerferien.id})
-      |> render_change()
+      |> render_click("select_all_federal_states")
+
+      # Test filtering by vacation type - click the nur button for Sommerferien
+      view
+      |> render_click("select_only_vacation_type", %{"id" => to_string(sommerferien.id)})
 
       assert has_element?(view, "td", "Sommerferien")
       refute has_element?(view, "td", "Winterferien")
