@@ -3,10 +3,11 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
 
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferienWeb.LocationTrackingHelpers
   import Ecto.Query
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     # Get all federal states in Germany
     federal_states =
       from(l in MehrSchulferien.Locations.Location,
@@ -21,8 +22,8 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
     # Get all years that have periods
     available_years = get_available_years()
 
-    # Preselect all federal states and vacation types
-    selected_federal_state_ids = Enum.map(federal_states, & &1.id)
+    # Extract federal states from cookies, or select all if none found
+    selected_federal_state_ids = get_preselected_federal_states(session, federal_states)
     selected_vacation_type_ids = Enum.map(vacation_types, & &1.id)
 
     # Preselect current and next year
@@ -600,6 +601,74 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
       </svg>
       """)
+    end
+  end
+
+  defp get_preselected_federal_states(session, all_federal_states) do
+    # Extract recent locations from session
+    recent_locations = session["recent_locations"] || ""
+
+    if recent_locations == "" do
+      # No cookies, select all federal states
+      Enum.map(all_federal_states, & &1.id)
+    else
+      # Parse locations from cookie
+      locations =
+        LocationTrackingHelpers.get_recent_locations(%{"recent_locations" => recent_locations})
+
+      # Extract federal state IDs from locations
+      federal_state_ids =
+        locations
+        |> Enum.map(&extract_federal_state_id/1)
+        |> Enum.reject(&is_nil/1)
+        |> Enum.uniq()
+
+      if federal_state_ids == [] do
+        # No valid federal states found, select all
+        Enum.map(all_federal_states, & &1.id)
+      else
+        federal_state_ids
+      end
+    end
+  end
+
+  defp extract_federal_state_id({"f", slug}) do
+    # Direct federal state reference
+    # Need to find the federal state - we don't know the country, so we'll query directly
+    query =
+      from(l in MehrSchulferien.Locations.Location,
+        where: l.slug == ^slug and l.is_federal_state == true,
+        limit: 1
+      )
+
+    case Repo.one(query) do
+      %{id: id} -> id
+      _ -> nil
+    end
+  end
+
+  defp extract_federal_state_id({"c", slug}) do
+    # City - need to traverse up to federal state
+    case MehrSchulferien.Locations.get_city_by_slug(slug) do
+      nil -> nil
+      city -> get_federal_state_id_from_location(city)
+    end
+  end
+
+  defp extract_federal_state_id({"s", slug}) do
+    # School - need to traverse up to federal state
+    case MehrSchulferien.Locations.get_school_by_slug(slug) do
+      nil -> nil
+      school -> get_federal_state_id_from_location(school)
+    end
+  end
+
+  defp extract_federal_state_id(_), do: nil
+
+  defp get_federal_state_id_from_location(location) do
+    case MehrSchulferien.Periods.get_school_federal_state(location.id) do
+      %{id: federal_state_id} -> federal_state_id
+      _ -> nil
     end
   end
 
