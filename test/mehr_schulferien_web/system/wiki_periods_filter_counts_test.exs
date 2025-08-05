@@ -7,14 +7,32 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
     setup do
       # Create test data using factories
       germany = insert(:country, name: "Deutschland", slug: "d")
-      
+
       # Create Hamburg as a federal state
-      hamburg = insert(:federal_state, name: "Hamburg", slug: "hamburg", parent_location_id: germany.id)
+      hamburg =
+        insert(:federal_state, name: "Hamburg", slug: "hamburg", parent_location_id: germany.id)
 
       # Create vacation types
-      sommer = insert(:holiday_or_vacation_type, name: "Sommer", slug: "sommer", default_is_school_vacation: true)
-      herbst = insert(:holiday_or_vacation_type, name: "Herbst", slug: "herbst", default_is_school_vacation: true)
-      ostern = insert(:holiday_or_vacation_type, name: "Ostern", slug: "ostern", default_is_school_vacation: true)
+      sommer =
+        insert(:holiday_or_vacation_type,
+          name: "Sommer",
+          slug: "sommer",
+          default_is_school_vacation: true
+        )
+
+      herbst =
+        insert(:holiday_or_vacation_type,
+          name: "Herbst",
+          slug: "herbst",
+          default_is_school_vacation: true
+        )
+
+      ostern =
+        insert(:holiday_or_vacation_type,
+          name: "Ostern",
+          slug: "ostern",
+          default_is_school_vacation: true
+        )
 
       # Create periods for Hamburg with different vacation types in 2025 and 2026
       # Create 2 Sommer periods that should show up when Sommer is unchecked
@@ -82,21 +100,25 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
 
       # The result list should be empty (no selections means no results)
       refute has_element?(view, "td", "Hamburg")
-      
+
       # Now check only Herbst and Ostern (not Sommer)
       # Get all vacation type checkboxes from the current HTML
       html = render(view)
-      vacation_type_ids = Regex.scan(~r/id="vacation_type_(\d+)"/, html)
+
+      vacation_type_ids =
+        Regex.scan(~r/id="vacation_type_(\d+)"/, html)
         |> Enum.map(fn [_, id] -> String.to_integer(id) end)
-      
+
       # Find the IDs for our vacation types
-      herbst_checkbox = Enum.find(vacation_type_ids, fn id -> 
-        html =~ ~r/vacation_type_#{id}".*?Herbst/s
-      end)
-      
-      ostern_checkbox = Enum.find(vacation_type_ids, fn id -> 
-        html =~ ~r/vacation_type_#{id}".*?Ostern/s
-      end)
+      herbst_checkbox =
+        Enum.find(vacation_type_ids, fn id ->
+          html =~ ~r/vacation_type_#{id}".*?Herbst/s
+        end)
+
+      ostern_checkbox =
+        Enum.find(vacation_type_ids, fn id ->
+          html =~ ~r/vacation_type_#{id}".*?Ostern/s
+        end)
 
       # Build form params with Hamburg, selected vacation types (not Sommer), and years
       form_params = %{
@@ -114,17 +136,18 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
 
       # Now Sommer should be unchecked and show (+2)
       refute has_element?(view, "#vacation_type_#{sommer.id}[checked]")
-      
+
       # Look for the count in the label
-      sommer_label_html = view
+      sommer_label_html =
+        view
         |> element("label[for='vacation_type_#{sommer.id}']")
         |> render()
-      
+
       assert sommer_label_html =~ "Sommer"
       # The actual count might be different due to how the calculation works
       # Let's extract the actual count from the HTML
       assert sommer_label_html =~ ~r/\(\+(\d+)\)/
-      
+
       # Extract the number to verify it's positive
       [_, count_str] = Regex.run(~r/\(\+(\d+)\)/, sommer_label_html)
       count = String.to_integer(count_str)

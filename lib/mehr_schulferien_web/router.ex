@@ -15,6 +15,7 @@ defmodule MehrSchulferienWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug MehrSchulferienWeb.Plugs.CorsPlug
   end
 
   pipeline :redirects do
