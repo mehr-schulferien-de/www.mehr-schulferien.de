@@ -251,7 +251,7 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
 
       # Create period in the future for testing
       future_date = Date.utc_today() |> Date.add(30)
-      
+
       period =
         insert(:period,
           location_id: bayern.id,
@@ -270,6 +270,7 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
 
       # Verify page shows current data
       assert has_element?(view, "h1", "Ferientermin bearbeiten")
+
       # Check that the form has the date inputs (not checking specific values due to dynamic dates)
       assert has_element?(view, "input[name='period[starts_on]']")
       assert has_element?(view, "input[name='period[ends_on]']")
@@ -277,7 +278,7 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       # Update the period
       new_start = period.starts_on |> Date.add(5)
       new_end = period.ends_on |> Date.add(5)
-      
+
       view
       |> form("form",
         period: %{
@@ -356,7 +357,7 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       html = render(view)
       assert html =~ "Diese Aktion betrifft"
       assert html =~ "Schulen"
-      
+
       # Confirm deletion in modal
       view
       |> element("button[phx-click='delete']", "Endgültig löschen")
@@ -383,7 +384,7 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       # Modal should be shown
       html = render(view)
       assert html =~ "Ferientermin löschen"
-      
+
       # Cancel deletion in modal
       view
       |> element("button[phx-click='hide_delete_modal']", "Abbrechen")
@@ -392,12 +393,16 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       # Modal should be closed
       html = render(view)
       refute html =~ "Ferientermin löschen"
-      
+
       # Period should still exist
       assert Periods.get_period!(period.id)
     end
 
-    test "user cannot edit a past period", %{conn: conn, bayern: bayern, sommerferien: sommerferien} do
+    test "user cannot edit a past period", %{
+      conn: conn,
+      bayern: bayern,
+      sommerferien: sommerferien
+    } do
       # Create a period in the past
       past_period =
         insert(:period,
@@ -412,11 +417,11 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
 
       # Should show warning message
       assert html =~ "Dieser Ferientermin liegt in der Vergangenheit"
-      
+
       # Form fields should be disabled
       assert has_element?(view, "input[name='period[starts_on]'][disabled]")
       assert has_element?(view, "button[type='submit'][disabled]")
-      
+
       # Delete button should be disabled
       assert has_element?(view, "button[phx-click='show_delete_modal'][disabled]")
     end

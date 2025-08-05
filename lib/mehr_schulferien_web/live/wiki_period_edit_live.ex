@@ -37,7 +37,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
 
       # Check if period is in the past
       is_past_period = period_is_in_past?(period)
-      
+
       socket =
         socket
         |> assign(:page_title, "Ferientermin bearbeiten - Wiki")
@@ -84,7 +84,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
         {:noreply,
          socket
          |> put_flash(:error, "Vergangene Ferientermine können nicht bearbeitet werden.")}
-      
+
       socket.assigns.limit_reached ->
         {:noreply,
          socket
@@ -92,7 +92,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
            :error,
            "Das tägliche Limit von #{socket.assigns.daily_limit} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
          )}
-      
+
       true ->
         save_period(socket, period_params)
     end
@@ -131,8 +131,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
     else
       # Count affected schools when showing the modal
       affected_count = count_affected_schools(socket.assigns.period)
-      
-      {:noreply, 
+
+      {:noreply,
        socket
        |> assign(:show_delete_modal, true)
        |> assign(:affected_schools_count, affected_count)}
@@ -173,23 +173,23 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
     # Count all schools within this federal state's hierarchy
     # Schools can be under: Federal State → County → City → School
     federal_state_id = period.location_id
-    
+
     # Get all counties in this federal state
-    county_ids = 
+    county_ids =
       from(l in MehrSchulferien.Locations.Location,
         where: l.parent_location_id == ^federal_state_id and l.is_county == true,
         select: l.id
       )
       |> Repo.all()
-    
+
     # Get all cities in these counties
-    city_ids = 
+    city_ids =
       from(l in MehrSchulferien.Locations.Location,
         where: l.parent_location_id in ^county_ids and l.is_city == true,
         select: l.id
       )
       |> Repo.all()
-    
+
     # Count schools that are direct children of cities
     from(l in MehrSchulferien.Locations.Location,
       where: l.parent_location_id in ^city_ids and l.is_school == true,
@@ -386,8 +386,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   defp get_recent_vacation_types do
     # Get vacation types used in periods from the last 12 months
     twelve_months_ago = Date.utc_today() |> Date.add(-365)
-    
-    vacation_type_ids = 
+
+    vacation_type_ids =
       from(p in Period,
         join: l in assoc(p, :location),
         where: p.is_school_vacation == true and l.is_federal_state == true,
@@ -396,7 +396,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
         distinct: true
       )
       |> Repo.all()
-    
+
     # If no vacation types found in recent periods, get all school vacation types
     if vacation_type_ids == [] do
       from(vt in Calendars.HolidayOrVacationType,
@@ -650,8 +650,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
         </.stack>
       </.container>
       
-      <!-- Delete Confirmation Modal -->
-      <div 
+    <!-- Delete Confirmation Modal -->
+      <div
         :if={@show_delete_modal}
         class="fixed inset-0 z-50 overflow-y-auto"
         aria-labelledby="modal-title"
@@ -664,12 +664,15 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
             class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity"
             aria-hidden="true"
             phx-click="hide_delete_modal"
-          ></div>
-
-          <!-- This element is to trick the browser into centering the modal contents. -->
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-          <!-- Modal panel -->
+          >
+          </div>
+          
+    <!-- This element is to trick the browser into centering the modal contents. -->
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+            &#8203;
+          </span>
+          
+    <!-- Modal panel -->
           <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
@@ -691,7 +694,10 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                   </svg>
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
+                  <h3
+                    class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100"
+                    id="modal-title"
+                  >
                     Ferientermin löschen
                   </h3>
                   <div class="mt-2">
@@ -699,7 +705,9 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                       Sind Sie sicher, dass Sie diesen Ferientermin löschen möchten?
                     </p>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      <strong>Zeitraum:</strong> {format_date(@period.starts_on)} - {format_date(@period.ends_on)}
+                      <strong>Zeitraum:</strong> {format_date(@period.starts_on)} - {format_date(
+                        @period.ends_on
+                      )}
                     </p>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                       <strong>Bundesland:</strong> {@period.location.name}
@@ -709,7 +717,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                     </p>
                     <div class="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-md">
                       <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                        ⚠️ Diese Aktion betrifft <strong>{@affected_schools_count} Schulen</strong> in diesem Bundesland.
+                        ⚠️ Diese Aktion betrifft <strong>{@affected_schools_count} Schulen</strong>
+                        in diesem Bundesland.
                       </p>
                       <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
                         Die Ferien werden für alle betroffenen Schulen gelöscht.

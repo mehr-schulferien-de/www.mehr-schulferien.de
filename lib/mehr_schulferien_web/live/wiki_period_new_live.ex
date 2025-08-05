@@ -124,8 +124,8 @@ defmodule MehrSchulferienWeb.WikiPeriodNewLive do
   defp get_recent_vacation_types do
     # Get vacation types used in periods from the last 12 months
     twelve_months_ago = Date.utc_today() |> Date.add(-365)
-    
-    vacation_type_ids = 
+
+    vacation_type_ids =
       from(p in Period,
         join: l in assoc(p, :location),
         where: p.is_school_vacation == true and l.is_federal_state == true,
@@ -134,7 +134,7 @@ defmodule MehrSchulferienWeb.WikiPeriodNewLive do
         distinct: true
       )
       |> Repo.all()
-    
+
     # If no vacation types found in recent periods, get all school vacation types
     if vacation_type_ids == [] do
       from(vt in Calendars.HolidayOrVacationType,

@@ -17,7 +17,7 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
 
     # Get vacation types used in the last 12 months
     vacation_types = get_recent_vacation_types()
-    
+
     # Get all years that have periods
     available_years = get_available_years()
 
@@ -144,8 +144,8 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
   defp get_recent_vacation_types do
     # Get vacation types used in periods from the last 12 months
     twelve_months_ago = Date.utc_today() |> Date.add(-365)
-    
-    vacation_type_ids = 
+
+    vacation_type_ids =
       from(p in Period,
         join: l in assoc(p, :location),
         where: p.is_school_vacation == true and l.is_federal_state == true,
@@ -154,7 +154,7 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
         distinct: true
       )
       |> Repo.all()
-    
+
     # If no vacation types found in recent periods, get all school vacation types
     if vacation_type_ids == [] do
       from(vt in MehrSchulferien.Calendars.HolidayOrVacationType,
@@ -174,7 +174,7 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
 
   defp get_available_years do
     # Get all unique years from periods
-    years = 
+    years =
       from(p in Period,
         join: l in assoc(p, :location),
         where: p.is_school_vacation == true and l.is_federal_state == true,
@@ -182,10 +182,10 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
       )
       |> Repo.all()
       |> Enum.uniq()
-    
+
     # Ensure current year is included even if no periods exist
     current_year = Date.utc_today().year
-    
+
     years
     |> Enum.concat([current_year])
     |> Enum.uniq()
@@ -308,7 +308,11 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
                     id="year"
                     class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   >
-                    <option :for={year <- @available_years} value={year} selected={year == @selected_year}>
+                    <option
+                      :for={year <- @available_years}
+                      value={year}
+                      selected={year == @selected_year}
+                    >
                       {year}
                     </option>
                   </select>
@@ -316,11 +320,11 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
               </div>
             </form>
           </div>
-
-          <!-- Mobile-friendly card view for small screens -->
+          
+    <!-- Mobile-friendly card view for small screens -->
           <div class="block md:hidden space-y-4">
-            <div 
-              :for={period <- @periods} 
+            <div
+              :for={period <- @periods}
               class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2"
             >
               <div class="flex justify-between items-start">
@@ -377,27 +381,36 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
               <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                 <div>
                   <span class="text-gray-500 dark:text-gray-400">Von:</span>
-                  <span class="text-gray-900 dark:text-gray-100 ml-1">{format_date(period.starts_on)}</span>
+                  <span class="text-gray-900 dark:text-gray-100 ml-1">
+                    {format_date(period.starts_on)}
+                  </span>
                 </div>
                 <div>
                   <span class="text-gray-500 dark:text-gray-400">Bis:</span>
-                  <span class="text-gray-900 dark:text-gray-100 ml-1">{format_date(period.ends_on)}</span>
+                  <span class="text-gray-900 dark:text-gray-100 ml-1">
+                    {format_date(period.ends_on)}
+                  </span>
                 </div>
                 <div>
                   <span class="text-gray-500 dark:text-gray-400">Dauer:</span>
-                  <span class="text-gray-900 dark:text-gray-100 ml-1">{period_duration(period)} Tage</span>
+                  <span class="text-gray-900 dark:text-gray-100 ml-1">
+                    {period_duration(period)} Tage
+                  </span>
                 </div>
               </div>
             </div>
-            
-            <div :if={@periods == []} class="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
+
+            <div
+              :if={@periods == []}
+              class="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center"
+            >
               <p class="text-gray-500 dark:text-gray-400">
                 Keine Ferientermine gefunden. Passen Sie Ihre Filter an oder fügen Sie neue Termine hinzu.
               </p>
             </div>
           </div>
-
-          <!-- Table view for larger screens -->
+          
+    <!-- Table view for larger screens -->
           <div class="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
             <div class="overflow-x-auto">
               <.table>

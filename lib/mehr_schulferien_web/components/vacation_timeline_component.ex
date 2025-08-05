@@ -250,8 +250,8 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         Date.compare(day, period.ends_on) != :gt
     end)
     |> Enum.sort_by(fn period ->
-      # Default priority is 0 if not specified
-      priority = Map.get(period, :display_priority, 0)
+      # Default priority is 0 if not specified or nil
+      priority = Map.get(period, :display_priority) || 0
       # Return negative to sort descending (highest priority first)
       -priority
     end)
