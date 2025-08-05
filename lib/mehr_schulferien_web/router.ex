@@ -167,6 +167,9 @@ defmodule MehrSchulferienWeb.Router do
     get "/sitemap.xml", SitemapController, :sitemap
     get "/robots.txt", RobotsController, :index
 
+    # Wiki section hub
+    live "/wiki", WikiHubLive
+
     # Wiki section for collaborative school address editing
     live "/wiki/schools/new", WikiSchoolNewLive
     live "/wiki/schools/:slug", WikiSchoolShowLive
@@ -185,6 +188,15 @@ defmodule MehrSchulferienWeb.Router do
     delete "/wiki/schools/:slug/bewegliche-ferientage/:id",
            WikiController,
            :delete_beweglicher_ferientag
+
+    # Wiki section for collaborative period editing
+    live "/wiki/periods", WikiPeriodIndexLive
+    live "/wiki/periods/new", WikiPeriodNewLive
+    live "/wiki/periods/:id/edit", WikiPeriodEditLive
+    post "/wiki/periods/:id", WikiController, :update_period
+    put "/wiki/periods/:id", WikiController, :update_period
+    delete "/wiki/periods/:id", WikiController, :delete_period
+    post "/wiki/periods/:id/rollback/:version_id", WikiController, :rollback_period
 
     # Federal state routes (SEO-friendly pattern)
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show

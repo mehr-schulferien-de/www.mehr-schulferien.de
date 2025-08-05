@@ -537,6 +537,27 @@ defmodule MehrSchulferienWeb.WikiController do
   defp field_name("line1"), do: "Adresszeile 1"
   defp field_name(field), do: field
 
+  defp gather_period_changes(version) do
+    # Get the previous values for the period
+    old_values = get_previous_values("Period", version.item_id, version)
+
+    version.item_changes
+    |> Enum.map(fn {field, new_value} ->
+      field_str = to_string(field)
+      field_atom = String.to_atom(field_str)
+      old_value = Map.get(old_values, field_atom, "")
+      {period_field_name(field_str), {old_value, new_value}}
+    end)
+    |> Enum.into(%{})
+  end
+
+  defp period_field_name("starts_on"), do: "Beginn"
+  defp period_field_name("ends_on"), do: "Ende"
+  defp period_field_name("location_id"), do: "Bundesland"
+  defp period_field_name("holiday_or_vacation_type_id"), do: "Ferienart"
+  defp period_field_name("memo"), do: "Notiz"
+  defp period_field_name(field), do: field
+
   def delete_school(conn, %{"slug" => school_slug}) do
     school = Locations.get_school_by_slug!(school_slug)
 
@@ -613,6 +634,145 @@ defmodule MehrSchulferienWeb.WikiController do
           conn
           |> put_flash(:error, "Fehler beim Löschen der Schule: #{inspect(reason)}")
           |> redirect(to: "/wiki/schools/#{school_slug}")
+      end
+    end
+  end
+
+  # Period management functions
+  def update_period(conn, %{"id" => period_id} = params) do
+    period = MehrSchulferien.Periods.get_period!(period_id)
+
+    # Check daily limit
+    today = Date.utc_today()
+    daily_changes = Wiki.get_daily_change_count(today)
+
+    if daily_changes >= Config.daily_change_limit() do
+      conn
+      |> put_flash(
+        :error,
+        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+      )
+      |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+    else
+      period_params = Map.get(params, "period", %{})
+      changeset = MehrSchulferien.Periods.Period.changeset(period, period_params)
+
+      case PaperTrail.update(changeset, meta: %{ip_address: get_client_ip(conn)}) do
+        {:ok, %{model: updated_period, version: version}} ->
+          # Increment daily change count if there was a version created
+          if version do
+            Wiki.increment_daily_change_count(today)
+
+            # Send email notification
+            email_task = fn ->
+              Logger.info("Sending email notification for period update")
+              changes = gather_period_changes(version)
+
+              result =
+                Email.period_updated_notification(updated_period, changes)
+                |> Mailer.deliver()
+
+              Logger.info("Email send result: #{inspect(result)}")
+            end
+
+            # Run synchronously in test environment to avoid connection ownership issues
+            if Application.get_env(:mehr_schulferien, :env) == :test do
+              email_task.()
+            else
+              Task.start(email_task)
+            end
+          end
+
+          conn
+          |> put_flash(:info, "Ferientermin wurde erfolgreich aktualisiert.")
+          |> redirect(to: ~p"/wiki/periods")
+
+        {:error, _changeset} ->
+          conn
+          |> put_flash(:error, "Fehler beim Aktualisieren des Ferientermins.")
+          |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+      end
+    end
+  end
+
+  def delete_period(conn, %{"id" => period_id}) do
+    period = MehrSchulferien.Periods.get_period!(period_id)
+
+    # Check daily limit
+    today = Date.utc_today()
+    daily_changes = Wiki.get_daily_change_count(today)
+
+    if daily_changes >= Config.daily_change_limit() do
+      conn
+      |> put_flash(
+        :error,
+        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+      )
+      |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+    else
+      case MehrSchulferien.Periods.delete_period(period) do
+        {:ok, _period} ->
+          # Increment daily change count
+          Wiki.increment_daily_change_count(today)
+
+          # Send email notification
+          email_task = fn ->
+            Logger.info("Sending email notification for period deletion")
+
+            result =
+              Email.period_deleted_notification(period)
+              |> Mailer.deliver()
+
+            Logger.info("Email send result: #{inspect(result)}")
+          end
+
+          # Run synchronously in test environment to avoid connection ownership issues
+          if Application.get_env(:mehr_schulferien, :env) == :test do
+            email_task.()
+          else
+            Task.start(email_task)
+          end
+
+          conn
+          |> put_flash(:info, "Ferientermin wurde erfolgreich gelöscht.")
+          |> redirect(to: ~p"/wiki/periods")
+
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "Fehler beim Löschen des Ferientermins.")
+          |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+      end
+    end
+  end
+
+  def rollback_period(conn, %{"id" => period_id, "version_id" => version_id}) do
+    period = MehrSchulferien.Periods.get_period!(period_id)
+
+    # Check daily limit
+    today = Date.utc_today()
+    daily_changes = Wiki.get_daily_change_count(today)
+
+    if daily_changes >= Config.daily_change_limit() do
+      conn
+      |> put_flash(
+        :error,
+        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+      )
+      |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+    else
+      case Wiki.rollback_to_version(period, version_id, get_client_ip(conn)) do
+        {:ok, _updated_period} ->
+          # Increment daily change count
+          Wiki.increment_daily_change_count(today)
+
+          conn
+          |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
+          |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "Fehler beim Zurückkehren zur ausgewählten Version.")
+          |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
       end
     end
   end

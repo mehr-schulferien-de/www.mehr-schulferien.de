@@ -169,7 +169,6 @@ defmodule MehrSchulferien.LocationsTest do
           slug: "test-vacation-#{System.unique_integer([:positive])}",
           colloquial: "Test Vacation",
           default_display_priority: 3,
-          default_html_class: "green",
           default_is_listed_below_month: true,
           default_is_school_vacation: true,
           default_is_valid_for_students: true
@@ -182,7 +181,6 @@ defmodule MehrSchulferien.LocationsTest do
           slug: "test-holiday-#{System.unique_integer([:positive])}",
           colloquial: "Test Holiday",
           default_display_priority: 3,
-          default_html_class: "green",
           default_is_public_holiday: true,
           default_is_valid_for_everybody: true
         })

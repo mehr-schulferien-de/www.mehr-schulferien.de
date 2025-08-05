@@ -531,4 +531,101 @@ defmodule MehrSchulferien.Email do
   defp format_copy_status(:partial), do: "Teilweise erfolgreich"
   defp format_copy_status(:failed), do: "Fehlgeschlagen"
   defp format_copy_status(_), do: "Unbekannt"
+
+  # Period notification functions
+  def period_created_notification(period) do
+    period = MehrSchulferien.Repo.preload(period, [:location, :holiday_or_vacation_type])
+
+    new()
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
+    |> subject(
+      "Neuer Ferientermin: #{period.location.name} - #{period.holiday_or_vacation_type.name}"
+    )
+    |> html_body("""
+    <h2>Neuer Ferientermin wurde erstellt</h2>
+    <p><strong>Bundesland:</strong> #{period.location.name}</p>
+    <p><strong>Ferienart:</strong> #{period.holiday_or_vacation_type.name}</p>
+    <p><strong>Beginn:</strong> #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}</p>
+    <p><strong>Ende:</strong> #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}</p>
+    #{if period.memo, do: "<p><strong>Notiz:</strong> #{period.memo}</p>", else: ""}
+    <p><strong>Erstellt am:</strong> #{format_datetime(DateTime.utc_now())}</p>
+    <p><a href="https://www.mehr-schulferien.de/wiki/periods/#{period.id}/edit" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;">Termin bearbeiten</a></p>
+    """)
+    |> text_body("""
+    Neuer Ferientermin wurde erstellt
+
+    Bundesland: #{period.location.name}
+    Ferienart: #{period.holiday_or_vacation_type.name}
+    Beginn: #{Calendar.strftime(period.starts_on, "%d.%m.%Y")}
+    Ende: #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}
+    #{if period.memo, do: "Notiz: #{period.memo}\n", else: ""}
+    Erstellt am: #{format_datetime(DateTime.utc_now())}
+
+    Link zum Bearbeiten: https://www.mehr-schulferien.de/wiki/periods/#{period.id}/edit
+    """)
+  end
+
+  def period_updated_notification(period, changes) do
+    period = MehrSchulferien.Repo.preload(period, [:location, :holiday_or_vacation_type])
+
+    new()
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
+    |> subject(
+      "Ferientermin bearbeitet: #{period.location.name} - #{period.holiday_or_vacation_type.name}"
+    )
+    |> html_body("""
+    <h2>Ferientermin wurde bearbeitet</h2>
+    <p><strong>Bundesland:</strong> #{period.location.name}</p>
+    <p><strong>Ferienart:</strong> #{period.holiday_or_vacation_type.name}</p>
+    <p><strong>Aktueller Zeitraum:</strong> #{Calendar.strftime(period.starts_on, "%d.%m.%Y")} - #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}</p>
+    <h3>Änderungen:</h3>
+    #{format_changes_html(changes)}
+    <p><strong>Geändert am:</strong> #{format_datetime(DateTime.utc_now())}</p>
+    <p><a href="https://www.mehr-schulferien.de/wiki/periods/#{period.id}/edit" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;">Termin anzeigen</a></p>
+    """)
+    |> text_body("""
+    Ferientermin wurde bearbeitet
+
+    Bundesland: #{period.location.name}
+    Ferienart: #{period.holiday_or_vacation_type.name}
+    Aktueller Zeitraum: #{Calendar.strftime(period.starts_on, "%d.%m.%Y")} - #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}
+
+    Änderungen:
+    #{format_changes_text(changes)}
+
+    Geändert am: #{format_datetime(DateTime.utc_now())}
+
+    Link zum Termin: https://www.mehr-schulferien.de/wiki/periods/#{period.id}/edit
+    """)
+  end
+
+  def period_deleted_notification(period) do
+    period = MehrSchulferien.Repo.preload(period, [:location, :holiday_or_vacation_type])
+
+    new()
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
+    |> subject(
+      "Ferientermin gelöscht: #{period.location.name} - #{period.holiday_or_vacation_type.name}"
+    )
+    |> html_body("""
+    <h2>Ferientermin wurde gelöscht</h2>
+    <p><strong>Bundesland:</strong> #{period.location.name}</p>
+    <p><strong>Ferienart:</strong> #{period.holiday_or_vacation_type.name}</p>
+    <p><strong>Zeitraum:</strong> #{Calendar.strftime(period.starts_on, "%d.%m.%Y")} - #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}</p>
+    #{if period.memo, do: "<p><strong>Notiz:</strong> #{period.memo}</p>", else: ""}
+    <p><strong>Gelöscht am:</strong> #{format_datetime(DateTime.utc_now())}</p>
+    """)
+    |> text_body("""
+    Ferientermin wurde gelöscht
+
+    Bundesland: #{period.location.name}
+    Ferienart: #{period.holiday_or_vacation_type.name}
+    Zeitraum: #{Calendar.strftime(period.starts_on, "%d.%m.%Y")} - #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}
+    #{if period.memo, do: "Notiz: #{period.memo}\n", else: ""}
+    Gelöscht am: #{format_datetime(DateTime.utc_now())}
+    """)
+  end
 end

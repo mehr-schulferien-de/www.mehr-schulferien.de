@@ -109,5 +109,9 @@ defmodule MehrSchulferien.Wiki do
     version.item_type == "Location" and version.item_id == id
   end
 
+  defp version_matches_model?(version, %{__struct__: MehrSchulferien.Periods.Period, id: id}) do
+    version.item_type == "Period" and version.item_id == id
+  end
+
   defp version_matches_model?(_, _), do: false
 end

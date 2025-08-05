@@ -70,7 +70,6 @@ defmodule MehrSchulferien.StyleConfig do
     Map.get(tailwind_classes(), day_type, "")
   end
 
-
   # Helper function to convert period to day_type
   @doc """
   Determines the day_type based on a period's attributes
