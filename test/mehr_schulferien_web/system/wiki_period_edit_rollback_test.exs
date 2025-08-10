@@ -98,13 +98,13 @@ defmodule MehrSchulferienWeb.System.WikiPeriodEditRollbackTest do
       # The version history should show the new memo value
       assert html =~ "Second update via form"
 
-      # Check for the improved diff display (old value in red background, new value in green background)
-      assert html =~ "bg-red-50"
-      assert html =~ "bg-green-50"
+      # Check for the improved diff display (we now use text colors instead of backgrounds)
+      assert html =~ "text-red-600"
+      assert html =~ "text-green-600"
       # Arrow showing transition
       assert html =~ "→"
-      # Check for "Aktueller Stand" label on the most recent version
-      assert html =~ "Aktueller Stand"
+      # Check for "Aktuell" label on the most recent version (shortened from "Aktueller Stand")
+      assert html =~ "Aktuell"
     end
 
     test "rollback functionality works correctly", %{conn: conn, period: period} do
@@ -162,7 +162,7 @@ defmodule MehrSchulferienWeb.System.WikiPeriodEditRollbackTest do
       {:ok, view, html} = live(conn, "/wiki/periods/#{period.id}/edit")
 
       # Check initial daily changes display
-      assert html =~ "Änderungen heute:"
+      assert html =~ "Heutige Änderungen:"
 
       # Make a change
       view
@@ -179,9 +179,10 @@ defmodule MehrSchulferienWeb.System.WikiPeriodEditRollbackTest do
 
       # The daily changes counter should increment
       html = render(view)
-      assert html =~ "Änderungen heute:"
-      # Check that the counter shows at least 1 change
-      assert html =~ ~r/Änderungen heute: \d+ \/ \d+/
+      assert html =~ "Heutige Änderungen:"
+      # Check that the counter shows at least 1 change (format is now different)
+      # The new format shows "X / Y" separately, not in one line
+      assert html =~ ~r/\d+ \/ \d+/
     end
   end
 end

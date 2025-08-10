@@ -316,12 +316,12 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
           meta: %{ip_address: "127.0.0.1"}
         )
 
-      {:ok, view, _html} = live(conn, "/wiki/periods/#{period.id}/edit")
+      {:ok, view, html} = live(conn, "/wiki/periods/#{period.id}/edit")
 
       # Verify version history section
       assert has_element?(view, "h3", "Änderungshistorie")
-      # With two versions, the older one should have a rollback button
-      assert has_element?(view, "button", "Auf diesen Stand zurücksetzen")
+      # With two versions, the older one should have a rollback link (changed from button to text link)
+      assert html =~ "← Zurücksetzen"
     end
 
     test "user can rollback to previous version", %{conn: conn, period: period} do

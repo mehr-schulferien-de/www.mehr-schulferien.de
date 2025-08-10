@@ -573,360 +573,359 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <.container>
-        <.stack spacing="6">
-          <!-- Flash messages -->
-          <%= if Phoenix.Flash.get(@flash, :info) do %>
-            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-              <p class="text-green-800 dark:text-green-300">
-                {Phoenix.Flash.get(@flash, :info)}
-              </p>
-            </div>
-          <% end %>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Flash messages -->
+      <%= if Phoenix.Flash.get(@flash, :info) do %>
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+          <p class="text-green-800 dark:text-green-300">
+            {Phoenix.Flash.get(@flash, :info)}
+          </p>
+        </div>
+      <% end %>
 
-          <%= if Phoenix.Flash.get(@flash, :error) do %>
-            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p class="text-red-800 dark:text-red-300">
-                {Phoenix.Flash.get(@flash, :error)}
-              </p>
-            </div>
-          <% end %>
+      <%= if Phoenix.Flash.get(@flash, :error) do %>
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+          <p class="text-red-800 dark:text-red-300">
+            {Phoenix.Flash.get(@flash, :error)}
+          </p>
+        </div>
+      <% end %>
+      
+    <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Ferientermin bearbeiten
+          </h1>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">
+            {format_date(@period.starts_on)} - {format_date(@period.ends_on)}
+          </p>
+        </div>
+        <Phoenix.Component.link
+          navigate={~p"/wiki/periods"}
+          class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          ← Zurück zur Übersicht
+        </Phoenix.Component.link>
+      </div>
+      
+    <!-- Warning messages -->
+      <div
+        :if={@limit_reached}
+        class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 mb-6"
+      >
+        <p class="text-red-800 dark:text-red-200">
+          <strong>Achtung:</strong> Das tägliche Limit von {@daily_limit} Änderungen wurde erreicht.
+          Sie können diese Seite ansehen, aber keine Änderungen vornehmen.
+        </p>
+      </div>
 
-          <div class="flex justify-between items-center">
-            <div>
-              <.heading level={1} class="text-gray-900 dark:text-gray-100">
-                Ferientermin bearbeiten
-              </.heading>
-              <.text class="text-gray-600 dark:text-gray-400 mt-2">
-                {format_date(@period.starts_on)} - {format_date(@period.ends_on)}
-              </.text>
-            </div>
-            <Phoenix.Component.link
-              navigate={~p"/wiki/periods"}
-              class="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
-            >
-              ← Zurück zur Übersicht
-            </Phoenix.Component.link>
-          </div>
+      <div
+        :if={@is_past_period}
+        class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-6"
+      >
+        <p class="text-yellow-800 dark:text-yellow-200">
+          <strong>Hinweis:</strong>
+          Dieser Ferientermin liegt in der Vergangenheit und kann nicht mehr bearbeitet oder gelöscht werden.
+          Sie können diese Seite nur zur Ansicht verwenden.
+        </p>
+      </div>
+      
+    <!-- Main content grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main form column -->
+        <div class="lg:col-span-2">
+          <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+              Feriendaten bearbeiten
+            </h2>
 
-          <div
-            :if={@limit_reached}
-            class="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-4"
-          >
-            <.text class="text-red-800 dark:text-red-200">
-              <strong>Achtung:</strong>
-              Das tägliche Limit von {@daily_limit} Änderungen wurde erreicht.
-              Sie können diese Seite ansehen, aber keine Änderungen vornehmen.
-            </.text>
-          </div>
-
-          <div
-            :if={@is_past_period}
-            class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4"
-          >
-            <.text class="text-yellow-800 dark:text-yellow-200">
-              <strong>Hinweis:</strong>
-              Dieser Ferientermin liegt in der Vergangenheit und kann nicht mehr bearbeitet oder gelöscht werden.
-              Sie können diese Seite nur zur Ansicht verwenden.
-            </.text>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2">
-              <.card class="dark:bg-gray-800">
-                <:content>
-                  <.heading level={3} class="mb-4 text-gray-900 dark:text-gray-100">
-                    Feriendaten bearbeiten
-                  </.heading>
-
-                  <form phx-change="validate" phx-submit="save" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label
-                          for="period_location_id"
-                          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                        >
-                          Bundesland
-                        </label>
-                        <select
-                          id="period_location_id"
-                          name="period[location_id]"
-                          class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                          disabled={@limit_reached or @is_past_period}
-                        >
-                          <%= for fs <- @federal_states do %>
-                            <option
-                              value={fs.id}
-                              selected={fs.id == Ecto.Changeset.get_field(@changeset, :location_id)}
-                            >
-                              {fs.name}
-                            </option>
-                          <% end %>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label
-                          for="period_holiday_or_vacation_type_id"
-                          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                        >
-                          Ferienart
-                        </label>
-                        <select
-                          id="period_holiday_or_vacation_type_id"
-                          name="period[holiday_or_vacation_type_id]"
-                          class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                          disabled={@limit_reached or @is_past_period}
-                        >
-                          <%= for vt <- @vacation_types do %>
-                            <option
-                              value={vt.id}
-                              selected={
-                                vt.id ==
-                                  Ecto.Changeset.get_field(@changeset, :holiday_or_vacation_type_id)
-                              }
-                            >
-                              {vt.name}
-                            </option>
-                          <% end %>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label
-                          for="period_starts_on"
-                          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                        >
-                          Beginn
-                        </label>
-                        <input
-                          type="date"
-                          id="period_starts_on"
-                          name="period[starts_on]"
-                          value={Ecto.Changeset.get_field(@changeset, :starts_on)}
-                          class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                          disabled={@limit_reached or @is_past_period}
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          for="period_ends_on"
-                          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                        >
-                          Ende
-                        </label>
-                        <input
-                          type="date"
-                          id="period_ends_on"
-                          name="period[ends_on]"
-                          value={Ecto.Changeset.get_field(@changeset, :ends_on)}
-                          class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                          disabled={@limit_reached or @is_past_period}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label
-                        for="period_memo"
-                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            <form phx-change="validate" phx-submit="save" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    for="period_location_id"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
+                    Bundesland *
+                  </label>
+                  <select
+                    id="period_location_id"
+                    name="period[location_id]"
+                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    disabled={@limit_reached or @is_past_period}
+                    required
+                  >
+                    <%= for fs <- @federal_states do %>
+                      <option
+                        value={fs.id}
+                        selected={fs.id == Ecto.Changeset.get_field(@changeset, :location_id)}
                       >
-                        Notiz (optional)
-                      </label>
-                      <textarea
-                        id="period_memo"
-                        name="period[memo]"
-                        rows="3"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                        disabled={@limit_reached or @is_past_period}
-                      >{Ecto.Changeset.get_field(@changeset, :memo) || ""}</textarea>
-                    </div>
-
-                    <div class="flex justify-between w-full">
-                      <.button type="submit" disabled={@limit_reached or @is_past_period}>
-                        Änderungen speichern
-                      </.button>
-
-                      <button
-                        type="button"
-                        phx-click="show_delete_modal"
-                        disabled={@limit_reached or @is_past_period}
-                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-600 text-white hover:bg-red-700 h-10 px-4 py-2"
-                      >
-                        Löschen
-                      </button>
-                    </div>
-                  </form>
-                </:content>
-              </.card>
-            </div>
-
-            <div>
-              <.card class="dark:bg-gray-800">
-                <:content>
-                  <.heading level={3} class="mb-4 text-gray-900 dark:text-gray-100">
-                    Änderungshistorie
-                  </.heading>
-
-                  <.text class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Änderungen heute: {@daily_changes} / {@daily_limit}
-                  </.text>
-
-                  <div class="space-y-4">
-                    <%= for {version, index} <- Enum.with_index(if(@show_all_versions, do: @versions, else: @display_versions)) do %>
-                      <% is_current = is_current_version?(version, @versions) %>
-                      <div class={[
-                        "relative rounded-lg p-4 transition-colors",
-                        if(is_current,
-                          do:
-                            "bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700",
-                          else:
-                            "bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                        )
-                      ]}>
-                        <div class="flex items-start justify-between mb-2">
-                          <div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                              {format_datetime(version.inserted_at)}
-                            </div>
-                            <%= if is_current do %>
-                              <span class="inline-block mt-1 px-2 py-1 text-xs font-semibold bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded">
-                                Aktueller Stand
-                              </span>
-                            <% else %>
-                              <span class="inline-block mt-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400">
-                                Version #{length(@versions) - index}
-                              </span>
-                            <% end %>
-                          </div>
-                          <%= if version.meta && version.meta["rollback_to"] do %>
-                            <span class="text-xs text-gray-500 dark:text-gray-400 italic">
-                              Zurückgesetzt von Version #{version.meta["rollback_from"]}
-                            </span>
-                          <% end %>
-                        </div>
-
-                        <div class="mt-3 space-y-2">
-                          <%= if version.item_changes && map_size(version.item_changes) > 0 do %>
-                            <div class="bg-white dark:bg-gray-900 rounded p-3 border border-gray-200 dark:border-gray-700">
-                              <div class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                                Änderungen:
-                              </div>
-                              <%= for {field, new_value} <- version.item_changes do %>
-                                <% field_str = to_string(field) %>
-                                <% old_value = get_old_value_for_field(version, field_str) %>
-                                <div class="flex flex-col space-y-1 mb-2 last:mb-0">
-                                  <div class="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                    {version_field_name(field_str)}:
-                                  </div>
-                                  <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2 items-center">
-                                    <div class="bg-red-50 dark:bg-red-900/20 rounded px-2 py-1">
-                                      <%= if old_value != nil && old_value != "" do %>
-                                        <span class="text-sm text-red-700 dark:text-red-400">
-                                          {format_version_value(field_str, old_value)}
-                                        </span>
-                                      <% else %>
-                                        <span class="text-sm text-gray-400 dark:text-gray-600 italic">
-                                          (leer)
-                                        </span>
-                                      <% end %>
-                                    </div>
-                                    <div class="text-gray-400 dark:text-gray-600 text-center hidden md:block">
-                                      →
-                                    </div>
-                                    <div class="bg-green-50 dark:bg-green-900/20 rounded px-2 py-1">
-                                      <span class="text-sm text-green-700 dark:text-green-400">
-                                        {format_version_value(field_str, new_value)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              <% end %>
-                            </div>
-                          <% else %>
-                            <div class="text-sm text-gray-500 dark:text-gray-400 italic">
-                              Keine Änderungen in dieser Version
-                            </div>
-                          <% end %>
-                        </div>
-
-                        <%= unless is_current do %>
-                          <div class="mt-3 flex items-center justify-between">
-                            <button
-                              phx-click="rollback"
-                              phx-value-version-id={version.id}
-                              disabled={@limit_reached or @is_past_period}
-                              class="inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-8 px-3 active:scale-95 active:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-600 dark:active:bg-blue-700"
-                            >
-                              <svg
-                                class="w-4 h-4 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                                >
-                                </path>
-                              </svg>
-                              Auf diesen Stand zurücksetzen
-                            </button>
-                          </div>
-                        <% end %>
-                      </div>
+                        {fs.name}
+                      </option>
                     <% end %>
+                  </select>
+                </div>
 
-                    <div :if={length(@versions) > 5}>
-                      <button
-                        phx-click="toggle_versions"
-                        class="inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-200 text-gray-900 hover:bg-gray-300 h-8 px-3"
+                <div>
+                  <label
+                    for="period_holiday_or_vacation_type_id"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
+                    Ferienart *
+                  </label>
+                  <select
+                    id="period_holiday_or_vacation_type_id"
+                    name="period[holiday_or_vacation_type_id]"
+                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    disabled={@limit_reached or @is_past_period}
+                    required
+                  >
+                    <%= for vt <- @vacation_types do %>
+                      <option
+                        value={vt.id}
+                        selected={
+                          vt.id ==
+                            Ecto.Changeset.get_field(@changeset, :holiday_or_vacation_type_id)
+                        }
                       >
-                        {if @show_all_versions,
-                          do: "Weniger anzeigen",
-                          else: "Alle #{length(@versions)} Versionen anzeigen"}
-                      </button>
-                    </div>
+                        {vt.name}
+                      </option>
+                    <% end %>
+                  </select>
+                </div>
 
-                    <%= if @versions == [] do %>
-                      <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
-                        <svg
-                          class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          >
-                          </path>
-                        </svg>
-                        <.text class="text-gray-500 dark:text-gray-400 font-medium">
-                          Noch keine Änderungshistorie vorhanden
-                        </.text>
-                        <.text class="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                          Änderungen werden hier nach dem Speichern angezeigt.
-                        </.text>
+                <div>
+                  <label
+                    for="period_starts_on"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
+                    Beginn *
+                  </label>
+                  <input
+                    type="date"
+                    id="period_starts_on"
+                    name="period[starts_on]"
+                    value={Ecto.Changeset.get_field(@changeset, :starts_on)}
+                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    disabled={@limit_reached or @is_past_period}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    for="period_ends_on"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
+                    Ende *
+                  </label>
+                  <input
+                    type="date"
+                    id="period_ends_on"
+                    name="period[ends_on]"
+                    value={Ecto.Changeset.get_field(@changeset, :ends_on)}
+                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    disabled={@limit_reached or @is_past_period}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="period_memo"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Notiz (optional)
+                </label>
+                <textarea
+                  id="period_memo"
+                  name="period[memo]"
+                  rows="4"
+                  class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                  disabled={@limit_reached or @is_past_period}
+                  placeholder="Zusätzliche Informationen zu diesem Ferientermin..."
+                >{Ecto.Changeset.get_field(@changeset, :memo) || ""}</textarea>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Hier können Sie zusätzliche Informationen oder Besonderheiten zu diesem Ferientermin notieren.
+                </p>
+              </div>
+
+              <div class="pt-4 flex justify-between">
+                <button
+                  type="submit"
+                  disabled={@limit_reached or @is_past_period}
+                  class="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Änderungen speichern
+                </button>
+
+                <button
+                  type="button"
+                  phx-click="show_delete_modal"
+                  disabled={@limit_reached or @is_past_period}
+                  class="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Löschen
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+    <!-- Sidebar column -->
+        <div class="space-y-6">
+          <!-- Daily limit info -->
+          <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">
+              Tageslimit
+            </h3>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Heutige Änderungen:</span>
+                <span class="font-semibold text-gray-900 dark:text-gray-100">
+                  {@daily_changes} / {@daily_limit}
+                </span>
+              </div>
+              <div class="mt-2">
+                <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div
+                    class={"h-2 rounded-full #{if @limit_reached, do: "bg-red-600", else: "bg-green-600"}"}
+                    style={"width: #{min(@daily_changes / @daily_limit * 100, 100)}%"}
+                  >
+                  </div>
+                </div>
+              </div>
+              <%= if @limit_reached do %>
+                <p class="text-red-600 text-sm mt-2">
+                  Das Tageslimit wurde erreicht. Bitte versuchen Sie es morgen erneut.
+                </p>
+              <% end %>
+            </div>
+          </div>
+          
+    <!-- Version history -->
+          <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+              Änderungshistorie
+            </h3>
+
+            <div class="space-y-3">
+              <%= for {version, index} <- Enum.with_index(if(@show_all_versions, do: @versions, else: @display_versions)) do %>
+                <% is_current = is_current_version?(version, @versions) %>
+                <div class={[
+                  "relative rounded-lg p-3 transition-colors",
+                  if(is_current,
+                    do:
+                      "bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700",
+                    else: "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
+                  )
+                ]}>
+                  <div class="flex items-start justify-between mb-2">
+                    <div>
+                      <div class="text-xs text-gray-600 dark:text-gray-400">
+                        {format_datetime(version.inserted_at)}
                       </div>
+                      <%= if is_current do %>
+                        <span class="inline-block mt-1 px-2 py-0.5 text-xs font-semibold bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded">
+                          Aktuell
+                        </span>
+                      <% else %>
+                        <span class="inline-block mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          v{length(@versions) - index}
+                        </span>
+                      <% end %>
+                    </div>
+                    <%= if version.meta && version.meta["rollback_to"] do %>
+                      <span class="text-xs text-gray-500 dark:text-gray-400 italic">
+                        Rollback
+                      </span>
                     <% end %>
                   </div>
-                </:content>
-              </.card>
+
+                  <%= if version.item_changes && map_size(version.item_changes) > 0 do %>
+                    <div class="space-y-1 mt-2">
+                      <%= for {field, new_value} <- version.item_changes do %>
+                        <% field_str = to_string(field) %>
+                        <% old_value = get_old_value_for_field(version, field_str) %>
+                        <div class="text-xs">
+                          <span class="font-medium text-gray-600 dark:text-gray-300">
+                            {version_field_name(field_str)}:
+                          </span>
+                          <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-red-600 dark:text-red-400 line-through">
+                              <%= if old_value != nil && old_value != "" do %>
+                                {format_version_value(field_str, old_value)}
+                              <% else %>
+                                (leer)
+                              <% end %>
+                            </span>
+                            <span class="text-gray-400">→</span>
+                            <span class="text-green-600 dark:text-green-400">
+                              {format_version_value(field_str, new_value)}
+                            </span>
+                          </div>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 italic mt-2">
+                      Keine Änderungen
+                    </div>
+                  <% end %>
+
+                  <%= unless is_current do %>
+                    <div class="mt-2">
+                      <button
+                        phx-click="rollback"
+                        phx-value-version-id={version.id}
+                        disabled={@limit_reached or @is_past_period}
+                        class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        ← Zurücksetzen
+                      </button>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <div :if={length(@versions) > 5}>
+                <button
+                  phx-click="toggle_versions"
+                  class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  {if @show_all_versions,
+                    do: "Weniger anzeigen",
+                    else: "Alle #{length(@versions)} Versionen anzeigen"}
+                </button>
+              </div>
+
+              <%= if @versions == [] do %>
+                <div class="text-center py-4">
+                  <svg
+                    class="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500 mb-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Noch keine Änderungen
+                  </p>
+                </div>
+              <% end %>
             </div>
           </div>
-        </.stack>
-      </.container>
-      
-    <!-- Delete Confirmation Modal -->
+        </div>
+      </div>
+      <!-- Delete Confirmation Modal -->
       <div
         :if={@show_delete_modal}
         class="fixed inset-0 z-50 overflow-y-auto"
@@ -952,7 +951,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
           <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
-                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
                   <svg
                     class="h-6 w-6 text-red-600 dark:text-red-400"
                     xmlns="http://www.w3.org/2000/svg"
@@ -980,18 +979,20 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                     <p class="text-sm text-gray-500 dark:text-gray-400">
                       Sind Sie sicher, dass Sie diesen Ferientermin löschen möchten?
                     </p>
-                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      <strong>Zeitraum:</strong> {format_date(@period.starts_on)} - {format_date(
-                        @period.ends_on
-                      )}
-                    </p>
-                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      <strong>Bundesland:</strong> {@period.location.name}
-                    </p>
-                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      <strong>Ferienart:</strong> {@period.holiday_or_vacation_type.name}
-                    </p>
-                    <div class="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-md">
+                    <div class="mt-3 space-y-1 text-sm">
+                      <p class="text-gray-700 dark:text-gray-300">
+                        <strong>Zeitraum:</strong> {format_date(@period.starts_on)} - {format_date(
+                          @period.ends_on
+                        )}
+                      </p>
+                      <p class="text-gray-700 dark:text-gray-300">
+                        <strong>Bundesland:</strong> {@period.location.name}
+                      </p>
+                      <p class="text-gray-700 dark:text-gray-300">
+                        <strong>Ferienart:</strong> {@period.holiday_or_vacation_type.name}
+                      </p>
+                    </div>
+                    <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-md">
                       <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                         ⚠️ Diese Aktion betrifft <strong>{@affected_schools_count} Schulen</strong>
                         in diesem Bundesland.
@@ -1004,7 +1005,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                 </div>
               </div>
             </div>
-            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
               <button
                 type="button"
                 phx-click="delete"
@@ -1015,7 +1016,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
               <button
                 type="button"
                 phx-click="hide_delete_modal"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Abbrechen
               </button>
