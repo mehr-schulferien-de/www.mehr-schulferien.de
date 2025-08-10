@@ -86,25 +86,24 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   Returns a list of dates for a certain month.
   """
   def create_month(year, month) do
-    days_in_month =
+    # Normalize month and year if month > 12
+    {actual_year, actual_month} =
       if month <= 12 do
-        get_days_in_month(year, month)
+        {year, month}
       else
-        Logger.warning(fn ->
-          "#################### Huh? Month #{inspect(month)} out of range 1-12 for create_month( #{inspect(year)}, #{inspect(month)} ). Running get_days_in_month( #{inspect(year + 1)}, #{inspect(month - 12)} )"
-        end)
-
-        get_days_in_month(year + 1, month - 12)
+        {year + 1, month - 12}
       end
+
+    days_in_month = get_days_in_month(actual_year, actual_month)
 
     if !days_in_month do
       Logger.warning(fn ->
-        "#################### Huh? No days in month #{inspect(month)}/#{inspect(year)}"
+        "#################### Huh? No days in month #{inspect(actual_month)}/#{inspect(actual_year)}"
       end)
     end
 
     for day <- 1..days_in_month do
-      %Date{year: year, month: month, day: day, calendar: Calendar.ISO}
+      %Date{year: actual_year, month: actual_month, day: day, calendar: Calendar.ISO}
     end
   end
 

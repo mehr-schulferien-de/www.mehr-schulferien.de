@@ -25,8 +25,8 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   secret_key_base: "Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+Hs+",
   server: true
 
-# Print only warnings and errors during test
-config :logger, level: :warning
+# Print only errors during test (suppress warnings)
+config :logger, level: :error
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime

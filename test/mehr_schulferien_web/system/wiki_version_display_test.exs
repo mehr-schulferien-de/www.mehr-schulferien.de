@@ -79,15 +79,6 @@ defmodule MehrSchulferienWeb.System.WikiVersionDisplayTest do
 
       # Step 7: Verify the version history shows the change summary
       # In LiveView version, we check for version number
-      if not (html =~ "Version ##{latest_version.id}") do
-        IO.puts("Expected to find 'Version ##{latest_version.id}' but didn't")
-        # Try to find what version text is there
-        case Regex.run(~r/Version #(\d+)/, html) do
-          [full, _num] -> IO.puts("Found version: #{full}")
-          _ -> IO.puts("No version text found at all")
-        end
-      end
-
       assert html =~ "Version ##{latest_version.id}"
 
       # Check that version history shows something changed

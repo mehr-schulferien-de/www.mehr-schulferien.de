@@ -89,16 +89,8 @@ defmodule MehrSchulferienWeb.FederalStateView do
         end
 
       for month <- start_month..end_month do
-        create_month_days(period.starts_on.year, month)
+        DateHelpers.create_month(period.starts_on.year, month)
       end
-    end
-  end
-
-  defp create_month_days(year, month) do
-    if month > 12 do
-      DateHelpers.create_month(year + 1, month - 12)
-    else
-      DateHelpers.create_month(year, month)
     end
   end
 end

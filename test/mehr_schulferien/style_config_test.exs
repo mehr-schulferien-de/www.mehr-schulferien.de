@@ -88,20 +88,8 @@ defmodule MehrSchulferien.StyleConfigTest do
     end
   end
 
-  describe "html_class_to_day_type/1" do
-    test "converts Bootstrap class names to day types" do
-      assert StyleConfig.html_class_to_day_type("success") == :vacation
-      assert StyleConfig.html_class_to_day_type("danger") == :holiday
-      assert StyleConfig.html_class_to_day_type("active") == :weekend
-      assert StyleConfig.html_class_to_day_type("warning") == :bridge_day
-    end
-
-    test "returns nil for unknown html class" do
-      assert StyleConfig.html_class_to_day_type("primary") == nil
-      assert StyleConfig.html_class_to_day_type("unknown") == nil
-      assert StyleConfig.html_class_to_day_type("") == nil
-    end
-  end
+  # Note: html_class_to_day_type/1 was removed when migrating from Bootstrap to Tailwind
+  # The system now uses period_to_day_type/1 to determine day types from period attributes
 
   describe "period_to_day_type/1" do
     test "identifies vacation periods" do
@@ -124,31 +112,13 @@ defmodule MehrSchulferien.StyleConfigTest do
       assert StyleConfig.period_to_day_type(period) == :holiday
     end
 
-    test "identifies bridge day periods by html_class" do
-      period = %{
-        is_school_vacation: false,
-        is_public_holiday: false,
-        html_class: "warning"
-      }
-
-      assert StyleConfig.period_to_day_type(period) == :bridge_day
-    end
-
-    test "identifies weekend periods by html_class" do
-      period = %{
-        is_school_vacation: false,
-        is_public_holiday: false,
-        html_class: "active"
-      }
-
-      assert StyleConfig.period_to_day_type(period) == :weekend
-    end
+    # Note: Bridge days are identified by being a BridgeDayPeriod struct
+    # Weekends are not stored as periods but determined by date
 
     test "returns nil for periods with no matching type" do
       period = %{
         is_school_vacation: false,
-        is_public_holiday: false,
-        html_class: "primary"
+        is_public_holiday: false
       }
 
       assert StyleConfig.period_to_day_type(period) == nil
@@ -200,8 +170,11 @@ defmodule MehrSchulferien.StyleConfigTest do
 
       assert is_binary(StyleConfig.get_class(:vacation))
 
-      assert is_atom(StyleConfig.html_class_to_day_type("success")) or
-               is_nil(StyleConfig.html_class_to_day_type("unknown"))
+      # html_class_to_day_type was removed - using period_to_day_type instead
+      period = %{is_school_vacation: true}
+
+      assert is_atom(StyleConfig.period_to_day_type(period)) or
+               is_nil(StyleConfig.period_to_day_type(%{}))
 
       assert is_atom(StyleConfig.period_to_day_type(%{is_school_vacation: true})) or
                is_nil(StyleConfig.period_to_day_type(%{}))

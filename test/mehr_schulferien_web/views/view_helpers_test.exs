@@ -50,12 +50,12 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
   end
 
   describe "gets the html_class" do
-    test "shows html_class if date is a holiday" do
+    test "shows html_class if date is a school vacation" do
       period =
         insert(:period, %{
-          html_class: "success",
           starts_on: ~D[2020-03-01],
-          ends_on: ~D[2020-03-04]
+          ends_on: ~D[2020-03-04],
+          is_school_vacation: true
         })
 
       assert ViewHelpers.get_html_class(~D[2020-03-02], [period]) ==
@@ -68,20 +68,22 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
       period_1 =
         insert(:period, %{
           display_priority: 8,
-          html_class: "info",
           starts_on: ~D[2020-03-01],
-          ends_on: ~D[2020-03-01]
+          ends_on: ~D[2020-03-01],
+          is_public_holiday: true
         })
 
       period_2 =
         insert(:period, %{
           display_priority: 5,
-          html_class: "success",
           starts_on: ~D[2020-03-01],
-          ends_on: ~D[2020-03-04]
+          ends_on: ~D[2020-03-04],
+          is_school_vacation: true
         })
 
-      assert ViewHelpers.get_html_class(~D[2020-03-01], [period_1, period_2]) == "info"
+      # Period 1 has higher priority (8 > 5) and is a holiday (blue)
+      assert ViewHelpers.get_html_class(~D[2020-03-01], [period_1, period_2]) ==
+               "bg-blue-100 dark:bg-blue-900/30"
 
       assert ViewHelpers.get_html_class(~D[2020-03-02], [period_1, period_2]) ==
                "bg-green-100 dark:bg-green-900/30"

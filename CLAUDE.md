@@ -85,9 +85,52 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
 1. **RUN TESTS FIRST**: `mix test` - ALL tests MUST pass before any work is considered complete
 2. **FIX ALL WARNINGS**: `mix compile --warnings-as-errors` - NO warnings are acceptable
 3. **FORMAT CODE**: `mix format` - Code MUST be properly formatted
-4. **FIX TESTS BEFORE GIT COMMIT**: `mix test` - All tests must be green before you can `git commit` anything.
+4. **CHECK TEST OUTPUT QUALITY**: Tests must run with CLEAN output (only dots, no warnings/errors)
+5. **FIX TESTS BEFORE GIT COMMIT**: `mix test` - All tests must be green before you can `git commit` anything.
 
-**NEVER commit or consider work done without completing ALL three steps above.**
+**NEVER commit or consider work done without completing ALL steps above.**
+
+### TEST QUALITY STANDARDS - MANDATORY
+**🧪 IMPORTANT: Maintain clean, reliable tests at all times:**
+
+#### What Makes Tests "Clean"
+- **NO debug output**: Remove all `IO.puts`, `IO.inspect`, `dbg()` from tests
+- **NO skipped tests**: Either fix or remove `@tag :skip` tests
+- **NO placeholder tests**: Never use `assert true` - write real assertions
+- **NO warnings/errors in output**: Test output should be dots only (`.` for pass, `*` for pending)
+- **NO flaky tests**: Tests must pass consistently, not randomly
+
+#### When Working With Tests, ALWAYS:
+1. **Check test output cleanliness**: Run `mix test 2>&1 | grep -E "warning|error"` to find issues
+2. **Remove debug statements**: Search for `IO.puts|IO.inspect|dbg` in test files
+3. **Fix or remove skipped tests**: Search for `@tag :skip` and handle them
+4. **Suppress expected warnings in test env**: Use `Application.get_env(:mehr_schulferien, :env) != :test`
+5. **Handle race conditions**: Use proper test setup/teardown, avoid shared state
+
+#### Common Test Issues to Fix:
+- **Nominatim warnings**: Suppress geocoding warnings for fake test addresses
+- **Stale entry errors**: Handle Ecto.StaleEntryError gracefully in concurrent tests
+- **Database ownership errors**: Ensure proper Ecto.Sandbox usage
+- **Debug output**: Remove all IO operations that pollute test output
+- **Logger output**: Set `config :logger, level: :error` in `config/test.exs`
+
+#### Test Quality Checklist (Run Before Every Commit):
+```bash
+# 1. Check for clean output
+mix test 2>&1 | tail -5  # Should show only "X tests, 0 failures"
+
+# 2. Check for skipped tests
+grep -r "@tag :skip" test/  # Should return nothing
+
+# 3. Check for debug output
+grep -r "IO\.\(puts\|inspect\)" test/  # Should return nothing
+
+# 4. Check for placeholder tests
+grep -r "assert true" test/  # Should return nothing
+
+# 5. Run full test suite
+mix test  # Output should be only dots, no text
+```
 
 ### Additional Requirements
 - Pre-commit hooks enforce: tests, formatting, compilation, and various file checks
@@ -217,6 +260,35 @@ _Batteries-included Claude Code integration for Elixir projects_
 <!-- claude:subagents-end -->
 <!-- usage-rules-end -->
 
+## Test Maintenance Protocol
+
+### When Asked About Tests or Test Issues:
+1. **ALWAYS check test output quality first** - Run `mix test` and look for any non-dot output
+2. **Identify ALL issues** - Don't just fix the obvious one, scan for:
+   - Warnings/errors in output
+   - Skipped tests
+   - Debug statements
+   - Flaky/intermittent failures
+3. **Fix systematically** - Address root causes, not symptoms:
+   - Suppress logging in test environment properly
+   - Handle race conditions with proper test isolation
+   - Remove or fix skipped tests, never leave them
+4. **Verify the fix** - Run tests multiple times to ensure consistency
+
+### Proactive Test Maintenance:
+- **After any code change**: Check that test output remains clean
+- **When adding new features**: Ensure new tests follow clean output standards
+- **During refactoring**: Remove any debug code before committing
+- **Before suggesting commits**: ALWAYS run the test quality checklist
+
+### Red Flags That Require Immediate Action:
+- Any `IO.puts`, `IO.inspect`, or `dbg()` in test files
+- Tests with `@tag :skip` or `@moduletag :skip`
+- Tests that just `assert true` (placeholder tests)
+- Any warning or error messages during test runs
+- Tests that sometimes pass and sometimes fail (flaky tests)
+
 ## Git Workflow and Interactions Memories
 
 - You are allowed to git commit and git push code but ask the user first or wait for the user to tell you to do it.
+- **IMPORTANT**: Before ANY git commit, you MUST run the test quality checklist to ensure clean tests

@@ -99,13 +99,13 @@ defmodule MehrSchulferien.Calendars.DateHelpersTest do
     end
 
     test "handles month numbers greater than 12" do
-      # Month 13 creates dates with month 13 but uses days from next year's January
+      # Month 13 should be normalized to next year's January
       result = DateHelpers.create_month(2024, 13)
       assert length(result) == 31
-      # The function creates dates with the actual month number passed (13)
+      # The function should normalize month 13 to January of the next year
       first_date = List.first(result)
-      assert first_date.year == 2024
-      assert first_date.month == 13
+      assert first_date.year == 2025
+      assert first_date.month == 1
       assert first_date.day == 1
     end
   end

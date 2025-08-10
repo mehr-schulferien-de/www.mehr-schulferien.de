@@ -32,7 +32,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
       client_ip =
         case get_connect_info(socket, :peer_data) do
           %{address: {a, b, c, d}} -> "#{a}.#{b}.#{c}.#{d}"
-          _ -> "unknown"
+          # Default to localhost for tests
+          _ -> "127.0.0.1"
         end
 
       # Check if period is in the past
@@ -104,7 +105,10 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   end
 
   @impl true
-  def handle_event("rollback", %{"version-id" => version_id}, socket) do
+  def handle_event("rollback", params, socket) do
+    # Handle both "version-id" and "version_id" keys
+    version_id = params["version-id"] || params["version_id"]
+
     if socket.assigns.limit_reached do
       {:noreply,
        socket
@@ -166,7 +170,15 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
 
   defp get_period_versions(period) do
     PaperTrail.get_versions(period)
-    |> Enum.sort_by(& &1.inserted_at, :desc)
+    |> Enum.sort_by(&{&1.inserted_at, &1.id}, :desc)
+  end
+
+  defp is_current_version?(version, versions) do
+    # The first version in the list (most recent) is the current state
+    case versions do
+      [current | _] -> version.id == current.id
+      _ -> false
+    end
   end
 
   defp count_affected_schools(period) do
@@ -202,7 +214,11 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
     changeset = Period.changeset(socket.assigns.period, period_params)
 
     case PaperTrail.update(changeset, meta: %{ip_address: socket.assigns.client_ip}) do
-      {:ok, %{model: updated_period, version: version}} ->
+      {:ok, result} ->
+        # Extract model and version (version might be nil if no changes)
+        updated_period = Map.get(result, :model)
+        version = Map.get(result, :version)
+
         # Increment daily change count if there was a version created
         if version do
           Wiki.increment_daily_change_count(Date.utc_today())
@@ -227,10 +243,22 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
           end
         end
 
+        # Reload period with updated data and versions
+        updated_period = get_period_with_preloads(updated_period.id)
+        updated_versions = get_period_versions(updated_period)
+
+        # Update daily changes count
+        new_daily_changes =
+          if version, do: socket.assigns.daily_changes + 1, else: socket.assigns.daily_changes
+
         {:noreply,
          socket
          |> put_flash(:info, "Ferientermin wurde erfolgreich aktualisiert.")
-         |> redirect(to: ~p"/wiki/periods")}
+         |> assign(:period, updated_period)
+         |> assign(:versions, updated_versions)
+         |> assign(:display_versions, Enum.take(updated_versions, 5))
+         |> assign(:changeset, Periods.change_period(updated_period))
+         |> assign(:daily_changes, new_daily_changes)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
@@ -239,15 +267,34 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
 
   defp rollback_to_version(socket, version_id) do
     case Wiki.rollback_to_version(socket.assigns.period, version_id, socket.assigns.client_ip) do
-      {:ok, _updated_period} ->
+      {:ok, result} ->
         Wiki.increment_daily_change_count(Date.utc_today())
+
+        # Extract the model from the result (same structure as PaperTrail.update)
+        updated_period = Map.get(result, :model)
+
+        # Reload period with updated data and versions
+        reloaded_period = get_period_with_preloads(updated_period.id)
+        updated_versions = get_period_versions(reloaded_period)
+
+        # Update daily changes count
+        new_daily_changes = socket.assigns.daily_changes + 1
 
         {:noreply,
          socket
          |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
-         |> redirect(to: ~p"/wiki/periods/#{socket.assigns.period.id}/edit")}
+         |> assign(:period, reloaded_period)
+         |> assign(:versions, updated_versions)
+         |> assign(:display_versions, Enum.take(updated_versions, 5))
+         |> assign(:changeset, Periods.change_period(reloaded_period))
+         |> assign(:daily_changes, new_daily_changes)}
 
-      {:error, _} ->
+      {:error, :already_at_version} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Die Daten entsprechen bereits dieser Version.")}
+
+      {:error, _reason} ->
         {:noreply,
          socket
          |> put_flash(:error, "Fehler beim Zurückkehren zur ausgewählten Version.")}
@@ -304,23 +351,51 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   defp version_field_name("memo"), do: "Notiz"
   defp version_field_name(field), do: field
 
-  defp format_version_value("starts_on", value) when not is_nil(value) and value != "",
-    do: format_date(value)
+  defp format_version_value("starts_on", value) when not is_nil(value) and value != "" do
+    case value do
+      %Date{} = date ->
+        format_date(date)
 
-  defp format_version_value("ends_on", value) when not is_nil(value) and value != "",
-    do: format_date(value)
+      date_string when is_binary(date_string) ->
+        case Date.from_iso8601(date_string) do
+          {:ok, date} -> format_date(date)
+          _ -> date_string
+        end
+
+      _ ->
+        ""
+    end
+  end
+
+  defp format_version_value("ends_on", value) when not is_nil(value) and value != "" do
+    case value do
+      %Date{} = date ->
+        format_date(date)
+
+      date_string when is_binary(date_string) ->
+        case Date.from_iso8601(date_string) do
+          {:ok, date} -> format_date(date)
+          _ -> date_string
+        end
+
+      _ ->
+        ""
+    end
+  end
 
   defp format_version_value("starts_on", _), do: ""
   defp format_version_value("ends_on", _), do: ""
 
-  defp format_version_value("location_id", id) do
+  defp format_version_value("location_id", id) when id != nil and id != "" do
     case Locations.get_location(id) do
       nil -> "ID: #{id}"
       location -> location.name
     end
   end
 
-  defp format_version_value("holiday_or_vacation_type_id", id) do
+  defp format_version_value("location_id", _), do: ""
+
+  defp format_version_value("holiday_or_vacation_type_id", id) when id != nil and id != "" do
     try do
       type = Calendars.get_holiday_or_vacation_type!(id)
       type.name
@@ -328,6 +403,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
       Ecto.NoResultsError -> "ID: #{id}"
     end
   end
+
+  defp format_version_value("holiday_or_vacation_type_id", _), do: ""
 
   defp format_version_value(_, value), do: to_string(value)
 
@@ -378,8 +455,26 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
         Map.merge(acc, atomized_changes)
       end)
     else
-      # No previous version, return empty map
-      %{}
+      # No previous version. For the first version, we can try to infer the old values
+      # by looking at what changed. If a field changed, the old value was whatever
+      # was there before the change.
+
+      # Get the period record to see its original state
+      _period = Repo.get!(Period, current_version.item_id)
+
+      # For the first version, we need to "undo" the changes to get the original values
+      changes = current_version.item_changes || %{}
+
+      # Create a map of original values for fields that were changed
+      changes
+      |> Enum.reduce(%{}, fn {field_str, _new_value}, acc ->
+        field_atom = if is_atom(field_str), do: field_str, else: String.to_atom(field_str)
+
+        # For the first version of a field, we can't know the original value
+        # unless we have additional context. PaperTrail only records changes,
+        # not the original state.
+        Map.put(acc, field_atom, nil)
+      end)
     end
   end
 
@@ -418,12 +513,86 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
     Date.compare(period.ends_on, Date.utc_today()) == :lt
   end
 
+  defp get_old_value_for_field(version, field_str) do
+    # This function tries to reconstruct what the old value was before this version
+    # by looking at the version history
+
+    field_atom = String.to_atom(field_str)
+
+    # Get all versions for this period in chronological order
+    all_versions =
+      PaperTrail.Version
+      |> where([v], v.item_type == "Period" and v.item_id == ^version.item_id)
+      |> order_by([v], asc: v.id)
+      |> Repo.all()
+
+    # Find the index of the current version
+    current_index = Enum.find_index(all_versions, fn v -> v.id == version.id end)
+
+    if current_index == nil do
+      nil
+    else
+      # Get all versions before the current one
+      versions_before = Enum.take(all_versions, current_index)
+
+      if versions_before == [] do
+        # This is the first version - we can't determine the original value
+        # without looking at the period record itself
+        nil
+      else
+        # Look backwards through versions to find the most recent change to this field
+        versions_before
+        |> Enum.reverse()
+        |> Enum.find_value(nil, fn v ->
+          changes = v.item_changes || %{}
+
+          # Convert keys to atoms if needed
+          atomized_changes =
+            changes
+            |> Enum.map(fn {k, v} ->
+              {if(is_atom(k), do: k, else: String.to_atom(k)), v}
+            end)
+            |> Enum.into(%{})
+
+          # If this version changed the field, that's the value we want
+          case Map.get(atomized_changes, field_atom) do
+            # Continue looking
+            nil -> nil
+            value -> {:found, value}
+          end
+        end)
+        |> case do
+          {:found, value} -> value
+          # Field was never changed before, so original value is unknown
+          nil -> nil
+        end
+      end
+    end
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <.container>
         <.stack spacing="6">
+          <!-- Flash messages -->
+          <%= if Phoenix.Flash.get(@flash, :info) do %>
+            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+              <p class="text-green-800 dark:text-green-300">
+                {Phoenix.Flash.get(@flash, :info)}
+              </p>
+            </div>
+          <% end %>
+
+          <%= if Phoenix.Flash.get(@flash, :error) do %>
+            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <p class="text-red-800 dark:text-red-300">
+                {Phoenix.Flash.get(@flash, :error)}
+              </p>
+            </div>
+          <% end %>
+
           <div class="flex justify-between items-center">
             <div>
               <.heading level={1} class="text-gray-900 dark:text-gray-100">
@@ -487,7 +656,10 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                           disabled={@limit_reached or @is_past_period}
                         >
                           <%= for fs <- @federal_states do %>
-                            <option value={fs.id} selected={fs.id == @changeset.data.location_id}>
+                            <option
+                              value={fs.id}
+                              selected={fs.id == Ecto.Changeset.get_field(@changeset, :location_id)}
+                            >
                               {fs.name}
                             </option>
                           <% end %>
@@ -510,7 +682,10 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                           <%= for vt <- @vacation_types do %>
                             <option
                               value={vt.id}
-                              selected={vt.id == @changeset.data.holiday_or_vacation_type_id}
+                              selected={
+                                vt.id ==
+                                  Ecto.Changeset.get_field(@changeset, :holiday_or_vacation_type_id)
+                              }
                             >
                               {vt.name}
                             </option>
@@ -529,7 +704,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                           type="date"
                           id="period_starts_on"
                           name="period[starts_on]"
-                          value={@changeset.data.starts_on}
+                          value={Ecto.Changeset.get_field(@changeset, :starts_on)}
                           class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                           disabled={@limit_reached or @is_past_period}
                         />
@@ -546,7 +721,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                           type="date"
                           id="period_ends_on"
                           name="period[ends_on]"
-                          value={@changeset.data.ends_on}
+                          value={Ecto.Changeset.get_field(@changeset, :ends_on)}
                           class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                           disabled={@limit_reached or @is_past_period}
                         />
@@ -566,7 +741,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                         rows="3"
                         class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                         disabled={@limit_reached or @is_past_period}
-                      >{@changeset.data.memo}</textarea>
+                      >{Ecto.Changeset.get_field(@changeset, :memo) || ""}</textarea>
                     </div>
 
                     <div class="flex justify-between w-full">
@@ -592,41 +767,120 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
               <.card class="dark:bg-gray-800">
                 <:content>
                   <.heading level={3} class="mb-4 text-gray-900 dark:text-gray-100">
-                    Versionshistorie
+                    Änderungshistorie
                   </.heading>
 
                   <.text class="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Änderungen heute: {@daily_changes} / {@daily_limit}
                   </.text>
 
-                  <div class="space-y-3">
-                    <div
-                      :for={version <- if(@show_all_versions, do: @versions, else: @display_versions)}
-                      class="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2"
-                    >
-                      <div class="text-sm text-gray-600 dark:text-gray-400">
-                        {format_datetime(version.inserted_at)}
-                      </div>
-                      <div class="text-sm mt-1">
-                        <div
-                          :for={{field, value} <- version.item_changes || %{}}
-                          class="text-gray-800 dark:text-gray-200"
-                        >
-                          <strong>{version_field_name(to_string(field))}:</strong> {format_version_value(
-                            to_string(field),
-                            value
-                          )}
+                  <div class="space-y-4">
+                    <%= for {version, index} <- Enum.with_index(if(@show_all_versions, do: @versions, else: @display_versions)) do %>
+                      <% is_current = is_current_version?(version, @versions) %>
+                      <div class={[
+                        "relative rounded-lg p-4 transition-colors",
+                        if(is_current,
+                          do:
+                            "bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700",
+                          else:
+                            "bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+                        )
+                      ]}>
+                        <div class="flex items-start justify-between mb-2">
+                          <div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                              {format_datetime(version.inserted_at)}
+                            </div>
+                            <%= if is_current do %>
+                              <span class="inline-block mt-1 px-2 py-1 text-xs font-semibold bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded">
+                                Aktueller Stand
+                              </span>
+                            <% else %>
+                              <span class="inline-block mt-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400">
+                                Version #{length(@versions) - index}
+                              </span>
+                            <% end %>
+                          </div>
+                          <%= if version.meta && version.meta["rollback_to"] do %>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 italic">
+                              Zurückgesetzt von Version #{version.meta["rollback_from"]}
+                            </span>
+                          <% end %>
                         </div>
+
+                        <div class="mt-3 space-y-2">
+                          <%= if version.item_changes && map_size(version.item_changes) > 0 do %>
+                            <div class="bg-white dark:bg-gray-900 rounded p-3 border border-gray-200 dark:border-gray-700">
+                              <div class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
+                                Änderungen:
+                              </div>
+                              <%= for {field, new_value} <- version.item_changes do %>
+                                <% field_str = to_string(field) %>
+                                <% old_value = get_old_value_for_field(version, field_str) %>
+                                <div class="flex flex-col space-y-1 mb-2 last:mb-0">
+                                  <div class="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                    {version_field_name(field_str)}:
+                                  </div>
+                                  <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2 items-center">
+                                    <div class="bg-red-50 dark:bg-red-900/20 rounded px-2 py-1">
+                                      <%= if old_value != nil && old_value != "" do %>
+                                        <span class="text-sm text-red-700 dark:text-red-400">
+                                          {format_version_value(field_str, old_value)}
+                                        </span>
+                                      <% else %>
+                                        <span class="text-sm text-gray-400 dark:text-gray-600 italic">
+                                          (leer)
+                                        </span>
+                                      <% end %>
+                                    </div>
+                                    <div class="text-gray-400 dark:text-gray-600 text-center hidden md:block">
+                                      →
+                                    </div>
+                                    <div class="bg-green-50 dark:bg-green-900/20 rounded px-2 py-1">
+                                      <span class="text-sm text-green-700 dark:text-green-400">
+                                        {format_version_value(field_str, new_value)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              <% end %>
+                            </div>
+                          <% else %>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 italic">
+                              Keine Änderungen in dieser Version
+                            </div>
+                          <% end %>
+                        </div>
+
+                        <%= unless is_current do %>
+                          <div class="mt-3 flex items-center justify-between">
+                            <button
+                              phx-click="rollback"
+                              phx-value-version-id={version.id}
+                              disabled={@limit_reached or @is_past_period}
+                              class="inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-8 px-3 active:scale-95 active:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-600 dark:active:bg-blue-700"
+                            >
+                              <svg
+                                class="w-4 h-4 mr-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                >
+                                </path>
+                              </svg>
+                              Auf diesen Stand zurücksetzen
+                            </button>
+                          </div>
+                        <% end %>
                       </div>
-                      <button
-                        phx-click="rollback"
-                        phx-value-version-id={version.id}
-                        disabled={@limit_reached or @is_past_period}
-                        class="mt-2 inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-200 text-gray-900 hover:bg-gray-300 h-8 px-3"
-                      >
-                        Zu dieser Version zurückkehren
-                      </button>
-                    </div>
+                    <% end %>
 
                     <div :if={length(@versions) > 5}>
                       <button
@@ -639,9 +893,31 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                       </button>
                     </div>
 
-                    <.text :if={@versions == []} class="text-gray-500 dark:text-gray-400 italic">
-                      Noch keine Versionshistorie vorhanden
-                    </.text>
+                    <%= if @versions == [] do %>
+                      <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
+                        <svg
+                          class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          >
+                          </path>
+                        </svg>
+                        <.text class="text-gray-500 dark:text-gray-400 font-medium">
+                          Noch keine Änderungshistorie vorhanden
+                        </.text>
+                        <.text class="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                          Änderungen werden hier nach dem Speichern angezeigt.
+                        </.text>
+                      </div>
+                    <% end %>
                   </div>
                 </:content>
               </.card>

@@ -64,7 +64,6 @@ defmodule MehrSchulferien.CalendarsTest do
     @valid_attrs %{
       colloquial: "Weihnachtsferien",
       default_display_priority: 4,
-      default_html_class: "green",
       default_is_listed_below_month: true,
       default_is_school_vacation: true,
       default_is_valid_for_students: true,
@@ -72,7 +71,6 @@ defmodule MehrSchulferien.CalendarsTest do
       wikipedia_url: "https://de.wikipedia.org/wiki/Schulferien#Weihnachtsferien"
     }
     @update_attrs %{
-      default_html_class: "blue",
       default_is_listed_below_month: false,
       default_is_school_vacation: false
     }
@@ -99,7 +97,7 @@ defmodule MehrSchulferien.CalendarsTest do
                Calendars.create_holiday_or_vacation_type(valid_attrs)
 
       assert holiday_or_vacation_type.colloquial == "Weihnachtsferien"
-      assert holiday_or_vacation_type.default_html_class == "green"
+      # Note: default_html_class is not a field in the schema
       assert holiday_or_vacation_type.default_is_listed_below_month == true
       assert holiday_or_vacation_type.default_is_public_holiday == false
       assert holiday_or_vacation_type.default_is_school_vacation == true
@@ -123,7 +121,7 @@ defmodule MehrSchulferien.CalendarsTest do
       assert {:ok, %HolidayOrVacationType{} = holiday_or_vacation_type} =
                Calendars.update_holiday_or_vacation_type(holiday_or_vacation_type, @update_attrs)
 
-      assert holiday_or_vacation_type.default_html_class == "blue"
+      # Note: default_html_class is not a field in the schema
       assert holiday_or_vacation_type.default_is_listed_below_month == false
       assert holiday_or_vacation_type.default_is_school_vacation == false
     end

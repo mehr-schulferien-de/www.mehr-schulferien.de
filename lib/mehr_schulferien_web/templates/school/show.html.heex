@@ -624,20 +624,17 @@
               Schuljahr {school_year}/{school_year + 1}
             </.heading>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-              <% # Show August to December of the school year
-              months = [8, 9, 10, 11, 12] ++ [1, 2, 3, 4, 5, 6, 7]
-              current_calendar_year = @today.year %>
+              <% # Show August to December of the school year, then January to July of the next calendar year
+              months = [8, 9, 10, 11, 12] ++ [1, 2, 3, 4, 5, 6, 7] %>
               <%= for month <- months do %>
                 <% year = if month >= 8, do: school_year, else: school_year + 1 %>
-                <%= if year >= current_calendar_year do %>
-                  <.month_calendar
-                    month={month}
-                    year={year}
-                    periods={@periods}
-                    public_periods={@public_periods}
-                    all_periods={@all_periods}
-                  />
-                <% end %>
+                <.month_calendar
+                  month={month}
+                  year={year}
+                  periods={@periods}
+                  public_periods={@public_periods}
+                  all_periods={@all_periods}
+                />
               <% end %>
             </div>
           <% end %>

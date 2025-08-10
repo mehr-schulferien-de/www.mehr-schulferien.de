@@ -203,13 +203,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
       assert rolled_back_school.address.city == "Test City"
     end
 
-    @tag :skip
-    test "rollback handles non-existent version gracefully", %{conn: _conn, school: _school} do
-      # This test is skipped because it requires clicking a non-existent button
-      # The functionality is covered by the LiveView implementation
-      assert true
-    end
-
     test "rollback handles invalid version ID gracefully", %{conn: conn, school: school} do
       {:ok, live, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
@@ -297,13 +290,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
       assert rolled_back_school.address.homepage_url == "https://updated.school.de"
     end
 
-    @tag :skip
-    test "rollback respects daily limits", %{conn: _conn, school: _school} do
-      # This test is skipped due to LiveView test infrastructure issues
-      # The functionality is verified to work in the actual implementation
-      assert true
-    end
-
     test "rollback increments daily change count", %{conn: conn, school: school} do
       {:ok, live, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
@@ -318,17 +304,29 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveRollbackTest do
         }
       })
 
+      # Now UPDATE the address to create a second version
+      live
+      |> form("form")
+      |> render_submit(%{
+        "name" => school.name,
+        "address" => %{
+          "street" => "Updated Street",
+          "city" => "Updated City"
+        }
+      })
+
       today = Date.utc_today()
       initial_count = Wiki.get_daily_change_count(today)
 
-      # Get the version
+      # Get the versions - should now have 2 versions
       updated_school = Locations.get_school_by_slug!(school.slug)
       versions = PaperTrail.get_versions(updated_school.address)
-      version = List.first(versions)
+      # Get the FIRST version (the insert) to rollback to
+      version_to_rollback = Enum.find(versions, fn v -> v.event == "insert" end)
 
-      # Perform rollback
+      # Perform rollback to the original version
       live
-      |> element("button[phx-click='rollback_version'][phx-value-id='#{version.id}']")
+      |> element("button[phx-click='rollback_version'][phx-value-id='#{version_to_rollback.id}']")
       |> render_click()
 
       # Verify daily count was incremented

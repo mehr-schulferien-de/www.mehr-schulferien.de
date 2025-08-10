@@ -39,16 +39,34 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       assert html_response(conn, 200) =~
                "Schuljahr #{current_school_year}/#{current_school_year + 1}"
 
-      # Check for current year calendar months
-      assert html_response(conn, 200) =~ "Januar #{@current_year}"
-      assert html_response(conn, 200) =~ "Dezember #{@current_year}"
+      # Check for calendar months based on the current school year
+      # The template shows months for the current and next school year
+      # Current school year runs from August to July of the following year
+      if Date.utc_today().month >= 8 do
+        # We're after August, so current school year is @current_year/@current_year+1
+        # Should show Aug-Dec of @current_year and Jan-Jul of @next_year
+        assert html_response(conn, 200) =~ "August #{@current_year}"
+        assert html_response(conn, 200) =~ "Dezember #{@current_year}"
+        assert html_response(conn, 200) =~ "Januar #{@next_year}"
+        assert html_response(conn, 200) =~ "Juli #{@next_year}"
 
-      # Check for next year months up to July
-      assert html_response(conn, 200) =~ "Januar #{@next_year}"
-      assert html_response(conn, 200) =~ "Juli #{@next_year}"
+        # Next school year (@next_year/@next_year+1) should also be shown
+        assert html_response(conn, 200) =~ "August #{@next_year}"
+        assert html_response(conn, 200) =~ "Dezember #{@next_year}"
+      else
+        # We're before August, so current school year is @current_year-1/@current_year
+        # Should show Aug-Dec of @current_year-1 and Jan-Jul of @current_year
+        assert html_response(conn, 200) =~ "August #{@current_year - 1}"
+        assert html_response(conn, 200) =~ "Dezember #{@current_year - 1}"
+        assert html_response(conn, 200) =~ "Januar #{@current_year}"
+        assert html_response(conn, 200) =~ "Juli #{@current_year}"
 
-      # Check that there's no additional future year calendar display
-      refute html_response(conn, 200) =~ "Januar #{@next_year + 1}"
+        # Next school year (@current_year/@next_year) should also be shown
+        assert html_response(conn, 200) =~ "August #{@current_year}"
+        assert html_response(conn, 200) =~ "Dezember #{@current_year}"
+        assert html_response(conn, 200) =~ "Januar #{@next_year}"
+        assert html_response(conn, 200) =~ "Juli #{@next_year}"
+      end
     end
 
     test "shows correct FAQ sections with only current year question", %{

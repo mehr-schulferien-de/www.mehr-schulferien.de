@@ -49,7 +49,7 @@ defmodule MehrSchulferien.PeriodsTest do
       assert period.created_by_email_address == "george@example.com"
       assert period.ends_on == ~D[2010-04-20]
       assert period.starts_on == ~D[2010-04-17]
-      assert period.html_class == holiday_or_vacation_type.default_html_class
+      # Note: html_class is not a field on Period, it's computed at runtime
       assert period.is_public_holiday == holiday_or_vacation_type.default_is_public_holiday
       assert period.religion_id == holiday_or_vacation_type.default_religion_id
     end
@@ -93,7 +93,7 @@ defmodule MehrSchulferien.PeriodsTest do
     test "update_period/2 with valid data updates the period" do
       period = insert(:period)
       assert {:ok, %Period{} = period} = Periods.update_period(period, @update_attrs)
-      assert period.html_class == "white"
+      # Note: html_class is not a field on Period, it's computed at runtime
       assert period.is_public_holiday == true
     end
 

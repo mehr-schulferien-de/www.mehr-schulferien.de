@@ -291,9 +291,9 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       )
       |> render_submit()
 
-      # Should redirect
-      flash = assert_redirect(view, "/wiki/periods")
-      assert flash["info"] == "Ferientermin wurde erfolgreich aktualisiert."
+      # Should show success message (stays on same page)
+      html = render(view)
+      assert html =~ "Ferientermin wurde erfolgreich aktualisiert."
 
       # Verify changes were saved
       updated_period = Periods.get_period!(period.id)
@@ -303,18 +303,25 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
     end
 
     test "shows version history", %{conn: conn, period: period} do
-      # Create a version by updating the period
+      # Create two versions by updating the period
       {:ok, _} =
         PaperTrail.update(
           Periods.Period.changeset(period, %{memo: "Version 1"}),
           meta: %{ip_address: "127.0.0.1"}
         )
 
+      {:ok, _} =
+        PaperTrail.update(
+          Periods.Period.changeset(Repo.reload!(period), %{memo: "Version 2"}),
+          meta: %{ip_address: "127.0.0.1"}
+        )
+
       {:ok, view, _html} = live(conn, "/wiki/periods/#{period.id}/edit")
 
       # Verify version history section
-      assert has_element?(view, "h3", "Versionshistorie")
-      assert has_element?(view, "button", "Zu dieser Version zurückkehren")
+      assert has_element?(view, "h3", "Änderungshistorie")
+      # With two versions, the older one should have a rollback button
+      assert has_element?(view, "button", "Auf diesen Stand zurücksetzen")
     end
 
     test "user can rollback to previous version", %{conn: conn, period: period} do
@@ -334,13 +341,14 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       {:ok, view, _html} = live(conn, "/wiki/periods/#{period.id}/edit")
 
       # Click rollback button for first version
+      # Use a more flexible selector since the button might not be a button element
       view
-      |> element("button[phx-click='rollback'][phx-value-version-id='#{version1.id}']")
+      |> element("[phx-click='rollback'][phx-value-version-id='#{version1.id}']")
       |> render_click()
 
-      # Should redirect
-      flash = assert_redirect(view, "/wiki/periods/#{period.id}/edit")
-      assert flash["info"] == "Erfolgreich zur ausgewählten Version zurückgekehrt."
+      # Should show success message (stays on same page)
+      html = render(view)
+      assert html =~ "Erfolgreich zur ausgewählten Version zurückgekehrt."
 
       # Verify rollback worked
       rolled_back_period = Periods.get_period!(period.id)

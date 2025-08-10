@@ -13,7 +13,8 @@ defmodule MehrSchulferien.LocationsPerformanceTest do
       school = insert(:school, %{parent_location_id: city.id, name: "Test School"})
 
       # Count queries during execution
-      {:ok, _pid} = :dbg.tracer()
+      # Redirect dbg output to nowhere for clean test output
+      {:ok, _pid} = :dbg.tracer(:process, {fn _, _ -> :ok end, nil})
       :dbg.p(:all, :c)
       :dbg.tp(MehrSchulferien.Repo, :query, :x)
       :dbg.tp(MehrSchulferien.Repo, :get, :x)
