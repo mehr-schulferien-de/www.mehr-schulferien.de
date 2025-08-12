@@ -1,4 +1,4 @@
-<div class="max-w-4xl mx-auto py-6">
+<div class="max-w-6xl mx-auto py-6">
   <!-- Flash messages -->
   <%= if Phoenix.Flash.get(@flash, :info) do %>
     <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
@@ -15,13 +15,14 @@
       </p>
     </div>
   <% end %>
-  <!-- Header with Navigation -->
+  
+<!-- Header with Navigation -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
       Schul-Wiki: {@school.name}
     </h1>
     <p class="text-gray-600 dark:text-gray-400 mb-4">
-      Bearbeiten Sie die Adressdaten dieser Schule. Alle Änderungen werden mit Ihrer IP-Adresse protokolliert.
+      Bearbeiten Sie die Adressdaten dieser Schule. Alle Änderungen werden protokolliert.
     </p>
     <!-- Navigation Tabs -->
     <div class="border-b border-gray-200 dark:border-gray-700">
@@ -37,7 +38,8 @@
       </nav>
     </div>
   </div>
-  <!-- Auto Data Enrichment Button -->
+  
+<!-- Auto Data Enrichment Button -->
   <%= if not @limit_reached and @api_key_available do %>
     <div class="mb-6 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4">
       <div class="flex items-center justify-between">
@@ -54,7 +56,6 @@
           disabled={@enrichment_loading}
           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:bg-gray-400 rounded-md transition-colors shadow-sm"
         >
-          >
           <%= if @enrichment_loading do %>
             <svg
               class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -84,7 +85,7 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M4 10h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zM8 10V7a4 4 0 0 1 8 0v3M12 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               >
               </path>
             </svg>
@@ -95,9 +96,9 @@
     </div>
   <% end %>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Edit Form -->
-    <div class="space-y-6">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Edit Form - Left Column -->
+    <div class="lg:col-span-2 space-y-6">
       <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Adressdaten bearbeiten
@@ -127,248 +128,109 @@
         )}
       </div>
     </div>
-    <!-- Right Column -->
+    
+<!-- Version History Timeline - Right Column -->
     <div class="space-y-6">
-      <!-- Current Data Display -->
-      <%= if @school.address do %>
-        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">
-            Aktuelle Daten
-          </h3>
-          <dl class="space-y-2 text-sm">
-            <div>
-              <dt class="font-bold text-gray-700 dark:text-gray-300">Schulname:</dt>
-              <dd class="text-gray-900 dark:text-gray-100">{@school.name}</dd>
-            </div>
-            <%= if @school.address.street || @school.address.zip_code || @school.address.city do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Adresse:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">
-                  <%= if @school.address.street do %>
-                    {@school.address.street}<br />
-                  <% end %>
-                  <%= if @school.address.zip_code || @school.address.city do %>
-                    {@school.address.zip_code || ""} {@school.address.city || ""}
-                  <% end %>
-                </dd>
-              </div>
-            <% end %>
-            <%= if @school.address.phone_number || @school.address.email_address do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Kontakt:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">
-                  <%= if @school.address.phone_number do %>
-                    Tel: {@school.address.phone_number}<br />
-                  <% end %>
-                  <%= if @school.address.email_address do %>
-                    E-Mail: {@school.address.email_address}
-                  <% end %>
-                </dd>
-              </div>
-            <% end %>
-            <%= if @school.address.homepage_url do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Homepage:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">
-                  {link(display_url(@school.address.homepage_url),
-                    to: @school.address.homepage_url,
-                    target: "_blank",
-                    class: "text-blue-600 hover:underline"
-                  )}
-                </dd>
-              </div>
-            <% end %>
-            <%= if @school.address.wikipedia_url do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Wikipedia:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">
-                  {link(display_url(@school.address.wikipedia_url),
-                    to: @school.address.wikipedia_url,
-                    target: "_blank",
-                    class: "text-blue-600 hover:underline"
-                  )}
-                </dd>
-              </div>
-            <% end %>
-            <%= if @school.address.instagram_url do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Instagram:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">
-                  {link(
-                    "@" <> (String.split(@school.address.instagram_url, "/") |> List.last()),
-                    to: @school.address.instagram_url,
-                    target: "_blank",
-                    class: "text-blue-600 hover:underline"
-                  )}
-                </dd>
-              </div>
-            <% end %>
-            <%= if @school.address.students_count do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Schülerzahl:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">{@school.address.students_count}</dd>
-              </div>
-            <% end %>
-            <%= if @school.address.founded_year do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Gründungsjahr:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">{@school.address.founded_year}</dd>
-              </div>
-            <% end %>
-            <%= if @school.address.description do %>
-              <div>
-                <dt class="font-bold text-gray-700 dark:text-gray-300">Beschreibung:</dt>
-                <dd class="text-gray-900 dark:text-gray-100">{@school.address.description}</dd>
-              </div>
-            <% end %>
-          </dl>
-        </div>
-      <% else %>
-        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
-          <h3 class="text-lg font-medium text-yellow-900 dark:text-yellow-200 mb-2">
-            Keine Adressdaten vorhanden
-          </h3>
-          <p class="text-sm text-yellow-800 dark:text-yellow-300">
-            Für diese Schule sind noch keine Adressdaten hinterlegt.
-            Bitte tragen Sie die bekannten Informationen ein.
+      <!-- Version History Timeline -->
+      <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Versionshistorie
+          </h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {length(@versions)} Änderungen
           </p>
         </div>
-      <% end %>
-      <!-- Version History -->
-      <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-between">
-            Versionshistorie
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-              {length(@versions)} Änderungen
-            </span>
-          </h2>
-        </div>
-        <div class="divide-y divide-gray-200 dark:divide-gray-700 max-h-96 overflow-y-auto">
-          <%= if @versions == [] do %>
-            <div class="p-6 text-center text-gray-500 dark:text-gray-400">
-              Noch keine Änderungen vorhanden.
-            </div>
-          <% else %>
-            <%= for version <- @display_versions do %>
-              <div class={"p-4 hover:bg-gray-50 border-l-4 #{if Map.get(version, :change_count, 0) > 0, do: "border-blue-400", else: "border-gray-200"}"}>
-                <div class="flex-1">
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="flex items-center gap-2 mb-1">
-                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Version #{version.id}
-                        </p>
-                        <%= if Map.get(version, :change_count, 0) > 0 do %>
-                          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
-                            {Map.get(version, :change_count)} {if Map.get(
-                                                                    version,
-                                                                    :change_count
-                                                                  ) == 1,
-                                                                  do: "Änderung",
-                                                                  else: "Änderungen"}
-                          </span>
-                        <% end %>
-                      </div>
 
-                      <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                        {MehrSchulferienWeb.Formatters.DateFormatter.format_datetime(
-                          version.inserted_at
-                        )} • {Map.get(version, :originator) || "Unbekannt"}
-                      </p>
+        <%= if @versions == [] do %>
+          <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+            Noch keine Änderungen vorhanden.
+          </div>
+        <% else %>
+          <!-- Timeline -->
+          <div class="p-6">
+            <div class="relative">
+              <!-- Timeline Line -->
+              <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700">
+              </div>
+              
+<!-- Timeline Items -->
+              <div class="space-y-6">
+                <%= for {version, index} <- Enum.with_index(@versions) do %>
+                  <div class="relative flex items-start">
+                    <!-- Timeline Dot -->
+                    <div class={"absolute left-2.5 w-3 h-3 rounded-full border-2 #{if index == 0, do: "bg-blue-500 border-blue-500", else: "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"}"}>
+                    </div>
+                    
+<!-- Content -->
+                    <div class="ml-10 flex-1">
+                      <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <!-- Header -->
+                        <div class="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                              {version.description || "Änderung"}
+                            </h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {MehrSchulferienWeb.Formatters.DateFormatter.format_datetime(
+                                version.inserted_at
+                              )}
+                            </p>
+                          </div>
 
-                      <%= if Map.get(version, :change_summary) do %>
-                        <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                          <span class="font-medium">Änderungen:</span> {Map.get(
-                            version,
-                            :change_summary
-                          )}
-                        </p>
-                      <% end %>
-
-                      <%= if Map.get(version, :changes) && map_size(Map.get(version, :changes)) > 0 do %>
-                        <details class="mt-2">
-                          <summary class="text-xs text-gray-600 dark:text-gray-400 cursor-pointer hover:text-gray-800 dark:hover:text-gray-200">
-                            Details anzeigen
-                          </summary>
-                          <div class="mt-2 pl-4 border-l-2 border-gray-100 dark:border-gray-700">
-                            <%= for {field_name, {old_value, new_value}} <- Map.get(version, :changes) do %>
-                              <div class="mb-3 text-xs">
-                                <span class="font-medium text-gray-700 dark:text-gray-300 block mb-1">
-                                  {field_name}:
-                                </span>
-                                <div class="ml-2 bg-gray-50 dark:bg-gray-800 p-2 rounded border-l-2 border-gray-300 dark:border-gray-600">
-                                  <%= if is_nil(old_value) or old_value == "" do %>
-                                    <div class="bg-green-50 p-1 rounded">
-                                      <span class="text-green-700 font-mono text-xs">
-                                        + hinzugefügt:
-                                      </span>
-                                      <div class="text-green-800 mt-1 font-medium">
-                                        "{new_value}"
-                                      </div>
-                                    </div>
-                                  <% else %>
-                                    <%= if is_nil(new_value) or new_value == "" do %>
-                                      <div class="bg-red-50 p-1 rounded">
-                                        <span class="text-red-700 font-mono text-xs">
-                                          - gelöscht:
-                                        </span>
-                                        <div class="text-red-800 dark:text-red-200 mt-1 font-medium">
-                                          "{old_value}"
-                                        </div>
-                                      </div>
-                                    <% else %>
-                                      <div class="space-y-1">
-                                        <div class="bg-red-50 p-1 rounded">
-                                          <span class="text-red-700 font-mono text-xs">
-                                            - alt:
-                                          </span>
-                                          <div class="text-red-800 dark:text-red-200 mt-1 font-medium">
-                                            "{old_value}"
-                                          </div>
-                                        </div>
-                                        <div class="bg-green-50 p-1 rounded">
-                                          <span class="text-green-700 font-mono text-xs">
-                                            + neu:
-                                          </span>
-                                          <div class="text-green-800 mt-1 font-medium">
-                                            "{new_value}"
-                                          </div>
-                                        </div>
-                                      </div>
-                                    <% end %>
-                                  <% end %>
-                                </div>
-                              </div>
+                          <%= if not @limit_reached and version.snapshot do %>
+                            <button
+                              phx-click="show_rollback_preview"
+                              phx-value-version_id={version.id}
+                              class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                            >
+                              <svg
+                                class="w-3 h-3 mr-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                >
+                                </path>
+                              </svg>
+                              Wiederherstellen
+                            </button>
+                          <% end %>
+                        </div>
+                        
+<!-- Changed Fields -->
+                        <%= if map_size(version.changes) > 0 do %>
+                          <div class="mt-2 flex flex-wrap gap-1">
+                            <%= for {field, _value} <- version.changes do %>
+                              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                                {field}
+                              </span>
                             <% end %>
                           </div>
-                        </details>
-                      <% end %>
+                        <% end %>
+                      </div>
                     </div>
-                    <%= if not @limit_reached do %>
-                      <button
-                        phx-click="rollback_version"
-                        phx-value-id={version.id}
-                        data-confirm="Möchten Sie diese Version wiederherstellen? Die aktuellen Daten werden mit den Werten aus dieser Version überschrieben."
-                        class="ml-4 px-3 py-1 text-xs font-medium rounded-md text-yellow-700 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-900/30 hover:bg-yellow-200 dark:hover:bg-yellow-900/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 shrink-0"
-                      >
-                        Wiederherstellen
-                      </button>
-                    <% end %>
                   </div>
-                </div>
+                <% end %>
               </div>
-            <% end %>
-          <% end %>
-        </div>
+            </div>
+          </div>
+        <% end %>
       </div>
-
+      
+<!-- Daily Limit Info -->
       {Phoenix.View.render(MehrSchulferienWeb.WikiView, "_daily_limit_info.html",
         daily_changes: @daily_changes
       )}
     </div>
   </div>
-  <!-- Back to School Link -->
+  
+<!-- Back to School Link -->
   <div class="mt-8 text-center">
     <a
       href={~p"/ferien/d/schule/#{@school.slug}"}
@@ -386,6 +248,201 @@
     </a>
   </div>
 </div>
+
+<!-- Rollback Preview Modal -->
+<%= if @show_rollback_preview && @rollback_version do %>
+  <div
+    class="fixed z-50 inset-0 overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div
+        class="fixed inset-0 bg-gray-500 dark:bg-gray-800 bg-opacity-75 dark:bg-opacity-75 transition-opacity"
+        aria-hidden="true"
+      >
+      </div>
+      
+<!-- This element is to trick the browser into centering the modal contents. -->
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+        &#8203;
+      </span>
+      
+<!-- Modal panel -->
+      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 sm:mx-0 sm:h-10 sm:w-10">
+              <svg
+                class="h-6 w-6 text-yellow-600 dark:text-yellow-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                >
+                </path>
+              </svg>
+            </div>
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-grow">
+              <h3
+                class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100"
+                id="modal-title"
+              >
+                Version wiederherstellen
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Möchten Sie zu dieser Version zurückkehren?
+                </p>
+              </div>
+
+              <%= if @rollback_version.snapshot do %>
+                <div class="mt-4">
+                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    Vorschau der Änderungen:
+                  </h4>
+
+                  <div class="space-y-4">
+                    <!-- Compare Current vs Rollback -->
+                    <div class="grid grid-cols-2 gap-4">
+                      <!-- Current State -->
+                      <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-3">
+                        <h5 class="text-xs font-semibold text-red-700 dark:text-red-300 mb-2">
+                          Aktueller Zustand
+                        </h5>
+                        <dl class="space-y-1">
+                          <div>
+                            <dt class="text-xs text-gray-600 dark:text-gray-400">Schulname:</dt>
+                            <dd class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {@school.name}
+                            </dd>
+                          </div>
+                          <%= if @school.address do %>
+                            <%= if @school.address.street do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">Straße:</dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100">
+                                  {@school.address.street}
+                                </dd>
+                              </div>
+                            <% end %>
+                            <%= if @school.address.zip_code || @school.address.city do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">Ort:</dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100">
+                                  {@school.address.zip_code || ""} {@school.address.city || ""}
+                                </dd>
+                              </div>
+                            <% end %>
+                            <%= if @school.address.phone_number do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">Telefon:</dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100">
+                                  {@school.address.phone_number}
+                                </dd>
+                              </div>
+                            <% end %>
+                            <%= if @school.address.homepage_url do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">
+                                  Homepage:
+                                </dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100 truncate">
+                                  {@school.address.homepage_url}
+                                </dd>
+                              </div>
+                            <% end %>
+                          <% end %>
+                        </dl>
+                      </div>
+                      
+<!-- Rollback State -->
+                      <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+                        <h5 class="text-xs font-semibold text-green-700 dark:text-green-300 mb-2">
+                          Nach Wiederherstellung
+                        </h5>
+                        <dl class="space-y-1">
+                          <div>
+                            <dt class="text-xs text-gray-600 dark:text-gray-400">Schulname:</dt>
+                            <dd class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {Map.get(@rollback_version.snapshot, "name", "")}
+                            </dd>
+                          </div>
+                          <%= if Map.get(@rollback_version.snapshot, "address") do %>
+                            <% address = Map.get(@rollback_version.snapshot, "address") %>
+                            <%= if Map.get(address, "street") do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">Straße:</dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100">
+                                  {Map.get(address, "street")}
+                                </dd>
+                              </div>
+                            <% end %>
+                            <%= if Map.get(address, "zip_code") || Map.get(address, "city") do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">Ort:</dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100">
+                                  {Map.get(address, "zip_code", "")} {Map.get(address, "city", "")}
+                                </dd>
+                              </div>
+                            <% end %>
+                            <%= if Map.get(address, "phone_number") do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">Telefon:</dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100">
+                                  {Map.get(address, "phone_number")}
+                                </dd>
+                              </div>
+                            <% end %>
+                            <%= if Map.get(address, "homepage_url") do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">
+                                  Homepage:
+                                </dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100 truncate">
+                                  {Map.get(address, "homepage_url")}
+                                </dd>
+                              </div>
+                            <% end %>
+                          <% end %>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <button
+            type="button"
+            phx-click="confirm_rollback"
+            phx-value-version_id={@rollback_version.id}
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 dark:bg-yellow-500 text-base font-medium text-white hover:bg-yellow-700 dark:hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm"
+          >
+            Wiederherstellen
+          </button>
+          <button
+            type="button"
+            phx-click="cancel_rollback"
+            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          >
+            Abbrechen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <!-- Enrichment Modal -->
 <%= if @enrichment_data do %>
   <div

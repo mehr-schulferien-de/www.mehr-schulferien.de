@@ -82,12 +82,13 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
 ### CRITICAL CODE QUALITY REQUIREMENTS - MUST FOLLOW
 **⚠️ IMPORTANT: These are MANDATORY steps that MUST be completed after ANY code changes:**
 
-1. **RUN TESTS IMMEDIATELY**: `mix test` - Run tests IMMEDIATELY after making ANY code changes, especially UI/template changes
+1. **RUN ALL TESTS IMMEDIATELY**: `mix test` - Run ALL tests (not just specific test files) IMMEDIATELY after making ANY code changes, especially UI/template changes
 2. **FIX ALL TEST FAILURES**: Update tests when UI changes break assertions (e.g., changed text, CSS classes, HTML structure)
 3. **FIX ALL WARNINGS**: `mix compile --warnings-as-errors` - NO warnings are acceptable
 4. **FORMAT CODE**: `mix format` - Code MUST be properly formatted
 5. **CHECK TEST OUTPUT QUALITY**: Tests must run with CLEAN output (only dots, no warnings/errors)
 6. **VERIFY BEFORE COMPLETION**: Run `mix test` one final time - All tests must be green before work is considered done
+7. **NEVER SKIP FULL TEST SUITE**: Always run the complete test suite with `mix test`, not just individual test files
 
 **NEVER report work as complete without running and passing ALL tests.**
 **UI CHANGES REQUIRE SPECIAL ATTENTION**: When modifying templates, LiveView render functions, or CSS classes, ALWAYS check if tests need updating.

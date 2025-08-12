@@ -185,6 +185,7 @@ defmodule MehrSchulferien.SearchEngineAPI do
         if Application.get_env(:mehr_schulferien, :env) != :test do
           Logger.error("Stale entry error searching for school: #{inspect(e)}")
         end
+
         {:error, "Stale entry error: #{Exception.message(e)}"}
 
       e ->
@@ -636,8 +637,11 @@ defmodule MehrSchulferien.SearchEngineAPI do
     e in Ecto.StaleEntryError ->
       # Handle stale entry gracefully - this can happen in tests with concurrent updates
       if Application.get_env(:mehr_schulferien, :env) != :test do
-        Logger.warning("Stale entry when updating cache for address ID: #{address.id}: #{inspect(e)}")
+        Logger.warning(
+          "Stale entry when updating cache for address ID: #{address.id}: #{inspect(e)}"
+        )
       end
+
       :error
   end
 

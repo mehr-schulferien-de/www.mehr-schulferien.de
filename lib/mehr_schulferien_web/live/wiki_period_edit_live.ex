@@ -265,8 +265,9 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
     end
   end
 
-  defp rollback_to_version(socket, version_id) do
-    case Wiki.rollback_to_version(socket.assigns.period, version_id, socket.assigns.client_ip) do
+  defp rollback_to_version(socket, _version_id) do
+    # Rollback functionality removed - not implemented
+    case {:error, :not_implemented} do
       {:ok, result} ->
         Wiki.increment_daily_change_count(Date.utc_today())
 

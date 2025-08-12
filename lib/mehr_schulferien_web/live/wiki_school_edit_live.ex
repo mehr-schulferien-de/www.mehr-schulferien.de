@@ -1,5 +1,6 @@
 defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   use MehrSchulferienWeb, :live_view
+  import Ecto.Query
 
   alias MehrSchulferien.{
     Locations,
@@ -20,8 +21,8 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   def mount(%{"slug" => school_slug}, _session, socket) do
     school = Locations.get_school_by_slug!(school_slug)
 
-    # Get combined version history for both school and address
-    versions = get_combined_versions(school)
+    # Get version history
+    versions = get_version_history(school)
 
     # Get daily change count
     today = Date.utc_today()
@@ -47,15 +48,50 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
      assign(socket,
        school: school,
        versions: versions,
-       display_versions: Enum.take(versions, 5),
        changeset: changeset,
        daily_changes: daily_changes,
        limit_reached: limit_reached,
        enrichment_loading: false,
        enrichment_data: nil,
        enrichment_error: nil,
-       api_key_available: api_key_available
+       api_key_available: api_key_available,
+       show_rollback_preview: false,
+       rollback_version: nil
      )}
+  end
+
+  @impl true
+  def handle_event("validate", %{"address" => address_params} = params, socket) do
+    # Get the name from params, default to existing school name if not provided
+    name = Map.get(params, "name", socket.assigns.school.name)
+
+    # Create a changeset for validation
+    changeset =
+      if socket.assigns.school.address do
+        # Update existing address with params
+        address_changeset = Address.changeset(socket.assigns.school.address, address_params)
+
+        %{
+          address_changeset
+          | data: Map.merge(address_changeset.data, %{name: name}),
+            action: :validate
+        }
+      else
+        # Create new address changeset with validation
+        address_changeset =
+          Address.changeset(
+            %Address{school_location_id: socket.assigns.school.id},
+            address_params
+          )
+
+        %{
+          address_changeset
+          | data: Map.merge(address_changeset.data, %{name: name}),
+            action: :validate
+        }
+      end
+
+    {:noreply, assign(socket, changeset: changeset)}
   end
 
   @impl true
@@ -71,11 +107,13 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
       school = socket.assigns.school
       today = Date.utc_today()
 
+      # Store current state for version history
+      current_state = capture_current_state(school)
+
       # Update school name if changed
       school_result =
         if name != school.name do
           location_changeset = MehrSchulferien.Locations.Location.changeset(school, %{name: name})
-          # Note: We can't get IP address in LiveView easily, so using nil
           PaperTrail.update(location_changeset, meta: %{ip_address: nil})
         else
           {:ok, %{model: school, version: nil}}
@@ -117,9 +155,12 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
           if school_version || address_version do
             Wiki.increment_daily_change_count(today)
 
+            # Store version with snapshot of previous state
+            store_version_snapshot(school, current_state)
+
             # Reload data
             updated_school = Locations.get_school_by_slug!(school.slug)
-            versions = get_combined_versions(updated_school)
+            versions = get_version_history(updated_school)
             daily_changes = Wiki.get_daily_change_count(today)
             limit_reached = daily_changes >= Config.daily_change_limit()
 
@@ -132,7 +173,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
                   |> Repo.preload([:address, :parent_location])
 
                 # Gather change information
-                changes = gather_changes(school_version, address_version)
+                changes = gather_changes(school_version, address_version, current_state)
 
                 # Get country slug for the email
                 country_slug = get_country_slug_from_school(updated_school_with_associations)
@@ -177,7 +218,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
              |> assign(
                school: updated_school,
                versions: versions,
-               display_versions: Enum.take(versions, 5),
                changeset: changeset,
                daily_changes: daily_changes,
                limit_reached: limit_reached
@@ -195,6 +235,112 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
 
         {_, {:error, _}} ->
           {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren der Adresse.")}
+      end
+    end
+  end
+
+  @impl true
+  def handle_event("show_rollback_preview", %{"version_id" => version_id}, socket) do
+    version = Enum.find(socket.assigns.versions, &(&1.id == String.to_integer(version_id)))
+
+    if version do
+      {:noreply,
+       assign(socket,
+         show_rollback_preview: true,
+         rollback_version: version
+       )}
+    else
+      {:noreply, put_flash(socket, :error, "Version nicht gefunden.")}
+    end
+  end
+
+  @impl true
+  def handle_event("cancel_rollback", _params, socket) do
+    {:noreply,
+     assign(socket,
+       show_rollback_preview: false,
+       rollback_version: nil
+     )}
+  end
+
+  @impl true
+  def handle_event("confirm_rollback", %{"version_id" => version_id}, socket) do
+    if socket.assigns.limit_reached do
+      {:noreply,
+       put_flash(
+         socket,
+         :error,
+         "Das tägliche Limit wurde erreicht. Bitte versuchen Sie es morgen erneut."
+       )}
+    else
+      version = Enum.find(socket.assigns.versions, &(&1.id == String.to_integer(version_id)))
+
+      if version && version.snapshot do
+        school = socket.assigns.school
+        today = Date.utc_today()
+
+        # Restore from snapshot
+        result = restore_from_snapshot(school, version.snapshot)
+
+        case result do
+          {:ok, _} ->
+            Wiki.increment_daily_change_count(today)
+
+            # Reload data
+            updated_school = Locations.get_school_by_slug!(school.slug)
+            versions = get_version_history(updated_school)
+            daily_changes = Wiki.get_daily_change_count(today)
+            limit_reached = daily_changes >= Config.daily_change_limit()
+
+            # Update changeset
+            changeset =
+              if updated_school.address do
+                address_changeset = Maps.change_address(updated_school.address)
+
+                %{
+                  address_changeset
+                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
+                }
+              else
+                address_changeset =
+                  Maps.change_address(%Address{school_location_id: updated_school.id})
+
+                %{
+                  address_changeset
+                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
+                }
+              end
+
+            {:noreply,
+             socket
+             |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
+             |> assign(
+               school: updated_school,
+               versions: versions,
+               changeset: changeset,
+               daily_changes: daily_changes,
+               limit_reached: limit_reached,
+               show_rollback_preview: false,
+               rollback_version: nil
+             )}
+
+          {:error, reason} ->
+            {:noreply,
+             socket
+             |> put_flash(:error, "Fehler beim Wiederherstellen: #{reason}")
+             |> assign(
+               show_rollback_preview: false,
+               rollback_version: nil
+             )}
+        end
+      else
+        {:noreply,
+         socket
+         |> put_flash(:error, "Version konnte nicht wiederhergestellt werden.")
+         |> assign(
+           show_rollback_preview: false,
+           rollback_version: nil
+         )}
       end
     end
   end
@@ -382,7 +528,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
 
                   # Reload school data
                   updated_school = Locations.get_school_by_slug!(school.slug)
-                  versions = get_combined_versions(updated_school)
+                  versions = get_version_history(updated_school)
                   daily_changes = Wiki.get_daily_change_count(Date.utc_today())
                   limit_reached = daily_changes >= Config.daily_change_limit()
 
@@ -411,7 +557,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
                    |> assign(
                      school: updated_school,
                      versions: versions,
-                     display_versions: Enum.take(versions, 5),
                      changeset: new_changeset,
                      daily_changes: daily_changes,
                      limit_reached: limit_reached
@@ -453,7 +598,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
 
                   # Reload school data
                   updated_school = Locations.get_school_by_slug!(school.slug)
-                  versions = get_combined_versions(updated_school)
+                  versions = get_version_history(updated_school)
                   daily_changes = Wiki.get_daily_change_count(Date.utc_today())
                   limit_reached = daily_changes >= Config.daily_change_limit()
 
@@ -482,7 +627,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
                    |> assign(
                      school: updated_school,
                      versions: versions,
-                     display_versions: Enum.take(versions, 5),
                      changeset: new_changeset,
                      daily_changes: daily_changes,
                      limit_reached: limit_reached
@@ -520,77 +664,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   @impl true
   def handle_event("cancel_enrichment", _params, socket) do
     {:noreply, assign(socket, enrichment_data: nil, enrichment_error: nil)}
-  end
-
-  @impl true
-  def handle_event("rollback_version", %{"id" => version_id}, socket) do
-    if socket.assigns.limit_reached do
-      {:noreply,
-       put_flash(
-         socket,
-         :error,
-         "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht."
-       )}
-    else
-      school = socket.assigns.school
-
-      # Try to rollback the version to the appropriate model
-      rollback_result = attempt_version_rollback(school, version_id)
-
-      case rollback_result do
-        {:ok, _} ->
-          today = Date.utc_today()
-          Wiki.increment_daily_change_count(today)
-
-          # Reload school and data
-          updated_school = Locations.get_school_by_slug!(school.slug)
-          versions = get_combined_versions(updated_school)
-          daily_changes = Wiki.get_daily_change_count(today)
-          limit_reached = daily_changes >= Config.daily_change_limit()
-
-          # Update changeset
-          changeset =
-            if updated_school.address do
-              address_changeset = Maps.change_address(updated_school.address)
-
-              %{
-                address_changeset
-                | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-              }
-            else
-              address_changeset =
-                Maps.change_address(%Address{school_location_id: updated_school.id})
-
-              %{
-                address_changeset
-                | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-              }
-            end
-
-          {:noreply,
-           socket
-           |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
-           |> assign(
-             school: updated_school,
-             versions: versions,
-             display_versions: Enum.take(versions, 5),
-             changeset: changeset,
-             daily_changes: daily_changes,
-             limit_reached: limit_reached
-           )}
-
-        {:error, reason} ->
-          error_message =
-            case reason do
-              :version_not_found -> "Version nicht gefunden."
-              :version_mismatch -> "Version gehört nicht zu diesem Modell."
-              :invalid_version_id -> "Ungültige Versions-ID."
-              _ -> "Fehler beim Zurückkehren zur ausgewählten Version."
-            end
-
-          {:noreply, put_flash(socket, :error, error_message)}
-      end
-    end
   end
 
   @impl true
@@ -634,8 +707,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
      )}
   end
 
-  # Private helper functions (same as before)
-  defp get_combined_versions(school) do
+  # Private helper functions
+
+  defp get_version_history(school) do
     school_versions = PaperTrail.get_versions(school)
 
     address_versions =
@@ -645,158 +719,174 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
         []
       end
 
-    (school_versions ++ address_versions)
-    |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
-    |> Enum.map(&enrich_version_with_changes/1)
+    # Combine and sort versions
+    combined_versions =
+      (school_versions ++ address_versions)
+      |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
+      # Limit to last 20 versions
+      |> Enum.take(20)
+
+    # Add snapshot data from cache if available
+    Enum.map(combined_versions, fn version ->
+      snapshot = get_version_snapshot(version.id)
+      changes = extract_changes(version)
+
+      version
+      |> Map.put(:snapshot, snapshot)
+      |> Map.put(:changes, changes)
+      |> Map.put(:description, describe_changes(changes))
+    end)
   end
 
-  defp enrich_version_with_changes(version) do
-    changes = get_version_changes(version)
-    change_summary = generate_change_summary(changes)
-
-    version
-    |> Map.put(:changes, changes)
-    |> Map.put(:change_summary, change_summary)
-    |> Map.put(:change_count, map_size(changes))
-  end
-
-  defp get_version_changes(version) do
-    case version.item_type do
-      "Location" ->
-        # Handle both string and atom keys
-        item_changes = version.item_changes || %{}
-
-        cond do
-          Map.has_key?(item_changes, "name") ->
-            new_name = item_changes["name"]
-            old_values = get_previous_values("Location", version.item_id, version)
-            old_name = Map.get(old_values, "name") || Map.get(old_values, :name, "")
-            %{"Schulname" => {old_name, new_name}}
-
-          Map.has_key?(item_changes, :name) ->
-            new_name = item_changes[:name]
-            old_values = get_previous_values("Location", version.item_id, version)
-            old_name = Map.get(old_values, "name") || Map.get(old_values, :name, "")
-            %{"Schulname" => {old_name, new_name}}
-
-          true ->
-            %{}
+  defp capture_current_state(school) do
+    %{
+      name: school.name,
+      address:
+        if school.address do
+          %{
+            street: school.address.street,
+            zip_code: school.address.zip_code,
+            city: school.address.city,
+            email_address: school.address.email_address,
+            phone_number: school.address.phone_number,
+            homepage_url: school.address.homepage_url,
+            wikipedia_url: school.address.wikipedia_url,
+            instagram_url: school.address.instagram_url,
+            students_count: school.address.students_count,
+            founded_year: school.address.founded_year,
+            description: school.address.description
+          }
+        else
+          nil
         end
+    }
+  end
 
-      "Address" ->
-        old_values = get_previous_values("Address", version.item_id, version)
+  defp store_version_snapshot(school, state) do
+    # Store snapshot in a simple cache table or as JSON in the version meta
+    # For simplicity, we'll use the version meta field
+    versions =
+      PaperTrail.get_versions(school) ++
+        if(school.address, do: PaperTrail.get_versions(school.address), else: [])
 
-        Enum.reduce(version.item_changes || %{}, %{}, fn {field, new_value}, acc ->
-          # Convert field to both string and atom versions for lookup
-          field_str = if is_atom(field), do: Atom.to_string(field), else: field
-          field_atom = if is_binary(field), do: String.to_atom(field), else: field
+    latest_version =
+      versions
+      |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
+      |> List.first()
 
-          field_name =
-            case field_str do
-              "street" -> "Straße"
-              "zip_code" -> "PLZ"
-              "city" -> "Stadt"
-              "email_address" -> "E-Mail"
-              "phone_number" -> "Telefon"
-              "homepage_url" -> "Homepage"
-              "wikipedia_url" -> "Wikipedia"
-              "instagram_url" -> "Instagram"
-              "students_count" -> "Schülerzahl"
-              "founded_year" -> "Gründungsjahr"
-              "description" -> "Beschreibung"
-              _ -> nil
-            end
+    if latest_version do
+      # Update the version meta with the snapshot
+      meta = Map.put(latest_version.meta || %{}, "snapshot", state)
 
-          if field_name do
-            # Try both string and atom keys in old_values
-            old_value = Map.get(old_values, field_str) || Map.get(old_values, field_atom, "")
-
-            # Only include changes where there's a meaningful difference
-            old_empty = is_nil(old_value) or old_value == ""
-            new_empty = is_nil(new_value) or new_value == ""
-
-            if old_empty and new_empty do
-              # Both empty - no meaningful change
-              acc
-            else
-              Map.put(acc, field_name, {old_value, new_value})
-            end
-          else
-            acc
-          end
-        end)
-
-      _ ->
-        %{}
+      Repo.update_all(
+        from(v in PaperTrail.Version, where: v.id == ^latest_version.id),
+        set: [meta: meta]
+      )
     end
   end
 
-  defp generate_change_summary(changes) when map_size(changes) == 0 do
-    "Keine sichtbaren Änderungen"
-  end
+  defp get_version_snapshot(version_id) do
+    version = Repo.get(PaperTrail.Version, version_id)
 
-  defp generate_change_summary(changes) do
-    change_descriptions =
-      Enum.map(changes, fn {field_name, {old_value, new_value}} ->
-        old_empty = is_nil(old_value) or old_value == ""
-        new_empty = is_nil(new_value) or new_value == ""
-
-        cond do
-          old_empty and not new_empty ->
-            "#{field_name} hinzugefügt"
-
-          not old_empty and new_empty ->
-            "#{field_name} gelöscht"
-
-          true ->
-            "#{field_name} aktualisiert"
-        end
-      end)
-
-    case length(change_descriptions) do
-      1 ->
-        List.first(change_descriptions)
-
-      2 ->
-        Enum.join(change_descriptions, " • ")
-
-      n when n > 2 ->
-        first_two = change_descriptions |> Enum.take(2) |> Enum.join(" • ")
-        "#{first_two} • #{n - 2} weitere"
+    if version && version.meta do
+      Map.get(version.meta, "snapshot")
+    else
+      nil
     end
   end
 
-  defp gather_changes(school_version, address_version) do
+  defp restore_from_snapshot(school, snapshot) do
+    Repo.transaction(fn ->
+      # Restore school name
+      if snapshot["name"] != school.name do
+        school_changeset =
+          MehrSchulferien.Locations.Location.changeset(school, %{name: snapshot["name"]})
+
+        {:ok, _} = PaperTrail.update(school_changeset, meta: %{ip_address: nil, rollback: true})
+      end
+
+      # Restore address
+      if snapshot["address"] do
+        address_data = snapshot["address"]
+
+        if school.address do
+          # Update existing address
+          address_changeset = Address.changeset(school.address, address_data)
+
+          {:ok, _} =
+            PaperTrail.update(address_changeset, meta: %{ip_address: nil, rollback: true})
+        else
+          # Create new address if it existed in snapshot
+          address_data = Map.put(address_data, "school_location_id", school.id)
+          address_data = Map.put(address_data, "line1", snapshot["name"])
+          address_changeset = Address.changeset(%Address{}, address_data)
+
+          {:ok, _} =
+            PaperTrail.insert(address_changeset, meta: %{ip_address: nil, rollback: true})
+        end
+      end
+    end)
+  end
+
+  defp extract_changes(version) do
+    changes = version.item_changes || %{}
+
+    # Map field names to German labels
+    field_labels = %{
+      "name" => "Schulname",
+      "street" => "Straße",
+      "zip_code" => "PLZ",
+      "city" => "Stadt",
+      "email_address" => "E-Mail",
+      "phone_number" => "Telefon",
+      "homepage_url" => "Homepage",
+      "wikipedia_url" => "Wikipedia",
+      "instagram_url" => "Instagram",
+      "students_count" => "Schülerzahl",
+      "founded_year" => "Gründungsjahr",
+      "description" => "Beschreibung"
+    }
+
+    Enum.reduce(changes, %{}, fn {field, new_value}, acc ->
+      field_str = if is_atom(field), do: Atom.to_string(field), else: field
+
+      if label = field_labels[field_str] do
+        Map.put(acc, label, new_value)
+      else
+        acc
+      end
+    end)
+  end
+
+  defp describe_changes(changes) when map_size(changes) == 0, do: "Keine Änderungen"
+
+  defp describe_changes(changes) do
+    fields = Map.keys(changes)
+
+    case length(fields) do
+      1 -> "#{List.first(fields)} geändert"
+      2 -> "#{Enum.join(fields, " und ")} geändert"
+      n -> "#{Enum.join(Enum.take(fields, 2), ", ")} und #{n - 2} weitere geändert"
+    end
+  end
+
+  defp gather_changes(school_version, address_version, previous_state) do
     changes = %{}
 
     changes =
-      if school_version do
-        # Get the previous value for the school
-        old_values = get_previous_values("Location", school_version.item_id, school_version)
-
-        school_changes =
-          if Map.has_key?(school_version.item_changes || %{}, "name") do
-            new_name = school_version.item_changes["name"]
-            old_name = Map.get(old_values, "name") || Map.get(old_values, :name, "")
-            %{"Schulname" => {old_name, new_name}}
-          else
-            %{}
-          end
-
-        Map.merge(changes, school_changes)
+      if school_version && school_version.item_changes["name"] do
+        Map.put(changes, "Schulname", {
+          previous_state.name,
+          school_version.item_changes["name"]
+        })
       else
         changes
       end
 
-    if address_version do
-      # Get the previous value for the address
-      old_values = get_previous_values("Address", address_version.item_id, address_version)
-
-      address_changes =
-        Enum.reduce(address_version.item_changes || %{}, %{}, fn {field, new_value}, acc ->
-          # Convert field to both string and atom versions for lookup
+    changes =
+      if address_version do
+        Enum.reduce(address_version.item_changes || %{}, changes, fn {field, new_value}, acc ->
           field_str = if is_atom(field), do: Atom.to_string(field), else: field
-          field_atom = if is_binary(field), do: String.to_atom(field), else: field
 
           field_name =
             case field_str do
@@ -815,64 +905,23 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
             end
 
           if field_name do
-            # Try both string and atom keys in old_values
-            old_value = Map.get(old_values, field_str) || Map.get(old_values, field_atom, "")
+            old_value =
+              if previous_state.address do
+                Map.get(previous_state.address, String.to_atom(field_str))
+              else
+                nil
+              end
 
-            # Only include changes where there's a meaningful difference
-            old_empty = is_nil(old_value) or old_value == ""
-            new_empty = is_nil(new_value) or new_value == ""
-
-            if old_empty and new_empty do
-              # Both empty - no meaningful change
-              acc
-            else
-              Map.put(acc, field_name, {old_value, new_value})
-            end
+            Map.put(acc, field_name, {old_value, new_value})
           else
             acc
           end
         end)
-
-      Map.merge(changes, address_changes)
-    else
-      changes
-    end
-  end
-
-  defp get_previous_values(item_type, item_id, current_version) do
-    # Create proper struct for PaperTrail
-    model =
-      case item_type do
-        "Location" -> %MehrSchulferien.Locations.Location{id: item_id}
-        "Address" -> %MehrSchulferien.Maps.Address{id: item_id}
-        _ -> nil
-      end
-
-    versions =
-      if model do
-        PaperTrail.get_versions(model)
       else
-        []
-      end
-      |> Enum.filter(&(&1.id < current_version.id))
-      # Sort ascending to replay changes chronologically
-      |> Enum.sort_by(& &1.id, :asc)
-
-    # Reconstruct the state by replaying all previous versions chronologically
-    versions
-    |> Enum.reduce(%{}, fn version, state ->
-      changes = version.item_changes || %{}
-      # Merge changes into the current state, converting keys to consistent format
-      merged_changes =
         changes
-        |> Enum.into(%{}, fn {k, v} ->
-          # Convert atom keys to string keys for consistency
-          key = if is_atom(k), do: Atom.to_string(k), else: k
-          {key, v}
-        end)
+      end
 
-      Map.merge(state, merged_changes)
-    end)
+    changes
   end
 
   defp get_country_slug_from_school(school) do
@@ -902,39 +951,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   defp traverse_to_country(_), do: nil
-
-  defp attempt_version_rollback(school, version_id) do
-    # First, get the version to determine which model it belongs to
-    case Repo.get(PaperTrail.Version, String.to_integer(version_id)) do
-      nil ->
-        {:error, :version_not_found}
-
-      version ->
-        # Determine the appropriate model and attempt rollback
-        case version.item_type do
-          "Location" ->
-            # This version is for the school itself
-            Wiki.rollback_to_version(school, version_id, nil)
-
-          "Address" ->
-            # This version is for the school's address
-            if school.address do
-              Wiki.rollback_to_version(school.address, version_id, nil)
-            else
-              {:error, :no_address}
-            end
-
-          _ ->
-            {:error, :unknown_item_type}
-        end
-    end
-  rescue
-    Ecto.NoResultsError ->
-      {:error, :version_not_found}
-
-    ArgumentError ->
-      {:error, :invalid_version_id}
-  end
 
   defp filter_enrichment_updates(enriched_data, school) do
     address = school.address

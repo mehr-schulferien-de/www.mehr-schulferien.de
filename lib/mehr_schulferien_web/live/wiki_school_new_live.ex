@@ -270,6 +270,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
             if Application.get_env(:mehr_schulferien, :env) != :test do
               Logger.error("No coordinates found for #{name} at #{street}, #{zip_code} #{city}")
             end
+
             {:error, :no_coordinates}
         end
     end

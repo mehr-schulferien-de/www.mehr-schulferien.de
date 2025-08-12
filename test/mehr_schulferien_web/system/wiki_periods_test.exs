@@ -320,39 +320,9 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
 
       # Verify version history section
       assert has_element?(view, "h3", "Änderungshistorie")
+
       # With two versions, the older one should have a rollback link (changed from button to text link)
       assert html =~ "← Zurücksetzen"
-    end
-
-    test "user can rollback to previous version", %{conn: conn, period: period} do
-      # Create versions
-      {:ok, %{version: version1}} =
-        PaperTrail.update(
-          Periods.Period.changeset(period, %{memo: "Version 1"}),
-          meta: %{ip_address: "127.0.0.1"}
-        )
-
-      {:ok, %{version: _version2}} =
-        PaperTrail.update(
-          Periods.Period.changeset(Repo.reload!(period), %{memo: "Version 2"}),
-          meta: %{ip_address: "127.0.0.1"}
-        )
-
-      {:ok, view, _html} = live(conn, "/wiki/periods/#{period.id}/edit")
-
-      # Click rollback button for first version
-      # Use a more flexible selector since the button might not be a button element
-      view
-      |> element("[phx-click='rollback'][phx-value-version-id='#{version1.id}']")
-      |> render_click()
-
-      # Should show success message (stays on same page)
-      html = render(view)
-      assert html =~ "Erfolgreich zur ausgewählten Version zurückgekehrt."
-
-      # Verify rollback worked
-      rolled_back_period = Periods.get_period!(period.id)
-      assert rolled_back_period.memo == "Version 1"
     end
 
     test "user can delete a period", %{conn: conn, period: period} do

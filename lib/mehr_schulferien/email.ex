@@ -145,6 +145,7 @@ defmodule MehrSchulferien.Email do
 
   def school_updated_notification(school, address, changes, country_slug \\ "d") do
     school_url = UrlBuilder.school_url(country_slug, school)
+    edit_url = "https://www.mehr-schulferien.de/wiki/schools/#{school.slug}/edit"
 
     new()
     |> to({@admin_name, @admin_email})
@@ -155,7 +156,10 @@ defmodule MehrSchulferien.Email do
     <p><strong>Schulname:</strong> #{school.name}</p>
     <p><strong>Slug:</strong> #{school.slug}</p>
     <p><strong>ID:</strong> #{school.id}</p>
-    <p><a href="#{school_url}" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;">Schule anzeigen</a></p>
+    <p>
+      <a href="#{school_url}" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px;">Schule anzeigen</a>
+      <a href="#{edit_url}" style="display: inline-block; padding: 10px 20px; background-color: #10b981; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px;">Schule bearbeiten</a>
+    </p>
 
     <h3>Aktuelle Adressdaten:</h3>
     #{if address do
@@ -184,6 +188,7 @@ defmodule MehrSchulferien.Email do
     ID: #{school.id}
 
     Link zur Schule: #{school_url}
+    Link zum Bearbeiten: #{edit_url}
 
     Aktuelle Adressdaten:
     #{if address do

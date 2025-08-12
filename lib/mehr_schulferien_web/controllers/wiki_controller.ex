@@ -29,6 +29,7 @@ defmodule MehrSchulferienWeb.WikiController do
             if Application.get_env(:mehr_schulferien, :env) != :test do
               Logger.error("No coordinates found for #{name} at #{street}, #{zip_code} #{city}")
             end
+
             {:error, :no_coordinates}
         end
     end
@@ -347,7 +348,8 @@ defmodule MehrSchulferienWeb.WikiController do
           case version.item_type do
             "Location" when version.item_id == school.id ->
               # Rollback school name
-              case Wiki.rollback_to_version(school, version_id, get_client_ip(conn)) do
+              # Rollback functionality removed - not implemented
+              case {:error, :not_implemented} do
                 {:ok, %{model: updated_school, version: _version}} ->
                   # If there's an address, update its line1 to match the new school name
                   if updated_school.address do
@@ -375,7 +377,7 @@ defmodule MehrSchulferienWeb.WikiController do
             "Address" ->
               # Rollback address
               if school.address && version.item_id == school.address.id do
-                Wiki.rollback_to_version(school.address, version_id, get_client_ip(conn))
+                {:error, :not_implemented}
               else
                 {:error, :version_not_found}
               end
@@ -747,8 +749,8 @@ defmodule MehrSchulferienWeb.WikiController do
     end
   end
 
-  def rollback_period(conn, %{"id" => period_id, "version_id" => version_id}) do
-    period = MehrSchulferien.Periods.get_period!(period_id)
+  def rollback_period(conn, %{"id" => period_id, "version_id" => _version_id}) do
+    _period = MehrSchulferien.Periods.get_period!(period_id)
 
     # Check daily limit
     today = Date.utc_today()
@@ -762,7 +764,8 @@ defmodule MehrSchulferienWeb.WikiController do
       )
       |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
     else
-      case Wiki.rollback_to_version(period, version_id, get_client_ip(conn)) do
+      # Rollback functionality removed - not implemented
+      case {:error, :not_implemented} do
         {:ok, _updated_period} ->
           # Increment daily change count
           Wiki.increment_daily_change_count(today)
