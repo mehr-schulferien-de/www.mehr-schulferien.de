@@ -81,29 +81,39 @@ defmodule MehrSchulferienWeb.RobotsController do
     # Old no longer active routes (redirected to /ferien/)
     Disallow: /land/*
 
-    # Allow only current year (#{current_year}) and next year (#{next_year}) for federal state and bridge days pages
-    # Cities and schools now show consolidated views without year in URL
+    # Allow current year (#{current_year}) and next year (#{next_year}) for all pages
+    # Disallow other years to avoid indexing incomplete or outdated data
     """
 
     # Generate Disallow rules for all years
-    # For cities: disallow all year-specific URLs (they redirect to base URL)
-    # For schools: disallow all year-specific URLs (they redirect to base URL)
+    # For cities and schools: allow current and next year, disallow others
     # For federal states and bridge days: disallow all years except current and next
     disallow_rules =
       all_years
       |> Enum.flat_map(fn year ->
-        # Always disallow year-specific city and school URLs since they redirect
-        city_and_school_rules = [
-          "Disallow: /ferien/*/stadt/*/#{year}$",
-          "Disallow: /ferien/*/schule/*/#{year}$"
-        ]
+        rules = []
+
+        # For cities and schools: only disallow if NOT current or next year
+        rules =
+          if year != current_year && year != next_year do
+            rules ++
+              [
+                "Disallow: /ferien/*/stadt/*/#{year}$",
+                "Disallow: /ferien/*/schule/*/#{year}$"
+              ]
+          else
+            rules
+          end
 
         # For bridge days, only disallow past and far future years
-        if year != current_year && year != next_year do
-          city_and_school_rules ++ ["Disallow: /brueckentage/*/bundesland/*/#{year}$"]
-        else
-          city_and_school_rules
-        end
+        rules =
+          if year != current_year && year != next_year do
+            rules ++ ["Disallow: /brueckentage/*/bundesland/*/#{year}$"]
+          else
+            rules
+          end
+
+        rules
       end)
       |> Enum.join("\n")
 
