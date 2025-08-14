@@ -19,6 +19,7 @@ defmodule MehrSchulferienWeb.SitemapController do
   defp fetch_all_locations_with_periods do
     alias MehrSchulferien.Locations.Location
     alias MehrSchulferien.Periods.Period
+    alias MehrSchulferien.Calendars.VacationTypes
 
     # Get all countries
     countries = Locations.list_countries()
@@ -92,7 +93,18 @@ defmodule MehrSchulferienWeb.SitemapController do
           else: is_school_vacation_types
 
       # Add periods and metadata to each location
-      federal_states_with_meta = add_periods_to_locations(federal_states, periods_by_location_id)
+      # For federal states, also add vacation types
+      today = Calendars.DateHelpers.today_berlin()
+
+      federal_states_with_meta =
+        federal_states
+        |> add_periods_to_locations(periods_by_location_id)
+        |> Enum.map(fn federal_state ->
+          # Fetch vacation types that actually exist for this federal state
+          vacation_types = VacationTypes.list_for_federal_state(federal_state, today)
+          Map.put(federal_state, :vacation_types, vacation_types)
+        end)
+
       counties_with_meta = add_periods_to_locations(counties, periods_by_location_id)
       cities_with_meta = add_periods_to_locations(cities, periods_by_location_id)
       schools_with_meta = add_periods_to_locations(schools, periods_by_location_id)
