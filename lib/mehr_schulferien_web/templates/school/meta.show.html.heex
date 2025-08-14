@@ -1,5 +1,10 @@
 <title>
-  Schulferien {@school.name} {@current_school_year}/{@current_school_year + 1} ({@city.name}, {@federal_state.name})
+  <% truncated_name = MehrSchulferienWeb.Helpers.SeoTitleHelper.truncate_school_name(@school.name) %>
+  <% year_range =
+    MehrSchulferienWeb.Helpers.SeoTitleHelper.format_year_range(
+      @current_school_year,
+      @current_school_year + 1
+    ) %> Schulferien {truncated_name} {year_range}
 </title>
 <meta
   name="description"

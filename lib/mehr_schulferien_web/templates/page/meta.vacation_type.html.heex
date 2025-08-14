@@ -7,7 +7,10 @@ meta_description =
   ) %>
 
 <title>
-  {@vacation_config.name} {@current_year}, {@next_year} Deutschland - Alle Bundesländer
+  {@vacation_config.name} {MehrSchulferienWeb.Helpers.SeoTitleHelper.format_year_range(
+    @current_year,
+    @next_year
+  )} Deutschland
 </title>
 <meta name="description" content={meta_description} />
 <meta

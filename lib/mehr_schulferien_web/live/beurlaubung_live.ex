@@ -34,7 +34,11 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
     ]
   end
 
-  def get_page_title(school_name), do: "Beurlaubungsvordruck - #{school_name}"
+  def get_page_title(school_name) do
+    alias MehrSchulferienWeb.Helpers.SeoTitleHelper
+    truncated = SeoTitleHelper.truncate_school_name(school_name)
+    "Beurlaubung - #{truncated}"
+  end
 
   def get_translations do
     %{

@@ -1,5 +1,8 @@
 <title>
-  Schulferien {@city.name} {@current_year}/{@next_year} - Alle Ferientermine ({@federal_state.name})
+  Schulferien {@city.name} {MehrSchulferienWeb.Helpers.SeoTitleHelper.format_year_range(
+    @current_year,
+    @next_year
+  )} ({@federal_state.name})
 </title>
 <meta
   name="description"

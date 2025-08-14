@@ -208,7 +208,10 @@ defmodule MehrSchulferienWeb.SchoolController do
       # Show next 3 vacations
       |> Enum.take(3)
 
-    page_title = "Entschuldigungsschreiben und Beurlaubungen - #{school.name}"
+    alias MehrSchulferienWeb.Helpers.SeoTitleHelper
+
+    truncated_name = SeoTitleHelper.truncate_school_name(school.name)
+    page_title = "Schulbriefe - #{truncated_name}"
 
     page_description =
       "Erstellen Sie kostenlos Entschuldigungsschreiben, Beurlaubungen und Sportbefreiungen für #{school.name}. Einfache Formulare, professionelle PDFs zum Download."
