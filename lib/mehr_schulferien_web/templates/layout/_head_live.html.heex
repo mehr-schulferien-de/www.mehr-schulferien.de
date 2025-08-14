@@ -27,7 +27,9 @@
   <meta property="og:image:height" content="630" />
 <% end %>
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://www.mehr-schulferien.de/briefe/" />
+<%= if assigns[:current_url] do %>
+  <meta property="og:url" content={@current_url} />
+<% end %>
 <meta property="og:site_name" content="mehr-schulferien.de" />
 <meta property="og:locale" content="de_DE" />
 <!-- Twitter Card meta tags -->
