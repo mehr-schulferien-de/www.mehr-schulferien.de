@@ -7,7 +7,6 @@ defmodule MehrSchulferienWeb.VacationView do
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.ICalPanelComponent
   import MehrSchulferienWeb.FederalStateComponents
-  import MehrSchulferienWeb.FederalState.FaqSchemaComponent
   import MehrSchulferienWeb.FederalState.LastUpdatedComponent
 
   alias MehrSchulferienWeb.Formatters.DateFormatter
