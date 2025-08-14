@@ -233,6 +233,7 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
   def format_vacation_table_data(states_data) do
     Enum.map(states_data, fn %{state: state, period: period, duration: duration} ->
       %{
+        state: state,
         state_name: state.name,
         state_code: state.code,
         state_slug: state.slug,

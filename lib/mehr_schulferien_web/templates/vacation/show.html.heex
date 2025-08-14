@@ -113,15 +113,17 @@
 
                 <% # Show previous year's dates as reference if available %>
                 <% previous_year = @year - 1 %>
-                <div class="bg-white rounded p-4 mb-4">
-                  <.text variant="small" class="text-gray-600 mb-2">Zur Orientierung:</.text>
-                  <a
-                    href={~p"/#{@vacation_type}/#{@federal_state.slug}/#{previous_year}"}
-                    class="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    {@vacation_name} {previous_year} ansehen →
-                  </a>
-                </div>
+                <%= if @previous_year_exists do %>
+                  <div class="bg-white rounded p-4 mb-4">
+                    <.text variant="small" class="text-gray-600 mb-2">Zur Orientierung:</.text>
+                    <a
+                      href={~p"/#{@vacation_type}/#{@federal_state.slug}/#{previous_year}"}
+                      class="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      {@vacation_name} {previous_year} ansehen →
+                    </a>
+                  </div>
+                <% end %>
 
                 <div class="space-y-2">
                   <a

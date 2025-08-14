@@ -92,8 +92,8 @@ defmodule MehrSchulferienWeb.CityController do
         Map.put(period, :adjoining_duration, difference)
       end)
 
-    # Always return 200 status for city pages
-    conn = conn
+    # Set the appropriate status code based on data availability
+    conn = if has_data, do: conn, else: put_status(conn, 404)
 
     # Track city visit
     conn = track_location_visit(conn, "c", city.slug)

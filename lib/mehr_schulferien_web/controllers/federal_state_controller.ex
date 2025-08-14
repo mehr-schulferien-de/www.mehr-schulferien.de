@@ -85,8 +85,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
     # Track federal state visit
     conn = track_location_visit(conn, "f", federal_state.slug)
 
-    # Get vacation types for this federal state
-    vacation_types = VacationTypes.list_for_federal_state(federal_state, today)
+    # Get vacation types for this federal state and specific year
+    vacation_types = VacationTypes.list_for_year(federal_state, year)
 
     render(
       conn,

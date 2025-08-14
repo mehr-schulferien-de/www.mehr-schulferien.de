@@ -105,9 +105,9 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
                 <% end %>
               </td>
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                <%= if data.period do %>
+                <%= if data.period && MehrSchulferien.Calendars.VacationTypes.exists_for_year?(data.state, @vacation_type, @year) do %>
                   <a
-                    href={~p"/#{@vacation_type}/#{data.state_slug}/#{@year}"}
+                    href={"/#{@vacation_type}ferien/#{data.state_slug}/#{@year}"}
                     class="text-blue-600 hover:text-blue-900"
                   >
                     Details <span class="sr-only">für {data.state_name}</span>

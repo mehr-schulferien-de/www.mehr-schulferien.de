@@ -111,6 +111,9 @@ defmodule MehrSchulferienWeb.VacationController do
         nil
       end
 
+    # Set 404 status if no vacation period exists for this year
+    conn = if is_nil(vacation_period), do: put_status(conn, 404), else: conn
+
     render(
       conn,
       "show.html",
@@ -149,13 +152,22 @@ defmodule MehrSchulferienWeb.VacationController do
   end
 
   defp get_vacation_types_for_year(federal_state, year) do
-    year_int = String.to_integer(year)
-    # Middle of the viewed year
-    reference_date = Date.new!(year_int, 6, 1)
-    VacationTypes.list_for_federal_state(federal_state, reference_date)
+    # Get vacation types that actually exist for this specific year
+    VacationTypes.list_for_year(federal_state, year)
   end
 
   defp build_render_assigns(params) do
+    year_int = String.to_integer(params.year)
+    previous_year = year_int - 1
+
+    # Check if previous year vacation exists
+    previous_year_exists =
+      VacationTypes.exists_for_year?(
+        params.federal_state,
+        params.vacation_type_record.slug,
+        previous_year
+      )
+
     %{
       country: params.country,
       federal_state: params.federal_state,
@@ -168,9 +180,10 @@ defmodule MehrSchulferienWeb.VacationController do
       public_periods: params.data.public_periods,
       today: params.today,
       has_data: not is_nil(params.vacation_period_with_adjoining),
+      previous_year_exists: previous_year_exists,
       css_framework: :tailwind_new,
       months: get_german_month_names(),
-      year: String.to_integer(params.year),
+      year: year_int,
       years_with_data: MehrSchulferien.Periods.list_years_with_periods(),
       meta_title_type: :vacation,
       page_title:

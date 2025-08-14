@@ -51,8 +51,8 @@
           <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
         </url>
         
-        <%!-- Vacation-specific URLs for better SEO - only for vacation types that exist for this federal state --%>
-        <%= for vacation_type <- Map.get(federal_state, :vacation_types, []) do %>
+        <%!-- Vacation-specific URLs for better SEO - only for vacation types that exist for this federal state and year --%>
+        <%= for vacation_type <- Map.get(federal_state, :vacation_types_by_year, %{}) |> Map.get(year, []) do %>
           <url>
             <loc>https://www.mehr-schulferien.de/<%= vacation_type.slug %>ferien/<%= federal_state.slug %>/<%= year %></loc>
           </url>

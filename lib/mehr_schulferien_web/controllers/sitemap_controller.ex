@@ -100,9 +100,19 @@ defmodule MehrSchulferienWeb.SitemapController do
         federal_states
         |> add_periods_to_locations(periods_by_location_id)
         |> Enum.map(fn federal_state ->
-          # Fetch vacation types that actually exist for this federal state
-          vacation_types = VacationTypes.list_for_federal_state(federal_state, today)
-          Map.put(federal_state, :vacation_types, vacation_types)
+          # Prepare vacation types per year for accurate sitemap generation
+          period_years = Map.get(federal_state, :period_years, [])
+
+          vacation_types_by_year =
+            period_years
+            |> Enum.filter(fn y -> y == today.year or y == today.year + 1 end)
+            |> Enum.map(fn year ->
+              vacation_types = VacationTypes.list_for_year(federal_state, year)
+              {year, vacation_types}
+            end)
+            |> Map.new()
+
+          Map.put(federal_state, :vacation_types_by_year, vacation_types_by_year)
         end)
 
       counties_with_meta = add_periods_to_locations(counties, periods_by_location_id)

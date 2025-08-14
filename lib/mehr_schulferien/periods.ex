@@ -659,6 +659,28 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
+  Checks if any periods exist for a specific location and year.
+  Useful for determining if vacation pages should exist.
+  """
+  def period_exists_for_year?(location_id, year) when is_integer(year) do
+    start_date = Date.new!(year, 1, 1)
+    end_date = Date.new!(year, 12, 31)
+
+    from(p in Period,
+      where:
+        p.location_id == ^location_id and
+          p.starts_on <= ^end_date and
+          p.ends_on >= ^start_date,
+      limit: 1
+    )
+    |> Repo.exists?()
+  end
+
+  def period_exists_for_year?(location_id, year) when is_binary(year) do
+    period_exists_for_year?(location_id, String.to_integer(year))
+  end
+
+  @doc """
   Validates if adding a beweglicher Ferientag would exceed the federal state limit.
   Returns {:ok, remaining_count} if valid, {:error, reason} if not.
   """
