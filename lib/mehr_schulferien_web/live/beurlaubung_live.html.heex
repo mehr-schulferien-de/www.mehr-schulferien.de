@@ -3,12 +3,14 @@
     <!-- Breadcrumbs and Language Switcher -->
     <div class="flex justify-between items-center mb-6 gap-4">
       <nav aria-label="Breadcrumb" class="flex-1 min-w-0">
+        <% truncated_school_name =
+          MehrSchulferienWeb.Helpers.SeoTitleHelper.truncate_school_name(@school.name, 35) %>
         <% breadcrumbs = [
           {"Startseite", "/"},
           {@country.name, ~p"/ferien/#{@country.slug}"},
           {@federal_state.name, ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"},
           {@city.name, ~p"/ferien/#{@country.slug}/stadt/#{@city.slug}/#{Date.utc_today().year}"},
-          {@school.name,
+          {truncated_school_name,
            ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{Date.utc_today().year}"},
           {"Vordrucke", ~p"/briefe/#{@school.slug}"},
           {"Beurlaubungsvordruck", nil}

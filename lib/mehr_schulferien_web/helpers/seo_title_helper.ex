@@ -47,9 +47,10 @@ defmodule MehrSchulferienWeb.Helpers.SeoTitleHelper do
   def format_year_range(year) when is_integer(year), do: "#{year}"
 
   @doc """
-  Truncates school names intelligently with common abbreviations.
+  Truncates school names intelligently while maintaining readability.
   """
   def truncate_school_name(name, max_length \\ @max_school_name_length) do
+    # First, try simple term replacement
     abbreviated =
       name
       |> replace_common_terms()
@@ -58,7 +59,8 @@ defmodule MehrSchulferienWeb.Helpers.SeoTitleHelper do
     if String.length(abbreviated) <= max_length do
       abbreviated
     else
-      abbreviate_name_parts(abbreviated, max_length)
+      # If still too long, use smart truncation
+      smart_truncate(name, max_length)
     end
   end
 
@@ -88,30 +90,158 @@ defmodule MehrSchulferienWeb.Helpers.SeoTitleHelper do
     |> String.replace("Saint", "St.")
   end
 
-  defp abbreviate_name_parts(name, max_length) do
-    parts = String.split(name, [" ", "-"], trim: true)
+  defp smart_truncate(name, max_length) do
+    # Remove common descriptive phrases first
+    cleaned = remove_descriptors(name)
 
-    abbreviated =
-      if length(parts) > 2 do
-        parts
-        |> Enum.map(&abbreviate_part/1)
-        |> Enum.join("-")
-      else
-        name
-      end
-
-    if String.length(abbreviated) <= max_length do
-      abbreviated
+    # Try with just cleaning
+    if String.length(cleaned) <= max_length do
+      cleaned
     else
-      truncate_with_ellipsis(abbreviated, max_length)
+      # Extract main name and location
+      {main_name, location} = extract_name_and_location(cleaned)
+
+      # Replace common terms in main name
+      main_abbreviated = replace_common_terms(main_name)
+
+      # Try with abbreviated main name + location
+      with_location =
+        if location && String.length(location) <= 15 do
+          "#{main_abbreviated} #{location}"
+        else
+          main_abbreviated
+        end
+
+      if String.length(with_location) <= max_length do
+        with_location
+      else
+        # Last resort: truncate the main name more aggressively
+        truncate_main_name(main_abbreviated, max_length)
+      end
     end
   end
 
-  defp abbreviate_part(part) do
-    cond do
-      String.length(part) <= 3 -> part
-      String.match?(part, ~r/^[A-Z]/) -> String.first(part) <> "."
-      true -> String.slice(part, 0, 3)
+  defp remove_descriptors(name) do
+    # Remove common administrative/descriptive phrases
+    descriptors = [
+      "Staatliche anerkannte",
+      "Staatlich anerkannte",
+      "Städtische",
+      "Städtisches",
+      "Staatliche",
+      "Staatliches",
+      "katholische freie Schule",
+      "evangelische freie Schule",
+      "katholische Schule",
+      "evangelische Schule",
+      "freie Schule",
+      "Privates",
+      "Private",
+      "Bischöfliche",
+      "Bischöfliches",
+      "Erzbischöfliche",
+      "Erzbischöfliches"
+    ]
+
+    Enum.reduce(descriptors, name, fn descriptor, acc ->
+      String.replace(acc, descriptor, "")
+    end)
+    |> String.replace(~r/\s+/, " ")
+    |> String.trim()
+  end
+
+  defp extract_name_and_location(name) do
+    # Common location indicators
+    location_patterns = [
+      ~r/\s+(Bad\s+\w+)$/,
+      ~r/\s+(am\s+\w+)$/,
+      ~r/\s+(im\s+\w+)$/,
+      ~r/\s+(in\s+\w+)$/,
+      ~r/\s+(\w+burg)$/,
+      ~r/\s+(\w+stadt)$/,
+      ~r/\s+(\w+hausen)$/,
+      ~r/\s+(\w+heim)$/,
+      ~r/\s+(\w+dorf)$/
+    ]
+
+    # Try to extract location from the end
+    location =
+      Enum.find_value(location_patterns, fn pattern ->
+        case Regex.run(pattern, name) do
+          [_, loc] -> loc
+          _ -> nil
+        end
+      end)
+
+    if location do
+      main = String.replace(name, location, "") |> String.trim()
+      {main, location}
+    else
+      # Check if last word might be a city name (capitalized, not a school type)
+      parts = String.split(name, " ")
+      last_word = List.last(parts)
+
+      school_types = [
+        "Gymnasium",
+        "Grundschule",
+        "Realschule",
+        "Hauptschule",
+        "Gesamtschule",
+        "Mittelschule",
+        "Oberschule",
+        "Berufsschule",
+        "Förderschule",
+        "Gemeinschaftsschule",
+        "Schule"
+      ]
+
+      if length(parts) > 2 && last_word not in school_types &&
+           String.match?(last_word, ~r/^[A-Z]/) do
+        main = parts |> Enum.drop(-1) |> Enum.join(" ")
+        {main, last_word}
+      else
+        {name, nil}
+      end
+    end
+  end
+
+  defp truncate_main_name(name, max_length) do
+    # Smart truncation for the main name
+    if String.contains?(name, "-") do
+      # For hyphenated names, try to keep the pattern recognizable
+      parts = String.split(name, "-")
+
+      if length(parts) == 2 do
+        # e.g., "Albertus-Magnus-Gym" -> keep first part full, abbreviate second
+        [first, second] = parts
+
+        abbreviated_second =
+          if String.length(second) > 6 do
+            String.slice(second, 0, 3) <> "."
+          else
+            second
+          end
+
+        result = "#{first}-#{abbreviated_second}"
+
+        if String.length(result) <= max_length do
+          result
+        else
+          # Still too long, abbreviate first part too
+          truncate_with_ellipsis(name, max_length)
+        end
+      else
+        # Multiple hyphens, keep first two parts if possible
+        important_parts = Enum.take(parts, 2) |> Enum.join("-")
+
+        if String.length(important_parts) <= max_length do
+          important_parts <> "..."
+        else
+          truncate_with_ellipsis(name, max_length)
+        end
+      end
+    else
+      truncate_with_ellipsis(name, max_length)
     end
   end
 

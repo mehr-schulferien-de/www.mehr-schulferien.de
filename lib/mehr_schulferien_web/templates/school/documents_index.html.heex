@@ -96,8 +96,10 @@
               >
               </path>
             </svg>
-            <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", class: "ml-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2 truncate max-w-[120px] md:max-w-none", title: @school.name do %>
-              {@school.name}
+            <% truncated_school_name =
+              MehrSchulferienWeb.Helpers.SeoTitleHelper.truncate_school_name(@school.name, 35) %>
+            <%= link to: ~p"/ferien/#{@country.slug}/schule/#{@school.slug}/#{@current_year}", class: "ml-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2 truncate max-w-[120px] md:max-w-[200px]", title: @school.name do %>
+              {truncated_school_name}
             <% end %>
           </div>
         </li>
