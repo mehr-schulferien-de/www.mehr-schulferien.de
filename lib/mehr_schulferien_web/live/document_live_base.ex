@@ -482,7 +482,7 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
             %{
               page_description:
                 "Erstellen Sie eine Sportbefreiung für #{school_name}. Einfaches Formular, professionelles PDF zum Download.",
-              og_image: "/images/sportbefreiung-vorschau.webp"
+              og_image: "/images/entschuldigung-dummy.png"
             }
 
           _ ->
