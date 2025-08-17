@@ -53,7 +53,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
     ~H"""
     <div class="mt-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-      <div class="mx-auto px-4 py-8 sm:py-12">
+      <div class="mx-auto px-4 py-6">
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" id="faq">
           Ferien FAQ
         </h2>
@@ -62,7 +62,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
         </p>
 
         <div class="mt-6">
-          <dl class="space-y-8 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-8 sm:space-y-0">
+          <dl class="space-y-6 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 sm:space-y-0">
             <!-- School Vacation FAQ Section -->
             <.faq_question question={@faq_data.next_vacation_question} />
 
@@ -137,8 +137,8 @@ defmodule MehrSchulferienWeb.FaqComponent do
   # Individual FAQ question components
   defp section_header(assigns) do
     ~H"""
-    <div class="sm:col-span-2 mt-8">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{@title}</h3>
+    <div class="sm:col-span-2 mt-3">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{@title}</h3>
     </div>
     """
   end

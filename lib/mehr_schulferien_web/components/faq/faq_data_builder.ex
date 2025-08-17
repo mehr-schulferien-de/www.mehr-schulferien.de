@@ -261,11 +261,24 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
   end
 
   defp format_periods_answer(periods) do
-    Enum.map_join(
-      periods,
-      " ",
-      &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})"
-    )
+    period_texts =
+      Enum.map(
+        periods,
+        &"#{&1.holiday_or_vacation_type.colloquial} (#{ViewHelpers.format_date_range(&1.starts_on, &1.ends_on, :short)})"
+      )
+
+    # Join with commas and "und" before the last item
+    case period_texts do
+      [] ->
+        ""
+
+      [single] ->
+        single
+
+      _ ->
+        {last, rest} = List.pop_at(period_texts, -1)
+        Enum.join(rest, ", ") <> " und " <> last
+    end
   end
 
   def location_preposition(location, is_school_page) do
