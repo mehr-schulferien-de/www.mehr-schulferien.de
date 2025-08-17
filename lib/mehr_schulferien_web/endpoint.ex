@@ -39,6 +39,10 @@ defmodule MehrSchulferienWeb.Endpoint do
     gzip: false,
     only: ~w(assets css fonts images favicon.ico robots.txt ads.txt)
 
+  if Application.compile_env(:mehr_schulferien, :env) == :dev do
+    plug Tidewave
+  end
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
@@ -62,10 +66,6 @@ defmodule MehrSchulferienWeb.Endpoint do
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session, @session_options
-
-  if Application.compile_env(:mehr_schulferien, :env) == :dev do
-    plug Tidewave
-  end
 
   plug MehrSchulferienWeb.Router
 end
