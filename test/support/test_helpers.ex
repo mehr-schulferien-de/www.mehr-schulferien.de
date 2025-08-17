@@ -42,4 +42,50 @@ defmodule MehrSchulferien.TestHelpers do
       _ -> raise ArgumentError, "Unknown country slug: #{slug}"
     end
   end
+
+  @doc """
+  Creates a school with the full location hierarchy for testing.
+  This is used as a setup function in many tests.
+  """
+  def create_school(_context \\ %{}) do
+    # Create the location hierarchy needed for a school
+    country = get_or_create_deutschland()
+
+    federal_state =
+      insert(:federal_state, %{
+        parent_location_id: country.id,
+        slug: "rheinland-pfalz",
+        name: "Rheinland-Pfalz"
+      })
+
+    county =
+      insert(:county, %{
+        parent_location_id: federal_state.id,
+        slug: "koblenz",
+        name: "Koblenz"
+      })
+
+    city =
+      insert(:city, %{
+        parent_location_id: county.id,
+        slug: "koblenz-stadt",
+        name: "Koblenz"
+      })
+
+    school =
+      insert(:school, %{
+        parent_location_id: city.id,
+        slug: "test-gymnasium",
+        name: "Test-Gymnasium"
+      })
+
+    {:ok,
+     %{
+       country: country,
+       federal_state: federal_state,
+       county: county,
+       city: city,
+       school: school
+     }}
+  end
 end

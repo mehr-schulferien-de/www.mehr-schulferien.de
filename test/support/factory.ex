@@ -112,6 +112,25 @@ defmodule MehrSchulferien.Factory do
     merge_attributes(school, attrs)
   end
 
+  def school_with_address_factory do
+    # Build a school with an associated address
+    school = build(:school)
+
+    address = %MehrSchulferien.Maps.Address{
+      street: "Teststraße 123",
+      zip_code: "12345",
+      city: "Teststadt",
+      email_address: "test@school.de",
+      phone_number: "+49 123 456789",
+      homepage_url: "https://test-school.de",
+      line1: "Schubart-Gymnasium Partnerschule für Europa",
+      school_type: "Gymnasium"
+    }
+
+    # Return school with address
+    %{school | address: address}
+  end
+
   def period_factory(attrs \\ %{}) do
     federal_state = Map.get(attrs, :location_id) || insert(:federal_state).id
 

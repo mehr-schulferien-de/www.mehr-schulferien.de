@@ -1,5 +1,5 @@
 defmodule MehrSchulferienWeb.VacationUrlGenerationTest do
-  use MehrSchulferienWeb.ConnCase, async: true
+  use MehrSchulferienWeb.ConnCase, async: false
   import MehrSchulferien.TestHelpers
   alias MehrSchulferien.Calendars.VacationTypes
 

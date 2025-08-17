@@ -3,7 +3,7 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
-  import MehrSchulferien.TestHelpers
+  import MehrSchulferien.TestHelpers, except: [create_school: 1]
   @moduletag :system
 
   describe "PDF generation and download" do
