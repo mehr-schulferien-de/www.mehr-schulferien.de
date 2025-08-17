@@ -50,7 +50,7 @@ defmodule MehrSchulferien.MixProject do
       {:ex_doc, "~> 0.38", only: :dev, runtime: false},
       {:ecto_autoslug_field, "~> 3.0"},
       {:req, "~> 0.5.10"},
-      {:tidewave, "~> 0.2.0", only: :dev},
+      {:tidewave, "~> 0.3.0", only: :dev},
       {:ex_phone_number, "~> 0.4.8"},
       {:paper_trail, "~> 1.1.2"},
       {:swoosh, "~> 1.16"},
