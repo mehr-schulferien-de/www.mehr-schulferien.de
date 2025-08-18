@@ -157,7 +157,7 @@ defmodule MehrSchulferien.Periods.Grouping do
     end_check = last_bridge.ends_on
 
     # Get all dates in the range
-    date_range = 
+    date_range =
       if Date.compare(start_check, end_check) == :gt do
         Date.range(start_check, end_check, -1)
       else
