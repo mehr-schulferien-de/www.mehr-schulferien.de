@@ -19,7 +19,9 @@ defmodule MehrSchulferienWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: MehrSchulferienWeb
+      use Phoenix.Controller,
+        formats: [:html, :json, :ics, :xml],
+        layouts: [html: MehrSchulferienWeb.LayoutView]
 
       import Plug.Conn
       import MehrSchulferienWeb.Gettext
@@ -33,8 +35,7 @@ defmodule MehrSchulferienWeb do
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/mehr_schulferien_web/templates",
-        namespace: MehrSchulferienWeb
+        root: "lib/mehr_schulferien_web/templates"
 
       # Import convenience functions from controllers
       import Phoenix.Controller,

@@ -180,9 +180,25 @@ mix test  # Output should be only dots, no text
 - **LiveView** for interactive components
 - **Responsive design** with Tailwind CSS
 
+## Phoenix 1.8 Migration Status
+
+**✅ COMPLETED**: This project has been successfully upgraded from Phoenix 1.7.21 to Phoenix 1.8.0.
+
+### Migration Details:
+- **HTML Modules**: All View modules have been migrated to format-specific modules (HTML, JSON, ICS, XML)
+- **Controller Configuration**: Updated to use `:formats` and `:layouts` options
+- **Test Dependencies**: Added `lazy_html` for LiveView tests
+- **All tests passing**: 707 tests, 0 failures
+
+### Module Structure:
+- HTML modules: `lib/mehr_schulferien_web/controllers/*_html.ex`
+- JSON modules: `lib/mehr_schulferien_web/controllers/api/v2/*_json.ex`
+- ICS modules: `lib/mehr_schulferien_web/controllers/api/v2/*_ics.ex`
+- XML modules: `lib/mehr_schulferien_web/controllers/*_xml.ex`
+
 ## Phoenix Verified Routes (~p sigil)
 
-The project has been fully migrated to Phoenix verified routes (Phoenix 1.7.21+) and exclusively uses the `~p` sigil for all routing.
+The project has been fully migrated to Phoenix verified routes and exclusively uses the `~p` sigil for all routing.
 
 ### Implementation
 1. **Setup** - Verified routes are configured in:
