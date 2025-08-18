@@ -11,7 +11,8 @@ defmodule MehrSchulferien.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      versioning: versioning()
+      versioning: versioning(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 
@@ -74,7 +75,8 @@ defmodule MehrSchulferien.MixProject do
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": [
-        "tailwind default",
+        "cmd export NODE_ENV=production",
+        "tailwind production",
         "esbuild default --minify",
         "assets.copy",
         "phx.digest"

@@ -84,6 +84,27 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
+  Ultra-lightweight query for period counts and date ranges.
+  Used for generating navigation and overview data.
+  """
+  def list_periods_summary(location_ids, starts_on, ends_on) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          p.ends_on >= ^starts_on and
+          p.starts_on <= ^ends_on,
+      select: %{
+        id: p.id,
+        starts_on: p.starts_on,
+        ends_on: p.ends_on,
+        is_public_holiday: p.is_public_holiday,
+        is_school_vacation: p.is_school_vacation
+      }
+    )
+    |> Repo.all()
+  end
+
+  @doc """
   Returns the list of periods.
   """
   def list_periods do

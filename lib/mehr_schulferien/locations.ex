@@ -82,6 +82,32 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Gets a single location by slug with only essential fields.
+  Optimized for display purposes where full record isn't needed.
+  """
+  def get_location_by_slug_selective!(slug) do
+    query =
+      from l in Location,
+        where: l.slug == ^slug,
+        select: %Location{
+          id: l.id,
+          name: l.name,
+          slug: l.slug,
+          parent_location_id: l.parent_location_id,
+          is_country: l.is_country,
+          is_federal_state: l.is_federal_state,
+          is_county: l.is_county,
+          is_city: l.is_city,
+          is_school: l.is_school
+        }
+
+    case Repo.one(query) do
+      nil -> raise Ecto.NoResultsError, queryable: query
+      location -> location
+    end
+  end
+
+  @doc """
   Creates a location.
   """
   def create_location(attrs \\ %{}) do
@@ -260,42 +286,52 @@ defmodule MehrSchulferien.Locations do
 
   Uses a single recursive CTE query instead of multiple queries.
   Returns IDs ordered from root (country) to the given location.
+  Results are cached for 1 hour to improve performance.
   """
   def recursive_location_ids(%Location{id: location_id}) do
-    query = """
-    WITH RECURSIVE location_hierarchy AS (
-      -- Base case: start with the given location
-      SELECT id, parent_location_id, 1 as level
-      FROM locations
-      WHERE id = $1
-      
-      UNION ALL
-      
-      -- Recursive case: find parent of each location
-      SELECT l.id, l.parent_location_id, lh.level + 1
-      FROM locations l
-      INNER JOIN location_hierarchy lh ON l.id = lh.parent_location_id
-    )
-    SELECT id 
-    FROM location_hierarchy
-    ORDER BY level DESC
-    """
+    cache_key = "location_hierarchy:#{location_id}"
 
-    case Repo.query(query, [location_id]) do
-      {:ok, %{rows: rows}} ->
-        Enum.map(rows, fn [id] -> id end)
-
-      {:error, reason} ->
-        # Log the error for debugging
-        require Logger
-
-        Logger.error(
-          "Failed to execute recursive CTE for location #{location_id}: #{inspect(reason)}"
+    Cache.cached_location_operation(
+      cache_key,
+      fn ->
+        query = """
+        WITH RECURSIVE location_hierarchy AS (
+          -- Base case: start with the given location
+          SELECT id, parent_location_id, 1 as level
+          FROM locations
+          WHERE id = $1
+          
+          UNION ALL
+          
+          -- Recursive case: find parent of each location
+          SELECT l.id, l.parent_location_id, lh.level + 1
+          FROM locations l
+          INNER JOIN location_hierarchy lh ON l.id = lh.parent_location_id
         )
+        SELECT id 
+        FROM location_hierarchy
+        ORDER BY level DESC
+        """
 
-        # Return empty list on error to maintain consistent return type
-        []
-    end
+        case Repo.query(query, [location_id]) do
+          {:ok, %{rows: rows}} ->
+            Enum.map(rows, fn [id] -> id end)
+
+          {:error, reason} ->
+            # Log the error for debugging
+            require Logger
+
+            Logger.error(
+              "Failed to execute recursive CTE for location #{location_id}: #{inspect(reason)}"
+            )
+
+            # Return empty list on error to maintain consistent return type
+            []
+        end
+      end,
+      # Cache for 1 hour
+      ttl: 3600
+    )
   end
 
   #
@@ -304,26 +340,42 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Returns the list of countries.
+  Results are cached for 24 hours since countries rarely change.
   """
   def list_countries do
-    Repo.all(from l in Location, where: l.is_country == true)
+    Cache.cached_location_operation(
+      "countries:all",
+      fn ->
+        Repo.all(from l in Location, where: l.is_country == true)
+      end,
+      # Cache for 24 hours
+      ttl: 86400
+    )
   end
 
   @doc """
   Returns the list of countries with only essential fields.
   Reduces data transfer by ~75% compared to full query.
+  Results are cached for 24 hours since countries rarely change.
   """
   def list_countries_selective do
-    from(l in Location,
-      where: l.is_country == true,
-      select: %Location{
-        id: l.id,
-        name: l.name,
-        slug: l.slug,
-        is_country: l.is_country
-      }
+    Cache.cached_location_operation(
+      "countries:selective",
+      fn ->
+        from(l in Location,
+          where: l.is_country == true,
+          select: %Location{
+            id: l.id,
+            name: l.name,
+            slug: l.slug,
+            is_country: l.is_country
+          }
+        )
+        |> Repo.all()
+      end,
+      # Cache for 24 hours
+      ttl: 86400
     )
-    |> Repo.all()
   end
 
   @doc """
@@ -427,27 +479,43 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Returns the list of federal states in a country.
+  Results are cached for 24 hours since federal states rarely change.
   """
   def list_federal_states(country) do
-    list_children_by_flag(country, :is_federal_state)
+    Cache.cached_location_operation(
+      "federal_states:#{country.id}",
+      fn ->
+        list_children_by_flag(country, :is_federal_state)
+      end,
+      # Cache for 24 hours
+      ttl: 86400
+    )
   end
 
   @doc """
   Returns the list of federal states with only essential fields.
   Reduces data transfer by ~69% compared to full query.
+  Results are cached for 24 hours since federal states rarely change.
   """
   def list_federal_states_selective(country) do
-    from(l in Location,
-      where: l.is_federal_state == true and l.parent_location_id == ^country.id,
-      select: %Location{
-        id: l.id,
-        name: l.name,
-        slug: l.slug,
-        parent_location_id: l.parent_location_id,
-        is_federal_state: l.is_federal_state
-      }
+    Cache.cached_location_operation(
+      "federal_states:selective:#{country.id}",
+      fn ->
+        from(l in Location,
+          where: l.is_federal_state == true and l.parent_location_id == ^country.id,
+          select: %Location{
+            id: l.id,
+            name: l.name,
+            slug: l.slug,
+            parent_location_id: l.parent_location_id,
+            is_federal_state: l.is_federal_state
+          }
+        )
+        |> Repo.all()
+      end,
+      # Cache for 24 hours
+      ttl: 86400
     )
-    |> Repo.all()
   end
 
   #
@@ -528,6 +596,28 @@ defmodule MehrSchulferien.Locations do
     city
     |> list_children_by_flag(:is_school)
     |> Repo.preload([:address])
+  end
+
+  @doc """
+  Returns the list of schools for a certain city with only essential fields.
+  Optimized for list displays where full records aren't needed.
+  Reduces data transfer by ~65%.
+  """
+  def list_schools_selective(city) do
+    from(l in Location,
+      left_join: a in MehrSchulferien.Maps.Address,
+      on: a.school_location_id == l.id,
+      where: l.is_school == true and l.parent_location_id == ^city.id,
+      select: %{
+        id: l.id,
+        name: l.name,
+        slug: l.slug,
+        parent_location_id: l.parent_location_id,
+        street: a.street,
+        zip_code: a.zip_code
+      }
+    )
+    |> Repo.all()
   end
 
   @doc """

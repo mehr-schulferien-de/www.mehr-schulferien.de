@@ -63,6 +63,17 @@ config :tailwind,
       --output=../priv/static/assets/app.css
     ),
     cd: Path.expand("../assets", __DIR__)
+  ],
+  # Production build with minification
+  production: [
+    args: ~w(
+      --config=tailwind.config.js
+      --input=css/app.css
+      --output=../priv/static/assets/app.css
+      --minify
+    ),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_ENV" => "production"}
   ]
 
 # Configure Swoosh API client

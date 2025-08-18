@@ -36,8 +36,10 @@ defmodule MehrSchulferienWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :mehr_schulferien,
-    gzip: false,
-    only: ~w(assets css fonts images favicon.ico robots.txt ads.txt)
+    gzip: Mix.env() == :prod,
+    only: ~w(assets css fonts images favicon.ico robots.txt ads.txt),
+    cache_control_for_etags: "public, max-age=31536000",
+    headers: [{"cache-control", "public, max-age=31536000"}]
 
   if Application.compile_env(:mehr_schulferien, :env) == :dev do
     plug Tidewave
@@ -66,6 +68,11 @@ defmodule MehrSchulferienWeb.Endpoint do
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session, @session_options
+
+  # Add compression for dynamic responses in production
+  if Mix.env() == :prod do
+    plug MehrSchulferienWeb.Plugs.Compression
+  end
 
   plug MehrSchulferienWeb.Router
 end

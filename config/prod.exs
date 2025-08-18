@@ -36,7 +36,11 @@ config :mehr_schulferien, MehrSchulferien.Repo,
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   # Check origin to prevent CSRF attacks
-  check_origin: ["https://mehr-schulferien.de", "https://www.mehr-schulferien.de"]
+  check_origin: ["https://mehr-schulferien.de", "https://www.mehr-schulferien.de"],
+  # Enable gzip compression for static files
+  gzip: true,
+  # Set cache control headers for static assets
+  static_cache_control: "public, max-age=31536000"
 
 # Increased logging level for debugging in production
 # config :logger, level: :info

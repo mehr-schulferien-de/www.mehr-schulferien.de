@@ -6,7 +6,7 @@ defmodule MehrSchulferien.Calendars do
   import Ecto.Query, warn: false
 
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, Religion}
-  alias MehrSchulferien.Repo
+  alias MehrSchulferien.{Cache, Repo}
 
   @doc """
   Returns the list of religions.
@@ -56,43 +56,84 @@ defmodule MehrSchulferien.Calendars do
 
   @doc """
   Returns the list of holiday_or_vacation_types.
+  Results are cached for 24 hours since vacation types rarely change.
   """
   def list_holiday_or_vacation_types do
-    Repo.all(HolidayOrVacationType)
+    Cache.cached_query_operation(
+      "vacation_types:all",
+      fn ->
+        Repo.all(HolidayOrVacationType)
+      end,
+      # Cache for 24 hours
+      ttl: 86400
+    )
   end
 
   @doc """
   Returns the list of holiday_or_vacation_types which are is_school_vacation == true.
+  Results are cached for 24 hours since vacation types rarely change.
   """
   def list_is_school_vacation_types(country) do
-    query =
-      from(p in HolidayOrVacationType,
-        where:
-          p.default_is_school_vacation == true and
-            p.country_location_id == ^country.id
-      )
+    Cache.cached_query_operation(
+      "vacation_types:school:#{country.id}",
+      fn ->
+        query =
+          from(p in HolidayOrVacationType,
+            where:
+              p.default_is_school_vacation == true and
+                p.country_location_id == ^country.id
+          )
 
-    Repo.all(query)
+        Repo.all(query)
+      end,
+      # Cache for 24 hours
+      ttl: 86400
+    )
   end
 
   @doc """
   Gets a single holiday_or_vacation_type.
+  Results are cached for 24 hours since vacation types rarely change.
 
   Raises `Ecto.NoResultsError` if the Holiday or vacation type does not exist.
   """
-  def get_holiday_or_vacation_type!(id), do: Repo.get!(HolidayOrVacationType, id)
+  def get_holiday_or_vacation_type!(id) do
+    Cache.cached_query_operation(
+      "vacation_type:#{id}",
+      fn ->
+        Repo.get!(HolidayOrVacationType, id)
+      end,
+      # Cache for 24 hours
+      ttl: 86400
+    )
+  end
 
   def get_holiday_or_vacation_type_by_name!(name) do
-    Repo.get_by!(HolidayOrVacationType, name: name)
+    Cache.cached_query_operation(
+      "vacation_type:name:#{name}",
+      fn ->
+        Repo.get_by!(HolidayOrVacationType, name: name)
+      end,
+      # Cache for 24 hours
+      ttl: 86400
+    )
   end
 
   @doc """
   Gets a single get_holiday_or_vacation_type by querying for the slug.
+  Results are cached for 24 hours since vacation types rarely change.
 
   Raises `Ecto.NoResultsError` if the federal state does not exist.
   """
   def get_holiday_or_vacation_type_by_slug!(slug) do
-    Repo.get_by!(HolidayOrVacationType, slug: slug)
+    Cache.cached_query_operation(
+      "vacation_type:slug:#{slug}",
+      fn ->
+        Repo.get_by!(HolidayOrVacationType, slug: slug)
+      end,
+      # Cache for 24 hours
+      ttl: 86400
+    )
   end
 
   @doc """
