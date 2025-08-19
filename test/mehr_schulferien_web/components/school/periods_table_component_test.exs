@@ -39,7 +39,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
       assert html =~ "<tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">"
       assert html =~ "Name"
       assert html =~ "Termin"
-      assert html =~ "Tage*"
+      assert html =~ "Tage"
     end
 
     test "displays memo for Beweglicher Ferientag with memo" do
@@ -269,7 +269,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
 
       # Should show the footnote about effective duration
       assert html =~
-               "* Die effektive Dauer in Tagen enthält an die Ferien angrenzende Wochenenden und Feiertage."
+               "Die Anzahl der Tage enthält angrenzende Wochenenden und Feiertage."
     end
 
     test "generates correct anchor links for calendar navigation" do

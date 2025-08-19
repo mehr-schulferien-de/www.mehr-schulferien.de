@@ -89,7 +89,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
       class={"hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer #{if @is_current, do: "bg-yellow-100 dark:bg-yellow-900"} #{if @is_past, do: "text-gray-400 dark:text-gray-500"} #{if @is_next_year, do: "bg-gray-50 dark:bg-gray-900"}"}
       onclick={"window.location.href='#{@row_href}'"}
     >
-      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm font-medium align-top">
+      <td class="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm font-medium align-top">
         <%= if @period_link_builder do %>
           <a
             href={@period_link_builder.(@period)}
@@ -98,16 +98,25 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
             {render_slot(@period_name) || render_period_name(assigns)}
           </a>
         <% else %>
-          {render_slot(@period_name) || render_period_name(assigns)}
+          <span class="sm:hidden">
+            <%= if @period.holiday_or_vacation_type.name == "Beweglicher Ferientag" do %>
+              Bewegl. Ferientag
+            <% else %>
+              {render_slot(@period_name) || render_period_name(assigns)}
+            <% end %>
+          </span>
+          <span class="hidden sm:inline">
+            {render_slot(@period_name) || render_period_name(assigns)}
+          </span>
         <% end %>
 
         <%= if @show_memo && @period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && @period.memo && @period.memo != "" do %>
-          <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+          <div class="hidden sm:block text-xs text-gray-600 dark:text-gray-400 mt-1">
             {clean_beweglicher_ferientag_memo(@period.memo)}
           </div>
         <% end %>
       </td>
-      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm align-top">
+      <td class="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm align-top">
         <%= if @show_mobile_dates do %>
           <.mobile_date_display
             period={@period}
@@ -122,7 +131,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
           />
         <% end %>
       </td>
-      <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-right align-top">
+      <td class="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm text-right align-top">
         {@effective_duration}
       </td>
     </tr>
@@ -148,7 +157,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     ~H"""
     <%= if @has_differences do %>
       <div class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-        * Die effektive Dauer in Tagen enthält an die Ferien angrenzende Wochenenden und Feiertage.
+        Die Anzahl der Tage enthält angrenzende Wochenenden und Feiertage.
       </div>
     <% end %>
     """
@@ -196,30 +205,28 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     ~H"""
     <div>
       <%= if Date.compare(@period.starts_on, @period.ends_on) == :eq do %>
-        <span class="sm:hidden whitespace-nowrap">
+        <span class="sm:hidden whitespace-nowrap text-xs sm:text-sm">
           <%= if @show_year_in_dates do %>
-            {DateFormatter.format_date_full(@period.starts_on)}
-          <% else %>
             {DateFormatter.format_date_with_short_year(@period.starts_on)}
+          <% else %>
+            {DateFormatter.format_date_short(@period.starts_on)}
           <% end %>
         </span>
         <span class="hidden sm:inline whitespace-nowrap">
           {DateFormatter.format_date_full(@period.starts_on)}
         </span>
       <% else %>
-        <div class="sm:hidden">
+        <span class="sm:hidden whitespace-nowrap text-xs">
           <%= if @show_year_in_dates do %>
-            <span class="whitespace-nowrap">{DateFormatter.format_date_full(@period.starts_on)}</span>
-            <span class="whitespace-nowrap">- {DateFormatter.format_date_full(@period.ends_on)}</span>
+            {DateFormatter.format_date_with_short_year(@period.starts_on)} - {DateFormatter.format_date_with_short_year(
+              @period.ends_on
+            )}
           <% else %>
-            <span class="whitespace-nowrap">
-              {DateFormatter.format_date_with_short_year(@period.starts_on)}
-            </span>
-            <span class="whitespace-nowrap">
-              - {DateFormatter.format_date_with_short_year(@period.ends_on)}
-            </span>
+            {DateFormatter.format_date_short(@period.starts_on)}-{DateFormatter.format_date_short(
+              @period.ends_on
+            )}
           <% end %>
-        </div>
+        </span>
         <span class="hidden sm:inline whitespace-nowrap">
           {DateFormatter.format_date_full(@period.starts_on)} - {DateFormatter.format_date_full(
             @period.ends_on
