@@ -19,6 +19,12 @@ defmodule MehrSchulferienWeb.SchoolController do
         |> put_status(:moved_permanently)
         |> redirect(to: ~p"/ferien/#{country.slug}/schule/#{school_slug}")
 
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("404.html")
+
       {:error, _} ->
         conn
         |> put_status(:service_unavailable)
@@ -38,6 +44,12 @@ defmodule MehrSchulferienWeb.SchoolController do
          school: school
        }} ->
         show_school_page(conn, country, federal_state, county, city, school)
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> render("404.html")
 
       {:error, _} ->
         conn

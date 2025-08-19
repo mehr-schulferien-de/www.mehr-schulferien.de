@@ -698,12 +698,17 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
             try do
               # Reload school with preloaded associations for email
               school_with_address = Repo.preload(school, [:address, :parent_location])
-              
+
               # Get the country slug for the email
               country_slug = get_country_slug_from_school(school_with_address)
 
               # Send the deletion notification email with reason
-              Email.school_deleted_notification(school_with_address, school_with_address.address, country_slug, reason)
+              Email.school_deleted_notification(
+                school_with_address,
+                school_with_address.address,
+                country_slug,
+                reason
+              )
               |> Mailer.deliver!()
             rescue
               error ->
@@ -722,7 +727,8 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
                   ~p"/ferien/d/stadt/#{parent.slug}"
 
                 parent.is_county ->
-                  ~p"/ferien/d"  # Counties don't have their own page, redirect to main
+                  # Counties don't have their own page, redirect to main
+                  ~p"/ferien/d"
 
                 parent.is_federal_state ->
                   ~p"/ferien/d/bundesland/#{parent.slug}"

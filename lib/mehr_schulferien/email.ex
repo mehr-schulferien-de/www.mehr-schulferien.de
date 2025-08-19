@@ -281,7 +281,7 @@ defmodule MehrSchulferien.Email do
     |> subject("Schule gelöscht: #{school.name}")
     |> html_body("""
     <h2>Schule wurde gelöscht</h2>
-    
+
     <h3>Grunddaten:</h3>
     <p><strong>Schulname:</strong> #{school.name}</p>
     <p><strong>Slug:</strong> #{school.slug}</p>
@@ -313,12 +313,12 @@ defmodule MehrSchulferien.Email do
         <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Gründungsjahr:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.founded_year || "N/A"}</td></tr>
         <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Beschreibung:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.description || "N/A"}</td></tr>
         #{if address.lat && address.lon do
-          """
-          <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Koordinaten:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.lat}, #{address.lon}</td></tr>
-          """
-        else
-          ""
-        end}
+        """
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Koordinaten:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.lat}, #{address.lon}</td></tr>
+        """
+      else
+        ""
+      end}
       </table>
       """
     else
@@ -343,11 +343,10 @@ defmodule MehrSchulferien.Email do
 
       -- Adresse wiederherstellen (falls vorhanden)
       #{if address do
-        "INSERT INTO addresses (school_location_id, line1, street, zip_code, city, email_address, phone_number, homepage_url)\n" <>
-        "VALUES (#{school.id}, '#{escape_sql(school.name)}', '#{escape_sql(address.street)}', '#{escape_sql(address.zip_code)}', '#{escape_sql(address.city)}', '#{escape_sql(address.email_address)}', '#{escape_sql(address.phone_number)}', '#{escape_sql(address.homepage_url)}');"
-      else
-        "-- Keine Adresse vorhanden"
-      end}
+      "INSERT INTO addresses (school_location_id, line1, street, zip_code, city, email_address, phone_number, homepage_url)\n" <> "VALUES (#{school.id}, '#{escape_sql(school.name)}', '#{escape_sql(address.street)}', '#{escape_sql(address.zip_code)}', '#{escape_sql(address.city)}', '#{escape_sql(address.email_address)}', '#{escape_sql(address.phone_number)}', '#{escape_sql(address.homepage_url)}');"
+    else
+      "-- Keine Adresse vorhanden"
+    end}
 
       -- Perioden wiederherstellen
       INSERT INTO periods (id, holiday_or_vacation_type_id, location_id, starts_on, ends_on, inserted_at, updated_at)
