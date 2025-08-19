@@ -33,27 +33,42 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
     ~H"""
     <div>
       <div class="overflow-x-auto">
-        <%= for {school_year, periods} <- @grouped_periods do %>
-          <div class="mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-              Schuljahr {school_year}/{school_year + 1}
-            </h3>
+        <%= for {{school_year, periods}, index} <- Enum.with_index(@grouped_periods) do %>
+          <div class={"mb-6 #{if index > 0, do: "mt-8 pt-6 border-t-2 border-gray-300 dark:border-gray-600"}"}>
+            <div class="flex items-center gap-3 mb-3">
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                Schuljahr {school_year}/{school_year + 1}
+              </h3>
+              <%= if school_year == @current_school_year do %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  Aktuell
+                </span>
+              <% else %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  Nächstes Jahr
+                </span>
+              <% end %>
+            </div>
 
-            <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 table-fixed">
+            <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 table-fixed rounded-lg overflow-hidden">
               <colgroup>
                 <col class="w-1/2" />
                 <col class="w-1/3" />
                 <col class="w-1/6" />
               </colgroup>
               <thead>
-                <tr>
-                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
+                <tr class={
+                  if school_year != @current_school_year,
+                    do: "bg-blue-50 dark:bg-blue-950",
+                    else: "bg-gray-50 dark:bg-gray-900"
+                }>
+                  <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Name
                   </th>
-                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
+                  <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Termin
                   </th>
-                  <th class="px-2 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-900 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
+                  <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Tage*
                   </th>
                 </tr>
@@ -67,6 +82,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                     current_year={@current_school_year}
                     show_mobile_dates={true}
                     show_memo={true}
+                    show_year_in_dates={true}
                   />
                 <% end %>
               </tbody>

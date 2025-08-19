@@ -39,6 +39,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
   - `:period_link_builder` - Optional function to build period link
   - `:show_mobile_dates` - Whether to show mobile-optimized dates
   - `:show_memo` - Whether to show period memo
+  - `:show_year_in_dates` - Whether to always show year in dates for clarity
   """
   attr :period, :map, required: true
   attr :all_periods, :list, required: true
@@ -48,6 +49,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
   attr :period_link_builder, :any, default: nil
   attr :show_mobile_dates, :boolean, default: false
   attr :show_memo, :boolean, default: false
+  attr :show_year_in_dates, :boolean, default: false
 
   slot :period_name do
     attr :class, :string
@@ -107,9 +109,17 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
       </td>
       <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm align-top">
         <%= if @show_mobile_dates do %>
-          <.mobile_date_display period={@period} is_next_year={@is_next_year} />
+          <.mobile_date_display
+            period={@period}
+            is_next_year={@is_next_year}
+            show_year_in_dates={@show_year_in_dates}
+          />
         <% else %>
-          <.simple_date_display period={@period} is_next_year={@is_next_year} />
+          <.simple_date_display
+            period={@period}
+            is_next_year={@is_next_year}
+            show_year_in_dates={@show_year_in_dates}
+          />
         <% end %>
       </td>
       <td class="px-2 sm:px-4 py-2 sm:py-3 text-sm text-right align-top">
@@ -149,16 +159,27 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
   """
   attr :period, :map, required: true
   attr :is_next_year, :boolean, default: false
+  attr :show_year_in_dates, :boolean, default: false
 
   def simple_date_display(assigns) do
     ~H"""
     <span class="whitespace-nowrap">
       <%= if Date.compare(@period.starts_on, @period.ends_on) == :eq do %>
-        {DateFormatter.format_date_with_short_year(@period.starts_on)}
+        <%= if @show_year_in_dates || @period.starts_on.year != @period.ends_on.year do %>
+          {DateFormatter.format_date_full(@period.starts_on)}
+        <% else %>
+          {DateFormatter.format_date_with_short_year(@period.starts_on)}
+        <% end %>
       <% else %>
-        {DateFormatter.format_date_with_short_year(@period.starts_on)} - {DateFormatter.format_date_with_short_year(
-          @period.ends_on
-        )}
+        <%= if @show_year_in_dates || @period.starts_on.year != @period.ends_on.year do %>
+          {DateFormatter.format_date_full(@period.starts_on)} - {DateFormatter.format_date_full(
+            @period.ends_on
+          )}
+        <% else %>
+          {DateFormatter.format_date_with_short_year(@period.starts_on)} - {DateFormatter.format_date_with_short_year(
+            @period.ends_on
+          )}
+        <% end %>
       <% end %>
     </span>
     """
@@ -169,33 +190,43 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
   """
   attr :period, :map, required: true
   attr :is_next_year, :boolean, default: false
+  attr :show_year_in_dates, :boolean, default: false
 
   def mobile_date_display(assigns) do
     ~H"""
-    <span class="whitespace-nowrap">
+    <div>
       <%= if Date.compare(@period.starts_on, @period.ends_on) == :eq do %>
-        <span class="sm:hidden">
-          {DateFormatter.format_date_with_short_year(@period.starts_on)}
+        <span class="sm:hidden whitespace-nowrap">
+          <%= if @show_year_in_dates do %>
+            {DateFormatter.format_date_full(@period.starts_on)}
+          <% else %>
+            {DateFormatter.format_date_with_short_year(@period.starts_on)}
+          <% end %>
         </span>
-        <span class="hidden sm:inline">
+        <span class="hidden sm:inline whitespace-nowrap">
           {DateFormatter.format_date_full(@period.starts_on)}
         </span>
       <% else %>
-        <span class="sm:hidden">
-          {DateFormatter.format_date_with_short_year(@period.starts_on)}
-        </span>
-        <span class="hidden sm:inline">
-          {DateFormatter.format_date_full(@period.starts_on)}
-        </span>
-        -
-        <span class="sm:hidden">
-          {DateFormatter.format_date_with_short_year(@period.ends_on)}
-        </span>
-        <span class="hidden sm:inline">
-          {DateFormatter.format_date_full(@period.ends_on)}
+        <div class="sm:hidden">
+          <%= if @show_year_in_dates do %>
+            <span class="whitespace-nowrap">{DateFormatter.format_date_full(@period.starts_on)}</span>
+            <span class="whitespace-nowrap">- {DateFormatter.format_date_full(@period.ends_on)}</span>
+          <% else %>
+            <span class="whitespace-nowrap">
+              {DateFormatter.format_date_with_short_year(@period.starts_on)}
+            </span>
+            <span class="whitespace-nowrap">
+              - {DateFormatter.format_date_with_short_year(@period.ends_on)}
+            </span>
+          <% end %>
+        </div>
+        <span class="hidden sm:inline whitespace-nowrap">
+          {DateFormatter.format_date_full(@period.starts_on)} - {DateFormatter.format_date_full(
+            @period.ends_on
+          )}
         </span>
       <% end %>
-    </span>
+    </div>
     """
   end
 
