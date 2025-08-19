@@ -272,38 +272,54 @@ defmodule MehrSchulferien.Email do
     |> Enum.join(" ")
   end
 
-  def school_deleted_notification(school, address, country_slug \\ "d") do
+  def school_deleted_notification(school, address, country_slug \\ "d", deletion_reason \\ nil) do
     school_url = UrlBuilder.school_url(country_slug, school)
 
     new()
-    |> to({@admin_name, @admin_email})
+    |> to({"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"})
     |> from({@system_email_name, @noreply_email})
     |> subject("Schule gelöscht: #{school.name}")
     |> html_body("""
     <h2>Schule wurde gelöscht</h2>
+    
+    <h3>Grunddaten:</h3>
     <p><strong>Schulname:</strong> #{school.name}</p>
     <p><strong>Slug:</strong> #{school.slug}</p>
     <p><strong>ID:</strong> #{school.id}</p>
+    <p><strong>Parent Location ID:</strong> #{school.parent_location_id || "N/A"}</p>
+    <p><strong>Code:</strong> #{school.code || "N/A"}</p>
     <p><strong>Gelöschte URL:</strong> <span style="text-decoration: line-through;">#{school_url}</span></p>
+    #{if deletion_reason && deletion_reason != "" do
+      "<p><strong>Löschgrund:</strong> #{deletion_reason}</p>"
+    else
+      ""
+    end}
 
     #{if address do
       """
       <h3>Adressdaten (gesichert):</h3>
-      <p><strong>Straße:</strong> #{address.street || "N/A"}</p>
-      <p><strong>PLZ:</strong> #{address.zip_code || "N/A"}</p>
-      <p><strong>Stadt:</strong> #{address.city || "N/A"}</p>
-      <p><strong>E-Mail:</strong> #{address.email_address || "N/A"}</p>
-      <p><strong>Telefon:</strong> #{address.phone_number || "N/A"}</p>
-      <p><strong>Homepage:</strong> #{address.homepage_url || "N/A"}</p>
-      <p><strong>Schultyp:</strong> #{address.school_type || "N/A"}</p>
-      <p><strong>Amtliche ID:</strong> #{address.official_id || "N/A"}</p>
-      #{if address.lat && address.lon do
-        """
-        <p><strong>Koordinaten:</strong> #{address.lat}, #{address.lon}</p>
-        """
-      else
-        ""
-      end}
+      <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Straße:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.street || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>PLZ:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.zip_code || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Stadt:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.city || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>E-Mail:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.email_address || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Telefon:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.phone_number || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Homepage:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.homepage_url || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Wikipedia:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.wikipedia_url || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Instagram:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.instagram_url || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Schultyp:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.school_type || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Amtliche ID:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.official_id || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Schülerzahl:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.students_count || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Gründungsjahr:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.founded_year || "N/A"}</td></tr>
+        <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Beschreibung:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.description || "N/A"}</td></tr>
+        #{if address.lat && address.lon do
+          """
+          <tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>Koordinaten:</strong></td><td style="padding: 5px; border: 1px solid #ddd;">#{address.lat}, #{address.lon}</td></tr>
+          """
+        else
+          ""
+        end}
+      </table>
       """
     else
       "<p><em>Keine Adressdaten vorhanden</em></p>"
@@ -311,30 +327,63 @@ defmodule MehrSchulferien.Email do
 
     <p><strong>Gelöscht am:</strong> #{format_datetime(DateTime.utc_now())}</p>
 
-    <p style="margin-top: 20px; padding: 10px; background-color: #fee2e2; border-left: 4px solid #dc2626;">
-      <strong>Hinweis:</strong> Die Schule und alle zugehörigen Daten wurden in Backup-Tabellen gesichert (deleted_schools und deleted_periods).
-    </p>
+    <div style="margin-top: 20px; padding: 15px; background-color: #fee2e2; border-left: 4px solid #dc2626;">
+      <h4 style="margin-top: 0;">Wiederherstellung möglich:</h4>
+      <p>Die Schule und alle zugehörigen Daten wurden in Backup-Tabellen gesichert (deleted_schools und deleted_periods).</p>
+      <p>Falls die Löschung versehentlich erfolgte, können die Daten aus den Backup-Tabellen wiederhergestellt werden.</p>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background-color: #fef3c7; border-left: 4px solid #f59e0b;">
+      <h4 style="margin-top: 0;">SQL für Wiederherstellung:</h4>
+      <pre style="background-color: #f9fafb; padding: 10px; border-radius: 4px; overflow-x: auto;">
+      -- Schule wiederherstellen
+      INSERT INTO locations (id, name, slug, code, parent_location_id, is_school, inserted_at, updated_at)
+      SELECT original_id, name, slug, code, parent_location_id, true, original_inserted_at, original_updated_at
+      FROM deleted_schools WHERE original_id = #{school.id};
+
+      -- Adresse wiederherstellen (falls vorhanden)
+      #{if address do
+        "INSERT INTO addresses (school_location_id, line1, street, zip_code, city, email_address, phone_number, homepage_url)\n" <>
+        "VALUES (#{school.id}, '#{escape_sql(school.name)}', '#{escape_sql(address.street)}', '#{escape_sql(address.zip_code)}', '#{escape_sql(address.city)}', '#{escape_sql(address.email_address)}', '#{escape_sql(address.phone_number)}', '#{escape_sql(address.homepage_url)}');"
+      else
+        "-- Keine Adresse vorhanden"
+      end}
+
+      -- Perioden wiederherstellen
+      INSERT INTO periods (id, holiday_or_vacation_type_id, location_id, starts_on, ends_on, inserted_at, updated_at)
+      SELECT original_id, holiday_or_vacation_type_id, location_id, starts_on, ends_on, original_inserted_at, original_updated_at
+      FROM deleted_periods WHERE deleted_school_original_id = #{school.id};
+      </pre>
+    </div>
     """)
     |> text_body("""
     Schule wurde gelöscht
 
+    === GRUNDDATEN ===
     Schulname: #{school.name}
     Slug: #{school.slug}
     ID: #{school.id}
-
+    Parent Location ID: #{school.parent_location_id || "N/A"}
+    Code: #{school.code || "N/A"}
+    #{if deletion_reason && deletion_reason != "", do: "Löschgrund: #{deletion_reason}\n", else: ""}
     Gelöschte URL: #{school_url}
 
     #{if address do
       """
-      Adressdaten (gesichert):
+      === ADRESSDATEN (GESICHERT) ===
       Straße: #{address.street || "N/A"}
       PLZ: #{address.zip_code || "N/A"}
       Stadt: #{address.city || "N/A"}
       E-Mail: #{address.email_address || "N/A"}
       Telefon: #{address.phone_number || "N/A"}
       Homepage: #{address.homepage_url || "N/A"}
+      Wikipedia: #{address.wikipedia_url || "N/A"}
+      Instagram: #{address.instagram_url || "N/A"}
       Schultyp: #{address.school_type || "N/A"}
       Amtliche ID: #{address.official_id || "N/A"}
+      Schülerzahl: #{address.students_count || "N/A"}
+      Gründungsjahr: #{address.founded_year || "N/A"}
+      Beschreibung: #{address.description || "N/A"}
       #{if address.lat && address.lon do
         "Koordinaten: #{address.lat}, #{address.lon}"
       else
@@ -342,14 +391,20 @@ defmodule MehrSchulferien.Email do
       end}
       """
     else
-      "Keine Adressdaten vorhanden"
+      "=== KEINE ADRESSDATEN VORHANDEN ==="
     end}
 
     Gelöscht am: #{format_datetime(DateTime.utc_now())}
 
-    Hinweis: Die Schule und alle zugehörigen Daten wurden in Backup-Tabellen gesichert (deleted_schools und deleted_periods).
+    === WIEDERHERSTELLUNG ===
+    Die Schule und alle zugehörigen Daten wurden in Backup-Tabellen gesichert (deleted_schools und deleted_periods).
+    Falls die Löschung versehentlich erfolgte, können die Daten aus den Backup-Tabellen wiederhergestellt werden.
     """)
   end
+
+  defp escape_sql(nil), do: ""
+  defp escape_sql(value) when is_binary(value), do: String.replace(value, "'", "''")
+  defp escape_sql(value), do: to_string(value)
 
   def beweglicher_ferientag_created_notification(period, school) do
     school_url = "https://www.mehr-schulferien.de/ferien/d/schule/#{school.slug}"

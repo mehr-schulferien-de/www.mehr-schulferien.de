@@ -56,7 +56,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
        enrichment_error: nil,
        api_key_available: api_key_available,
        show_rollback_preview: false,
-       rollback_version: nil
+       rollback_version: nil,
+       show_delete_confirmation: false,
+       delete_error: nil
      )}
   end
 
@@ -664,6 +666,94 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   @impl true
   def handle_event("cancel_enrichment", _params, socket) do
     {:noreply, assign(socket, enrichment_data: nil, enrichment_error: nil)}
+  end
+
+  @impl true
+  def handle_event("show_delete_confirmation", _params, socket) do
+    {:noreply, assign(socket, show_delete_confirmation: true, delete_error: nil)}
+  end
+
+  @impl true
+  def handle_event("cancel_delete", _params, socket) do
+    {:noreply, assign(socket, show_delete_confirmation: false, delete_error: nil)}
+  end
+
+  @impl true
+  def handle_event(
+        "confirm_delete",
+        %{"zip_code_confirmation" => zip_code, "deletion_reason" => reason},
+        socket
+      ) do
+    school = socket.assigns.school
+
+    # Verify ZIP code
+    expected_zip = if school.address, do: school.address.zip_code, else: nil
+
+    if zip_code == expected_zip || (expected_zip == nil && zip_code == "") do
+      # Proceed with deletion
+      case Locations.delete_school(school, deletion_reason: reason) do
+        {:ok, %{school: _deleted_school}} ->
+          # Send email notification asynchronously
+          Task.start(fn ->
+            try do
+              # Reload school with preloaded associations for email
+              school_with_address = Repo.preload(school, [:address, :parent_location])
+              
+              # Get the country slug for the email
+              country_slug = get_country_slug_from_school(school_with_address)
+
+              # Send the deletion notification email with reason
+              Email.school_deleted_notification(school_with_address, school_with_address.address, country_slug, reason)
+              |> Mailer.deliver!()
+            rescue
+              error ->
+                Logger.error("Failed to send school deletion email: #{inspect(error)}")
+                Logger.error(Exception.format(:error, error, __STACKTRACE__))
+            end
+          end)
+
+          # Redirect to a success page or the parent location page
+          parent_url =
+            if school.parent_location_id do
+              parent = Locations.get_location!(school.parent_location_id)
+
+              cond do
+                parent.is_city ->
+                  ~p"/ferien/d/stadt/#{parent.slug}"
+
+                parent.is_county ->
+                  ~p"/ferien/d"  # Counties don't have their own page, redirect to main
+
+                parent.is_federal_state ->
+                  ~p"/ferien/d/bundesland/#{parent.slug}"
+
+                true ->
+                  ~p"/ferien/d"
+              end
+            else
+              ~p"/ferien/d"
+            end
+
+          {:noreply,
+           socket
+           |> put_flash(
+             :info,
+             "Die Schule wurde erfolgreich gelöscht. Eine Sicherungskopie wurde per E-Mail versendet."
+           )
+           |> redirect(to: parent_url)}
+
+        {:error, reason} ->
+          {:noreply,
+           assign(socket,
+             delete_error: "Fehler beim Löschen der Schule: #{inspect(reason)}"
+           )}
+      end
+    else
+      {:noreply,
+       assign(socket,
+         delete_error: "Die eingegebene Postleitzahl stimmt nicht überein."
+       )}
+    end
   end
 
   @impl true
