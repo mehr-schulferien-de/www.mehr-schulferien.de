@@ -86,7 +86,11 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
 
     ~H"""
     <tr
-      class={"hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer #{if @is_current, do: "bg-yellow-100 dark:bg-yellow-900"} #{if @is_past, do: "text-gray-400 dark:text-gray-500"} #{if @is_next_year, do: "bg-gray-50 dark:bg-gray-900"}"}
+      class={"cursor-pointer transition-colors #{cond do
+        @is_current -> "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
+        @is_next_year -> "bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
+        true -> "hover:bg-gray-50 dark:hover:bg-gray-700"
+      end} #{if @is_past, do: "text-gray-400 dark:text-gray-500"}"}
       onclick={"window.location.href='#{@row_href}'"}
     >
       <td class="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm font-medium align-top">
@@ -102,7 +106,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
             <%= if @period.holiday_or_vacation_type.name == "Beweglicher Ferientag" do %>
               Bewegl. Ferientag
             <% else %>
-              {render_slot(@period_name) || render_period_name(assigns)}
+              {render_slot(@period_name) || render_period_name_mobile(assigns)}
             <% end %>
           </span>
           <span class="hidden sm:inline">
@@ -247,6 +251,30 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     ~H"""
     <.period_name period={@period} />
     """
+  end
+
+  defp render_period_name_mobile(assigns) do
+    # For mobile, show period name without the year
+    period = assigns.period
+
+    name =
+      cond do
+        is_map_key(period.holiday_or_vacation_type, :colloquial) &&
+          period.holiday_or_vacation_type.colloquial &&
+            period.holiday_or_vacation_type.colloquial != "" ->
+          period.holiday_or_vacation_type.colloquial
+
+        is_map_key(period.holiday_or_vacation_type, :colloquial_name) &&
+          period.holiday_or_vacation_type.colloquial_name &&
+            period.holiday_or_vacation_type.colloquial_name != "" ->
+          period.holiday_or_vacation_type.colloquial_name
+
+        true ->
+          period.holiday_or_vacation_type.name
+      end
+
+    # Remove year if present (e.g., "Weihnachtsferien 2025" -> "Weihnachtsferien")
+    String.replace(name, ~r/\s+\d{4}$/, "")
   end
 
   defp clean_beweglicher_ferientag_memo(memo) do
