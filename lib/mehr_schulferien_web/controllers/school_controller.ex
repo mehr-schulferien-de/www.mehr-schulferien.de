@@ -73,8 +73,13 @@ defmodule MehrSchulferienWeb.SchoolController do
     {:ok, full_start} = Date.new(current_school_year, 8, 1)
     {:ok, full_end} = Date.new(next_school_year + 1, 7, 31)
 
+    # Use the new SQL-based grouped query
     all_periods =
-      MehrSchulferien.Periods.list_school_vacation_periods(location_ids, full_start, full_end)
+      MehrSchulferien.Periods.list_grouped_school_vacation_periods_v2(
+        location_ids,
+        full_start,
+        full_end
+      )
 
     all_public_periods =
       MehrSchulferien.Periods.list_public_periods(location_ids, full_start, full_end)
@@ -215,8 +220,13 @@ defmodule MehrSchulferienWeb.SchoolController do
     ends_on = Date.add(today, 180)
 
     # Get only school vacation periods (not public holidays)
+    # Use the grouped query directly
     vacation_periods =
-      MehrSchulferien.Periods.Query.list_school_vacation_periods(location_ids, starts_on, ends_on)
+      MehrSchulferien.Periods.list_grouped_school_vacation_periods_v2(
+        location_ids,
+        starts_on,
+        ends_on
+      )
       # Show next 3 vacations
       |> Enum.take(3)
 

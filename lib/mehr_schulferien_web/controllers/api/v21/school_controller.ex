@@ -39,14 +39,20 @@ defmodule MehrSchulferienWeb.Api.V21.SchoolController do
       periods =
         case params["type"] do
           "vacation" ->
-            Periods.list_school_vacation_periods(location_ids, start_date, end_date)
+            # Use the SQL-based grouped query
+            Periods.list_grouped_school_vacation_periods_v2(location_ids, start_date, end_date)
 
           "holiday" ->
             Periods.list_public_periods(location_ids, start_date, end_date)
 
           _ ->
-            Periods.list_school_vacation_periods(location_ids, start_date, end_date) ++
-              Periods.list_public_periods(location_ids, start_date, end_date)
+            # Use the SQL-based grouped query for vacations
+            vacation_periods =
+              Periods.list_grouped_school_vacation_periods_v2(location_ids, start_date, end_date)
+
+            public_periods = Periods.list_public_periods(location_ids, start_date, end_date)
+
+            vacation_periods ++ public_periods
         end
         |> Enum.map(&format_period/1)
         |> Enum.sort_by(& &1.starts_on)

@@ -12,7 +12,7 @@ defmodule MehrSchulferien.Periods do
 
   alias MehrSchulferien.{Cache, Calendars}
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType}
-  alias MehrSchulferien.Periods.{Period, Query, DateOperations, Grouping}
+  alias MehrSchulferien.Periods.{Period, Query, DateOperations, Grouping, GroupedQuery}
   alias MehrSchulferien.Repo
 
   #
@@ -200,6 +200,13 @@ defmodule MehrSchulferien.Periods do
   defdelegate list_previous_periods(federal_state, holiday_or_vacation_type), to: Query
   defdelegate list_current_and_future_periods(federal_state, holiday_or_vacation_type), to: Query
   defdelegate list_school_vacation_periods(location_ids, starts_on, ends_on), to: Query
+
+  defdelegate list_grouped_school_vacation_periods(location_ids, starts_on, ends_on),
+    to: GroupedQuery
+
+  defdelegate list_grouped_school_vacation_periods_v2(location_ids, starts_on, ends_on),
+    to: GroupedQuery
+
   defdelegate list_public_everybody_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_public_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_school_free_periods(location_ids, starts_on, ends_on), to: Query
