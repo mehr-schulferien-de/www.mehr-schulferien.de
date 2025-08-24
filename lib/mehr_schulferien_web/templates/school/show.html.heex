@@ -42,10 +42,10 @@
             <% end %>
             <!-- Bewegliche Ferientage from other schools with same zip code -->
             <%= if @school_bewegliche_ferientage == [] && @other_schools_bewegliche_ferientage != [] do %>
-              <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                 <div class="flex items-start">
                   <svg
-                    class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"
+                    class="w-5 h-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -54,29 +54,79 @@
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                     />
                   </svg>
                   <div class="flex-1">
-                    <.text
-                      variant="small"
-                      class="text-blue-900 dark:text-blue-100 font-medium mb-1"
-                    >
-                      Andere Schulen mit der gleichen Postleitzahl haben an folgenden Daten einen beweglichen Ferientag: {@other_schools_bewegliche_ferientage
-                      |> Enum.map(fn period ->
-                        formatted_date =
-                          MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
-                            period.starts_on
-                          )
-
-                        if period.memo do
-                          "#{formatted_date} (#{period.memo})"
-                        else
-                          formatted_date
-                        end
-                      end)
-                      |> Enum.join(", ")}
+                    <.heading level={4} class="text-amber-900 dark:text-amber-100 mb-2">
+                      Mögliche bewegliche Ferientage
+                    </.heading>
+                    <.text variant="small" class="text-amber-800 dark:text-amber-200 mb-3">
+                      Diese Schule hat noch keine beweglichen Ferientage eingetragen.
+                      Andere Schulen mit der gleichen Postleitzahl ({@school.address.zip_code}) haben folgende bewegliche Ferientage:
                     </.text>
+                    <div class="space-y-2">
+                      <%= for period <- @other_schools_bewegliche_ferientage do %>
+                        <div class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-md border border-amber-100 dark:border-amber-900">
+                          <div class="flex-1">
+                            <div class="font-medium text-gray-900 dark:text-gray-100">
+                              {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                                period.starts_on
+                              )}
+                              <%= if period.memo do %>
+                                <span class="ml-2 text-gray-600 dark:text-gray-400">
+                                  ({period.memo})
+                                </span>
+                              <% end %>
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              <%= if length(period.source_schools) == 1 do %>
+                                <% school = hd(period.source_schools) %> Schule: {link(
+                                  school.name,
+                                  to: ~p"/ferien/#{@country.slug}/schule/#{school.slug}",
+                                  class:
+                                    "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                                )}
+                              <% else %>
+                                {length(period.source_schools)} Schulen:
+                                <%= for {school, index} <- Enum.with_index(Enum.take(period.source_schools, 3)) do %>
+                                  <%= if index > 0 do %>
+                                    ,
+                                  <% end %>
+                                  {link(school.name,
+                                    to: ~p"/ferien/#{@country.slug}/schule/#{school.slug}",
+                                    class:
+                                      "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                                  )}
+                                <% end %>
+                                <%= if length(period.source_schools) > 3 do %>
+                                  und {length(period.source_schools) - 3} weitere
+                                <% end %>
+                              <% end %>
+                            </div>
+                          </div>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div class="mt-3">
+                      <%= link to: "/wiki/schools/#{@school.slug}/ferientage",
+                          class: "inline-flex items-center text-sm font-medium text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300" do %>
+                        <svg
+                          class="w-4 h-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        Diese Daten für {@school.name} übernehmen
+                      <% end %>
+                    </div>
                   </div>
                 </div>
               </div>

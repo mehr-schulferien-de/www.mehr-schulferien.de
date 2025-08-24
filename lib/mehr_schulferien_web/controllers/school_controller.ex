@@ -134,21 +134,42 @@ defmodule MehrSchulferienWeb.SchoolController do
         # Get all schools with the same zip code (excluding current school)
         schools_same_zip = Locations.find_schools_by_same_zip_code(school)
 
-        # Get bewegliche ferientage for each school and collect unique dates
-        schools_same_zip
-        |> Enum.flat_map(fn other_school ->
-          MehrSchulferien.Periods.list_bewegliche_ferientage_for_school_in_range(
-            other_school.id,
-            full_start,
-            full_end
-          )
-        end)
-        |> Enum.uniq_by(& &1.starts_on)
-        |> Enum.reject(fn period ->
-          # Exclude dates that the current school already has
-          Enum.any?(school_bewegliche_ferientage, &(&1.starts_on == period.starts_on))
-        end)
-        |> Enum.sort_by(& &1.starts_on)
+        # Get bewegliche ferientage for each school and track which schools have them
+        ferientage_with_schools =
+          schools_same_zip
+          |> Enum.flat_map(fn other_school ->
+            MehrSchulferien.Periods.list_bewegliche_ferientage_for_school_in_range(
+              other_school.id,
+              full_start,
+              full_end
+            )
+            |> Enum.map(fn period ->
+              # Add school information to each period
+              Map.put(period, :source_schools, [
+                %{name: other_school.name, slug: other_school.slug}
+              ])
+            end)
+          end)
+          |> Enum.group_by(& &1.starts_on)
+          |> Enum.map(fn {_date, periods} ->
+            # Merge periods with same date, combining school info
+            first_period = hd(periods)
+
+            all_schools =
+              periods
+              |> Enum.flat_map(& &1.source_schools)
+              |> Enum.uniq_by(& &1.slug)
+              |> Enum.sort_by(& &1.name)
+
+            Map.put(first_period, :source_schools, all_schools)
+          end)
+          |> Enum.reject(fn period ->
+            # Exclude dates that the current school already has
+            Enum.any?(school_bewegliche_ferientage, &(&1.starts_on == period.starts_on))
+          end)
+          |> Enum.sort_by(& &1.starts_on)
+
+        ferientage_with_schools
       else
         []
       end
