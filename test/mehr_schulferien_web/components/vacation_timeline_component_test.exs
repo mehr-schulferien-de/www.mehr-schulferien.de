@@ -551,20 +551,23 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     # We're not counting calendar emojis because they've replaced the green rectangles
 
     # Count green cells (vacation days) in the timeline only
+    # The vacation color class from StyleConfig is now "bg-green-600 dark:bg-green-700"
     # Should be 10 days of Pfingstferien excluding Fronleichnam
     # Plus 1 for the legend marker = 11
     green_cell_count =
       html
-      |> String.split("bg-green-600")
+      |> String.split("bg-green-600 dark:bg-green-700")
       |> length()
       # Subtract 1 because split results in one more segment than delimiters
       |> Kernel.-(1)
 
     # Count blue cells (public holidays) in the timeline
+    # The holiday color class from StyleConfig is now "bg-blue-600 dark:bg-blue-600"
+    # So we need to count the exact class string that includes both light and dark
     # Should be 1 for Fronleichnam plus 1 for the legend marker = 2
     blue_cell_count =
       html
-      |> String.split("bg-blue-600")
+      |> String.split("bg-blue-600 dark:bg-blue-600")
       |> length()
       |> Kernel.-(1)
 

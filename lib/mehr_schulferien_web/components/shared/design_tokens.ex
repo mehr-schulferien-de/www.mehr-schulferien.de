@@ -189,28 +189,28 @@ defmodule MehrSchulferienWeb.Shared.DesignTokens do
   def day_type_colors do
     %{
       holiday: %{
-        background: "bg-blue-600 dark:bg-blue-500",
-        light_background: "bg-blue-100 dark:bg-blue-900/30",
-        text: "text-blue-800 dark:text-blue-300",
-        border: "border-blue-200 dark:border-blue-800"
+        background: "bg-blue-600 dark:bg-blue-600",
+        light_background: "bg-blue-100 dark:bg-blue-800",
+        text: "text-blue-800 dark:text-blue-100",
+        border: "border-blue-200 dark:border-blue-700"
       },
       vacation: %{
-        background: "bg-green-600 dark:bg-green-500",
-        light_background: "bg-green-100 dark:bg-green-900/30",
-        text: "text-green-800 dark:text-green-300",
-        border: "border-green-200 dark:border-green-800"
+        background: "bg-green-600 dark:bg-green-700",
+        light_background: "bg-green-100 dark:bg-green-800",
+        text: "text-green-800 dark:text-green-100",
+        border: "border-green-200 dark:border-green-700"
       },
       weekend: %{
-        background: "bg-gray-100 dark:bg-gray-700",
-        light_background: "bg-gray-50 dark:bg-gray-800",
-        text: "text-gray-700 dark:text-gray-300",
-        border: "border-gray-200 dark:border-gray-600"
+        background: "bg-gray-100 dark:bg-gray-600",
+        light_background: "bg-gray-50 dark:bg-gray-700",
+        text: "text-gray-700 dark:text-gray-200",
+        border: "border-gray-200 dark:border-gray-500"
       },
       bridge_day: %{
         background: "bg-yellow-500 dark:bg-yellow-600",
-        light_background: "bg-yellow-100 dark:bg-yellow-900/30",
-        text: "text-yellow-800 dark:text-yellow-300",
-        border: "border-yellow-200 dark:border-yellow-800"
+        light_background: "bg-yellow-100 dark:bg-yellow-800",
+        text: "text-yellow-800 dark:text-yellow-100",
+        border: "border-yellow-200 dark:border-yellow-700"
       }
     }
   end

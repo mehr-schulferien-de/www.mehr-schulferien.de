@@ -86,9 +86,9 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       is_weekend = Date.day_of_week(day) > 5
       highest_priority_period = find_period_for_day(assigns.timeline_periods, day)
       cell_bg_class = cond do
-        highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-purple-600 dark:bg-purple-500 text-white"
-        highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600 dark:bg-blue-500 text-white"
-        is_weekend -> "bg-gray-100 dark:bg-gray-700"
+        highest_priority_period && Map.get(highest_priority_period, :is_school_vacation, false) -> "bg-purple-600 dark:bg-purple-600 text-white"
+        highest_priority_period && Map.get(highest_priority_period, :is_public_holiday, false) -> "bg-blue-600 dark:bg-blue-600 text-white"
+        is_weekend -> "bg-gray-100 dark:bg-gray-600"
         true -> ""
       end
 
