@@ -22,7 +22,7 @@ defmodule MehrSchulferienWeb.Endpoint do
 
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [connect_info: [:x_headers, :peer_data, session: @session_options]],
-    longpoll: false,
+    longpoll: [connect_info: [session: @session_options]],
     drainer: [
       batch_size: 10000,
       batch_interval: 2000,
