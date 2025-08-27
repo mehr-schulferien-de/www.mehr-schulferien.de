@@ -1,335 +1,60 @@
-/* This file is for your main application css. */
-
-/******** Tailwind base directives ********/
+/* Tailwind base directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Alpine.js x-cloak directive to hide elements before Alpine initializes */
+/* Alpine.js x-cloak directive */
 [x-cloak] {
   display: none !important;
 }
 
-/* Custom project-specific styles can follow below. Remove legacy bootstrap imports. */
+/* Essential custom styles that can't be easily replaced with Tailwind utilities */
 
-/* Footer styling (legacy) retained for now */
-footer {
-  background: #eee;
-  padding: 0;
-  margin: 5em 0 0;
-}
-
-footer .dsgvo {
-  background: #f5f5f5;
-  color: #333;
-  padding: 2em 0;
-  line-height: 1.2em;
-}
-
-footer .dsgvo p {
-  font-size: .8em;
-}
-
-footer .copy {
-  text-align: center;
-  margin: 0;
-  padding: 2em 0;
-}
-
-.logo {
-  margin: .5em 0;
-  display: block;
-  font-size: 35px;
-}
-
-.logo svg {
-  height: 1em;
-  width: 7.972em;
-  display: block;
-}
-
-h1 {
-  margin: .5em 0 .5em;
-}
-
-.page-header {
-  margin-top: 0;
-}
-
-mark,
-.mark {
-  line-height: inherit;
-  padding: .1em .2em;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 2rem;
-}
-
-@media (max-width: 768px) {
-  mark,
-  .mark {
-    line-height: inherit;
-    padding: 0 .2em;
-  }
-  h1 {
-    font-size: 1.9em;
-    margin-top: 0;
-    line-height: 1.2em;
-  }
-  h2 {
-    font-size: 1.5em;
-  }
-  h3 {
-    font-size: 1.25em;
-  }
-  h4 {
-    font-size: 1em;
-  }
-  .calendar-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.panel-body ul {
-  margin-left: 0;
-  padding-left: 1.1em;
-}
-
+/* Calendar color coding for different holiday types */
 mark.public-holiday {
   background: #d9edf7;
 }
+
 mark.school-holiday {
   background: #dff0d8;
 }
 
-i.icon {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-}
-
-i.icon svg {
-  display: block;
-  width: 1em;
-  height: 1em;
-}
-
-i.icon svg,
-i.icon svg path {
-  fill: currentColor;
-}
-
-.calendar {
-  margin: 0 0 .75em 0;
-  overflow: hidden;
-  margin: 1em 0;
-}
-
+/* Calendar month widget specific styles */
 .calendar .header {
-  padding: 8px 12px;
   background: rgb(52,98,172);
-  color: #fff;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-.calendar .body {
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-}
-
-.calendar .text-muted {
-  color: rgba(255,255,255,.7);
-  font-weight: 300;
-}
-
-.calendar .footer {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-top: none;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  border-top: 1px solid #ccc;
-}
-
-.calendar .footer .padding {
-}
-
-
-.calendar .header h3 {
-  margin: 0;
-  padding: 0;
-}
-
-.calendar table {
-  margin: 0 0 -1px;
-  border: none;
-}
-
-.calendar .col-xs-6 dl:last-child {
-  margin: 0;
-}
-
-.calendar table thead th {
-  text-align: center;
-  border-left: 1px solid rgba(0,0,0,.2);
-  border-bottom: 2px solid rgba(0,0,0,.2);
-}
-
-.calendar table td {
-  padding-top: .5em !important;
-  padding-bottom: .5em !important;
-  border-top: none;
-  border-bottom: 1px solid rgba(0,0,0,.2);
-  border-left: 1px solid rgba(0,0,0,.2);
-  text-align: center;
-}
-
-.calendar table tr td:first-child {
-  border-left: none;
-}
-
-.calendar table tr th:first-child {
-  border-left: none;
-}
-
-@media (min-width:992px) {
-  .calendar table td {
-    font-size: 1.1em;
-  }
-}
-
-table.table thead {
-  border-radius: 10px;
-}
-
-.table-wrapper {
-  border-radius: 10px;
-  margin: 0 0 1em;
-  overflow: hidden;
-  border: 1px solid rgba(0,0,0,.2);
-}
-
-.table-wrapper table {
-  margin: 0;
-}
-
-.table-wrapper table thead {
-  margin: -1px;
-  position: relative;
 }
 
 .table-wrapper table thead th {
   background: rgb(52,98,172);
-  color: #fff;
-  font-size: 1.2em;
 }
 
-.table-wrapper table thead th a {
-  color: #fff;
-}
-
-.icon-calendar {
-  display: inline-flex;
-  align-items: center;
-  font-size: 1.2em;
-  margin-right: 0.2em;
-}
-
-body {
-  font-size: 16px;
-}
-
-/* Bridge day section */
-.bridge-day-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
-
-.bridge-day-title .icon-calendar {
-  font-size: 1.2em;
-}
-
-.bridge-day-teaser {
-  font-weight: 600;
-  color: #357abd;
-  margin-bottom: 0.5em;
-}
-
-.bridge-day-teaser-example {
-  font-weight: 400;
-  color: #444;
-}
-
-.bridge-day-teaser a {
-  color: #357abd;
-  text-decoration: underline;
-}
-
-.bridge-day-info {
-  margin-bottom: 1em;
-}
-
-.bridge-day-table {
-  margin-top: 1em;
-}
-
+/* Auto-hyphenation for German text */
 html {
   hyphens: auto;
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
 }
 
-/* Animation for federal state dropdown updates */
+/* LiveView form update animations */
 @keyframes highlightUpdate {
   0% {
-    background-color: rgb(219, 234, 254); /* blue-100 */
-    border-color: rgb(59, 130, 246); /* blue-500 */
+    background-color: rgb(219, 234, 254);
+    border-color: rgb(59, 130, 246);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
   }
   50% {
-    background-color: rgb(191, 219, 254); /* blue-200 */
-    border-color: rgb(59, 130, 246); /* blue-500 */
+    background-color: rgb(191, 219, 254);
+    border-color: rgb(59, 130, 246);
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
   }
   100% {
     background-color: white;
-    border-color: rgb(209, 213, 219); /* gray-300 */
+    border-color: rgb(209, 213, 219);
     box-shadow: 0 0 0 0px rgba(59, 130, 246, 0);
   }
 }
 
-/* Phoenix LiveView adds phx-change-loading class during updates */
-#search_federal_state {
-  transition: all 0.3s ease-out;
-  position: relative;
-}
-
-/* Animate when LiveView is updating the form */
 .phx-change-loading #search_federal_state,
 .phx-submit-loading #search_federal_state {
   animation: highlightUpdate 1.5s ease-out;
-}
-
-/* Additional visual feedback for value changes */
-#search_federal_state:not([value=""]):not(:focus) {
-  background-color: rgb(243, 244, 246); /* gray-100 */
-}
-
-/* Pulse animation for the dropdown arrow when value changes */
-@keyframes arrowPulse {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(2px); }
-}
-
-.phx-change-loading #search_federal_state {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-size: 1.5em 1.5em;
-  background-repeat: no-repeat;
-  animation: highlightUpdate 1.5s ease-out, arrowPulse 0.5s ease-out 3;
 }

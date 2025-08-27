@@ -53,7 +53,7 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
-# Configure Tailwind to use PostCSS
+# Configure Tailwind without PostCSS - using built-in minification
 config :tailwind,
   version: "3.4.6",
   default: [
@@ -61,20 +61,18 @@ config :tailwind,
       --config=tailwind.config.js
       --input=css/app.css
       --output=../priv/static/assets/app.css
-      --postcss
     ),
     cd: Path.expand("../assets", __DIR__)
   ],
-  # Production build uses PostCSS for proper minification
+  # Production build uses Tailwind's built-in minification
   production: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css
       --output=../priv/static/assets/app.css
-      --postcss
+      --minify
     ),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_ENV" => "production"}
+    cd: Path.expand("../assets", __DIR__)
   ]
 
 # Configure Swoosh API client
