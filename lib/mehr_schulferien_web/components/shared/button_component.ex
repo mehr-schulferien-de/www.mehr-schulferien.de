@@ -17,6 +17,8 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
   attr :onclick, :string, default: nil
   attr :disabled, :boolean, default: false
   attr :class, :string, default: ""
+  attr :"aria-label", :string, default: nil
+  attr :"aria-pressed", :string, default: nil
   slot :inner_block, required: true
 
   def button(assigns) do
@@ -57,11 +59,24 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
 
     ~H"""
     <%= if @href do %>
-      <a href={@href} target={@target} class={@computed_class} onclick={@onclick}>
+      <a
+        href={@href}
+        target={@target}
+        class={@computed_class}
+        onclick={@onclick}
+        aria-label={assigns[:"aria-label"]}
+      >
         {render_slot(@inner_block)}
       </a>
     <% else %>
-      <button type={@type} disabled={@disabled} class={@computed_class} onclick={@onclick}>
+      <button
+        type={@type}
+        disabled={@disabled}
+        class={@computed_class}
+        onclick={@onclick}
+        aria-label={assigns[:"aria-label"]}
+        aria-pressed={assigns[:"aria-pressed"]}
+      >
         {render_slot(@inner_block)}
       </button>
     <% end %>
@@ -71,6 +86,7 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
   attr :href, :string, required: true
   attr :class, :string, default: ""
   attr :target, :string, default: nil
+  attr :"aria-label", :string, default: nil
   slot :inner_block, required: true
 
   def link_button(assigns) do
@@ -78,7 +94,8 @@ defmodule MehrSchulferienWeb.Shared.ButtonComponent do
     <a
       href={@href}
       target={@target}
-      class={"text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline cursor-pointer #{@class}"}
+      aria-label={assigns[:"aria-label"]}
+      class={"text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm cursor-pointer transition-colors #{@class}"}
     >
       {render_slot(@inner_block)}
     </a>

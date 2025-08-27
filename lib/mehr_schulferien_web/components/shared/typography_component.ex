@@ -15,12 +15,12 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
 
     base_classes =
       case assigns.level do
-        1 -> "text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100"
-        2 -> "text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100"
-        3 -> "text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100"
-        4 -> "text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100"
-        5 -> "text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100"
-        6 -> "text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100"
+        1 -> "text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 leading-tight"
+        2 -> "text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 leading-tight"
+        3 -> "text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 leading-snug"
+        4 -> "text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 leading-snug"
+        5 -> "text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 leading-normal"
+        6 -> "text-base font-medium text-gray-900 dark:text-gray-100 leading-normal"
       end
 
     assigns = assign(assigns, :tag, tag)
@@ -40,10 +40,10 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   def text(assigns) do
     base_classes =
       case assigns.variant do
-        "base" -> "text-base text-gray-700 dark:text-gray-300"
-        "lead" -> "text-lg text-gray-700 dark:text-gray-300"
-        "small" -> "text-sm text-gray-600 dark:text-gray-400"
-        "muted" -> "text-sm text-gray-500 dark:text-gray-400"
+        "base" -> "text-base text-gray-700 dark:text-gray-300 leading-relaxed"
+        "lead" -> "text-lg text-gray-700 dark:text-gray-300 leading-relaxed"
+        "small" -> "text-sm text-gray-600 dark:text-gray-400 leading-normal"
+        "muted" -> "text-sm text-gray-500 dark:text-gray-400 leading-normal"
       end
 
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")
@@ -66,13 +66,13 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
     base_classes =
       case assigns.variant do
         "primary" ->
-          "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors"
+          "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
 
         "secondary" ->
-          "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:underline transition-colors"
+          "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
 
         "muted" ->
-          "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors"
+          "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
       end
 
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")

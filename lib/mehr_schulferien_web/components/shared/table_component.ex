@@ -9,6 +9,9 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
   attr :striped, :boolean, default: true
   attr :hover, :boolean, default: true
   attr :compact, :boolean, default: false
+  attr :caption, :string, default: nil
+  attr :"aria-label", :string, default: nil
+  attr :id, :string, default: nil
   slot :inner_block, required: true
 
   def table(assigns) do
@@ -17,8 +20,15 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")
 
     ~H"""
-    <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-      <table class={@computed_class}>
+    <div
+      class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700"
+      role="region"
+      aria-label={assigns[:"aria-label"] || "Table"}
+    >
+      <table class={@computed_class} id={@id}>
+        <%= if @caption do %>
+          <caption class="sr-only">{@caption}</caption>
+        <% end %>
         {render_slot(@inner_block)}
       </table>
     </div>
