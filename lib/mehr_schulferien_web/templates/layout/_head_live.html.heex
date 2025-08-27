@@ -51,6 +51,8 @@
   <meta name="robots" content="noindex,nofollow" />
 <% end %>
 
-<link rel="stylesheet" href={static_path(@socket, "/assets/app.css")} />
+<% css_path = static_path(@socket, "/assets/app.css") %>
+<!-- CSS Path: <%= css_path %> -->
+<link rel="stylesheet" href={css_path} />
 
 <meta name="msvalidate.01" content="889EC413403DAE7D10C24068686129FA" />

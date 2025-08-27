@@ -57,15 +57,19 @@ then
   rm -rf priv/static/assets
   rm -f priv/static/cache_manifest.json
   
+  # Install asset dependencies if needed
   MIX_ENV=prod mix assets.setup
+  
+  # Build and deploy assets using the proper mix task
+  echo "Building and deploying assets..."
   MIX_ENV=prod mix assets.deploy
   
-  # Run digest to ensure proper fingerprinting
-  MIX_ENV=prod mix phx.digest
-  
-  # Clean up non-fingerprinted assets to avoid confusion
-  rm -f priv/static/assets/app.css
-  rm -f priv/static/assets/app.js
+  # Ensure non-fingerprinted versions are removed to force use of fingerprinted assets
+  if [ -f "priv/static/assets/app.css" ] && [ -f "priv/static/cache_manifest.json" ]; then
+    echo "Removing non-fingerprinted assets..."
+    rm -f priv/static/assets/app.css
+    rm -f priv/static/assets/app.js
+  fi
 
   # Verify assets were built
   if [ ! -f "priv/static/cache_manifest.json" ]; then
