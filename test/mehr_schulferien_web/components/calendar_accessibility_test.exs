@@ -8,7 +8,7 @@ defmodule MehrSchulferienWeb.Components.CalendarAccessibilityTest do
       day_colors = DesignTokens.day_type_colors()
 
       # Holiday colors - improved for accessibility
-      assert day_colors.holiday.light_background == "bg-blue-200 dark:bg-blue-800"
+      assert day_colors.holiday.light_background == "bg-blue-200 dark:bg-blue-900"
       assert day_colors.holiday.text == "text-blue-900 dark:text-blue-100"
 
       # bg-blue-200 (#BFDBFE) with text-blue-900 (#1E3A8A) provides excellent contrast
@@ -19,7 +19,7 @@ defmodule MehrSchulferienWeb.Components.CalendarAccessibilityTest do
       day_colors = DesignTokens.day_type_colors()
 
       # Vacation colors - improved for accessibility
-      assert day_colors.vacation.light_background == "bg-green-200 dark:bg-green-800"
+      assert day_colors.vacation.light_background == "bg-green-200 dark:bg-green-900"
       assert day_colors.vacation.text == "text-green-900 dark:text-green-100"
 
       # bg-green-200 (#A7F3D0) with text-green-900 (#064E3B) provides excellent contrast
@@ -30,8 +30,8 @@ defmodule MehrSchulferienWeb.Components.CalendarAccessibilityTest do
       day_colors = DesignTokens.day_type_colors()
 
       # Weekend colors - improved for better visibility
-      assert day_colors.weekend.light_background == "bg-gray-100 dark:bg-gray-700"
-      assert day_colors.weekend.text == "text-gray-800 dark:text-gray-200"
+      assert day_colors.weekend.light_background == "bg-gray-100 dark:bg-gray-800"
+      assert day_colors.weekend.text == "text-gray-800 dark:text-gray-100"
 
       # bg-gray-100 (#F3F4F6) with text-gray-800 (#1F2937) provides excellent contrast
       # Light mode: ~11.4:1 contrast ratio (exceeds WCAG AA 4.5:1 requirement)
@@ -41,7 +41,7 @@ defmodule MehrSchulferienWeb.Components.CalendarAccessibilityTest do
       day_colors = DesignTokens.day_type_colors()
 
       # Bridge day colors - improved for accessibility
-      assert day_colors.bridge_day.light_background == "bg-yellow-200 dark:bg-yellow-800"
+      assert day_colors.bridge_day.light_background == "bg-yellow-200 dark:bg-yellow-900"
       assert day_colors.bridge_day.text == "text-yellow-900 dark:text-yellow-100"
 
       # bg-yellow-200 (#FDE68A) with text-yellow-900 (#78350F) provides excellent contrast

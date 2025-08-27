@@ -15,8 +15,8 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
 
     base_classes =
       case assigns.level do
-        1 -> "text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 leading-tight"
-        2 -> "text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 leading-tight"
+        1 -> "text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-50 leading-tight"
+        2 -> "text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-50 leading-tight"
         3 -> "text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 leading-snug"
         4 -> "text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 leading-snug"
         5 -> "text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 leading-normal"
@@ -40,9 +40,9 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   def text(assigns) do
     base_classes =
       case assigns.variant do
-        "base" -> "text-base text-gray-700 dark:text-gray-300 leading-relaxed"
-        "lead" -> "text-lg text-gray-700 dark:text-gray-300 leading-relaxed"
-        "small" -> "text-sm text-gray-600 dark:text-gray-400 leading-normal"
+        "base" -> "text-base text-gray-700 dark:text-gray-200 leading-relaxed"
+        "lead" -> "text-lg text-gray-700 dark:text-gray-200 leading-relaxed"
+        "small" -> "text-sm text-gray-600 dark:text-gray-300 leading-normal"
         "muted" -> "text-sm text-gray-500 dark:text-gray-400 leading-normal"
       end
 
@@ -104,9 +104,9 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   def page_title(assigns) do
     ~H"""
     <div class={"mb-6 #{@class}"}>
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{@title}</h1>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-2">{@title}</h1>
       <%= if @subtitle do %>
-        <p class="text-lg text-gray-600 dark:text-gray-400">{@subtitle}</p>
+        <p class="text-lg text-gray-600 dark:text-gray-300">{@subtitle}</p>
       <% end %>
     </div>
     """
@@ -120,7 +120,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   def section_title(assigns) do
     ~H"""
     <div class={"mb-4 #{@class}"}>
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{@title}</h2>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50">{@title}</h2>
       <%= if @divider do %>
         <div class="mt-2 border-b border-gray-200 dark:border-gray-700"></div>
       <% end %>

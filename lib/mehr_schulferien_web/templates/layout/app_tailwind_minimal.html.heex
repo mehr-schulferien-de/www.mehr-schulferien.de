@@ -4,7 +4,15 @@
     {render(MehrSchulferienWeb.LayoutView, "_head.html", assigns)}
   </head>
   <body class="min-h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
-    <main role="main">
+    <!-- Skip to main content link for keyboard navigation and screen readers -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 z-50"
+    >
+      Zum Hauptinhalt springen
+    </a>
+
+    <main role="main" id="main-content">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {render(MehrSchulferienWeb.LayoutView, "_logo.html", assigns)}
         {render(MehrSchulferienWeb.LayoutView, "_flash.html", assigns)}
