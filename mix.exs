@@ -75,8 +75,7 @@ defmodule MehrSchulferien.MixProject do
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": [
-        "cmd export NODE_ENV=production",
-        "tailwind production",
+        "cmd NODE_ENV=production mix tailwind production",
         "esbuild default --minify",
         "assets.copy",
         "phx.digest"

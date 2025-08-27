@@ -686,5 +686,4 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   defp traverse_to_country(_), do: nil
-
 end

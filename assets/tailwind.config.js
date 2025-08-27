@@ -1,8 +1,11 @@
 module.exports = {
   content: [
     './js/**/*.js',
-    '../lib/*_web/**/*.*ex',
-    '../lib/*_web/**/*.heex'
+    '../lib/mehr_schulferien_web/**/*.*ex',
+    '../lib/mehr_schulferien_web/**/*.heex',
+    '../lib/mehr_schulferien_web.ex',
+    '../lib/mehr_schulferien_web/**/*.html.heex',
+    '../lib/mehr_schulferien_web/**/*.html.eex'
   ],
   theme: {
     extend: {},
