@@ -53,7 +53,7 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
-# Configure Tailwind
+# Configure Tailwind to use PostCSS
 config :tailwind,
   version: "3.4.6",
   default: [
@@ -61,16 +61,17 @@ config :tailwind,
       --config=tailwind.config.js
       --input=css/app.css
       --output=../priv/static/assets/app.css
+      --postcss
     ),
     cd: Path.expand("../assets", __DIR__)
   ],
-  # Production build with minification
+  # Production build uses PostCSS for proper minification
   production: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css
       --output=../priv/static/assets/app.css
-      --minify
+      --postcss
     ),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_ENV" => "production"}

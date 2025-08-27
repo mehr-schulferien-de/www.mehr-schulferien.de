@@ -58,6 +58,8 @@ then
   rm -f priv/static/cache_manifest.json
   
   # Install asset dependencies if needed
+  echo "Installing asset dependencies..."
+  cd assets && npm install --production=false && cd ..
   MIX_ENV=prod mix assets.setup
   
   # Build and deploy assets using the proper mix task
