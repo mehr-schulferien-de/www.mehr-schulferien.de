@@ -59,7 +59,7 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
         })
 
       assert ViewHelpers.get_html_class(~D[2020-03-02], [period]) ==
-               "bg-green-100 dark:bg-green-800"
+               "bg-green-200 dark:bg-green-800"
 
       assert ViewHelpers.get_html_class(~D[2020-03-05], [period]) == ""
     end
@@ -83,10 +83,10 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
 
       # Period 1 has higher priority (8 > 5) and is a holiday (blue)
       assert ViewHelpers.get_html_class(~D[2020-03-01], [period_1, period_2]) ==
-               "bg-blue-100 dark:bg-blue-800"
+               "bg-blue-200 dark:bg-blue-800"
 
       assert ViewHelpers.get_html_class(~D[2020-03-02], [period_1, period_2]) ==
-               "bg-green-100 dark:bg-green-800"
+               "bg-green-200 dark:bg-green-800"
     end
   end
 

@@ -156,21 +156,28 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                           Date.compare(period.ends_on, current_date) != :lt
                       end) %>
 
-                    <td class={[
-                      "border border-gray-200 dark:border-gray-700 text-center py-1 w-1/12 text-xs h-[30px]",
+                    <% # Get both background and text colors based on day type
+                    day_type_classes =
                       cond do
                         is_public_holiday ->
-                          MehrSchulferien.StyleConfig.get_class(:holiday, true)
+                          day_colors = MehrSchulferienWeb.Shared.DesignTokens.day_type_colors()
+                          "#{day_colors.holiday.light_background} #{day_colors.holiday.text}"
 
                         is_vacation ->
-                          MehrSchulferien.StyleConfig.get_class(:vacation, true)
+                          day_colors = MehrSchulferienWeb.Shared.DesignTokens.day_type_colors()
+                          "#{day_colors.vacation.light_background} #{day_colors.vacation.text}"
 
                         weekday >= 6 ->
-                          MehrSchulferien.StyleConfig.get_class(:weekend, true)
+                          day_colors = MehrSchulferienWeb.Shared.DesignTokens.day_type_colors()
+                          "#{day_colors.weekend.light_background} #{day_colors.weekend.text}"
 
                         true ->
-                          ""
-                      end
+                          "text-gray-900 dark:text-gray-100"
+                      end %>
+
+                    <td class={[
+                      "border border-gray-200 dark:border-gray-700 text-center py-1 w-1/12 text-xs h-[30px] font-medium",
+                      day_type_classes
                     ]}>
                       {day}.
                     </td>
