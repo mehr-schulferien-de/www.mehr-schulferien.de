@@ -123,7 +123,6 @@ defmodule MehrSchulferienWeb.Accessibility.DarkModeContrastTest do
       {"text-blue-200", "bg-blue-900"} -> 5.9
       {"text-blue-300", "bg-gray-900"} -> 8.6
       {"text-blue-400", "bg-gray-900"} -> 6.3
-      {"text-white", "bg-blue-500"} -> 7.0
       # Green contrasts
       {"text-green-100", "bg-green-900"} -> 8.1
       {"text-green-200", "bg-green-900"} -> 6.1

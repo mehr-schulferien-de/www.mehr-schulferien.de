@@ -60,7 +60,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
       {:ok, school: school, address: address}
     end
 
+    @tag :skip
     test "displays enrichment button", %{conn: conn, school: school} do
+      # Skipped: Auto Data Enrichment functionality has been removed
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/edit")
 
       assert has_element?(view, "button", "Auto Data Enrichment")
@@ -80,7 +82,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
       refute has_element?(view, "button", "Auto Data Enrichment")
     end
 
+    @tag :skip
     test "shows loading state during enrichment", %{conn: conn, school: school} do
+      # Skipped: Auto Data Enrichment functionality has been removed
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/edit")
 
       # Click enrichment button

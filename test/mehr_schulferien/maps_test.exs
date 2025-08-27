@@ -17,6 +17,7 @@ defmodule MehrSchulferien.MapsTest do
       "phone_number" => "+49 7361 9561",
       "fax_number" => "+49 7361 9561",
       "homepage_url" => "https://www.example-school.de",
+      "schuelerzeitung_url" => "https://schuelerzeitung.example-school.de",
       "school_type_entity" => "Gymnasium",
       "school_type" => "Gymnasium",
       "official_id" => "75774",

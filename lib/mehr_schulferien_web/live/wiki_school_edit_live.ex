@@ -9,8 +9,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
     Email,
     Mailer,
     Config,
-    Repo,
-    SearchEngineAPI
+    Repo
   }
 
   alias MehrSchulferien.Maps.Address
@@ -41,9 +40,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
         %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
       end
 
-    # Check if SERPAPI is available
-    api_key_available = match?({:ok, _}, SearchEngineAPI.get_api_key())
-
     {:ok,
      assign(socket,
        school: school,
@@ -51,10 +47,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
        changeset: changeset,
        daily_changes: daily_changes,
        limit_reached: limit_reached,
-       enrichment_loading: false,
-       enrichment_data: nil,
-       enrichment_error: nil,
-       api_key_available: api_key_available,
        show_rollback_preview: false,
        rollback_version: nil,
        show_delete_confirmation: false,
@@ -348,327 +340,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   @impl true
-  def handle_event("enrich_data", _params, socket) do
-    cond do
-      socket.assigns.limit_reached ->
-        {:noreply,
-         put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Aktionen möglich.")}
-
-      not socket.assigns.api_key_available ->
-        {:noreply,
-         put_flash(socket, :error, "API-Schlüssel nicht verfügbar. Feature nicht aktiviert.")}
-
-      true ->
-        # Start loading
-        socket = assign(socket, enrichment_loading: true, enrichment_error: nil)
-        school = socket.assigns.school
-
-        # Perform the enrichment in a task
-        parent = self()
-
-        Task.start(fn ->
-          try do
-            case SearchEngineAPI.search_school_by_slug(school.slug, force_refresh: false) do
-              {:ok, %{search_results: results}} ->
-                # Extract school info
-                enriched_data = SearchEngineAPI.extract_school_info(results, school.name)
-                send(parent, {:enrichment_complete, enriched_data})
-
-              {:error, reason} ->
-                send(parent, {:enrichment_error, reason})
-            end
-          rescue
-            error ->
-              send(parent, {:enrichment_error, Exception.message(error)})
-          end
-        end)
-
-        {:noreply, socket}
-    end
-  end
-
-  @impl true
-  def handle_event("apply_enriched_data", %{"fields" => fields}, socket) do
-    cond do
-      socket.assigns.limit_reached ->
-        {:noreply,
-         put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
-
-      not socket.assigns.api_key_available ->
-        {:noreply,
-         put_flash(socket, :error, "API-Schlüssel nicht verfügbar. Feature nicht aktiviert.")}
-
-      true ->
-        enriched_data = socket.assigns.enrichment_data
-        school = socket.assigns.school
-
-        # Build update params from selected fields
-        address_params = %{}
-
-        address_params =
-          if Map.get(fields, "homepage_url") == "true" && enriched_data.homepage_url do
-            Map.put(address_params, "homepage_url", enriched_data.homepage_url)
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "phone_number") == "true" && enriched_data.phone_number do
-            Map.put(address_params, "phone_number", enriched_data.phone_number)
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "wikipedia_url") == "true" && enriched_data.wikipedia_url do
-            Map.put(address_params, "wikipedia_url", enriched_data.wikipedia_url)
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "instagram_url") == "true" && enriched_data.instagram_url do
-            Map.put(address_params, "instagram_url", enriched_data.instagram_url)
-          else
-            address_params
-          end
-
-        # Add new fields from additional_info
-        additional = enriched_data.additional_info || %{}
-
-        address_params =
-          if Map.get(fields, "students_count") == "true" && additional[:students_count] do
-            # Ensure students_count is an integer
-            case Integer.parse(to_string(additional[:students_count])) do
-              {count, _} -> Map.put(address_params, "students_count", count)
-              :error -> address_params
-            end
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "founded_year") == "true" && additional[:founded] do
-            # Extract year from founded string (e.g., "1850" or "Founded in 1850")
-            case Regex.run(~r/\d{4}/, to_string(additional[:founded])) do
-              [year_str] -> Map.put(address_params, "founded_year", String.to_integer(year_str))
-              _ -> address_params
-            end
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "description") == "true" && enriched_data.description do
-            Map.put(address_params, "description", enriched_data.description)
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "street") == "true" && enriched_data.street do
-            Map.put(address_params, "street", enriched_data.street)
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "zip_code") == "true" && enriched_data.zip_code do
-            Map.put(address_params, "zip_code", enriched_data.zip_code)
-          else
-            address_params
-          end
-
-        address_params =
-          if Map.get(fields, "city") == "true" && enriched_data.city do
-            Map.put(address_params, "city", enriched_data.city)
-          else
-            address_params
-          end
-
-        # If we have anything to update, proceed
-        if map_size(address_params) > 0 do
-          # Update address if we have address fields
-          if map_size(address_params) > 0 do
-            # Add required fields
-            address_params =
-              Map.merge(address_params, %{
-                "school_location_id" => school.id,
-                "line1" => school.name
-              })
-
-            if school.address do
-              # Update existing - merge with current address data to preserve fields not being updated
-              existing_params = %{
-                "street" => school.address.street,
-                "zip_code" => school.address.zip_code,
-                "city" => school.address.city,
-                "email_address" => school.address.email_address,
-                "phone_number" => school.address.phone_number,
-                "homepage_url" => school.address.homepage_url,
-                "wikipedia_url" => school.address.wikipedia_url,
-                "instagram_url" => school.address.instagram_url,
-                "students_count" => school.address.students_count,
-                "founded_year" => school.address.founded_year,
-                "description" => school.address.description
-              }
-
-              # Merge new params over existing ones
-              merged_params = Map.merge(existing_params, address_params)
-              changeset = Address.changeset(school.address, merged_params)
-
-              case PaperTrail.update(changeset, meta: %{ip_address: nil}) do
-                {:ok, %{version: version}} ->
-                  # Increment daily change count if there was a version (actual change)
-                  if version do
-                    today = Date.utc_today()
-                    Wiki.increment_daily_change_count(today)
-                  end
-
-                  # Clear enrichment data and reload
-                  socket = assign(socket, enrichment_data: nil)
-
-                  # Reload school data
-                  updated_school = Locations.get_school_by_slug!(school.slug)
-                  versions = get_version_history(updated_school)
-                  daily_changes = Wiki.get_daily_change_count(Date.utc_today())
-                  limit_reached = daily_changes >= Config.daily_change_limit()
-
-                  # Update changeset with new data
-                  new_changeset =
-                    if updated_school.address do
-                      address_changeset = Maps.change_address(updated_school.address)
-
-                      %{
-                        address_changeset
-                        | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                      }
-                    else
-                      address_changeset =
-                        Maps.change_address(%Address{school_location_id: updated_school.id})
-
-                      %{
-                        address_changeset
-                        | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                      }
-                    end
-
-                  {:noreply,
-                   socket
-                   |> put_flash(:info, "Angereicherte Daten wurden erfolgreich übernommen.")
-                   |> assign(
-                     school: updated_school,
-                     versions: versions,
-                     changeset: new_changeset,
-                     daily_changes: daily_changes,
-                     limit_reached: limit_reached
-                   )}
-
-                {:error, %Ecto.Changeset{} = changeset} ->
-                  errors =
-                    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-                      Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
-                        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
-                      end)
-                    end)
-
-                  error_msg =
-                    Enum.map_join(errors, ", ", fn {field, msgs} ->
-                      "#{field}: #{Enum.join(msgs, ", ")}"
-                    end)
-
-                  {:noreply, put_flash(socket, :error, "Fehler beim Speichern: #{error_msg}")}
-
-                {:error, error} ->
-                  {:noreply,
-                   put_flash(socket, :error, "Fehler beim Speichern der Daten: #{inspect(error)}")}
-              end
-            else
-              # Create new
-              changeset = Address.changeset(%Address{}, address_params)
-
-              case PaperTrail.insert(changeset, meta: %{ip_address: nil}) do
-                {:ok, %{version: version}} ->
-                  # Increment daily change count if there was a version (actual change)
-                  if version do
-                    today = Date.utc_today()
-                    Wiki.increment_daily_change_count(today)
-                  end
-
-                  # Clear enrichment data and reload
-                  socket = assign(socket, enrichment_data: nil)
-
-                  # Reload school data
-                  updated_school = Locations.get_school_by_slug!(school.slug)
-                  versions = get_version_history(updated_school)
-                  daily_changes = Wiki.get_daily_change_count(Date.utc_today())
-                  limit_reached = daily_changes >= Config.daily_change_limit()
-
-                  # Update changeset with new data
-                  new_changeset =
-                    if updated_school.address do
-                      address_changeset = Maps.change_address(updated_school.address)
-
-                      %{
-                        address_changeset
-                        | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                      }
-                    else
-                      address_changeset =
-                        Maps.change_address(%Address{school_location_id: updated_school.id})
-
-                      %{
-                        address_changeset
-                        | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                      }
-                    end
-
-                  {:noreply,
-                   socket
-                   |> put_flash(:info, "Angereicherte Daten wurden erfolgreich übernommen.")
-                   |> assign(
-                     school: updated_school,
-                     versions: versions,
-                     changeset: new_changeset,
-                     daily_changes: daily_changes,
-                     limit_reached: limit_reached
-                   )}
-
-                {:error, %Ecto.Changeset{} = changeset} ->
-                  errors =
-                    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-                      Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
-                        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
-                      end)
-                    end)
-
-                  error_msg =
-                    Enum.map_join(errors, ", ", fn {field, msgs} ->
-                      "#{field}: #{Enum.join(msgs, ", ")}"
-                    end)
-
-                  {:noreply, put_flash(socket, :error, "Fehler beim Speichern: #{error_msg}")}
-
-                {:error, error} ->
-                  {:noreply,
-                   put_flash(socket, :error, "Fehler beim Speichern der Daten: #{inspect(error)}")}
-              end
-            end
-          else
-            {:noreply, put_flash(socket, :info, "Keine Felder zum Aktualisieren ausgewählt.")}
-          end
-        else
-          {:noreply, put_flash(socket, :info, "Keine Felder zum Aktualisieren ausgewählt.")}
-        end
-    end
-  end
-
-  @impl true
-  def handle_event("cancel_enrichment", _params, socket) do
-    {:noreply, assign(socket, enrichment_data: nil, enrichment_error: nil)}
-  end
-
-  @impl true
   def handle_event("show_delete_confirmation", _params, socket) do
     {:noreply, assign(socket, show_delete_confirmation: true, delete_error: nil)}
   end
@@ -768,41 +439,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
     {:noreply, socket}
   end
 
-  @impl true
-  def handle_info({:enrichment_complete, enriched_data}, socket) do
-    # Filter enriched data to only show fields that would be updates
-    filtered_data = filter_enrichment_updates(enriched_data, socket.assigns.school)
-
-    if has_any_updates?(filtered_data) do
-      {:noreply,
-       assign(socket,
-         enrichment_loading: false,
-         enrichment_data: filtered_data,
-         enrichment_error: nil
-       )}
-    else
-      {:noreply,
-       socket
-       |> put_flash(:info, "Keine neuen Daten gefunden. Alle Informationen sind bereits aktuell.")
-       |> assign(
-         enrichment_loading: false,
-         enrichment_error: nil
-       )}
-    end
-  end
-
-  @impl true
-  def handle_info({:enrichment_error, reason}, socket) do
-    {:noreply,
-     socket
-     |> put_flash(:error, "Fehler beim Abrufen der Daten: #{reason}")
-     |> assign(
-       enrichment_loading: false,
-       enrichment_data: nil,
-       enrichment_error: reason
-     )}
-  end
-
   # Private helper functions
 
   defp get_version_history(school) do
@@ -846,6 +482,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
             email_address: school.address.email_address,
             phone_number: school.address.phone_number,
             homepage_url: school.address.homepage_url,
+            schuelerzeitung_url: school.address.schuelerzeitung_url,
             wikipedia_url: school.address.wikipedia_url,
             instagram_url: school.address.instagram_url,
             students_count: school.address.students_count,
@@ -936,6 +573,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
       "email_address" => "E-Mail",
       "phone_number" => "Telefon",
       "homepage_url" => "Homepage",
+      "schuelerzeitung_url" => "Schülerzeitung",
       "wikipedia_url" => "Wikipedia",
       "instagram_url" => "Instagram",
       "students_count" => "Schülerzahl",
@@ -992,6 +630,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
               "email_address" -> "E-Mail"
               "phone_number" -> "Telefon"
               "homepage_url" -> "Homepage"
+              "schuelerzeitung_url" -> "Schülerzeitung"
               "wikipedia_url" -> "Wikipedia"
               "instagram_url" -> "Instagram"
               "students_count" -> "Schülerzahl"
@@ -1048,92 +687,4 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
 
   defp traverse_to_country(_), do: nil
 
-  defp filter_enrichment_updates(enriched_data, school) do
-    address = school.address
-
-    # Filter main fields
-    filtered_data = %{
-      phone_number: filter_field(enriched_data.phone_number, address && address.phone_number),
-      homepage_url: filter_field(enriched_data.homepage_url, address && address.homepage_url),
-      wikipedia_url: filter_field(enriched_data.wikipedia_url, address && address.wikipedia_url),
-      instagram_url: filter_field(enriched_data.instagram_url, address && address.instagram_url),
-      description: filter_field(enriched_data.description, address && address.description),
-      street: filter_field(enriched_data.street, address && address.street),
-      zip_code: filter_field(enriched_data.zip_code, address && address.zip_code),
-      city: filter_field(enriched_data.city, address && address.city),
-      additional_info: %{}
-    }
-
-    # Filter additional info
-    additional = enriched_data.additional_info || %{}
-
-    filtered_additional = %{}
-
-    filtered_additional =
-      if additional[:students_count] &&
-           additional[:students_count] != (address && address.students_count) do
-        Map.put(filtered_additional, :students_count, additional[:students_count])
-      else
-        filtered_additional
-      end
-
-    filtered_additional =
-      if additional[:founded] do
-        # Extract year from founded string
-        founded_year =
-          case Regex.run(~r/\d{4}/, to_string(additional[:founded])) do
-            [year_str] -> String.to_integer(year_str)
-            _ -> nil
-          end
-
-        if founded_year && founded_year != (address && address.founded_year) do
-          Map.put(filtered_additional, :founded, additional[:founded])
-        else
-          filtered_additional
-        end
-      else
-        filtered_additional
-      end
-
-    # Keep other additional info fields that might be useful
-    filtered_additional =
-      Enum.reduce(additional, filtered_additional, fn {k, v}, acc ->
-        if k not in [:students_count, :founded] do
-          Map.put(acc, k, v)
-        else
-          acc
-        end
-      end)
-
-    %{filtered_data | additional_info: filtered_additional}
-  end
-
-  defp filter_field(new_value, current_value) do
-    # Only include if new value exists and is different from current
-    if new_value && new_value != "" && new_value != current_value do
-      new_value
-    else
-      nil
-    end
-  end
-
-  defp has_any_updates?(filtered_data) do
-    # Check if any main fields have updates
-    main_fields_updated =
-      filtered_data.phone_number ||
-        filtered_data.homepage_url ||
-        filtered_data.wikipedia_url ||
-        filtered_data.instagram_url ||
-        filtered_data.description ||
-        filtered_data.street ||
-        filtered_data.zip_code ||
-        filtered_data.city
-
-    # Check if any additional fields have updates
-    additional_updated =
-      filtered_data.additional_info[:students_count] ||
-        filtered_data.additional_info[:founded]
-
-    main_fields_updated || additional_updated
-  end
 end

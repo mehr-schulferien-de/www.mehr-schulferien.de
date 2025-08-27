@@ -39,63 +39,6 @@
     </div>
   </div>
   
-<!-- Auto Data Enrichment Button -->
-  <%= if not @limit_reached and @api_key_available do %>
-    <div class="mb-6 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-            Fehlende Daten automatisch ergänzen
-          </h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Suche nach öffentlich verfügbaren Informationen zu dieser Schule
-          </p>
-        </div>
-        <button
-          phx-click="enrich_data"
-          disabled={@enrichment_loading}
-          class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:bg-gray-400 rounded-md transition-colors shadow-sm"
-        >
-          <%= if @enrichment_loading do %>
-            <svg
-              class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              >
-              </circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              >
-              </path>
-            </svg>
-            Suche läuft...
-          <% else %>
-            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              >
-              </path>
-            </svg>
-            Auto Data Enrichment
-          <% end %>
-        </button>
-      </div>
-    </div>
-  <% end %>
-
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Edit Form - Left Column -->
     <div class="lg:col-span-2 space-y-6">
@@ -383,6 +326,16 @@
                                 </dd>
                               </div>
                             <% end %>
+                            <%= if @school.address.schuelerzeitung_url do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">
+                                  Schülerzeitung:
+                                </dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100 truncate">
+                                  {@school.address.schuelerzeitung_url}
+                                </dd>
+                              </div>
+                            <% end %>
                           <% end %>
                         </dl>
                       </div>
@@ -435,6 +388,16 @@
                                 </dd>
                               </div>
                             <% end %>
+                            <%= if Map.get(address, "schuelerzeitung_url") do %>
+                              <div>
+                                <dt class="text-xs text-gray-600 dark:text-gray-400">
+                                  Schülerzeitung:
+                                </dt>
+                                <dd class="text-sm text-gray-900 dark:text-gray-100 truncate">
+                                  {Map.get(address, "schuelerzeitung_url")}
+                                </dd>
+                              </div>
+                            <% end %>
                           <% end %>
                         </dl>
                       </div>
@@ -467,288 +430,6 @@
   </div>
 <% end %>
 
-<!-- Enrichment Modal -->
-<%= if @enrichment_data do %>
-  <div
-    class="fixed z-50 inset-0 overflow-y-auto"
-    aria-labelledby="modal-title"
-    role="dialog"
-    aria-modal="true"
-  >
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <!-- Background overlay -->
-      <div
-        class="fixed inset-0 bg-gray-500 dark:bg-gray-800 bg-opacity-75 dark:bg-opacity-75 transition-opacity"
-        aria-hidden="true"
-      >
-      </div>
-      <!-- This element is to trick the browser into centering the modal contents. -->
-      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-        &#8203;
-      </span>
-      <!-- Modal panel -->
-      <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-        <form phx-submit="apply_enriched_data">
-          <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 sm:mx-0 sm:h-10 sm:w-10">
-                <svg
-                  class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  >
-                  </path>
-                </svg>
-              </div>
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-grow">
-                <h3
-                  class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100"
-                  id="modal-title"
-                >
-                  Gefundene Daten
-                </h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Wählen Sie aus, welche Daten übernommen werden sollen:
-                  </p>
-                </div>
-
-                <div class="mt-4 space-y-3">
-                  <%= if @enrichment_data.homepage_url do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[homepage_url]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Homepage
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {display_url(@enrichment_data.homepage_url)}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.phone_number do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[phone_number]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Telefonnummer
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {@enrichment_data.phone_number}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.wikipedia_url do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[wikipedia_url]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Wikipedia
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {display_url(@enrichment_data.wikipedia_url)}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.instagram_url do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[instagram_url]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Instagram
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {display_url(@enrichment_data.instagram_url)}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.description do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[description]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Beschreibung
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {@enrichment_data.description}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.street do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[street]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Straße
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {@enrichment_data.street}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.zip_code do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[zip_code]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          PLZ
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {@enrichment_data.zip_code}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.city do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[city]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Stadt
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {@enrichment_data.city}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.additional_info[:students_count] do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[students_count]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Schülerzahl
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {@enrichment_data.additional_info[:students_count]}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if @enrichment_data.additional_info[:founded] do %>
-                    <label class="flex items-start">
-                      <input
-                        type="checkbox"
-                        name="fields[founded_year]"
-                        value="true"
-                        checked
-                        class="mt-1 h-4 w-4 text-indigo-600 dark:text-indigo-400 border-gray-300 dark:border-gray-600 rounded"
-                      />
-                      <div class="ml-3">
-                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Gründungsjahr
-                        </span>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {@enrichment_data.additional_info[:founded]}
-                        </p>
-                      </div>
-                    </label>
-                  <% end %>
-
-                  <%= if map_size(Map.take(@enrichment_data, [:homepage_url, :phone_number, :wikipedia_url, :instagram_url, :description, :street, :zip_code, :city])) == 0 && 
-                         map_size(Map.take(@enrichment_data.additional_info || %{}, [:students_count, :founded])) == 0 do %>
-                    <p class="text-sm text-gray-500 italic">Keine neuen Daten gefunden.</p>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
-              type="submit"
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-base font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Daten übernehmen
-            </button>
-            <button
-              type="button"
-              phx-click="cancel_enrichment"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Abbrechen
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-<% end %>
 <!-- Delete Confirmation Modal -->
 <%= if @show_delete_confirmation do %>
   <div

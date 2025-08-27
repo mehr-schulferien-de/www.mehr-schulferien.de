@@ -52,6 +52,7 @@ defmodule MehrSchulferien.Maps.Address do
     field :phone_number, :string
     field :fax_number, :string
     field :homepage_url, :string
+    field :schuelerzeitung_url, :string
     field :wikipedia_url, :string
     field :school_type, :string
     field :official_id, :string
@@ -83,6 +84,7 @@ defmodule MehrSchulferien.Maps.Address do
       :phone_number,
       :fax_number,
       :homepage_url,
+      :schuelerzeitung_url,
       :wikipedia_url,
       :school_type,
       :official_id,
@@ -100,6 +102,7 @@ defmodule MehrSchulferien.Maps.Address do
     |> normalize_phone_number()
     |> normalize_urls()
     |> validate_homepage_url()
+    |> validate_schuelerzeitung_url()
     |> validate_instagram_url()
     |> validate_coordinates()
     |> validate_founded_year()
@@ -130,6 +133,31 @@ defmodule MehrSchulferien.Maps.Address do
     end
   end
 
+  # Validates schuelerzeitung URL is well-formed when present (optional field)
+  defp validate_schuelerzeitung_url(changeset) do
+    case get_field(changeset, :schuelerzeitung_url) do
+      nil ->
+        changeset
+
+      "" ->
+        changeset
+
+      url when is_binary(url) ->
+        if String.match?(url, ~r/^https?:\/\/.+\..+/) do
+          changeset
+        else
+          add_error(
+            changeset,
+            :schuelerzeitung_url,
+            "muss eine gültige URL sein (z.B. https://schuelerzeitung.schule.de)"
+          )
+        end
+
+      _ ->
+        changeset
+    end
+  end
+
   defp update_attrs(attrs) do
     # Handle both legacy parameter names (address_street, etc.) and current ones (street, etc.)
     line1 = attrs["address_line1"] || attrs["line1"]
@@ -151,6 +179,7 @@ defmodule MehrSchulferien.Maps.Address do
   defp normalize_urls(changeset) do
     changeset
     |> normalize_url_field(:homepage_url)
+    |> normalize_url_field(:schuelerzeitung_url)
     |> normalize_url_field(:wikipedia_url)
     |> normalize_url_field(:instagram_url)
   end

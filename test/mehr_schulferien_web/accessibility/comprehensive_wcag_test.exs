@@ -1,10 +1,5 @@
 defmodule MehrSchulferienWeb.Accessibility.ComprehensiveWCAGTest do
   use MehrSchulferienWeb.ConnCase
-  import Phoenix.LiveViewTest
-
-  alias MehrSchulferienWeb.Shared.DesignTokens
-  alias MehrSchulferienWeb.Shared.TypographyComponent
-  alias MehrSchulferienWeb.Shared.ButtonComponent
 
   describe "WCAG 2.1 AA Compliance Tests" do
     test "all text has sufficient color contrast (4.5:1 minimum)" do
