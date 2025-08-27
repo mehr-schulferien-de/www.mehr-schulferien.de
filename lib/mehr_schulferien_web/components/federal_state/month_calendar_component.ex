@@ -117,34 +117,44 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                 end) %>
               <%= if has_days do %>
                 <tr>
-                  <%= for weekday <- 1..7 do %>
+                  <% # Calculate empty cells at the beginning of the week
+                  empty_cells_before =
+                    Enum.count(1..7, fn weekday ->
+                      day = week_start_day + weekday - 1
+                      day < 1
+                    end)
+
+                  # Calculate empty cells at the end of the week
+                  empty_cells_after =
+                    Enum.count(1..7, fn weekday ->
+                      day = week_start_day + weekday - 1
+                      day > @days_in_month
+                    end)
+
+                  # Render empty cell with colspan at the beginning if needed %>
+                  <%= if empty_cells_before > 0 do %>
+                    <td
+                      colspan={empty_cells_before}
+                      class="border border-gray-200 dark:border-gray-700"
+                    >
+                    </td>
+                  <% end %>
+
+                  <%= for weekday <- (empty_cells_before + 1)..(7 - empty_cells_after) do %>
                     <% day = week_start_day + weekday - 1 %>
-                    <% current_date =
-                      if day > 0 and day <= @days_in_month do
-                        Date.new!(@year, @month, day)
-                      else
-                        nil
-                      end %>
+                    <% current_date = Date.new!(@year, @month, day) %>
 
                     <% is_public_holiday =
-                      if current_date do
-                        Enum.any?(@public_periods, fn period ->
-                          Date.compare(period.starts_on, current_date) != :gt &&
-                            Date.compare(period.ends_on, current_date) != :lt
-                        end)
-                      else
-                        false
-                      end %>
+                      Enum.any?(@public_periods, fn period ->
+                        Date.compare(period.starts_on, current_date) != :gt &&
+                          Date.compare(period.ends_on, current_date) != :lt
+                      end) %>
 
                     <% is_vacation =
-                      if current_date do
-                        Enum.any?(@periods, fn period ->
-                          Date.compare(period.starts_on, current_date) != :gt &&
-                            Date.compare(period.ends_on, current_date) != :lt
-                        end)
-                      else
-                        false
-                      end %>
+                      Enum.any?(@periods, fn period ->
+                        Date.compare(period.starts_on, current_date) != :gt &&
+                          Date.compare(period.ends_on, current_date) != :lt
+                      end) %>
 
                     <td class={[
                       "border border-gray-200 dark:border-gray-700 text-center py-1 w-1/12 text-xs h-[30px]",
@@ -162,9 +172,16 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                           ""
                       end
                     ]}>
-                      <%= if day > 0 and day <= @days_in_month do %>
-                        {day}.
-                      <% end %>
+                      {day}.
+                    </td>
+                  <% end %>
+
+                  <% # Render empty cell with colspan at the end if needed %>
+                  <%= if empty_cells_after > 0 do %>
+                    <td
+                      colspan={empty_cells_after}
+                      class="border border-gray-200 dark:border-gray-700"
+                    >
                     </td>
                   <% end %>
                 </tr>
