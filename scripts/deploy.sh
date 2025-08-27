@@ -53,8 +53,19 @@ then
 
   # Build assets using new Phoenix 1.7+ build system
   echo "Building assets..."
+  # Clean old assets first to avoid conflicts
+  rm -rf priv/static/assets
+  rm -f priv/static/cache_manifest.json
+  
   MIX_ENV=prod mix assets.setup
   MIX_ENV=prod mix assets.deploy
+  
+  # Run digest to ensure proper fingerprinting
+  MIX_ENV=prod mix phx.digest
+  
+  # Clean up non-fingerprinted assets to avoid confusion
+  rm -f priv/static/assets/app.css
+  rm -f priv/static/assets/app.js
 
   # Verify assets were built
   if [ ! -f "priv/static/cache_manifest.json" ]; then
