@@ -57,9 +57,8 @@ then
   rm -rf priv/static/assets
   rm -f priv/static/cache_manifest.json
   
-  # Install asset dependencies if needed
-  echo "Installing asset dependencies..."
-  cd assets && npm install --production=false && cd ..
+  # Setup assets (Tailwind and ESBuild)
+  echo "Setting up assets..."
   MIX_ENV=prod mix assets.setup
   
   # Build and deploy assets using the proper mix task
