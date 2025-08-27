@@ -65,11 +65,24 @@ then
   echo "Building and deploying assets..."
   MIX_ENV=prod mix assets.deploy
   
-  # Ensure non-fingerprinted versions are removed to force use of fingerprinted assets
-  if [ -f "priv/static/assets/app.css" ] && [ -f "priv/static/cache_manifest.json" ]; then
-    echo "Removing non-fingerprinted assets..."
-    rm -f priv/static/assets/app.css
-    rm -f priv/static/assets/app.js
+  # Create non-fingerprinted copies from the fingerprinted versions
+  # This ensures we always have both versions available
+  if [ -f "priv/static/cache_manifest.json" ]; then
+    echo "Creating non-fingerprinted copies from fingerprinted assets..."
+    
+    # Extract the fingerprinted CSS filename from cache manifest
+    css_file=$(grep -o '"assets/app-[^"]*\.css"' priv/static/cache_manifest.json | head -1 | tr -d '"')
+    if [ -n "$css_file" ] && [ -f "priv/static/$css_file" ]; then
+      cp "priv/static/$css_file" "priv/static/assets/app.css"
+      echo "Copied $css_file to app.css"
+    fi
+    
+    # Extract the fingerprinted JS filename from cache manifest
+    js_file=$(grep -o '"assets/app-[^"]*\.js"' priv/static/cache_manifest.json | head -1 | tr -d '"')
+    if [ -n "$js_file" ] && [ -f "priv/static/$js_file" ]; then
+      cp "priv/static/$js_file" "priv/static/assets/app.js"
+      echo "Copied $js_file to app.js"
+    fi
   fi
 
   # Verify assets were built
