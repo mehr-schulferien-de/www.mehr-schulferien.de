@@ -1097,10 +1097,12 @@ defmodule MehrSchulferienWeb.HomeLive do
         </div>
       </main>
     <% else %>
-      <div class="mt-4 sm:mt-8 px-4 sm:px-0" id="test-page-container" phx-hook="MaintainScroll">
-        <.heading level={1} class="mb-6 sm:mb-8">
-          Schulferien und Feiertage
-        </.heading>
+      <div class="mt-6 sm:mt-8" id="test-page-container" phx-hook="MaintainScroll">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+          <.heading level={1}>
+            Schulferien und Feiertage
+          </.heading>
+        </div>
 
         <.school_search_form
           federal_states={@federal_states}
