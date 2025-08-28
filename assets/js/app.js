@@ -6,6 +6,9 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 // import topbar from "../vendor/topbar.js"
 
+// Import navigation module for dropdown and mobile menu functionality
+import "./navigation"
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
 // Define hooks for cookie management

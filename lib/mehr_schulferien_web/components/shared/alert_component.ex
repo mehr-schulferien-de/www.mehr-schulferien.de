@@ -56,7 +56,7 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
             <button
               type="button"
               class="inline-flex rounded-md p-1.5 hover:bg-white dark:hover:bg-gray-700 hover:bg-opacity-20 dark:hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2"
-              onclick="this.closest('[role=alert]').remove()"
+              data-dismiss-alert
             >
               <span class="sr-only">Dismiss</span>
               <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -130,7 +130,7 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
             <button
               type="button"
               class="flex p-2 rounded-md hover:bg-white hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-white"
-              onclick="this.closest('[role=banner]').remove()"
+              data-dismiss-alert
             >
               <span class="sr-only">Dismiss</span>
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -175,15 +175,9 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
     ~H"""
     <div
       class={"fixed #{@position_classes} z-50 #{@class}"}
-      x-data="{ show: true }"
-      x-show="show"
-      x-init={"setTimeout(() => show = false, #{@auto_dismiss})"}
-      x-transition:enter="transform ease-out duration-300 transition"
-      x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-      x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
-      x-transition:leave="transition ease-in duration-100"
-      x-transition:leave-start="opacity-100"
-      x-transition:leave-end="opacity-0"
+      data-toast
+      data-auto-dismiss={@auto_dismiss}
+      style="opacity: 0; transform: translateX(100%); transition: opacity 300ms ease-out, transform 300ms ease-out;"
     >
       <div class="max-w-sm w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto ring-1 ring-black dark:ring-gray-700 ring-opacity-5 dark:ring-opacity-100 overflow-hidden">
         <div class="p-4">
@@ -199,7 +193,7 @@ defmodule MehrSchulferienWeb.Shared.AlertComponent do
             </div>
             <div class="ml-4 flex-shrink-0 flex">
               <button
-                @click="show = false"
+                data-dismiss-toast
                 class="rounded-md inline-flex text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               >
                 <span class="sr-only">Close</span>

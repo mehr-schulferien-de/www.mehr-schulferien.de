@@ -3,16 +3,7 @@
 
 <% federal_states = MehrSchulferienWeb.NavigationHelper.federal_states() %>
 
-<header
-  class="bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700"
-  x-data="{ 
-    mobileMenuOpen: false, 
-    desktopDropdown2025Open: false, 
-    desktopDropdown2026Open: false, 
-    brueckenDropdown2025Open: false, 
-    brueckenDropdown2026Open: false 
-  }"
->
+<header class="bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700">
   <nav
     class="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-6"
     aria-label="Global"
@@ -34,7 +25,7 @@
       <button
         type="button"
         class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-        @click="mobileMenuOpen = true"
+        data-mobile-menu-toggle
       >
         <span class="sr-only">Open main menu</span>
         <svg
@@ -56,12 +47,12 @@
     </div>
     <div class="hidden lg:flex lg:gap-x-12">
       <!-- First dropdown - Current Year -->
-      <div class="relative">
+      <div class="relative" data-dropdown-container>
         <button
           type="button"
           class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          x-bind:aria-expanded="desktopDropdown2025Open.toString()"
-          @click="desktopDropdown2025Open = !desktopDropdown2025Open"
+          data-dropdown-trigger
+          aria-expanded="false"
         >
           Schulferien {@current_year}
           <svg
@@ -80,11 +71,8 @@
         </button>
 
         <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700"
-          x-show="desktopDropdown2025Open"
-          @click.away="desktopDropdown2025Open = false"
-          x-transition
-          x-cloak
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
+          data-dropdown-menu
         >
           <div class="p-2">
             <%= for {federal_state, display_name} <- federal_states do %>
@@ -105,12 +93,12 @@
         </div>
       </div>
       <!-- Second dropdown - Next Year -->
-      <div class="relative">
+      <div class="relative" data-dropdown-container>
         <button
           type="button"
           class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          x-bind:aria-expanded="desktopDropdown2026Open.toString()"
-          @click="desktopDropdown2026Open = !desktopDropdown2026Open"
+          data-dropdown-trigger
+          aria-expanded="false"
         >
           Schulferien {@next_year}
           <svg
@@ -129,11 +117,8 @@
         </button>
 
         <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700"
-          x-show="desktopDropdown2026Open"
-          @click.away="desktopDropdown2026Open = false"
-          x-transition
-          x-cloak
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
+          data-dropdown-menu
         >
           <div class="p-2">
             <%= for {federal_state, display_name} <- federal_states do %>
@@ -154,12 +139,12 @@
         </div>
       </div>
       <!-- Third dropdown - Bridge Days Current Year -->
-      <div class="relative">
+      <div class="relative" data-dropdown-container>
         <button
           type="button"
           class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          x-bind:aria-expanded="brueckenDropdown2025Open.toString()"
-          @click="brueckenDropdown2025Open = !brueckenDropdown2025Open"
+          data-dropdown-trigger
+          aria-expanded="false"
         >
           Brückentage {@current_year}
           <svg
@@ -178,11 +163,8 @@
         </button>
 
         <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700"
-          x-show="brueckenDropdown2025Open"
-          @click.away="brueckenDropdown2025Open = false"
-          x-transition
-          x-cloak
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
+          data-dropdown-menu
         >
           <div class="p-2">
             <%= for {federal_state, display_name} <- federal_states do %>
@@ -203,12 +185,12 @@
         </div>
       </div>
       <!-- Fourth dropdown - Bridge Days Next Year -->
-      <div class="relative">
+      <div class="relative" data-dropdown-container>
         <button
           type="button"
           class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          x-bind:aria-expanded="brueckenDropdown2026Open.toString()"
-          @click="brueckenDropdown2026Open = !brueckenDropdown2026Open"
+          data-dropdown-trigger
+          aria-expanded="false"
         >
           Brückentage {@next_year}
           <svg
@@ -227,11 +209,8 @@
         </button>
 
         <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700"
-          x-show="brueckenDropdown2026Open"
-          @click.away="brueckenDropdown2026Open = false"
-          x-transition
-          x-cloak
+          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
+          data-dropdown-menu
         >
           <div class="p-2">
             <%= for {federal_state, display_name} <- federal_states do %>
@@ -255,11 +234,8 @@
   </nav>
   <!-- Mobile menu -->
   <div
-    class="lg:hidden fixed inset-0 z-50 bg-white dark:bg-gray-900"
-    x-show="mobileMenuOpen"
-    @click.away="mobileMenuOpen = false"
-    x-transition
-    x-cloak
+    class="lg:hidden fixed inset-0 z-50 bg-white dark:bg-gray-900 hidden"
+    data-mobile-menu
   >
     <div class="px-6 py-6">
       <div class="flex items-center justify-between">
@@ -277,7 +253,7 @@
         <button
           type="button"
           class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          @click="mobileMenuOpen = false"
+          data-mobile-menu-close
         >
           <span class="sr-only">Close menu</span>
           <svg

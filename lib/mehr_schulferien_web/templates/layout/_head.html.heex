@@ -11,8 +11,11 @@
 <% end %>
 <% conn_or_socket = assigns[:conn] || assigns[:socket] %>
 <% css_path = static_path(conn_or_socket, "/assets/app.css") %>
+<% js_path = static_path(conn_or_socket, "/assets/app.js") %>
 <!-- CSS Path: <%= css_path %> -->
 <link rel="stylesheet" href={css_path} />
+<!-- JS Path: <%= js_path %> -->
+<script defer src={js_path}></script>
 
 <script
   data-ad-client="ca-pub-9538764634478220"
