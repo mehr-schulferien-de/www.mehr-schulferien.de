@@ -5,11 +5,11 @@ defmodule MehrSchulferienWeb.Api.V2.PeriodController do
 
   def index(conn, _params) do
     periods = Periods.list_periods()
-    render(conn, "index.json", periods: periods)
+    render(conn, :index, periods: periods)
   end
 
   def show(conn, %{"id" => id}) do
     period = Periods.get_period!(id)
-    render(conn, "show.json", period: period)
+    render(conn, :show, period: period)
   end
 end

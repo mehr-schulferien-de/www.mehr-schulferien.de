@@ -1,17 +1,13 @@
 defmodule MehrSchulferienWeb.Api.V2.LocationJSON do
-  use Phoenix.View,
-    root: "lib/mehr_schulferien_web/templates",
-    path: "api/v2/location"
-
-  def render("index.json", %{locations: locations}) do
-    %{data: render_many(locations, __MODULE__, "location.json")}
+  def index(%{locations: locations}) do
+    %{data: for(location <- locations, do: data(location))}
   end
 
-  def render("show.json", %{location: location}) do
-    %{data: render_one(location, __MODULE__, "location.json")}
+  def show(%{location: location}) do
+    %{data: data(location)}
   end
 
-  def render("location.json", %{location: location}) do
+  defp data(location) do
     %{
       id: location.id,
       name: location.name,

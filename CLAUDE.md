@@ -238,6 +238,7 @@ The project has been fully migrated to Phoenix verified routes and exclusively u
 ## Memories
 
 - Always remember the sitemap.xml file to be up to date if URLs are added, removed or changed.
+- **ALWAYS RUN THE FULL TEST SUITE** (`mix test`) after making any code changes to ensure nothing breaks. Tests may fail due to cache issues - use `MehrSchulferien.Cache.clear_query_cache()` in tests when needed.
 <!-- usage-rules-start -->
 <!-- usage-rules-header -->
 # Usage Rules

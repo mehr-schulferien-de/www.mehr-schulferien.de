@@ -143,6 +143,15 @@ defmodule MehrSchulferien.Cache do
   end
 
   @doc """
+  Clears all query cache entries.
+  Useful for tests that need fresh data.
+  """
+  def clear_query_cache do
+    :ets.delete_all_objects(@query_cache)
+    :ok
+  end
+
+  @doc """
   Helper function to cache expensive location operations.
   """
   def cached_location_operation(cache_key, fun, opts \\ []) do
