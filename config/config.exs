@@ -21,6 +21,14 @@ config :mehr_schulferien,
   noreply_email: "noreply@mehr-schulferien.de",
   system_email_name: "MehrSchulferien System"
 
+# Configure MCP (Model Context Protocol) server
+config :mehr_schulferien, :mcp,
+  server_name: "MehrSchulferien Data",
+  version: "1.0.0",
+  capabilities: [:tools],
+  transport: :http,
+  path: "/mcp"
+
 # Configures the endpoint
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   url: [host: "localhost"],

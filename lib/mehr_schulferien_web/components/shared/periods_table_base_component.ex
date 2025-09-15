@@ -66,6 +66,9 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     period_year = assigns.period.starts_on.year
     is_next_year = assigns.current_year && period_year > assigns.current_year
 
+    is_beweglicher_ferientag =
+      assigns.period.holiday_or_vacation_type.name == "Beweglicher Ferientag"
+
     month_name = @month_names[assigns.period.starts_on.month]
 
     days = Date.diff(assigns.period.ends_on, assigns.period.starts_on) + 1
@@ -80,6 +83,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
       |> assign(:is_current, is_current)
       |> assign(:is_past, is_past)
       |> assign(:is_next_year, is_next_year)
+      |> assign(:is_beweglicher_ferientag, is_beweglicher_ferientag)
       |> assign(:days, days)
       |> assign(:effective_duration, effective_duration)
       |> assign(:row_href, row_href)
@@ -88,6 +92,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     <tr
       class={"cursor-pointer transition-colors #{cond do
         @is_current -> "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
+        @is_beweglicher_ferientag -> "bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-500"
         @is_next_year -> "bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
         true -> "hover:bg-gray-50 dark:hover:bg-gray-700"
       end} #{if @is_past, do: "text-gray-400 dark:text-gray-500"}"}

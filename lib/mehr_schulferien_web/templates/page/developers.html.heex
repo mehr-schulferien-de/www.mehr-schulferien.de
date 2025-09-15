@@ -2,376 +2,378 @@
   <:content>
     <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
       <.heading level={1} class="text-3xl mb-6">
-        Informationen für Entwickler
+        Developer Hub - Dokumentation für Entwickler
       </.heading>
 
-      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
-        Das Open-Source-Projekt
-      </.heading>
+      {render("developers_nav.html", current_page: :overview)}
 
-      <p class="mb-4">
-        mehr-schulferien.de ist ein mit der Programmiersprache Elixir und dem
-        <.link href="http://phoenixframework.org" variant="primary">
-          Phoenix Framework
-        </.link>
-        geschriebenes Open-Source-Projekt (MIT Lizenz). Der
-        Code wird auf
-        <.link
-          href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de"
-          variant="primary"
-        >
-          https://github.com/mehr-schulferien-de/www.mehr-schulferien.de
-        </.link>
-        gehostet und dort findet die Entwicklungsarbeit statt.
-      </p>
-      <p class="mb-4">
-        <b>Wir freuen uns über gute Feature-Requests und Bug-Reports!</b>
-        Idealerweise
-        als <.link
-          href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new"
-          variant="primary"
-        >Issues auf Github</.link>, aber auch gerne per E-Mail an Stefan Wintermeyer
-        <.link href="mailto:sw@wintermeyer-consulting.de" variant="primary">
-          (sw@wintermeyer-consulting.de)
-        </.link>
-      </p>
-
-      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
-        URL-Parameter
-      </.heading>
-      <p class="mb-4">
-        Verschiedene Ansichten können über URL-Parameter angepasst werden. Die Ferienübersicht unter
-        <.link href="/" variant="primary">/</.link>
-        unterstützt folgende Parameter:
-      </p>
-
-      <div class="overflow-x-auto mb-6">
-        <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-          <thead>
-            <tr class="bg-gray-100 dark:bg-gray-900">
-              <th class="py-2 px-4 border-b text-left">Parameter</th>
-              <th class="py-2 px-4 border-b text-left">Typ</th>
-              <th class="py-2 px-4 border-b text-left">Beschreibung</th>
-              <th class="py-2 px-4 border-b text-left">Beispiel</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">today</td>
-              <td class="py-2 px-4 border-b">String</td>
-              <td class="py-2 px-4 border-b">Startdatum im Format DD.MM.YYYY</td>
-              <td class="py-2 px-4 border-b font-mono">today=01.09.2024</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">days</td>
-              <td class="py-2 px-4 border-b">Integer</td>
-              <td class="py-2 px-4 border-b">Anzahl der anzuzeigenden Tage (1-365)</td>
-              <td class="py-2 px-4 border-b font-mono">days=180</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="mt-8 grid gap-6 md:grid-cols-2">
+        <!-- REST API Card -->
+        <.card variant="enhanced" class="hover:shadow-lg transition-shadow">
+          <:content>
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-4">
+                  <svg
+                    class="w-6 h-6 text-blue-600 dark:text-blue-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200">
+                  REST API
+                </.heading>
+              </div>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Zugriff auf alle Ferien- und Feiertagsdaten über unsere RESTful JSON API.
+                Ideal für Web-Anwendungen und mobile Apps.
+              </p>
+              <ul class="space-y-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  JSON & iCalendar Formate
+                </li>
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Keine Authentifizierung nötig
+                </li>
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Versionierte API (v2.0 & v2.1)
+                </li>
+              </ul>
+              <.link
+                href="/developers/api"
+                class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                Zur API Dokumentation
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </.link>
+            </div>
+          </:content>
+        </.card>
+        
+<!-- MCP Server Card -->
+        <.card variant="enhanced" class="hover:shadow-lg transition-shadow">
+          <:content>
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg mr-4">
+                  <svg
+                    class="w-6 h-6 text-purple-600 dark:text-purple-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200">
+                  MCP Server
+                </.heading>
+              </div>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Model Context Protocol Server für AI-Assistenten.
+                Perfekt für Claude, ChatGPT und andere KI-Tools.
+              </p>
+              <ul class="space-y-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  40+ spezialisierte Tools
+                </li>
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Slug-basierte Navigation
+                </li>
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  JSON-RPC Protokoll
+                </li>
+              </ul>
+              <.link
+                href="/developers/mcp"
+                class="inline-flex items-center text-purple-600 dark:text-purple-400 hover:underline font-medium"
+              >
+                Zur MCP Dokumentation
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </.link>
+            </div>
+          </:content>
+        </.card>
+        
+<!-- Open Source Card -->
+        <.card variant="enhanced" class="hover:shadow-lg transition-shadow">
+          <:content>
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <div class="p-3 bg-gray-100 dark:bg-gray-900/30 rounded-lg mr-4">
+                  <svg
+                    class="w-6 h-6 text-gray-600 dark:text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
+                </div>
+                <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200">
+                  Open Source
+                </.heading>
+              </div>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Unser Code ist Open Source (MIT Lizenz). Contributions und Feature Requests sind willkommen!
+              </p>
+              <ul class="space-y-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Elixir & Phoenix Framework
+                </li>
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  MIT Lizenz
+                </li>
+                <li class="flex items-start">
+                  <svg
+                    class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Pull Requests willkommen
+                </li>
+              </ul>
+              <.link
+                href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de"
+                target="_blank"
+                class="inline-flex items-center text-gray-600 dark:text-gray-400 hover:underline font-medium"
+              >
+                GitHub Repository
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </.link>
+            </div>
+          </:content>
+        </.card>
       </div>
 
-      <p class="mb-4">
-        Beispiel mit kombinierten Parametern:
-        <.link href="/?today=01.09.2024&days=180" variant="primary" class="font-mono">
-          /?today=01.09.2024&days=180
-        </.link>
-      </p>
-      <p class="mb-4">
-        Weitere Informationen finden Sie in der <.link
-          href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/blob/master/docs/url_parameters.md"
-          variant="primary"
-        >Dokumentation auf GitHub</.link>.
-      </p>
+      <div class="mt-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mb-4">
+          Quick Start
+        </.heading>
 
-      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
-        Die API
-      </.heading>
-      <p class="mb-4">
-        Alle Daten können per RESTful JSON-API abgerufen werden. Wir bieten zwei API-Versionen an:
-      </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">REST API Beispiel</h3>
+            <div class="relative">
+              <button
+                onclick="copyToClipboard(this)"
+                data-content='curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?year=2025'
+                class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                title="In Zwischenablage kopieren"
+              >
+                Kopieren
+              </button>
+              <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"><code>curl -H "Accept: application/json" \
+  https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?year=2025</code></pre>
+            </div>
+          </div>
 
-      <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
-        <div class="flex">
-          <div class="ml-3">
-            <p class="text-sm text-blue-700 dark:text-blue-300">
-              <strong>Empfehlung:</strong>
-              Verwenden Sie API v2.1 für neue Integrationen. Die v2.0 API ist veraltet und wird nur noch aus Kompatibilitätsgründen unterstützt.
-            </p>
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              MCP Server Beispiel
+            </h3>
+            <div class="relative">
+              <button
+                onclick="copyToClipboard(this)"
+                data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_vacations","arguments":{"location_slug":"bayern","location_type":"federal_state","start_date":"2025-01-01","end_date":"2025-12-31"}},"id":1}&#39;'
+                class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                title="In Zwischenablage kopieren"
+              >
+                Kopieren
+              </button>
+              <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_vacations",
+      "arguments": {
+        "location_slug": "bayern",
+        "location_type": "federal_state",
+        "start_date": "2025-01-01",
+        "end_date": "2025-12-31"
+      }
+    },
+    "id": 1
+  }'| %></code></pre>
+            </div>
           </div>
         </div>
       </div>
 
-      <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-6 mb-3">
-        API v2.1 (Empfohlen)
-      </.heading>
-      <p class="mb-4">
-        Die API v2.1 bietet eine klare Struktur mit dedizierten Endpunkten für jeden Standorttyp. Dies verhindert Mehrdeutigkeiten, wenn mehrere Standorte denselben Slug haben (z.B. "Hessen" als Bundesland und als Stadt).
-      </p>
-
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        Verfügbare Endpunkte
-      </.heading>
-      <div class="overflow-x-auto mb-6">
-        <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-          <thead>
-            <tr class="bg-gray-100 dark:bg-gray-900">
-              <th class="py-2 px-4 border-b text-left">Standorttyp</th>
-              <th class="py-2 px-4 border-b text-left">Basis-URL</th>
-              <th class="py-2 px-4 border-b text-left">Verfügbare Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="py-2 px-4 border-b">Bundesländer</td>
-              <td class="py-2 px-4 border-b font-mono">/api/v2.1/federal-states</td>
-              <td class="py-2 px-4 border-b">Liste, Details, Ferien, iCalendar</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b">Städte</td>
-              <td class="py-2 px-4 border-b font-mono">/api/v2.1/cities</td>
-              <td class="py-2 px-4 border-b">Liste, Details, Ferien, iCalendar</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b">Landkreise</td>
-              <td class="py-2 px-4 border-b font-mono">/api/v2.1/counties</td>
-              <td class="py-2 px-4 border-b">Liste, Details, Ferien, iCalendar</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b">Schulen</td>
-              <td class="py-2 px-4 border-b font-mono">/api/v2.1/schools</td>
-              <td class="py-2 px-4 border-b">Liste, Details, Ferien, iCalendar, vCard</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        Beispiele: Standorte abrufen
-      </.heading>
-      <ul class="list-disc pl-5 mb-4">
-        <li>
-          <strong>Alle Bundesländer:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/federal-states</pre>
-        </li>
-        <li>
-          <strong>Spezifisches Bundesland:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/federal-states/hessen</pre>
-        </li>
-        <li>
-          <strong>Alle Städte:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/cities</pre>
-        </li>
-      </ul>
-
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        Beispiele: Feriendaten abrufen
-      </.heading>
-      <ul class="list-disc pl-5 mb-4">
-        <li>
-          <strong>Ferien für ein Bundesland:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?start_date=2024-01-01&end_date=2024-12-31</pre>
-        </li>
-        <li>
-          <strong>Nur Schulferien für eine Stadt:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/periods?type=vacation&start_date=2024-01-01&end_date=2024-12-31</pre>
-        </li>
-        <li>
-          <strong>Nur Feiertage für einen Landkreis:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/counties/muenchen-landkreis/periods?type=holiday&start_date=2024-01-01&end_date=2024-12-31</pre>
-        </li>
-      </ul>
-
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        iCalendar Export
-      </.heading>
-      <p class="mb-2">
-        Exportieren Sie Feriendaten im iCalendar-Format (.ics) für die direkte Integration in Kalenderanwendungen:
-      </p>
-      <ul class="list-disc pl-5 mb-4">
-        <li>
-          <strong>Schuljahr 2024/2025 für Bayern:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/icalendar?year=2024&vacation_types=school</pre>
-        </li>
-        <li>
-          <strong>Kalenderjahr 2024 für München (alle Ferien & Feiertage):</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/icalendar?year=2024&vacation_types=all&calendar_year=true</pre>
-        </li>
-        <li>
-          <strong>Nur Schulferien für eine spezifische Schule:</strong> <br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded overflow-x-auto">curl https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/icalendar?year=2024&vacation_types=school</pre>
-        </li>
-      </ul>
-
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        vCard Export (nur für Schulen)
-      </.heading>
-      <p class="mb-2">
-        Exportieren Sie Schulkontaktdaten als vCard:
-      </p>
-      <pre class="bg-gray-100 dark:bg-gray-800 p-2 mb-4 rounded overflow-x-auto">curl https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/vcard</pre>
-
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        API Response Format
-      </.heading>
-      <p class="mb-2">
-        Alle API v2.1 Antworten folgen einem einheitlichen JSON-Format:
-      </p>
-      <pre class="bg-gray-100 dark:bg-gray-800 p-2 mb-4 rounded overflow-x-auto"><%= ~s|{
-  "data": [ /* Array von Objekten oder einzelnes Objekt */ ],
-  "meta": {
-    "api_version": "2.1"
-  }
-}| %></pre>
-
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        Query Parameter
-      </.heading>
-      <div class="overflow-x-auto mb-6">
-        <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
-          <thead>
-            <tr class="bg-gray-100 dark:bg-gray-900">
-              <th class="py-2 px-4 border-b text-left">Parameter</th>
-              <th class="py-2 px-4 border-b text-left">Endpunkte</th>
-              <th class="py-2 px-4 border-b text-left">Beschreibung</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">start_date</td>
-              <td class="py-2 px-4 border-b">periods</td>
-              <td class="py-2 px-4 border-b">Startdatum im Format YYYY-MM-DD</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">end_date</td>
-              <td class="py-2 px-4 border-b">periods</td>
-              <td class="py-2 px-4 border-b">Enddatum im Format YYYY-MM-DD</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">type</td>
-              <td class="py-2 px-4 border-b">periods</td>
-              <td class="py-2 px-4 border-b">
-                vacation (nur Ferien) oder holiday (nur Feiertage)
-              </td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">year</td>
-              <td class="py-2 px-4 border-b">icalendar</td>
-              <td class="py-2 px-4 border-b">Jahr für den Export (Standard: aktuelles Jahr)</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">vacation_types</td>
-              <td class="py-2 px-4 border-b">icalendar</td>
-              <td class="py-2 px-4 border-b">school (nur Schulferien) oder all (alle)</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 border-b font-mono">calendar_year</td>
-              <td class="py-2 px-4 border-b">icalendar</td>
-              <td class="py-2 px-4 border-b">true für Kalenderjahr, sonst Schuljahr</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p class="mb-4">
-        <strong>Vollständige API v2.1 Dokumentation:</strong>
-        <.link
-          href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/blob/master/docs/api_v2.1.md"
-          variant="primary"
-        >
-          API v2.1 Referenz auf GitHub
-        </.link>
-      </p>
-
-      <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-6 mb-3">
-        API v2.0 (Veraltet)
-      </.heading>
-      <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 mb-4">
-        <div class="flex">
-          <div class="ml-3">
-            <p class="text-sm text-yellow-700 dark:text-yellow-300">
-              <strong>Hinweis:</strong>
-              Die API v2.0 ist veraltet und wird nur noch aus Kompatibilitätsgründen unterstützt.
-              Bitte verwenden Sie für neue Integrationen die API v2.1, da diese eindeutige Endpunkte für jeden Standorttyp bietet
-              und das Problem mit mehrdeutigen Slugs (z.B. "Hessen" als Bundesland und Stadt) löst.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-6 mb-3">
-        locations
-      </.heading>
-      <p class="mb-4">
-        Das Model Locations wird für die Speicherung von Ländern (countries), Bundesländern (federal_states), Landkreisen (counties),
-        Städten (cities) und Schulen (schools) benutzt. Die Dabei werden die einzelnen Ebenen mit einander verknüpft.
-      </p>
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        Beispiel
-      </.heading>
-      <ul class="list-disc pl-5 mb-4">
-        <li>
-          Daten zu Deutschland abrufen:<br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/locations/1</pre>
-        </li>
-        <li>
-          Daten zu allen Locations abrufen:<br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/locations</pre>
-        </li>
-      </ul>
-
-      <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-6 mb-3">
-        periods
-      </.heading>
-      <p class="mb-4">
-        Das Model Period wird zur Speicherung der einzelnen Ferien und Feiertage benutzt.
-      </p>
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        Beispiel
-      </.heading>
-      <ul class="list-disc pl-5 mb-4">
-        <li>
-          Daten zum Eintrag mit der ID 23 abrufen:<br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/periods/23</pre>
-        </li>
-        <li>
-          Daten zu allen Einträgen abrufen:<br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/periods</pre>
-        </li>
-      </ul>
-
-      <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-6 mb-3">
-        holiday_or_vacation_types
-      </.heading>
-      <p class="mb-4">
-        Das Model HolidayOrVacationType wird zur Speicherung der einzelnen Arten von Ferien und Feiertage benutzt.
-      </p>
-      <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-4 mb-2">
-        Beispiel
-      </.heading>
-      <ul class="list-disc pl-5 mb-4">
-        <li>
-          Daten zum Eintrag mit der ID 10 abrufen:<br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/holiday_or_vacation_types/10</pre>
-        </li>
-        <li>
-          Daten zu allen Einträgen abrufen:<br />
-          <pre class="bg-gray-100 dark:bg-gray-800 p-2 mt-1 mb-2 rounded">curl -H "Content-Type: application/json" http://www.mehr-schulferien.de/api/v2.0/holiday_or_vacation_types</pre>
-        </li>
-      </ul>
-
-      <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-6 mb-3">
-        Noch Wünsche an die API?
-      </.heading>
-      <p class="mb-4">
-        Mit der aktuellen API haben Sie Zugriff auf alle Daten, müssen diese aber noch selber verarbeiten. In Zukunft
-        werden wir auch Anfragen wie "Ist heute ein Feiertag" per API beantworten. Wenn Sie dazu Wünsche oder Vorschläge
-        haben, würden wir uns über ein entsprechendes Feature-Request-<.link
-          href="https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/issues/new"
-          variant="primary"
-        >Issues auf Github</.link> freuen.
-      </p>
+      {render("developers_footer.html", assigns)}
     </div>
   </:content>
 </.card>
+
+<script>
+  function copyToClipboard(button) {
+    const content = button.getAttribute('data-content');
+    const decodedContent = content.replace(/&#39;/g, "'");
+
+    navigator.clipboard.writeText(decodedContent).then(function() {
+      const originalText = button.textContent;
+      button.textContent = 'Kopiert!';
+      button.classList.add('bg-green-600');
+      button.classList.remove('bg-gray-700');
+
+      setTimeout(function() {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-600');
+        button.classList.add('bg-gray-700');
+      }, 2000);
+    }).catch(function(err) {
+      console.error('Fehler beim Kopieren: ', err);
+      button.textContent = 'Fehler!';
+      setTimeout(function() {
+        button.textContent = 'Kopieren';
+      }, 2000);
+    });
+  }
+</script>

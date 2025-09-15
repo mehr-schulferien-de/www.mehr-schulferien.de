@@ -144,6 +144,17 @@ defmodule MehrSchulferienWeb.Router do
     resources "/periods", PeriodController, only: [:index, :show]
   end
 
+  # ========== MCP (Model Context Protocol) Server ==========
+  scope "/mcp" do
+    forward "/", MehrSchulferienWeb.MCP.Router
+  end
+
+  # ========== MCP Documentation ==========
+  scope "/", MehrSchulferienWeb do
+    pipe_through :browser
+    get "/mcp-docs", MCPDocumentationController, :index
+  end
+
   # ========== Main Routes (SEO-optimized /ferien/ URLs) ==========
   scope "/", MehrSchulferienWeb do
     pipe_through :browser
@@ -156,6 +167,8 @@ defmodule MehrSchulferienWeb.Router do
     get "/winterferien", PageController, :winter_vacations
     get "/pfingstferien", PageController, :pentecost_vacations
     get "/developers", PageController, :developers
+    get "/developers/api", PageController, :developers_api
+    get "/developers/mcp", PageController, :developers_mcp
     get "/impressum", PageController, :impressum
 
     # Test page

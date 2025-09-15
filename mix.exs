@@ -58,6 +58,7 @@ defmodule MehrSchulferien.MixProject do
       {:swoosh, "~> 1.16"},
       {:gen_smtp, "~> 1.2"},
       {:hackney, "~> 1.9"},
+      {:hermes_mcp, "~> 0.14.1"},
       {:tzdata, "~> 1.1"},
       {:mix_version, "~> 2.5.0"},
       {:mogrify, "~> 0.9.3"},

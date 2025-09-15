@@ -1,0 +1,465 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">MCP Server API Documentation</h1>
+      <p class="text-lg text-gray-600">
+        Access German school vacation and holiday data through the Model Context Protocol (MCP)
+      </p>
+      <div class="mt-4 flex items-center space-x-4">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+          Version 1.0.0
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+          Slug-based Access
+        </span>
+      </div>
+    </div>
+
+    <!-- Quick Start -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Quick Start</h2>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Endpoint</h3>
+          <code class="block bg-gray-100 p-3 rounded text-sm">
+            https://www.mehr-schulferien.de/mcp
+          </code>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Protocol</h3>
+          <p class="text-gray-600">MCP (Model Context Protocol) over HTTP/JSON-RPC</p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Authentication</h3>
+          <p class="text-gray-600">No authentication required (public read-only access)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example Request -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Example API Request</h2>
+
+      <p class="text-gray-600 mb-4">
+        Send a POST request to the MCP endpoint with a JSON-RPC payload to call any tool.
+      </p>
+
+      <div class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+        <pre>POST https://www.mehr-schulferien.de/mcp
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get_school_details",
+    "arguments": {
+      "school_slug": "79713-josef-anton-sickinger-grundschule"
+    }
+  },
+  "id": 1
+}</pre>
+      </div>
+    </div>
+
+    <!-- Available Tools -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Available Tools</h2>
+
+      <div class="space-y-8">
+        <!-- Location Navigation Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">📍 Location Navigation</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_countries</h4>
+              <p class="text-sm text-gray-600 mb-2">List all available countries</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">No parameters required</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_federal_states</h4>
+              <p class="text-sm text-gray-600 mb-2">List federal states of a country</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">country_slug: string</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_cities_by_state</h4>
+              <p class="text-sm text-gray-600 mb-2">List all cities in a federal state</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">country_slug, federal_state_slug</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_cities_by_country</h4>
+              <p class="text-sm text-gray-600 mb-2">List all cities of a country</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">country_slug: string</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_schools_by_city</h4>
+              <p class="text-sm text-gray-600 mb-2">List all schools in a city</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">city_slug: string</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_schools_by_federal_state</h4>
+              <p class="text-sm text-gray-600 mb-2">List ALL schools in a federal state</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">country_slug, federal_state_slug</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_counties</h4>
+              <p class="text-sm text-gray-600 mb-2">List all counties of a federal state</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">country_slug, federal_state_slug</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_location_hierarchy</h4>
+              <p class="text-sm text-gray-600 mb-2">Get full location hierarchy</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- School Information Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">🏫 School Information</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_school_details</h4>
+              <p class="text-sm text-gray-600 mb-2">Complete school info with address & contact</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">school_slug: string</code>
+              <p class="text-xs text-gray-500 mt-2">Returns: name, address, phone, email, homepage</p>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">search_schools</h4>
+              <p class="text-sm text-gray-600 mb-2">Search schools by name or keyword</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">query, federal_state_slug?, city_slug?</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_nearby_schools</h4>
+              <p class="text-sm text-gray-600 mb-2">Find schools within distance</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">school_slug, distance_meters</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_schools_by_zip</h4>
+              <p class="text-sm text-gray-600 mb-2">Find schools by zip code prefix</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">zip_prefix: string (3-5 digits)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Period Query Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">📅 Vacations & Holidays</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_vacations</h4>
+              <p class="text-sm text-gray-600 mb-2">School vacation periods</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type, dates?</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_public_holidays</h4>
+              <p class="text-sm text-gray-600 mb-2">Public holidays for a location</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type, year</code>
+              <p class="text-xs text-gray-500 mt-2">Supports: country, federal_state, city</p>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_all_periods</h4>
+              <p class="text-sm text-gray-600 mb-2">Combined vacations and holidays</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type, year</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_next_periods</h4>
+              <p class="text-sm text-gray-600 mb-2">Upcoming vacations and holidays</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type, count?</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_current_periods</h4>
+              <p class="text-sm text-gray-600 mb-2">Currently active periods</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type, date?</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Planning Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">🌉 Vacation Planning</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_bridge_days</h4>
+              <p class="text-sm text-gray-600 mb-2">Calculate optimal bridge days</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">federal_state_slug, year</code>
+              <p class="text-xs text-gray-500 mt-2">Returns efficiency percentage</p>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">check_bridge_days_availability</h4>
+              <p class="text-sm text-gray-600 mb-2">Check bridge days for multiple years</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">federal_state_slug, years[]</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_vacation_statistics</h4>
+              <p class="text-sm text-gray-600 mb-2">Vacation day statistics</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type, year</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">compare_vacation_schedules</h4>
+              <p class="text-sm text-gray-600 mb-2">Compare schedules between locations</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slugs[], location_type, year</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_school_year_info</h4>
+              <p class="text-sm text-gray-600 mb-2">School year start and end dates</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">federal_state_slug, year</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_bewegliche_ferientage</h4>
+              <p class="text-sm text-gray-600 mb-2">Flexible vacation day info</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">school_slug, school_year</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search & Export Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">🔍 Search & Export</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">search_locations</h4>
+              <p class="text-sm text-gray-600 mb-2">Search any location by name</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">query, type?</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_location_by_slug</h4>
+              <p class="text-sm text-gray-600 mb-2">Get location details by slug</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">slug: string</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">validate_slug</h4>
+              <p class="text-sm text-gray-600 mb-2">Check if slug exists</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">slug: string</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_ical_url</h4>
+              <p class="text-sm text-gray-600 mb-2">Generate iCal subscription URL</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, location_type</code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">export_periods_json</h4>
+              <p class="text-sm text-gray-600 mb-2">Export periods as JSON</p>
+              <code class="text-xs bg-gray-100 px-2 py-1 rounded">location_slug, type, dates</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Common Slugs Reference -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Common Slugs Reference</h2>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Countries</h3>
+          <ul class="space-y-1 text-sm">
+            <li><code class="bg-gray-100 px-2 py-1 rounded">deutschland</code> - Germany</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Federal States</h3>
+          <ul class="space-y-1 text-sm">
+            <li><code class="bg-gray-100 px-2 py-1 rounded">baden-wuerttemberg</code> - Baden-Württemberg</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">bayern</code> - Bavaria</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">berlin</code> - Berlin</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">brandenburg</code> - Brandenburg</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">bremen</code> - Bremen</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">hamburg</code> - Hamburg</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">hessen</code> - Hesse</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">mecklenburg-vorpommern</code> - Mecklenburg-Vorpommern</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">niedersachsen</code> - Lower Saxony</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">nordrhein-westfalen</code> - North Rhine-Westphalia</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">rheinland-pfalz</code> - Rhineland-Palatinate</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">saarland</code> - Saarland</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">sachsen</code> - Saxony</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">sachsen-anhalt</code> - Saxony-Anhalt</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">schleswig-holstein</code> - Schleswig-Holstein</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">thueringen</code> - Thuringia</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Major Cities</h3>
+          <ul class="space-y-1 text-sm">
+            <li><code class="bg-gray-100 px-2 py-1 rounded">muenchen</code> - Munich</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">berlin</code> - Berlin</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">hamburg</code> - Hamburg</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">koeln</code> - Cologne</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">frankfurt-am-main</code> - Frankfurt</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">stuttgart</code> - Stuttgart</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">duesseldorf</code> - Düsseldorf</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">dortmund</code> - Dortmund</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">essen</code> - Essen</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">leipzig</code> - Leipzig</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Location Types</h3>
+          <ul class="space-y-1 text-sm">
+            <li><code class="bg-gray-100 px-2 py-1 rounded">country</code> - Country level</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">federal_state</code> - Federal state level</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">county</code> - County level</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">city</code> - City level</li>
+            <li><code class="bg-gray-100 px-2 py-1 rounded">school</code> - School level</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example Usage with cURL -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Example Usage</h2>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Get Public Holidays for Berlin 2025</h3>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_public_holidays","arguments":{"location_slug":"berlin","location_type":"federal_state","year":2025}},"id":1}'</pre>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Find Schools in Munich</h3>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_schools_by_city","arguments":{"city_slug":"muenchen"}},"id":2}'</pre>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Get School Contact Information</h3>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_school_details","arguments":{"school_slug":"79713-josef-anton-sickinger-grundschule"}},"id":3}'</pre>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Calculate Bridge Days for Bavaria 2025</h3>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_bridge_days","arguments":{"federal_state_slug":"bayern","year":2025}},"id":4}'</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integration Guide -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Integration Guide</h2>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">For AI Assistants</h3>
+          <p class="text-gray-600 mb-2">
+            This MCP server is designed to work seamlessly with AI assistants that support the Model Context Protocol.
+            Configure your assistant to connect to the MCP endpoint, and it will automatically discover all available tools.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">For Developers</h3>
+          <p class="text-gray-600 mb-2">
+            Use standard HTTP POST requests with JSON-RPC format. All responses are JSON-formatted and optimized for programmatic access.
+            The slug-based navigation ensures you never need internal database IDs.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Example Languages</h3>
+          <ul class="list-disc ml-5 space-y-1 text-gray-600">
+            <li><strong>Python:</strong> Use <code class="bg-gray-100 px-1 rounded">requests</code> library</li>
+            <li><strong>JavaScript:</strong> Use <code class="bg-gray-100 px-1 rounded">fetch</code> or <code class="bg-gray-100 px-1 rounded">axios</code></li>
+            <li><strong>Ruby:</strong> Use <code class="bg-gray-100 px-1 rounded">Net::HTTP</code> or <code class="bg-gray-100 px-1 rounded">HTTParty</code></li>
+            <li><strong>PHP:</strong> Use <code class="bg-gray-100 px-1 rounded">cURL</code> or <code class="bg-gray-100 px-1 rounded">Guzzle</code></li>
+            <li><strong>Go:</strong> Use <code class="bg-gray-100 px-1 rounded">net/http</code> package</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate Limiting & Best Practices -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Best Practices</h2>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Rate Limiting</h3>
+          <ul class="list-disc ml-5 space-y-1 text-gray-600">
+            <li>No strict rate limits for reasonable usage</li>
+            <li>Please cache responses when appropriate</li>
+            <li>Avoid unnecessary repeated queries</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Performance Tips</h3>
+          <ul class="list-disc ml-5 space-y-1 text-gray-600">
+            <li>Use specific location types to narrow searches</li>
+            <li>Request only the date ranges you need</li>
+            <li>Cache location slugs for repeated queries</li>
+            <li>Use batch operations when comparing multiple locations</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Error Handling</h3>
+          <ul class="list-disc ml-5 space-y-1 text-gray-600">
+            <li>Always check for error responses in the JSON-RPC result</li>
+            <li>Invalid slugs will return "not found" errors</li>
+            <li>Date parameters must be in YYYY-MM-DD format</li>
+            <li>Year parameters are typically limited to 2020-2030</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support & Contact -->
+    <div class="bg-white shadow-sm rounded-lg p-6">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Support & Contact</h2>
+
+      <div class="space-y-2 text-gray-600">
+        <p>For API support and questions:</p>
+        <ul class="list-disc ml-5 space-y-1">
+          <li>Email: <a href="mailto:support@mehr-schulferien.de" class="text-blue-600 hover:underline">support@mehr-schulferien.de</a></li>
+          <li>Website: <a href="https://www.mehr-schulferien.de" class="text-blue-600 hover:underline">www.mehr-schulferien.de</a></li>
+          <li>Developer Docs: <a href="/developers" class="text-blue-600 hover:underline">API v2.1 Documentation</a></li>
+        </ul>
+
+        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-800">
+            <strong>Note:</strong> This is a read-only API. All data modifications must be done through the main website's wiki interface.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

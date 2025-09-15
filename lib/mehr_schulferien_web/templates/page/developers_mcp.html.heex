@@ -1,0 +1,971 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        MCP Server Dokumentation
+      </.heading>
+
+      {render("developers_nav.html", current_page: :mcp)}
+
+      <div class="mt-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-400 dark:border-purple-600 p-4 mb-6">
+        <div class="flex">
+          <div class="ml-3">
+            <p class="text-sm text-purple-700 dark:text-purple-300">
+              <strong>Model Context Protocol (MCP):</strong>
+              Ein standardisiertes Protokoll für die Kommunikation zwischen AI-Assistenten und externen Datenquellen.
+              Perfekt für Claude, ChatGPT und andere KI-Tools.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+        Quick Start
+      </.heading>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Endpoint</h3>
+          <code class="block bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm">
+            https://www.mehr-schulferien.de/mcp
+          </code>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Protokoll</h3>
+          <p class="text-gray-600 dark:text-gray-400">
+            MCP (Model Context Protocol) über HTTP/JSON-RPC
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Authentifizierung</h3>
+          <p class="text-gray-600 dark:text-gray-400">
+            Keine Authentifizierung erforderlich (öffentlicher Lesezugriff)
+          </p>
+        </div>
+      </div>
+
+      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+        Beispiel API Request
+      </.heading>
+
+      <p class="text-gray-600 dark:text-gray-400 mb-4">
+        Senden Sie einen POST-Request an den MCP-Endpunkt mit einem JSON-RPC Payload:
+      </p>
+
+      <div class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+        <pre><%= ~s|POST https://www.mehr-schulferien.de/mcp
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get_school_details",
+    "arguments": {
+      "school_slug": "79713-josef-anton-sickinger-grundschule"
+    }
+  },
+  "id": 1
+}| %></pre>
+      </div>
+
+      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+        Verfügbare Tools
+      </.heading>
+
+      <div class="space-y-8">
+        <!-- Location Navigation Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">📍 Location Navigation</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_countries</h4>
+              <p class="text-sm text-gray-600 mb-2">Alle verfügbaren Länder auflisten</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                Keine Parameter erforderlich
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_federal_states</h4>
+              <p class="text-sm text-gray-600 mb-2">Bundesländer eines Landes auflisten</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                country_slug: string
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_cities_by_state</h4>
+              <p class="text-sm text-gray-600 mb-2">Alle Städte in einem Bundesland</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                country_slug, federal_state_slug
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_schools_by_city</h4>
+              <p class="text-sm text-gray-600 mb-2">Alle Schulen in einer Stadt</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                city_slug: string
+              </code>
+            </div>
+          </div>
+        </div>
+        
+<!-- School Information Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">🏫 Schulinformationen</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_school_details</h4>
+              <p class="text-sm text-gray-600 mb-2">
+                Vollständige Schulinfo mit Adresse & Kontakt
+              </p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                school_slug: string
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">search_schools</h4>
+              <p class="text-sm text-gray-600 mb-2">Schulen nach Name oder Stichwort suchen</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                query, federal_state_slug?, city_slug?
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_nearby_schools</h4>
+              <p class="text-sm text-gray-600 mb-2">Schulen im Umkreis finden</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                school_slug, distance_meters
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_schools_by_zip</h4>
+              <p class="text-sm text-gray-600 mb-2">Schulen nach PLZ-Präfix finden</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                zip_prefix: string (3-5 Ziffern)
+              </code>
+            </div>
+          </div>
+        </div>
+        
+<!-- Period Query Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">📅 Ferien & Feiertage</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_vacations</h4>
+              <p class="text-sm text-gray-600 mb-2">Schulferienzeiten</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                location_slug, location_type, dates?
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_public_holidays</h4>
+              <p class="text-sm text-gray-600 mb-2">Feiertage für einen Standort</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                location_slug, location_type, year
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_all_periods</h4>
+              <p class="text-sm text-gray-600 mb-2">Kombinierte Ferien und Feiertage</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                location_slug, location_type, year
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_next_periods</h4>
+              <p class="text-sm text-gray-600 mb-2">Kommende Ferien und Feiertage</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                location_slug, location_type, count?
+              </code>
+            </div>
+          </div>
+        </div>
+        
+<!-- Planning Tools -->
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">🌉 Urlaubsplanung</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_bridge_days</h4>
+              <p class="text-sm text-gray-600 mb-2">Optimale Brückentage berechnen</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                federal_state_slug, year
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_vacation_statistics</h4>
+              <p class="text-sm text-gray-600 mb-2">Ferientage-Statistiken</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                location_slug, location_type, year
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">compare_vacation_schedules</h4>
+              <p class="text-sm text-gray-600 mb-2">Ferienpläne vergleichen</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                location_slugs[], location_type, year
+              </code>
+            </div>
+
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-1">get_bewegliche_ferientage</h4>
+              <p class="text-sm text-gray-600 mb-2">Bewegliche Ferientage Info</p>
+              <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                school_slug, school_year
+              </code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+        Häufige Slug-Referenzen
+      </.heading>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Bundesländer</h3>
+          <ul class="space-y-1 text-sm">
+            <li>
+              <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                baden-wuerttemberg
+              </code>
+            </li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">bayern</code></li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">berlin</code></li>
+            <li>
+              <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">brandenburg</code>
+            </li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">hessen</code></li>
+            <li>
+              <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                nordrhein-westfalen
+              </code>
+            </li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">sachsen</code></li>
+            <li>und weitere...</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Große Städte</h3>
+          <ul class="space-y-1 text-sm">
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">muenchen</code></li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">berlin</code></li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">hamburg</code></li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">koeln</code></li>
+            <li>
+              <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                frankfurt-am-main
+              </code>
+            </li>
+            <li><code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">stuttgart</code></li>
+            <li>
+              <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">duesseldorf</code>
+            </li>
+            <li>und weitere...</li>
+          </ul>
+        </div>
+      </div>
+
+      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+        Verwendungsbeispiele
+      </.heading>
+
+      <div class="space-y-6">
+        <!-- Basic Examples -->
+        <div class="border-l-4 border-green-500 pl-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Basis-Abfragen</h3>
+
+          <div class="space-y-4">
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">1. Alle Bundesländer auflisten</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_federal_states","arguments":{"country_slug":"deutschland"}},"id":1}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_federal_states",
+      "arguments": {
+        "country_slug": "deutschland"
+      }
+    },
+    "id": 1
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">2. Städte in Bayern finden</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_cities_by_state","arguments":{"country_slug":"deutschland","federal_state_slug":"bayern"}},"id":2}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_cities_by_state",
+      "arguments": {
+        "country_slug": "deutschland",
+        "federal_state_slug": "bayern"
+      }
+    },
+    "id": 2
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">3. Feiertage für Berlin 2025</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_public_holidays","arguments":{"location_slug":"berlin","location_type":"federal_state","year":2025}},"id":3}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_public_holidays",
+      "arguments": {
+        "location_slug": "berlin",
+        "location_type": "federal_state",
+        "year": 2025
+      }
+    },
+    "id": 3
+  }'| %></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+<!-- School-Related Examples -->
+        <div class="border-l-4 border-blue-500 pl-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Schul-Abfragen</h3>
+
+          <div class="space-y-4">
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">4. Schulen in München finden</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_schools_by_city","arguments":{"city_slug":"muenchen"}},"id":4}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_schools_by_city",
+      "arguments": {
+        "city_slug": "muenchen"
+      }
+    },
+    "id": 4
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">5. Schuldetails abrufen</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_school_details","arguments":{"school_slug":"79713-josef-anton-sickinger-grundschule"}},"id":5}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_school_details",
+      "arguments": {
+        "school_slug": "79713-josef-anton-sickinger-grundschule"
+      }
+    },
+    "id": 5
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">
+                6. Schulen im PLZ-Bereich 80331 (München Zentrum)
+              </h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_schools_by_zip","arguments":{"zip_prefix":"80331"}},"id":6}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_schools_by_zip",
+      "arguments": {
+        "zip_prefix": "80331"
+      }
+    },
+    "id": 6
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">7. Schulen nach Name suchen</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"search_schools","arguments":{"query":"Gymnasium","federal_state_slug":"bayern"}},"id":7}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "search_schools",
+      "arguments": {
+        "query": "Gymnasium",
+        "federal_state_slug": "bayern"
+      }
+    },
+    "id": 7
+  }'| %></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+<!-- Vacation Planning Examples -->
+        <div class="border-l-4 border-purple-500 pl-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Ferienplanung</h3>
+
+          <div class="space-y-4">
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">8. Schulferien für Bayern 2025</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_vacations","arguments":{"location_slug":"bayern","location_type":"federal_state","start_date":"2025-01-01","end_date":"2025-12-31"}},"id":8}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_vacations",
+      "arguments": {
+        "location_slug": "bayern",
+        "location_type": "federal_state",
+        "start_date": "2025-01-01",
+        "end_date": "2025-12-31"
+      }
+    },
+    "id": 8
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">
+                9. Nächste 5 Ferienperioden für Hamburg
+              </h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_next_periods","arguments":{"location_slug":"hamburg","location_type":"federal_state","count":5}},"id":9}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_next_periods",
+      "arguments": {
+        "location_slug": "hamburg",
+        "location_type": "federal_state",
+        "count": 5
+      }
+    },
+    "id": 9
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">10. Aktuelle Ferienperiode prüfen</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_current_periods","arguments":{"location_slug":"nordrhein-westfalen","location_type":"federal_state"}},"id":10}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_current_periods",
+      "arguments": {
+        "location_slug": "nordrhein-westfalen",
+        "location_type": "federal_state"
+      }
+    },
+    "id": 10
+  }'| %></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+<!-- Bridge Days Examples -->
+        <div class="border-l-4 border-orange-500 pl-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Brückentage-Optimierung</h3>
+
+          <div class="space-y-4">
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">11. Brückentage für Bayern 2025</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_bridge_days","arguments":{"federal_state_slug":"bayern","year":2025}},"id":11}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_bridge_days",
+      "arguments": {
+        "federal_state_slug": "bayern",
+        "year": 2025
+      }
+    },
+    "id": 11
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">
+                12. Brückentage-Verfügbarkeit für mehrere Jahre
+              </h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"check_bridge_days_availability","arguments":{"federal_state_slug":"hessen","years":[2025,2026,2027]}},"id":12}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "check_bridge_days_availability",
+      "arguments": {
+        "federal_state_slug": "hessen",
+        "years": [2025, 2026, 2027]
+      }
+    },
+    "id": 12
+  }'| %></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+<!-- Advanced Examples -->
+        <div class="border-l-4 border-red-500 pl-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Erweiterte Abfragen</h3>
+
+          <div class="space-y-4">
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">13. Ferienstatistiken für 2025</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_vacation_statistics","arguments":{"location_slug":"sachsen","location_type":"federal_state","year":2025}},"id":13}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_vacation_statistics",
+      "arguments": {
+        "location_slug": "sachsen",
+        "location_type": "federal_state",
+        "year": 2025
+      }
+    },
+    "id": 13
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">
+                14. Ferienpläne mehrerer Bundesländer vergleichen
+              </h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"compare_vacation_schedules","arguments":{"location_slugs":["bayern","baden-wuerttemberg","hessen"],"location_type":"federal_state","year":2025}},"id":14}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "compare_vacation_schedules",
+      "arguments": {
+        "location_slugs": [
+          "bayern",
+          "baden-wuerttemberg",
+          "hessen"
+        ],
+        "location_type": "federal_state",
+        "year": 2025
+      }
+    },
+    "id": 14
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">
+                15. Alle Ferien und Feiertage kombiniert
+              </h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_all_periods","arguments":{"location_slug":"berlin","location_type":"federal_state","year":2025}},"id":15}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_all_periods",
+      "arguments": {
+        "location_slug": "berlin",
+        "location_type": "federal_state",
+        "year": 2025
+      }
+    },
+    "id": 15
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">16. Location-Hierarchie abrufen</h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_location_hierarchy","arguments":{"location_slug":"muenchen","location_type":"city"}},"id":16}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_location_hierarchy",
+      "arguments": {
+        "location_slug": "muenchen",
+        "location_type": "city"
+      }
+    },
+    "id": 16
+  }'| %></code></pre>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-gray-800 mb-2">
+                17. iCal-URL für Kalender-Integration generieren
+              </h4>
+              <div class="relative">
+                <button
+                  onclick="copyToClipboard(this)"
+                  data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_ical_url","arguments":{"location_slug":"bayern","location_type":"federal_state"}},"id":17}&#39;'
+                  class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  title="In Zwischenablage kopieren"
+                >
+                  Kopieren
+                </button>
+                <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded-lg overflow-x-auto text-sm"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_ical_url",
+      "arguments": {
+        "location_slug": "bayern",
+        "location_type": "federal_state"
+      }
+    },
+    "id": 17
+  }'| %></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+<!-- Python Example -->
+        <div class="border-l-4 border-indigo-500 pl-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Integration in Python</h3>
+          <pre class="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto text-sm"><%= ~s|import requests
+import json
+
+# MCP Server Endpoint
+url = "https://www.mehr-schulferien.de/mcp"
+
+# Beispiel 1: Feiertage abrufen
+payload = {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+        "name": "get_public_holidays",
+        "arguments": {
+            "location_slug": "bayern",
+            "location_type": "federal_state",
+            "year": 2025
+        }
+    },
+    "id": 1
+}
+
+response = requests.post(url, json=payload)
+holidays = response.json()
+print(json.dumps(holidays, indent=2))
+
+# Beispiel 2: Schulen suchen
+payload = {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+        "name": "search_schools",
+        "arguments": {
+            "query": "Grundschule",
+            "city_slug": "muenchen"
+        }
+    },
+    "id": 2
+}
+
+response = requests.post(url, json=payload)
+schools = response.json()
+for school in schools.get('result', []):
+    print(f"- {school['name']}: {school['address']}")| %></pre>
+        </div>
+        
+<!-- JavaScript Example -->
+        <div class="border-l-4 border-yellow-500 pl-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">
+            Integration in JavaScript/Node.js
+          </h3>
+          <pre class="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto text-sm"><%= ~s|// Mit fetch API (Node.js 18+ oder Browser)
+async function getVacations(state, year) {
+  const response = await fetch('https://www.mehr-schulferien.de/mcp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'tools/call',
+      params: {
+        name: 'get_vacations',
+        arguments: {
+          location_slug: state,
+          location_type: 'federal_state',
+          start_date: `${year}-01-01`,
+          end_date: `${year}-12-31`
+        }
+      },
+      id: 1
+    })
+  });
+
+  const data = await response.json();
+  return data.result;
+}
+
+// Verwendung
+getVacations('bayern', 2025).then(vacations => {
+  vacations.forEach(vacation => {
+    console.log(`${vacation.name}: ${vacation.starts_on} - ${vacation.ends_on}`);
+  });
+});| %></pre>
+        </div>
+      </div>
+
+      <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+        Integration
+      </.heading>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Für AI-Assistenten</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-2">
+            Dieser MCP-Server ist für die nahtlose Integration mit AI-Assistenten konzipiert, die das Model Context Protocol unterstützen.
+            Konfigurieren Sie Ihren Assistenten für die Verbindung zum MCP-Endpunkt - alle verfügbaren Tools werden automatisch erkannt.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Für Entwickler</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-2">
+            Verwenden Sie Standard HTTP POST-Requests mit JSON-RPC Format. Alle Antworten sind JSON-formatiert und für programmatischen Zugriff optimiert.
+            Die slug-basierte Navigation stellt sicher, dass Sie niemals interne Datenbank-IDs benötigen.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        <p class="text-sm text-blue-800 dark:text-blue-300">
+          <strong>Hinweis:</strong>
+          Dies ist eine Read-Only API. Alle Datenänderungen müssen über das Wiki-Interface der Hauptwebsite erfolgen.
+        </p>
+      </div>
+
+      <p class="mt-6">
+        <strong>Vollständige MCP Dokumentation:</strong>
+        <.link href="/mcp-docs" variant="primary">
+          Detaillierte MCP Server Dokumentation
+        </.link>
+      </p>
+
+      {render("developers_footer.html", assigns)}
+    </div>
+  </:content>
+</.card>
+
+<script>
+  function copyToClipboard(button) {
+    const content = button.getAttribute('data-content');
+    const decodedContent = content.replace(/&#39;/g, "'");
+
+    navigator.clipboard.writeText(decodedContent).then(function() {
+      const originalText = button.textContent;
+      button.textContent = 'Kopiert!';
+      button.classList.add('bg-green-600');
+      button.classList.remove('bg-gray-700');
+
+      setTimeout(function() {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-600');
+        button.classList.add('bg-gray-700');
+      }, 2000);
+    }).catch(function(err) {
+      console.error('Fehler beim Kopieren: ', err);
+      button.textContent = 'Fehler!';
+      setTimeout(function() {
+        button.textContent = 'Kopieren';
+      }, 2000);
+    });
+  }
+</script>

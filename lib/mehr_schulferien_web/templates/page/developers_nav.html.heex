@@ -1,0 +1,31 @@
+<nav class="mb-6 border-b border-gray-200 dark:border-gray-700">
+  <div class="flex flex-wrap gap-1">
+    <.link
+      href="/developers"
+      class={"px-4 py-2 text-sm font-medium rounded-t-lg transition-colors " <>
+              if @current_page == :overview,
+                do: "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-t border-l border-r border-gray-200 dark:border-gray-700",
+                else: "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"}
+    >
+      Übersicht
+    </.link>
+    <.link
+      href="/developers/api"
+      class={"px-4 py-2 text-sm font-medium rounded-t-lg transition-colors " <>
+              if @current_page == :api,
+                do: "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-t border-l border-r border-gray-200 dark:border-gray-700",
+                else: "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"}
+    >
+      REST API
+    </.link>
+    <.link
+      href="/developers/mcp"
+      class={"px-4 py-2 text-sm font-medium rounded-t-lg transition-colors " <>
+              if @current_page == :mcp,
+                do: "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-t border-l border-r border-gray-200 dark:border-gray-700",
+                else: "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"}
+    >
+      MCP Server
+    </.link>
+  </div>
+</nav>

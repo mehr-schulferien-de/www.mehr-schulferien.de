@@ -26,7 +26,8 @@ defmodule MehrSchulferienWeb.Api.V2.LocationControllerTest do
         parent_location_id: city.id
       })
 
-    {:ok, %{conn: conn, country: country, federal_state: federal_state, city: city, school: school}}
+    {:ok,
+     %{conn: conn, country: country, federal_state: federal_state, city: city, school: school}}
   end
 
   describe "index" do

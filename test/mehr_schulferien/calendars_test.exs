@@ -79,16 +79,19 @@ defmodule MehrSchulferien.CalendarsTest do
     test "list_holiday_or_vacation_types/0 returns all holiday_or_vacation_types" do
       # Clear the cache to ensure we get fresh data
       MehrSchulferien.Cache.clear_query_cache()
-      
+
       holiday_or_vacation_type = insert(:holiday_or_vacation_type)
       types = Calendars.list_holiday_or_vacation_types()
-      
+
       # Ensure we actually got some results
       assert length(types) > 0
-      
+
       # Check if our inserted type is in the list
       found = Enum.find(types, &(&1.id == holiday_or_vacation_type.id))
-      assert found != nil, "Created holiday_or_vacation_type with id #{holiday_or_vacation_type.id} not found in list"
+
+      assert found != nil,
+             "Created holiday_or_vacation_type with id #{holiday_or_vacation_type.id} not found in list"
+
       assert found.id == holiday_or_vacation_type.id
     end
 

@@ -113,7 +113,10 @@ defmodule MehrSchulferienWeb.Api.V2.HolidayOrVacationTypeControllerTest do
   end
 
   describe "show" do
-    test "returns a single holiday_or_vacation_type as JSON", %{conn: conn, summer_vacation: summer_vacation} do
+    test "returns a single holiday_or_vacation_type as JSON", %{
+      conn: conn,
+      summer_vacation: summer_vacation
+    } do
       conn = get(conn, ~p"/api/v2.0/holiday_or_vacation_types/#{summer_vacation.id}")
       response = json_response(conn, 200)
 
