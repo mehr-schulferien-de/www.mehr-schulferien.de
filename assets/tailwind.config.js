@@ -1,5 +1,5 @@
 module.exports = {
-  darkMode: 'class',
+  darkMode: 'media',
   content: [
     './js/**/*.js',
     '../lib/mehr_schulferien_web/**/*.*ex',
