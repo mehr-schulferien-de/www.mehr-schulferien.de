@@ -60,13 +60,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
       {:ok, school: school, address: address}
     end
 
-    @tag :skip
-    test "displays enrichment button", %{conn: conn, school: school} do
-      # Skipped: Auto Data Enrichment functionality has been removed
-      {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/edit")
-
-      assert has_element?(view, "button", "Auto Data Enrichment")
-    end
+    # Auto Data Enrichment functionality tests removed - feature deprecated
 
     test "enrichment button is disabled when limit reached", %{conn: conn, school: school} do
       # Simulate reaching daily limit
@@ -80,19 +74,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/edit")
 
       refute has_element?(view, "button", "Auto Data Enrichment")
-    end
-
-    @tag :skip
-    test "shows loading state during enrichment", %{conn: conn, school: school} do
-      # Skipped: Auto Data Enrichment functionality has been removed
-      {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/edit")
-
-      # Click enrichment button
-      view |> element("button", "Auto Data Enrichment") |> render_click()
-
-      # Should show loading state
-      assert has_element?(view, "button", "Suche läuft...")
-      assert has_element?(view, "svg.animate-spin")
     end
   end
 
