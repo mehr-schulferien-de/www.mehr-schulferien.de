@@ -10,6 +10,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
 
   alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Formatters.DateFormatter
+  alias MehrSchulferienWeb.Shared.BadgeComponent
 
   @month_names %{
     1 => "januar",
@@ -92,7 +93,6 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     <tr
       class={"cursor-pointer transition-colors #{cond do
         @is_current -> "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
-        @is_beweglicher_ferientag -> "bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-500"
         @is_next_year -> "bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
         true -> "hover:bg-gray-50 dark:hover:bg-gray-700"
       end} #{if @is_past, do: "text-gray-400 dark:text-gray-500"}"}
@@ -107,16 +107,25 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
             {render_slot(@period_name) || render_period_name(assigns)}
           </a>
         <% else %>
-          <span class="sm:hidden">
-            <%= if @period.holiday_or_vacation_type.name == "Beweglicher Ferientag" do %>
-              Bewegl. Ferientag
-            <% else %>
-              {render_slot(@period_name) || render_period_name_mobile(assigns)}
+          <div class="flex items-center gap-2">
+            <div>
+              <span class="sm:hidden">
+                <%= if @period.holiday_or_vacation_type.name == "Beweglicher Ferientag" do %>
+                  Bewegl. Ferientag
+                <% else %>
+                  {render_slot(@period_name) || render_period_name_mobile(assigns)}
+                <% end %>
+              </span>
+              <span class="hidden sm:inline">
+                {render_slot(@period_name) || render_period_name(assigns)}
+              </span>
+            </div>
+            <%= if @is_beweglicher_ferientag do %>
+              <BadgeComponent.badge variant="primary" size="sm">
+                BF
+              </BadgeComponent.badge>
             <% end %>
-          </span>
-          <span class="hidden sm:inline">
-            {render_slot(@period_name) || render_period_name(assigns)}
-          </span>
+          </div>
         <% end %>
 
         <%= if @show_memo && @period.holiday_or_vacation_type.name == "Beweglicher Ferientag" && @period.memo && @period.memo != "" do %>
