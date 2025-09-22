@@ -1245,15 +1245,15 @@ defmodule MehrSchulferienWeb.HomeLive do
                   <%= for school <- schools do %>
                     <a
                       href={"/ferien/d/schule/#{school.slug}"}
-                      class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-4 group block"
+                      class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 p-4 group block"
                     >
                       <div class="flex items-start justify-between gap-2">
                         <div class="flex-1 min-w-0">
-                          <h3 class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
+                          <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">
                             {school.name}
                           </h3>
                           <%= if school.address do %>
-                            <p class="text-xs text-gray-500">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
                               <%= if school.address.street do %>
                                 {school.address.street}<br />
                               <% end %>
@@ -1264,7 +1264,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                           <% end %>
                         </div>
                         <svg
-                          class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 mt-0.5"
+                          class="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0 mt-0.5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
