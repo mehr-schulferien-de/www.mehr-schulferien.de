@@ -63,7 +63,8 @@ defmodule MehrSchulferien.MixProject do
       {:mix_version, "~> 2.5.0"},
       {:mogrify, "~> 0.9.3"},
       {:resvg, "~> 0.5.0"},
-      {:igniter, "~> 0.6", only: [:dev, :test]}
+      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:csv, "~> 3.2"}
     ]
   end
 
