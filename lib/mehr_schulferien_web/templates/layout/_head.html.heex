@@ -18,11 +18,13 @@
 <script defer src={js_path}>
 </script>
 
-<script
-  data-ad-client="ca-pub-9538764634478220"
-  async
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
->
-</script>
+<%= if assigns[:show_ads] == true do %>
+  <script
+    data-ad-client="ca-pub-9538764634478220"
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+  >
+  </script>
+<% end %>
 
 <meta name="msvalidate.01" content="889EC413403DAE7D10C24068686129FA" />

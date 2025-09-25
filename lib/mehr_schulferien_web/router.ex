@@ -11,6 +11,7 @@ defmodule MehrSchulferienWeb.Router do
     plug MehrSchulferienWeb.LocalePlug
     plug MehrSchulferienWeb.Plugs.DateAssignsPlug
     plug MehrSchulferienWeb.Plugs.LocationCookiesPlug
+    plug MehrSchulferienWeb.Plugs.VisitorTrackingPlug
   end
 
   pipeline :api do

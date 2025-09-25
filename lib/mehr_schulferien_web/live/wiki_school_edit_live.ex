@@ -158,34 +158,36 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
             daily_changes = Wiki.get_daily_change_count(today)
             limit_reached = daily_changes >= Config.daily_change_limit()
 
-            # Send email notification
-            Task.start(fn ->
-              try do
-                # Reload school with all associations needed for email
-                updated_school_with_associations =
-                  Locations.get_location!(updated_school.id)
-                  |> Repo.preload([:address, :parent_location])
+            # Send email notification (skip in test environment to avoid connection ownership issues)
+            if Application.get_env(:mehr_schulferien, :env) != :test do
+              Task.start(fn ->
+                try do
+                  # Reload school with all associations needed for email
+                  updated_school_with_associations =
+                    Locations.get_location!(updated_school.id)
+                    |> Repo.preload([:address, :parent_location])
 
-                # Gather change information
-                changes = gather_changes(school_version, address_version, current_state)
+                  # Gather change information
+                  changes = gather_changes(school_version, address_version, current_state)
 
-                # Get country slug for the email
-                country_slug = get_country_slug_from_school(updated_school_with_associations)
+                  # Get country slug for the email
+                  country_slug = get_country_slug_from_school(updated_school_with_associations)
 
-                # Build and send email
-                Email.school_updated_notification(
-                  updated_school_with_associations,
-                  updated_school_with_associations.address,
-                  changes,
-                  country_slug
-                )
-                |> Mailer.deliver!()
-              rescue
-                error ->
-                  Logger.error("Failed to send school update email: #{inspect(error)}")
-                  Logger.error(Exception.format(:error, error, __STACKTRACE__))
-              end
-            end)
+                  # Build and send email
+                  Email.school_updated_notification(
+                    updated_school_with_associations,
+                    updated_school_with_associations.address,
+                    changes,
+                    country_slug
+                  )
+                  |> Mailer.deliver!()
+                rescue
+                  error ->
+                    Logger.error("Failed to send school update email: #{inspect(error)}")
+                    Logger.error(Exception.format(:error, error, __STACKTRACE__))
+                end
+              end)
+            end
 
             # Update changeset
             changeset =
