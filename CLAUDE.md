@@ -80,18 +80,18 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
 ## Development Guidelines
 
 ### CRITICAL CODE QUALITY REQUIREMENTS - MUST FOLLOW
-**⚠️ IMPORTANT: These are MANDATORY steps that MUST be completed after ANY code changes:**
+**⚠️ IMPORTANT: Code quality is automatically enforced via hooks:**
 
-1. **RUN ALL TESTS IMMEDIATELY**: `mix test` - Run ALL tests (not just specific test files) IMMEDIATELY after making ANY code changes, especially UI/template changes
-2. **FIX ALL TEST FAILURES**: Update tests when UI changes break assertions (e.g., changed text, CSS classes, HTML structure)
-3. **FIX ALL WARNINGS**: `mix compile --warnings-as-errors` - NO warnings are acceptable
-4. **FORMAT CODE**: `mix format` - Code MUST be properly formatted
-5. **CHECK TEST OUTPUT QUALITY**: Tests must run with CLEAN output (only dots, no warnings/errors)
-6. **VERIFY BEFORE COMPLETION**: Run `mix test` one final time - All tests must be green before work is considered done
-7. **NEVER SKIP FULL TEST SUITE**: Always run the complete test suite with `mix test`, not just individual test files
+The project uses Claude Code hooks that automatically run after each response:
+- **Format**: `mix format` ensures code is properly formatted
+- **Test**: `mix test` runs the full test suite
+- **Compile**: `mix compile --warnings-as-errors` catches warnings during editing
 
-**NEVER report work as complete without running and passing ALL tests.**
-**UI CHANGES REQUIRE SPECIAL ATTENTION**: When modifying templates, LiveView render functions, or CSS classes, ALWAYS check if tests need updating.
+**Your responsibilities:**
+1. **FIX ALL TEST FAILURES**: When hooks report test failures, update tests if UI changes broke assertions (e.g., changed text, CSS classes, HTML structure)
+2. **FIX ALL WARNINGS**: When hooks report compilation warnings, address them immediately
+3. **VERIFY TEST OUTPUT QUALITY**: Tests must run with CLEAN output (only dots, no warnings/errors)
+4. **UI CHANGES REQUIRE SPECIAL ATTENTION**: When modifying templates, LiveView render functions, or CSS classes, anticipate which tests need updating
 
 ### TEST QUALITY STANDARDS - MANDATORY
 **🧪 IMPORTANT: Maintain clean, reliable tests at all times:**
@@ -136,7 +136,8 @@ mix test  # Output should be only dots, no text
 ```
 
 ### Additional Requirements
-- Pre-commit hooks enforce: tests, formatting, compilation, and various file checks
+- Claude Code hooks automatically enforce: tests, formatting, compilation after each response
+- Git pre-commit hooks enforce: tests, formatting, compilation, and various file checks
 - Use simple solutions with onboard tools/packages when possible
 - Focus only on assigned tasks (DRY principle, but avoid scope creep)
 
@@ -238,7 +239,8 @@ The project has been fully migrated to Phoenix verified routes and exclusively u
 ## Memories
 
 - Always remember the sitemap.xml file to be up to date if URLs are added, removed or changed.
-- **ALWAYS RUN THE FULL TEST SUITE** (`mix test`) after making any code changes to ensure nothing breaks. Tests may fail due to cache issues - use `MehrSchulferien.Cache.clear_query_cache()` in tests when needed.
+- Tests may fail due to cache issues - use `MehrSchulferien.Cache.clear_query_cache()` in tests when needed.
+- Claude Code hooks automatically run `mix format` and `mix test` after each response, ensuring code quality.
 <!-- usage-rules-start -->
 <!-- usage-rules-header -->
 # Usage Rules
@@ -278,6 +280,26 @@ _Batteries-included Claude Code integration for Elixir projects_
 ## claude:subagents usage
 [claude:subagents usage rules](deps/claude/usage-rules/subagents.md)
 <!-- claude:subagents-end -->
+<!-- phoenix:ecto-start -->
+## phoenix:ecto usage
+[phoenix:ecto usage rules](deps/phoenix/usage-rules/ecto.md)
+<!-- phoenix:ecto-end -->
+<!-- phoenix:elixir-start -->
+## phoenix:elixir usage
+[phoenix:elixir usage rules](deps/phoenix/usage-rules/elixir.md)
+<!-- phoenix:elixir-end -->
+<!-- phoenix:html-start -->
+## phoenix:html usage
+[phoenix:html usage rules](deps/phoenix/usage-rules/html.md)
+<!-- phoenix:html-end -->
+<!-- phoenix:liveview-start -->
+## phoenix:liveview usage
+[phoenix:liveview usage rules](deps/phoenix/usage-rules/liveview.md)
+<!-- phoenix:liveview-end -->
+<!-- phoenix:phoenix-start -->
+## phoenix:phoenix usage
+[phoenix:phoenix usage rules](deps/phoenix/usage-rules/phoenix.md)
+<!-- phoenix:phoenix-end -->
 <!-- usage-rules-end -->
 
 ## Test Maintenance Protocol
@@ -311,4 +333,4 @@ _Batteries-included Claude Code integration for Elixir projects_
 ## Git Workflow and Interactions Memories
 
 - You are allowed to git commit and git push code but ask the user first or wait for the user to tell you to do it.
-- **IMPORTANT**: Before ANY git commit, you MUST run the test quality checklist to ensure clean tests
+- **IMPORTANT**: Git pre-commit hooks automatically run the test quality checklist before commits
