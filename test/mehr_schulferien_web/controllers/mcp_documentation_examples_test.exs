@@ -76,13 +76,12 @@ defmodule MehrSchulferienWeb.MCPDocumentationExamplesTest do
 
       assert response =~ "REST API Dokumentation"
       assert response =~ "API v2.1"
-      assert response =~ "federal-states"
-      assert response =~ "cities"
-      assert response =~ "schools"
-      assert response =~ "iCalendar"
-      assert response =~ "vCard"
-      assert response =~ "PDF-Dokumente generieren"
-      assert response =~ "Stefan Wintermeyer"
+      assert response =~ "Standorte"
+      assert response =~ "Bundesländer, Städte, Landkreise und Schulen"
+      assert response =~ "Ferien & Feiertage"
+      assert response =~ "Brückentage"
+      assert response =~ "Export-Formate"
+      assert response =~ "iCalendar, vCard und PDF-Dokumente"
     end
 
     test "developer pages have consistent navigation", %{conn: conn} do

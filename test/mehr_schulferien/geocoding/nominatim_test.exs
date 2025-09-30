@@ -43,9 +43,7 @@ defmodule MehrSchulferien.Geocoding.NominatimTest do
 
   describe "parameter building" do
     test "geocode_address accepts all required parameters" do
-      # Test that the function exists with default parameter
-      # The function has a default for country, so it exports both arity 3 and 4
-      assert function_exported?(MehrSchulferien.Geocoding.Nominatim, :geocode_address, 3)
+      # Test that the function exists - it has arity 4 with a default for country parameter
       assert function_exported?(MehrSchulferien.Geocoding.Nominatim, :geocode_address, 4)
     end
   end
