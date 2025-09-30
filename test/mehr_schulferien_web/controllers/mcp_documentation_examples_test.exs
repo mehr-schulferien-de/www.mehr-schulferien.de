@@ -76,12 +76,12 @@ defmodule MehrSchulferienWeb.MCPDocumentationExamplesTest do
 
       assert response =~ "REST API Dokumentation"
       assert response =~ "API v2.1"
-      assert response =~ "API v2.0"
       assert response =~ "federal-states"
       assert response =~ "cities"
       assert response =~ "schools"
       assert response =~ "iCalendar"
       assert response =~ "vCard"
+      assert response =~ "PDF-Dokumente generieren"
       assert response =~ "Stefan Wintermeyer"
     end
 

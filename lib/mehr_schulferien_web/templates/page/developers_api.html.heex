@@ -6,15 +6,18 @@
       </.heading>
 
       {render("developers_nav.html", current_page: :api)}
-
-      <!-- Table of Contents -->
+      
+<!-- Table of Contents -->
       <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-8">
         <.heading level={3} class="text-lg mb-3 mt-0">
           Inhaltsverzeichnis
         </.heading>
         <nav class="space-y-2 text-sm">
           <div>
-            <a href="#v21-overview" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <a
+              href="#v21-overview"
+              class="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               API v2.1
             </a>
             <ul class="ml-5 mt-1 space-y-1 list-disc">
@@ -191,7 +194,10 @@
       </p>
 
       <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
-        <.heading level={4} class="text-base font-semibold text-gray-800 dark:text-gray-200 mt-0 mb-2">
+        <.heading
+          level={4}
+          class="text-base font-semibold text-gray-800 dark:text-gray-200 mt-0 mb-2"
+        >
           Endpunkt
         </.heading>
         <pre class="bg-white dark:bg-gray-900 p-2 rounded overflow-x-auto text-sm">POST /api/v2.1/schools/:slug/documents</pre>
@@ -367,16 +373,21 @@
 
       <div class="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-600 p-4 mb-2">
         <p class="text-sm text-green-700 dark:text-green-300">
-          <strong>Response:</strong> Bei erfolgreicher Generierung wird das PDF direkt als Binary mit Content-Type "application/pdf" zurückgegeben.
+          <strong>Response:</strong>
+          Bei erfolgreicher Generierung wird das PDF direkt als Binary mit Content-Type "application/pdf" zurückgegeben.
         </p>
       </div>
       <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-6">
         <p class="text-sm text-red-700 dark:text-red-300">
-          <strong>Fehler:</strong> Bei Fehlern wird ein JSON-Objekt mit dem Feld "error" und einer Fehlerbeschreibung zurückgegeben (Status 400 oder 404).
+          <strong>Fehler:</strong>
+          Bei Fehlern wird ein JSON-Objekt mit dem Feld "error" und einer Fehlerbeschreibung zurückgegeben (Status 400 oder 404).
         </p>
       </div>
 
-      <div id="v21-response" class="scroll-mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+      <div
+        id="v21-response"
+        class="scroll-mt-6 border-t border-gray-200 dark:border-gray-700 pt-6"
+      >
         <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-2 mb-3">
           API Response Format
         </.heading>
