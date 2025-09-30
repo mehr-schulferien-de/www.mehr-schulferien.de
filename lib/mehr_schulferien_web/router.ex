@@ -133,6 +133,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/schools/:slug/periods", SchoolController, :periods
     get "/schools/:slug/icalendar", SchoolController, :icalendar
     get "/schools/:slug/vcard", SchoolController, :vcard
+    post "/schools/:slug/documents", DocumentController, :create
 
     # Countries
     resources "/countries", CountryController, only: [:index, :show], param: "slug"
