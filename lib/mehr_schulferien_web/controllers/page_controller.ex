@@ -111,9 +111,51 @@ defmodule MehrSchulferienWeb.PageController do
   end
 
   def developers_api(conn, _params) do
-    render(conn, "developers_api.html",
+    render(conn, "developers_api_overview.html",
       css_framework: :tailwind_new,
       page_title: "REST API v2.1 Dokumentation - Schulferien & Feiertage API"
+    )
+  end
+
+  def developers_api_locations(conn, _params) do
+    render(conn, "developers_api_locations.html",
+      css_framework: :tailwind_new,
+      page_title: "Standorte API - Dokumentation"
+    )
+  end
+
+  def developers_api_periods(conn, _params) do
+    render(conn, "developers_api_periods.html",
+      css_framework: :tailwind_new,
+      page_title: "Ferien & Feiertage API - Dokumentation"
+    )
+  end
+
+  def developers_api_bridge_days(conn, _params) do
+    render(conn, "developers_api_bridge_days.html",
+      css_framework: :tailwind_new,
+      page_title: "Brückentage API - Dokumentation"
+    )
+  end
+
+  def developers_api_exports(conn, _params) do
+    render(conn, "developers_api_exports.html",
+      css_framework: :tailwind_new,
+      page_title: "Export-Formate API - Dokumentation"
+    )
+  end
+
+  def developers_api_pdf(conn, _params) do
+    render(conn, "developers_api_pdf.html",
+      css_framework: :tailwind_new,
+      page_title: "PDF-Dokumente API - Dokumentation"
+    )
+  end
+
+  def developers_api_reference(conn, _params) do
+    render(conn, "developers_api_reference.html",
+      css_framework: :tailwind_new,
+      page_title: "API-Referenz - Dokumentation"
     )
   end
 

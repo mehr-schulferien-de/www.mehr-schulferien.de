@@ -1,0 +1,375 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        API-Referenz
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          ← Zurück zur API-Übersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Diese Seite beschreibt allgemeine Konzepte, Response-Formate und Parameter,
+        die in der gesamten API v2.1 verwendet werden.
+      </p>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Response-Format
+        </.heading>
+
+        <p class="mb-4">
+          Alle API v2.1 JSON-Antworten folgen einem einheitlichen Format mit zwei Hauptfeldern:
+        </p>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": [ /* Array von Objekten oder einzelnes Objekt */ ],
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Daten-Feld
+        </.heading>
+
+        <p class="mb-4">
+          Das <code>data</code>-Feld enthält die eigentlichen Daten:
+        </p>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>Bei Listen-Endpunkten (z.B. <code>/federal-states</code>): Ein Array von Objekten</li>
+          <li>Bei Detail-Endpunkten (z.B. <code>/federal-states/bayern</code>): Ein einzelnes Objekt</li>
+          <li>
+            Bei spezialisierten Endpunkten (z.B. <code>/bridge-days</code>): Ein Objekt mit strukturierten Daten
+          </li>
+        </ul>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Meta-Feld
+        </.heading>
+
+        <p class="mb-4">
+          Das <code>meta</code>-Feld enthält zusätzliche Informationen über die Antwort:
+        </p>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code>api_version</code>: Version der API (immer "2.1")
+          </li>
+          <li>
+            <code>location</code>: Bei Periods-Endpunkten - Informationen über den Standort
+          </li>
+          <li>
+            <code>date_range</code>: Bei Periods-Endpunkten - Der angefragte Zeitraum
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Fehlerbehandlung
+        </.heading>
+
+        <p class="mb-4">
+          Bei Fehlern wird ein JSON-Objekt mit einem <code>errors</code>-Array zurückgegeben:
+        </p>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "errors": [
+    {
+      "status": "404",
+      "title": "Not Found",
+      "detail": "Federal state not found"
+    }
+  ]
+}| %></pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          HTTP-Status-Codes
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Status-Code</th>
+                <th class="py-2 px-4 border-b text-left">Bedeutung</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">200 OK</td>
+                <td class="py-2 px-4 border-b">Erfolg</td>
+                <td class="py-2 px-4 border-b">Anfrage erfolgreich verarbeitet</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">400 Bad Request</td>
+                <td class="py-2 px-4 border-b">Ungültige Anfrage</td>
+                <td class="py-2 px-4 border-b">Fehlende oder ungültige Parameter</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">404 Not Found</td>
+                <td class="py-2 px-4 border-b">Nicht gefunden</td>
+                <td class="py-2 px-4 border-b">Ressource existiert nicht</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">500 Internal Server Error</td>
+                <td class="py-2 px-4 border-b">Serverfehler</td>
+                <td class="py-2 px-4 border-b">Unerwarteter Fehler auf dem Server</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Query-Parameter
+        </.heading>
+
+        <p class="mb-4">
+          Verschiedene Endpunkte unterstützen Query-Parameter zur Filterung und Anpassung der Ergebnisse:
+        </p>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Parameter</th>
+                <th class="py-2 px-4 border-b text-left">Endpunkte</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">start_date</td>
+                <td class="py-2 px-4 border-b">periods</td>
+                <td class="py-2 px-4 border-b">Startdatum im Format YYYY-MM-DD</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">end_date</td>
+                <td class="py-2 px-4 border-b">periods</td>
+                <td class="py-2 px-4 border-b">Enddatum im Format YYYY-MM-DD</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">type</td>
+                <td class="py-2 px-4 border-b">periods</td>
+                <td class="py-2 px-4 border-b">
+                  <code>vacation</code> (nur Ferien) oder <code>holiday</code> (nur Feiertage)
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">year</td>
+                <td class="py-2 px-4 border-b">icalendar, bridge-days</td>
+                <td class="py-2 px-4 border-b">Jahr (YYYY)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">vacation_types</td>
+                <td class="py-2 px-4 border-b">icalendar</td>
+                <td class="py-2 px-4 border-b">
+                  <code>school</code> (nur Schulferien) oder <code>all</code> (Ferien + Feiertage)
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">calendar_year</td>
+                <td class="py-2 px-4 border-b">icalendar</td>
+                <td class="py-2 px-4 border-b">
+                  <code>true</code> für Kalenderjahr, <code>false</code> für Schuljahr
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">federal_state</td>
+                <td class="py-2 px-4 border-b">cities, counties, schools</td>
+                <td class="py-2 px-4 border-b">Filterung nach Bundesland (Slug)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">city</td>
+                <td class="py-2 px-4 border-b">schools</td>
+                <td class="py-2 px-4 border-b">Filterung nach Stadt (Slug)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">country</td>
+                <td class="py-2 px-4 border-b">federal-states</td>
+                <td class="py-2 px-4 border-b">Filterung nach Land (Slug)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Datumsformate
+        </.heading>
+
+        <p class="mb-4">
+          Alle Daten in der API verwenden das <strong>ISO 8601</strong> Format:
+        </p>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <strong>Datum:</strong> <code>YYYY-MM-DD</code> (z.B. "2025-01-15")
+          </li>
+          <li>
+            <strong>Datum mit Zeit:</strong> <code>YYYY-MM-DDTHH:MM:SSZ</code> (z.B. "2025-01-15T10:30:00Z")
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Standorttypen
+        </.heading>
+
+        <p class="mb-4">
+          Die API unterstützt folgende Standorttypen, die in einem <code>type</code>-Feld zurückgegeben werden:
+        </p>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Typ</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+                <th class="py-2 px-4 border-b text-left">Beispiel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">country</td>
+                <td class="py-2 px-4 border-b">Land</td>
+                <td class="py-2 px-4 border-b">Deutschland</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">federal_state</td>
+                <td class="py-2 px-4 border-b">Bundesland</td>
+                <td class="py-2 px-4 border-b">Bayern</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">county</td>
+                <td class="py-2 px-4 border-b">Landkreis</td>
+                <td class="py-2 px-4 border-b">München (Landkreis)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">city</td>
+                <td class="py-2 px-4 border-b">Stadt</td>
+                <td class="py-2 px-4 border-b">München</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">school</td>
+                <td class="py-2 px-4 border-b">Schule</td>
+                <td class="py-2 px-4 border-b">Gymnasium München Nord</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Content-Types
+        </.heading>
+
+        <p class="mb-4">
+          Die API unterstützt verschiedene Content-Types je nach Endpunkt:
+        </p>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Endpunkt-Typ</th>
+                <th class="py-2 px-4 border-b text-left">Content-Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b">JSON-Endpunkte</td>
+                <td class="py-2 px-4 border-b font-mono">application/json</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b">iCalendar-Export</td>
+                <td class="py-2 px-4 border-b font-mono">text/calendar; charset=utf-8</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b">vCard-Export</td>
+                <td class="py-2 px-4 border-b font-mono">text/vcard; charset=utf-8</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b">PDF-Dokumente</td>
+                <td class="py-2 px-4 border-b font-mono">application/pdf</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+        <p class="text-sm text-blue-700 dark:text-blue-300">
+          <strong>Tipp:</strong>
+          Alle API-Endpunkte sind öffentlich zugänglich und erfordern keine Authentifizierung.
+          Bitte beachten Sie faire Nutzungsgrenzen und cachen Sie Antworten wenn möglich.
+        </p>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Rate Limiting
+        </.heading>
+
+        <p class="mb-4">
+          Derzeit gibt es keine festen Rate Limits für die API. Wir bitten jedoch um:
+        </p>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>Angemessene Nutzung der API</li>
+          <li>Caching von Antworten wenn möglich</li>
+          <li>Vermeidung von unnötigen wiederholten Anfragen</li>
+        </ul>
+
+        <p class="mb-6">
+          Bei missbräuchlicher Nutzung behalten wir uns vor, Rate Limits einzuführen oder den Zugriff zu beschränken.
+        </p>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a
+              href={~p"/developers/api/locations"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Standorte API
+            </a>
+             - Arbeiten mit Standorten
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/periods"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Ferien & Feiertage API
+            </a>
+             - Abrufen von Ferien und Feiertagen
+          </li>
+          <li>
+            <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+              API-Übersicht
+            </a>
+             - Zurück zur Übersicht
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>

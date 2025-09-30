@@ -1,0 +1,240 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        Brückentage API
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          ← Zurück zur API-Übersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Die Brückentage-Endpunkte berechnen optimale Urlaubsmöglichkeiten durch Identifizierung von Lücken zwischen Feiertagen und Wochenenden.
+        Dabei werden nur Brückentage-Gelegenheiten zurückgegeben, die eine Effizienz von über 100% aufweisen (mehr freie Tage als Urlaubstage benötigt).
+      </p>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Verfügbare Endpunkte
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Methode</th>
+                <th class="py-2 px-4 border-b text-left">Endpunkt</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono text-blue-600 dark:text-blue-400">GET</td>
+                <td class="py-2 px-4 border-b font-mono">
+                  /api/v2.1/federal-states/:slug/bridge-days
+                </td>
+                <td class="py-2 px-4 border-b">Brückentage für ein Bundesland</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono text-blue-600 dark:text-blue-400">GET</td>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/counties/:slug/bridge-days</td>
+                <td class="py-2 px-4 border-b">Brückentage für einen Landkreis</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono text-blue-600 dark:text-blue-400">GET</td>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/cities/:slug/bridge-days</td>
+                <td class="py-2 px-4 border-b">Brückentage für eine Stadt</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Query-Parameter
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">year</code>
+            (erforderlich): Das Jahr für die Brückentage-Berechnung (aktuelles Jahr - 5 bis aktuelles Jahr + 3)
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Beispiel
+        </.heading>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Request
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/bridge-days?year=2025</pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Response
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "location": {
+      "id": 2,
+      "name": "Bayern",
+      "slug": "bayern",
+      "type": "federal_state"
+    },
+    "year": 2025,
+    "summary": {
+      "total_opportunities": 8,
+      "total_vacation_days_needed": 12,
+      "total_free_days_gained": 48,
+      "overall_efficiency_percentage": 300
+    },
+    "bridge_days": [
+      {
+        "starts_on": "2025-05-02",
+        "ends_on": "2025-05-02",
+        "vacation_days_needed": 1,
+        "total_consecutive_free_days": 4,
+        "efficiency_percentage": 300,
+        "category": "normal",
+        "related_holidays": [
+          {
+            "name": "Tag der Arbeit",
+            "slug": "tag-der-arbeit",
+            "starts_on": "2025-05-01",
+            "ends_on": "2025-05-01",
+            "is_public_holiday": true
+          }
+        ],
+        "timeline": {
+          "actual_starts_on": "2025-05-01",
+          "actual_ends_on": "2025-05-04",
+          "includes_weekends": true
+        }
+      }
+    ]
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Response-Felder
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">location</code>: Informationen über den Standort
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">year</code>: Das angefragte Jahr
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">summary</code>: Zusammenfassende Statistiken über alle Brückentage-Möglichkeiten
+            <ul class="ml-5 list-disc mt-2">
+              <li><code>total_opportunities</code>: Anzahl der Brückentage-Gelegenheiten</li>
+              <li><code>total_vacation_days_needed</code>: Gesamt benötigte Urlaubstage</li>
+              <li><code>total_free_days_gained</code>: Gesamt gewonnene freie Tage</li>
+              <li><code>overall_efficiency_percentage</code>: Gesamt-Effizienz in Prozent</li>
+            </ul>
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">bridge_days</code>: Liste der Brückentage-Möglichkeiten (sortiert nach Effizienz)
+            <ul class="ml-5 list-disc mt-2">
+              <li>
+                <code>starts_on</code>
+                / <code>ends_on</code>: Zeitraum der zu nehmenden Urlaubstage
+              </li>
+              <li><code>vacation_days_needed</code>: Anzahl der benötigten Urlaubstage</li>
+              <li>
+                <code>total_consecutive_free_days</code>: Gesamtzahl aufeinanderfolgender freier Tage
+              </li>
+              <li>
+                <code>efficiency_percentage</code>: Effizienz in Prozent ((freie Tage - Urlaubstage) / Urlaubstage × 100)
+              </li>
+              <li>
+                <code>category</code>: "normal" (1 Urlaubstag) oder "super" (2+ Urlaubstage)
+              </li>
+              <li>
+                <code>related_holidays</code>: Liste der Feiertage, die diese Brückentage-Gelegenheit schaffen
+              </li>
+              <li>
+                <code>timeline</code>: Tatsächlicher Zeitraum der freien Tage (inkl. angrenzender Wochenenden)
+                <ul class="ml-5 list-disc mt-2">
+                  <li>
+                    <code>actual_starts_on</code>: Tatsächlicher Beginn des freien Zeitraums
+                  </li>
+                  <li><code>actual_ends_on</code>: Tatsächliches Ende des freien Zeitraums</li>
+                  <li><code>includes_weekends</code>: Ob Wochenenden eingeschlossen sind</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+        <p class="text-sm text-blue-700 dark:text-blue-300">
+          <strong>Hinweis:</strong>
+          Die Brückentage werden nach Effizienz absteigend sortiert. Es werden nur Gelegenheiten zurückgegeben,
+          bei denen die Effizienz über 100% liegt (mehr freie Tage als genommene Urlaubstage).
+        </p>
+      </div>
+
+      <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-6">
+        <p class="text-sm text-red-700 dark:text-red-300">
+          <strong>Fehler:</strong>
+          Status 404 wird zurückgegeben, wenn für den angegebenen Standort und das Jahr keine Brückentage verfügbar sind.
+          Status 400 wird bei ungültigen Jahr-Parameter zurückgegeben.
+        </p>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a
+              href={~p"/developers/api/locations"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Standorte API
+            </a>
+             - Standort-Informationen abrufen
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/periods"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Ferien & Feiertage API
+            </a>
+             - Feiertage für Brückentage-Berechnungen
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/reference"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              API-Referenz
+            </a>
+             - Allgemeine Response-Formate und Fehlerbehandlung
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>

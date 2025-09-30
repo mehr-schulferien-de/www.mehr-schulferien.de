@@ -117,16 +117,19 @@ defmodule MehrSchulferienWeb.Router do
     resources "/federal-states", FederalStateController, only: [:index, :show], param: "slug"
     get "/federal-states/:slug/periods", FederalStateController, :periods
     get "/federal-states/:slug/icalendar", FederalStateController, :icalendar
+    get "/federal-states/:slug/bridge-days", FederalStateController, :bridge_days
 
     # Cities
     resources "/cities", CityController, only: [:index, :show], param: "slug"
     get "/cities/:slug/periods", CityController, :periods
     get "/cities/:slug/icalendar", CityController, :icalendar
+    get "/cities/:slug/bridge-days", CityController, :bridge_days
 
     # Counties
     resources "/counties", CountyController, only: [:index, :show], param: "slug"
     get "/counties/:slug/periods", CountyController, :periods
     get "/counties/:slug/icalendar", CountyController, :icalendar
+    get "/counties/:slug/bridge-days", CountyController, :bridge_days
 
     # Schools
     resources "/schools", SchoolController, only: [:index, :show], param: "slug"
@@ -170,6 +173,12 @@ defmodule MehrSchulferienWeb.Router do
     get "/pfingstferien", PageController, :pentecost_vacations
     get "/developers", PageController, :developers
     get "/developers/api", PageController, :developers_api
+    get "/developers/api/locations", PageController, :developers_api_locations
+    get "/developers/api/periods", PageController, :developers_api_periods
+    get "/developers/api/bridge-days", PageController, :developers_api_bridge_days
+    get "/developers/api/exports", PageController, :developers_api_exports
+    get "/developers/api/pdf", PageController, :developers_api_pdf
+    get "/developers/api/reference", PageController, :developers_api_reference
     get "/developers/mcp", PageController, :developers_mcp
     get "/impressum", PageController, :impressum
 

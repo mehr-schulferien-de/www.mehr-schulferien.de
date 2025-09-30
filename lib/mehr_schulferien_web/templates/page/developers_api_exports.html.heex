@@ -1,0 +1,204 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        Export-Formate API
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          ← Zurück zur API-Übersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Die Export-Endpunkte ermöglichen das Exportieren von Ferien- und Feiertagsdaten in verschiedenen Formaten
+        für die Integration in Kalenderanwendungen und Adressbücher.
+      </p>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          iCalendar Export
+        </.heading>
+
+        <p class="mb-4">
+          Exportieren Sie Feriendaten im iCalendar-Format (.ics) für die direkte Integration in Kalenderanwendungen
+          wie Apple Kalender, Google Calendar, Outlook und andere.
+        </p>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Verfügbare Endpunkte
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Endpunkt</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">
+                  /api/v2.1/federal-states/:slug/icalendar
+                </td>
+                <td class="py-2 px-4 border-b">iCalendar für ein Bundesland</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/cities/:slug/icalendar</td>
+                <td class="py-2 px-4 border-b">iCalendar für eine Stadt</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/counties/:slug/icalendar</td>
+                <td class="py-2 px-4 border-b">iCalendar für einen Landkreis</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/schools/:slug/icalendar</td>
+                <td class="py-2 px-4 border-b">iCalendar für eine Schule</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Query-Parameter
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Parameter</th>
+                <th class="py-2 px-4 border-b text-left">Standard</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">year</td>
+                <td class="py-2 px-4 border-b">Aktuelles Jahr</td>
+                <td class="py-2 px-4 border-b">Jahr für den Export</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">vacation_types</td>
+                <td class="py-2 px-4 border-b">school</td>
+                <td class="py-2 px-4 border-b">
+                  <code>school</code> (nur Schulferien) oder <code>all</code> (Ferien + Feiertage)
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">calendar_year</td>
+                <td class="py-2 px-4 border-b">false</td>
+                <td class="py-2 px-4 border-b">
+                  <code>true</code> für Kalenderjahr (Jan-Dez), <code>false</code> für Schuljahr (Aug-Jul)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Beispiele
+        </.heading>
+
+        <p class="mb-2 font-medium">Schuljahr 2024/2025 für Bayern (nur Schulferien):</p>
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/icalendar?year=2024&vacation_types=school</pre>
+
+        <p class="mb-2 font-medium">Kalenderjahr 2024 für München (alle Ferien & Feiertage):</p>
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/icalendar?year=2024&vacation_types=all&calendar_year=true</pre>
+
+        <p class="mb-2 font-medium">Nur Schulferien für eine spezifische Schule:</p>
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/icalendar?year=2024&vacation_types=school</pre>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+          <p class="text-sm text-blue-700 dark:text-blue-300">
+            <strong>Tipp:</strong>
+            Die iCalendar-Dateien können direkt in Kalenderanwendungen importiert oder als Abonnement-URL verwendet werden.
+            Der Content-Type ist <code>text/calendar; charset=utf-8</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="mb-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-2 mb-4">
+          vCard Export (nur für Schulen)
+        </.heading>
+
+        <p class="mb-4">
+          Exportieren Sie Schulkontaktdaten als vCard (.vcf) für die Integration in Adressbücher
+          und Kontaktverwaltungssysteme.
+        </p>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Endpunkt
+        </.heading>
+
+        <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
+          <pre class="text-sm">GET /api/v2.1/schools/:slug/vcard</pre>
+        </div>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Beispiel
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/vcard</pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Enthaltene Informationen
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>Schulname</li>
+          <li>Adresse (Straße, PLZ, Stadt)</li>
+          <li>Telefonnummer (falls vorhanden)</li>
+          <li>Faxnummer (falls vorhanden)</li>
+          <li>E-Mail-Adresse (falls vorhanden)</li>
+          <li>Website-URL (falls vorhanden)</li>
+          <li>Geografische Koordinaten (falls vorhanden)</li>
+        </ul>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+          <p class="text-sm text-blue-700 dark:text-blue-300">
+            <strong>Hinweis:</strong>
+            Der vCard-Export ist nur für Schulen verfügbar. Der Content-Type ist <code>text/vcard; charset=utf-8</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a
+              href={~p"/developers/api/periods"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Ferien & Feiertage API
+            </a>
+             - JSON-Format für Ferien und Feiertage
+          </li>
+          <li>
+            <a href={~p"/developers/api/pdf"} class="text-blue-600 dark:text-blue-400 hover:underline">
+              PDF-Dokumente API
+            </a>
+             - Generieren von PDF-Dokumenten
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/reference"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              API-Referenz
+            </a>
+             - Allgemeine Response-Formate und Fehlerbehandlung
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>

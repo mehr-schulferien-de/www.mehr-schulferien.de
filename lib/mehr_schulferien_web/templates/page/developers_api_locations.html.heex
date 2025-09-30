@@ -1,0 +1,163 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        Standorte API
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          ← Zurück zur API-Übersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Die Standorte-Endpunkte ermöglichen das Abrufen von Informationen über Bundesländer, Städte,
+        Landkreise und Schulen in Deutschland.
+      </p>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Verfügbare Endpunkte
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Standorttyp</th>
+                <th class="py-2 px-4 border-b text-left">Basis-URL</th>
+                <th class="py-2 px-4 border-b text-left">Verfügbare Aktionen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b">Bundesländer</td>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/federal-states</td>
+                <td class="py-2 px-4 border-b">Liste, Details</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b">Städte</td>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/cities</td>
+                <td class="py-2 px-4 border-b">Liste, Details</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b">Landkreise</td>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/counties</td>
+                <td class="py-2 px-4 border-b">Liste, Details</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b">Schulen</td>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/schools</td>
+                <td class="py-2 px-4 border-b">Liste, Details</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b">Länder</td>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/countries</td>
+                <td class="py-2 px-4 border-b">Liste, Details</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Beispiele
+        </.heading>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Alle Bundesländer abrufen
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states</pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Spezifisches Bundesland abrufen
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern</pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Alle Städte abrufen
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/cities</pre>
+
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Optional: Filterung nach Bundesland möglich mit <code>?federal_state=bayern</code>
+        </p>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Schulen abrufen
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/schools</pre>
+
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Optional: Filterung mit <code>?city=muenchen</code> oder <code>?federal_state=bayern</code>
+        </p>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Response-Format
+        </.heading>
+
+        <p class="mb-4">
+          Alle Standort-Endpunkte geben JSON im folgenden Format zurück:
+        </p>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": [
+    {
+      "id": 2,
+      "name": "Bayern",
+      "slug": "bayern",
+      "code": "BY",
+      "type": "federal_state",
+      "parent_location_id": 1,
+      "links": {
+        "self": "https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern",
+        "periods": "https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods",
+        "icalendar": "https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/icalendar"
+      }
+    }
+  ],
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+      </div>
+
+      <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+        <p class="text-sm text-blue-700 dark:text-blue-300">
+          <strong>Tipp:</strong>
+          Das <code>links</code>-Objekt enthält URLs zu verwandten Ressourcen wie Ferien, iCalendar-Export und mehr.
+        </p>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a href={~p"/developers/api/periods"} class="text-blue-600 dark:text-blue-400 hover:underline">
+              Ferien & Feiertage API
+            </a>
+             - Ferien für Standorte abrufen
+          </li>
+          <li>
+            <a href={~p"/developers/api/reference"} class="text-blue-600 dark:text-blue-400 hover:underline">
+              API-Referenz
+            </a>
+             - Allgemeine Response-Formate und Parameter
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>

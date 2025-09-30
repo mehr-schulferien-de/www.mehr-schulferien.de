@@ -11,6 +11,8 @@ defmodule MehrSchulferienWeb.Api.V21.CityController do
   use MehrSchulferienWeb.Api.V21.BaseController
 
   alias MehrSchulferien.Periods.CustomICal
+  alias MehrSchulferienWeb.BridgeDayFormatter
+  alias MehrSchulferienWeb.BridgeDayController
 
   def index(conn, params) do
     cities =
@@ -84,6 +86,26 @@ defmodule MehrSchulferienWeb.Api.V21.CityController do
         build_ical_filename(city.name, ical_params.year, is_school_year)
       )
       |> text(ical_content)
+    end
+  end
+
+  def bridge_days(conn, %{"slug" => slug} = params) do
+    with {:ok, city} <- get_city_by_slug(slug),
+         {:ok, year} <- parse_year(params["year"]),
+         true <- BridgeDayController.has_bridge_days?([city.id], year) do
+      result = BridgeDayFormatter.format_bridge_days(city, year)
+
+      render_json(conn, result)
+    else
+      {:error, :invalid_year} ->
+        {:error,
+         "Invalid year parameter. Must be an integer between current year - 5 and current year + 3."}
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+
+      false ->
+        {:error, :not_found}
     end
   end
 
@@ -187,5 +209,30 @@ defmodule MehrSchulferienWeb.Api.V21.CityController do
   defp build_ical_filename(name, year, false = _is_school_year) do
     sanitized_name = String.replace(name, [" ", "-"], "_")
     "attachment; filename=Schulferien_#{sanitized_name}_#{year}.ics"
+  end
+
+  defp parse_year(nil), do: {:error, :invalid_year}
+
+  defp parse_year(year_param) when is_binary(year_param) do
+    case Integer.parse(year_param) do
+      {year, ""} -> validate_year_range(year)
+      _ -> {:error, :invalid_year}
+    end
+  end
+
+  defp parse_year(year_param) when is_integer(year_param) do
+    validate_year_range(year_param)
+  end
+
+  defp parse_year(_), do: {:error, :invalid_year}
+
+  defp validate_year_range(year) do
+    current_year = Date.utc_today().year
+
+    if year in (current_year - 5)..(current_year + 3) do
+      {:ok, year}
+    else
+      {:error, :invalid_year}
+    end
   end
 end

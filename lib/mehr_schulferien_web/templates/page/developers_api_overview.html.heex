@@ -1,0 +1,142 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        REST API Dokumentation
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          API v2.1
+        </.heading>
+        <p class="mb-6">
+          Die API v2.1 bietet eine klare Struktur mit dedizierten Endpunkten für jeden Standorttyp.
+          Dies verhindert Mehrdeutigkeiten, wenn mehrere Standorte denselben Slug haben
+          (z.B. "Hessen" als Bundesland und als Stadt).
+        </p>
+
+        <p class="mb-6">
+          Alle API-Endpunkte sind öffentlich zugänglich und erfordern keine Authentifizierung.
+          Die Antworten erfolgen im JSON-Format und folgen einem konsistenten Schema.
+        </p>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+          <p class="text-sm text-blue-700 dark:text-blue-300">
+            <strong>Basis-URL:</strong>
+            <code class="bg-white dark:bg-gray-900 px-2 py-1 rounded ml-2">https://www.mehr-schulferien.de/api/v2.1</code>
+          </p>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Dokumentationsseiten
+        </.heading>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <a
+            href={~p"/developers/api/locations"}
+            class="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
+          >
+            <.heading level={3} class="text-lg mb-2 mt-0 text-blue-600 dark:text-blue-400">
+              Standorte
+            </.heading>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Bundesländer, Städte, Landkreise und Schulen abrufen und durchsuchen.
+            </p>
+          </a>
+
+          <a
+            href={~p"/developers/api/periods"}
+            class="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
+          >
+            <.heading level={3} class="text-lg mb-2 mt-0 text-blue-600 dark:text-blue-400">
+              Ferien & Feiertage
+            </.heading>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Schulferien und gesetzliche Feiertage für Standorte abfragen.
+            </p>
+          </a>
+
+          <a
+            href={~p"/developers/api/bridge-days"}
+            class="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
+          >
+            <.heading level={3} class="text-lg mb-2 mt-0 text-blue-600 dark:text-blue-400">
+              Brückentage
+            </.heading>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Optimale Urlaubsmöglichkeiten durch Brückentage-Berechnung finden.
+            </p>
+          </a>
+
+          <a
+            href={~p"/developers/api/exports"}
+            class="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
+          >
+            <.heading level={3} class="text-lg mb-2 mt-0 text-blue-600 dark:text-blue-400">
+              Export-Formate
+            </.heading>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              iCalendar, vCard und PDF-Dokumente generieren und exportieren.
+            </p>
+          </a>
+
+          <a
+            href={~p"/developers/api/reference"}
+            class="block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-600 transition-colors md:col-span-2"
+          >
+            <.heading level={3} class="text-lg mb-2 mt-0 text-blue-600 dark:text-blue-400">
+              API-Referenz
+            </.heading>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Response-Format, Fehlerbehandlung und allgemeine Parameter.
+            </p>
+          </a>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Schnellstart
+        </.heading>
+
+        <p class="mb-4">
+          Beispiel: Schulferien für Bayern im Jahr 2025 abrufen:
+        </p>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?start_date=2025-01-01&end_date=2025-12-31&type=vacation| %></pre>
+
+        <p class="mb-4">
+          Antwort:
+        </p>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": [
+    {
+      "id": 123,
+      "starts_on": "2025-07-28",
+      "ends_on": "2025-09-08",
+      "name": "Sommerferien",
+      "type": "school_vacation",
+      "is_school_vacation": true,
+      "is_public_holiday": false
+    }
+  ],
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+      </div>
+
+      <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 mb-6">
+        <p class="text-sm text-yellow-700 dark:text-yellow-300">
+          <strong>Hinweis:</strong>
+          Die API ist für den öffentlichen Gebrauch gedacht. Bitte beachten Sie faire Nutzungsgrenzen und cachen Sie Antworten wenn möglich.
+        </p>
+      </div>
+    </div>
+  </:content>
+</.card>

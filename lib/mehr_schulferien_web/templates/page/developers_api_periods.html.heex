@@ -1,0 +1,237 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        Ferien & Feiertage API
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          ← Zurück zur API-Übersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Die Ferien- und Feiertage-Endpunkte ermöglichen das Abrufen von Schulferien und gesetzlichen Feiertagen
+        für verschiedene Standorte in Deutschland.
+      </p>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Verfügbare Endpunkte
+        </.heading>
+
+        <p class="mb-4">
+          Alle Standorttypen (Bundesländer, Städte, Landkreise, Schulen) bieten einen <code>/periods</code> Endpunkt.
+        </p>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Endpunkt</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/federal-states/:slug/periods</td>
+                <td class="py-2 px-4 border-b">Ferien & Feiertage für ein Bundesland</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/cities/:slug/periods</td>
+                <td class="py-2 px-4 border-b">Ferien & Feiertage für eine Stadt</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/counties/:slug/periods</td>
+                <td class="py-2 px-4 border-b">Ferien & Feiertage für einen Landkreis</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">/api/v2.1/schools/:slug/periods</td>
+                <td class="py-2 px-4 border-b">Ferien & Feiertage für eine Schule</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Query-Parameter
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Parameter</th>
+                <th class="py-2 px-4 border-b text-left">Erforderlich</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">start_date</td>
+                <td class="py-2 px-4 border-b">Nein</td>
+                <td class="py-2 px-4 border-b">Startdatum im Format YYYY-MM-DD (Standard: heute)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">end_date</td>
+                <td class="py-2 px-4 border-b">Nein</td>
+                <td class="py-2 px-4 border-b">
+                  Enddatum im Format YYYY-MM-DD (Standard: 1 Jahr nach Startdatum)
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">type</td>
+                <td class="py-2 px-4 border-b">Nein</td>
+                <td class="py-2 px-4 border-b">
+                  <code>vacation</code> (nur Schulferien) oder <code>holiday</code> (nur Feiertage). Standard: beides
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Beispiele
+        </.heading>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Alle Ferien und Feiertage für Bayern in 2025
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?start_date=2025-01-01&end_date=2025-12-31</pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Nur Schulferien für München
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/periods?type=vacation&start_date=2025-01-01&end_date=2025-12-31</pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Nur Feiertage für einen Landkreis
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/counties/muenchen-landkreis/periods?type=holiday&start_date=2025-01-01&end_date=2025-12-31</pre>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Response-Format
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": [
+    {
+      "id": 123,
+      "starts_on": "2025-07-28",
+      "ends_on": "2025-09-08",
+      "name": "Sommerferien",
+      "type": "school_vacation",
+      "is_school_vacation": true,
+      "is_public_holiday": false
+    },
+    {
+      "id": 456,
+      "starts_on": "2025-12-25",
+      "ends_on": "2025-12-25",
+      "name": "1. Weihnachtsfeiertag",
+      "type": "public_holiday",
+      "is_school_vacation": false,
+      "is_public_holiday": true
+    }
+  ],
+  "meta": {
+    "api_version": "2.1",
+    "location": {
+      "id": 2,
+      "name": "Bayern",
+      "slug": "bayern",
+      "type": "federal_state"
+    },
+    "date_range": {
+      "start_date": "2025-01-01",
+      "end_date": "2025-12-31"
+    }
+  }
+}| %></pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Feld-Beschreibungen
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">id</code>: Eindeutige ID des Zeitraums
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">starts_on</code>: Startdatum (ISO 8601)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">ends_on</code>: Enddatum (ISO 8601)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">name</code>: Name des Zeitraums (z.B. "Sommerferien", "Pfingstmontag")
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">type</code>: Typ des Zeitraums ("school_vacation" oder "public_holiday")
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">is_school_vacation</code>: Boolean, ob es sich um Schulferien handelt
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">is_public_holiday</code>: Boolean, ob es sich um einen gesetzlichen Feiertag handelt
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+        <p class="text-sm text-blue-700 dark:text-blue-300">
+          <strong>Tipp:</strong>
+          Die Perioden werden chronologisch sortiert zurückgegeben. Das <code>meta</code>-Objekt enthält
+          zusätzliche Informationen über den Standort und den angefragten Zeitraum.
+        </p>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a
+              href={~p"/developers/api/locations"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Standorte API
+            </a>
+             - Standort-Informationen abrufen
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/exports"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Export-Formate
+            </a>
+             - iCalendar-Export für Kalender-Integration
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/reference"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              API-Referenz
+            </a>
+             - Allgemeine Response-Formate und Parameter
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>

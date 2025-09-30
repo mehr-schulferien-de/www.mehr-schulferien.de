@@ -14,9 +14,8 @@ defmodule MehrSchulferienWeb.MCP.Server do
   import Ecto.Query, warn: false
   alias MehrSchulferien.{Locations, Periods, BridgeDays, Repo}
   alias MehrSchulferien.Locations.Location
-  alias MehrSchulferien.Periods.Grouping
-  alias MehrSchulferien.BridgeDayCalculations
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferienWeb.BridgeDayFormatter
 
   def init(_, frame) do
     {:ok,
@@ -689,58 +688,10 @@ defmodule MehrSchulferienWeb.MCP.Server do
   def handle_tool("get_bridge_days", %{federal_state_slug: state_slug, year: year}, frame) do
     with {:ok, country} <- get_country_by_slug("deutschland"),
          {:ok, state} <- get_federal_state_by_slug(state_slug, country) do
-      location_ids = [country.id, state.id]
-      {:ok, start_date} = Date.new(year, 1, 1)
-      {:ok, end_date} = Date.new(year, 12, 31)
+      # Use shared formatter
+      result = BridgeDayFormatter.format_bridge_days(state, year)
 
-      periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
-      bridge_day_map = Grouping.group_by_interval(periods)
-
-      bridge_days = []
-
-      for num <- 1..4 do
-        if bridge_day_map[num] do
-          valid_bridge_days =
-            bridge_day_map[num]
-            |> Enum.filter(fn bridge_day ->
-              all_periods = Grouping.list_periods_with_bridge_day(periods, bridge_day)
-              BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
-            end)
-            |> Enum.map(fn bridge_day ->
-              all_periods = Grouping.list_periods_with_bridge_day(periods, bridge_day)
-
-              total_free =
-                BridgeDayCalculations.calculate_total_consecutive_free_days(
-                  bridge_day,
-                  all_periods
-                )
-
-              gain =
-                if num > 0 do
-                  (total_free - num) / num * 100
-                else
-                  0
-                end
-
-              %{
-                starts_on: bridge_day.starts_on,
-                ends_on: bridge_day.ends_on,
-                vacation_days_needed: num,
-                total_free_days: total_free,
-                efficiency_percentage: round(gain),
-                connected_periods: Enum.map(all_periods, &format_period/1)
-              }
-            end)
-
-          bridge_days ++ valid_bridge_days
-        else
-          bridge_days
-        end
-      end
-      |> List.flatten()
-      |> Enum.sort_by(& &1.efficiency_percentage, :desc)
-
-      {:reply, bridge_days, frame}
+      {:reply, result.bridge_days, frame}
     else
       {:error, :not_found} ->
         {:error, "Federal state not found: #{state_slug}", frame}

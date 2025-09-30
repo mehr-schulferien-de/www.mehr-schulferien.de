@@ -1,0 +1,324 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        PDF-Dokumente API
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          ← Zurück zur API-Übersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Generieren Sie PDF-Dokumente wie Entschuldigungen, Beurlaubungsanträge oder Sportbefreiungen für Schulen.
+        Diese Dokumente werden dynamisch mit LaTeX erstellt und als PDF zurückgegeben.
+      </p>
+
+      <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 mb-6">
+        <p class="text-sm text-yellow-700 dark:text-yellow-300">
+          <strong>Hinweis:</strong>
+          Die PDF-Generierung ist nur für Schulen verfügbar.
+        </p>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Endpunkt
+        </.heading>
+
+        <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">
+          <pre class="text-sm">POST /api/v2.1/schools/:slug/documents</pre>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Verfügbare Dokumenttypen
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">entschuldigung</code>
+            - Entschuldigung für Fehltage (z.B. bei Krankheit)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">beurlaubung</code>
+            - Antrag auf Beurlaubung vom Unterricht
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">sportbefreiung</code>
+            - Befreiung vom Sportunterricht
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Beispiele
+        </.heading>
+
+        <details class="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <summary class="cursor-pointer bg-gray-50 dark:bg-gray-800/50 px-4 py-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+            📄 Beispiel: Entschuldigung erstellen
+          </summary>
+          <div class="p-4">
+            <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "type": "entschuldigung",
+    "first_name": "Max",
+    "last_name": "Mustermann",
+    "zip_code": "80333",
+    "city": "München",
+    "name_of_student": "Anna Mustermann",
+    "class_name": "5a",
+    "reason": "krankheit",
+    "start_date": "2025-01-15",
+    "end_date": "2025-01-17",
+    "teacher_name": "Schmidt",
+    "teacher_salutation": "Frau"
+  }' \\
+  --output entschuldigung.pdf| %></pre>
+          </div>
+        </details>
+
+        <details class="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <summary class="cursor-pointer bg-gray-50 dark:bg-gray-800/50 px-4 py-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+            📝 Beispiel: Beurlaubungsantrag erstellen
+          </summary>
+          <div class="p-4">
+            <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "type": "beurlaubung",
+    "first_name": "Max",
+    "last_name": "Mustermann",
+    "zip_code": "80333",
+    "city": "München",
+    "name_of_student": "Anna Mustermann",
+    "class_name": "5a",
+    "start_date": "2025-02-10",
+    "end_date": "2025-02-14",
+    "detailed_reason": "Familiäre Angelegenheiten"
+  }' \\
+  --output beurlaubung.pdf| %></pre>
+          </div>
+        </details>
+
+        <details class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <summary class="cursor-pointer bg-gray-50 dark:bg-gray-800/50 px-4 py-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+            🏃 Beispiel: Sportbefreiung erstellen
+          </summary>
+          <div class="p-4">
+            <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "type": "sportbefreiung",
+    "first_name": "Max",
+    "last_name": "Mustermann",
+    "zip_code": "80333",
+    "city": "München",
+    "name_of_student": "Anna Mustermann",
+    "class_name": "5a",
+    "duration_type": "single_lesson",
+    "single_date": "2025-03-20",
+    "detailed_reason": "Verletzung am Fuß",
+    "medical_certificate": true
+  }' \\
+  --output sportbefreiung.pdf| %></pre>
+          </div>
+        </details>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Parameter
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Parameter</th>
+                <th class="py-2 px-4 border-b text-left">Erforderlich</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">type</td>
+                <td class="py-2 px-4 border-b">Ja</td>
+                <td class="py-2 px-4 border-b">
+                  "entschuldigung", "beurlaubung" oder "sportbefreiung"
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">first_name</td>
+                <td class="py-2 px-4 border-b">Ja</td>
+                <td class="py-2 px-4 border-b">Vorname des Absenders</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">last_name</td>
+                <td class="py-2 px-4 border-b">Ja</td>
+                <td class="py-2 px-4 border-b">Nachname des Absenders</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">zip_code</td>
+                <td class="py-2 px-4 border-b">Ja</td>
+                <td class="py-2 px-4 border-b">Postleitzahl</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">city</td>
+                <td class="py-2 px-4 border-b">Ja</td>
+                <td class="py-2 px-4 border-b">Stadt</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">name_of_student</td>
+                <td class="py-2 px-4 border-b">Ja</td>
+                <td class="py-2 px-4 border-b">Name des Schülers/der Schülerin</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">class_name</td>
+                <td class="py-2 px-4 border-b">Ja</td>
+                <td class="py-2 px-4 border-b">Klassenname (z.B. "5a")</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">start_date</td>
+                <td class="py-2 px-4 border-b">Abhängig vom Typ</td>
+                <td class="py-2 px-4 border-b">Startdatum (ISO 8601, z.B. "2025-01-15")</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">end_date</td>
+                <td class="py-2 px-4 border-b">Abhängig vom Typ</td>
+                <td class="py-2 px-4 border-b">Enddatum (ISO 8601)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">reason</td>
+                <td class="py-2 px-4 border-b">Nur bei Entschuldigung</td>
+                <td class="py-2 px-4 border-b">
+                  "krankheit", "arzttermin", "familiaere_angelegenheiten", "beerdigung" oder "religioser_feiertag"
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">duration_type</td>
+                <td class="py-2 px-4 border-b">Nur bei Sportbefreiung</td>
+                <td class="py-2 px-4 border-b">"single_lesson" oder "multiple_days"</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">single_date</td>
+                <td class="py-2 px-4 border-b">Bei single_lesson</td>
+                <td class="py-2 px-4 border-b">Datum für einzelne Sportstunde (ISO 8601)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">teacher_name</td>
+                <td class="py-2 px-4 border-b">Nein</td>
+                <td class="py-2 px-4 border-b">Name des Klassenlehrers/der Klassenlehrerin</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">teacher_salutation</td>
+                <td class="py-2 px-4 border-b">Nein</td>
+                <td class="py-2 px-4 border-b">"Herr" oder "Frau"</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">detailed_reason</td>
+                <td class="py-2 px-4 border-b">Nein</td>
+                <td class="py-2 px-4 border-b">Ausführliche Begründung</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">medical_certificate</td>
+                <td class="py-2 px-4 border-b">Nein</td>
+                <td class="py-2 px-4 border-b">
+                  Boolean - ob ärztliches Attest beigefügt wird (nur bei Sportbefreiung)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Response
+        </.heading>
+
+        <div class="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-600 p-4 mb-4">
+          <p class="text-sm text-green-700 dark:text-green-300">
+            <strong>Erfolg:</strong>
+            Bei erfolgreicher Generierung wird das PDF direkt als Binary mit Content-Type <code>application/pdf</code> zurückgegeben.
+            Sie können die Datei direkt speichern und öffnen.
+          </p>
+        </div>
+
+        <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-6">
+          <p class="text-sm text-red-700 dark:text-red-300">
+            <strong>Fehler:</strong>
+            Bei Fehlern wird ein JSON-Objekt mit dem Feld "error" und einer Fehlerbeschreibung zurückgegeben.
+          </p>
+        </div>
+
+        <p class="mb-2 font-medium">Beispiel Fehler-Response:</p>
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "error": "School not found"
+}| %></pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          HTTP-Status-Codes
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">200 OK</code>
+            - PDF erfolgreich generiert
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">400 Bad Request</code>
+            - Ungültige oder fehlende Parameter
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">404 Not Found</code>
+            - Schule nicht gefunden
+          </li>
+        </ul>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a
+              href={~p"/developers/api/locations"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Standorte API
+            </a>
+             - Schulinformationen abrufen
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/exports"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Export-Formate
+            </a>
+             - Andere Export-Optionen (iCalendar, vCard)
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/reference"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              API-Referenz
+            </a>
+             - Allgemeine Response-Formate und Fehlerbehandlung
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>
