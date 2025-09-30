@@ -110,6 +110,10 @@ defmodule MehrSchulferienWeb.FaqComponent do
               <% end %>
 
               <.faq_question question={@faq_data.next_holiday_question} />
+              <!-- Date Query Tools Section -->
+              <.section_header title="Schnelle Abfragen" />
+
+              <.date_query_links federal_state={@federal_state} />
             <% end %>
           </dl>
         </div>
@@ -253,6 +257,36 @@ defmodule MehrSchulferienWeb.FaqComponent do
         >
           Liste der Landkreise und Städte in {@federal_state.name}.
         </.link>
+      </dd>
+    </div>
+    """
+  end
+
+  defp date_query_links(assigns) do
+    ~H"""
+    <div class="sm:col-span-2">
+      <dd class="text-sm text-gray-600 dark:text-gray-400">
+        <p class="mb-3">
+          Schnelle Antworten auf häufige Fragen zu Feiertagen und Schultagen:
+        </p>
+        <ul class="list-disc ml-5 space-y-2">
+          <li>
+            <.link
+              navigate={~p"/ist-heute-feiertag/#{@federal_state.slug}"}
+              class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
+            >
+              Ist heute ein Feiertag in {@federal_state.name}?
+            </.link>
+          </li>
+          <li>
+            <.link
+              navigate={~p"/ist-heute-schulfrei/#{@federal_state.slug}"}
+              class="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
+            >
+              Ist heute schulfrei in {@federal_state.name}?
+            </.link>
+          </li>
+        </ul>
       </dd>
     </div>
     """

@@ -60,6 +60,11 @@
                 </a>
               </li>
               <li>
+                <a href="#v21-queries" class="text-blue-600 dark:text-blue-400 hover:underline">
+                  Datum-Abfragen
+                </a>
+              </li>
+              <li>
                 <a href="#v21-response" class="text-blue-600 dark:text-blue-400 hover:underline">
                   Response Format & Parameter
                 </a>
@@ -575,6 +580,152 @@
             <strong>Fehler:</strong>
             Status 404 wird zurückgegeben, wenn für den angegebenen Standort und das Jahr keine Brückentage verfügbar sind.
             Status 400 wird bei ungültigen Jahr-Parameter zurückgegeben.
+          </p>
+        </div>
+      </div>
+
+      <div
+        id="v21-queries"
+        class="scroll-mt-6 border-t border-gray-200 dark:border-gray-700 pt-6"
+      >
+        <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-2 mb-3">
+          Datum-Abfragen
+        </.heading>
+        <p class="mb-4">
+          Die Datum-Abfrage-Endpunkte ermöglichen schnelle Antworten auf Fragen wie "Ist heute ein Feiertag?" oder "Ist das ein Schultag?".
+        </p>
+
+        <div class="mb-6">
+          <.heading level={4} class="text-lg text-gray-800 dark:text-gray-200 mt-4 mb-2">
+            Ist ein bestimmtes Datum ein Feiertag?
+          </.heading>
+          <pre class="bg-white dark:bg-gray-900 p-2 rounded overflow-x-auto text-sm">GET /api/v2.1/queries/is-public-holiday</pre>
+          <p class="mt-2 mb-2"><strong>Query Parameter:</strong></p>
+          <ul class="list-disc ml-5 mb-4">
+            <li>
+              <code>location_slug</code>
+              (required): Slug des Bundeslandes (z.B. "bayern", "hessen")
+            </li>
+            <li><code>date</code> (required): Datum im ISO 8601 Format (z.B. "2025-12-25")</li>
+          </ul>
+          <p class="mb-2"><strong>Beispiel:</strong></p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -H "Accept: application/json" \\
+  "https://www.mehr-schulferien.de/api/v2.1/queries/is-public-holiday?location_slug=bayern&date=2025-12-25"| %></pre>
+          <p class="mt-4 mb-2"><strong>Response:</strong></p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "date": "2025-12-25",
+    "location": {
+      "id": 5,
+      "name": "Bayern",
+      "slug": "bayern",
+      "code": "BY"
+    },
+    "is_public_holiday": true,
+    "public_holiday_names": ["1. Weihnachtstag"]
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+        </div>
+
+        <div class="mb-6">
+          <.heading level={4} class="text-lg text-gray-800 dark:text-gray-200 mt-4 mb-2">
+            Ist ein bestimmtes Datum ein Schultag?
+          </.heading>
+          <pre class="bg-white dark:bg-gray-900 p-2 rounded overflow-x-auto text-sm">GET /api/v2.1/queries/is-school-day</pre>
+          <p class="mt-2 mb-2"><strong>Query Parameter:</strong></p>
+          <ul class="list-disc ml-5 mb-4">
+            <li><code>location_slug</code> (required): Slug des Bundeslandes</li>
+            <li><code>date</code> (required): Datum im ISO 8601 Format</li>
+          </ul>
+          <p class="mb-2"><strong>Beispiel:</strong></p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -H "Accept: application/json" \\
+  "https://www.mehr-schulferien.de/api/v2.1/queries/is-school-day?location_slug=bayern&date=2025-09-15"| %></pre>
+          <p class="mt-4 mb-2"><strong>Response:</strong></p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "date": "2025-09-15",
+    "location": {
+      "id": 5,
+      "name": "Bayern",
+      "slug": "bayern",
+      "code": "BY"
+    },
+    "is_school_day": true
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+        </div>
+
+        <div class="mb-6">
+          <.heading level={4} class="text-lg text-gray-800 dark:text-gray-200 mt-4 mb-2">
+            Umfassende Datumsanalyse
+          </.heading>
+          <pre class="bg-white dark:bg-gray-900 p-2 rounded overflow-x-auto text-sm">GET /api/v2.1/queries/check-date</pre>
+          <p class="mt-2 mb-2"><strong>Query Parameter:</strong></p>
+          <ul class="list-disc ml-5 mb-4">
+            <li><code>location_slug</code> (required): Slug des Bundeslandes</li>
+            <li><code>date</code> (required): Datum im ISO 8601 Format</li>
+          </ul>
+          <p class="mb-4">
+            Dieser Endpunkt liefert eine umfassende Analyse eines Datums, einschließlich:
+          </p>
+          <ul class="list-disc ml-5 mb-4">
+            <li>Ob es ein Feiertag ist</li>
+            <li>Ob es ein Schultag ist</li>
+            <li>Ob es Schulferien sind</li>
+            <li>Ob es ein Wochenende ist</li>
+            <li>Listen der aktiven Feiertage und Ferienperioden</li>
+            <li>Eine menschenlesbare Erklärung</li>
+          </ul>
+          <p class="mb-2"><strong>Beispiel:</strong></p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -H "Accept: application/json" \\
+  "https://www.mehr-schulferien.de/api/v2.1/queries/check-date?location_slug=bayern&date=2025-08-15"| %></pre>
+          <p class="mt-4 mb-2"><strong>Response:</strong></p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "date": "2025-08-15",
+    "location": {
+      "id": 5,
+      "name": "Bayern",
+      "slug": "bayern",
+      "code": "BY"
+    },
+    "is_public_holiday": true,
+    "is_school_day": false,
+    "is_school_vacation": true,
+    "is_weekend": false,
+    "public_holiday_periods": [
+      {
+        "id": 12345,
+        "name": "Mariä Himmelfahrt",
+        "starts_on": "2025-08-15",
+        "ends_on": "2025-08-15"
+      }
+    ],
+    "school_vacation_periods": [
+      {
+        "id": 67890,
+        "name": "Sommerferien",
+        "colloquial": "Sommerferien",
+        "starts_on": "2025-08-01",
+        "ends_on": "2025-09-15"
+      }
+    ],
+    "explanation": "Mariä Himmelfahrt und Sommerferien"
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+          <p class="mt-4">
+            <strong>Fehler:</strong>
+            Status 404 wird zurückgegeben, wenn der Standort nicht gefunden wird.
+            Status 400 wird bei ungültigem Datumsformat zurückgegeben.
           </p>
         </div>
       </div>

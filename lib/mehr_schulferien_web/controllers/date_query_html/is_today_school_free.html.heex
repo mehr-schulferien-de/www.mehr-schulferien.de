@@ -1,0 +1,92 @@
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <.heading level={1} class="mb-6">
+    Ist heute schulfrei in {@federal_state.name}?
+  </.heading>
+
+  <div class="mb-8">
+    <.card>
+      <:content>
+        <div class="text-center py-8">
+          <%= if not @result.is_school_day do %>
+            <div class="text-6xl font-bold text-green-600 mb-4">JA</div>
+            <.text size="xl" class="mb-4">
+              Heute ist schulfrei in {@federal_state.name}.
+            </.text>
+            <.text class="text-gray-600">
+              {@result.explanation}
+            </.text>
+          <% else %>
+            <div class="text-6xl font-bold text-gray-600 mb-4">NEIN</div>
+            <.text size="xl" class="mb-4">
+              Heute ist ein regulärer Schultag in {@federal_state.name}.
+            </.text>
+          <% end %>
+        </div>
+      </:content>
+    </.card>
+  </div>
+
+  <%= if length(@result.school_vacation_periods) > 0 do %>
+    <div class="mb-8">
+      <.heading level={2} class="mb-4">Aktuelle Ferien</.heading>
+      <.card>
+        <:content>
+          <ul class="list-disc ml-5 space-y-2">
+            <%= for period <- @result.school_vacation_periods do %>
+              <li>
+                {period.holiday_or_vacation_type.colloquial} ({Calendar.strftime(
+                  period.starts_on,
+                  "%d.%m."
+                )} - {Calendar.strftime(period.ends_on, "%d.%m.%Y")})
+              </li>
+            <% end %>
+          </ul>
+        </:content>
+      </.card>
+    </div>
+  <% end %>
+
+  <%= if length(@result.public_holiday_periods) > 0 do %>
+    <div class="mb-8">
+      <.heading level={2} class="mb-4">Feiertage heute</.heading>
+      <.card>
+        <:content>
+          <ul class="list-disc ml-5 space-y-2">
+            <%= for period <- @result.public_holiday_periods do %>
+              <li>{period.holiday_or_vacation_type.name}</li>
+            <% end %>
+          </ul>
+        </:content>
+      </.card>
+    </div>
+  <% end %>
+
+  <div class="mb-8">
+    <.heading level={2} class="mb-4">Weitere Informationen</.heading>
+    <div class="space-y-4">
+      <a href={~p"/ferien/d/bundesland/#{@federal_state.slug}"} class="block">
+        <.card class="hover:shadow-lg transition-shadow">
+          <:content>
+            <.text size="lg" weight="semibold">Ferienkalender {@federal_state.name}</.text>
+            <.text size="sm" class="text-gray-600">Alle Ferien und Feiertage im Überblick</.text>
+          </:content>
+        </.card>
+      </a>
+
+      <a href={~p"/naechste-ferien/#{@federal_state.slug}"} class="block">
+        <.card class="hover:shadow-lg transition-shadow">
+          <:content>
+            <.text size="lg" weight="semibold">Nächste Ferien {@federal_state.name}</.text>
+            <.text size="sm" class="text-gray-600">Wann sind die nächsten Schulferien?</.text>
+          </:content>
+        </.card>
+      </a>
+    </div>
+  </div>
+
+  <div class="text-center text-gray-600">
+    <.text size="sm">
+      Stand: {Calendar.strftime(@result.date, "%d.%m.%Y")}
+    </.text>
+  </div>
+</div>

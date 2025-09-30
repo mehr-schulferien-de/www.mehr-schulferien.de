@@ -128,6 +128,26 @@
             </div>
           </div>
         <% end %>
+        <% # Quick links to date query tools %>
+        <div class="mt-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+          <.heading level={3} class="text-lg text-green-900 dark:text-green-100 mb-3">
+            Schnelle Abfragen:
+          </.heading>
+          <div class="grid grid-cols-1 gap-2">
+            <a
+              href={~p"/ist-heute-feiertag/#{@federal_state.slug}"}
+              class="px-3 py-2 text-sm font-medium text-green-700 dark:text-green-300 bg-white dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/40 border border-green-300 dark:border-green-700 rounded-md transition-colors text-center"
+            >
+              🎉 Ist heute ein Feiertag?
+            </a>
+            <a
+              href={~p"/ist-heute-schulfrei/#{@federal_state.slug}"}
+              class="px-3 py-2 text-sm font-medium text-green-700 dark:text-green-300 bg-white dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/40 border border-green-300 dark:border-green-700 rounded-md transition-colors text-center"
+            >
+              🎒 Ist heute schulfrei?
+            </a>
+          </div>
+        </div>
       </div>
     </div>
 

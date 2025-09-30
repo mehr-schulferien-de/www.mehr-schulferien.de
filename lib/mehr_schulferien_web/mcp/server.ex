@@ -12,7 +12,7 @@ defmodule MehrSchulferienWeb.MCP.Server do
     capabilities: [:tools]
 
   import Ecto.Query, warn: false
-  alias MehrSchulferien.{Locations, Periods, BridgeDays, Repo}
+  alias MehrSchulferien.{DateQuery, Locations, Periods, BridgeDays, Repo}
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferienWeb.BridgeDayFormatter
@@ -26,7 +26,8 @@ defmodule MehrSchulferienWeb.MCP.Server do
      |> register_bridge_day_tools()
      |> register_statistical_tools()
      |> register_export_tools()
-     |> register_search_tools()}
+     |> register_search_tools()
+     |> register_date_query_tools()}
   end
 
   # Location Navigation Tools
@@ -991,6 +992,110 @@ defmodule MehrSchulferienWeb.MCP.Server do
     end
   end
 
+  def handle_tool("check_is_public_holiday", params, frame) do
+    with {:ok, location} <- get_location_by_slug_safe(params.location_slug),
+         {:ok, date} <- parse_or_default_date(params[:date]) do
+      {is_holiday, periods} = DateQuery.is_public_holiday?(location, date)
+
+      result = %{
+        date: Date.to_iso8601(date),
+        location: %{
+          name: location.name,
+          slug: location.slug,
+          type: get_location_type(location)
+        },
+        is_public_holiday: is_holiday,
+        holidays:
+          Enum.map(periods, fn period ->
+            %{
+              name: period.holiday_or_vacation_type.name,
+              starts_on: Date.to_iso8601(period.starts_on),
+              ends_on: Date.to_iso8601(period.ends_on)
+            }
+          end)
+      }
+
+      {:reply, result, frame}
+    else
+      {:error, reason} ->
+        {:error, format_error(reason), frame}
+    end
+  end
+
+  def handle_tool("check_is_school_day", params, frame) do
+    with {:ok, location} <- get_location_by_slug_safe(params.location_slug),
+         {:ok, date} <- parse_or_default_date(params[:date]) do
+      {is_school_day, periods} = DateQuery.is_school_day?(location, date)
+
+      result = %{
+        date: Date.to_iso8601(date),
+        location: %{
+          name: location.name,
+          slug: location.slug,
+          type: get_location_type(location)
+        },
+        is_school_day: is_school_day,
+        school_free_periods:
+          Enum.map(periods, fn period ->
+            %{
+              name: period.holiday_or_vacation_type.name,
+              colloquial: period.holiday_or_vacation_type.colloquial,
+              starts_on: Date.to_iso8601(period.starts_on),
+              ends_on: Date.to_iso8601(period.ends_on)
+            }
+          end)
+      }
+
+      {:reply, result, frame}
+    else
+      {:error, reason} ->
+        {:error, format_error(reason), frame}
+    end
+  end
+
+  def handle_tool("check_date_status", params, frame) do
+    with {:ok, location} <- get_location_by_slug_safe(params.location_slug),
+         {:ok, date} <- parse_or_default_date(params[:date]) do
+      status = DateQuery.check_date_status(location, date)
+
+      result = %{
+        date: Date.to_iso8601(status.date),
+        location: %{
+          name: status.location.name,
+          slug: status.location.slug,
+          type: get_location_type(status.location)
+        },
+        is_public_holiday: status.is_public_holiday,
+        is_school_day: status.is_school_day,
+        is_school_vacation: status.is_school_vacation,
+        is_weekend: status.is_weekend,
+        public_holidays:
+          Enum.map(status.public_holiday_periods, fn period ->
+            %{
+              name: period.holiday_or_vacation_type.name,
+              starts_on: Date.to_iso8601(period.starts_on),
+              ends_on: Date.to_iso8601(period.ends_on)
+            }
+          end),
+        school_vacations:
+          Enum.map(status.school_vacation_periods, fn period ->
+            %{
+              name: period.holiday_or_vacation_type.name,
+              colloquial: period.holiday_or_vacation_type.colloquial,
+              starts_on: Date.to_iso8601(period.starts_on),
+              ends_on: Date.to_iso8601(period.ends_on)
+            }
+          end),
+        explanation: status.explanation
+      }
+
+      {:reply, result, frame}
+    else
+      {:error, reason} ->
+        {:error, format_error(reason), frame}
+    end
+  end
+
   # Helper Functions
 
   defp get_country_by_slug(slug) do
@@ -1227,4 +1332,55 @@ defmodule MehrSchulferienWeb.MCP.Server do
       query
     end
   end
+
+  # Date Query Tools
+  defp register_date_query_tools(frame) do
+    frame
+    |> register_tool("check_is_public_holiday",
+      description: "Check if a specific date is a public holiday in a location",
+      input_schema: %{
+        location_slug:
+          {:required, :string, description: "Location slug (federal state, city, or school)"},
+        date:
+          {:optional, :string,
+           pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Date (YYYY-MM-DD), defaults to today"}
+      },
+      annotations: %{read_only: true}
+    )
+    |> register_tool("check_is_school_day",
+      description: "Check if a specific date is a school day in a location",
+      input_schema: %{
+        location_slug:
+          {:required, :string, description: "Location slug (federal state, city, or school)"},
+        date:
+          {:optional, :string,
+           pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Date (YYYY-MM-DD), defaults to today"}
+      },
+      annotations: %{read_only: true}
+    )
+    |> register_tool("check_date_status",
+      description: "Get comprehensive status of a date (holiday, school day, vacation, weekend)",
+      input_schema: %{
+        location_slug:
+          {:required, :string, description: "Location slug (federal state, city, or school)"},
+        date:
+          {:optional, :string,
+           pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Date (YYYY-MM-DD), defaults to today"}
+      },
+      annotations: %{read_only: true}
+    )
+  end
+
+  defp get_location_by_slug_safe(slug) do
+    try do
+      location = Locations.get_location_by_slug!(slug)
+      {:ok, location}
+    rescue
+      Ecto.NoResultsError -> {:error, :not_found}
+    end
+  end
+
+  defp format_error(:not_found), do: "Location not found"
+  defp format_error(error) when is_binary(error), do: error
+  defp format_error(_), do: "An error occurred"
 end

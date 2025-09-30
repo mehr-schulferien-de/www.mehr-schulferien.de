@@ -870,6 +870,16 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Gets a single federal_state by querying for the slug alone.
+
+  Returns the federal state if found, or nil if not.
+  This is useful when you need to find a federal state by slug without knowing the country.
+  """
+  def get_federal_state_by_slug(federal_state_slug) do
+    Repo.get_by(Location, slug: federal_state_slug, is_federal_state: true)
+  end
+
+  @doc """
   Gets both a country and its federal_state in a single query by their slugs.
 
   Raises `Ecto.NoResultsError` if either the federal state or country does not exist.

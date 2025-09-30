@@ -147,6 +147,11 @@ defmodule MehrSchulferienWeb.Router do
 
     # Periods
     resources "/periods", PeriodController, only: [:index, :show]
+
+    # Date Queries
+    get "/queries/is-public-holiday", QueryController, :is_public_holiday
+    get "/queries/is-school-day", QueryController, :is_school_day
+    get "/queries/check-date", QueryController, :check_date
   end
 
   # ========== MCP (Model Context Protocol) Server ==========
@@ -178,9 +183,16 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers/api/bridge-days", PageController, :developers_api_bridge_days
     get "/developers/api/exports", PageController, :developers_api_exports
     get "/developers/api/pdf", PageController, :developers_api_pdf
+    get "/developers/api/queries", PageController, :developers_api_queries
     get "/developers/api/reference", PageController, :developers_api_reference
     get "/developers/mcp", PageController, :developers_mcp
     get "/impressum", PageController, :impressum
+
+    # Date Query Routes
+    get "/ist-heute-feiertag/:federal_state_slug", DateQueryController, :is_today_public_holiday
+    get "/ist-heute-schulfrei/:federal_state_slug", DateQueryController, :is_today_school_free
+    get "/ist-schultag/:federal_state_slug/:date", DateQueryController, :is_school_day
+    get "/ist-feiertag/:federal_state_slug/:date", DateQueryController, :is_public_holiday
 
     # Test page
 

@@ -9,6 +9,30 @@
     <loc>https://www.mehr-schulferien.de/developers</loc>
   </url>
   <url>
+    <loc>https://www.mehr-schulferien.de/developers/api</loc>
+  </url>
+  <url>
+    <loc>https://www.mehr-schulferien.de/developers/api/locations</loc>
+  </url>
+  <url>
+    <loc>https://www.mehr-schulferien.de/developers/api/periods</loc>
+  </url>
+  <url>
+    <loc>https://www.mehr-schulferien.de/developers/api/bridge-days</loc>
+  </url>
+  <url>
+    <loc>https://www.mehr-schulferien.de/developers/api/exports</loc>
+  </url>
+  <url>
+    <loc>https://www.mehr-schulferien.de/developers/api/queries</loc>
+  </url>
+  <url>
+    <loc>https://www.mehr-schulferien.de/developers/api/reference</loc>
+  </url>
+  <url>
+    <loc>https://www.mehr-schulferien.de/developers/mcp</loc>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/impressum</loc>
   </url>
   
@@ -45,19 +69,27 @@
 
     <%!-- Federal States URLs --%>
     <%= for federal_state <- federal_states do %>
+      <%!-- Date Query URLs for federal state --%>
+      <url>
+        <loc>https://www.mehr-schulferien.de/ist-heute-feiertag/<%= federal_state.slug %></loc>
+      </url>
+      <url>
+        <loc>https://www.mehr-schulferien.de/ist-heute-schulfrei/<%= federal_state.slug %></loc>
+      </url>
+
       <%!-- Years for federal state --%>
       <%= for year <- Map.get(federal_state, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <url>
           <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
         </url>
-        
+
         <%!-- Vacation-specific URLs for better SEO - only for vacation types that exist for this federal state and year --%>
         <%= for vacation_type <- Map.get(federal_state, :vacation_types_by_year, %{}) |> Map.get(year, []) do %>
           <url>
             <loc>https://www.mehr-schulferien.de/<%= vacation_type.slug %>ferien/<%= federal_state.slug %>/<%= year %></loc>
           </url>
         <% end %>
-        
+
         <%!-- Bridge days URLs for federal states --%>
         <url>
           <loc>https://www.mehr-schulferien.de/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>

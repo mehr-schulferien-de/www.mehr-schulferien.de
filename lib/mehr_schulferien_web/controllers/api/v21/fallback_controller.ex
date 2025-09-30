@@ -24,6 +24,14 @@ defmodule MehrSchulferienWeb.Api.V21.FallbackController do
     |> json(MehrSchulferienWeb.Api.V21.ErrorJSON.render("400.json", %{}))
   end
 
+  def call(conn, {:error, :invalid_date}) do
+    conn
+    |> put_status(:bad_request)
+    |> json(
+      MehrSchulferienWeb.Api.V21.ErrorJSON.render("400.json", %{message: "Invalid date format"})
+    )
+  end
+
   def call(conn, {:error, message}) when is_binary(message) do
     conn
     |> put_status(:bad_request)

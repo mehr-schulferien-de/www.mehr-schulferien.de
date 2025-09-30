@@ -1,0 +1,337 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        Datum-Abfragen API
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          ← Zurück zur API-Übersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Die Datum-Abfragen API ermöglicht es, schnell und einfach zu überprüfen, ob ein bestimmtes
+        Datum ein Feiertag, Schultag oder Ferientag ist. Ideal für Kalender-Apps, Planungstools
+        oder einfache Abfragen wie "Ist heute schulfrei in Bayern?".
+      </p>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Verfügbare Endpunkte
+        </.heading>
+
+        <div class="mb-8">
+          <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+            1. Feiertag prüfen
+          </.heading>
+
+          <p class="mb-4">
+            Prüft, ob ein bestimmtes Datum ein gesetzlicher Feiertag ist.
+          </p>
+
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|GET /api/v2.1/queries/is-public-holiday?location_slug=bayern&date=2025-12-25| %></pre>
+
+          <p class="mb-2 font-semibold">Query-Parameter:</p>
+          <ul class="ml-5 list-disc space-y-2 mb-4">
+            <li>
+              <code>location_slug</code>
+              (erforderlich): Slug des Standorts (Bundesland, Stadt oder Schule)
+            </li>
+            <li>
+              <code>date</code> (optional): Datum im Format YYYY-MM-DD. Standard: heute
+            </li>
+          </ul>
+
+          <p class="mb-2 font-semibold">Beispiel-Antwort:</p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "date": "2025-12-25",
+    "location": {
+      "name": "Bayern",
+      "slug": "bayern",
+      "type": "federal_state"
+    },
+    "is_public_holiday": true,
+    "holidays": [
+      {
+        "name": "1. Weihnachtstag",
+        "starts_on": "2025-12-25",
+        "ends_on": "2025-12-25"
+      }
+    ]
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+        </div>
+
+        <div class="mb-8">
+          <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+            2. Schultag prüfen
+          </.heading>
+
+          <p class="mb-4">
+            Prüft, ob ein bestimmtes Datum ein Schultag ist (kein Wochenende, kein Feiertag, keine Ferien).
+          </p>
+
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|GET /api/v2.1/queries/is-school-day?location_slug=bayern&date=2025-09-15| %></pre>
+
+          <p class="mb-2 font-semibold">Query-Parameter:</p>
+          <ul class="ml-5 list-disc space-y-2 mb-4">
+            <li>
+              <code>location_slug</code>
+              (erforderlich): Slug des Standorts (Bundesland, Stadt oder Schule)
+            </li>
+            <li>
+              <code>date</code> (optional): Datum im Format YYYY-MM-DD. Standard: heute
+            </li>
+          </ul>
+
+          <p class="mb-2 font-semibold">Beispiel-Antwort:</p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "date": "2025-09-15",
+    "location": {
+      "name": "Bayern",
+      "slug": "bayern",
+      "type": "federal_state"
+    },
+    "is_school_day": true,
+    "school_free_periods": []
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+        </div>
+
+        <div class="mb-8">
+          <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+            3. Umfassende Datum-Prüfung
+          </.heading>
+
+          <p class="mb-4">
+            Liefert einen umfassenden Status für ein Datum: Feiertag, Schultag, Ferien, Wochenende
+            und eine menschenlesbare Erklärung.
+          </p>
+
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|GET /api/v2.1/queries/check-date?location_slug=bayern&date=2025-12-25| %></pre>
+
+          <p class="mb-2 font-semibold">Query-Parameter:</p>
+          <ul class="ml-5 list-disc space-y-2 mb-4">
+            <li>
+              <code>location_slug</code>
+              (erforderlich): Slug des Standorts (Bundesland, Stadt oder Schule)
+            </li>
+            <li>
+              <code>date</code> (optional): Datum im Format YYYY-MM-DD. Standard: heute
+            </li>
+          </ul>
+
+          <p class="mb-2 font-semibold">Beispiel-Antwort:</p>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "date": "2025-12-25",
+    "location": {
+      "name": "Bayern",
+      "slug": "bayern",
+      "type": "federal_state"
+    },
+    "is_public_holiday": true,
+    "is_school_day": false,
+    "is_school_vacation": true,
+    "is_weekend": false,
+    "public_holidays": [
+      {
+        "name": "1. Weihnachtstag",
+        "starts_on": "2025-12-25",
+        "ends_on": "2025-12-25"
+      }
+    ],
+    "school_vacations": [
+      {
+        "name": "Weihnachtsferien",
+        "colloquial": "Weihnachtsferien",
+        "starts_on": "2025-12-24",
+        "ends_on": "2026-01-05"
+      }
+    ],
+    "explanation": "1. Weihnachtstag und Weihnachtsferien"
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Praktische Anwendungsfälle
+        </.heading>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-4">
+          <p class="font-semibold mb-2">Ist heute Feiertag in Hessen?</p>
+          <pre class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"><%= ~s|GET /api/v2.1/queries/is-public-holiday?location_slug=hessen| %></pre>
+        </div>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-4">
+          <p class="font-semibold mb-2">Ist morgen schulfrei in Berlin?</p>
+          <pre class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"><%= ~s|GET /api/v2.1/queries/check-date?location_slug=berlin&date=<morgen>| %></pre>
+          <p class="text-sm mt-2 text-blue-700 dark:text-blue-300">
+            Hinweis: <code>&lt;morgen&gt;</code> durch tatsächliches Datum ersetzen
+          </p>
+        </div>
+
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-4">
+          <p class="font-semibold mb-2">
+            Umfassender Status für eine spezifische Schule an einem bestimmten Datum
+          </p>
+          <pre class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"><%= ~s|GET /api/v2.1/queries/check-date?location_slug=85354-gymnasium-freising&date=2025-07-28| %></pre>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Standort-Typen
+        </.heading>
+
+        <p class="mb-4">
+          Die Datum-Abfragen funktionieren mit folgenden Standort-Typen:
+        </p>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <strong>Bundesländer</strong>
+            (z.B. <code>bayern</code>, <code>hessen</code>, <code>berlin</code>)
+          </li>
+          <li>
+            <strong>Städte</strong> (z.B. <code>muenchen</code>, <code>frankfurt-am-main</code>)
+          </li>
+          <li>
+            <strong>Schulen</strong> (z.B. <code>85354-gymnasium-freising</code>)
+          </li>
+        </ul>
+
+        <p class="mb-4">
+          <strong>Tipp:</strong>
+          Verwenden Sie die
+          <a
+            href={~p"/developers/api/locations"}
+            class="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Standorte API
+          </a>
+          um verfügbare Slugs zu finden.
+        </p>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Fehlerbehandlung
+        </.heading>
+
+        <p class="mb-4">
+          Die API gibt folgende HTTP-Status-Codes zurück:
+        </p>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Status-Code</th>
+                <th class="py-2 px-4 border-b text-left">Bedeutung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">200 OK</td>
+                <td class="py-2 px-4 border-b">Erfolg</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">400 Bad Request</td>
+                <td class="py-2 px-4 border-b">Ungültiges Datumsformat</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono">404 Not Found</td>
+                <td class="py-2 px-4 border-b">Standort nicht gefunden</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="mb-2 font-semibold">Beispiel-Fehlermeldung:</p>
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "errors": [
+    {
+      "status": "404",
+      "title": "Not Found",
+      "detail": "Location not found"
+    }
+  ]
+}| %></pre>
+      </div>
+
+      <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 mb-6">
+        <p class="text-sm text-yellow-700 dark:text-yellow-300">
+          <strong>Performance-Tipp:</strong>
+          Die API berechnet Datum-Status on-the-fly. Für wiederholte Abfragen desselben Zeitraums
+          empfehlen wir, die
+          <a
+            href={~p"/developers/api/periods"}
+            class="text-yellow-800 dark:text-yellow-200 hover:underline"
+          >
+            Periods API
+          </a>
+          zu verwenden und die Ergebnisse lokal zu cachen.
+        </p>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a
+              href={~p"/developers/api/periods"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Ferien & Feiertage API
+            </a>
+            - Abrufen vollständiger Zeiträume
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/locations"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Standorte API
+            </a>
+            - Verfügbare Standort-Slugs finden
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/reference"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              API-Referenz
+            </a>
+            - Allgemeine API-Konzepte
+          </li>
+          <li>
+            <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+              API-Übersicht
+            </a>
+            - Zurück zur Übersicht
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>
