@@ -171,7 +171,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   def handle_event("add_beweglicher_ferientag", %{"ferientag" => params}, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
-       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+       socket
+       |> clear_flash()
+       |> put_flash(:error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
     else
       school = socket.assigns.school
       memo = params["memo"]
@@ -184,8 +186,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
           if future_dates == [] do
             {:noreply,
-             put_flash(
-               socket,
+             socket
+             |> clear_flash()
+             |> put_flash(
                :error,
                "Bewegliche Ferientage können nur für zukünftige Daten angelegt werden."
              )}
@@ -200,8 +203,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
               date_strings = Enum.map(existing_dates, &DateFormatter.format_date_short/1)
 
               {:noreply,
-               put_flash(
-                 socket,
+               socket
+               |> clear_flash()
+               |> put_flash(
                  :error,
                  "Für folgende Daten existieren bereits bewegliche Ferientage: #{Enum.join(date_strings, ", ")}"
                )}
@@ -288,14 +292,32 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                     # Check if any failures were due to limit
                     limit_errors =
                       Enum.filter(results, fn
-                        {:error, reason} -> String.contains?(reason, "maximale Anzahl")
-                        _ -> false
+                        {:error, reason} when is_binary(reason) ->
+                          String.contains?(reason, "maximale Anzahl")
+
+                        _ ->
+                          false
                       end)
 
-                    if length(limit_errors) > 0 do
-                      "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden (Limit erreicht)."
-                    else
-                      "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden."
+                    # Check if any failures were due to non-school days
+                    no_school_day_errors =
+                      Enum.filter(results, fn
+                        {:error, reason} when is_binary(reason) ->
+                          String.contains?(reason, "schulfreier Tag")
+
+                        _ ->
+                          false
+                      end)
+
+                    cond do
+                      length(no_school_day_errors) > 0 ->
+                        "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden (bereits schulfreie Tage)."
+
+                      length(limit_errors) > 0 ->
+                        "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden (Limit erreicht)."
+
+                      true ->
+                        "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden."
                     end
                   else
                     if successful == 1 do
@@ -314,6 +336,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
                 {:noreply,
                  socket
+                 |> clear_flash()
                  |> put_flash(:info, message)
                  |> assign(
                    bewegliche_ferientage: bewegliche_ferientage,
@@ -323,17 +346,26 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                    school_years_data: school_years_data
                  )}
               else
-                {:noreply,
-                 put_flash(socket, :error, "Fehler beim Hinzufügen der beweglichen Ferientage.")}
+                # All failed - show the specific error message from the first failure
+                error_message =
+                  case Enum.at(results, 0) do
+                    {:error, msg} when is_binary(msg) -> msg
+                    _ -> "Fehler beim Hinzufügen der beweglichen Ferientage."
+                  end
+
+                {:noreply, socket |> clear_flash() |> put_flash(:error, error_message)}
               end
             end
           end
 
         {:ok, []} ->
-          {:noreply, put_flash(socket, :error, "Bitte geben Sie mindestens ein Datum ein.")}
+          {:noreply,
+           socket
+           |> clear_flash()
+           |> put_flash(:error, "Bitte geben Sie mindestens ein Datum ein.")}
 
         {:error, error_message} ->
-          {:noreply, put_flash(socket, :error, error_message)}
+          {:noreply, socket |> clear_flash() |> put_flash(:error, error_message)}
       end
     end
   end
@@ -342,7 +374,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   def handle_event("delete_beweglicher_ferientag", %{"id" => id}, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
-       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+       socket
+       |> clear_flash()
+       |> put_flash(:error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
     else
       period = Periods.get_period!(id)
       school = socket.assigns.school
@@ -397,6 +431,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
             {:noreply,
              socket
+             |> clear_flash()
              |> put_flash(:info, "Beweglicher Ferientag wurde gelöscht.")
              |> assign(
                bewegliche_ferientage: bewegliche_ferientage,
@@ -408,6 +443,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           else
             {:noreply,
              socket
+             |> clear_flash()
              |> put_flash(:info, "Beweglicher Ferientag wurde gelöscht.")
              |> assign(
                bewegliche_ferientage: bewegliche_ferientage,
@@ -416,7 +452,10 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           end
 
         {:error, _changeset} ->
-          {:noreply, put_flash(socket, :error, "Fehler beim Löschen des beweglichen Ferientags.")}
+          {:noreply,
+           socket
+           |> clear_flash()
+           |> put_flash(:error, "Fehler beim Löschen des beweglichen Ferientags.")}
       end
     end
   end
@@ -430,7 +469,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   def handle_event("add_single_ferientag", %{"ferientag" => params}, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
-       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+       socket
+       |> clear_flash()
+       |> put_flash(:error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
     else
       school = socket.assigns.school
 
@@ -446,8 +487,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           # Check if date is in the future
           if Date.compare(date, Date.utc_today()) != :gt do
             {:noreply,
-             put_flash(
-               socket,
+             socket
+             |> clear_flash()
+             |> put_flash(
                :error,
                "Nur zukünftige Daten können als bewegliche Ferientage eingetragen werden."
              )}
@@ -455,8 +497,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
             # Check if ferientag already exists on this date
             if has_beweglicher_ferientag_on_date?(socket.assigns.bewegliche_ferientage, date) do
               {:noreply,
-               put_flash(
-                 socket,
+               socket
+               |> clear_flash()
+               |> put_flash(
                  :error,
                  "Für dieses Datum existiert bereits ein beweglicher Ferientag."
                )}
@@ -514,6 +557,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
                     {:noreply,
                      socket
+                     |> clear_flash()
                      |> put_flash(:info, "Beweglicher Ferientag wurde erfolgreich hinzugefügt.")
                      |> assign(
                        bewegliche_ferientage: bewegliche_ferientage,
@@ -527,6 +571,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                   else
                     {:noreply,
                      socket
+                     |> clear_flash()
                      |> put_flash(:info, "Beweglicher Ferientag wurde erfolgreich hinzugefügt.")
                      |> assign(
                        bewegliche_ferientage: bewegliche_ferientage,
@@ -536,15 +581,20 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                      )}
                   end
 
+                {:error, error_message} when is_binary(error_message) ->
+                  {:noreply, socket |> clear_flash() |> put_flash(:error, error_message)}
+
                 {:error, _changeset} ->
                   {:noreply,
-                   put_flash(socket, :error, "Fehler beim Hinzufügen des beweglichen Ferientags.")}
+                   socket
+                   |> clear_flash()
+                   |> put_flash(:error, "Fehler beim Hinzufügen des beweglichen Ferientags.")}
               end
             end
           end
 
         {:error, _} ->
-          {:noreply, put_flash(socket, :error, "Ungültiges Datumsformat.")}
+          {:noreply, socket |> clear_flash() |> put_flash(:error, "Ungültiges Datumsformat.")}
       end
     end
   end
@@ -695,10 +745,15 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   def handle_event("quick_copy_ferientage", _params, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
-       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+       socket
+       |> clear_flash()
+       |> put_flash(:error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
     else
       if MapSet.size(socket.assigns.quick_copy_ferientage) == 0 do
-        {:noreply, put_flash(socket, :error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
+        {:noreply,
+         socket
+         |> clear_flash()
+         |> put_flash(:error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
       else
         # Create bewegliche ferientage for selected dates
         school = socket.assigns.school
@@ -756,6 +811,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
           {:noreply,
            socket
+           |> clear_flash()
            |> put_flash(:info, message)
            |> assign(
              bewegliche_ferientage: bewegliche_ferientage,
@@ -767,7 +823,9 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
            )}
         else
           {:noreply,
-           put_flash(socket, :error, "Fehler beim Hinzufügen der beweglichen Ferientage.")}
+           socket
+           |> clear_flash()
+           |> put_flash(:error, "Fehler beim Hinzufügen der beweglichen Ferientage.")}
         end
       end
     end
@@ -777,16 +835,22 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   def handle_event("show_copy_confirmation", _params, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
-       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+       socket
+       |> clear_flash()
+       |> put_flash(:error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
     else
       cond do
         MapSet.size(socket.assigns.selected_ferientage) == 0 ->
           {:noreply,
-           put_flash(socket, :error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
+           socket
+           |> clear_flash()
+           |> put_flash(:error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
 
         MapSet.size(socket.assigns.selected_schools) == 0 ->
           {:noreply,
-           put_flash(socket, :error, "Bitte wählen Sie mindestens eine Zielschule aus.")}
+           socket
+           |> clear_flash()
+           |> put_flash(:error, "Bitte wählen Sie mindestens eine Zielschule aus.")}
 
         true ->
           # Calculate if this operation would exceed the daily limit
@@ -814,16 +878,22 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   def handle_event("copy_ferientage", _params, socket) do
     if socket.assigns.limit_reached do
       {:noreply,
-       put_flash(socket, :error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
+       socket
+       |> clear_flash()
+       |> put_flash(:error, "Tageslimit erreicht. Keine weiteren Änderungen möglich.")}
     else
       cond do
         MapSet.size(socket.assigns.selected_ferientage) == 0 ->
           {:noreply,
-           put_flash(socket, :error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
+           socket
+           |> clear_flash()
+           |> put_flash(:error, "Bitte wählen Sie mindestens einen Ferientag aus.")}
 
         MapSet.size(socket.assigns.selected_schools) == 0 ->
           {:noreply,
-           put_flash(socket, :error, "Bitte wählen Sie mindestens eine Zielschule aus.")}
+           socket
+           |> clear_flash()
+           |> put_flash(:error, "Bitte wählen Sie mindestens eine Zielschule aus.")}
 
         true ->
           {:noreply,
@@ -952,6 +1022,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
           )
 
         socket
+        |> clear_flash()
         |> put_flash(:info, message)
         |> assign(
           copy_in_progress: false,
@@ -965,6 +1036,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
       _ ->
         socket
+        |> clear_flash()
         |> put_flash(:error, "Fehler beim Kopieren der beweglichen Ferientage.")
         |> assign(copy_in_progress: false)
     end

@@ -5,6 +5,15 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
 
   alias MehrSchulferien.{Locations, Maps, Calendars}
 
+  # Helper function to find the next weekday from a given date
+  defp find_next_weekday(date) do
+    case Date.day_of_week(date) do
+      6 -> Date.add(date, 2)
+      7 -> Date.add(date, 1)
+      _ -> date
+    end
+  end
+
   describe "data enrichment feature" do
     setup do
       # Create test school hierarchy 
@@ -153,7 +162,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
     test "accepts single date input using simple form", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
 
-      future_date = Date.utc_today() |> Date.add(30)
+      future_date = Date.utc_today() |> Date.add(30) |> find_next_weekday()
       date_iso = Date.to_iso8601(future_date)
 
       # Use the simple form

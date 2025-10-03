@@ -4,6 +4,15 @@ defmodule MehrSchulferien.PeriodsLimitTest do
 
   alias MehrSchulferien.{Periods, Wiki, Config}
 
+  # Helper function to find the next weekday from a given date
+  defp find_next_weekday(date) do
+    case Date.day_of_week(date) do
+      6 -> Date.add(date, 2)
+      7 -> Date.add(date, 1)
+      _ -> date
+    end
+  end
+
   describe "copy_specific_bewegliche_ferientage/2 with daily limit" do
     setup do
       # Get or create beweglicher ferientag type
@@ -31,8 +40,11 @@ defmodule MehrSchulferien.PeriodsLimitTest do
       target_school1 = insert(:school, name: "Target School 1", parent_location_id: city.id)
       target_school2 = insert(:school, name: "Target School 2", parent_location_id: city.id)
 
-      # Create bewegliche ferientage for source school
-      dates = for i <- 1..5, do: Date.utc_today() |> Date.add(i * 10)
+      # Create bewegliche ferientage for source school on weekdays only
+      dates =
+        for i <- 1..5 do
+          Date.utc_today() |> Date.add(i * 10) |> find_next_weekday()
+        end
 
       ferientage =
         Enum.map(dates, fn date ->

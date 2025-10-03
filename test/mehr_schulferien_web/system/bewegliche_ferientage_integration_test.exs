@@ -93,7 +93,12 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
           max_bewegliche_ferientage: 6
         })
 
-      %{school: school, country: country, beweglicher_type: beweglicher_type}
+      %{
+        school: school,
+        country: country,
+        federal_state: federal_state,
+        beweglicher_type: beweglicher_type
+      }
     end
 
     test "bewegliche Ferientage can be created programmatically and displayed", %{
@@ -131,8 +136,11 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
     end
 
     test "duplicate bewegliche Ferientage are prevented", %{school: school} do
-      # Create first beweglicher Ferientag
-      future_date = Date.utc_today() |> Date.add(15)
+      # Create first beweglicher Ferientag on a future weekday
+      future_date =
+        Date.utc_today()
+        |> Date.add(15)
+        |> find_next_weekday()
 
       {:ok, _period1} =
         Periods.create_beweglicher_ferientag_for_school(
@@ -166,5 +174,201 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
              |> render()
              |> String.contains?("min=")
     end
+
+    test "bewegliche Ferientage cannot be added on existing no-school days", %{
+      school: school,
+      federal_state: federal_state,
+      country: country
+    } do
+      # Find a future weekday (not weekend)
+      future_date =
+        Date.utc_today()
+        |> Date.add(30)
+        |> find_next_weekday()
+
+      # Create a public holiday on that date at the federal state level
+      {:ok, holiday_type} =
+        Calendars.create_holiday_or_vacation_type(%{
+          name: "Test Feiertag",
+          colloquial: "Test Feiertag",
+          slug: "test-feiertag",
+          country_location_id: country.id,
+          default_display_priority: 5,
+          default_html_class: "danger",
+          default_is_listed_below_month: true,
+          default_is_school_vacation: false,
+          default_is_public_holiday: true,
+          default_is_valid_for_students: true,
+          default_is_valid_for_everybody: true
+        })
+
+      {:ok, _holiday_period} =
+        Periods.create_period(%{
+          location_id: federal_state.id,
+          holiday_or_vacation_type_id: holiday_type.id,
+          starts_on: future_date,
+          ends_on: future_date,
+          is_public_holiday: true,
+          is_valid_for_students: true,
+          is_valid_for_everybody: true,
+          created_by_email_address: "test@example.com"
+        })
+
+      # Try to create a beweglicher Ferientag on the same date
+      result =
+        Periods.create_beweglicher_ferientag_for_school(
+          school.id,
+          future_date,
+          "Should fail"
+        )
+
+      # Should fail with error message
+      assert {:error, message} = result
+      assert message =~ "bereits ein schulfreier Tag" || message =~ "kein Schultag"
+    end
+
+    test "bewegliche Ferientage cannot be added on weekends", %{school: school} do
+      # Find next Saturday
+      saturday =
+        Date.utc_today()
+        |> Date.add(1)
+        |> find_next_saturday()
+
+      # Try to create a beweglicher Ferientag on Saturday
+      result =
+        Periods.create_beweglicher_ferientag_for_school(
+          school.id,
+          saturday,
+          "Should fail on weekend"
+        )
+
+      # Should fail with error message
+      assert {:error, message} = result
+      assert message =~ "Wochenende" || message =~ "kein Schultag"
+    end
+
+    test "bewegliche Ferientage cannot be added during school vacations", %{
+      school: school,
+      federal_state: federal_state,
+      country: country
+    } do
+      # Find a future weekday
+      future_date =
+        Date.utc_today()
+        |> Date.add(60)
+        |> find_next_weekday()
+
+      # Create a school vacation period at the federal state level
+      {:ok, vacation_type} =
+        Calendars.create_holiday_or_vacation_type(%{
+          name: "Test Ferien",
+          colloquial: "Test Ferien",
+          slug: "test-ferien",
+          country_location_id: country.id,
+          default_display_priority: 4,
+          default_html_class: "info",
+          default_is_listed_below_month: true,
+          default_is_school_vacation: true,
+          default_is_public_holiday: false,
+          default_is_valid_for_students: true,
+          default_is_valid_for_everybody: false
+        })
+
+      {:ok, _vacation_period} =
+        Periods.create_period(%{
+          location_id: federal_state.id,
+          holiday_or_vacation_type_id: vacation_type.id,
+          starts_on: future_date,
+          ends_on: Date.add(future_date, 7),
+          is_school_vacation: true,
+          is_valid_for_students: true,
+          created_by_email_address: "test@example.com"
+        })
+
+      # Try to create a beweglicher Ferientag during vacation
+      result =
+        Periods.create_beweglicher_ferientag_for_school(
+          school.id,
+          future_date,
+          "Should fail during vacation"
+        )
+
+      # Should fail with error message
+      assert {:error, message} = result
+      assert message =~ "bereits ein schulfreier Tag" || message =~ "kein Schultag"
+    end
+
+    test "UI shows specific error message when adding beweglicher Ferientag on non-school day", %{
+      conn: conn,
+      school: school,
+      federal_state: federal_state,
+      country: country
+    } do
+      # Find a future weekday
+      future_date =
+        Date.utc_today()
+        |> Date.add(45)
+        |> find_next_weekday()
+
+      # Create a public holiday on that date at the federal state level
+      {:ok, holiday_type} =
+        Calendars.create_holiday_or_vacation_type(%{
+          name: "Test Feiertag UI",
+          colloquial: "Test Feiertag UI",
+          slug: "test-feiertag-ui",
+          country_location_id: country.id,
+          default_display_priority: 5,
+          default_html_class: "danger",
+          default_is_listed_below_month: true,
+          default_is_school_vacation: false,
+          default_is_public_holiday: true,
+          default_is_valid_for_students: true,
+          default_is_valid_for_everybody: true
+        })
+
+      {:ok, _holiday_period} =
+        Periods.create_period(%{
+          location_id: federal_state.id,
+          holiday_or_vacation_type_id: holiday_type.id,
+          starts_on: future_date,
+          ends_on: future_date,
+          is_public_holiday: true,
+          is_valid_for_students: true,
+          is_valid_for_everybody: true,
+          created_by_email_address: "test@example.com"
+        })
+
+      # Navigate to the wiki ferientage page
+      {:ok, view, _html} = live(conn, "/wiki/schools/#{school.slug}/ferientage")
+
+      # Try to add a beweglicher Ferientag on the public holiday
+      view
+      |> element("form[phx-submit='add_single_ferientag']")
+      |> render_submit(%{
+        "ferientag" => %{
+          "date" => Date.to_iso8601(future_date),
+          "memo" => "Should fail on holiday"
+        }
+      })
+
+      # Check that the specific error message is displayed
+      html = render(view)
+      assert html =~ "bereits ein schulfreier Tag"
+    end
+  end
+
+  # Helper functions
+  defp find_next_weekday(date) do
+    case Date.day_of_week(date) do
+      6 -> Date.add(date, 2)
+      7 -> Date.add(date, 1)
+      _ -> date
+    end
+  end
+
+  defp find_next_saturday(date) do
+    days_until_saturday = rem(6 - Date.day_of_week(date) + 7, 7)
+    days_until_saturday = if days_until_saturday == 0, do: 7, else: days_until_saturday
+    Date.add(date, days_until_saturday)
   end
 end

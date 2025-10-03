@@ -390,6 +390,36 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
+  Checks if a given date is already a no-school day for a location.
+  Returns true if the date is a weekend, holiday, or vacation day.
+  """
+  def is_no_school_day?(location_id, date) do
+    alias MehrSchulferien.Locations
+
+    # Check if it's a weekend
+    if Date.day_of_week(date) in [6, 7] do
+      true
+    else
+      # Get location and its ancestors
+      school = Locations.get_location!(location_id)
+      location_ids = Locations.recursive_location_ids(school)
+
+      # Query for any periods on this date that affect students
+      existing_periods =
+        from(p in Period,
+          where:
+            p.location_id in ^location_ids and
+              p.starts_on <= ^date and
+              p.ends_on >= ^date and
+              p.is_valid_for_students == true
+        )
+        |> Repo.all()
+
+      length(existing_periods) > 0
+    end
+  end
+
+  @doc """
   Creates a beweglicher Ferientag period for a school.
   """
   def create_beweglicher_ferientag_for_school(school_id, date, memo) do
@@ -410,41 +440,49 @@ defmodule MehrSchulferien.Periods do
           )
           |> Repo.one()
 
-        if existing do
-          {:error, "Ein beweglicher Ferientag existiert bereits für dieses Datum"}
-        else
-          # Check federal state limit
-          case validate_bewegliche_ferientage_limit(school_id, date, memo) do
-            {:error, reason} ->
-              {:error, reason}
+        cond do
+          existing ->
+            {:error, "Ein beweglicher Ferientag existiert bereits für dieses Datum"}
 
-            {:ok, _remaining} ->
-              attrs = %{
-                "location_id" => school_id,
-                "holiday_or_vacation_type_id" => beweglicher_type.id,
-                "starts_on" => date,
-                "ends_on" => date,
-                "memo" => memo,
-                "created_by_email_address" => "wiki@mehr-schulferien.de",
-                "display_priority" => beweglicher_type.default_display_priority || 7,
-                "is_listed_below_month" => beweglicher_type.default_is_listed_below_month || true,
-                "is_school_vacation" => beweglicher_type.default_is_school_vacation || false,
-                "is_public_holiday" => beweglicher_type.default_is_public_holiday || false,
-                "is_valid_for_students" => beweglicher_type.default_is_valid_for_students || true,
-                "is_valid_for_everybody" =>
-                  beweglicher_type.default_is_valid_for_everybody || false
-              }
+          is_no_school_day?(school_id, date) ->
+            {:error,
+             "Dieses Datum ist bereits ein schulfreier Tag (Wochenende, Feiertag oder Ferien)"}
 
-              case create_period(attrs) do
-                {:ok, period} ->
-                  # Track the change for daily limit
-                  Wiki.increment_daily_change_count(Date.utc_today())
-                  {:ok, period}
+          true ->
+            # Check federal state limit
+            case validate_bewegliche_ferientage_limit(school_id, date, memo) do
+              {:error, reason} ->
+                {:error, reason}
 
-                error ->
-                  error
-              end
-          end
+              {:ok, _remaining} ->
+                attrs = %{
+                  "location_id" => school_id,
+                  "holiday_or_vacation_type_id" => beweglicher_type.id,
+                  "starts_on" => date,
+                  "ends_on" => date,
+                  "memo" => memo,
+                  "created_by_email_address" => "wiki@mehr-schulferien.de",
+                  "display_priority" => beweglicher_type.default_display_priority || 7,
+                  "is_listed_below_month" =>
+                    beweglicher_type.default_is_listed_below_month || true,
+                  "is_school_vacation" => beweglicher_type.default_is_school_vacation || false,
+                  "is_public_holiday" => beweglicher_type.default_is_public_holiday || false,
+                  "is_valid_for_students" =>
+                    beweglicher_type.default_is_valid_for_students || true,
+                  "is_valid_for_everybody" =>
+                    beweglicher_type.default_is_valid_for_everybody || false
+                }
+
+                case create_period(attrs) do
+                  {:ok, period} ->
+                    # Track the change for daily limit
+                    Wiki.increment_daily_change_count(Date.utc_today())
+                    {:ok, period}
+
+                  error ->
+                    error
+                end
+            end
         end
     end
   end

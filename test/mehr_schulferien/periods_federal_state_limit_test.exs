@@ -5,6 +5,15 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
   alias MehrSchulferien.Periods
   alias MehrSchulferien.Periods.FederalStateFerientageLimit
 
+  # Helper function to find the next weekday from a given date
+  defp find_next_weekday(date) do
+    case Date.day_of_week(date) do
+      6 -> Date.add(date, 2)
+      7 -> Date.add(date, 1)
+      _ -> date
+    end
+  end
+
   describe "school year calculation" do
     test "get_school_year_for_date/1 returns correct school year" do
       # August 2024 should be 2024/2025
@@ -82,12 +91,12 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
       # Initially should be 0
       assert Periods.count_bewegliche_ferientage_for_school_year(school.id, "2024/2025") == 0
 
-      # Create some bewegliche Ferientage
+      # Create some bewegliche Ferientage (using weekdays)
       {:ok, _} =
-        Periods.create_beweglicher_ferientag_for_school(school.id, ~D[2024-09-01], "Test 1")
+        Periods.create_beweglicher_ferientag_for_school(school.id, ~D[2024-09-02], "Test 1")
 
       {:ok, _} =
-        Periods.create_beweglicher_ferientag_for_school(school.id, ~D[2024-12-15], "Test 2")
+        Periods.create_beweglicher_ferientag_for_school(school.id, ~D[2024-12-16], "Test 2")
 
       # Should now be 2
       assert Periods.count_bewegliche_ferientage_for_school_year(school.id, "2024/2025") == 2
@@ -103,45 +112,49 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
 
     test "validate_bewegliche_ferientage_limit/3 validates correctly", %{school: school} do
       # Should allow first 6 (3 * 2 with wiggle room)
+      # Using weekdays starting from Monday 2024-09-02
       for i <- 1..6 do
+        date = Date.add(~D[2024-09-02], (i - 1) * 30) |> find_next_weekday()
+
         assert {:ok, _} =
                  Periods.validate_bewegliche_ferientage_limit(
                    school.id,
-                   Date.add(~D[2024-09-01], (i - 1) * 30),
+                   date,
                    "Test #{i}"
                  )
 
         {:ok, _} =
           Periods.create_beweglicher_ferientag_for_school(
             school.id,
-            Date.add(~D[2024-09-01], (i - 1) * 30),
+            date,
             "Test #{i}"
           )
       end
 
-      # Should reject 7th
+      # Should reject 7th (using Monday 2025-03-03)
       assert {:error, reason} =
-               Periods.validate_bewegliche_ferientage_limit(school.id, ~D[2025-03-01], "Test 7")
+               Periods.validate_bewegliche_ferientage_limit(school.id, ~D[2025-03-03], "Test 7")
 
       assert String.contains?(reason, "maximale Anzahl von 6")
     end
 
     test "create_beweglicher_ferientag_for_school/3 respects limit", %{school: school} do
       # Create 6 ferientage (the limit * 2 with wiggle room)
+      # Using weekdays starting from Monday 2024-09-02
       for i <- 1..6 do
         {:ok, _} =
           Periods.create_beweglicher_ferientag_for_school(
             school.id,
-            Date.add(~D[2024-09-01], (i - 1) * 30),
+            Date.add(~D[2024-09-02], (i - 1) * 30) |> find_next_weekday(),
             "Test #{i}"
           )
       end
 
-      # 7th should fail
+      # 7th should fail (using Monday 2025-03-03)
       assert {:error, reason} =
                Periods.create_beweglicher_ferientag_for_school(
                  school.id,
-                 ~D[2025-03-01],
+                 ~D[2025-03-03],
                  "Test 7"
                )
 
@@ -152,9 +165,9 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
       # Delete the limit
       Repo.delete_all(FederalStateFerientageLimit)
 
-      # Should allow many ferientage
+      # Should allow many ferientage (using weekdays starting from Monday 2024-09-02)
       for i <- 1..10 do
-        date = Date.add(~D[2024-09-01], i * 10)
+        date = Date.add(~D[2024-09-02], i * 10) |> find_next_weekday()
 
         assert {:ok, _} =
                  Periods.create_beweglicher_ferientag_for_school(school.id, date, "Test #{i}")
@@ -171,9 +184,9 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
         set: [max_bewegliche_ferientage: 0]
       )
 
-      # Should not allow any
+      # Should not allow any (using Monday 2024-09-02)
       assert {:error, reason} =
-               Periods.create_beweglicher_ferientag_for_school(school.id, ~D[2024-09-01], "Test")
+               Periods.create_beweglicher_ferientag_for_school(school.id, ~D[2024-09-02], "Test")
 
       assert String.contains?(reason, "maximale Anzahl von 0")
     end
