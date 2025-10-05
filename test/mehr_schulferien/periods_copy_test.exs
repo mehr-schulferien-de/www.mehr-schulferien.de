@@ -4,6 +4,15 @@ defmodule MehrSchulferien.PeriodsCopyTest do
 
   alias MehrSchulferien.Periods
 
+  # Helper function to find the next weekday from a given date
+  defp find_next_weekday(date) do
+    case Date.day_of_week(date) do
+      6 -> Date.add(date, 2)
+      7 -> Date.add(date, 1)
+      _ -> date
+    end
+  end
+
   describe "copy_bewegliche_ferientage/2" do
     setup do
       # Get or create beweglicher ferientag type
@@ -31,9 +40,10 @@ defmodule MehrSchulferien.PeriodsCopyTest do
       target_school1 = insert(:school, name: "Target School 1", parent_location_id: city.id)
       target_school2 = insert(:school, name: "Target School 2", parent_location_id: city.id)
 
-      # Create bewegliche ferientage for source school
-      date1 = Date.utc_today() |> Date.add(10)
-      date2 = Date.utc_today() |> Date.add(20)
+      # Create bewegliche ferientage for source school on weekdays only
+      # Use dates far enough in the future to avoid existing holidays
+      date1 = Date.utc_today() |> Date.add(100) |> find_next_weekday()
+      date2 = Date.utc_today() |> Date.add(110) |> find_next_weekday()
 
       {:ok, ferientag1} =
         Periods.create_beweglicher_ferientag_for_school(
