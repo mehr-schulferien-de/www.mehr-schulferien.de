@@ -136,6 +136,43 @@ defmodule MehrSchulferien.EmailTest do
       assert email.html_body =~ "Neue Straße 456"
     end
 
+    test "school_updated_notification/3 includes old school name when name changes" do
+      school = %{
+        id: 123,
+        name: "Neue Test Grundschule",
+        slug: "12345-test-grundschule"
+      }
+
+      address = %{
+        street: "Teststraße 123",
+        zip_code: "12345",
+        city: "Berlin",
+        email_address: "info@test-schule.de",
+        phone_number: "+49 30 12345678",
+        homepage_url: "https://www.test-schule.de"
+      }
+
+      changes = %{
+        "Schulname" => {"Alte Test Grundschule", "Neue Test Grundschule"}
+      }
+
+      email = Email.school_updated_notification(school, address, changes)
+
+      assert email.to == [{@admin_name, @admin_email}]
+      assert email.from == {@system_email_name, @noreply_email}
+      assert email.subject == "Schule bearbeitet: Neue Test Grundschule"
+
+      # Check HTML body contains both old and new names
+      assert email.html_body =~ "Alte Test Grundschule"
+      assert email.html_body =~ "Neue Test Grundschule"
+      assert email.html_body =~ "→"
+
+      # Check text body contains both old and new names
+      assert email.text_body =~ "Alte Test Grundschule"
+      assert email.text_body =~ "Neue Test Grundschule"
+      assert email.text_body =~ "→"
+    end
+
     test "school notification emails can be sent" do
       school = %{
         id: 123,

@@ -147,13 +147,20 @@ defmodule MehrSchulferien.Email do
     school_url = UrlBuilder.school_url(country_slug, school)
     edit_url = "https://www.mehr-schulferien.de/wiki/schools/#{school.slug}/edit"
 
+    # Extract old name if school name was changed
+    old_name = if changes["Schulname"], do: elem(changes["Schulname"], 0), else: nil
+
     new()
     |> to({@admin_name, @admin_email})
     |> from({@system_email_name, @noreply_email})
     |> subject("Schule bearbeitet: #{school.name}")
     |> html_body("""
     <h2>Schule wurde bearbeitet</h2>
-    <p><strong>Schulname:</strong> #{school.name}</p>
+    #{if old_name do
+      "<p><strong>Schulname:</strong> <span style='color: #dc2626;'>#{old_name}</span> → <span style='color: #059669;'>#{school.name}</span></p>"
+    else
+      "<p><strong>Schulname:</strong> #{school.name}</p>"
+    end}
     <p><strong>Slug:</strong> #{school.slug}</p>
     <p><strong>ID:</strong> #{school.id}</p>
     <p>
@@ -183,7 +190,11 @@ defmodule MehrSchulferien.Email do
     |> text_body("""
     Schule wurde bearbeitet
 
-    Schulname: #{school.name}
+    #{if old_name do
+      "Schulname: #{old_name} → #{school.name}"
+    else
+      "Schulname: #{school.name}"
+    end}
     Slug: #{school.slug}
     ID: #{school.id}
 
