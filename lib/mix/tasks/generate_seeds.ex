@@ -73,21 +73,19 @@ defmodule Mix.Tasks.GenerateSeeds do
   defp export_locations(seeds_dir) do
     IO.puts("Exporting locations...")
 
-    # Get all locations with their parent and cachable calendar location slugs in one query
+    # Get all locations with their parent slugs in one query
     locations_with_relations =
       Repo.all(
         from l in Location,
           left_join: p in Location,
           on: l.parent_location_id == p.id,
-          left_join: c in Location,
-          on: l.cachable_calendar_location_id == c.id,
-          select: {l, p.slug, c.slug},
+          select: {l, p.slug},
           order_by: [l.parent_location_id, l.id]
       )
 
     data =
       locations_with_relations
-      |> Enum.map(fn {location, parent_slug, cachable_slug} ->
+      |> Enum.map(fn {location, parent_slug} ->
         %{
           name: location.name,
           code: location.code,
@@ -98,7 +96,6 @@ defmodule Mix.Tasks.GenerateSeeds do
           is_city: location.is_city,
           is_school: location.is_school,
           parent_location_slug: parent_slug,
-          cachable_calendar_location_slug: cachable_slug,
           inserted_at: truncate_datetime(location.inserted_at),
           updated_at: truncate_datetime(location.updated_at)
         }
@@ -130,9 +127,8 @@ defmodule Mix.Tasks.GenerateSeeds do
       if length(locations_without_parents) > 0 do
         locations_for_insert = Enum.map(locations_without_parents, fn location ->
           location
-          |> Map.drop([:parent_location_slug, :cachable_calendar_location_slug])
+          |> Map.drop([:parent_location_slug])
           |> Map.put(:parent_location_id, nil)
-          |> Map.put(:cachable_calendar_location_id, nil)
         end)
 
         {_, location_results} = MehrSchulferien.Repo.insert_all("locations", locations_for_insert, returning: [:id, :slug])
@@ -159,12 +155,10 @@ defmodule Mix.Tasks.GenerateSeeds do
 
           locations_for_insert = Enum.map(ready_locations, fn location ->
             parent_location_id = Map.get(lookup, location.parent_location_slug)
-            cachable_calendar_location_id = Map.get(lookup, location.cachable_calendar_location_slug)
 
             location
-            |> Map.drop([:parent_location_slug, :cachable_calendar_location_slug])
+            |> Map.drop([:parent_location_slug])
             |> Map.put(:parent_location_id, parent_location_id)
-            |> Map.put(:cachable_calendar_location_id, cachable_calendar_location_id)
           end)
 
           {_, location_results} = MehrSchulferien.Repo.insert_all("locations", locations_for_insert, returning: [:id, :slug])
@@ -211,9 +205,8 @@ defmodule Mix.Tasks.GenerateSeeds do
         
         locations_for_insert = Enum.map(batch, fn location ->
           location
-          |> Map.drop([:parent_location_slug, :cachable_calendar_location_slug])
+          |> Map.drop([:parent_location_slug])
           |> Map.put(:parent_location_id, nil)
-          |> Map.put(:cachable_calendar_location_id, nil)
         end)
 
         {_, location_results} = MehrSchulferien.Repo.insert_all("locations", locations_for_insert, returning: [:id, :slug])
@@ -248,12 +241,10 @@ defmodule Mix.Tasks.GenerateSeeds do
           
           locations_for_insert = Enum.map(batch, fn location ->
             parent_location_id = Map.get(acc_lookup, location.parent_location_slug)
-            cachable_calendar_location_id = Map.get(acc_lookup, location.cachable_calendar_location_slug)
 
             location
-            |> Map.drop([:parent_location_slug, :cachable_calendar_location_slug])
+            |> Map.drop([:parent_location_slug])
             |> Map.put(:parent_location_id, parent_location_id)
-            |> Map.put(:cachable_calendar_location_id, cachable_calendar_location_id)
           end)
 
           {_, location_results} = MehrSchulferien.Repo.insert_all("locations", locations_for_insert, returning: [:id, :slug])

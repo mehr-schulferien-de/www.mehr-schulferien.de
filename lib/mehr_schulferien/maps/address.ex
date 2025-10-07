@@ -58,8 +58,6 @@ defmodule MehrSchulferien.Maps.Address do
     field :official_id, :string
     field :lon, :float
     field :lat, :float
-    field :google_search_cache, :map
-    field :google_search_cached_at, :utc_datetime
     field :instagram_url, :string
     field :students_count, :integer
     field :founded_year, :integer
@@ -91,8 +89,6 @@ defmodule MehrSchulferien.Maps.Address do
       :lon,
       :lat,
       :school_location_id,
-      :google_search_cache,
-      :google_search_cached_at,
       :instagram_url,
       :students_count,
       :founded_year,

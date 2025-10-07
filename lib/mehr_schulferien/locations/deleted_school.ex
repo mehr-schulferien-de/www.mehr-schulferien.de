@@ -9,7 +9,6 @@ defmodule MehrSchulferien.Locations.DeletedSchool do
     field :slug, :string
     field :code, :string
     field :parent_location_id, :integer
-    field :cachable_calendar_location_id, :integer
     field :is_country, :boolean, default: false
     field :is_federal_state, :boolean, default: false
     field :is_county, :boolean, default: false
@@ -50,7 +49,6 @@ defmodule MehrSchulferien.Locations.DeletedSchool do
       :slug,
       :code,
       :parent_location_id,
-      :cachable_calendar_location_id,
       :is_country,
       :is_federal_state,
       :is_county,

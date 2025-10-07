@@ -62,7 +62,6 @@ defmodule MehrSchulferien.Locations.Location do
 
     # Hierarchy relationships
     belongs_to :parent_location, __MODULE__
-    belongs_to :cachable_calendar_location, __MODULE__
 
     # School-specific associations
     has_one :address, Address, foreign_key: :school_location_id, on_delete: :delete_all
@@ -102,15 +101,13 @@ defmodule MehrSchulferien.Locations.Location do
       :is_county,
       :is_city,
       :is_school,
-      :parent_location_id,
-      :cachable_calendar_location_id
+      :parent_location_id
     ])
     |> validate_required([:name])
     |> validate_name_not_empty()
     |> validate_one_is_present([:is_country, :is_federal_state, :is_county, :is_city, :is_school])
     |> validate_length(:code, max: 3)
     |> validate_presence_of_parent()
-    |> validate_cachable_calendar_location()
     |> LocationNameSlug.maybe_generate_slug()
     |> LocationNameSlug.unique_constraint()
   end
@@ -145,21 +142,6 @@ defmodule MehrSchulferien.Locations.Location do
         changeset
         |> validate_required([:parent_location_id])
         |> assoc_constraint(:parent_location)
-    end
-  end
-
-  @doc """
-  Validates the cachable calendar location if set.
-  """
-  def validate_cachable_calendar_location(changeset) do
-    # If set the cachable location must exist.
-    case get_field(changeset, :cachable_calendar_location_id) do
-      id when is_integer(id) ->
-        changeset
-        |> assoc_constraint(:cachable_calendar_location)
-
-      _ ->
-        changeset
     end
   end
 

@@ -169,7 +169,6 @@ defmodule MehrSchulferien.Locations do
         slug: school.slug || "",
         code: school.code,
         parent_location_id: school.parent_location_id,
-        cachable_calendar_location_id: school.cachable_calendar_location_id,
         is_country: school.is_country,
         is_federal_state: school.is_federal_state,
         is_county: school.is_county,
