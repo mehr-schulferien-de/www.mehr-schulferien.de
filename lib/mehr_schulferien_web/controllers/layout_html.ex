@@ -27,19 +27,13 @@ defmodule MehrSchulferienWeb.LayoutHTML do
   alias MehrSchulferienWeb.NavigationHelper
 
   @doc """
-  Returns the appropriate layout template file.
+  Returns the layout template file.
 
-  - :tailwind_new -> Uses the full modern layout (app_tailwind_full.html)
-  - default -> Uses the minimal layout for legacy pages (app_tailwind_minimal.html)
-
-  Controllers set css_framework: :tailwind_new for fully migrated pages.
+  All pages now use the full modern layout with navigation and footer.
+  The css_framework parameter is deprecated and no longer needed.
   """
-  def select_layout_template(_conn, assigns) do
-    if Map.get(assigns, :css_framework) == :tailwind_new do
-      "app_tailwind_full.html"
-    else
-      "app_tailwind_minimal.html"
-    end
+  def select_layout_template(_conn, _assigns) do
+    "app_tailwind_full.html"
   end
 
   @doc """

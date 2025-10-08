@@ -82,12 +82,13 @@ defmodule MehrSchulferienWeb.PageController do
     current_year_table = VacationTypeHelpers.format_vacation_table_data(current_year_data)
     next_year_table = VacationTypeHelpers.format_vacation_table_data(next_year_data)
 
-    # Generate structured data
+    # Generate structured data (returns list of ItemLists for both years)
     structured_data =
       VacationTypeHelpers.generate_vacation_structured_data(
         vacation_type,
         current_year,
         current_year_data,
+        next_year_data,
         conn
       )
 
@@ -102,7 +103,7 @@ defmodule MehrSchulferienWeb.PageController do
       current_year_data: current_year_table,
       next_year_data: next_year_table,
       structured_data: structured_data,
-      css_framework: :tailwind
+      css_framework: :tailwind_new
     )
   end
 

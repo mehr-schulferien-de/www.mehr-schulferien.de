@@ -49,7 +49,60 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
 
   def vacation_overview_table(assigns) do
     ~H"""
-    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+    <!-- Mobile: Card Layout -->
+    <div class="md:hidden space-y-3">
+      <%= for data <- @vacation_data do %>
+        <div id={data.state_slug} class="bg-white shadow rounded-lg p-4 border border-gray-200">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="text-base font-semibold text-gray-900">{data.state_name}</h3>
+              <p class="text-xs text-gray-500">({data.state_code})</p>
+            </div>
+            <%= if data.duration > 0 do %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                {data.duration} Tage
+              </span>
+            <% end %>
+          </div>
+
+          <dl class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <dt class="font-medium text-gray-500">Beginn:</dt>
+              <dd class="text-gray-900">
+                <%= if data.period do %>
+                  <time datetime={data.period.starts_on}>{data.start_date}</time>
+                <% else %>
+                  <span class="text-gray-400">-</span>
+                <% end %>
+              </dd>
+            </div>
+            <div class="flex justify-between text-sm">
+              <dt class="font-medium text-gray-500">Ende:</dt>
+              <dd class="text-gray-900">
+                <%= if data.period do %>
+                  <time datetime={data.period.ends_on}>{data.end_date}</time>
+                <% else %>
+                  <span class="text-gray-400">-</span>
+                <% end %>
+              </dd>
+            </div>
+          </dl>
+
+          <%= if data.period && MehrSchulferien.Calendars.VacationTypes.exists_for_year?(data.state, @vacation_type, @year) do %>
+            <div class="mt-3 pt-3 border-t border-gray-200">
+              <a
+                href={"/#{@vacation_type}ferien/#{data.state_slug}/#{@year}"}
+                class="text-sm text-blue-600 hover:text-blue-900 font-medium"
+              >
+                Details anzeigen →
+              </a>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <!-- Desktop: Table Layout -->
+    <div class="hidden md:block overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
       <table class="min-w-full divide-y divide-gray-300">
         <thead class="bg-gray-50">
           <tr>
@@ -72,7 +125,10 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
         </thead>
         <tbody class="divide-y divide-gray-200 bg-white">
           <%= for {data, index} <- Enum.with_index(@vacation_data) do %>
-            <tr id={data.state_slug} class={if rem(index, 2) == 0, do: "bg-white", else: "bg-gray-50"}>
+            <tr
+              id={"#{data.state_slug}-desktop"}
+              class={if rem(index, 2) == 0, do: "bg-white", else: "bg-gray-50"}
+            >
               <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
                 {data.state_name}
                 <span class="ml-1 text-xs text-gray-500">({data.state_code})</span>
@@ -269,18 +325,17 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
   end
 
   @doc """
-  Renders structured data scripts
+  Renders structured data scripts (list of ItemLists for multiple years)
   """
-  attr :structured_data, :map, required: true
+  attr :structured_data, :list, required: true
 
   def vacation_structured_data(assigns) do
     ~H"""
-    <script type="application/ld+json">
-      <%= Phoenix.HTML.raw(Jason.encode!(@structured_data.item_list)) %>
-    </script>
-    <script type="application/ld+json">
-      <%= Phoenix.HTML.raw(Jason.encode!(@structured_data.faq)) %>
-    </script>
+    <%= for item <- @structured_data do %>
+      <script type="application/ld+json">
+        <%= Phoenix.HTML.raw(Jason.encode!(item)) %>
+      </script>
+    <% end %>
     """
   end
 end

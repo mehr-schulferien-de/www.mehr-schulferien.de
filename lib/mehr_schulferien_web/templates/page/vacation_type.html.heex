@@ -28,6 +28,13 @@
   </section>
   <!-- Planning Tips -->
   <MehrSchulferienWeb.VacationTypeComponents.vacation_planning_tips vacation_type={@vacation_type} />
+  <!-- Month-by-Month Breakdown -->
+  <MehrSchulferienWeb.VacationMonthBreakdownComponent.vacation_month_breakdown
+    vacation_type={@vacation_type}
+    vacation_config={@vacation_config}
+    current_year={@current_year}
+    current_year_data={@current_year_data}
+  />
   <!-- Next Year Section -->
   <section class="mt-12">
     <.heading level={2} class="text-2xl mb-4">
@@ -121,6 +128,15 @@
         </p>
     <% end %>
   </section>
+  <!-- FAQ Section -->
+  <MehrSchulferienWeb.VacationTypeFaqComponent.vacation_type_faq
+    vacation_type={@vacation_type}
+    vacation_config={@vacation_config}
+    current_year={@current_year}
+    next_year={@next_year}
+    current_year_data={@current_year_data}
+    next_year_data={@next_year_data}
+  />
   <!-- Links to other vacation types -->
   <section class="mt-12 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
     <.heading level={3} class="text-lg mb-4">Weitere Ferientermine</.heading>

@@ -4,7 +4,7 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
   Provides SEO content, data fetching, and formatting functions.
   """
 
-  alias MehrSchulferien.{Locations, Periods, UrlBuilder}
+  alias MehrSchulferien.{Locations, Periods}
 
   @vacation_configs %{
     "sommer" => %{
@@ -31,9 +31,11 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
     "herbst" => %{
       name: "Herbstferien",
       slug: "herbst",
-      keywords: "Herbsturlaub, Wanderurlaub, Herbstausflug, Erntedank, Kurzreise",
+      keywords:
+        "Herbsturlaub, Wanderurlaub, Herbstausflug, Erntedank, Kurzreise, Herbstferien 2025, Herbstferien 2026, wann sind Herbstferien, Herbstferien Deutschland, Herbstferien Termine",
       description_suffix: "Goldene Herbstzeit für Wanderungen und Kurzreisen.",
-      meta_focus: "Perfekt für Herbstwanderungen und Städtereisen in der bunten Jahreszeit.",
+      meta_focus:
+        "Perfekt für Herbstwanderungen und Städtereisen in der bunten Jahreszeit. Vergleichen Sie alle 16 Bundesländer und planen Sie Ihren Herbsturlaub optimal.",
       start_month: 9,
       start_day: 25,
       duration_days: 35
@@ -141,25 +143,44 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
       earliest = List.first(valid_periods)
       latest = Enum.max_by(valid_periods, fn %{period: p} -> p.starts_on end)
 
-      earliest_date = Calendar.strftime(earliest.period.starts_on, "%d.%m.")
-      latest_date = Calendar.strftime(latest.period.starts_on, "%d.%m.")
+      earliest_date = Calendar.strftime(earliest.period.starts_on, "%-d. %B")
+      latest_date = Calendar.strftime(latest.period.starts_on, "%-d. %B")
+      earliest_state = earliest.state.name
+      latest_state = latest.state.name
 
-      "#{config.name} #{year} in Deutschland: Termine aller 16 Bundesländer von #{earliest_date} bis #{latest_date}. #{config.meta_focus}"
+      "#{config.name} #{year}: Von #{earliest_date} (#{earliest_state}) bis #{latest_date} (#{latest_state}) | Alle 16 Bundesländer im Vergleich. Jetzt Urlaub planen!"
     end
   end
 
   @doc """
-  Generate structured data for vacation type page
+  Generate structured data for vacation type page with both current and next year
   """
-  def generate_vacation_structured_data(vacation_type, year, states_data, conn) do
+  def generate_vacation_structured_data(
+        vacation_type,
+        current_year,
+        current_year_data,
+        next_year_data,
+        conn
+      ) do
     config = get_vacation_config(vacation_type)
+    next_year = current_year + 1
 
-    # ItemList of all vacation periods
-    item_list = %{
+    # ItemList for current year
+    current_year_item_list =
+      generate_year_item_list(config, current_year, current_year_data, conn)
+
+    # ItemList for next year
+    next_year_item_list = generate_year_item_list(config, next_year, next_year_data, conn)
+
+    [current_year_item_list, next_year_item_list]
+  end
+
+  defp generate_year_item_list(config, year, states_data, _conn) do
+    %{
       "@context" => "https://schema.org",
       "@type" => "ItemList",
       "name" => "#{config.name} #{year} - Alle Bundesländer",
-      "description" => generate_meta_description(vacation_type, year, states_data),
+      "description" => generate_meta_description(config.slug, year, states_data),
       "itemListElement" =>
         states_data
         |> Enum.filter(&(&1.period != nil))
@@ -182,49 +203,11 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
                   "addressRegion" => state.name,
                   "addressCountry" => "DE"
                 }
-              },
-              "url" =>
-                UrlBuilder.base_url() <>
-                  Phoenix.Controller.current_path(conn) <>
-                  "##{state.slug}"
+              }
             }
           }
         end)
     }
-
-    # FAQ Schema
-    faq = %{
-      "@context" => "https://schema.org",
-      "@type" => "FAQPage",
-      "mainEntity" => [
-        %{
-          "@type" => "Question",
-          "name" => "Wann sind #{config.name} #{year} in Deutschland?",
-          "acceptedAnswer" => %{
-            "@type" => "Answer",
-            "text" => generate_faq_answer_dates(config, year, states_data)
-          }
-        },
-        %{
-          "@type" => "Question",
-          "name" => "Welches Bundesland hat zuerst #{config.name} #{year}?",
-          "acceptedAnswer" => %{
-            "@type" => "Answer",
-            "text" => generate_faq_answer_first_state(states_data)
-          }
-        },
-        %{
-          "@type" => "Question",
-          "name" => "Wie lange dauern die #{config.name} #{year}?",
-          "acceptedAnswer" => %{
-            "@type" => "Answer",
-            "text" => generate_faq_answer_duration(config, states_data)
-          }
-        }
-      ]
-    }
-
-    %{item_list: item_list, faq: faq}
   end
 
   @doc """
@@ -243,57 +226,5 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
         period: period
       }
     end)
-  end
-
-  # Private helper functions
-
-  defp generate_faq_answer_dates(config, year, states_data) do
-    valid_periods = Enum.filter(states_data, &(&1.period != nil))
-
-    if Enum.empty?(valid_periods) do
-      "Die Termine für #{config.name} #{year} stehen noch nicht fest."
-    else
-      earliest = List.first(valid_periods)
-      latest = Enum.max_by(valid_periods, fn %{period: p} -> p.ends_on end)
-
-      "Die #{config.name} #{year} beginnen am #{Calendar.strftime(earliest.period.starts_on, "%d.%m.%Y")} " <>
-        "in #{earliest.state.name} und enden am #{Calendar.strftime(latest.period.ends_on, "%d.%m.%Y")} " <>
-        "in #{latest.state.name}."
-    end
-  end
-
-  defp generate_faq_answer_first_state(states_data) do
-    valid_periods = Enum.filter(states_data, &(&1.period != nil))
-
-    if Enum.empty?(valid_periods) do
-      "Die Termine stehen noch nicht fest."
-    else
-      first = List.first(valid_periods)
-
-      "#{first.state.name} beginnt als erstes Bundesland am #{Calendar.strftime(first.period.starts_on, "%d.%m.%Y")}."
-    end
-  end
-
-  defp generate_faq_answer_duration(config, states_data) do
-    durations =
-      states_data
-      |> Enum.filter(&(&1.period != nil))
-      |> Enum.map(& &1.duration)
-      |> Enum.uniq()
-      |> Enum.sort()
-
-    case durations do
-      [] ->
-        "Die Dauer der #{config.name} steht noch nicht fest."
-
-      [single] ->
-        "Die #{config.name} dauern in allen Bundesländern #{single} Tage."
-
-      multiple ->
-        min_days = List.first(multiple)
-        max_days = List.last(multiple)
-
-        "Die #{config.name} dauern zwischen #{min_days} und #{max_days} Tagen, je nach Bundesland."
-    end
   end
 end

@@ -77,6 +77,15 @@ The application uses **Tailwind CSS** as the styling framework with a unified de
 - **StyleConfig** (`lib/mehr_schulferien/style_config.ex`): Manages day type colors/styles
 - **Day Types**: Standardized styling for holidays, vacations, weekends, and bridge days
 
+### Layout System
+
+The application uses a unified layout system:
+
+- **Layout Template**: All pages use `app_tailwind_full.html.heex` with full navigation and footer
+- **DEPRECATED**: The `css_framework` parameter in controllers is deprecated and no longer needed
+- **Migration Complete**: All pages have been migrated to the modern Tailwind layout
+- **DO NOT** use `css_framework: :tailwind_new` in new code - it's no longer necessary
+
 ## Development Guidelines
 
 ### CRITICAL CODE QUALITY REQUIREMENTS - MUST FOLLOW

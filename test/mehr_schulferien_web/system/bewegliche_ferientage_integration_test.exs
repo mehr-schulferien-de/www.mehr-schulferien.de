@@ -101,13 +101,42 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
       }
     end
 
+    # Helper to find a valid school day (not weekend, not holiday, not vacation)
+    defp find_valid_school_day(start_date, school_id, max_attempts \\ 30) do
+      Enum.find_value(0..max_attempts, fn offset ->
+        candidate = Date.add(start_date, offset)
+        day_of_week = Date.day_of_week(candidate)
+
+        # Check if it's a weekday (Monday-Friday)
+        if day_of_week in 1..5 do
+          # Check if there are any existing periods on this date
+          case Periods.create_beweglicher_ferientag_for_school(
+                 school_id,
+                 candidate,
+                 "Test Validity Check"
+               ) do
+            {:ok, period} ->
+              # Clean up test period
+              Repo.delete(period)
+              candidate
+
+            {:error, _} ->
+              nil
+          end
+        else
+          nil
+        end
+      end) || start_date
+    end
+
     test "bewegliche Ferientage can be created programmatically and displayed", %{
       conn: conn,
       school: school,
       beweglicher_type: _beweglicher_type
     } do
       # Create a beweglicher Ferientag directly using the Periods module
-      future_date = Date.utc_today() |> Date.add(10)
+      # Find a valid weekday (not weekend, not holiday, not vacation)
+      future_date = find_valid_school_day(Date.utc_today() |> Date.add(10), school.id)
 
       {:ok, period} =
         Periods.create_beweglicher_ferientag_for_school(
