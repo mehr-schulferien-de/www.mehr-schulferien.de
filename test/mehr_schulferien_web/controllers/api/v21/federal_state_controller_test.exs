@@ -5,7 +5,7 @@ defmodule MehrSchulferienWeb.Api.V21.FederalStateControllerTest do
   import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
-    # Create a country first
+    # Use shared helper for common setup
     country = get_or_create_deutschland()
 
     # Create multiple federal states
@@ -49,29 +49,21 @@ defmodule MehrSchulferienWeb.Api.V21.FederalStateControllerTest do
         country_location_id: country.id
       })
 
-    # Create periods for testing
+    # Create periods for testing using factories
     bayern = Enum.find(federal_states, &(&1.slug == "bayern"))
 
     periods = [
-      insert(:period, %{
+      insert(:school_vacation, %{
         location_id: bayern.id,
         starts_on: ~D[2024-07-29],
         ends_on: ~D[2024-09-09],
-        holiday_or_vacation_type_id: school_vacation_type.id,
-        is_school_vacation: true,
-        is_public_holiday: false,
-        is_valid_for_students: true,
-        created_by_email_address: "test@example.com"
+        holiday_or_vacation_type_id: school_vacation_type.id
       }),
-      insert(:period, %{
+      insert(:public_holiday, %{
         location_id: bayern.id,
         starts_on: ~D[2024-10-03],
         ends_on: ~D[2024-10-03],
-        holiday_or_vacation_type_id: public_holiday_type.id,
-        is_school_vacation: false,
-        is_public_holiday: true,
-        is_valid_for_students: true,
-        created_by_email_address: "test@example.com"
+        holiday_or_vacation_type_id: public_holiday_type.id
       })
     ]
 

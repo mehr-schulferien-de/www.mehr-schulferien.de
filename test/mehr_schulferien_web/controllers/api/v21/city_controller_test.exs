@@ -5,22 +5,9 @@ defmodule MehrSchulferienWeb.Api.V21.CityControllerTest do
   import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
-    # Create location hierarchy
-    country = get_or_create_deutschland()
-
-    federal_state =
-      insert(:federal_state, %{
-        name: "Bayern",
-        slug: "bayern",
-        parent_location_id: country.id
-      })
-
-    county =
-      insert(:county, %{
-        name: "München",
-        slug: "muenchen-landkreis",
-        parent_location_id: federal_state.id
-      })
+    # Use shared helper for common setup
+    %{country: country, federal_state: federal_state, county: county} =
+      setup_city_test_hierarchy()
 
     # Create multiple cities
     cities = [
@@ -57,18 +44,15 @@ defmodule MehrSchulferienWeb.Api.V21.CityControllerTest do
         country_location_id: country.id
       })
 
-    # Create periods for München
+    # Create periods for München using factory
     muenchen = List.first(cities)
 
     periods = [
-      insert(:period, %{
+      insert(:school_vacation, %{
         location_id: muenchen.id,
         starts_on: ~D[2024-10-28],
         ends_on: ~D[2024-11-01],
-        holiday_or_vacation_type_id: vacation_type.id,
-        is_school_vacation: true,
-        is_valid_for_students: true,
-        created_by_email_address: "test@example.com"
+        holiday_or_vacation_type_id: vacation_type.id
       })
     ]
 
@@ -178,17 +162,14 @@ defmodule MehrSchulferienWeb.Api.V21.CityControllerTest do
       conn: conn,
       federal_state: federal_state
     } do
-      # Add a period to the federal state
+      # Add a period to the federal state using factory
       vacation_type = insert(:holiday_or_vacation_type, %{name: "Winterferien"})
 
-      insert(:period, %{
+      insert(:school_vacation, %{
         location_id: federal_state.id,
         starts_on: ~D[2024-12-23],
         ends_on: ~D[2025-01-06],
-        holiday_or_vacation_type_id: vacation_type.id,
-        is_school_vacation: true,
-        is_valid_for_students: true,
-        created_by_email_address: "test@example.com"
+        holiday_or_vacation_type_id: vacation_type.id
       })
 
       conn =

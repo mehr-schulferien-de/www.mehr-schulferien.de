@@ -1,5 +1,5 @@
 defmodule MehrSchulferienWeb.SchoolComponentsTest do
-  use MehrSchulferienWeb.ConnCase
+  use MehrSchulferienWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
 
   alias MehrSchulferienWeb.SchoolComponents

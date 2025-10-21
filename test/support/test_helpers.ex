@@ -88,4 +88,42 @@ defmodule MehrSchulferien.TestHelpers do
        school: school
      }}
   end
+
+  @doc """
+  Creates a standard location hierarchy for API tests (Deutschland → Bayern).
+  This is the common setup used across all API v2.1 controller tests.
+
+  Returns a map with :country and :federal_state keys.
+  """
+  def setup_api_test_hierarchy do
+    country = get_or_create_deutschland()
+
+    federal_state =
+      insert(:federal_state, %{
+        name: "Bayern",
+        slug: "bayern",
+        parent_location_id: country.id
+      })
+
+    %{country: country, federal_state: federal_state}
+  end
+
+  @doc """
+  Creates a complete location hierarchy for testing cities
+  (Deutschland → Bayern → München county).
+
+  Returns a map with :country, :federal_state, and :county keys.
+  """
+  def setup_city_test_hierarchy do
+    %{country: country, federal_state: federal_state} = setup_api_test_hierarchy()
+
+    county =
+      insert(:county, %{
+        name: "München",
+        slug: "muenchen-landkreis",
+        parent_location_id: federal_state.id
+      })
+
+    %{country: country, federal_state: federal_state, county: county}
+  end
 end

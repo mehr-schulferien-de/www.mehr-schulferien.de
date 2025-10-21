@@ -23,6 +23,7 @@ defmodule MehrSchulferienWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import MehrSchulferien.Factory
+      import MehrSchulferienWeb.ConnCase
 
       use Phoenix.VerifiedRoutes,
         endpoint: MehrSchulferienWeb.Endpoint,
@@ -41,5 +42,21 @@ defmodule MehrSchulferienWeb.ConnCase do
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  @doc """
+  Helper function to render a component and convert it to a binary string.
+  This eliminates the repetitive pattern of calling to_iodata and IO.iodata_to_binary.
+
+  ## Examples
+
+      html = render_to_string(&MyComponent.render/1, %{data: data})
+      assert html =~ "Expected content"
+  """
+  def render_to_string(component, assigns) do
+    component
+    |> apply([assigns])
+    |> Phoenix.HTML.Safe.to_iodata()
+    |> IO.iodata_to_binary()
   end
 end

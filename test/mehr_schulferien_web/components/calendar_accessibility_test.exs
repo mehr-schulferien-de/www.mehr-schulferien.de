@@ -1,5 +1,5 @@
 defmodule MehrSchulferienWeb.Components.CalendarAccessibilityTest do
-  use MehrSchulferienWeb.ConnCase
+  use MehrSchulferienWeb.ConnCase, async: true
 
   alias MehrSchulferienWeb.Shared.DesignTokens
 

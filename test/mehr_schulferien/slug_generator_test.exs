@@ -1,5 +1,5 @@
 defmodule MehrSchulferien.SlugGeneratorTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias MehrSchulferien.SlugGenerator
 
   describe "slugify_downcase/1" do

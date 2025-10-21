@@ -1,5 +1,5 @@
 defmodule MehrSchulferien.Helpers.PhoneFormatterTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias MehrSchulferien.Helpers.PhoneFormatter
 
   describe "format_phone_number/1" do

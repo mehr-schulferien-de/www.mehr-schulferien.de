@@ -5,15 +5,8 @@ defmodule MehrSchulferienWeb.Api.V21.CountyControllerTest do
   import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
-    # Create location hierarchy
-    country = get_or_create_deutschland()
-
-    federal_state =
-      insert(:federal_state, %{
-        name: "Bayern",
-        slug: "bayern",
-        parent_location_id: country.id
-      })
+    # Use shared helper for common setup
+    %{country: country, federal_state: federal_state} = setup_api_test_hierarchy()
 
     # Create multiple counties
     counties = [
@@ -53,30 +46,24 @@ defmodule MehrSchulferienWeb.Api.V21.CountyControllerTest do
         country_location_id: country.id
       })
 
-    # Create periods
+    # Create periods using factories
     muenchen_county = List.first(counties)
+    weihnachts_type = insert(:holiday_or_vacation_type, %{name: "Weihnachtsferien"})
 
     periods = [
       # County-specific period
-      insert(:period, %{
+      insert(:school_vacation, %{
         location_id: muenchen_county.id,
         starts_on: ~D[2024-05-21],
         ends_on: ~D[2024-05-31],
-        holiday_or_vacation_type_id: vacation_type.id,
-        is_school_vacation: true,
-        is_valid_for_students: true,
-        created_by_email_address: "test@example.com"
+        holiday_or_vacation_type_id: vacation_type.id
       }),
       # Federal state period (inherited)
-      insert(:period, %{
+      insert(:school_vacation, %{
         location_id: federal_state.id,
         starts_on: ~D[2024-12-23],
         ends_on: ~D[2025-01-06],
-        holiday_or_vacation_type_id:
-          insert(:holiday_or_vacation_type, %{name: "Weihnachtsferien"}).id,
-        is_school_vacation: true,
-        is_valid_for_students: true,
-        created_by_email_address: "test@example.com"
+        holiday_or_vacation_type_id: weihnachts_type.id
       })
     ]
 
@@ -260,7 +247,7 @@ defmodule MehrSchulferienWeb.Api.V21.CountyControllerTest do
     end
 
     test "filters by vacation_types", %{conn: conn, federal_state: federal_state} do
-      # Add a public holiday
+      # Add a public holiday using factory
       holiday_type =
         insert(:holiday_or_vacation_type, %{
           name: "Fronleichnam",
@@ -268,13 +255,11 @@ defmodule MehrSchulferienWeb.Api.V21.CountyControllerTest do
           default_is_school_vacation: false
         })
 
-      insert(:period, %{
+      insert(:public_holiday, %{
         location_id: federal_state.id,
         starts_on: ~D[2024-05-30],
         ends_on: ~D[2024-05-30],
-        holiday_or_vacation_type_id: holiday_type.id,
-        is_public_holiday: true,
-        is_school_vacation: false
+        holiday_or_vacation_type_id: holiday_type.id
       })
 
       # Request only school vacations

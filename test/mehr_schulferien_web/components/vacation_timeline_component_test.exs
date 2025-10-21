@@ -56,7 +56,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
 
     # Test single year case
     html =
-      VacationTimelineComponent.render(
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: single_year_periods,
@@ -66,9 +66,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
           {"Juni", 30, 2025, 6},
           {"Juli", 29, 2025, 7}
         ]
-      )
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
+      })
 
     # For single year case: dates should NOT include years
     assert html =~ "(29.05.)"
@@ -82,7 +80,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
 
     # Test multi-year case
     multi_year_html =
-      VacationTimelineComponent.render(
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: create_days(~D[2025-12-01], 90),
         months: months,
         all_periods: multi_year_periods,
@@ -92,9 +90,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
           {"Januar", 31, 2026, 1},
           {"Februar", 28, 2026, 2}
         ]
-      )
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
+      })
 
     # For multi year case: dates SHOULD include years
     assert multi_year_html =~ "(24.12.2025)"
@@ -138,7 +134,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     expected_days_until = Date.diff(~D[2025-06-10], current_date)
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -151,8 +147,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         # Override the Date.utc_today() with our fixed date for testing
         _test_today: current_date
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Assert that the countdown is shown correctly (26 days from May 15 to June 10)
     assert html =~ "#{expected_days_until} Tage bis zu den Pfingstferien."
@@ -183,7 +177,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     expected_days_until = Date.diff(vacation_start_date, timeline_start_date)
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -194,8 +188,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
           {"Juli", 29, 2025, 7}
         ]
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Assert countdown uses timeline start date (May 1) as reference
     # (40 days from May 1 to June 10)
@@ -226,7 +218,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     expected_days_remaining = Date.diff(vacation_end, reference_date)
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -238,8 +230,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         ],
         _test_today: reference_date
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should show message about current vacation
     assert html =~ "Aktuell sind Sommerferien (noch #{expected_days_remaining} Tage)."
@@ -270,7 +260,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     months = get_test_months()
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -282,8 +272,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         ],
         _test_today: reference_date
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should show message about last day of vacation
     assert html =~ "Aktuell sind Sommerferien (letzter Tag)."
@@ -307,7 +295,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     months = get_test_months()
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -319,8 +307,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         ],
         _test_today: current_date
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should use colloquial name
     assert html =~ "Ferien zu Pfingsten"
@@ -348,7 +334,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     months = get_test_months()
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -360,8 +346,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         ],
         _test_today: current_date
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should fall back to formal name
     assert html =~ "Pfingstferien"
@@ -393,7 +377,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     expected_days = Date.diff(~D[2025-07-31], current_date)
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -406,8 +390,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         federal_state: federal_state,
         _test_today: current_date
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should show countdown with federal state name
     assert html =~ "#{expected_days} Tage bis zu den Sommerferien in Baden-Württemberg."
@@ -439,7 +421,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     expected_days_remaining = Date.diff(vacation_end, reference_date)
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -452,8 +434,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         federal_state: federal_state,
         _test_today: reference_date
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should show current vacation with federal state name
     assert html =~
@@ -483,7 +463,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     months = get_test_months()
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -495,8 +475,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
         ],
         federal_state: federal_state
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should create proper link to vacation page with correct anchor format (lowercase month)
     assert html =~ ~s(href="/ferien/d/bundesland/baden-wuerttemberg/2025#juni2025")
@@ -542,10 +520,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     }
 
     # We need to extract the rendered HTML to check the cell colors
-    html =
-      VacationTimelineComponent.render(component)
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
+    html = render_to_string(&VacationTimelineComponent.render/1, component)
 
     # NOTE: The counts include the color markers in the legend at the bottom
     # We're not counting calendar emojis because they've replaced the green rectangles
@@ -601,7 +576,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     months = get_test_months()
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: vacation_periods,
@@ -613,8 +588,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
           {"August", 17, 2025, 8}
         ]
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Should display month headers
     assert html =~ "Mai"
@@ -670,7 +643,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     months = get_test_months()
 
     html =
-      VacationTimelineComponent.render(%{
+      render_to_string(&VacationTimelineComponent.render/1, %{
         days_to_show: days_to_show,
         months: months,
         all_periods: periods,
@@ -680,8 +653,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
           {"Juni", 29, 2025, 6}
         ]
       })
-      |> Phoenix.HTML.Safe.to_iodata()
-      |> IO.iodata_to_binary()
 
     # Check that holidays and vacations are listed
     assert html =~ "Christi Himmelfahrt"
