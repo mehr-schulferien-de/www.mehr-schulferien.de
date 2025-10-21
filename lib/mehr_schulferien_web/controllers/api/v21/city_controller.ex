@@ -12,7 +12,6 @@ defmodule MehrSchulferienWeb.Api.V21.CityController do
 
   alias MehrSchulferien.Periods.CustomICal
   alias MehrSchulferienWeb.BridgeDayFormatter
-  alias MehrSchulferienWeb.BridgeDayController
 
   def index(conn, params) do
     cities =
@@ -91,8 +90,7 @@ defmodule MehrSchulferienWeb.Api.V21.CityController do
 
   def bridge_days(conn, %{"slug" => slug} = params) do
     with {:ok, city} <- get_city_by_slug(slug),
-         {:ok, year} <- parse_year(params["year"]),
-         true <- BridgeDayController.has_bridge_days?([city.id], year) do
+         {:ok, year} <- parse_year(params["year"]) do
       result = BridgeDayFormatter.format_bridge_days(city, year)
 
       render_json(conn, result)
@@ -102,9 +100,6 @@ defmodule MehrSchulferienWeb.Api.V21.CityController do
          "Invalid year parameter. Must be an integer between current year - 5 and current year + 3."}
 
       {:error, :not_found} ->
-        {:error, :not_found}
-
-      false ->
         {:error, :not_found}
     end
   end

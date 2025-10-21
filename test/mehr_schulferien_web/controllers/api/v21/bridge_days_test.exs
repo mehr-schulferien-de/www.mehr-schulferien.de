@@ -229,18 +229,31 @@ defmodule MehrSchulferienWeb.Api.V21.BridgeDaysTest do
       assert error["detail"] =~ "Invalid year"
     end
 
-    test "returns 404 when no bridge days exist for the year", %{conn: conn, bayern: bayern} do
+    test "returns empty result when no qualifying bridge days exist for the year", %{
+      conn: conn,
+      bayern: bayern
+    } do
       # Use a year far in the future where we have no data
       future_year = Date.utc_today().year + 2
 
       conn =
         get(conn, ~p"/api/v2.1/federal-states/#{bayern.slug}/bridge-days?year=#{future_year}")
 
-      # Should return 404 when no bridge days exist
-      response = json_response(conn, 404)
-      assert Map.has_key?(response, "errors")
-      assert is_list(response["errors"])
-      assert hd(response["errors"])["status"] == "404"
+      # Should return 200 with empty bridge_days array when request is valid
+      # but no bridge days meet the quality threshold
+      response = json_response(conn, 200)
+      assert %{"data" => data, "meta" => _meta} = response
+
+      # Verify structure exists but bridge_days is empty
+      assert data["location"]["slug"] == bayern.slug
+      assert data["year"] == future_year
+      assert data["bridge_days"] == []
+
+      # Summary should reflect no bridge days
+      assert data["summary"]["total_opportunities"] == 0
+      assert data["summary"]["total_vacation_days_needed"] == 0
+      assert data["summary"]["total_free_days_gained"] == 0
+      assert data["summary"]["overall_efficiency_percentage"] == 0
     end
   end
 

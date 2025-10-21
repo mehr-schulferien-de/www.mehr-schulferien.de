@@ -12,7 +12,6 @@ defmodule MehrSchulferienWeb.Api.V21.FederalStateController do
 
   alias MehrSchulferien.Periods.CustomICal
   alias MehrSchulferienWeb.BridgeDayFormatter
-  alias MehrSchulferienWeb.BridgeDayController
 
   def index(conn, params) do
     country_slug = params["country"]
@@ -93,8 +92,7 @@ defmodule MehrSchulferienWeb.Api.V21.FederalStateController do
 
   def bridge_days(conn, %{"slug" => slug} = params) do
     with {:ok, federal_state} <- get_federal_state_by_slug(slug),
-         {:ok, year} <- parse_year(params["year"]),
-         true <- BridgeDayController.has_bridge_days?([federal_state.id], year) do
+         {:ok, year} <- parse_year(params["year"]) do
       result = BridgeDayFormatter.format_bridge_days(federal_state, year)
 
       render_json(conn, result)
@@ -104,9 +102,6 @@ defmodule MehrSchulferienWeb.Api.V21.FederalStateController do
          "Invalid year parameter. Must be an integer between current year - 5 and current year + 3."}
 
       {:error, :not_found} ->
-        {:error, :not_found}
-
-      false ->
         {:error, :not_found}
     end
   end
