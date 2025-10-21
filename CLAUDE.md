@@ -309,6 +309,12 @@ _Batteries-included Claude Code integration for Elixir projects_
 ## phoenix:phoenix usage
 [phoenix:phoenix usage rules](deps/phoenix/usage-rules/phoenix.md)
 <!-- phoenix:phoenix-end -->
+<!-- ex_phone_number-start -->
+## ex_phone_number usage
+_A library for parsing, formatting, and validating international phone numbers. Based on Google's libphonenumber._
+
+[ex_phone_number usage rules](deps/ex_phone_number/usage-rules.md)
+<!-- ex_phone_number-end -->
 <!-- usage-rules-end -->
 
 ## Test Maintenance Protocol
