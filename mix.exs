@@ -42,7 +42,7 @@ defmodule MehrSchulferien.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.4.1"},
-      {:gettext, "~> 0.24"},
+      {:gettext, "~> 1.0"},
       {:jason, "~> 1.4.0"},
       {:plug_cowboy, "~> 2.7"},
       {:ex_machina, "~> 2.8.0", only: :test},

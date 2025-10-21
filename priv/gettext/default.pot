@@ -2,7 +2,6 @@
 ##
 ## This file contains all the messages used in the application.
 ## To update the po files, use `mix gettext.extract --merge`.
-
 msgid ""
 msgstr ""
 "Language: \n"
