@@ -173,6 +173,71 @@ defmodule MehrSchulferien.EmailTest do
       assert email.text_body =~ "→"
     end
 
+    test "school_updated_notification/3 includes complete before and after sections" do
+      school = %{
+        id: 123,
+        name: "Neue Test Grundschule",
+        slug: "12345-test-grundschule"
+      }
+
+      # Current (after) address data
+      address = %{
+        street: "Neue Straße 456",
+        zip_code: "54321",
+        city: "Hamburg",
+        email_address: "neu@test-schule.de",
+        phone_number: "+49 40 87654321",
+        homepage_url: "https://www.neue-test-schule.de",
+        schuelerzeitung_url: "https://www.neue-zeitung.de",
+        wikipedia_url: "https://de.wikipedia.org/wiki/Neue_Test",
+        instagram_url: "https://instagram.com/neue_test",
+        students_count: 500,
+        founded_year: 1990,
+        description: "Neue Beschreibung"
+      }
+
+      # Changes showing old -> new values
+      changes = %{
+        "Schulname" => {"Alte Test Grundschule", "Neue Test Grundschule"},
+        "Straße" => {"Alte Straße 123", "Neue Straße 456"},
+        "PLZ" => {"12345", "54321"},
+        "Stadt" => {"Berlin", "Hamburg"},
+        "E-Mail" => {"alt@test-schule.de", "neu@test-schule.de"},
+        "Telefon" => {"+49 30 12345678", "+49 40 87654321"},
+        "Homepage" => {"https://www.alte-test-schule.de", "https://www.neue-test-schule.de"}
+      }
+
+      email = Email.school_updated_notification(school, address, changes)
+
+      # Check HTML body contains a "before" section with old data
+      assert email.html_body =~ ~r/Alte.*Adressdaten/i
+      assert email.html_body =~ "Alte Straße 123"
+      assert email.html_body =~ "12345"
+      assert email.html_body =~ "Berlin"
+      assert email.html_body =~ "alt@test-schule.de"
+      assert email.html_body =~ "+49 30 12345678"
+      assert email.html_body =~ "https://www.alte-test-schule.de"
+
+      # Check HTML body contains current/after section with new data
+      assert email.html_body =~ ~r/Aktuelle.*Adressdaten/i
+      assert email.html_body =~ "Neue Straße 456"
+      assert email.html_body =~ "54321"
+      assert email.html_body =~ "Hamburg"
+      assert email.html_body =~ "neu@test-schule.de"
+      assert email.html_body =~ "+49 40 87654321"
+      assert email.html_body =~ "https://www.neue-test-schule.de"
+
+      # Check text body contains old data section
+      assert email.text_body =~ ~r/Alte.*Adressdaten/i
+      assert email.text_body =~ "Alte Straße 123"
+      assert email.text_body =~ "Berlin"
+
+      # Check text body contains new data section
+      assert email.text_body =~ ~r/Aktuelle.*Adressdaten/i
+      assert email.text_body =~ "Neue Straße 456"
+      assert email.text_body =~ "Hamburg"
+    end
+
     test "school notification emails can be sent" do
       school = %{
         id: 123,

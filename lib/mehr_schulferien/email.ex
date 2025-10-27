@@ -150,6 +150,9 @@ defmodule MehrSchulferien.Email do
     # Extract old name if school name was changed
     old_name = if changes["Schulname"], do: elem(changes["Schulname"], 0), else: nil
 
+    # Build the before state (old data) from changes
+    before_state = build_before_state(school, address, changes)
+
     new()
     |> to({@admin_name, @admin_email})
     |> from({@system_email_name, @noreply_email})
@@ -168,19 +171,11 @@ defmodule MehrSchulferien.Email do
       <a href="#{edit_url}" style="display: inline-block; padding: 10px 20px; background-color: #10b981; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px;">Schule bearbeiten</a>
     </p>
 
-    <h3>Aktuelle Adressdaten:</h3>
-    #{if address do
-      """
-      <p><strong>Straße:</strong> #{address.street || "N/A"}</p>
-      <p><strong>PLZ:</strong> #{address.zip_code || "N/A"}</p>
-      <p><strong>Stadt:</strong> #{address.city || "N/A"}</p>
-      <p><strong>E-Mail:</strong> #{address.email_address || "N/A"}</p>
-      <p><strong>Telefon:</strong> #{address.phone_number || "N/A"}</p>
-      <p><strong>Homepage:</strong> #{address.homepage_url || "N/A"}</p>
-      """
-    else
-      "<p><em>Keine Adressdaten vorhanden</em></p>"
-    end}
+    <h3>Alte Adressdaten (Vorher):</h3>
+    #{format_address_data_html(before_state)}
+
+    <h3>Aktuelle Adressdaten (Nachher):</h3>
+    #{format_address_data_html(%{name: school.name, address: address})}
 
     <h3>Änderungen:</h3>
     #{format_changes_html(changes)}
@@ -201,19 +196,11 @@ defmodule MehrSchulferien.Email do
     Link zur Schule: #{school_url}
     Link zum Bearbeiten: #{edit_url}
 
-    Aktuelle Adressdaten:
-    #{if address do
-      """
-      Straße: #{address.street || "N/A"}
-      PLZ: #{address.zip_code || "N/A"}
-      Stadt: #{address.city || "N/A"}
-      E-Mail: #{address.email_address || "N/A"}
-      Telefon: #{address.phone_number || "N/A"}
-      Homepage: #{address.homepage_url || "N/A"}
-      """
-    else
-      "Keine Adressdaten vorhanden"
-    end}
+    Alte Adressdaten (Vorher):
+    #{format_address_data_text(before_state)}
+
+    Aktuelle Adressdaten (Nachher):
+    #{format_address_data_text(%{name: school.name, address: address})}
 
     Änderungen:
     #{format_changes_text(changes)}
@@ -281,6 +268,99 @@ defmodule MehrSchulferien.Email do
     |> String.split()
     |> Enum.map(&String.capitalize/1)
     |> Enum.join(" ")
+  end
+
+  # Build the "before" state by reconstructing old values from changes
+  defp build_before_state(school, address, changes) do
+    # Map German field names to address struct keys
+    field_mapping = %{
+      "Straße" => :street,
+      "PLZ" => :zip_code,
+      "Stadt" => :city,
+      "E-Mail" => :email_address,
+      "Telefon" => :phone_number,
+      "Homepage" => :homepage_url,
+      "Schülerzeitung" => :schuelerzeitung_url,
+      "Wikipedia" => :wikipedia_url,
+      "Instagram" => :instagram_url,
+      "Schülerzahl" => :students_count,
+      "Gründungsjahr" => :founded_year,
+      "Beschreibung" => :description
+    }
+
+    # Get the old name (before change)
+    old_name =
+      if changes["Schulname"] do
+        elem(changes["Schulname"], 0)
+      else
+        school.name
+      end
+
+    # Build the old address by replacing changed fields with their old values
+    old_address =
+      if address do
+        Enum.reduce(changes, address, fn {field_name, {old_value, _new_value}}, acc_address ->
+          if field_key = field_mapping[field_name] do
+            Map.put(acc_address, field_key, old_value)
+          else
+            acc_address
+          end
+        end)
+      else
+        nil
+      end
+
+    %{name: old_name, address: old_address}
+  end
+
+  # Format address data as HTML
+  defp format_address_data_html(%{name: name, address: address}) do
+    """
+    <p><strong>Schulname:</strong> #{name || "N/A"}</p>
+    #{if address do
+      """
+      <p><strong>Straße:</strong> #{Map.get(address, :street) || "N/A"}</p>
+      <p><strong>PLZ:</strong> #{Map.get(address, :zip_code) || "N/A"}</p>
+      <p><strong>Stadt:</strong> #{Map.get(address, :city) || "N/A"}</p>
+      <p><strong>E-Mail:</strong> #{Map.get(address, :email_address) || "N/A"}</p>
+      <p><strong>Telefon:</strong> #{Map.get(address, :phone_number) || "N/A"}</p>
+      <p><strong>Homepage:</strong> #{Map.get(address, :homepage_url) || "N/A"}</p>
+      <p><strong>Schülerzeitung:</strong> #{Map.get(address, :schuelerzeitung_url) || "N/A"}</p>
+      <p><strong>Wikipedia:</strong> #{Map.get(address, :wikipedia_url) || "N/A"}</p>
+      <p><strong>Instagram:</strong> #{Map.get(address, :instagram_url) || "N/A"}</p>
+      <p><strong>Schülerzahl:</strong> #{Map.get(address, :students_count) || "N/A"}</p>
+      <p><strong>Gründungsjahr:</strong> #{Map.get(address, :founded_year) || "N/A"}</p>
+      <p><strong>Beschreibung:</strong> #{if Map.get(address, :description) && Map.get(address, :description) != "", do: Map.get(address, :description), else: "N/A"}</p>
+      """
+    else
+      "<p><em>Keine Adressdaten vorhanden</em></p>"
+    end}
+    """
+  end
+
+  # Format address data as plain text
+  defp format_address_data_text(%{name: name, address: address}) do
+    """
+    Schulname: #{name || "N/A"}
+    #{if address do
+      """
+      Straße: #{Map.get(address, :street) || "N/A"}
+      PLZ: #{Map.get(address, :zip_code) || "N/A"}
+      Stadt: #{Map.get(address, :city) || "N/A"}
+      E-Mail: #{Map.get(address, :email_address) || "N/A"}
+      Telefon: #{Map.get(address, :phone_number) || "N/A"}
+      Homepage: #{Map.get(address, :homepage_url) || "N/A"}
+      Schülerzeitung: #{Map.get(address, :schuelerzeitung_url) || "N/A"}
+      Wikipedia: #{Map.get(address, :wikipedia_url) || "N/A"}
+      Instagram: #{Map.get(address, :instagram_url) || "N/A"}
+      Schülerzahl: #{Map.get(address, :students_count) || "N/A"}
+      Gründungsjahr: #{Map.get(address, :founded_year) || "N/A"}
+      Beschreibung: #{if Map.get(address, :description) && Map.get(address, :description) != "", do: Map.get(address, :description), else: "N/A"}
+      """
+    else
+      "Keine Adressdaten vorhanden"
+    end}
+    """
   end
 
   def school_deleted_notification(school, address, country_slug \\ "d", deletion_reason \\ nil) do
