@@ -6,6 +6,9 @@ defmodule MehrSchulferien.Application do
   use Application
 
   def start(_type, _args) do
+    # Enable hot code upgrades before starting supervision tree
+    MehrSchulferien.HotDeploy.startup_reapply_current()
+
     # Base children that always start
     base_children = [
       {Phoenix.PubSub, name: MehrSchulferien.PubSub},

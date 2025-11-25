@@ -270,20 +270,20 @@ sudo su - mehrschul2025
 # Generate SECRET_KEY_BASE (at least 64 bytes)
 SECRET_KEY_BASE=$(openssl rand -base64 64 | tr -d '\n')
 
-# Create environment file for systemd
+# Create environment file for systemd and shell sourcing
 cat > /home/mehrschul2025/conf/env << EOF
 # Database
-DATABASE_URL=postgresql://mehrschul2025:YOUR_ENCODED_PASSWORD@localhost/mehr_schulferien_prod
-POOL_SIZE=20
+export DATABASE_URL=postgresql://mehrschul2025:YOUR_ENCODED_PASSWORD@localhost/mehr_schulferien_prod
+export POOL_SIZE=20
 
 # Phoenix
-SECRET_KEY_BASE=${SECRET_KEY_BASE}
-PHX_HOST=www.mehr-schulferien.de
-PORT=4000
-PHX_SERVER=true
+export SECRET_KEY_BASE=${SECRET_KEY_BASE}
+export PHX_HOST=www.mehr-schulferien.de
+export PORT=4000
+export PHX_SERVER=true
 
 # Optional
-ECTO_IPV6=false
+export ECTO_IPV6=false
 EOF
 
 # Secure the file
@@ -304,7 +304,7 @@ exit
 
 ```bash
 # As admin user
-sudo nano /etc/systemd/system/mehr-schulferien2020.service
+sudo nano /etc/systemd/system/mehr-schulferien2025.service
 ```
 
 Paste this content:
@@ -342,7 +342,7 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable mehr-schulferien2020
+sudo systemctl enable mehr-schulferien2025
 ```
 
 ### Step 6.3: Grant Deployment User Systemd Permissions
@@ -354,7 +354,7 @@ sudo visudo -f /etc/sudoers.d/mehrschul2025
 Add this line:
 
 ```
-mehrschul2025 ALL=(ALL) NOPASSWD: /bin/systemctl restart mehr-schulferien2020.service, /bin/systemctl stop mehr-schulferien2020.service, /bin/systemctl start mehr-schulferien2020.service, /usr/bin/journalctl -u mehr-schulferien2020 *
+mehrschul2025 ALL=(ALL) NOPASSWD: /bin/systemctl restart mehr-schulferien2025.service, /bin/systemctl stop mehr-schulferien2025.service, /bin/systemctl start mehr-schulferien2025.service, /usr/bin/journalctl -u mehr-schulferien2025 *
 ```
 
 ---
@@ -589,10 +589,10 @@ mv _build/prod/rel/mehr_schulferien ~/app/release
 ~/app/release/bin/mehr_schulferien eval "MehrSchulferien.ReleaseTasks.migrate"
 
 # Start application
-sudo systemctl start mehr-schulferien2020
+sudo systemctl start mehr-schulferien2025
 
 # Check status
-sudo systemctl status mehr-schulferien2020
+sudo systemctl status mehr-schulferien2025
 
 exit
 ```
@@ -605,7 +605,7 @@ curl http://localhost:4000
 curl http://localhost:4000/health
 
 # Check logs
-sudo journalctl -u mehr-schulferien2020 -n 50
+sudo journalctl -u mehr-schulferien2025 -n 50
 ```
 
 ---
@@ -683,25 +683,25 @@ find ~/backups -name "pre-deploy-*.dump" -type f | sort -r | tail -n +11 | xargs
 
 ```bash
 # Real-time logs
-sudo journalctl -u mehr-schulferien2020 -f
+sudo journalctl -u mehr-schulferien2025 -f
 
 # Last 100 lines
-sudo journalctl -u mehr-schulferien2020 -n 100
+sudo journalctl -u mehr-schulferien2025 -n 100
 
 # Today's logs
-sudo journalctl -u mehr-schulferien2020 --since today
+sudo journalctl -u mehr-schulferien2025 --since today
 
 # Errors only
-sudo journalctl -u mehr-schulferien2020 -p err
+sudo journalctl -u mehr-schulferien2025 -p err
 ```
 
 ### Service Management
 
 ```bash
-sudo systemctl restart mehr-schulferien2020
-sudo systemctl stop mehr-schulferien2020
-sudo systemctl start mehr-schulferien2020
-sudo systemctl status mehr-schulferien2020
+sudo systemctl restart mehr-schulferien2025
+sudo systemctl stop mehr-schulferien2025
+sudo systemctl start mehr-schulferien2025
+sudo systemctl status mehr-schulferien2025
 ```
 
 ### Manual Deployment
@@ -723,7 +723,7 @@ The deploy script keeps 3 previous releases. To rollback:
 ls -lt ~/app/*.backup.*
 
 # Stop current version
-sudo systemctl stop mehr-schulferien2020
+sudo systemctl stop mehr-schulferien2025
 
 # Move current release aside
 mv ~/app/release ~/app/release.failed
@@ -732,7 +732,7 @@ mv ~/app/release ~/app/release.failed
 mv ~/app/release.backup.TIMESTAMP ~/app/release
 
 # Start
-sudo systemctl start mehr-schulferien2020
+sudo systemctl start mehr-schulferien2025
 ```
 
 ### Database Rollback
@@ -770,7 +770,7 @@ sudo su - mehrschul2025
 
 ```bash
 # Check detailed logs
-sudo journalctl -u mehr-schulferien2020 -n 200 --no-pager
+sudo journalctl -u mehr-schulferien2025 -n 200 --no-pager
 
 # Check if port is in use
 sudo netstat -tlnp | grep 4000
