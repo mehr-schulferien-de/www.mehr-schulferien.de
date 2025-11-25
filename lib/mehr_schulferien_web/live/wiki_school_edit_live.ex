@@ -28,6 +28,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
     daily_changes = Wiki.get_daily_change_count(today)
     limit_reached = daily_changes >= Config.daily_change_limit()
 
+    # Store original zip code for detecting significant changes
+    original_zip_code = if school.address, do: school.address.zip_code, else: nil
+
     # Create a combined changeset for both school and address fields
     changeset =
       if school.address do
@@ -50,7 +53,9 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
        show_rollback_preview: false,
        rollback_version: nil,
        show_delete_confirmation: false,
-       delete_error: nil
+       delete_error: nil,
+       original_zip_code: original_zip_code,
+       show_new_school_hint: false
      )}
   end
 
@@ -58,6 +63,13 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   def handle_event("validate", %{"address" => address_params} = params, socket) do
     # Get the name from params, default to existing school name if not provided
     name = Map.get(params, "name", socket.assigns.school.name)
+
+    # Check if zip code has changed significantly (to a different valid 5-digit zip code)
+    new_zip_code = Map.get(address_params, "zip_code", "")
+    original_zip_code = socket.assigns.original_zip_code
+
+    show_new_school_hint =
+      zip_code_changed_significantly?(original_zip_code, new_zip_code)
 
     # Create a changeset for validation
     changeset =
@@ -85,7 +97,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
         }
       end
 
-    {:noreply, assign(socket, changeset: changeset)}
+    {:noreply, assign(socket, changeset: changeset, show_new_school_hint: show_new_school_hint)}
   end
 
   @impl true
@@ -688,4 +700,18 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   defp traverse_to_country(_), do: nil
+
+  # Check if the zip code has changed to a different valid 5-digit German zip code
+  defp zip_code_changed_significantly?(original, new)
+       when is_binary(original) and is_binary(new) do
+    # Only show hint if:
+    # 1. Both are valid 5-digit zip codes
+    # 2. They are different
+    String.length(original) == 5 and
+      String.length(new) == 5 and
+      String.match?(new, ~r/^\d{5}$/) and
+      original != new
+  end
+
+  defp zip_code_changed_significantly?(_, _), do: false
 end

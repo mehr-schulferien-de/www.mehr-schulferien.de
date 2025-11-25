@@ -57,6 +57,49 @@
           </div>
         <% end %>
 
+        <%= if @show_new_school_hint do %>
+          <div
+            id="new-school-hint"
+            class="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-lg"
+          >
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg
+                  class="h-5 w-5 text-amber-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                  Möchten Sie eine neue Schule anlegen?
+                </h3>
+                <div class="mt-2 text-sm text-amber-700 dark:text-amber-300">
+                  <p>
+                    Sie haben die Postleitzahl geändert. Wenn Sie eine
+                    <strong>andere Schule</strong>
+                    hinzufügen möchten, nutzen Sie bitte die Funktion "Neue Schule anlegen".
+                  </p>
+                  <p class="mt-2">
+                    <a
+                      href={~p"/wiki/schools/new"}
+                      class="font-medium text-amber-800 dark:text-amber-200 underline hover:text-amber-900 dark:hover:text-amber-100"
+                    >
+                      Hier klicken, um eine neue Schule anzulegen →
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
         {Phoenix.View.render(MehrSchulferienWeb.WikiView, "_school_form.html",
           changeset: @changeset,
           limit_reached: @limit_reached,
@@ -74,7 +117,31 @@
     
 <!-- Version History Timeline - Right Column -->
     <div class="space-y-6">
-      <!-- Version History Timeline -->
+      <!-- Add New School Button - Prominent placement -->
+      <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <h3 class="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+          Schule nicht gefunden?
+        </h3>
+        <p class="text-sm text-blue-700 dark:text-blue-300 mb-3">
+          Wenn Sie eine neue Schule hinzufügen möchten (anstatt diese zu bearbeiten), nutzen Sie bitte die Funktion "Neue Schule anlegen".
+        </p>
+        <a
+          href={~p"/wiki/schools/new"}
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+          Neue Schule anlegen
+        </a>
+      </div>
+      
+<!-- Version History Timeline -->
       <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
