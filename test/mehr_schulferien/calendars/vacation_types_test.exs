@@ -1,5 +1,6 @@
 defmodule MehrSchulferien.Calendars.VacationTypesTest do
-  use MehrSchulferien.DataCase, async: true
+  # async: false to prevent database deadlocks - this test uses shared location data
+  use MehrSchulferien.DataCase, async: false
 
   alias MehrSchulferien.Calendars.VacationTypes
   alias MehrSchulferien.Calendars.HolidayOrVacationType

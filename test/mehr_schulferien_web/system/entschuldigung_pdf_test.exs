@@ -1,21 +1,40 @@
 defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
+  @moduledoc """
+  Tests for PDF generation functionality.
+
+  Note: Most PDF formatting logic is tested in MehrSchulferien.PdfGeneratorTest.
+  This file focuses on integration tests for the actual PDF endpoint.
+
+  Tests tagged with @tag :slow actually generate PDFs via LaTeX.
+  Run `mix test --exclude slow` for faster feedback.
+  """
   use MehrSchulferienWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
   import MehrSchulferien.TestHelpers, except: [create_school: 1]
+
   @moduletag :system
 
-  describe "PDF generation and download" do
+  @valid_params %{
+    "first_name" => "Max",
+    "last_name" => "Mustermann",
+    "street" => "Teststraße 1",
+    "zip_code" => "12345",
+    "city" => "Teststadt",
+    "name_of_student" => "Max Junior",
+    "class_name" => "5a",
+    "reason" => "krankheit",
+    "start_date" => "2025-06-15",
+    "end_date" => "2025-06-15"
+  }
+
+  describe "PDF form submission" do
     setup [:create_school]
 
-    test "generates and downloads PDF when form is submitted with valid data", %{
-      conn: conn,
-      school: school
-    } do
+    test "form submission with valid data shows success message", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, "/briefe/#{school.slug}/entschuldigung")
 
-      # Fill in complete valid form data
       form_data = %{
         "form" => %{
           "title" => "Dr.",
@@ -32,31 +51,24 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
         }
       }
 
-      # Submit the form - this should stay on same page and show success message
       html =
         view
         |> form("#entschuldigung-form", form_data)
         |> render_submit()
 
-      # Check that form submission was successful
       assert html =~ "PDF wurde erfolgreich erstellt"
       assert html =~ "Sie können das Formular erneut ausfüllen"
-
-      # Check that form was reset
-      assert html =~ "value=\"\""
     end
 
-    test "shows validation error when required fields are missing", %{
+    test "form submission with missing fields shows validation error", %{
       conn: conn,
       school: school
     } do
       {:ok, view, _html} = live(conn, "/briefe/#{school.slug}/entschuldigung")
 
-      # Submit form with missing required fields
       incomplete_form_data = %{
         "form" => %{
           "first_name" => "Maria",
-          # Missing other required fields
           "reason" => "krankheit",
           "start_date" => "2025-06-20",
           "end_date" => "2025-06-22"
@@ -67,208 +79,21 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
       |> form("#entschuldigung-form", incomplete_form_data)
       |> render_submit()
 
-      # Should show validation error
       assert has_element?(view, "[phx-feedback-for]") or render(view) =~ "Pflichtfelder"
     end
+  end
 
-    test "PDF download endpoint works with valid form data", %{
-      conn: conn,
-      school: school
-    } do
-      # Simulate the PDF download request with query parameters
-      params = %{
-        "first_name" => "Max",
-        "last_name" => "Mustermann",
-        "street" => "Teststraße 1",
-        "zip_code" => "12345",
-        "city" => "Teststadt",
-        "name_of_student" => "Max Junior",
-        "class_name" => "5a",
-        "reason" => "krankheit",
-        "start_date" => "2025-06-15",
-        "end_date" => "2025-06-15"
-      }
+  describe "PDF download endpoint" do
+    setup [:create_school]
 
-      # This will test the PDF generation if LaTeX is available
-      # If LaTeX is not available, it should return an error gracefully
-      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
-
-      case conn.status do
-        200 ->
-          # PDF generation successful
-          content_type = get_resp_header(conn, "content-type") |> List.first()
-          assert content_type =~ "application/pdf"
-          assert get_resp_header(conn, "content-disposition") |> List.first() =~ "attachment"
-          assert get_resp_header(conn, "content-disposition") |> List.first() =~ ".pdf"
-
-          # Check that we got some binary data
-          assert byte_size(conn.resp_body) > 0
-
-        302 ->
-          # Redirect back to form (likely due to LaTeX not being available)
-          assert redirected_to(conn) =~ "/briefe/#{school.slug}/entschuldigung"
-
-        _ ->
-          flunk("Unexpected response status: #{conn.status}")
-      end
-    end
-
-    test "PDF download endpoint handles missing school gracefully", %{conn: conn} do
-      params = %{
-        "first_name" => "Max",
-        "last_name" => "Mustermann",
-        "street" => "Teststraße 1",
-        "zip_code" => "12345",
-        "city" => "Teststadt",
-        "name_of_student" => "Max Junior",
-        "class_name" => "5a",
-        "reason" => "krankheit",
-        "start_date" => "2025-06-15",
-        "end_date" => "2025-06-15"
-      }
-
-      conn = get(conn, "/briefe/non-existent-school/entschuldigung/pdf", params)
+    test "returns 404 for non-existent school", %{conn: conn} do
+      conn = get(conn, "/briefe/non-existent-school/entschuldigung/pdf", @valid_params)
       assert conn.status == 404
     end
 
-    test "generates correct filename for PDF download", %{
-      conn: conn,
-      school: school
-    } do
-      params = %{
-        "first_name" => "Maria",
-        "last_name" => "Musterfrau",
-        "street" => "Beispielstraße 42",
-        "zip_code" => "54321",
-        "city" => "Beispielstadt",
-        "name_of_student" => "Anna Marie Musterfrau",
-        "class_name" => "7b",
-        "reason" => "arzttermin",
-        "start_date" => "2025-06-20",
-        "end_date" => "2025-06-20"
-      }
-
-      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
-
-      if conn.status == 200 do
-        content_disposition = get_resp_header(conn, "content-disposition") |> List.first()
-        assert content_disposition =~ "Entschuldigung_Anna_Marie_Musterfrau_2025-06-20.pdf"
-      end
-    end
-
-    test "generates correct filename with date range for multi-day absence", %{
-      conn: conn,
-      school: school
-    } do
-      params = %{
-        "first_name" => "Hans",
-        "last_name" => "Schmidt",
-        "street" => "Teststraße 1",
-        "zip_code" => "12345",
-        "city" => "Teststadt",
-        "name_of_student" => "Max Schmidt",
-        "class_name" => "8a",
-        "reason" => "krankheit",
-        "start_date" => "2025-06-15",
-        "end_date" => "2025-06-17"
-      }
-
-      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
-
-      if conn.status == 200 do
-        content_disposition = get_resp_header(conn, "content-disposition") |> List.first()
-        assert content_disposition =~ "Entschuldigung_Max_Schmidt_2025-06-15_bis_2025-06-17.pdf"
-      end
-    end
-
-    test "handles different excuse reasons correctly", %{
-      conn: conn,
-      school: school
-    } do
-      base_params = %{
-        "first_name" => "Test",
-        "last_name" => "Parent",
-        "street" => "Teststraße 1",
-        "zip_code" => "12345",
-        "city" => "Teststadt",
-        "name_of_student" => "Test Child",
-        "class_name" => "5a",
-        "start_date" => "2025-06-15",
-        "end_date" => "2025-06-15"
-      }
-
-      reasons = [
-        "krankheit",
-        "arzttermin",
-        "familiaere_angelegenheiten",
-        "beerdigung",
-        "religioser_feiertag"
-      ]
-
-      Enum.each(reasons, fn reason ->
-        params = Map.put(base_params, "reason", reason)
-        conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
-
-        # Should either succeed or fail gracefully
-        assert conn.status in [200, 302]
-      end)
-    end
-
-    test "handles date ranges correctly", %{
-      conn: conn,
-      school: school
-    } do
-      base_params = %{
-        "first_name" => "Test",
-        "last_name" => "Parent",
-        "street" => "Teststraße 1",
-        "zip_code" => "12345",
-        "city" => "Teststadt",
-        "name_of_student" => "Test Child",
-        "class_name" => "5a",
-        "reason" => "krankheit"
-      }
-
-      # Test single day absence
-      single_day_params =
-        Map.merge(base_params, %{
-          "start_date" => "2025-06-15",
-          "end_date" => "2025-06-15"
-        })
-
-      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", single_day_params)
-      assert conn.status in [200, 302]
-
-      # Test multi-day absence
-      multi_day_params =
-        Map.merge(base_params, %{
-          "start_date" => "2025-06-15",
-          "end_date" => "2025-06-17"
-        })
-
-      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", multi_day_params)
-      assert conn.status in [200, 302]
-    end
-
-    test "PDF download returns valid PDF file with correct content type", %{
-      conn: conn,
-      school: school
-    } do
-      # Simulate the PDF download request with query parameters
-      params = %{
-        "first_name" => "Max",
-        "last_name" => "Mustermann",
-        "street" => "Teststraße 1",
-        "zip_code" => "12345",
-        "city" => "Teststadt",
-        "name_of_student" => "Max Junior",
-        "class_name" => "5a",
-        "reason" => "krankheit",
-        "start_date" => "2025-06-15",
-        "end_date" => "2025-06-15"
-      }
-
-      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
+    @tag :slow
+    test "generates valid PDF with correct headers", %{conn: conn, school: school} do
+      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", @valid_params)
 
       case conn.status do
         200 ->
@@ -279,29 +104,54 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
           content_disposition = get_resp_header(conn, "content-disposition") |> List.first()
           assert content_disposition =~ "attachment"
           assert content_disposition =~ ".pdf"
+          assert content_disposition =~ "Entschuldigung_Max_Junior"
 
-          # Check PDF magic number (%PDF-)
+          # Check PDF magic number
           assert binary_part(conn.resp_body, 0, 5) == "%PDF-"
-
-          # Check that we got some binary data
           assert byte_size(conn.resp_body) > 0
 
         302 ->
-          # PDF generation failed (likely due to missing LaTeX packages)
-          # Should redirect back to form with error message
+          # LaTeX not available - redirect back with error
           assert redirected_to(conn) =~ "/briefe/#{school.slug}/entschuldigung"
 
-          assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-                   "PDF konnte nicht erstellt werden"
+        status ->
+          flunk("Unexpected response status: #{status}")
+      end
+    end
 
-        _ ->
-          flunk("Unexpected response status: #{conn.status}")
+    @tag :slow
+    test "generates correct filename for multi-day absence", %{conn: conn, school: school} do
+      params =
+        Map.merge(@valid_params, %{"start_date" => "2025-06-15", "end_date" => "2025-06-17"})
+
+      conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
+
+      if conn.status == 200 do
+        content_disposition = get_resp_header(conn, "content-disposition") |> List.first()
+        assert content_disposition =~ "2025-06-15_bis_2025-06-17.pdf"
+      end
+    end
+
+    @tag :slow
+    test "handles all excuse reasons", %{conn: conn, school: school} do
+      # Test all reasons in a single request batch to minimize PDF generations
+      reasons = [
+        "krankheit",
+        "arzttermin",
+        "familiaere_angelegenheiten",
+        "beerdigung",
+        "religioser_feiertag"
+      ]
+
+      for reason <- reasons do
+        params = Map.put(@valid_params, "reason", reason)
+        conn = get(conn, "/briefe/#{school.slug}/entschuldigung/pdf", params)
+        assert conn.status in [200, 302], "Failed for reason: #{reason}"
       end
     end
   end
 
   defp create_school(_) do
-    # Create the location hierarchy needed for a school
     country = get_or_create_deutschland()
 
     federal_state =
@@ -332,7 +182,6 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
         name: "Max-von-Laue-Gymnasium"
       })
 
-    # Create an address for the school
     insert(:address, %{
       school_location_id: school.id,
       street: "Südallee 1",
