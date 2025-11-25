@@ -16,7 +16,11 @@ jobs:
     runs-on: [self-hosted, production]
 
     steps:
-      - name: Deploy application
+      - name: Update repository and deploy
         run: |
           cd ~/app/build/repo
+          # First update the repo to get the latest deploy script
+          git fetch origin master
+          git reset --hard origin/master
+          # Now run the updated deploy script
           ./scripts/deploy.sh
