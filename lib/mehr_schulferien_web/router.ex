@@ -42,6 +42,12 @@ defmodule MehrSchulferienWeb.Router do
     end
   end
 
+  # ========== Health Check (for monitoring and load balancers) ==========
+  scope "/", MehrSchulferienWeb do
+    pipe_through :api
+    get "/health", HealthController, :index
+  end
+
   # ========== Old Route Redirects (now redirecting /land/ to /ferien/) ==========
   scope "/", MehrSchulferienWeb do
     pipe_through :redirects
