@@ -34,12 +34,44 @@ defmodule MehrSchulferienWeb.Live.Shared.BriefeHelpers do
     locale
   end
 
+  # Known form field keys that can be atomized safely
+  @known_form_keys ~w(
+    title first_name last_name street zip_code city
+    name_of_student class_name duration_type single_date
+    start_date end_date teacher_salutation teacher_name
+    child_type detailed_reason medical_certificate
+    student_name parent_name date reason signature_date
+    class school_year sport_type duration excuse_type
+    phone email parent_first_name parent_last_name
+    student_first_name student_last_name absence_date
+    absence_start_date absence_end_date
+  )a
+
   @doc """
-  Converts string keys to atoms in a map.
+  Converts string keys to atoms in a map, only for known keys.
+  Unknown keys are silently dropped for security (prevents atom table exhaustion).
   """
   def atomize_keys(params) do
-    Enum.into(params, %{}, fn {k, v} -> {String.to_atom(k), v} end)
+    Enum.reduce(params, %{}, fn {k, v}, acc ->
+      case safe_to_atom(k) do
+        {:ok, atom_key} -> Map.put(acc, atom_key, v)
+        :error -> acc
+      end
+    end)
   end
+
+  defp safe_to_atom(key) when is_atom(key), do: {:ok, key}
+
+  defp safe_to_atom(key) when is_binary(key) do
+    try do
+      atom = String.to_existing_atom(key)
+      if atom in @known_form_keys, do: {:ok, atom}, else: :error
+    rescue
+      ArgumentError -> :error
+    end
+  end
+
+  defp safe_to_atom(_), do: :error
 
   @doc """
   Parses date fields in form data.

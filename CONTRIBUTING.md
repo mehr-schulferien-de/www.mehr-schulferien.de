@@ -9,10 +9,12 @@ please open an issue and let us know.
 
 1. Make sure you have the following programs installed:
 
-    * Erlang > 22
-    * Elixir > 1.10
-    * nodejs > 6.8.0
-    * postgresql
+    * Erlang 27.3.4 or higher
+    * Elixir 1.19.3 or higher (OTP 27 build)
+    * Node.js 6.8.0 or higher
+    * PostgreSQL
+
+   Use `mise` to manage Erlang and Elixir versions as specified in `.tool-versions`.
 
 1. Clone this repository (do not create a fork, as pull requests from forks
 are not being handled properly by Github actions).

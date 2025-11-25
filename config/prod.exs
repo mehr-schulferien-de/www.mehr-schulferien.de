@@ -43,9 +43,8 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   # Set cache control headers for static assets
   static_cache_control: "public, max-age=31536000"
 
-# Increased logging level for debugging in production
-# config :logger, level: :info
-config :logger, level: :debug
+# Production logging level - use LOG_LEVEL env var to override (default: info)
+config :logger, level: String.to_atom(System.get_env("LOG_LEVEL", "info"))
 
 # Set stacktrace depth to match development for detailed error reporting
 config :phoenix, :stacktrace_depth, 20

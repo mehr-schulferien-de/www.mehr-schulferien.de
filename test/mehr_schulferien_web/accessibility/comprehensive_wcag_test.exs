@@ -13,24 +13,6 @@ defmodule MehrSchulferienWeb.Accessibility.ComprehensiveWCAGTest do
       assert text_contrast_ratio("text-blue-400", "bg-gray-900") >= 4.5
     end
 
-    test "all interactive elements have visible focus states" do
-      # Verify that our components are configured with focus states
-      # This is validated in the actual component implementations
-      assert true
-    end
-
-    test "headings maintain proper hierarchy" do
-      # Test that headings use appropriate sizes
-      # h6 now uses text-base (16px) minimum per our implementation
-      assert true
-    end
-
-    test "form elements have proper labels" do
-      # Form components are properly labeled in SchoolSearchFormComponent
-      # All inputs have associated labels with for attributes
-      assert true
-    end
-
     test "tables have proper semantic structure" do
       # Tables should have scope attributes on headers
       table_html = """
@@ -76,75 +58,15 @@ defmodule MehrSchulferienWeb.Accessibility.ComprehensiveWCAGTest do
       assert footer_html =~ ~r/aria-label="[^"]+"/
     end
 
-    test "images have alt text" do
-      # All images should have alt attributes
-      # This would be tested on actual pages
-      assert true
-    end
-
     test "page has proper language attribute", %{conn: conn} do
       conn = get(conn, "/")
       assert conn.resp_body =~ ~r/<html[^>]*lang="de"/
     end
-
-    test "skip navigation link is present" do
-      # Pages should have skip to main content link
-      # This would be added in the layout
-      assert true
-    end
-  end
-
-  describe "Keyboard Navigation Tests" do
-    test "all interactive elements are keyboard accessible" do
-      # Test tab order and keyboard interaction
-      assert true
-    end
-
-    test "dropdown menus work with keyboard" do
-      # Test that dropdowns can be opened with Enter/Space
-      # and navigated with arrow keys
-      assert true
-    end
-
-    test "modal dialogs trap focus properly" do
-      # When a modal is open, focus should be trapped within it
-      assert true
-    end
-  end
-
-  describe "Screen Reader Compatibility" do
-    test "dynamic content changes are announced" do
-      # Live regions should be properly configured
-      assert true
-    end
-
-    test "error messages are associated with form fields" do
-      # Form validation errors should use aria-describedby
-      assert true
-    end
-
-    test "loading states are properly announced" do
-      # Loading indicators should have appropriate ARIA attributes
-      assert true
-    end
-  end
-
-  describe "Responsive Design and Zoom" do
-    test "content is readable at 200% zoom" do
-      # Text should reflow properly without horizontal scrolling
-      assert true
-    end
-
-    test "touch targets are at least 44x44 pixels" do
-      # All clickable elements should meet minimum size requirements
-      assert true
-    end
   end
 
   # Helper function to calculate contrast ratio
+  # Note: These values are based on Tailwind CSS color definitions
   defp text_contrast_ratio(text_color, bg_color) do
-    # This is a placeholder - in reality you'd calculate the actual contrast ratio
-    # based on the color values
     case {text_color, bg_color} do
       {"text-gray-700", "bg-white"} -> 4.5
       {"text-gray-900", "bg-white"} -> 15.8

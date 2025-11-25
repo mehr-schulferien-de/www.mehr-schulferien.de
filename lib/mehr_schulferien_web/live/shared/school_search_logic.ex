@@ -12,6 +12,21 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
   import Ecto.Query
   alias MehrSchulferien.Repo
 
+  # Helper to safely parse federal_state_id
+  defp parse_federal_state_id(nil), do: :error
+  defp parse_federal_state_id(""), do: :error
+
+  defp parse_federal_state_id(value) when is_integer(value), do: {:ok, value}
+
+  defp parse_federal_state_id(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, ""} -> {:ok, int}
+      _ -> :error
+    end
+  end
+
+  defp parse_federal_state_id(_), do: :error
+
   @doc """
   Checks if text is a partial or full zip code (1-5 digits)
   """
@@ -85,11 +100,13 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         where: like(zc.value, ^zip_pattern) or like(a.zip_code, ^zip_pattern)
 
     query =
-      if federal_state_id && federal_state_id != "" do
-        from [s, city, county, a, zcm, zc] in base_query,
-          where: county.parent_location_id == ^String.to_integer(federal_state_id)
-      else
-        base_query
+      case parse_federal_state_id(federal_state_id) do
+        {:ok, federal_state_id_int} ->
+          from [s, city, county, a, zcm, zc] in base_query,
+            where: county.parent_location_id == ^federal_state_id_int
+
+        :error ->
+          base_query
       end
 
     query =
@@ -374,5 +391,54 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
     |> String.reverse()
     |> String.replace(~r/(\d{3})(?=\d)/, "\\1.")
     |> String.reverse()
+  end
+
+  @doc """
+  Sorts schools by the given field and order.
+  Returns schools unchanged if field is nil.
+  """
+  def sort_schools(schools, nil, _order), do: schools
+
+  def sort_schools(schools, field, order) do
+    Enum.sort_by(
+      schools,
+      fn school ->
+        case field do
+          :name ->
+            school.name || ""
+
+          :street ->
+            if school.address, do: school.address.street || "", else: ""
+
+          :zip_code ->
+            if school.address, do: school.address.zip_code || "", else: ""
+
+          :city ->
+            if school.parent_location, do: school.parent_location.name || "", else: ""
+
+          _ ->
+            ""
+        end
+      end,
+      if(order == :asc, do: &<=/2, else: &>=/2)
+    )
+  end
+
+  @doc """
+  Fetches federal states for the dropdown.
+  Returns a list of {name, id} tuples sorted by name.
+  """
+  def get_federal_states do
+    alias MehrSchulferien.Locations
+
+    case Locations.get_country_by_slug("d") do
+      nil ->
+        []
+
+      country ->
+        Locations.list_federal_states(country)
+        |> Enum.map(fn state -> {state.name, state.id} end)
+        |> Enum.sort_by(&elem(&1, 0))
+    end
   end
 end

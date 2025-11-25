@@ -94,7 +94,11 @@ defmodule MehrSchulferienWeb.LocalePlug do
       browser_lang
     else
       # Try language part only (e.g., "en-US" -> "en")
-      lang_part = browser_lang |> String.split("-") |> hd()
+      lang_part =
+        case String.split(browser_lang, "-") do
+          [first | _] -> first
+          [] -> browser_lang
+        end
 
       if lang_part in @supported_locales do
         lang_part

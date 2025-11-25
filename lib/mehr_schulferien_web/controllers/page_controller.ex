@@ -406,8 +406,9 @@ defmodule MehrSchulferienWeb.PageController do
     state_ids = Enum.uniq(state_ids)
 
     # Get min and max year for date range
-    min_year = Enum.min(years)
-    max_year = Enum.max(years)
+    current_year = Date.utc_today().year
+    min_year = Enum.min(years, fn -> current_year end)
+    max_year = Enum.max(years, fn -> current_year end)
     {:ok, start_date} = Date.new(min_year, 1, 1)
     {:ok, end_date} = Date.new(max_year, 12, 31)
 

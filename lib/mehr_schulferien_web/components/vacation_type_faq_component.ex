@@ -122,13 +122,18 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
       "Die Dauer variiert je nach Bundesland."
     else
       durations = Enum.map(valid_periods, & &1.duration)
-      min_duration = Enum.min(durations)
-      max_duration = Enum.max(durations)
+      min_duration = Enum.min(durations, fn -> 0 end)
+      max_duration = Enum.max(durations, fn -> 0 end)
 
-      if min_duration == max_duration do
-        "Die #{vacation_name} dauern in allen Bundesländern #{min_duration} Tage."
-      else
-        "Die #{vacation_name} dauern je nach Bundesland zwischen #{min_duration} und #{max_duration} Tagen."
+      cond do
+        min_duration == 0 and max_duration == 0 ->
+          "Die Dauer variiert je nach Bundesland."
+
+        min_duration == max_duration ->
+          "Die #{vacation_name} dauern in allen Bundesländern #{min_duration} Tage."
+
+        true ->
+          "Die #{vacation_name} dauern je nach Bundesland zwischen #{min_duration} und #{max_duration} Tagen."
       end
     end
   end

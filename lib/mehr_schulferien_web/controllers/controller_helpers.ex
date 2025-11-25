@@ -118,8 +118,8 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
     check_years = (year - 3)..(year + 3) |> Enum.to_list()
 
     # Get vacation periods for the entire range with a single query
-    range_start = Date.from_erl!({Enum.min(check_years), 1, 1})
-    range_end = Date.from_erl!({Enum.max(check_years), 12, 31})
+    range_start = Date.from_erl!({Enum.min(check_years, fn -> year end), 1, 1})
+    range_end = Date.from_erl!({Enum.max(check_years, fn -> year end), 12, 31})
 
     all_periods = Periods.list_school_vacation_periods(location_ids, range_start, range_end)
 

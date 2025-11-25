@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.HomeLive do
   alias MehrSchulferienWeb.NavigationHelper
   alias MehrSchulferienWeb.Formatters.DateFormatter
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferienWeb.Live.Shared.{LocationHistoryHelpers, SchoolSearchLogic}
   import MehrSchulferienWeb.Shared.LocationHistoryComponent
   require Logger
 
@@ -17,7 +18,7 @@ defmodule MehrSchulferienWeb.HomeLive do
     recent_locations = load_location_history_from_session(session)
 
     # Get federal states for dropdown
-    federal_states = get_federal_states()
+    federal_states = SchoolSearchLogic.get_federal_states()
 
     # Check if database is empty
     if federal_states == [] do
@@ -60,7 +61,9 @@ defmodule MehrSchulferienWeb.HomeLive do
   @impl true
   def handle_event("search", %{"search" => search_params}, socket) do
     schools = search_schools_with_federal_state(search_params)
-    sorted_schools = sort_schools(schools, socket.assigns.sort_by, socket.assigns.sort_order)
+
+    sorted_schools =
+      SchoolSearchLogic.sort_schools(schools, socket.assigns.sort_by, socket.assigns.sort_order)
 
     {:noreply,
      assign(socket,
@@ -139,58 +142,73 @@ defmodule MehrSchulferienWeb.HomeLive do
     {:noreply, socket}
   end
 
+  # Valid sort fields to prevent atom table exhaustion
+  @valid_sort_fields ~w(name street zip_code city)a
+
   @impl true
   def handle_event("toggle_city", %{"city-id" => city_id}, socket) do
-    city_id = String.to_integer(city_id)
-    expanded_cities = socket.assigns.expanded_cities
+    case Integer.parse(city_id) do
+      {city_id_int, ""} ->
+        expanded_cities = socket.assigns.expanded_cities
 
-    expanded_cities =
-      if MapSet.member?(expanded_cities, city_id) do
-        MapSet.delete(expanded_cities, city_id)
-      else
-        MapSet.put(expanded_cities, city_id)
-      end
+        expanded_cities =
+          if MapSet.member?(expanded_cities, city_id_int) do
+            MapSet.delete(expanded_cities, city_id_int)
+          else
+            MapSet.put(expanded_cities, city_id_int)
+          end
 
-    socket = assign(socket, :expanded_cities, expanded_cities)
+        socket = assign(socket, :expanded_cities, expanded_cities)
 
-    # Push an event to maintain scroll position
-    {:noreply, push_event(socket, "maintain-scroll", %{element_id: "city-card-#{city_id}"})}
+        # Push an event to maintain scroll position
+        {:noreply,
+         push_event(socket, "maintain-scroll", %{element_id: "city-card-#{city_id_int}"})}
+
+      _ ->
+        {:noreply, socket}
+    end
   end
 
   @impl true
   def handle_event("sort", %{"field" => field}, socket) do
-    field_atom = String.to_atom(field)
+    case validate_sort_field(field) do
+      {:ok, field_atom} ->
+        {sort_by, sort_order} =
+          if socket.assigns.sort_by == field_atom do
+            # Toggle order if clicking the same field
+            {field_atom, if(socket.assigns.sort_order == :asc, do: :desc, else: :asc)}
+          else
+            # New field, default to ascending
+            {field_atom, :asc}
+          end
 
-    {sort_by, sort_order} =
-      if socket.assigns.sort_by == field_atom do
-        # Toggle order if clicking the same field
-        {field_atom, if(socket.assigns.sort_order == :asc, do: :desc, else: :asc)}
-      else
-        # New field, default to ascending
-        {field_atom, :asc}
-      end
+        sorted_schools =
+          SchoolSearchLogic.sort_schools(socket.assigns.schools, sort_by, sort_order)
 
-    sorted_schools = sort_schools(socket.assigns.schools, sort_by, sort_order)
+        {:noreply,
+         assign(socket,
+           schools: sorted_schools,
+           sort_by: sort_by,
+           sort_order: sort_order
+         )}
 
-    {:noreply,
-     assign(socket,
-       schools: sorted_schools,
-       sort_by: sort_by,
-       sort_order: sort_order
-     )}
-  end
-
-  defp get_federal_states do
-    case Locations.get_country_by_slug("d") do
-      nil ->
-        []
-
-      country ->
-        Locations.list_federal_states(country)
-        |> Enum.map(fn state -> {state.name, state.id} end)
-        |> Enum.sort_by(&elem(&1, 0))
+      :error ->
+        {:noreply, socket}
     end
   end
+
+  defp validate_sort_field(field) when is_binary(field) do
+    try do
+      atom = String.to_existing_atom(field)
+      if atom in @valid_sort_fields, do: {:ok, atom}, else: :error
+    rescue
+      ArgumentError -> :error
+    end
+  end
+
+  defp validate_sort_field(_), do: :error
+
+  # get_federal_states now delegated to SchoolSearchLogic
 
   defp load_location_history_from_session(session) do
     # Extract cookie values from session
@@ -199,72 +217,7 @@ defmodule MehrSchulferienWeb.HomeLive do
     recent_locations_str = session["recent_locations"]
     Logger.info("HomeLive - Recent locations string: #{inspect(recent_locations_str)}")
 
-    load_recent_locations(recent_locations_str)
-  end
-
-  defp load_recent_locations(nil), do: []
-  defp load_recent_locations(""), do: []
-
-  defp load_recent_locations(locations_str) do
-    # Get country for lookups
-    country =
-      try do
-        Locations.get_country_by_slug!("d")
-      rescue
-        _ -> nil
-      end
-
-    locations_str
-    |> String.split(",")
-    |> Enum.map(&parse_location_entry/1)
-    |> Enum.reject(&is_nil/1)
-    |> Enum.map(fn {type, slug} ->
-      location =
-        case type do
-          "f" ->
-            try do
-              fs = Locations.get_federal_state_by_slug!(slug, country)
-              %{type: :federal_state, location: fs, name: fs.name, slug: fs.slug}
-            rescue
-              _ -> nil
-            end
-
-          "c" ->
-            try do
-              city = Locations.get_city_by_slug!(slug)
-              %{type: :city, location: city, name: city.name, slug: city.slug}
-            rescue
-              _ -> nil
-            end
-
-          "s" ->
-            try do
-              school = Locations.get_school_by_slug!(slug)
-              # Get parent city for display
-              city = Locations.get_location!(school.parent_location_id)
-
-              %{
-                type: :school,
-                location: school,
-                name: school.name,
-                slug: school.slug,
-                city_name: city.name
-              }
-            rescue
-              _ -> nil
-            end
-        end
-
-      location
-    end)
-    |> Enum.reject(&is_nil/1)
-  end
-
-  defp parse_location_entry(entry) do
-    case String.split(entry, ":") do
-      [type, slug] when type in ["f", "c", "s"] -> {type, slug}
-      _ -> nil
-    end
+    LocationHistoryHelpers.load_recent_locations(recent_locations_str)
   end
 
   defp get_total_school_count do
@@ -284,49 +237,40 @@ defmodule MehrSchulferienWeb.HomeLive do
 
     schools = Locations.search_schools(params)
 
-    if federal_state_id != "" do
-      Enum.filter(schools, fn school ->
-        # Check if school's parent location (city) belongs to the selected federal state
-        school.parent_location &&
-          school.parent_location.parent_location_id == String.to_integer(federal_state_id)
-      end)
-    else
-      schools
+    case parse_integer(federal_state_id) do
+      {:ok, federal_state_id_int} ->
+        Enum.filter(schools, fn school ->
+          # Check if school's parent location (city) belongs to the selected federal state
+          school.parent_location &&
+            school.parent_location.parent_location_id == federal_state_id_int
+        end)
+
+      :error ->
+        schools
     end
   end
 
-  defp sort_schools(schools, nil, _order), do: schools
+  defp parse_integer(nil), do: :error
+  defp parse_integer(""), do: :error
 
-  defp sort_schools(schools, field, order) do
-    Enum.sort_by(
-      schools,
-      fn school ->
-        case field do
-          :name ->
-            school.name || ""
+  defp parse_integer(value) when is_integer(value), do: {:ok, value}
 
-          :street ->
-            if school.address, do: school.address.street || "", else: ""
-
-          :zip_code ->
-            if school.address, do: school.address.zip_code || "", else: ""
-
-          :city ->
-            if school.parent_location, do: school.parent_location.name || "", else: ""
-
-          _ ->
-            ""
-        end
-      end,
-      if(order == :asc, do: &<=/2, else: &>=/2)
-    )
+  defp parse_integer(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, ""} -> {:ok, int}
+      _ -> :error
+    end
   end
+
+  defp parse_integer(_), do: :error
+
+  # sort_schools now delegated to SchoolSearchLogic
 
   defp load_federal_state_overview(federal_state_id, today) do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
-    federal_state_id_int = String.to_integer(federal_state_id)
+    {:ok, federal_state_id_int} = parse_integer(federal_state_id)
 
     # Load federal state and country in one query with minimal fields
     query =
@@ -426,7 +370,7 @@ defmodule MehrSchulferienWeb.HomeLive do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
-    federal_state_id_int = String.to_integer(federal_state_id)
+    {:ok, federal_state_id_int} = parse_integer(federal_state_id)
 
     # Optimized query to get all schools with minimal fields
     query =
@@ -1004,11 +948,7 @@ defmodule MehrSchulferienWeb.HomeLive do
   defp get_federal_state_name(_), do: ""
 
   defp should_show_recent_locations(search_params) do
-    # Show recent locations only when both text fields are empty
-    location = Map.get(search_params, "location", "")
-    school_name = Map.get(search_params, "school_name", "")
-
-    location == "" and school_name == ""
+    LocationHistoryHelpers.should_show_recent_locations(search_params)
   end
 
   defp get_next_bridge_days(bridge_day_map, public_periods, today) do
@@ -2066,8 +2006,9 @@ defmodule MehrSchulferienWeb.HomeLive do
     state_ids = Enum.uniq(state_ids)
 
     # Get min and max year for date range
-    min_year = Enum.min(years)
-    max_year = Enum.max(years)
+    current_year = Date.utc_today().year
+    min_year = Enum.min(years, fn -> current_year end)
+    max_year = Enum.max(years, fn -> current_year end)
     {:ok, start_date} = Date.new(min_year, 1, 1)
     {:ok, end_date} = Date.new(max_year, 12, 31)
 

@@ -112,21 +112,26 @@ defmodule MehrSchulferienWeb.MCP.Router do
     }
   end
 
+  # Known MCP argument keys to prevent atom table exhaustion
+  @known_mcp_argument_keys ~w(
+    location_slug location_type year country_slug federal_state_slug
+    city_slug school_slug query type start_date end_date count
+    date distance_meters lat lng limit offset format
+    vacation_type religion include_holidays include_vacations
+  )a
+
   defp handle_tool_call(request) do
     tool_name = get_in(request, ["params", "name"])
     arguments = get_in(request, ["params", "arguments"]) || %{}
 
-    # Convert string keys to atoms for the arguments safely
+    # Convert string keys to atoms for the arguments safely (only known keys)
     atomized_arguments =
-      for {key, value} <- arguments, into: %{} do
-        atom_key =
-          try do
-            String.to_existing_atom(key)
-          rescue
-            ArgumentError -> String.to_atom(key)
+      for {key, value} <- arguments, reduce: %{} do
+        acc ->
+          case safe_mcp_key_to_atom(key) do
+            {:ok, atom_key} -> Map.put(acc, atom_key, value)
+            :error -> acc
           end
-
-        {atom_key, value}
       end
 
     # Create a minimal frame for the server
@@ -165,6 +170,17 @@ defmodule MehrSchulferienWeb.MCP.Router do
         }
     end
   end
+
+  defp safe_mcp_key_to_atom(key) when is_binary(key) do
+    try do
+      atom = String.to_existing_atom(key)
+      if atom in @known_mcp_argument_keys, do: {:ok, atom}, else: :error
+    rescue
+      ArgumentError -> :error
+    end
+  end
+
+  defp safe_mcp_key_to_atom(_), do: :error
 
   defp handle_ping(_request) do
     %{

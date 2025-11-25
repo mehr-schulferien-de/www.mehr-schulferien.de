@@ -176,38 +176,50 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
 
   @impl true
   def handle_event("select_only_federal_state", %{"id" => id}, socket) do
-    id = String.to_integer(id)
+    case Integer.parse(id) do
+      {id_int, ""} ->
+        socket =
+          socket
+          |> assign(:selected_federal_state_ids, [id_int])
+          |> load_periods()
 
-    socket =
-      socket
-      |> assign(:selected_federal_state_ids, [id])
-      |> load_periods()
+        {:noreply, socket}
 
-    {:noreply, socket}
+      _ ->
+        {:noreply, socket}
+    end
   end
 
   @impl true
   def handle_event("select_only_vacation_type", %{"id" => id}, socket) do
-    id = String.to_integer(id)
+    case Integer.parse(id) do
+      {id_int, ""} ->
+        socket =
+          socket
+          |> assign(:selected_vacation_type_ids, [id_int])
+          |> load_periods()
 
-    socket =
-      socket
-      |> assign(:selected_vacation_type_ids, [id])
-      |> load_periods()
+        {:noreply, socket}
 
-    {:noreply, socket}
+      _ ->
+        {:noreply, socket}
+    end
   end
 
   @impl true
   def handle_event("select_only_year", %{"year" => year}, socket) do
-    year = String.to_integer(year)
+    case Integer.parse(year) do
+      {year_int, ""} ->
+        socket =
+          socket
+          |> assign(:selected_years, [year_int])
+          |> load_periods()
 
-    socket =
-      socket
-      |> assign(:selected_years, [year])
-      |> load_periods()
+        {:noreply, socket}
 
-    {:noreply, socket}
+      _ ->
+        {:noreply, socket}
+    end
   end
 
   defp apply_filters(socket, params) do
@@ -233,7 +245,11 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
     |> Enum.filter(fn {key, value} -> String.starts_with?(key, prefix) && value == "true" end)
     |> Enum.map(fn {key, _} ->
       value = String.replace(key, prefix, "")
-      if String.match?(value, ~r/^\d+$/), do: String.to_integer(value), else: value
+
+      case Integer.parse(value) do
+        {int, ""} -> int
+        _ -> value
+      end
     end)
   end
 
@@ -244,7 +260,8 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
     |> String.split(",")
     |> Enum.map(&String.trim/1)
     |> Enum.reject(&(&1 == ""))
-    |> Enum.map(&String.to_integer/1)
+    |> Enum.map(&safe_to_integer/1)
+    |> Enum.reject(&is_nil/1)
   end
 
   defp parse_ids(ids) when is_list(ids), do: ids
@@ -252,14 +269,28 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
   defp parse_years(nil), do: [Date.utc_today().year]
 
   defp parse_years(years) when is_binary(years) do
-    years
-    |> String.split(",")
-    |> Enum.map(&String.trim/1)
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.map(&String.to_integer/1)
+    parsed =
+      years
+      |> String.split(",")
+      |> Enum.map(&String.trim/1)
+      |> Enum.reject(&(&1 == ""))
+      |> Enum.map(&safe_to_integer/1)
+      |> Enum.reject(&is_nil/1)
+
+    if Enum.empty?(parsed), do: [Date.utc_today().year], else: parsed
   end
 
   defp parse_years(years) when is_list(years), do: years
+
+  defp safe_to_integer(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, ""} -> int
+      _ -> nil
+    end
+  end
+
+  defp safe_to_integer(value) when is_integer(value), do: value
+  defp safe_to_integer(_), do: nil
 
   defp load_periods(socket) do
     query = build_query(socket.assigns)
