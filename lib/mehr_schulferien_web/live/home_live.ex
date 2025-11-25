@@ -1904,7 +1904,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         location_ids
         |> Enum.flat_map(fn id -> Map.get(periods_by_location, id, []) end)
         |> Enum.uniq_by(& &1.id)
-        |> Enum.sort_by(& &1.starts_on)
+        |> Enum.sort_by(& &1.starts_on, Date)
 
       # Compute next bridge day and best bridge day using the pre-fetched periods
       next_bridge_day = find_next_bridge_day_from_periods(state_periods, reference_date, 1)
