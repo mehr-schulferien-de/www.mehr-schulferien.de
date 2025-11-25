@@ -4,7 +4,7 @@ defmodule MehrSchulferien.MixProject do
   def project do
     [
       app: :mehr_schulferien,
-      version: "4.19.0",
+      version: "4.19.1",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
@@ -44,7 +44,7 @@ defmodule MehrSchulferien.MixProject do
       {:tailwind, "~> 0.4.1"},
       {:gettext, "~> 1.0"},
       {:jason, "~> 1.4.0"},
-      {:plug_cowboy, "~> 2.7"},
+      {:bandit, "~> 1.0"},
       {:ex_machina, "~> 2.8.0", only: :test},
       {:faker, "~> 0.17", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},

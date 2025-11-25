@@ -31,6 +31,7 @@ config :mehr_schulferien, :mcp,
 
 # Configures the endpoint
 config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   secret_key_base: "your-secret-key-base-here",
   render_errors: [view: MehrSchulferienWeb.ErrorView, accepts: ~w(html json), layout: false],
