@@ -193,6 +193,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers/api/reference", PageController, :developers_api_reference
     get "/developers/mcp", PageController, :developers_mcp
     get "/impressum", PageController, :impressum
+    get "/debug", PageController, :debug
 
     # Date Query Routes
     get "/ist-heute-feiertag/:federal_state_slug", DateQueryController, :is_today_public_holiday

@@ -11,7 +11,8 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   def mount(_params, _session, socket) do
     {daily_changes, limit_reached} = get_daily_limit_info()
 
-    changeset = %Ecto.Changeset{Ecto.Changeset.change(%Address{}) | action: nil}
+    %Ecto.Changeset{} = base_changeset = Ecto.Changeset.change(%Address{})
+    changeset = %{base_changeset | action: nil}
 
     {:ok,
      socket
@@ -64,9 +65,11 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
       end
 
     # Don't validate the changeset during typing, just preserve the form data
-    changeset = %Ecto.Changeset{
-      socket.assigns.changeset
-      | changes: Map.merge(socket.assigns.changeset.changes, address_params),
+    %Ecto.Changeset{} = current_changeset = socket.assigns.changeset
+
+    changeset = %{
+      current_changeset
+      | changes: Map.merge(current_changeset.changes, address_params),
         data: %Address{
           street: address_params["street"] || "",
           zip_code: address_params["zip_code"] || "",

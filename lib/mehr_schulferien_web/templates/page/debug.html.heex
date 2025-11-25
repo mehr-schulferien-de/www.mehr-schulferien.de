@@ -1,0 +1,84 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">System Debug Information</h1>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <!-- Runtime Information -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Runtime</h2>
+      <dl class="space-y-3">
+        <div class="flex justify-between">
+          <dt class="text-gray-600">Elixir Version</dt>
+          <dd class="font-mono text-gray-900">{@elixir_version}</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-600">Erlang/OTP Version</dt>
+          <dd class="font-mono text-gray-900">OTP {@erlang_version}</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-600">ERTS Version</dt>
+          <dd class="font-mono text-gray-900">{@erts_version}</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-600">Environment</dt>
+          <dd class="font-mono">
+            <span class={[
+              "px-2 py-1 rounded text-sm",
+              @environment == :prod && "bg-green-100 text-green-800",
+              @environment == :dev && "bg-yellow-100 text-yellow-800",
+              @environment == :test && "bg-blue-100 text-blue-800"
+            ]}>
+              {@environment}
+            </span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+    
+<!-- Application Information -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Application</h2>
+      <dl class="space-y-3">
+        <div class="flex justify-between">
+          <dt class="text-gray-600">App Version</dt>
+          <dd class="font-mono text-gray-900">{@app_version}</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-600">Deployment</dt>
+          <dd class="font-mono text-gray-900 text-sm">{@deployment_timestamp}</dd>
+        </div>
+      </dl>
+    </div>
+    
+<!-- Database Status -->
+    <div class="bg-white rounded-lg shadow p-6 md:col-span-2">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Database Status</h2>
+      <%= case @db_status do %>
+        <% :ok -> %>
+          <div class="flex items-center mb-4">
+            <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+            <span class="text-green-700 font-medium">Connected</span>
+          </div>
+          <dl class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded p-4">
+              <dt class="text-gray-600 text-sm">Cities</dt>
+              <dd class="text-2xl font-bold text-gray-900">{@cities_count}</dd>
+            </div>
+            <div class="bg-gray-50 rounded p-4">
+              <dt class="text-gray-600 text-sm">Schools</dt>
+              <dd class="text-2xl font-bold text-gray-900">{@schools_count}</dd>
+            </div>
+          </dl>
+        <% {:error, message} -> %>
+          <div class="flex items-center mb-4">
+            <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+            <span class="text-red-700 font-medium">Connection Error</span>
+          </div>
+          <p class="text-red-600 font-mono text-sm">{message}</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-8 text-center text-gray-500 text-sm">
+    Generated at {NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)}
+  </div>
+</div>

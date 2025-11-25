@@ -98,4 +98,30 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     assert response =~ "Stefan Wintermeyer"
     assert response =~ "Datenschutzerklärung"
   end
+
+  test "GET /debug returns 200 and shows system info", %{conn: conn} do
+    conn = get(conn, "/debug")
+    response = html_response(conn, 200)
+
+    # Check that page renders with 200 status code
+    assert response
+
+    # Check for Elixir version
+    assert response =~ "Elixir Version"
+    assert response =~ System.version()
+
+    # Check for Erlang/OTP version
+    assert response =~ "Erlang/OTP Version"
+
+    # Check for environment
+    assert response =~ "Environment"
+
+    # Check for database status
+    assert response =~ "Database Status"
+    assert response =~ "Connected"
+
+    # Check for cities and schools counts
+    assert response =~ "Cities"
+    assert response =~ "Schools"
+  end
 end

@@ -1,8 +1,10 @@
 defmodule MehrSchulferienWeb.PageController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods, Repo}
+  alias MehrSchulferien.Locations.Location
   alias MehrSchulferienWeb.Helpers.VacationTypeHelpers
+  import Ecto.Query
 
   def index(conn, %{"number_of_days" => number_of_days}) do
     today = DateHelpers.get_today_or_custom_date(conn)
@@ -173,6 +175,74 @@ defmodule MehrSchulferienWeb.PageController do
 
   def impressum(conn, _params) do
     render(conn, "impressum.html", css_framework: :tailwind_new)
+  end
+
+  def debug(conn, _params) do
+    # Elixir version
+    elixir_version = System.version()
+
+    # Erlang/OTP version (major.minor)
+    erlang_version =
+      :erlang.system_info(:otp_release)
+      |> to_string()
+
+    # Get ERTS version for more detail
+    erts_version =
+      :erlang.system_info(:version)
+      |> to_string()
+
+    # Environment
+    environment = Application.get_env(:mehr_schulferien, :env) || Mix.env()
+
+    # Database check - count cities and schools
+    {cities_count, schools_count, db_status} =
+      try do
+        cities = Repo.aggregate(from(l in Location, where: l.is_city == true), :count, :id)
+        schools = Locations.count_schools()
+        {cities, schools, :ok}
+      rescue
+        e -> {0, 0, {:error, Exception.message(e)}}
+      end
+
+    # App version from mix.exs
+    app_version = Application.spec(:mehr_schulferien, :vsn) |> to_string()
+
+    # Deployment timestamp - check for priv/static/cache_manifest.json modification time
+    # or use application start time as fallback
+    deployment_timestamp = get_deployment_timestamp()
+
+    render(conn, "debug.html",
+      elixir_version: elixir_version,
+      erlang_version: erlang_version,
+      erts_version: erts_version,
+      environment: environment,
+      cities_count: cities_count,
+      schools_count: schools_count,
+      db_status: db_status,
+      app_version: app_version,
+      deployment_timestamp: deployment_timestamp,
+      css_framework: :tailwind_new
+    )
+  end
+
+  defp get_deployment_timestamp do
+    # Try to get the modification time of priv/static/cache_manifest.json
+    # which is generated during asset deployment
+    manifest_path = Application.app_dir(:mehr_schulferien, "priv/static/cache_manifest.json")
+
+    case File.stat(manifest_path) do
+      {:ok, %{mtime: mtime}} ->
+        mtime
+        |> NaiveDateTime.from_erl!()
+        |> NaiveDateTime.to_string()
+
+      _ ->
+        # Fallback: use application start time
+        case :application.get_key(:mehr_schulferien, :start_time) do
+          {:ok, start_time} -> start_time
+          _ -> "Unknown"
+        end
+    end
   end
 
   def home(conn, params) do

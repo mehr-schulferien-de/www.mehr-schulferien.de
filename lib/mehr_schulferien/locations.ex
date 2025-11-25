@@ -561,10 +561,10 @@ defmodule MehrSchulferien.Locations do
     |> Enum.map(&combine_city_periods(federal_state, counties, &1))
   end
 
-  defp combine_city_periods(federal_state, counties, city) do
+  defp combine_city_periods(federal_state, counties, %Location{} = city) do
     county = Enum.find(counties, &(&1.id == city.parent_location_id))
     periods = federal_state.periods ++ county.periods ++ city.periods
-    %Location{city | periods: periods}
+    %{city | periods: periods}
   end
 
   @doc """
@@ -656,9 +656,9 @@ defmodule MehrSchulferien.Locations do
   end
 
   def combine_school_periods(schools, cities) do
-    Enum.map(schools, fn school ->
+    Enum.map(schools, fn %Location{} = school ->
       city = Enum.find(cities, &(&1.id == school.parent_location_id))
-      %Location{school | periods: school.periods ++ city.periods}
+      %{school | periods: school.periods ++ city.periods}
     end)
   end
 
