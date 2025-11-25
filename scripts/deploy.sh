@@ -9,10 +9,16 @@
 # - Application is currently running
 #
 # Cold deploy is used when:
+# - Elixir or Erlang version changed (via .tool-versions)
 # - Database migrations are pending
 # - Commit message contains [cold-deploy], [restart], or [supervision]
 # - Application is not running
 # - Hot deploy fails
+#
+# To upgrade Elixir/Erlang:
+# 1. Update .tool-versions with new versions
+# 2. Push to master
+# 3. Deploy will auto-install new versions via mise and cold deploy
 
 set -e
 
@@ -63,16 +69,51 @@ else
     git reset --hard origin/master
 fi
 
-# Get the version and commit info for logging
 cd "$REPO_DIR" || exit
+
+# Activate mise and install required Elixir/Erlang versions
+echo "Setting up mise environment..."
+eval "$(mise activate bash)"
+
+# Check if Elixir/Erlang versions changed (for cold deploy detection)
+CURRENT_ELIXIR=$(elixir --version 2>/dev/null | grep "Elixir" | awk '{print $2}' || echo "unknown")
+CURRENT_ERLANG=$(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell 2>/dev/null | tr -d '"' || echo "unknown")
+
+# Install versions from .tool-versions if needed
+if [ -f ".tool-versions" ]; then
+    echo "Installing tool versions from .tool-versions..."
+    mise install
+fi
+
+# Check versions after mise install
+NEW_ELIXIR=$(elixir --version 2>/dev/null | grep "Elixir" | awk '{print $2}' || echo "unknown")
+NEW_ERLANG=$(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell 2>/dev/null | tr -d '"' || echo "unknown")
+
+# Detect if runtime versions changed
+RUNTIME_CHANGED="false"
+if [ "$CURRENT_ELIXIR" != "$NEW_ELIXIR" ] || [ "$CURRENT_ERLANG" != "$NEW_ERLANG" ]; then
+    echo "Runtime version change detected!"
+    echo "  Elixir: $CURRENT_ELIXIR -> $NEW_ELIXIR"
+    echo "  Erlang: $CURRENT_ERLANG -> $NEW_ERLANG"
+    RUNTIME_CHANGED="true"
+fi
+
+# Get the version and commit info for logging
 new_version=$(grep "version: " mix.exs | sed "s/.*version: \"\(.*\)\",/\1/")
 commit_msg=$(git log -1 --pretty=%B)
 commit_hash=$(git rev-parse --short HEAD)
 
 echo "Deploying version: ${new_version} (${commit_hash})"
+echo "Using Elixir: ${NEW_ELIXIR}, Erlang/OTP: ${NEW_ERLANG}"
 
 # Function to check if cold deploy is required
 requires_cold_deploy() {
+    # Check if runtime versions changed (Elixir/Erlang upgrade)
+    if [ "$RUNTIME_CHANGED" = "true" ]; then
+        echo "Cold deploy required due to Elixir/Erlang version change"
+        return 0
+    fi
+
     # Check commit message for cold deploy tags
     if echo "$commit_msg" | grep -qiE '\[(cold-deploy|restart|supervision)\]'; then
         echo "Cold deploy requested via commit message"
