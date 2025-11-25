@@ -208,18 +208,29 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
     # Get official duration
     official_duration = Date.diff(period.ends_on, period.starts_on) + 1
 
-    # Check days before the period start
-    days_before = get_adjacent_days_before(period.starts_on, all_periods) |> length()
+    # Pre-build holiday date set for O(1) lookups instead of O(n) per date
+    holiday_dates = build_holiday_date_set(all_periods)
 
-    # Check days after the period end  
-    days_after = get_adjacent_days_after(period.ends_on, all_periods) |> length()
+    # Check days before the period start
+    days_before = get_adjacent_days_before(period.starts_on, holiday_dates) |> length()
+
+    # Check days after the period end
+    days_after = get_adjacent_days_after(period.ends_on, holiday_dates) |> length()
 
     # Return total effective duration
     official_duration + days_before + days_after
   end
 
+  # Build a MapSet of all holiday dates for O(1) lookups
+  defp build_holiday_date_set(periods) do
+    Enum.reduce(periods, MapSet.new(), fn period, acc ->
+      Date.range(period.starts_on, period.ends_on)
+      |> Enum.reduce(acc, &MapSet.put(&2, &1))
+    end)
+  end
+
   # Get days before a date that are already non-school days
-  defp get_adjacent_days_before(start_date, periods) do
+  defp get_adjacent_days_before(start_date, holiday_dates) do
     # Start checking from the day before the period
     day_before = Date.add(start_date, -1)
 
@@ -228,12 +239,12 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
 
     # Keep only consecutive days off
     Enum.take_while(dates_to_check, fn date ->
-      is_weekend_or_holiday?(date, periods)
+      is_weekend_or_holiday?(date, holiday_dates)
     end)
   end
 
   # Get days after a date that are already non-school days
-  defp get_adjacent_days_after(end_date, periods) do
+  defp get_adjacent_days_after(end_date, holiday_dates) do
     # Start checking from the day after the period
     day_after = Date.add(end_date, 1)
 
@@ -242,21 +253,17 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
 
     # Keep only consecutive days off
     Enum.take_while(dates_to_check, fn date ->
-      is_weekend_or_holiday?(date, periods)
+      is_weekend_or_holiday?(date, holiday_dates)
     end)
   end
 
-  # Check if a date is a weekend or part of any holiday period
-  defp is_weekend_or_holiday?(date, periods) do
+  # Check if a date is a weekend or part of any holiday period (O(1) with MapSet)
+  defp is_weekend_or_holiday?(date, holiday_dates) do
     # Weekend check (day_of_week: 6=Saturday, 7=Sunday)
     is_weekend = Date.day_of_week(date) > 5
 
-    # Holiday check - is this date within any period?
-    is_holiday =
-      Enum.any?(periods, fn p ->
-        Date.compare(date, p.starts_on) in [:eq, :gt] &&
-          Date.compare(date, p.ends_on) in [:lt, :eq]
-      end)
+    # Holiday check - O(1) MapSet lookup instead of O(n) Enum.any?
+    is_holiday = MapSet.member?(holiday_dates, date)
 
     is_weekend || is_holiday
   end

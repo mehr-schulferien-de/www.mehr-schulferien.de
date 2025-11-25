@@ -255,9 +255,10 @@ defmodule MehrSchulferien.Periods do
   Caches results based on location IDs and date range for improved performance.
   """
   def list_school_free_periods_cached(location_ids, starts_on, ends_on) do
-    # Create cache key from location IDs and date range
-    location_key = location_ids |> Enum.sort() |> Enum.join(",")
-    cache_key = "periods_#{location_key}_#{starts_on}_#{ends_on}"
+    # Create cache key using hash for efficiency instead of string join
+    # :erlang.phash2 is O(n) but produces a fixed-size integer vs variable-length string
+    location_hash = location_ids |> Enum.sort() |> :erlang.phash2()
+    cache_key = {:periods, location_hash, starts_on, ends_on}
 
     Cache.cached_query_operation(
       cache_key,
@@ -658,26 +659,29 @@ defmodule MehrSchulferien.Periods do
 
   @doc """
   Gets the federal state for a given school.
-  Traverses up the location hierarchy to find the federal state.
+  Uses a single query with recursive CTE instead of multiple queries per hierarchy level.
   """
   def get_school_federal_state(school_id) do
     alias MehrSchulferien.Locations
+    alias MehrSchulferien.Locations.Location
 
     case Locations.get_location(school_id) do
-      nil -> nil
-      school -> find_federal_state_in_hierarchy(school)
-    end
-  end
+      nil ->
+        nil
 
-  defp find_federal_state_in_hierarchy(%{is_federal_state: true} = location), do: location
-  defp find_federal_state_in_hierarchy(%{parent_location_id: nil}), do: nil
+      %{is_federal_state: true} = location ->
+        location
 
-  defp find_federal_state_in_hierarchy(%{parent_location_id: parent_id}) do
-    alias MehrSchulferien.Locations
+      school ->
+        # Use recursive CTE to get all ancestor IDs in one query
+        location_ids = Locations.recursive_location_ids(school)
 
-    case Locations.get_location(parent_id) do
-      nil -> nil
-      parent -> find_federal_state_in_hierarchy(parent)
+        # Find the federal state among ancestors
+        from(l in Location,
+          where: l.id in ^location_ids and l.is_federal_state == true,
+          limit: 1
+        )
+        |> Repo.one()
     end
   end
 

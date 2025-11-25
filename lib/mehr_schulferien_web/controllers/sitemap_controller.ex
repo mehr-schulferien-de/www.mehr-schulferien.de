@@ -172,9 +172,12 @@ defmodule MehrSchulferienWeb.SitemapController do
         end)
 
       # For schools, also add the city periods
+      # Pre-build map for O(1) lookups instead of O(n) Enum.find per school
+      cities_by_id = Map.new(cities_with_meta, &{&1.id, &1})
+
       schools_with_meta =
         Enum.map(schools_with_meta, fn school ->
-          city = Enum.find(cities_with_meta, fn city -> city.id == school.parent_location_id end)
+          city = Map.get(cities_by_id, school.parent_location_id)
 
           if city do
             city_periods = Map.get(city, :periods, [])

@@ -554,15 +554,17 @@ defmodule MehrSchulferien.Locations do
       |> Repo.preload([:periods])
 
     county_ids = Enum.map(counties, & &1.id)
+    # Pre-build map for O(1) lookups instead of O(n) Enum.find per city
+    counties_by_id = Map.new(counties, &{&1.id, &1})
 
     from(l in Location, where: l.is_city == true and l.parent_location_id in ^county_ids)
     |> Repo.all()
     |> Repo.preload([:periods])
-    |> Enum.map(&combine_city_periods(federal_state, counties, &1))
+    |> Enum.map(&combine_city_periods(federal_state, counties_by_id, &1))
   end
 
-  defp combine_city_periods(federal_state, counties, %Location{} = city) do
-    county = Enum.find(counties, &(&1.id == city.parent_location_id))
+  defp combine_city_periods(federal_state, counties_by_id, %Location{} = city) do
+    county = Map.get(counties_by_id, city.parent_location_id)
     periods = federal_state.periods ++ county.periods ++ city.periods
     %{city | periods: periods}
   end
@@ -627,11 +629,11 @@ defmodule MehrSchulferien.Locations do
     # First, get the city with its zip codes
     city_with_zips = Repo.preload(city, :zip_codes)
 
-    # Get the first 4 digits of all city zip codes
+    # Get the first 4 digits of all city zip codes as MapSet for O(1) lookups
     city_zip_prefixes =
       city_with_zips.zip_codes
       |> Enum.map(fn zip -> String.slice(zip.value, 0, 4) end)
-      |> Enum.uniq()
+      |> MapSet.new()
 
     # Get all schools in the city
     schools = list_schools(city)
@@ -647,7 +649,7 @@ defmodule MehrSchulferien.Locations do
 
         %{zip_code: school_zip} when is_binary(school_zip) ->
           school_zip_prefix = String.slice(school_zip, 0, 4)
-          Enum.member?(city_zip_prefixes, school_zip_prefix)
+          MapSet.member?(city_zip_prefixes, school_zip_prefix)
 
         _ ->
           false
@@ -656,8 +658,11 @@ defmodule MehrSchulferien.Locations do
   end
 
   def combine_school_periods(schools, cities) do
+    # Pre-build map for O(1) lookups instead of O(n) Enum.find per school
+    cities_by_id = Map.new(cities, &{&1.id, &1})
+
     Enum.map(schools, fn %Location{} = school ->
-      city = Enum.find(cities, &(&1.id == school.parent_location_id))
+      city = Map.get(cities_by_id, school.parent_location_id)
       %{school | periods: school.periods ++ city.periods}
     end)
   end
