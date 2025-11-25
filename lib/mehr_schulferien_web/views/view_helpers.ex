@@ -312,75 +312,92 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   @doc """
+  Builds a MapSet of all dates covered by the given periods.
+  Use this once before calling calculate_effective_duration_fast/3 in a loop.
+  This reduces complexity from O(n²) to O(n) when processing multiple periods.
+  """
+  def build_period_date_set(periods) do
+    periods
+    |> Enum.flat_map(fn p ->
+      Date.range(p.starts_on, p.ends_on) |> Enum.to_list()
+    end)
+    |> MapSet.new()
+  end
+
+  @doc """
   Calculate effective duration for a period, including adjacent holidays/weekends.
   This is the shared implementation used by all view modules.
+
+  When called with a list of periods (legacy API), it builds the date set internally.
+  For better performance when processing multiple periods, use build_period_date_set/1
+  once and then call calculate_effective_duration/3 with the pre-built MapSet.
   """
-  def calculate_effective_duration(period, periods) do
-    # Get official duration
+  def calculate_effective_duration(period, periods) when is_list(periods) do
+    # Legacy API: build date set on each call (O(n) per call)
+    period_date_set = build_period_date_set(periods)
+    calculate_effective_duration(period, period_date_set, :optimized)
+  end
+
+  def calculate_effective_duration(period, period_date_set, :optimized) do
+    # Optimized API: use pre-built MapSet for O(1) lookups
     official_duration = Date.diff(period.ends_on, period.starts_on) + 1
 
-    # Look for adjacent days that are already off days
-    # These could be weekends or other holiday periods
-
     # Check days before the period start
-    days_before =
-      get_adjacent_days_before(period.starts_on, periods)
-      |> length()
+    days_before = count_adjacent_days_before(period.starts_on, period_date_set)
 
     # Check days after the period end
-    days_after =
-      get_adjacent_days_after(period.ends_on, periods)
-      |> length()
+    days_after = count_adjacent_days_after(period.ends_on, period_date_set)
 
     # Return total effective duration
     official_duration + days_before + days_after
   end
 
-  # Get days before a date that are already non-school days
-  defp get_adjacent_days_before(start_date, periods) do
+  # Count consecutive days before a date that are already non-school days
+  # Uses O(1) MapSet lookups instead of O(n) Enum.any? scans
+  defp count_adjacent_days_before(start_date, period_date_set) do
     # Start checking from the day before the period
     day_before = Date.add(start_date, -1)
 
     # Look back up to 7 days (to catch full weekends + holidays)
-    dates_to_check = for i <- 0..6, do: Date.add(day_before, -i)
+    # Count consecutive days off
+    Enum.reduce_while(0..6, 0, fn i, count ->
+      date = Date.add(day_before, -i)
 
-    # Keep only consecutive days off
-    Enum.take_while(dates_to_check, fn date ->
-      # A date is a day off if:
-      # 1. It's a weekend (Sat/Sun)
-      # 2. It's part of another period (holiday/vacation)
-      is_weekend_or_holiday?(date, periods)
+      if is_weekend_or_holiday_fast?(date, period_date_set) do
+        {:cont, count + 1}
+      else
+        {:halt, count}
+      end
     end)
   end
 
-  # Get days after a date that are already non-school days
-  defp get_adjacent_days_after(end_date, periods) do
+  # Count consecutive days after a date that are already non-school days
+  # Uses O(1) MapSet lookups instead of O(n) Enum.any? scans
+  defp count_adjacent_days_after(end_date, period_date_set) do
     # Start checking from the day after the period
     day_after = Date.add(end_date, 1)
 
     # Look ahead up to 7 days (to catch full weekends + holidays)
-    dates_to_check = for i <- 0..6, do: Date.add(day_after, i)
+    # Count consecutive days off
+    Enum.reduce_while(0..6, 0, fn i, count ->
+      date = Date.add(day_after, i)
 
-    # Keep only consecutive days off
-    Enum.take_while(dates_to_check, fn date ->
-      # A date is a day off if:
-      # 1. It's a weekend (Sat/Sun)
-      # 2. It's part of another period (holiday/vacation)
-      is_weekend_or_holiday?(date, periods)
+      if is_weekend_or_holiday_fast?(date, period_date_set) do
+        {:cont, count + 1}
+      else
+        {:halt, count}
+      end
     end)
   end
 
   # Check if a date is a weekend or part of any holiday period
-  defp is_weekend_or_holiday?(date, periods) do
+  # Uses O(1) MapSet lookup instead of O(n) Enum.any? scan
+  defp is_weekend_or_holiday_fast?(date, period_date_set) do
     # Weekend check (day_of_week: 6=Saturday, 7=Sunday)
     is_weekend = Date.day_of_week(date) > 5
 
-    # Holiday check - is this date within any period?
-    is_holiday =
-      Enum.any?(periods, fn p ->
-        Date.compare(date, p.starts_on) in [:eq, :gt] &&
-          Date.compare(date, p.ends_on) in [:lt, :eq]
-      end)
+    # Holiday check - O(1) MapSet lookup
+    is_holiday = MapSet.member?(period_date_set, date)
 
     is_weekend || is_holiday
   end

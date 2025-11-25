@@ -90,8 +90,11 @@ defmodule MehrSchulferien.Periods.Grouping do
       # Sort by start date
       sorted_bridges = Enum.sort_by(single_day_bridges, & &1.starts_on)
 
+      # Pre-build a MapSet of holiday dates for O(1) lookups (instead of O(n) per date)
+      holiday_date_set = build_holiday_date_set(periods)
+
       # Find combinations where multiple single-day bridges create a continuous vacation
-      combinations = find_bridge_combinations(sorted_bridges, periods, 2, 3)
+      combinations = find_bridge_combinations(sorted_bridges, periods, holiday_date_set, 2, 3)
 
       # Group by total number of bridge days needed
       Enum.reduce(combinations, %{}, fn combo, acc ->
@@ -104,7 +107,17 @@ defmodule MehrSchulferien.Periods.Grouping do
     end
   end
 
-  defp find_bridge_combinations(bridges, periods, _min_days, max_days) do
+  # Build a MapSet of all dates that are public holidays for O(1) lookups
+  defp build_holiday_date_set(periods) do
+    periods
+    |> Enum.filter(& &1.is_public_holiday)
+    |> Enum.flat_map(fn p ->
+      Date.range(p.starts_on, p.ends_on) |> Enum.to_list()
+    end)
+    |> MapSet.new()
+  end
+
+  defp find_bridge_combinations(bridges, periods, holiday_date_set, _min_days, max_days) do
     # Generate combinations of 2 or 3 single-day bridges
     combinations = []
 
@@ -116,7 +129,7 @@ defmodule MehrSchulferien.Periods.Grouping do
               j <- (i + 1)..(length(bridges) - 1),
               bridge1 = Enum.at(bridges, i),
               bridge2 = Enum.at(bridges, j),
-              combo = check_bridge_combination([bridge1, bridge2], periods),
+              combo = check_bridge_combination([bridge1, bridge2], periods, holiday_date_set),
               combo != nil do
             combo
           end
@@ -134,7 +147,8 @@ defmodule MehrSchulferien.Periods.Grouping do
               bridge1 = Enum.at(bridges, i),
               bridge2 = Enum.at(bridges, j),
               bridge3 = Enum.at(bridges, k),
-              combo = check_bridge_combination([bridge1, bridge2, bridge3], periods),
+              combo =
+                check_bridge_combination([bridge1, bridge2, bridge3], periods, holiday_date_set),
               combo != nil do
             combo
           end
@@ -145,7 +159,7 @@ defmodule MehrSchulferien.Periods.Grouping do
     combinations
   end
 
-  defp check_bridge_combination(bridges, periods) do
+  defp check_bridge_combination(bridges, periods, holiday_date_set) do
     # Sort bridges by start date
     sorted_bridges = Enum.sort_by(bridges, & &1.starts_on)
     first_bridge = List.first(sorted_bridges)
@@ -167,7 +181,7 @@ defmodule MehrSchulferien.Periods.Grouping do
     # Check if all dates are either:
     # 1. Part of a bridge day we're taking
     # 2. A weekend
-    # 3. An existing holiday
+    # 3. An existing holiday (using pre-built MapSet for O(1) lookup)
     all_covered =
       Enum.all?(date_range, fn date ->
         is_bridge_day =
@@ -178,12 +192,8 @@ defmodule MehrSchulferien.Periods.Grouping do
 
         is_weekend = Date.day_of_week(date) > 5
 
-        is_holiday =
-          Enum.any?(periods, fn period ->
-            period.is_public_holiday &&
-              Date.compare(date, period.starts_on) != :lt &&
-              Date.compare(date, period.ends_on) != :gt
-          end)
+        # O(1) lookup instead of O(n) Enum.any?
+        is_holiday = MapSet.member?(holiday_date_set, date)
 
         is_bridge_day || is_weekend || is_holiday
       end)

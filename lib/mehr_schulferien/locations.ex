@@ -624,37 +624,38 @@ defmodule MehrSchulferien.Locations do
   @doc """
   Returns the list of schools for a certain city filtered by zip code prefix.
   Only returns schools whose zip codes start with the same first 4 digits as any of the city's zip codes.
+
+  Optimized to do the filtering in SQL using LEFT() function instead of fetching all schools
+  and filtering in Elixir.
   """
   def list_schools_by_zip_prefix(city) do
     # First, get the city with its zip codes
     city_with_zips = Repo.preload(city, :zip_codes)
 
-    # Get the first 4 digits of all city zip codes as MapSet for O(1) lookups
+    # Get the first 4 digits of all city zip codes
     city_zip_prefixes =
       city_with_zips.zip_codes
       |> Enum.map(fn zip -> String.slice(zip.value, 0, 4) end)
-      |> MapSet.new()
+      |> Enum.uniq()
 
-    # Get all schools in the city
-    schools = list_schools(city)
-
-    # Filter schools by zip code prefix
-    Enum.filter(schools, fn school ->
-      case school.address do
-        nil ->
-          false
-
-        %{zip_code: nil} ->
-          false
-
-        %{zip_code: school_zip} when is_binary(school_zip) ->
-          school_zip_prefix = String.slice(school_zip, 0, 4)
-          MapSet.member?(city_zip_prefixes, school_zip_prefix)
-
-        _ ->
-          false
-      end
-    end)
+    # If no zip codes, return empty list
+    if Enum.empty?(city_zip_prefixes) do
+      []
+    else
+      # Use SQL to filter schools by zip prefix - much faster than filtering in Elixir
+      from(l in Location,
+        join: a in MehrSchulferien.Maps.Address,
+        on: a.school_location_id == l.id,
+        where:
+          l.is_school == true and
+            l.parent_location_id == ^city.id and
+            not is_nil(a.zip_code) and
+            fragment("LEFT(?, 4)", a.zip_code) in ^city_zip_prefixes,
+        preload: [:address],
+        order_by: l.name
+      )
+      |> Repo.all()
+    end
   end
 
   def combine_school_periods(schools, cities) do
@@ -1269,10 +1270,24 @@ defmodule MehrSchulferien.Locations do
   end
 
   # Helper to find the federal state for any location
+  # Optimized to use a single query via recursive CTE instead of N recursive DB calls
   defp get_federal_state_for_location(%{is_federal_state: true} = location), do: location
   defp get_federal_state_for_location(%{parent_location_id: nil}), do: nil
 
+  defp get_federal_state_for_location(%Location{} = location) do
+    # Use recursive_location_ids to get all ancestor IDs in one query
+    ancestor_ids = recursive_location_ids(location)
+
+    # Find the federal state among ancestors (single query)
+    from(l in Location,
+      where: l.id in ^ancestor_ids and l.is_federal_state == true,
+      limit: 1
+    )
+    |> Repo.one()
+  end
+
   defp get_federal_state_for_location(%{parent_location_id: parent_id}) do
+    # Fallback for non-Location structs
     parent = Repo.get(Location, parent_id)
     if parent, do: get_federal_state_for_location(parent), else: nil
   end

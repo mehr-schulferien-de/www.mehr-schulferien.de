@@ -94,13 +94,17 @@ defmodule MehrSchulferienWeb.SchoolController do
       |> Enum.uniq()
       |> Enum.sort()
 
-    # Calculate adjoining_duration for each period
+    # Build period date set ONCE for O(1) lookups (instead of O(n) per period)
+    combined_periods = all_periods ++ all_public_periods
+    period_date_set = ViewHelpers.build_period_date_set(combined_periods)
+
+    # Calculate adjoining_duration for each period using optimized O(1) lookups
     periods_with_duration =
       Enum.map(all_periods, fn period ->
         days = Date.diff(period.ends_on, period.starts_on) + 1
 
         effective_duration =
-          ViewHelpers.calculate_effective_duration(period, all_periods ++ all_public_periods)
+          ViewHelpers.calculate_effective_duration(period, period_date_set, :optimized)
 
         difference = effective_duration - days
         Map.put(period, :adjoining_duration, difference)

@@ -66,14 +66,16 @@ defmodule MehrSchulferienWeb.FederalStateController do
     # Use shared logic to prepare show_year data
     data = CH.prepare_show_year_data(location_ids, year, today)
 
-    # Calculate adjoining_duration for each period
-    # This ensures display values reflect the current calculation
+    # Build period date set ONCE for O(1) lookups (instead of O(n) per period)
+    period_date_set = ViewHelpers.build_period_date_set(data.all_periods)
+
+    # Calculate adjoining_duration for each period using optimized O(1) lookups
     periods_with_duration =
       Enum.map(data.periods, fn period ->
         days = Date.diff(period.ends_on, period.starts_on) + 1
 
         effective_duration =
-          ViewHelpers.calculate_effective_duration(period, data.all_periods)
+          ViewHelpers.calculate_effective_duration(period, period_date_set, :optimized)
 
         difference = effective_duration - days
         Map.put(period, :adjoining_duration, difference)

@@ -60,12 +60,14 @@ defmodule MehrSchulferienWeb.CityController do
     # Calculate cutoff date (August 2 of next year)
     {:ok, cutoff_date} = Date.new(current_year + 1, 8, 2)
 
+    # Use SQL filter for cutoff_date instead of Elixir filter
     all_periods =
-      MehrSchulferien.Periods.list_school_vacation_periods(location_ids, full_start, full_end)
-      |> Enum.filter(fn period ->
-        # Keep periods that start on or before August 2 of next year
-        Date.compare(period.starts_on, cutoff_date) != :gt
-      end)
+      MehrSchulferien.Periods.list_school_vacation_periods(
+        location_ids,
+        full_start,
+        full_end,
+        starts_on_cutoff: cutoff_date
+      )
 
     all_public_periods =
       MehrSchulferien.Periods.list_public_periods(location_ids, full_start, full_end)
@@ -73,20 +75,24 @@ defmodule MehrSchulferienWeb.CityController do
     # Check if we have data
     has_data = length(all_periods) > 0
 
-    # Get years with data for navigation
+    # Get years with data for navigation - optimized to avoid creating intermediate list
     years_with_data =
       all_periods
       |> Enum.map(& &1.starts_on.year)
       |> Enum.uniq()
       |> Enum.sort()
 
-    # Calculate adjoining_duration for each period
+    # Build period date set ONCE for O(1) lookups (instead of O(n) per period)
+    combined_periods = all_periods ++ all_public_periods
+    period_date_set = ViewHelpers.build_period_date_set(combined_periods)
+
+    # Calculate adjoining_duration for each period using optimized O(1) lookups
     periods_with_duration =
       Enum.map(all_periods, fn period ->
         days = Date.diff(period.ends_on, period.starts_on) + 1
 
         effective_duration =
-          ViewHelpers.calculate_effective_duration(period, all_periods ++ all_public_periods)
+          ViewHelpers.calculate_effective_duration(period, period_date_set, :optimized)
 
         difference = effective_duration - days
         Map.put(period, :adjoining_duration, difference)

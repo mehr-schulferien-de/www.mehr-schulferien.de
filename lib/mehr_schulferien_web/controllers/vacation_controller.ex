@@ -97,8 +97,11 @@ defmodule MehrSchulferienWeb.VacationController do
     # Find the specific vacation period
     vacation_period = find_vacation_period(data.periods, vacation_type_record.name)
 
+    # Build period date set ONCE for O(1) lookups (instead of O(n) per period)
+    period_date_set = ViewHelpers.build_period_date_set(data.all_periods)
+
     # Calculate adjoining durations for all periods
-    periods_with_duration = calculate_periods_with_duration(data.periods, data.all_periods)
+    periods_with_duration = calculate_periods_with_duration(data.periods, period_date_set)
 
     # Get vacation types for the federal state
     vacation_types = get_vacation_types_for_year(federal_state, year)
@@ -106,7 +109,7 @@ defmodule MehrSchulferienWeb.VacationController do
     # Calculate vacation period's adjoining duration if it exists
     vacation_period_with_adjoining =
       if vacation_period do
-        add_adjoining_duration(vacation_period, data.all_periods)
+        add_adjoining_duration(vacation_period, period_date_set)
       else
         nil
       end
@@ -138,15 +141,18 @@ defmodule MehrSchulferienWeb.VacationController do
     end)
   end
 
-  defp calculate_periods_with_duration(periods, all_periods) do
+  defp calculate_periods_with_duration(periods, period_date_set) do
     Enum.map(periods, fn period ->
-      add_adjoining_duration(period, all_periods)
+      add_adjoining_duration(period, period_date_set)
     end)
   end
 
-  defp add_adjoining_duration(period, all_periods) do
+  defp add_adjoining_duration(period, period_date_set) do
     days = Date.diff(period.ends_on, period.starts_on) + 1
-    effective_duration = ViewHelpers.calculate_effective_duration(period, all_periods)
+
+    effective_duration =
+      ViewHelpers.calculate_effective_duration(period, period_date_set, :optimized)
+
     difference = effective_duration - days
     Map.put(period, :adjoining_duration, difference)
   end

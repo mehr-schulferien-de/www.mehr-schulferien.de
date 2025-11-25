@@ -48,17 +48,34 @@ defmodule MehrSchulferien.Periods.Query do
 
   @doc """
   Returns a list of school vacation periods for a certain time frame.
+
+  Options:
+    - `:starts_on_cutoff` - Only return periods where starts_on <= this date.
+      Useful for filtering out periods that start after a certain date while
+      still returning periods that span across the ends_on boundary.
   """
-  def list_school_vacation_periods(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.is_valid_for_students == true and
-          p.is_school_vacation == true and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: p.starts_on
-    )
+  def list_school_vacation_periods(location_ids, starts_on, ends_on, opts \\ []) do
+    starts_on_cutoff = Keyword.get(opts, :starts_on_cutoff)
+
+    query =
+      from(p in Period,
+        where:
+          p.location_id in ^location_ids and
+            p.is_valid_for_students == true and
+            p.is_school_vacation == true and
+            p.ends_on >= ^starts_on and
+            p.starts_on <= ^ends_on,
+        order_by: p.starts_on
+      )
+
+    query =
+      if starts_on_cutoff do
+        from(p in query, where: p.starts_on <= ^starts_on_cutoff)
+      else
+        query
+      end
+
+    query
     |> Repo.all()
     |> Repo.preload([:holiday_or_vacation_type, :location])
   end
