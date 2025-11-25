@@ -54,8 +54,9 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     is_future_reference =
       Date.compare(assigns.reference_date, assigns.bridge_day.starts_on) == :gt
 
-    # Create legend items
-    legend_items = create_legend_items(bridge_period, Map.get(assigns, :periods, []))
+    # Create legend items (only for periods visible in the timeline)
+    legend_items =
+      create_legend_items(bridge_period, Map.get(assigns, :periods, []), days_to_show)
 
     assigns =
       Map.merge(assigns, %{
@@ -244,25 +245,31 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     end)
   end
 
-  # Create legend items from periods
-  defp create_legend_items(bridge_period, periods) do
+  # Create legend items from periods (only those visible in the displayed date range)
+  defp create_legend_items(bridge_period, periods, days_to_show) do
+    # Determine the displayed date range
+    first_day = List.first(days_to_show)
+    last_day = List.last(days_to_show)
+
     # First add the bridge day
     bridge_label =
       "#{bridge_period.holiday_or_vacation_type.name} (#{format_date_range(bridge_period)})"
 
     legend_items = [%{color: "bg-purple-600 dark:bg-purple-500", label: bridge_label}]
 
-    # Add other periods (holidays)
+    # Add other periods (holidays) - only if they overlap with the displayed date range
     holiday_items =
       periods
       |> Enum.filter(fn period ->
         # Don't include regular bridge days with same date range as our main bridge period
         # or any other period that's not a holiday
+        # Only include periods that overlap with the displayed date range
         period != bridge_period &&
           !date_ranges_overlap?(period, bridge_period) &&
           (Map.get(period, :is_public_holiday, false) ||
              (Map.has_key?(period, :holiday_or_vacation_type) &&
-                period.holiday_or_vacation_type.name != "Wochenende"))
+                period.holiday_or_vacation_type.name != "Wochenende")) &&
+          period_overlaps_range?(period, first_day, last_day)
       end)
       |> Enum.map(fn period ->
         holiday_name = period.holiday_or_vacation_type.name
@@ -271,6 +278,13 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       end)
 
     legend_items ++ holiday_items
+  end
+
+  # Check if a period overlaps with the given date range
+  defp period_overlaps_range?(period, range_start, range_end) do
+    # Period overlaps if it ends on or after range_start AND starts on or before range_end
+    Date.compare(period.ends_on, range_start) != :lt &&
+      Date.compare(period.starts_on, range_end) != :gt
   end
 
   # Helper function to check if two periods overlap
