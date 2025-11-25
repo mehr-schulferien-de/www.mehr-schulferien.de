@@ -1721,11 +1721,10 @@ defmodule MehrSchulferienWeb.HomeLive do
             <.card_grid>
               <%= for {%{country: _country, federal_states: federal_states}, _country_index} <- Enum.with_index(@vacation_countries) do %>
                 <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
-                  <% # Find next bridge day for the federal state
-                  reference_date = @today
-
-                  next_bridge_day =
-                    MehrSchulferien.BridgeDays.find_next_bridge_day(federal_state, reference_date, 1)
+                  <% # Use pre-computed bridge day data (no DB queries!)
+                  bridge_data = Map.get(@bridge_days_data, federal_state.id, %{})
+                  next_bridge_day = bridge_data[:next_bridge_day]
+                  public_periods = bridge_data[:public_periods] || []
 
                   # Set up variables for year links
                   current_year = @vacation_current_year
@@ -1735,24 +1734,10 @@ defmodule MehrSchulferienWeb.HomeLive do
                       <.section_title title={federal_state.name} />
 
                       <%= if next_bridge_day do %>
-                        <% # Get related periods to find the public holiday
-                        country = Locations.get_location!(federal_state.parent_location_id)
-                        location_ids = [country.id, federal_state.id]
-
-                        # Fetch public periods for this window to find the holiday that creates the bridge day
-                        window_start = Date.add(next_bridge_day.starts_on, -5)
-                        window_end = Date.add(next_bridge_day.starts_on, 5)
-
-                        public_periods =
-                          MehrSchulferien.Periods.list_public_everybody_periods(
-                            location_ids,
-                            window_start,
-                            window_end
-                          )
-
-                        # Calculate efficiency
+                        <% # Use pre-computed data instead of DB queries
+                        # Calculate efficiency using pre-fetched periods
                         vacation_days = next_bridge_day.number_days
-                        # Calculate the actual total consecutive free days
+
                         total_free_days =
                           MehrSchulferien.BridgeDayCalculations.calculate_total_consecutive_free_days(
                             next_bridge_day,
@@ -1762,35 +1747,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                         efficiency =
                           if vacation_days > 0,
                             do: round((total_free_days - vacation_days) / vacation_days * 100),
-                            else: 0
-
-                        # Get timeline days for the bridge day
-                        timeline_start = Date.add(next_bridge_day.starts_on, -10)
-                        timeline_end = Date.add(next_bridge_day.ends_on, 10)
-                        _timeline_days = Date.diff(timeline_end, timeline_start) + 1
-
-                        days_range = Date.range(timeline_start, timeline_end)
-
-                        # Group days by month
-                        timeline_months =
-                          days_range
-                          |> Enum.to_list()
-                          |> Enum.group_by(fn day ->
-                            month_name = DateHelpers.get_months_map()[day.month]
-                            {month_name, day.year, day.month}
-                          end)
-                          |> Enum.sort_by(fn {{_name, year, month}, _days} -> {year, month} end)
-                          |> Enum.map(fn {{month_name, _year, _month}, days} ->
-                            {month_name, days}
-                          end)
-
-                        # Create month groups with correct day counts
-                        _months_with_days =
-                          Enum.map(timeline_months, fn {month_name, days} ->
-                            days_count = length(days)
-                            {year, month} = {List.first(days).year, List.first(days).month}
-                            {month_name, days_count, year, month}
-                          end) %>
+                            else: 0 %>
 
                         <.heading level={6} class="text-gray-700 mb-2">
                           Nächster Brückentag
@@ -1806,20 +1763,15 @@ defmodule MehrSchulferienWeb.HomeLive do
                           {MehrSchulferienWeb.BridgeDayTimelineComponent.bridge_day_timeline(%{
                             bridge_day: next_bridge_day,
                             periods: public_periods,
-                            reference_date: reference_date,
+                            reference_date: @today,
                             vacation_days: vacation_days,
                             total_free_days: total_free_days,
                             efficiency_percentage: efficiency
                           })}
                         </div>
 
-                        <% # Find super bridge day
-                        best_super_bridge_day =
-                          MehrSchulferien.BridgeDays.find_best_bridge_day(
-                            federal_state,
-                            reference_date,
-                            12
-                          ) %>
+                        <% # Use pre-computed best bridge day (no DB query!)
+                        best_super_bridge_day = bridge_data[:best_bridge_day] %>
 
                         <%= if best_super_bridge_day do %>
                           <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -1902,6 +1854,9 @@ defmodule MehrSchulferienWeb.HomeLive do
         fetch_countries_with_periods_optimized(today, ends_on, current_year)
       end)
 
+    # Pre-compute all bridge day data to avoid N+1 queries in render
+    bridge_days_data = precompute_bridge_days_data(countries, today)
+
     socket
     |> assign(:vacation_days, days)
     |> assign(:vacation_day_names, day_names)
@@ -1910,6 +1865,143 @@ defmodule MehrSchulferienWeb.HomeLive do
     |> assign(:vacation_number_of_days, days_to_display)
     |> assign(:vacation_months_with_days, months_with_days)
     |> assign(:vacation_countries, countries)
+    |> assign(:bridge_days_data, bridge_days_data)
+  end
+
+  # Pre-compute all bridge day data for all federal states in a single batch operation
+  # This eliminates N+1 queries during render (was ~60-100 queries, now ~2 queries)
+  defp precompute_bridge_days_data(countries, reference_date) do
+    alias MehrSchulferien.Periods.Grouping
+    alias MehrSchulferien.Helpers.{DateConstants, DateComparison}
+
+    # Collect all federal states and their countries
+    all_states_with_country =
+      Enum.flat_map(countries, fn %{country: country, federal_states: federal_states} ->
+        Enum.map(federal_states, fn state -> {state, country} end)
+      end)
+
+    # Get all unique location IDs (countries + states)
+    all_location_ids =
+      all_states_with_country
+      |> Enum.flat_map(fn {state, country} -> [country.id, state.id] end)
+      |> Enum.uniq()
+
+    # Single batch query: fetch all public periods for 12 months ahead
+    end_date = Date.add(reference_date, 365)
+
+    all_public_periods =
+      Periods.list_public_everybody_periods(all_location_ids, reference_date, end_date)
+
+    # Group periods by location_id for efficient filtering
+    periods_by_location = Enum.group_by(all_public_periods, & &1.location_id)
+
+    # Pre-compute bridge day data for each federal state
+    Enum.reduce(all_states_with_country, %{}, fn {state, country}, acc ->
+      location_ids = [country.id, state.id]
+
+      # Get periods for this state (country + state periods)
+      state_periods =
+        location_ids
+        |> Enum.flat_map(fn id -> Map.get(periods_by_location, id, []) end)
+        |> Enum.uniq_by(& &1.id)
+        |> Enum.sort_by(& &1.starts_on)
+
+      # Compute next bridge day and best bridge day using the pre-fetched periods
+      next_bridge_day = find_next_bridge_day_from_periods(state_periods, reference_date, 1)
+      best_bridge_day = find_best_bridge_day_from_periods(state_periods, reference_date)
+
+      # Build the data structure expected by the render function
+      bridge_data = %{
+        next_bridge_day: next_bridge_day,
+        best_bridge_day: best_bridge_day,
+        public_periods: state_periods,
+        country: country
+      }
+
+      Map.put(acc, state.id, bridge_data)
+    end)
+  end
+
+  # Find next bridge day using pre-fetched periods (no DB queries)
+  defp find_next_bridge_day_from_periods(public_periods, current_date, days_count) do
+    alias MehrSchulferien.Periods.Grouping
+    alias MehrSchulferien.Helpers.DateComparison
+
+    if length(public_periods) < 2 do
+      nil
+    else
+      bridge_day_map = Grouping.group_by_interval(public_periods)
+      bridge_days = Map.get(bridge_day_map, days_count + 1, [])
+
+      bridge_days
+      |> Enum.filter(&DateComparison.is_after?(&1.starts_on, current_date))
+      |> List.first()
+    end
+  end
+
+  # Find best bridge day using pre-fetched periods (no DB queries)
+  defp find_best_bridge_day_from_periods(public_periods, start_date) do
+    alias MehrSchulferien.Periods.Grouping
+    alias MehrSchulferien.Helpers.{DateConstants, DateComparison}
+
+    if length(public_periods) < 2 do
+      nil
+    else
+      bridge_day_map = Grouping.group_by_interval(public_periods)
+
+      opportunities =
+        for days <- DateConstants.min_bridge_days()..DateConstants.extended_max_bridge_days(),
+            bridge_days = Map.get(bridge_day_map, days, []),
+            length(bridge_days) > 0 do
+          vacation_days = days - 1
+
+          bridge_days
+          |> Enum.filter(&DateComparison.is_after?(&1.starts_on, start_date))
+          |> Enum.map(fn bridge_day ->
+            is_free_day = fn date ->
+              is_weekend = Date.day_of_week(date) > 5
+
+              is_holiday =
+                Enum.any?(public_periods, fn p ->
+                  Date.compare(date, p.starts_on) != :lt &&
+                    Date.compare(date, p.ends_on) != :gt
+                end)
+
+              is_weekend || is_holiday
+            end
+
+            actual_start =
+              1..10
+              |> Enum.map(fn d -> Date.add(bridge_day.starts_on, -d) end)
+              |> Enum.reverse()
+              |> Enum.reduce_while(bridge_day.starts_on, fn date, _acc ->
+                if is_free_day.(date), do: {:cont, date}, else: {:halt, Date.add(date, 1)}
+              end)
+
+            actual_end =
+              1..10
+              |> Enum.map(fn d -> Date.add(bridge_day.ends_on, d) end)
+              |> Enum.reduce_while(bridge_day.ends_on, fn date, _acc ->
+                if is_free_day.(date), do: {:cont, date}, else: {:halt, Date.add(date, -1)}
+              end)
+
+            total_free_days = Date.diff(actual_end, actual_start) + 1
+
+            %{
+              bridge_day: bridge_day,
+              vacation_days: vacation_days,
+              total_free_days: total_free_days
+            }
+          end)
+        end
+        |> List.flatten()
+
+      Enum.max_by(
+        opportunities,
+        fn opp -> opp.total_free_days * 1000 + (opp.total_free_days - opp.vacation_days) end,
+        fn -> nil end
+      )
+    end
   end
 
   # Calculates the months with days for the timeline
