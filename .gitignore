@@ -39,3 +39,6 @@ mehr_schulferien-*.tar
 
 # Mix deploy task (contains server credentials)
 /lib/mix/tasks/deploy.ex
+
+# Node modules
+node_modules/
