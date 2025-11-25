@@ -35,10 +35,22 @@ BUILD_DIR="$HOME/app/build"
 RELEASE_DIR="$HOME/app/release"
 REPO_DIR="$BUILD_DIR/repo"
 HOT_UPGRADES_DIR="$HOME/app/hot-upgrades"
+ENV_FILE="$HOME/conf/env"
 
 # Create directories if they don't exist
 mkdir -p "$BUILD_DIR"
 mkdir -p "$HOT_UPGRADES_DIR"
+
+# Source environment variables (DATABASE_URL, SECRET_KEY_BASE, etc.)
+if [ -f "$ENV_FILE" ]; then
+    echo "Sourcing environment from $ENV_FILE"
+    set -a  # automatically export all variables
+    source "$ENV_FILE"
+    set +a
+else
+    echo "ERROR: Environment file not found at $ENV_FILE"
+    exit 1
+fi
 
 # Check if we need to update the repository
 if [ ! -d "$REPO_DIR" ]; then
