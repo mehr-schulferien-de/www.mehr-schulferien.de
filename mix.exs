@@ -82,7 +82,7 @@ defmodule MehrSchulferien.MixProject do
         "assets.copy",
         "phx.digest"
       ],
-      "assets.copy": ["cmd cp -r assets/static/* priv/static/"]
+      "assets.copy": ["cmd cp -r assets/static/. priv/static/"]
     ]
   end
 
