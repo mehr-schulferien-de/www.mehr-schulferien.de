@@ -1,0 +1,22 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+
+# Queue deployments - each one waits for the previous to finish
+# No deployments are cancelled, they run sequentially
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, production]
+
+    steps:
+      - name: Deploy application
+        run: |
+          cd ~/app/build/repo
+          ./scripts/deploy.sh

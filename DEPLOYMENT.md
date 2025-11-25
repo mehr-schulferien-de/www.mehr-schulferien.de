@@ -31,7 +31,6 @@ This guide provides step-by-step instructions for deploying mehr-schulferien.de 
 ### What This Guide Builds
 
 - **Automated deployments** - Push to `master` triggers deployment via GitHub Actions
-- **Version-based deployments** - Only deploys when `mix.exs` version changes
 - **Safe database migrations** - Automatic migrations with Ecto advisory locks
 - **Automatic rollback** - Keeps 3 previous releases for manual rollback
 - **Self-hosted GitHub Actions runner** - Build and deploy on your server
@@ -860,15 +859,14 @@ sudo nginx -t
 
 The current `scripts/deploy.sh` implements:
 
-1. **Lock file mechanism** - Prevents concurrent deployments
+1. **Queued deployments** - GitHub Actions queues deployments sequentially, no cancellation
 2. **Git pull** - Fetches latest code from `master`
-3. **Version check** - Only deploys if version in `mix.exs` changes
-4. **Asset build** - Compiles Tailwind CSS and JavaScript
-5. **Release creation** - Builds OTP release with `mix release`
-6. **Service restart** - Stops before copy, starts after
-7. **Release backup** - Keeps 3 previous releases
-8. **Migration** - Runs `MehrSchulferien.ReleaseTasks.migrate`
-9. **Logging** - Uses syslog for deployment events
+3. **Asset build** - Compiles Tailwind CSS and JavaScript
+4. **Release creation** - Builds OTP release with `mix release`
+5. **Service restart** - Stops before copy, starts after
+6. **Release backup** - Keeps 3 previous releases
+7. **Migration** - Runs `MehrSchulferien.ReleaseTasks.migrate`
+8. **Logging** - Uses syslog for deployment events
 
 ---
 
@@ -876,7 +874,7 @@ The current `scripts/deploy.sh` implements:
 
 Your mehr-schulferien.de deployment provides:
 
-- Automated deployments when `mix.exs` version changes
+- Automated deployments on every push to `master`
 - Database migrations with advisory locks (safe for multiple nodes)
 - 3 release backups for quick rollback
 - Daily database backups (30-day retention)
@@ -886,12 +884,11 @@ Your mehr-schulferien.de deployment provides:
 - LiveView WebSocket support
 
 **Deployment flow:**
-1. Update version in `mix.exs`
-2. Push to `master`
-3. GitHub Actions runner executes `scripts/deploy.sh`
-4. New release built and deployed
-5. Migrations run automatically
-6. Previous release backed up
+1. Push to `master`
+2. GitHub Actions runner executes `scripts/deploy.sh`
+3. New release built and deployed
+4. Migrations run automatically
+5. Previous release backed up
 
 ---
 
