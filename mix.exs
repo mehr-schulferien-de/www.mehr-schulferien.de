@@ -46,7 +46,7 @@ defmodule MehrSchulferien.MixProject do
       {:jason, "~> 1.4.0"},
       {:bandit, "~> 1.0"},
       {:ex_machina, "~> 2.8.0", only: :test},
-      {:faker, "~> 0.17", only: :test},
+      {:faker, "~> 0.19.0-alpha", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:sitemap, "~> 1.0"},
       {:ex_doc, "~> 0.38", only: :dev, runtime: false},
