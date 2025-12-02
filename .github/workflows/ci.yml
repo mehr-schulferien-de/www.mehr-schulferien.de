@@ -13,7 +13,7 @@ env:
 
 jobs:
   test:
-    name: Test (Elixir ${{ env.ELIXIR_VERSION }} / OTP ${{ env.OTP_VERSION }})
+    name: Test (Elixir 1.18.4 / OTP 27.3.4)
     runs-on: ubuntu-latest
 
     services:
