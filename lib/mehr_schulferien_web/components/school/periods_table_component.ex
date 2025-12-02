@@ -32,7 +32,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
 
     ~H"""
     <div>
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Schulferien Tabelle">
         <%= for {{school_year, periods}, index} <- Enum.with_index(@grouped_periods) do %>
           <div class={"mb-4 sm:mb-6 #{if index > 0, do: "mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-300 dark:border-gray-600"}"}>
             <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
@@ -62,13 +62,13 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                     do: "bg-blue-50 dark:bg-blue-950",
                     else: "bg-gray-50 dark:bg-gray-900"
                 }>
-                  <th class="px-2 sm:px-4 py-1.5 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
+                  <th class="px-2 sm:px-4 py-1.5 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Name
                   </th>
-                  <th class="px-2 sm:px-4 py-1.5 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
+                  <th class="px-2 sm:px-4 py-1.5 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Termin
                   </th>
-                  <th class="px-2 sm:px-4 py-1.5 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
+                  <th class="px-2 sm:px-4 py-1.5 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wider border-b dark:border-gray-600">
                     Tage
                   </th>
                 </tr>

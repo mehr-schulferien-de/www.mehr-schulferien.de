@@ -124,7 +124,6 @@ defmodule MehrSchulferienWeb.FaqComponent do
     """
   end
 
-  # Component functions for individual FAQ sections
   defp faq_question(assigns) do
     ~H"""
     <div>
@@ -138,11 +137,12 @@ defmodule MehrSchulferienWeb.FaqComponent do
     """
   end
 
-  # Individual FAQ question components
   defp section_header(assigns) do
     ~H"""
     <div class="sm:col-span-2 mt-3">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{@title}</h3>
+      <dt>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{@title}</h3>
+      </dt>
     </div>
     """
   end
@@ -265,6 +265,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
   defp date_query_links(assigns) do
     ~H"""
     <div class="sm:col-span-2">
+      <dt></dt>
       <dd class="text-sm text-gray-600 dark:text-gray-400">
         <p class="mb-3">
           Schnelle Antworten auf häufige Fragen zu Feiertagen und Schultagen:

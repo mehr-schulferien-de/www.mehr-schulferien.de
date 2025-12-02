@@ -71,7 +71,8 @@
           Allerdings können Sie mit Brückentagen im aktuellen Jahr ({@current_year}) nicht mehr viel rausholen. Am besten Sie starten schon einmal die Urlaubsplanung für das
           nächste Jahr: {link("Brückentage #{@current_year + 1}",
             to:
-              ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@current_year + 1}"
+              ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@current_year + 1}",
+            class: "underline font-semibold hover:text-blue-700"
           )}
         <% end %>
       </.text>

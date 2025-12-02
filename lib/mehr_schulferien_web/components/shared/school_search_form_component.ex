@@ -131,7 +131,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
       </div>
       <div class="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <%= if @search_params["location"] == "" and @search_params["school_name"] == "" do %>
-          <div class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="text-xs text-gray-600 dark:text-gray-400">
             <span class="inline-flex items-center gap-1">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

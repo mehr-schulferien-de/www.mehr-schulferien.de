@@ -118,6 +118,7 @@ end %>
               <a
                 class="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-blue-700 dark:hover:text-blue-400 rounded-l-lg flex items-center"
                 href={prev_link}
+                aria-label={"Vorheriges Jahr (#{prev_year})"}
               >
                 <svg
                   class="h-5 w-5"
@@ -196,6 +197,7 @@ end %>
               <a
                 class="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-blue-700 dark:hover:text-blue-400 rounded-r-lg flex items-center"
                 href={next_link}
+                aria-label={"Nächstes Jahr (#{next_year})"}
               >
                 <svg
                   class="h-5 w-5"
@@ -255,7 +257,8 @@ end %>
         {if idx > 0, do: if(idx == length(future_years) - 1, do: " und ", else: ", ")}
         {link("Brückentage #{year}#{if idx == length(future_years) - 1, do: ".", else: ""}",
           to: ~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}",
-          class: "text-blue-600 hover:underline"
+          class:
+            "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline hover:underline font-semibold"
         )}
       <% end %>
     <% end %>
@@ -449,14 +452,14 @@ end %>
           <section class={
             if is_past_bridge_day,
               do:
-                "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded shadow p-6 h-full",
+                "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded shadow p-6 h-full",
               else: "bg-white dark:bg-gray-800 rounded shadow p-6 h-full"
           }>
             <.heading
               level={3}
               class={
                 if is_past_bridge_day,
-                  do: "text-xl font-semibold mb-4 text-gray-500 dark:text-gray-400",
+                  do: "text-xl font-semibold mb-4 text-gray-600 dark:text-gray-400",
                   else: "text-xl font-semibold mb-4 text-gray-900 dark:text-white"
               }
             >
@@ -467,8 +470,8 @@ end %>
               <%= if bridge_day.starts_on.year == bridge_day.ends_on.year && !String.contains?(MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on), Integer.to_string(bridge_day.starts_on.year)) do %>
                 <span class={
                   if is_past_bridge_day,
-                    do: "text-gray-400 dark:text-gray-500",
-                    else: "text-gray-500 dark:text-gray-400"
+                    do: "text-gray-600 dark:text-gray-400",
+                    else: "text-gray-600 dark:text-gray-300"
                 }>
                   {bridge_day.starts_on.year}
                 </span>

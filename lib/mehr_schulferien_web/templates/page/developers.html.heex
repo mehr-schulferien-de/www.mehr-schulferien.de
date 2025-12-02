@@ -308,7 +308,10 @@
               >
                 Kopieren
               </button>
-              <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"><code>curl -H "Accept: application/json" \
+              <pre
+                class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"
+                tabindex="0"
+              ><code>curl -H "Accept: application/json" \
   https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?year=2025</code></pre>
             </div>
           </div>
@@ -326,7 +329,10 @@
               >
                 Kopieren
               </button>
-              <pre class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+              <pre
+                class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"
+                tabindex="0"
+              ><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",

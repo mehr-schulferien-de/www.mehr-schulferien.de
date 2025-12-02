@@ -71,37 +71,39 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
                 class={[
                   "text-left py-0.5 pl-1 pr-0 font-semibold text-base border border-gray-200 dark:border-gray-700",
                   @should_cross_out &&
-                    "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400",
+                    "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200",
                   !@should_cross_out && "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 ]}
                 colspan="7"
               >
                 {@month_name} {@year}
                 <%= if @should_cross_out do %>
-                  <span class="text-xs ml-2 text-gray-500 italic">(noch keine Daten)</span>
+                  <span class="text-xs ml-2 text-gray-700 dark:text-gray-300 italic">
+                    (noch keine Daten)
+                  </span>
                 <% end %>
               </th>
             </tr>
             <tr>
-              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-900 dark:text-gray-100">
                 Mo
               </th>
-              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-900 dark:text-gray-100">
                 Di
               </th>
-              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-900 dark:text-gray-100">
                 Mi
               </th>
-              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-900 dark:text-gray-100">
                 Do
               </th>
-              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-900 dark:text-gray-100">
                 Fr
               </th>
-              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-900 dark:text-gray-100">
                 Sa
               </th>
-              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-700 dark:text-gray-300">
+              <th class="border border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900 text-xs p-0.5 font-medium text-gray-900 dark:text-gray-100">
                 So
               </th>
             </tr>

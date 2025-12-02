@@ -43,7 +43,7 @@
         <!-- Card for each federal state -->
         <.card padding="p-6" class="h-full">
           <:content>
-            <.section_title title={federal_state.name} />
+            <.section_title title={federal_state.name} level={3} />
             <!-- Timeline visualization -->
             <div id={"#{component_id}"}>
               {MehrSchulferienWeb.VacationTimelineComponent.render(
@@ -109,7 +109,7 @@
         next_year = current_year + 1 %>
         <.card padding="p-6" class="h-full">
           <:content>
-            <.section_title title={federal_state.name} />
+            <.section_title title={federal_state.name} level={3} />
 
             <%= if next_bridge_day_data do %>
               <% # Extract the bridge day and calculated values
@@ -159,7 +159,7 @@
                   {month_name, days_count, year, month}
                 end) %>
 
-              <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
+              <.heading level={4} class="text-gray-700 dark:text-gray-300 mb-2">
                 Nächster Brückentag
               </.heading>
               <.text variant="small" class="mb-3">
@@ -194,7 +194,7 @@
 
               <%= if best_super_bridge_day do %>
                 <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
+                  <.heading level={4} class="text-gray-700 dark:text-gray-300 mb-2">
                     Bester Superbrückentag
                   </.heading>
                   <.text variant="small">

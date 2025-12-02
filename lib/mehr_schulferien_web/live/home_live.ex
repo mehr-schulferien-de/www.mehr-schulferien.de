@@ -1193,7 +1193,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             {school.name}
                           </h3>
                           <%= if school.address do %>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                            <p class="text-xs text-gray-600 dark:text-gray-400">
                               <%= if school.address.street do %>
                                 {school.address.street}<br />
                               <% end %>
@@ -1286,7 +1286,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                                       {school.name}
                                     </p>
                                     <%= if school.address && school.address.street do %>
-                                      <p class="text-xs text-gray-500 mt-0.5 truncate">
+                                      <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5 truncate">
                                         {school.address.street}
                                         <%= if school.address.zip_code do %>
                                           , {school.address.zip_code} {String.slice(
@@ -1669,7 +1669,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                   <!-- Card for each federal state -->
                   <.card padding="p-6" class="h-full">
                     <:content>
-                      <.section_title title={federal_state.name} />
+                      <.section_title title={federal_state.name} level={3} />
                       <!-- Timeline visualization -->
                       <div id={"#{component_id}"}>
                         {MehrSchulferienWeb.VacationTimelineComponent.render(
@@ -1688,7 +1688,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
                       <div class="mt-4">
                         <div class="flex items-center gap-3">
-                          <span class="text-sm text-gray-600 dark:text-gray-400">Ferientermine:</span>
+                          <span class="text-sm text-gray-700 dark:text-gray-400">Ferientermine:</span>
                           <div class="flex-1 grid grid-cols-2 gap-3">
                             <.button
                               href={"/ferien/d/bundesland/#{federal_state.slug}/#{current_year}"}
@@ -1731,7 +1731,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                   next_year = current_year + 1 %>
                   <.card padding="p-6" class="h-full">
                     <:content>
-                      <.section_title title={federal_state.name} />
+                      <.section_title title={federal_state.name} level={3} />
 
                       <%= if next_bridge_day do %>
                         <% # Use pre-computed data instead of DB queries
@@ -1749,7 +1749,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                             do: round((total_free_days - vacation_days) / vacation_days * 100),
                             else: 0 %>
 
-                        <.heading level={6} class="text-gray-700 mb-2">
+                        <.heading level={4} class="text-gray-700 mb-2">
                           Nächster Brückentag
                         </.heading>
                         <.text variant="small" class="mb-3">
@@ -1775,7 +1775,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
                         <%= if best_super_bridge_day do %>
                           <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <.heading level={6} class="text-gray-700 dark:text-gray-300 mb-2">
+                            <.heading level={4} class="text-gray-700 dark:text-gray-300 mb-2">
                               Bester Superbrückentag
                             </.heading>
                             <.text variant="small">
@@ -1785,7 +1785,7 @@ defmodule MehrSchulferienWeb.HomeLive do
                                 best_super_bridge_day.bridge_day.ends_on
                               )}
                               <br />
-                              <span class="text-xs text-gray-500">
+                              <span class="text-xs text-gray-600 dark:text-gray-400">
                                 {best_super_bridge_day.vacation_days} Urlaubstag{if best_super_bridge_day.vacation_days >
                                                                                       1,
                                                                                     do: "e",
@@ -1802,7 +1802,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
                       <div class="mt-4">
                         <div class="flex items-center gap-3">
-                          <span class="text-sm text-gray-600 dark:text-gray-400">Brückentage:</span>
+                          <span class="text-sm text-gray-700 dark:text-gray-400">Brückentage:</span>
                           <div class="flex-1 grid grid-cols-2 gap-3">
                             <.button
                               href={"/brueckentage/d/bundesland/#{federal_state.slug}/#{current_year}"}

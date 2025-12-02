@@ -310,7 +310,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         ~H"""
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
-            <span class="text-gray-500 dark:text-gray-400">
+            <span class="text-gray-600 dark:text-gray-400">
               <%= if @days_remaining == 0 do %>
                 Aktuell sind {@display_name}{@location_text} (letzter Tag).
               <% else %>
@@ -350,7 +350,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         ~H"""
         <div class="mt-2 text-sm font-medium">
           <div class="flex items-center">
-            <span class="text-gray-500 dark:text-gray-400">
+            <span class="text-gray-600 dark:text-gray-400">
               <%= if @days_until == 1 do %>
                 1 Tag bis {@display_format}{@location_text}.
               <% else %>

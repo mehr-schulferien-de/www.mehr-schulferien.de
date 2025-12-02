@@ -66,13 +66,13 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
     base_classes =
       case assigns.variant do
         "primary" ->
-          "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
+          "text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
 
         "secondary" ->
-          "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
+          "text-gray-800 dark:text-gray-300 hover:text-gray-950 dark:hover:text-gray-100 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
 
         "muted" ->
-          "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
+          "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded-sm transition-colors"
       end
 
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")
@@ -115,12 +115,18 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   # Section heading with optional divider
   attr :title, :string, required: true
   attr :divider, :boolean, default: false
+  attr :level, :integer, default: 2, values: [1, 2, 3, 4, 5, 6]
   attr :class, :string, default: ""
 
   def section_title(assigns) do
+    tag = String.to_atom("h#{assigns.level}")
+    assigns = assign(assigns, :tag, tag)
+
     ~H"""
     <div class={"mb-4 #{@class}"}>
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50">{@title}</h2>
+      <.dynamic tag={@tag} class="text-xl font-semibold text-gray-900 dark:text-gray-50">
+        {@title}
+      </.dynamic>
       <%= if @divider do %>
         <div class="mt-2 border-b border-gray-200 dark:border-gray-700"></div>
       <% end %>

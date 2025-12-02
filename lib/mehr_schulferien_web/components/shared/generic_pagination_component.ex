@@ -56,12 +56,12 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
           next_year =
             if current_index < total_years - 1, do: Enum.at(@years_with_data, current_index + 1) %>
 
-          <% # Mobile pagination (3 years) %>
           <div class="flex w-full">
             <%= if prev_year do %>
               <.link
                 navigate={build_route_path(@conn, @location_type, @country, @location, prev_year)}
                 class="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-blue-700 dark:hover:text-blue-400 rounded-l-lg flex items-center"
+                aria-label={"Zurück zu #{prev_year}"}
               >
                 <svg
                   class="h-5 w-5"
@@ -69,6 +69,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
                 >
                   <path
                     stroke-linecap="round"
@@ -80,13 +81,17 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                 </svg>
               </.link>
             <% else %>
-              <span class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-600 rounded-l-lg cursor-not-allowed flex items-center">
+              <span
+                class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-600 rounded-l-lg cursor-not-allowed flex items-center"
+                aria-label="Vorheriges Jahr nicht verfügbar"
+              >
                 <svg
                   class="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
                 >
                   <path
                     stroke-linecap="round"
@@ -102,7 +107,10 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
             <div class="flex flex-grow">
               <%= for year <- mobile_visible_years do %>
                 <%= if year == @year do %>
-                  <span class="px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600 flex-1 text-center">
+                  <span
+                    class="px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-blue-600 flex-1 text-center"
+                    aria-current="page"
+                  >
                     {year}
                   </span>
                 <% else %>
@@ -120,6 +128,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
               <.link
                 navigate={build_route_path(@conn, @location_type, @country, @location, next_year)}
                 class="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-blue-700 dark:hover:text-blue-400 rounded-r-lg flex items-center"
+                aria-label={"Weiter zu #{next_year}"}
               >
                 <svg
                   class="h-5 w-5"
@@ -127,6 +136,7 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
                 >
                   <path
                     stroke-linecap="round"
@@ -138,13 +148,17 @@ defmodule MehrSchulferienWeb.Shared.GenericPaginationComponent do
                 </svg>
               </.link>
             <% else %>
-              <span class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-600 rounded-r-lg cursor-not-allowed flex items-center">
+              <span
+                class="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 border border-gray-200 dark:border-gray-600 rounded-r-lg cursor-not-allowed flex items-center"
+                aria-label="Nächstes Jahr nicht verfügbar"
+              >
                 <svg
                   class="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
                 >
                   <path
                     stroke-linecap="round"

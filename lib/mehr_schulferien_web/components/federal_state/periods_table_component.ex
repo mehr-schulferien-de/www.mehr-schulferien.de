@@ -17,7 +17,14 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
 
   def periods_table(assigns) do
     ~H"""
-    <div class="overflow-x-auto" itemscope itemtype="https://schema.org/Table">
+    <div
+      class="overflow-x-auto"
+      itemscope
+      itemtype="https://schema.org/Table"
+      tabindex="0"
+      role="region"
+      aria-label="Ferientermine Tabelle"
+    >
       <meta itemprop="about" content={table_about_content(assigns)} />
       <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
         <%= if assigns[:federal_state] && assigns[:year] do %>

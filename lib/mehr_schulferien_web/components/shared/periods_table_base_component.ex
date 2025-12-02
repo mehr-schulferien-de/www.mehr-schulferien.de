@@ -95,7 +95,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
         @is_current -> "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
         @is_next_year -> "bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
         true -> "hover:bg-gray-50 dark:hover:bg-gray-700"
-      end} #{if @is_past, do: "text-gray-400 dark:text-gray-500"}"}
+      end} #{if @is_past, do: "text-gray-600 dark:text-gray-400"}"}
       onclick={"window.location.href='#{@row_href}'"}
     >
       <td class="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm font-medium align-top">

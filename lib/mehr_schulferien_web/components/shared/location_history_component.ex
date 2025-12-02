@@ -20,7 +20,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
     <%= if @show and length(@recent_locations) > 0 do %>
       <div class="mt-6 pt-5 border-t border-gray-200 dark:border-gray-700">
         <div class="flex flex-col gap-3">
-          <div class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <div class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
             Zuletzt besucht
           </div>
           <!-- Mobile: horizontal flex, Desktop: grid -->
@@ -106,7 +106,7 @@ defmodule MehrSchulferienWeb.Shared.LocationHistoryComponent do
                       {truncate_name(location.name, location.type, 23)}
                     </span>
                   </div>
-                  <div class={"#{if show_full_info, do: "block", else: "hidden md:block"} text-xs text-gray-500 dark:text-gray-400"}>
+                  <div class={"#{if show_full_info, do: "block", else: "hidden md:block"} text-xs text-gray-600 dark:text-gray-300"}>
                     <%= case location.type do %>
                       <% :federal_state -> %>
                         Bundesland
