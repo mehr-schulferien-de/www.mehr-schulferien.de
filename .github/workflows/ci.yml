@@ -8,12 +8,12 @@ on:
 
 env:
   MIX_ENV: test
-  ELIXIR_VERSION: "1.18.4"
-  OTP_VERSION: "27.3.4"
+  ELIXIR_VERSION: "1.19.4"
+  OTP_VERSION: "28.3"
 
 jobs:
   test:
-    name: Test (Elixir 1.18.4 / OTP 27.3.4)
+    name: Test (Elixir 1.19.4 / OTP 28.3)
     runs-on: ubuntu-latest
 
     services:
