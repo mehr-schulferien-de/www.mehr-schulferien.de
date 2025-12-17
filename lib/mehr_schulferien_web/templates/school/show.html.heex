@@ -186,20 +186,18 @@
                     Importieren Sie die Schulferien direkt in Ihren Kalender.
                   </.text>
                   <div class="grid grid-cols-2 gap-2">
-                    <% api_version = "v2.1" %>
-                    <% base_path = if @school.is_school, do: "schools", else: "locations" %>
                     <% current_calendar_year = @today.year %>
-                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year}&calendar_year=true",
+                    <%= link to: "/api/v2.1/schools/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year}&calendar_year=true",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@school.slug}-#{current_calendar_year}.ics" do %>
                       📅 {current_calendar_year}
                     <% end %>
-                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year + 1}&calendar_year=true",
+                    <%= link to: "/api/v2.1/schools/#{@school.slug}/icalendar?vacation_types=school&year=#{current_calendar_year + 1}&calendar_year=true",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@school.slug}-#{current_calendar_year + 1}.ics" do %>
                       📅 {current_calendar_year + 1}
                     <% end %>
-                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@current_school_year}",
+                    <%= link to: "/api/v2.1/schools/#{@school.slug}/icalendar?vacation_types=school&year=#{@current_school_year}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schuljahr-#{@school.slug}-#{@current_school_year}-#{@current_school_year + 1}.ics" do %>
                       📚 {@current_school_year}/{String.slice(
@@ -207,7 +205,7 @@
                         -2..-1
                       )}
                     <% end %>
-                    <%= link to: "/api/#{api_version}/#{base_path}/#{@school.slug}/icalendar?vacation_types=school&year=#{@next_school_year}",
+                    <%= link to: "/api/v2.1/schools/#{@school.slug}/icalendar?vacation_types=school&year=#{@next_school_year}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schuljahr-#{@school.slug}-#{@next_school_year}-#{@next_school_year + 1}.ics" do %>
                       📚 {@next_school_year}/{String.slice(

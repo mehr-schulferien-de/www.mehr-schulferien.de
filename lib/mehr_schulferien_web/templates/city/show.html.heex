@@ -72,13 +72,12 @@
                     Importieren Sie die Schulferien direkt in Ihren Kalender.
                   </.text>
                   <div class="grid grid-cols-2 gap-2">
-                    <% api_version = "v2.1" %>
-                    <%= link to: "/api/#{api_version}/locations/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year}",
+                    <%= link to: "/api/v2.1/cities/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@city.slug}-#{@current_year}.ics" do %>
                       📅 {@current_year}
                     <% end %>
-                    <%= link to: "/api/#{api_version}/locations/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year + 1}",
+                    <%= link to: "/api/v2.1/cities/#{@city.slug}/icalendar?vacation_types=school&year=#{@current_year + 1}",
                         class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
                         download: "schulferien-#{@city.slug}-#{@current_year + 1}.ics" do %>
                       📅 {@current_year + 1}
@@ -460,10 +459,10 @@
 
                   <div class="space-y-2">
                     <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
-                      GET /api/v2.1/locations/{@city.slug}/icalendar
+                      GET /api/v2.1/cities/{@city.slug}/icalendar
                     </div>
                     <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 font-mono text-xs break-all text-gray-900 dark:text-gray-100">
-                      GET /api/v2.1/locations/{@city.slug}/periods
+                      GET /api/v2.1/cities/{@city.slug}/periods
                     </div>
                   </div>
 
