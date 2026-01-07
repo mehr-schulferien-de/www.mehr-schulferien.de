@@ -85,6 +85,10 @@ defmodule MehrSchulferienWeb.Router do
         RedirectController,
         :redirect_land_school_to_ferien
 
+    # Legacy /schools/ redirects (English URL pattern)
+    get "/schools/:school_slug/:year", RedirectController, :redirect_schools_with_year
+    get "/schools/:school_slug", RedirectController, :redirect_schools
+
     # Bridge days redirects from /land/ to /ferien/
     get "/land/:country_slug/bundesland/:federal_state_slug/brueckentage",
         RedirectController,

@@ -65,4 +65,21 @@ defmodule MehrSchulferienWeb.RedirectControllerTest do
       assert redirected_to(conn, 301) == "/ferien/deutschland/stadt/33619-bielefeld/2025"
     end
   end
+
+  describe "legacy /schools/ redirects" do
+    test "redirects /schools/:slug/:year to /ferien/d/schule/:slug", %{conn: conn} do
+      conn = get(conn, "/schools/86978-volksschule-hohenfurch/2026")
+      assert redirected_to(conn, 301) == "/ferien/d/schule/86978-volksschule-hohenfurch"
+    end
+
+    test "redirects /schools/:slug to /ferien/d/schule/:slug", %{conn: conn} do
+      conn = get(conn, "/schools/86978-volksschule-hohenfurch")
+      assert redirected_to(conn, 301) == "/ferien/d/schule/86978-volksschule-hohenfurch"
+    end
+
+    test "redirects /schools/:slug with query params to /ferien/d/schule/:slug", %{conn: conn} do
+      conn = get(conn, "/schools/07545-zabel-gymnasium?additional_categories=juedischer-feiertag")
+      assert redirected_to(conn, 301) == "/ferien/d/schule/07545-zabel-gymnasium"
+    end
+  end
 end

@@ -149,6 +149,19 @@ defmodule MehrSchulferienWeb.RedirectController do
     |> redirect(to: "/ferien/#{country_slug}/schule/#{school_slug}")
   end
 
+  # Legacy /schools/ redirects (English URL pattern)
+  def redirect_schools(conn, %{"school_slug" => school_slug}) do
+    conn
+    |> put_status(:moved_permanently)
+    |> redirect(to: ~p"/ferien/d/schule/#{school_slug}")
+  end
+
+  def redirect_schools_with_year(conn, %{"school_slug" => school_slug, "year" => _year}) do
+    conn
+    |> put_status(:moved_permanently)
+    |> redirect(to: ~p"/ferien/d/schule/#{school_slug}")
+  end
+
   # Bridge days redirects from /land/ to /ferien/
   def redirect_land_bridge_days_to_ferien(conn, %{
         "country_slug" => country_slug,
