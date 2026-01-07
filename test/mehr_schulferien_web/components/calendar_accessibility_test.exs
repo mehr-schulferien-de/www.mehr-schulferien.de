@@ -29,12 +29,15 @@ defmodule MehrSchulferienWeb.Components.CalendarAccessibilityTest do
     test "weekend colors meet WCAG AA standards" do
       day_colors = DesignTokens.day_type_colors()
 
-      # Weekend colors - improved for better visibility
-      assert day_colors.weekend.light_background == "bg-gray-100 dark:bg-gray-800"
-      assert day_colors.weekend.text == "text-gray-800 dark:text-gray-100"
+      # Weekend colors - optimized for visibility in both light and dark mode
+      # Uses bg-gray-200 in light mode (visible distinction from white background)
+      # Uses bg-gray-600 in dark mode (visible distinction from bg-gray-800 card background)
+      assert day_colors.weekend.light_background == "bg-gray-200 dark:bg-gray-600"
+      assert day_colors.weekend.text == "text-gray-600 dark:text-gray-300"
 
-      # bg-gray-100 (#F3F4F6) with text-gray-800 (#1F2937) provides excellent contrast
-      # Light mode: ~11.4:1 contrast ratio (exceeds WCAG AA 4.5:1 requirement)
+      # Light mode: bg-gray-200 (#E5E7EB) with text-gray-600 (#4B5563) ~4.7:1 contrast
+      # Dark mode: bg-gray-600 (#4B5563) with text-gray-300 (#D1D5DB) ~4.9:1 contrast
+      # Both meet WCAG AA standard (4.5:1 minimum)
     end
 
     test "bridge day colors meet WCAG AA standards" do
@@ -63,8 +66,8 @@ defmodule MehrSchulferienWeb.Components.CalendarAccessibilityTest do
         {"bg-green-200", "text-green-900", 11.2},
 
         # Weekend colors
-        # Weekend calendar cells (improved from bg-gray-50)
-        {"bg-gray-100", "text-gray-800", 11.4},
+        # Weekend calendar cells (optimized for dark mode visibility)
+        {"bg-gray-200", "text-gray-600", 4.7},
 
         # Bridge day colors
         # Bridge day calendar cells (improved)

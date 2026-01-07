@@ -58,3 +58,39 @@ html {
 .phx-submit-loading #search_federal_state {
   animation: highlightUpdate 1.5s ease-out;
 }
+
+/* Vacation planner: striped pattern for vacation days during school vacations */
+.vacation-in-school-vacation {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 2px,
+    rgba(34, 197, 94, 0.5) 2px,
+    rgba(34, 197, 94, 0.5) 4px
+  );
+  background-size: 100% 100%;
+}
+
+/* Dark mode: green stripes for visibility */
+@media (prefers-color-scheme: dark) {
+  .vacation-in-school-vacation {
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 2px,
+      rgba(34, 197, 94, 0.4) 2px,
+      rgba(34, 197, 94, 0.4) 4px
+    );
+  }
+}
+
+/* For explicit dark mode class (Tailwind dark mode) */
+.dark .vacation-in-school-vacation {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 2px,
+    rgba(34, 197, 94, 0.4) 2px,
+    rgba(34, 197, 94, 0.4) 4px
+  );
+}

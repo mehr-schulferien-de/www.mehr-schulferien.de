@@ -36,10 +36,13 @@ defmodule MehrSchulferienWeb.System.VacationTypeMobileViewTest do
           parent_location_id: country.id
         })
 
+      # Use current year for dates so the period appears on the page
+      current_year = Date.utc_today().year
+
       {:ok, period} =
         Periods.create_period(%{
-          starts_on: ~D[2025-10-20],
-          ends_on: ~D[2025-11-01],
+          starts_on: Date.new!(current_year, 10, 20),
+          ends_on: Date.new!(current_year, 11, 1),
           location_id: federal_state.id,
           html_class: "green",
           is_listed_below_month: true,

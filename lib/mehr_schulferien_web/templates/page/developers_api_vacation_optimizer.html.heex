@@ -1,0 +1,328 @@
+<.card padding="p-6" class="mb-8" variant="basic">
+  <:content>
+    <div class="prose prose-lg dark:prose-invert max-w-none mx-auto">
+      <.heading level={1} class="text-3xl mb-6">
+        Urlaubsplaner API
+      </.heading>
+
+      {render("developers_nav.html", current_page: :api)}
+
+      <p class="text-sm mb-6">
+        <a href={~p"/developers/api"} class="text-blue-600 dark:text-blue-400 hover:underline">
+          &larr; Zur&uuml;ck zur API-&Uuml;bersicht
+        </a>
+      </p>
+
+      <p class="mb-6">
+        Die Urlaubsplaner-Endpunkte berechnen optimale Urlaubszeitr&auml;ume f&uuml;r eine bestimmte Anzahl von Urlaubstagen.
+        Der Algorithmus findet die Zeitfenster mit der h&ouml;chsten Effizienz, indem er Feiertage und Wochenenden optimal nutzt.
+      </p>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Verf&uuml;gbare Endpunkte
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Methode</th>
+                <th class="py-2 px-4 border-b text-left">Endpunkt</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono text-blue-600 dark:text-blue-400">GET</td>
+                <td class="py-2 px-4 border-b font-mono">
+                  /api/v2.1/federal-states/:slug/vacation-optimizer
+                </td>
+                <td class="py-2 px-4 border-b">
+                  Optimale Urlaubsfenster f&uuml;r ein Bundesland (JSON)
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono text-blue-600 dark:text-blue-400">GET</td>
+                <td class="py-2 px-4 border-b font-mono">
+                  /api/v2.1/federal-states/:slug/vacation-optimizer/icalendar
+                </td>
+                <td class="py-2 px-4 border-b">Optimale Urlaubsfenster als iCal-Download</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Query-Parameter
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">year</code>
+            (optional): Das Jahr f&uuml;r die Berechnung (Standard: aktuelles Jahr). Erlaubter Bereich: aktuelles Jahr -5 bis +3.
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">days</code>
+            (erforderlich): Anzahl der Urlaubstage (1-60)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">variant</code>
+            (optional): <code>normal</code>
+            (Standard) oder <code>budget</code>
+            (au&szlig;erhalb der Schulferien f&uuml;r g&uuml;nstigeres Reisen)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">top</code>
+            (optional): Anzahl der zur&uuml;ckgegebenen Top-Ergebnisse (Standard: 5)
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Beispiel
+        </.heading>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Request
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer?year=2026&amp;days=10</pre>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Response
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+  "data": {
+    "location": {
+      "id": 2,
+      "name": "Bayern",
+      "slug": "bayern",
+      "type": "federal_state"
+    },
+    "year": 2026,
+    "vacation_days_requested": 10,
+    "variant": "normal",
+    "summary": {
+      "best_total_free_days": 17,
+      "best_efficiency_percentage": 70,
+      "opportunities_found": 5
+    },
+    "optimal_windows": [
+      {
+        "rank": 1,
+        "starts_on": "2026-04-18",
+        "ends_on": "2026-05-04",
+        "vacation_days_used": 10,
+        "total_free_days": 17,
+        "breakdown": {
+          "vacation_days": 10,
+          "weekend_days": 6,
+          "holiday_days": 1
+        },
+        "efficiency_percentage": 70,
+        "spans_year_boundary": false,
+        "includes_school_vacation": false,
+        "related_holidays": ["Tag der Arbeit"]
+      }
+    ],
+    "cross_year_option": null,
+    "links": {
+      "web_page": "https://www.mehr-schulferien.de/urlaubsplaner/bayern/10-tage/2026",
+      "icalendar": "https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer/icalendar?year=2026&days=10"
+    }
+  },
+  "meta": {
+    "api_version": "2.1"
+  }
+}| %></pre>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          Response-Felder
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">location</code>: Informationen &uuml;ber das Bundesland
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">year</code>: Das angefragte Jahr
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">vacation_days_requested</code>: Anzahl der angefragten Urlaubstage
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">variant</code>: "normal" oder "budget"
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">summary</code>: Zusammenfassende Statistiken
+            <ul class="ml-5 list-disc mt-2">
+              <li><code>best_total_free_days</code>: Maximale zusammenh&auml;ngende Freizeit</li>
+              <li>
+                <code>best_efficiency_percentage</code>: Beste Effizienz ((freie Tage - Urlaubstage) / Urlaubstage &times; 100)
+              </li>
+              <li><code>opportunities_found</code>: Anzahl der gefundenen optimalen Fenster</li>
+            </ul>
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">optimal_windows</code>: Liste der optimalen Urlaubsfenster (sortiert nach Effizienz)
+            <ul class="ml-5 list-disc mt-2">
+              <li><code>rank</code>: Position im Ranking (1 = bestes)</li>
+              <li>
+                <code>starts_on</code>
+                / <code>ends_on</code>: Zeitraum der zu nehmenden Urlaubstage
+              </li>
+              <li><code>vacation_days_used</code>: Verbrauchte Urlaubstage</li>
+              <li><code>total_free_days</code>: Gesamtzahl zusammenh&auml;ngender freier Tage</li>
+              <li>
+                <code>breakdown</code>: Aufschl&uuml;sselung nach Tagestypen
+                <ul class="ml-5 list-disc mt-2">
+                  <li><code>vacation_days</code>: Urlaubstage</li>
+                  <li><code>weekend_days</code>: Wochenendtage</li>
+                  <li><code>holiday_days</code>: Feiertage</li>
+                </ul>
+              </li>
+              <li><code>efficiency_percentage</code>: Effizienz dieses Fensters</li>
+              <li>
+                <code>spans_year_boundary</code>: Ob das Fenster &uuml;ber den Jahreswechsel geht
+              </li>
+              <li>
+                <code>includes_school_vacation</code>: Ob Schulferien enthalten sind (relevant f&uuml;r budget-Variante)
+              </li>
+              <li><code>related_holidays</code>: Liste der enthaltenen Feiertage</li>
+            </ul>
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">cross_year_option</code>: Optionales Jahreswechsel-Fenster (Dezember &rarr; Januar)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">links</code>: Hilfreiche Links
+            <ul class="ml-5 list-disc mt-2">
+              <li><code>web_page</code>: Link zur Web-Ansicht</li>
+              <li><code>icalendar</code>: Link zum iCal-Download</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-8">
+        <.heading level={2} class="text-2xl text-gray-800 dark:text-gray-200 mt-8 mb-4">
+          iCal-Export
+        </.heading>
+
+        <p class="mb-4">
+          Der iCal-Endpunkt liefert eine Kalenderdatei mit den optimalen Urlaubsfenstern.
+          Diese kann direkt in Kalender-Apps wie Google Calendar, Apple Calendar oder Outlook importiert werden.
+        </p>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Request
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer/icalendar?year=2026&amp;days=10</pre>
+
+        <p class="mb-4">
+          Response: <code>text/calendar</code>
+          Datei mit <code>Content-Disposition: attachment</code>
+          Header.
+        </p>
+
+        <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Beispiel iCal-Inhalt
+        </.heading>
+
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mehr-schulferien.de//Urlaubsplaner//DE
+X-WR-CALNAME:Urlaubsplaner Bayern 2026 (10 Tage)
+
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20260418
+DTEND;VALUE=DATE:20260505
+SUMMARY:Optimaler Urlaub (Rang 1) - 17 Tage
+DESCRIPTION:10 Urlaubstage &rarr; 17 freie Tage (70% Effizienz)\n
+  Enth&auml;lt: Tag der Arbeit\n
+  Berechnet von mehr-schulferien.de
+URL:https://www.mehr-schulferien.de/urlaubsplaner/bayern/10-tage/2026
+END:VEVENT
+
+END:VCALENDAR</pre>
+      </div>
+
+      <div class="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-600 p-4 mb-6">
+        <p class="text-sm text-green-700 dark:text-green-300">
+          <strong>Tipp &ndash; Budget-Variante:</strong>
+          Mit <code>variant=budget</code>
+          werden nur Urlaubsfenster au&szlig;erhalb der Schulferien berechnet.
+          Diese Zeitr&auml;ume sind oft g&uuml;nstiger f&uuml;r Reisen, da weniger Familien mit schulpflichtigen Kindern verreisen.
+        </p>
+      </div>
+
+      <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
+        <p class="text-sm text-blue-700 dark:text-blue-300">
+          <strong>Hinweis &ndash; Effizienz-Berechnung:</strong>
+          Die Effizienz gibt an, wie viele zus&auml;tzliche freie Tage pro Urlaubstag gewonnen werden.
+          Eine Effizienz von 70% bedeutet: Mit 10 Urlaubstagen erreichen Sie 17 freie Tage (10 + 7 zus&auml;tzliche).
+        </p>
+      </div>
+
+      <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-6">
+        <p class="text-sm text-red-700 dark:text-red-300">
+          <strong>Fehler:</strong>
+          Status 404 wird zur&uuml;ckgegeben, wenn das Bundesland nicht gefunden wird.
+          Status 400 wird bei ung&uuml;ltigen Parametern zur&uuml;ckgegeben (z.B. days &gt; 60 oder ung&uuml;ltiges Jahr).
+        </p>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <.heading level={2} class="text-xl text-gray-800 dark:text-gray-200 mb-4">
+          Siehe auch
+        </.heading>
+        <ul class="ml-5 list-disc space-y-2">
+          <li>
+            <a
+              href={~p"/developers/api/bridge-days"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Br&uuml;ckentage API
+            </a>
+            &ndash; F&uuml;r kurzfristige Urlaubsoptimierung (1-4 Tage)
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/locations"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Standorte API
+            </a>
+            &ndash; Bundesl&auml;nder und deren Slugs finden
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/exports"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Export-Formate
+            </a>
+            &ndash; Weitere Export-M&ouml;glichkeiten (iCal, vCard)
+          </li>
+          <li>
+            <a
+              href={~p"/developers/api/reference"}
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              API-Referenz
+            </a>
+            &ndash; Allgemeine Response-Formate und Fehlerbehandlung
+          </li>
+        </ul>
+      </div>
+    </div>
+  </:content>
+</.card>

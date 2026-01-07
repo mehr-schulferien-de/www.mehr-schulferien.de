@@ -43,6 +43,8 @@ defmodule MehrSchulferien.Geocoding.NominatimTest do
 
   describe "parameter building" do
     test "geocode_address accepts all required parameters" do
+      # Ensure module is loaded before checking exports
+      Code.ensure_loaded!(MehrSchulferien.Geocoding.Nominatim)
       # Test that the function exists - it has arity 3 (with default for country parameter)
       # When a function has default parameters, Elixir exports arity 3 (without default)
       assert function_exported?(MehrSchulferien.Geocoding.Nominatim, :geocode_address, 3)

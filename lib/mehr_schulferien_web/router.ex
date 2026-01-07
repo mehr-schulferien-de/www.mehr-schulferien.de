@@ -124,6 +124,11 @@ defmodule MehrSchulferienWeb.Router do
     get "/federal-states/:slug/periods", FederalStateController, :periods
     get "/federal-states/:slug/icalendar", FederalStateController, :icalendar
     get "/federal-states/:slug/bridge-days", FederalStateController, :bridge_days
+    get "/federal-states/:slug/vacation-optimizer", VacationOptimizerController, :show
+
+    get "/federal-states/:slug/vacation-optimizer/icalendar",
+        VacationOptimizerController,
+        :icalendar
 
     # Cities
     resources "/cities", CityController, only: [:index, :show], param: "slug"
@@ -190,6 +195,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers/api/exports", PageController, :developers_api_exports
     get "/developers/api/pdf", PageController, :developers_api_pdf
     get "/developers/api/queries", PageController, :developers_api_queries
+    get "/developers/api/vacation-optimizer", PageController, :developers_api_vacation_optimizer
     get "/developers/api/reference", PageController, :developers_api_reference
     get "/developers/mcp", PageController, :developers_mcp
     get "/impressum", PageController, :impressum
@@ -281,6 +287,29 @@ defmodule MehrSchulferienWeb.Router do
 
     # Sportbefreiung LiveView
     live "/briefe/:school_slug/sportbefreiung", SportbefreiungLive
+
+    # Vacation planner (Urlaubsplaner) - Normal variant
+    # IMPORTANT: These routes must come BEFORE the /:vacation_slug routes to match first
+    get "/urlaubsplaner/:federal_state_slug/:days",
+        VacationPlannerController,
+        :index,
+        constraints: [days: ~r/\d{1,2}-tage/]
+
+    get "/urlaubsplaner/:federal_state_slug/:days/:year",
+        VacationPlannerController,
+        :show,
+        constraints: [days: ~r/\d{1,2}-tage/, year: ~r/20[2-3][0-9]/]
+
+    # Vacation planner (Urlaubsplaner) - Budget variant (outside school vacations)
+    get "/urlaubsplaner-guenstig/:federal_state_slug/:days",
+        VacationPlannerController,
+        :index_budget,
+        constraints: [days: ~r/\d{1,2}-tage/]
+
+    get "/urlaubsplaner-guenstig/:federal_state_slug/:days/:year",
+        VacationPlannerController,
+        :show_budget,
+        constraints: [days: ~r/\d{1,2}-tage/, year: ~r/20[2-3][0-9]/]
 
     # Next vacation URL
     get "/naechste-ferien/:federal_state_slug", VacationController, :next_vacation

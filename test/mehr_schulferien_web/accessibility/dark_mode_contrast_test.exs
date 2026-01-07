@@ -37,10 +37,11 @@ defmodule MehrSchulferienWeb.Accessibility.DarkModeContrastTest do
       assert day_colors.vacation.text =~ "dark:text-green-100"
       assert dark_mode_contrast("text-green-100", "bg-green-900") >= 8.1
 
-      # Weekend: dark:bg-gray-800 with dark:text-gray-100
-      assert day_colors.weekend.light_background =~ "dark:bg-gray-800"
-      assert day_colors.weekend.text =~ "dark:text-gray-100"
-      assert dark_mode_contrast("text-gray-100", "bg-gray-800") >= 9.1
+      # Weekend: dark:bg-gray-600 with dark:text-gray-300
+      # Optimized for visibility - bg-gray-600 stands out from bg-gray-800 card background
+      assert day_colors.weekend.light_background =~ "dark:bg-gray-600"
+      assert day_colors.weekend.text =~ "dark:text-gray-300"
+      assert dark_mode_contrast("text-gray-300", "bg-gray-600") >= 4.5
 
       # Bridge Day: dark:bg-yellow-900 with dark:text-yellow-100
       assert day_colors.bridge_day.light_background =~ "dark:bg-yellow-900"
@@ -115,6 +116,7 @@ defmodule MehrSchulferienWeb.Accessibility.DarkModeContrastTest do
       {"text-gray-100", "bg-gray-900"} -> 11.1
       {"text-gray-100", "bg-gray-800"} -> 9.1
       {"text-gray-100", "bg-gray-700"} -> 7.4
+      {"text-gray-300", "bg-gray-600"} -> 4.9
       {"text-gray-200", "bg-gray-900"} -> 8.6
       {"text-gray-300", "bg-gray-900"} -> 6.3
       {"text-gray-400", "bg-gray-900"} -> 4.5

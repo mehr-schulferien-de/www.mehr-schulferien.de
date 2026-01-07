@@ -169,6 +169,13 @@ defmodule MehrSchulferienWeb.PageController do
     )
   end
 
+  def developers_api_vacation_optimizer(conn, _params) do
+    render(conn, "developers_api_vacation_optimizer.html",
+      css_framework: :tailwind_new,
+      page_title: "Urlaubsplaner API - Dokumentation"
+    )
+  end
+
   def developers_mcp(conn, _params) do
     render(conn, "developers_mcp.html", css_framework: :tailwind_new)
   end

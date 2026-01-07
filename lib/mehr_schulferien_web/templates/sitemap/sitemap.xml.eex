@@ -21,6 +21,9 @@
     <loc>https://www.mehr-schulferien.de/developers/api/bridge-days</loc>
   </url>
   <url>
+    <loc>https://www.mehr-schulferien.de/developers/api/vacation-optimizer</loc>
+  </url>
+  <url>
     <loc>https://www.mehr-schulferien.de/developers/api/exports</loc>
   </url>
   <url>
@@ -94,6 +97,16 @@
         <url>
           <loc>https://www.mehr-schulferien.de/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
         </url>
+
+        <%!-- Vacation planner (Urlaubsplaner) URLs --%>
+        <%= for days <- [10, 20, 30] do %>
+          <url>
+            <loc>https://www.mehr-schulferien.de/urlaubsplaner/<%= federal_state.slug %>/<%= days %>-tage/<%= year %></loc>
+          </url>
+          <url>
+            <loc>https://www.mehr-schulferien.de/urlaubsplaner-guenstig/<%= federal_state.slug %>/<%= days %>-tage/<%= year %></loc>
+          </url>
+        <% end %>
       <% end %>
     <% end %>
 

@@ -208,10 +208,10 @@ defmodule MehrSchulferienWeb.Shared.DesignTokens do
       },
       weekend: %{
         background: "bg-gray-300 dark:bg-gray-600",
-        # Light mode: bg-gray-100 with text-gray-800 = 11.4:1 contrast
-        # Dark mode: bg-gray-800 with text-gray-100 for optimal contrast
-        light_background: "bg-gray-100 dark:bg-gray-800",
-        text: "text-gray-800 dark:text-gray-100",
+        # Light mode: bg-gray-200 for visible distinction from white
+        # Dark mode: bg-gray-600 for visible distinction from bg-gray-800 card background
+        light_background: "bg-gray-200 dark:bg-gray-600",
+        text: "text-gray-600 dark:text-gray-300",
         border: "border-gray-300 dark:border-gray-600"
       },
       bridge_day: %{

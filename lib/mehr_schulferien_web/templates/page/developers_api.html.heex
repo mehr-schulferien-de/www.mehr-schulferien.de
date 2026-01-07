@@ -60,6 +60,14 @@
                 </a>
               </li>
               <li>
+                <a
+                  href="#v21-vacation-optimizer"
+                  class="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Urlaubsplaner (Urlaubsoptimierung)
+                </a>
+              </li>
+              <li>
                 <a href="#v21-queries" class="text-blue-600 dark:text-blue-400 hover:underline">
                   Datum-Abfragen
                 </a>
@@ -582,6 +590,102 @@
             Status 400 wird bei ungültigen Jahr-Parameter zurückgegeben.
           </p>
         </div>
+      </div>
+
+      <div
+        id="v21-vacation-optimizer"
+        class="scroll-mt-6 border-t border-gray-200 dark:border-gray-700 pt-6"
+      >
+        <.heading level={3} class="text-xl text-gray-800 dark:text-gray-200 mt-2 mb-3">
+          Urlaubsplaner (Urlaubsoptimierung)
+        </.heading>
+
+        <p class="mb-4">
+          Die Urlaubsplaner-Endpunkte berechnen optimale Urlaubszeiträume für eine bestimmte Anzahl von Urlaubstagen.
+          Der Algorithmus findet die Zeitfenster mit der höchsten Effizienz, indem er Feiertage und Wochenenden optimal nutzt.
+        </p>
+
+        <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Endpunkte
+        </.heading>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+            <thead>
+              <tr class="bg-gray-100 dark:bg-gray-900">
+                <th class="py-2 px-4 border-b text-left">Methode</th>
+                <th class="py-2 px-4 border-b text-left">Endpoint</th>
+                <th class="py-2 px-4 border-b text-left">Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono text-blue-600 dark:text-blue-400">GET</td>
+                <td class="py-2 px-4 border-b font-mono">
+                  /api/v2.1/federal-states/:slug/vacation-optimizer
+                </td>
+                <td class="py-2 px-4 border-b">Optimale Urlaubsfenster (JSON)</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border-b font-mono text-blue-600 dark:text-blue-400">GET</td>
+                <td class="py-2 px-4 border-b font-mono">
+                  /api/v2.1/federal-states/:slug/vacation-optimizer/icalendar
+                </td>
+                <td class="py-2 px-4 border-b">Optimale Urlaubsfenster als iCal-Download</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Query-Parameter
+        </.heading>
+
+        <ul class="ml-5 list-disc space-y-2 mb-6">
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">year</code>
+            (optional): Das Jahr für die Berechnung (Standard: aktuelles Jahr)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">days</code>
+            (erforderlich): Anzahl der Urlaubstage (1-60)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">variant</code>
+            (optional): "normal" (Standard) oder "budget" (außerhalb der Schulferien)
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">top</code>
+            (optional): Anzahl der Top-Ergebnisse (Standard: 5)
+          </li>
+        </ul>
+
+        <.heading level={4} class="text-lg text-gray-700 dark:text-gray-300 mt-6 mb-3">
+          Beispiel-Request
+        </.heading>
+
+        <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 mb-6 overflow-x-auto">
+          <pre class="text-sm"><code>GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer?year=2026&amp;days=10</code></pre>
+        </div>
+
+        <div class="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-600 p-4 mb-6">
+          <p class="text-sm text-green-700 dark:text-green-300">
+            <strong>Tipp:</strong>
+            Mit <code>variant=budget</code>
+            werden nur Urlaubsfenster außerhalb der Schulferien berechnet.
+            Diese Zeiträume sind oft günstiger für Reisen.
+          </p>
+        </div>
+
+        <p class="mb-4">
+          <strong>Ausführliche Dokumentation:</strong>
+          <a
+            href={~p"/developers/api/vacation-optimizer"}
+            class="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Urlaubsplaner API-Dokumentation →
+          </a>
+        </p>
       </div>
 
       <div

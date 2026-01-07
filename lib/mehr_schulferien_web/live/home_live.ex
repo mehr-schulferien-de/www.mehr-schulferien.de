@@ -1829,6 +1829,57 @@ defmodule MehrSchulferienWeb.HomeLive do
               <% end %>
             </.card_grid>
           </.stack>
+
+          <.stack spacing="8" class="mt-12">
+            <.heading level={2}>Urlaubsplaner</.heading>
+            <.text variant="base" class="mb-4">
+              Berechnen Sie die optimalen Urlaubszeiträume für Ihr Bundesland.
+              Wählen Sie die Anzahl Ihrer Urlaubstage und finden Sie heraus,
+              wann Sie die längste zusammenhängende Freizeit erreichen.
+            </.text>
+            <.card_grid>
+              <%= for {%{country: _country, federal_states: federal_states}, _country_index} <- Enum.with_index(@vacation_countries) do %>
+                <%= for {federal_state, _fs_index} <- Enum.with_index(federal_states) do %>
+                  <% current_year = @vacation_current_year %>
+                  <.card padding="p-6" class="h-full">
+                    <:content>
+                      <.section_title title={federal_state.name} level={3} />
+
+                      <.text variant="small" class="mb-4">
+                        Optimieren Sie Ihren Urlaub in {federal_state.name}
+                      </.text>
+
+                      <div class="flex flex-wrap gap-2 mb-4">
+                        <%= for days <- [10, 20, 30] do %>
+                          <a
+                            href={"/urlaubsplaner/#{federal_state.slug}/#{days}-tage/#{current_year}"}
+                            class="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800/40"
+                          >
+                            {days} Tage
+                          </a>
+                        <% end %>
+                      </div>
+
+                      <div class="flex flex-col sm:flex-row gap-2 text-sm">
+                        <a
+                          href={"/urlaubsplaner/#{federal_state.slug}/30-tage/#{current_year}"}
+                          class="text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          Maximale Freizeit →
+                        </a>
+                        <a
+                          href={"/urlaubsplaner-guenstig/#{federal_state.slug}/30-tage/#{current_year}"}
+                          class="text-green-600 dark:text-green-400 hover:underline"
+                        >
+                          Günstiger reisen →
+                        </a>
+                      </div>
+                    </:content>
+                  </.card>
+                <% end %>
+              <% end %>
+            </.card_grid>
+          </.stack>
         <% end %>
       </div>
     <% end %>

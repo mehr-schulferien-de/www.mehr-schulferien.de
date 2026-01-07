@@ -6,19 +6,13 @@ defmodule MehrSchulferienWeb.LayoutView do
   alias MehrSchulferienWeb.NavigationHelper
 
   @doc """
-  Returns the appropriate layout template file.
+  Returns the layout template file.
 
-  - :tailwind_new -> Uses the full modern layout (app_tailwind_full.html)
-  - default -> Uses the minimal layout for legacy pages (app_tailwind_minimal.html)
-
-  Controllers set css_framework: :tailwind_new for fully migrated pages.
+  All pages now use the full modern layout with navigation and footer.
+  The css_framework parameter is deprecated and no longer needed.
   """
-  def select_layout_template(_conn, assigns) do
-    if Map.get(assigns, :css_framework) == :tailwind_new do
-      "app_tailwind_full.html"
-    else
-      "app_tailwind_minimal.html"
-    end
+  def select_layout_template(_conn, _assigns) do
+    "app_tailwind_full.html"
   end
 
   @doc """
@@ -51,6 +45,27 @@ defmodule MehrSchulferienWeb.LayoutView do
     case conn.path_info do
       ["brueckentage", _country_slug, "bundesland", state_slug, year_str] ->
         state_slug == federal_state_slug && year_str == to_string(year)
+
+      _ ->
+        false
+    end
+  end
+
+  @doc """
+  Checks if the current page matches an Urlaubsplaner page for a specific federal state.
+  Used to disable menu items when viewing the same state's vacation planner page.
+
+  Returns true if the current path matches the format:
+  /urlaubsplaner/:federal_state_slug/:days/:year
+  or /urlaubsplaner-guenstig/:federal_state_slug/:days/:year
+  """
+  def is_current_urlaubsplaner_page_for_federal_state?(conn, federal_state_slug) do
+    case conn.path_info do
+      ["urlaubsplaner", state_slug, _days, _year] ->
+        state_slug == federal_state_slug
+
+      ["urlaubsplaner-guenstig", state_slug, _days, _year] ->
+        state_slug == federal_state_slug
 
       _ ->
         false

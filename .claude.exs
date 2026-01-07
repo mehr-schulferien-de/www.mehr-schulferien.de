@@ -11,8 +11,11 @@
     }
   ],
   hooks: %{
-    stop: [:format, "test"],
-    post_tool_use: [:compile, :format],
+    stop: ["format", "test"],
+    post_tool_use: [
+      :compile,
+      {"format {{tool_input.file_path}}", when: [:write, :edit, :multi_edit]}
+    ],
     pre_tool_use: [:compile, :format, :unused_deps]
   }
 }
