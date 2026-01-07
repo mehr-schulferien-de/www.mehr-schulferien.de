@@ -52,10 +52,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         show_year_with_data(conn, federal_state, country, year)
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
     end
   end
 
@@ -132,10 +129,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
       render(conn, "county_show.html", assigns)
     rescue
       Ecto.NoResultsError ->
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
     end
   end
 end

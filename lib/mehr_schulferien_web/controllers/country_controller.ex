@@ -2,14 +2,12 @@ defmodule MehrSchulferienWeb.CountryController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   def show(conn, %{"country_slug" => country_slug}) do
     case Locations.get_country_by_slug(country_slug) do
       nil ->
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
 
       country ->
         federal_states = Locations.list_federal_states(country)

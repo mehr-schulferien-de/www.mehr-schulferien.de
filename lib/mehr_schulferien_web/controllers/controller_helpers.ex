@@ -272,4 +272,29 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
   Get the months map used across controllers.
   """
   def get_months_map, do: @months_map
+
+  @env Application.compile_env(:mehr_schulferien, :env)
+
+  @doc """
+  Renders an appropriate error page when a resource is not found.
+
+  In development: Shows "Datenbank ist leer" with admin instructions
+  In production: Shows standard 404 page
+  """
+  def render_not_found_or_empty_database(conn) do
+    import Plug.Conn
+    import Phoenix.Controller
+
+    if @env == :prod do
+      conn
+      |> put_status(:not_found)
+      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> render("404.html")
+    else
+      conn
+      |> put_status(:service_unavailable)
+      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> render("empty_database.html")
+    end
+  end
 end

@@ -17,18 +17,12 @@ defmodule MehrSchulferienWeb.VacationController do
     country = Locations.get_country_by_slug("d")
 
     if is_nil(country) do
-      conn
-      |> put_status(:service_unavailable)
-      |> put_view(MehrSchulferienWeb.ErrorView)
-      |> render("empty_database.html")
+      CH.render_not_found_or_empty_database(conn)
     else
       federal_state = Locations.get_federal_state_by_slug(federal_state_slug, country)
 
       if is_nil(federal_state) do
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
       else
         # Extract and load vacation type
         vacation_type_slug = String.replace(vacation_slug, "ferien", "")

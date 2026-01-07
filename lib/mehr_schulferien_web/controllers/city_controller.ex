@@ -20,10 +20,7 @@ defmodule MehrSchulferienWeb.CityController do
         |> redirect(to: ~p"/ferien/#{country.slug}/stadt/#{city_slug}")
 
       {:error, _} ->
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
     end
   end
 
@@ -33,10 +30,7 @@ defmodule MehrSchulferienWeb.CityController do
         show_city_page(conn, country, federal_state, county, city)
 
       {:error, _} ->
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
     end
   end
 

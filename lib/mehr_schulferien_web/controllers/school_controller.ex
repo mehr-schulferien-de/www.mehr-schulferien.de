@@ -26,10 +26,7 @@ defmodule MehrSchulferienWeb.SchoolController do
         |> render("404.html")
 
       {:error, _} ->
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
     end
   end
 
@@ -52,10 +49,7 @@ defmodule MehrSchulferienWeb.SchoolController do
         |> render("404.html")
 
       {:error, _} ->
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
     end
   end
 

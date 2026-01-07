@@ -1011,20 +1011,12 @@ defmodule MehrSchulferienWeb.HomeLive do
               </div>
 
               <h1 class="text-3xl font-bold text-gray-900 mb-4">
-                Datenbank ist leer
+                Seite nicht verfügbar
               </h1>
 
               <p class="text-gray-600 mb-6">
-                Die Datenbank enthält derzeit keine Daten. Bitte stellen Sie sicher, dass die Datenbank korrekt eingerichtet wurde und alle erforderlichen Daten geladen sind.
+                Die Schulsuche ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.
               </p>
-
-              <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <p class="text-sm text-yellow-800">
-                  <strong>Für Administratoren:</strong>
-                  Führen Sie <code class="bg-yellow-100 px-2 py-1 rounded">mix ecto.setup</code>
-                  aus, um die Datenbank zu initialisieren und mit Daten zu füllen.
-                </p>
-              </div>
 
               <a
                 href="/"

@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
   alias MehrSchulferienWeb.BridgeDayView
+  alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   def index_within_federal_state(conn, %{
         "country_slug" => country_slug,
@@ -26,18 +27,12 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     country = Locations.get_country_by_slug(country_slug)
 
     if is_nil(country) do
-      conn
-      |> put_status(:service_unavailable)
-      |> put_view(MehrSchulferienWeb.ErrorView)
-      |> render("empty_database.html")
+      CH.render_not_found_or_empty_database(conn)
     else
       federal_state = Locations.get_federal_state_by_slug(federal_state_slug, country)
 
       if is_nil(federal_state) do
-        conn
-        |> put_status(:service_unavailable)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("empty_database.html")
+        CH.render_not_found_or_empty_database(conn)
       else
         with {:ok, year} <- check_year(conn, year),
              {:ok, start_date} <- Date.new(year, 1, 1),
