@@ -31,7 +31,7 @@ defmodule MehrSchulferienWeb.HomeLiveTest do
     test "mounts successfully and shows initial form", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/")
 
-      assert html =~ "Schulferien und Feiertage"
+      assert html =~ "Schulferien Deutschland"
       assert html =~ "Bundesland"
       assert html =~ "Stadt oder PLZ"
       assert html =~ "Schulname"

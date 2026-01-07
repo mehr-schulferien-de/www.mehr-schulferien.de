@@ -32,7 +32,15 @@ defmodule MehrSchulferienWeb.HomeLive do
         |> assign(:current_year, current_year)
         |> assign(:next_year, next_year)
         |> assign(:today, today)
-        |> assign(:page_title, "Schulferien und Feiertage")
+        |> assign(
+          :page_title,
+          "Schulferien Deutschland #{current_year}: Termine, Feiertage & Brückentage"
+        )
+        |> assign(
+          :page_description,
+          "Alle Schulferien #{current_year} für alle 16 Bundesländer. Ferientermine, Feiertage, Brückentage. Kostenlose Entschuldigungen als PDF."
+        )
+        |> assign(:current_url, "https://www.mehr-schulferien.de/")
         |> assign(:federal_states, federal_states)
         |> assign(:search_params, %{
           "location" => "",
@@ -1029,10 +1037,29 @@ defmodule MehrSchulferienWeb.HomeLive do
         </div>
       </main>
     <% else %>
+      <!-- JSON-LD Structured Data for SEO -->
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "mehr-schulferien.de",
+          "url": "https://www.mehr-schulferien.de",
+          "description": "Schulferien, Feiertage und Brückentage für alle 16 Bundesländer in Deutschland"
+        }
+      </script>
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "mehr-schulferien.de",
+          "url": "https://www.mehr-schulferien.de",
+          "logo": "https://www.mehr-schulferien.de/images/logo.png"
+        }
+      </script>
       <div class="mt-6 sm:mt-8" id="test-page-container" phx-hook="MaintainScroll">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
           <.heading level={1}>
-            Schulferien und Feiertage
+            Schulferien Deutschland {@current_year}
           </.heading>
         </div>
 
