@@ -36,7 +36,6 @@ defmodule MehrSchulferienWeb.WikiPeriodNewLive do
     socket =
       socket
       |> assign(:page_title, "Neuen Ferientermin hinzufügen - Wiki")
-      |> assign(:css_framework, :tailwind_new)
       |> assign(:changeset, changeset)
       |> assign(:federal_states, federal_states)
       |> assign(:vacation_types, vacation_types)

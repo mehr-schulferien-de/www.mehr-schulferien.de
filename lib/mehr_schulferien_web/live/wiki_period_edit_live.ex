@@ -42,7 +42,6 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
       socket =
         socket
         |> assign(:page_title, "Ferientermin bearbeiten - Wiki")
-        |> assign(:css_framework, :tailwind_new)
         |> assign(:period, period)
         |> assign(:changeset, changeset)
         |> assign(:federal_states, federal_states)

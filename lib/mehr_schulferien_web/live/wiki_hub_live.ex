@@ -7,7 +7,6 @@ defmodule MehrSchulferienWeb.WikiHubLive do
     socket =
       socket
       |> assign(:page_title, "Wiki - Gemeinsam mehr Schulferien")
-      |> assign(:css_framework, :tailwind_new)
       |> assign(:daily_limit, Config.daily_change_limit())
 
     {:ok, socket}

@@ -24,8 +24,7 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
        limit_reached: limit_reached,
        existing_schools: [],
        zip_code_valid: nil,
-       city_from_zip: nil,
-       css_framework: :tailwind_new
+       city_from_zip: nil
      )}
   end
 

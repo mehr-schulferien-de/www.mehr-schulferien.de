@@ -18,7 +18,6 @@ defmodule MehrSchulferienWeb.DateQueryController do
       |> assign(:federal_state, federal_state)
       |> assign(:query_type, :public_holiday)
       |> assign(:page_title, "Ist heute ein Feiertag in #{federal_state.name}?")
-      |> assign(:css_framework, :tailwind_new)
       |> render(:is_today_public_holiday)
     else
       {:error, :not_found} ->
@@ -43,7 +42,6 @@ defmodule MehrSchulferienWeb.DateQueryController do
       |> assign(:federal_state, federal_state)
       |> assign(:query_type, :school_free)
       |> assign(:page_title, "Ist heute schulfrei in #{federal_state.name}?")
-      |> assign(:css_framework, :tailwind_new)
       |> render(:is_today_school_free)
     else
       {:error, :not_found} ->
@@ -68,7 +66,6 @@ defmodule MehrSchulferienWeb.DateQueryController do
       |> assign(:federal_state, federal_state)
       |> assign(:query_type, :school_day)
       |> assign(:page_title, "Ist #{format_date(date)} ein Schultag in #{federal_state.name}?")
-      |> assign(:css_framework, :tailwind_new)
       |> render(:is_school_day)
     else
       {:error, :not_found} ->
@@ -99,7 +96,6 @@ defmodule MehrSchulferienWeb.DateQueryController do
       |> assign(:federal_state, federal_state)
       |> assign(:query_type, :public_holiday)
       |> assign(:page_title, "Ist #{format_date(date)} ein Feiertag in #{federal_state.name}?")
-      |> assign(:css_framework, :tailwind_new)
       |> render(:is_public_holiday)
     else
       {:error, :not_found} ->
