@@ -76,21 +76,11 @@ defmodule MehrSchulferienWeb.CityController do
       |> Enum.uniq()
       |> Enum.sort()
 
-    # Build period date set ONCE for O(1) lookups (instead of O(n) per period)
+    # Calculate adjoining_duration for each period
     combined_periods = all_periods ++ all_public_periods
-    period_date_set = ViewHelpers.build_period_date_set(combined_periods)
 
-    # Calculate adjoining_duration for each period using optimized O(1) lookups
     periods_with_duration =
-      Enum.map(all_periods, fn period ->
-        days = Date.diff(period.ends_on, period.starts_on) + 1
-
-        effective_duration =
-          ViewHelpers.calculate_effective_duration(period, period_date_set, :optimized)
-
-        difference = effective_duration - days
-        Map.put(period, :adjoining_duration, difference)
-      end)
+      ViewHelpers.add_adjoining_duration_to_periods(all_periods, combined_periods)
 
     # Set the appropriate status code based on data availability
     conn = if has_data, do: conn, else: put_status(conn, 404)
@@ -113,7 +103,6 @@ defmodule MehrSchulferienWeb.CityController do
         county: county,
         city: city,
         schools: schools,
-        css_framework: :tailwind_new,
         periods: periods_with_duration,
         public_periods: all_public_periods,
         all_periods: all_periods ++ all_public_periods,

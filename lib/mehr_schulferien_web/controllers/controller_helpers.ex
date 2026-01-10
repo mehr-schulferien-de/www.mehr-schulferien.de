@@ -5,21 +5,6 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Periods}
 
-  @months_map %{
-    1 => "Januar",
-    2 => "Februar",
-    3 => "März",
-    4 => "April",
-    5 => "Mai",
-    6 => "Juni",
-    7 => "Juli",
-    8 => "August",
-    9 => "September",
-    10 => "Oktober",
-    11 => "November",
-    12 => "Dezember"
-  }
-
   def list_period_data(location_ids, today) do
     current_year = today.year
     {:ok, first_day} = Date.new(current_year, 1, 1)
@@ -195,7 +180,7 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
       today: today,
       school_periods: extended_periods,
       next_schulferien_periods: next_schulferien_periods,
-      months: @months_map,
+      months: DateHelpers.get_months_map(),
       faq_data: faq_data
     }
   end
@@ -270,8 +255,9 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
 
   @doc """
   Get the months map used across controllers.
+  Delegates to DateHelpers.get_months_map/0.
   """
-  def get_months_map, do: @months_map
+  def get_months_map, do: DateHelpers.get_months_map()
 
   @env Application.compile_env(:mehr_schulferien, :env)
 

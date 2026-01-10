@@ -251,8 +251,7 @@ defmodule MehrSchulferienWeb.WikiController do
             display_versions: Enum.take(versions, 5),
             changeset: changeset,
             daily_changes: daily_changes,
-            limit_reached: false,
-            css_framework: :tailwind_new
+            limit_reached: false
           })
 
         {_, {:error, :invalid_address}} ->
@@ -284,8 +283,7 @@ defmodule MehrSchulferienWeb.WikiController do
             display_versions: Enum.take(versions, 5),
             changeset: changeset,
             daily_changes: daily_changes,
-            limit_reached: false,
-            css_framework: :tailwind_new
+            limit_reached: false
           })
 
         {_, {:error, changeset}} ->
@@ -298,8 +296,7 @@ defmodule MehrSchulferienWeb.WikiController do
             display_versions: Enum.take(versions, 5),
             changeset: changeset,
             daily_changes: daily_changes,
-            limit_reached: false,
-            css_framework: :tailwind_new
+            limit_reached: false
           })
       end
     end

@@ -63,20 +63,9 @@ defmodule MehrSchulferienWeb.FederalStateController do
     # Use shared logic to prepare show_year data
     data = CH.prepare_show_year_data(location_ids, year, today)
 
-    # Build period date set ONCE for O(1) lookups (instead of O(n) per period)
-    period_date_set = ViewHelpers.build_period_date_set(data.all_periods)
-
-    # Calculate adjoining_duration for each period using optimized O(1) lookups
+    # Calculate adjoining_duration for each period
     periods_with_duration =
-      Enum.map(data.periods, fn period ->
-        days = Date.diff(period.ends_on, period.starts_on) + 1
-
-        effective_duration =
-          ViewHelpers.calculate_effective_duration(period, period_date_set, :optimized)
-
-        difference = effective_duration - days
-        Map.put(period, :adjoining_duration, difference)
-      end)
+      ViewHelpers.add_adjoining_duration_to_periods(data.periods, data.all_periods)
 
     # Set the appropriate status code based on data availability
     conn = if data.has_data, do: conn, else: put_status(conn, 404)
@@ -93,7 +82,6 @@ defmodule MehrSchulferienWeb.FederalStateController do
       %{
         country: country,
         federal_state: federal_state,
-        css_framework: :tailwind_new,
         periods: periods_with_duration,
         all_periods: data.all_periods,
         vacation_types: vacation_types
@@ -121,8 +109,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
         [
           counties_with_cities: counties_with_cities,
           country: country,
-          federal_state: federal_state,
-          css_framework: :tailwind_new
+          federal_state: federal_state
         ] ++
           CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
 

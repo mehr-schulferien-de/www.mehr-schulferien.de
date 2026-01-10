@@ -6,7 +6,6 @@ defmodule MehrSchulferienWeb.HomeLive do
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
   alias MehrSchulferienWeb.Live.Shared.{LocationHistoryHelpers, SchoolSearchLogic}
   import MehrSchulferienWeb.Shared.LocationHistoryComponent
-  require Logger
 
   @impl true
   def mount(_params, session, socket) do
@@ -219,12 +218,7 @@ defmodule MehrSchulferienWeb.HomeLive do
   # get_federal_states now delegated to SchoolSearchLogic
 
   defp load_location_history_from_session(session) do
-    # Extract cookie values from session
-    Logger.info("HomeLive - Session data: #{inspect(session)}")
-
     recent_locations_str = session["recent_locations"]
-    Logger.info("HomeLive - Recent locations string: #{inspect(recent_locations_str)}")
-
     LocationHistoryHelpers.load_recent_locations(recent_locations_str)
   end
 
@@ -455,8 +449,7 @@ defmodule MehrSchulferienWeb.HomeLive do
       |> assign(:show_all_schools, true)
       |> assign(:schools, [])
     rescue
-      e ->
-        IO.inspect(e, label: "Error loading federal state data")
+      Ecto.NoResultsError ->
         socket
     end
   end

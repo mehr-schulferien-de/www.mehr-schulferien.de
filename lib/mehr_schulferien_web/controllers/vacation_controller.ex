@@ -91,19 +91,19 @@ defmodule MehrSchulferienWeb.VacationController do
     # Find the specific vacation period
     vacation_period = find_vacation_period(data.periods, vacation_type_record.name)
 
-    # Build period date set ONCE for O(1) lookups (instead of O(n) per period)
-    period_date_set = ViewHelpers.build_period_date_set(data.all_periods)
-
     # Calculate adjoining durations for all periods
-    periods_with_duration = calculate_periods_with_duration(data.periods, period_date_set)
+    periods_with_duration =
+      ViewHelpers.add_adjoining_duration_to_periods(data.periods, data.all_periods)
 
     # Get vacation types for the federal state
     vacation_types = get_vacation_types_for_year(federal_state, year)
 
-    # Calculate vacation period's adjoining duration if it exists
+    # Find the vacation period with adjoining duration from the calculated list
     vacation_period_with_adjoining =
       if vacation_period do
-        add_adjoining_duration(vacation_period, period_date_set)
+        Enum.find(periods_with_duration, fn p ->
+          p.holiday_or_vacation_type.name == vacation_period.holiday_or_vacation_type.name
+        end)
       else
         nil
       end
@@ -133,22 +133,6 @@ defmodule MehrSchulferienWeb.VacationController do
     Enum.find(periods, fn period ->
       period.holiday_or_vacation_type.name == vacation_name
     end)
-  end
-
-  defp calculate_periods_with_duration(periods, period_date_set) do
-    Enum.map(periods, fn period ->
-      add_adjoining_duration(period, period_date_set)
-    end)
-  end
-
-  defp add_adjoining_duration(period, period_date_set) do
-    days = Date.diff(period.ends_on, period.starts_on) + 1
-
-    effective_duration =
-      ViewHelpers.calculate_effective_duration(period, period_date_set, :optimized)
-
-    difference = effective_duration - days
-    Map.put(period, :adjoining_duration, difference)
   end
 
   defp get_vacation_types_for_year(federal_state, year) do
@@ -181,30 +165,12 @@ defmodule MehrSchulferienWeb.VacationController do
       today: params.today,
       has_data: not is_nil(params.vacation_period_with_adjoining),
       previous_year_exists: previous_year_exists,
-      css_framework: :tailwind_new,
-      months: get_german_month_names(),
+      months: DateHelpers.get_months_map(),
       year: year_int,
       years_with_data: MehrSchulferien.Periods.list_years_with_periods(),
       meta_title_type: :vacation,
       page_title:
         "#{params.vacation_type_record.colloquial} #{params.federal_state.name} #{params.year}"
-    }
-  end
-
-  defp get_german_month_names do
-    %{
-      1 => "Januar",
-      2 => "Februar",
-      3 => "März",
-      4 => "April",
-      5 => "Mai",
-      6 => "Juni",
-      7 => "Juli",
-      8 => "August",
-      9 => "September",
-      10 => "Oktober",
-      11 => "November",
-      12 => "Dezember"
     }
   end
 

@@ -312,6 +312,25 @@ defmodule MehrSchulferienWeb.ViewHelpers do
   end
 
   @doc """
+  Adds adjoining_duration field to each period in the list.
+
+  Calculates the number of extra days gained from adjacent weekends/holidays
+  and adds this as an :adjoining_duration key to each period map.
+
+  Uses optimized O(1) lookups with a pre-built period date set.
+  """
+  def add_adjoining_duration_to_periods(periods, all_periods) do
+    period_date_set = build_period_date_set(all_periods)
+
+    Enum.map(periods, fn period ->
+      days = Date.diff(period.ends_on, period.starts_on) + 1
+      effective_duration = calculate_effective_duration(period, period_date_set, :optimized)
+      difference = effective_duration - days
+      Map.put(period, :adjoining_duration, difference)
+    end)
+  end
+
+  @doc """
   Builds a MapSet of all dates covered by the given periods.
   Use this once before calling calculate_effective_duration_fast/3 in a loop.
   This reduces complexity from O(n²) to O(n) when processing multiple periods.
