@@ -61,11 +61,15 @@
           <dl class="grid grid-cols-2 gap-4">
             <div class="bg-gray-50 rounded p-4">
               <dt class="text-gray-600 text-sm">Cities</dt>
-              <dd class="text-2xl font-bold text-gray-900">{@cities_count}</dd>
+              <dd class="text-2xl font-bold text-gray-900">
+                {MehrSchulferienWeb.ViewHelpers.format_number(@cities_count)}
+              </dd>
             </div>
             <div class="bg-gray-50 rounded p-4">
               <dt class="text-gray-600 text-sm">Schools</dt>
-              <dd class="text-2xl font-bold text-gray-900">{@schools_count}</dd>
+              <dd class="text-2xl font-bold text-gray-900">
+                {MehrSchulferienWeb.ViewHelpers.format_number(@schools_count)}
+              </dd>
             </div>
           </dl>
         <% {:error, message} -> %>

@@ -218,7 +218,9 @@ defmodule MehrSchulferienWeb.PageController do
       {:ok, %{mtime: mtime}} ->
         mtime
         |> NaiveDateTime.from_erl!()
-        |> NaiveDateTime.to_string()
+        |> DateTime.from_naive!("Etc/UTC")
+        |> DateTime.shift_zone!("Europe/Berlin")
+        |> format_german_datetime()
 
       _ ->
         # Fallback: use application start time
@@ -227,6 +229,17 @@ defmodule MehrSchulferienWeb.PageController do
           _ -> "Unknown"
         end
     end
+  end
+
+  defp format_german_datetime(datetime) do
+    day = String.pad_leading("#{datetime.day}", 2, "0")
+    month = String.pad_leading("#{datetime.month}", 2, "0")
+    year = datetime.year
+    hour = String.pad_leading("#{datetime.hour}", 2, "0")
+    minute = String.pad_leading("#{datetime.minute}", 2, "0")
+    second = String.pad_leading("#{datetime.second}", 2, "0")
+
+    "#{day}.#{month}.#{year} #{hour}:#{minute}:#{second}"
   end
 
   def home(conn, params) do
