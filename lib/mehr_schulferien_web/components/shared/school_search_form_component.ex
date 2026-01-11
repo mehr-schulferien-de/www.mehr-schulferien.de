@@ -70,7 +70,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
             type="text"
             name={if @show_federal_state, do: "search[location]", else: "search[zip_code]"}
             value={get_location_value(@search_params, @show_federal_state)}
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[42px]"
             placeholder={@location_placeholder}
             id="search_location"
             phx-debounce="300"
@@ -91,7 +91,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
               type="text"
               name="search[city]"
               value={@search_params["city"] || ""}
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[42px]"
               placeholder="z.B. Berlin"
               id="search_city"
               phx-debounce="300"
@@ -109,7 +109,7 @@ defmodule MehrSchulferienWeb.Shared.SchoolSearchFormComponent do
             type="text"
             name="search[school_name]"
             value={@search_params["school_name"] || ""}
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500 h-[42px]"
             placeholder="z.B. Gymnasium oder Real*"
             id="search_school_name"
             phx-debounce="300"
