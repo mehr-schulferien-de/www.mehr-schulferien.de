@@ -4,12 +4,14 @@ defmodule MehrSchulferienWeb.NavigationHelper do
   """
 
   @doc """
-  Gets the current and next year based on today's date.
+  Gets three years for navigation: current, next, and third year.
+  Used for long-term vacation planning.
   """
   def get_navigation_years(today) do
     current_year = today.year
     next_year = current_year + 1
-    {current_year, next_year}
+    third_year = current_year + 2
+    {current_year, next_year, third_year}
   end
 
   @doc """

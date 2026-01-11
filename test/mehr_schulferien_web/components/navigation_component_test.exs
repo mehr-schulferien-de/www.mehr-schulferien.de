@@ -27,20 +27,40 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html =~ "Mehr Schulferien"
     end
 
-    test "renders desktop navigation with all dropdowns" do
+    test "renders desktop navigation with 3 dropdowns" do
       assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
-      # Check that all dropdown buttons are present with dynamic years
-      assert html =~ "Schulferien 2025"
-      assert html =~ "Schulferien 2026"
-      assert html =~ "Brückentage 2025"
-      assert html =~ "Brückentage 2026"
+      # Check that the 3 main dropdown buttons are present
+      assert html =~ "Schulferien"
+      assert html =~ "Brückentage"
+      assert html =~ "Urlaubsplaner"
 
-      # Check dropdown containers
-      assert html =~ ~r/class="[^"]*dropdown-container[^"]*relative[^"]*"/
-      assert html =~ ~r/class="[^"]*dropdown-menu[^"]*"/
+      # Check that year tabs appear in dropdowns
+      assert html =~ "data-year-tab"
+      assert html =~ "data-year-content"
+
+      # Check dropdown containers using data attributes
+      assert html =~ ~r/data-dropdown-container/
+      assert html =~ ~r/data-dropdown-menu/
+      assert html =~ ~r/data-dropdown-trigger/
+    end
+
+    test "renders year tabs in dropdowns" do
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
+
+      html = render_component(&NavigationComponent.navigation/1, assigns)
+
+      # Check year tabs are present
+      assert html =~ ~r/data-year-tab="2025"/
+      assert html =~ ~r/data-year-tab="2026"/
+      assert html =~ ~r/data-year-tab="2027"/
+
+      # Check year content panels are present
+      assert html =~ ~r/data-year-content="2025"/
+      assert html =~ ~r/data-year-content="2026"/
+      assert html =~ ~r/data-year-content="2027"/
     end
 
     test "renders all federal states in dropdowns" do
@@ -55,54 +75,52 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html =~ "Nordrhein-Westfalen"
       assert html =~ "Schleswig-Holstein"
 
-      # Check that links are properly formatted with dynamic years
+      # Check that links are properly formatted
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/baden-wuerttemberg\/2025"/
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2026"/
-      assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/berlin\/2025"/
-      assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/hamburg\/2026"/
+      assert html =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2027"/
+      assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/hamburg\/2025"/
+      assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/hessen\/2026"/
     end
 
-    test "renders mobile menu structure" do
+    test "renders mobile menu structure with nested years" do
       assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
       # Check mobile menu button
-      assert html =~ ~r/class="[^"]*mobile-menu-toggle[^"]*"/
+      assert html =~ ~r/data-mobile-menu-toggle/
       assert html =~ "Open main menu"
 
       # Check mobile menu container
-      assert html =~ ~r/class="[^"]*mobile-menu[^"]*hidden[^"]*"/
+      assert html =~ ~r/data-mobile-menu/
       assert html =~ "Close menu"
 
-      # Check mobile dropdowns using details/summary
+      # Check mobile dropdowns using nested details/summary
       assert html =~ "<details"
       assert html =~ "<summary"
-      assert html =~ ~r/class="[^"]*mobile-dropdown[^"]*"/
+
+      # Check that years appear in mobile menu too
+      assert html =~ ~r/<summary[^>]*>.*2025.*<\/summary>/s
+      assert html =~ ~r/<summary[^>]*>.*2026.*<\/summary>/s
+      assert html =~ ~r/<summary[^>]*>.*2027.*<\/summary>/s
     end
 
-    test "includes CSS for dropdown behavior" do
+    test "uses data attributes for JavaScript interaction" do
       assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
-      # Check that CSS for hover behavior is included
-      assert html =~ ".dropdown-container:hover .dropdown-menu"
-      assert html =~ "opacity: 1"
-      assert html =~ "visibility: visible"
-    end
-
-    test "includes JavaScript for mobile menu toggle" do
-      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
-
-      html = render_component(&NavigationComponent.navigation/1, assigns)
-
-      # Check that JavaScript for mobile functionality is included
-      assert html =~ "document.addEventListener('DOMContentLoaded'"
-      assert html =~ "querySelector('.mobile-menu-toggle')"
-      assert html =~ "querySelector('.mobile-menu-close')"
-      assert html =~ "classList.remove('hidden')"
-      assert html =~ "classList.add('hidden')"
+      # Check that data attributes are present for JS hooks
+      assert html =~ ~r/data-dropdown-container/
+      assert html =~ ~r/data-dropdown-trigger/
+      assert html =~ ~r/data-dropdown-menu/
+      assert html =~ ~r/data-mobile-menu-toggle/
+      assert html =~ ~r/data-mobile-menu-close/
+      assert html =~ ~r/data-mobile-menu[^-]/
+      assert html =~ ~r/data-year-tabs/
+      assert html =~ ~r/data-year-tab/
+      assert html =~ ~r/data-year-content/
     end
 
     test "renders proper accessibility attributes" do
@@ -114,9 +132,10 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html =~ ~r/aria-label="Global"/
       assert html =~ ~r/aria-hidden="true"/
       assert html =~ "sr-only"
+      assert html =~ ~r/aria-expanded="false"/
     end
 
-    test "all federal state links are properly formatted" do
+    test "all federal state links are properly formatted for all 3 years" do
       assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
@@ -140,16 +159,20 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
         "thueringen"
       ]
 
-      # Check that each federal state appears in all four navigation sections
+      # Check that each federal state appears in all navigation sections for all 3 years
       for state <- federal_states do
-        # Schulferien 2025
+        # Schulferien - all 3 years
         assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2025"/
-        # Schulferien 2026
         assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2026"/
-        # Brückentage 2025
+        assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2027"/
+        # Brückentage - all 3 years
         assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}\/2025"/
-        # Brückentage 2026
         assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}\/2026"/
+        assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}\/2027"/
+        # Urlaubsplaner - all 3 years
+        assert html =~ ~r/href="\/urlaubsplaner\/#{state}\/20-tage\/2025"/
+        assert html =~ ~r/href="\/urlaubsplaner\/#{state}\/20-tage\/2026"/
+        assert html =~ ~r/href="\/urlaubsplaner\/#{state}\/20-tage\/2027"/
       end
     end
 
@@ -161,27 +184,67 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
     end
 
     test "navigation uses dynamic years based on today parameter" do
-      # Test with 2024 as today
+      # Test with 2024 as today - should show 2024, 2025, 2026
       assigns_2024 = %{socket: nil, conn: nil, today: ~D[2024-03-15]}
       html_2024 = render_component(&NavigationComponent.navigation/1, assigns_2024)
 
-      assert html_2024 =~ "Schulferien 2024"
-      assert html_2024 =~ "Schulferien 2025"
-      assert html_2024 =~ "Brückentage 2024"
-      assert html_2024 =~ "Brückentage 2025"
+      # Check year tabs
+      assert html_2024 =~ ~r/data-year-tab="2024"/
+      assert html_2024 =~ ~r/data-year-tab="2025"/
+      assert html_2024 =~ ~r/data-year-tab="2026"/
+      # Check links for all 3 years
       assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2024"/
       assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2025"/
+      assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2026"/
 
-      # Test with 2026 as today
+      # Test with 2026 as today - should show 2026, 2027, 2028
       assigns_2026 = %{socket: nil, conn: nil, today: ~D[2026-08-10]}
       html_2026 = render_component(&NavigationComponent.navigation/1, assigns_2026)
 
-      assert html_2026 =~ "Schulferien 2026"
-      assert html_2026 =~ "Schulferien 2027"
-      assert html_2026 =~ "Brückentage 2026"
-      assert html_2026 =~ "Brückentage 2027"
+      # Check year tabs
+      assert html_2026 =~ ~r/data-year-tab="2026"/
+      assert html_2026 =~ ~r/data-year-tab="2027"/
+      assert html_2026 =~ ~r/data-year-tab="2028"/
+      # Check links for all 3 years
       assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2026"/
       assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2027"/
+      assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2028"/
+    end
+
+    test "renders Urlaubsplaner dropdown with all federal states and year tabs" do
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
+
+      html = render_component(&NavigationComponent.navigation/1, assigns)
+
+      # Check Urlaubsplaner dropdown is present
+      assert html =~ "Urlaubsplaner"
+
+      # Check Urlaubsplaner links for all 3 years
+      assert html =~ ~r/href="\/urlaubsplaner\/bayern\/20-tage\/2025"/
+      assert html =~ ~r/href="\/urlaubsplaner\/bayern\/20-tage\/2026"/
+      assert html =~ ~r/href="\/urlaubsplaner\/bayern\/20-tage\/2027"/
+      assert html =~ ~r/href="\/urlaubsplaner\/berlin\/20-tage\/2025"/
+      assert html =~ ~r/href="\/urlaubsplaner\/hessen\/20-tage\/2026"/
+    end
+
+    test "has only 3 dropdowns (Schulferien, Brückentage, Urlaubsplaner)" do
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
+
+      html = render_component(&NavigationComponent.navigation/1, assigns)
+
+      # Count data-dropdown-container occurrences (should be exactly 3)
+      dropdown_count = html |> String.split("data-dropdown-container") |> length() |> Kernel.-(1)
+      assert dropdown_count == 3
+    end
+
+    test "dropdown has scrollable content area" do
+      assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
+
+      html = render_component(&NavigationComponent.navigation/1, assigns)
+
+      # Check for max-height and overflow scroll classes
+      assert html =~ "max-h-96"
+      assert html =~ "overflow-y-auto"
     end
   end
 end

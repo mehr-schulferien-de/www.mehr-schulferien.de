@@ -13,6 +13,8 @@ module.exports = {
   },
   plugins: [],
   safelist: [
+    // Navigation dropdown widths
+    'w-[780px]',
     // Day type colors that might be dynamically generated
     {
       pattern: /^bg-(red|green|blue|yellow|orange|purple|pink|gray)-(100|200|300|400|500|600|700|800|900)$/

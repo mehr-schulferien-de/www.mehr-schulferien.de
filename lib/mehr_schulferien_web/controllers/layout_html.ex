@@ -77,12 +77,13 @@ defmodule MehrSchulferienWeb.LayoutHTML do
   """
   def get_navigation_assigns(conn) do
     today = DateHelpers.get_today_or_custom_date(conn)
-    {current_year, next_year} = NavigationHelper.get_navigation_years(today)
+    {current_year, next_year, third_year} = NavigationHelper.get_navigation_years(today)
 
     %{
       today: today,
       current_year: current_year,
-      next_year: next_year
+      next_year: next_year,
+      third_year: third_year
     }
   end
 end

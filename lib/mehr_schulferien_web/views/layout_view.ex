@@ -52,20 +52,21 @@ defmodule MehrSchulferienWeb.LayoutView do
   end
 
   @doc """
-  Checks if the current page matches an Urlaubsplaner page for a specific federal state.
+  Checks if the current page matches an Urlaubsplaner page for a specific federal state and year.
   Used to disable menu items when viewing the same state's vacation planner page.
 
   Returns true if the current path matches the format:
   /urlaubsplaner/:federal_state_slug/:days/:year
   or /urlaubsplaner-guenstig/:federal_state_slug/:days/:year
+  and the federal_state_slug and year match the parameters.
   """
-  def is_current_urlaubsplaner_page_for_federal_state?(conn, federal_state_slug) do
+  def is_current_urlaubsplaner_page_for_federal_state?(conn, federal_state_slug, year) do
     case conn.path_info do
-      ["urlaubsplaner", state_slug, _days, _year] ->
-        state_slug == federal_state_slug
+      ["urlaubsplaner", state_slug, _days, year_str] ->
+        state_slug == federal_state_slug && year_str == to_string(year)
 
-      ["urlaubsplaner-guenstig", state_slug, _days, _year] ->
-        state_slug == federal_state_slug
+      ["urlaubsplaner-guenstig", state_slug, _days, year_str] ->
+        state_slug == federal_state_slug && year_str == to_string(year)
 
       _ ->
         false
@@ -77,12 +78,13 @@ defmodule MehrSchulferienWeb.LayoutView do
   """
   def get_navigation_assigns(conn) do
     today = DateHelpers.get_today_or_custom_date(conn)
-    {current_year, next_year} = NavigationHelper.get_navigation_years(today)
+    {current_year, next_year, third_year} = NavigationHelper.get_navigation_years(today)
 
     %{
       today: today,
       current_year: current_year,
-      next_year: next_year
+      next_year: next_year,
+      third_year: third_year
     }
   end
 end

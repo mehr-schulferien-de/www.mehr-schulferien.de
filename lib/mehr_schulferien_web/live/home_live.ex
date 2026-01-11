@@ -11,7 +11,7 @@ defmodule MehrSchulferienWeb.HomeLive do
   def mount(_params, session, socket) do
     # Get navigation years for the navigation component
     today = DateHelpers.today_berlin()
-    {current_year, next_year} = NavigationHelper.get_navigation_years(today)
+    {current_year, next_year, _third_year} = NavigationHelper.get_navigation_years(today)
 
     # Get location history from session (cookies are passed through session)
     recent_locations = load_location_history_from_session(session)

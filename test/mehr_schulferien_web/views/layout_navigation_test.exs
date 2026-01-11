@@ -11,6 +11,7 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
       navigation_assigns = %{
         current_year: 2025,
         next_year: 2026,
+        third_year: 2027,
         conn: conn
       }
 
@@ -31,14 +32,20 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
       assert html =~ "data-mobile-menu"
     end
 
-    test "renders desktop navigation dropdowns", %{navigation_assigns: navigation_assigns} do
+    test "renders desktop navigation with 3 dropdowns and year tabs", %{
+      navigation_assigns: navigation_assigns
+    } do
       html = render_navigation(navigation_assigns)
 
-      # Check desktop dropdown buttons
-      assert html =~ "Schulferien 2025"
-      assert html =~ "Schulferien 2026"
-      assert html =~ "Brückentage 2025"
-      assert html =~ "Brückentage 2026"
+      # Check dropdown buttons
+      assert html =~ "Schulferien"
+      assert html =~ "Brückentage"
+      assert html =~ "Urlaubsplaner"
+
+      # Check year tabs are present
+      assert html =~ "data-year-tab"
+      assert html =~ "data-year-content"
+      assert html =~ "data-year-tabs"
 
       # Check data attributes for vanilla JS
       assert html =~ "data-dropdown-container"
@@ -65,7 +72,9 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
       assert html =~ "Close menu"
     end
 
-    test "renders all federal states in dropdowns", %{navigation_assigns: navigation_assigns} do
+    test "renders all federal states in dropdowns for all 3 years", %{
+      navigation_assigns: navigation_assigns
+    } do
       html = render_navigation(navigation_assigns)
 
       federal_states = [
@@ -89,32 +98,37 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
 
       for {slug, name} <- federal_states do
         assert html =~ name
+        # Check all 3 years for Schulferien
         assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2025"}
         assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2026"}
+        assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2027"}
+        # Check all 3 years for Brückentage
         assert html =~ ~r{href="/brueckentage/d/bundesland/#{slug}/2025"}
         assert html =~ ~r{href="/brueckentage/d/bundesland/#{slug}/2026"}
+        assert html =~ ~r{href="/brueckentage/d/bundesland/#{slug}/2027"}
+        # Check all 3 years for Urlaubsplaner
+        assert html =~ ~r{href="/urlaubsplaner/#{slug}/20-tage/2025"}
+        assert html =~ ~r{href="/urlaubsplaner/#{slug}/20-tage/2026"}
+        assert html =~ ~r{href="/urlaubsplaner/#{slug}/20-tage/2027"}
       end
     end
 
-    test "renders mobile navigation sections", %{navigation_assigns: navigation_assigns} do
+    test "renders mobile navigation with nested years", %{navigation_assigns: navigation_assigns} do
       html = render_navigation(navigation_assigns)
 
-      # Check mobile navigation uses details/summary for dropdowns
+      # Check mobile navigation uses nested details/summary for dropdowns
       assert html =~ "<details>"
       assert html =~ "<summary"
 
-      # Check all mobile sections are present
-      assert Regex.scan(~r/<summary[^>]*>.*?Schulferien 2025.*?<\/summary>/s, html) |> length() ==
-               1
+      # Check main sections are present (Schulferien, Brückentage, Urlaubsplaner)
+      assert html =~ ~r/<summary[^>]*>.*?Schulferien.*?<\/summary>/s
+      assert html =~ ~r/<summary[^>]*>.*?Brückentage.*?<\/summary>/s
+      assert html =~ ~r/<summary[^>]*>.*?Urlaubsplaner.*?<\/summary>/s
 
-      assert Regex.scan(~r/<summary[^>]*>.*?Schulferien 2026.*?<\/summary>/s, html) |> length() ==
-               1
-
-      assert Regex.scan(~r/<summary[^>]*>.*?Brückentage 2025.*?<\/summary>/s, html) |> length() ==
-               1
-
-      assert Regex.scan(~r/<summary[^>]*>.*?Brückentage 2026.*?<\/summary>/s, html) |> length() ==
-               1
+      # Check year subsections exist (nested details)
+      assert html =~ ~r/<summary[^>]*>.*?2025.*?<\/summary>/s
+      assert html =~ ~r/<summary[^>]*>.*?2026.*?<\/summary>/s
+      assert html =~ ~r/<summary[^>]*>.*?2027.*?<\/summary>/s
     end
 
     test "includes vanilla JS data attributes", %{navigation_assigns: navigation_assigns} do
@@ -125,6 +139,9 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
       assert html =~ "data-dropdown-menu"
       assert html =~ "data-mobile-menu"
       assert html =~ "data-mobile-menu-toggle"
+      assert html =~ "data-year-tabs"
+      assert html =~ "data-year-tab"
+      assert html =~ "data-year-content"
     end
 
     test "renders proper ARIA attributes", %{navigation_assigns: navigation_assigns} do
@@ -146,13 +163,30 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
       navigation_assigns = %{
         current_year: 2025,
         next_year: 2026,
+        third_year: 2027,
         conn: conn_federal_state
       }
 
       html = render_navigation(navigation_assigns)
 
-      # Should show Bayern as non-clickable in 2025 dropdown
+      # Should show Bayern as non-clickable in 2025 panel
       assert html =~ ~r/<span[^>]*class="[^"]*text-gray-400[^"]*"[^>]*>.*Bayern.*<\/span>/s
+    end
+
+    test "has only 3 dropdowns", %{navigation_assigns: navigation_assigns} do
+      html = render_navigation(navigation_assigns)
+
+      # Count data-dropdown-container occurrences (should be exactly 3)
+      dropdown_count = html |> String.split("data-dropdown-container") |> length() |> Kernel.-(1)
+      assert dropdown_count == 3
+    end
+
+    test "dropdowns have scrollable content", %{navigation_assigns: navigation_assigns} do
+      html = render_navigation(navigation_assigns)
+
+      # Check for scrollable content classes
+      assert html =~ "max-h-96"
+      assert html =~ "overflow-y-auto"
     end
   end
 

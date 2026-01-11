@@ -1,5 +1,5 @@
 <%!-- Shared navigation template that can be used by both traditional templates and LiveView --%>
-<%!-- Expects assigns: current_year, next_year, and optional conn for highlighting current page --%>
+<%!-- Expects assigns: current_year, next_year, third_year, and optional conn for highlighting current page --%>
 
 <% federal_states = MehrSchulferienWeb.NavigationHelper.federal_states() %>
 
@@ -45,8 +45,8 @@
         </svg>
       </button>
     </div>
-    <div class="hidden lg:flex lg:gap-x-12">
-      <!-- First dropdown - Current Year -->
+    <div class="hidden lg:flex lg:gap-x-8">
+      <!-- Schulferien dropdown with year tabs -->
       <div class="relative" data-dropdown-container>
         <button
           type="button"
@@ -54,7 +54,7 @@
           data-dropdown-trigger
           aria-expanded="false"
         >
-          Schulferien {@current_year}
+          Schulferien
           <svg
             class="size-5 flex-none text-gray-400 dark:text-gray-500"
             viewBox="0 0 20 20"
@@ -71,65 +71,77 @@
         </button>
 
         <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
+          class="absolute top-full -left-8 z-10 mt-3 w-72 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
           data-dropdown-menu
+          data-year-tabs
         >
-          <div class="p-2">
+          <!-- Year tabs -->
+          <div class="flex border-b border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-tl-3xl"
+              data-year-tab={@current_year}
+            >
+              {@current_year}
+            </button>
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
+              data-year-tab={@next_year}
+            >
+              {@next_year}
+            </button>
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-tr-3xl"
+              data-year-tab={@third_year}
+            >
+              {@third_year}
+            </button>
+          </div>
+          <!-- Year content panels -->
+          <div class="p-2 max-h-96 overflow-y-auto" data-year-content={@current_year}>
             <%= for {federal_state, display_name} <- federal_states do %>
               <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_page_for_federal_state?(@conn, federal_state, @current_year) do %>
-                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400 dark:text-gray-500">
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
                   {display_name}
                 </span>
               <% else %>
                 <a
                   href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
-                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   {display_name}
                 </a>
               <% end %>
             <% end %>
           </div>
-        </div>
-      </div>
-      <!-- Second dropdown - Next Year -->
-      <div class="relative" data-dropdown-container>
-        <button
-          type="button"
-          class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          data-dropdown-trigger
-          aria-expanded="false"
-        >
-          Schulferien {@next_year}
-          <svg
-            class="size-5 flex-none text-gray-400 dark:text-gray-500"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-            data-slot="icon"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-
-        <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
-          data-dropdown-menu
-        >
-          <div class="p-2">
+          <div class="p-2 max-h-96 overflow-y-auto hidden" data-year-content={@next_year}>
             <%= for {federal_state, display_name} <- federal_states do %>
               <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_page_for_federal_state?(@conn, federal_state, @next_year) do %>
-                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400 dark:text-gray-500">
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
                   {display_name}
                 </span>
               <% else %>
                 <a
                   href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
-                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  {display_name}
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="p-2 max-h-96 overflow-y-auto hidden" data-year-content={@third_year}>
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_page_for_federal_state?(@conn, federal_state, @third_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
+                  {display_name}
+                </span>
+              <% else %>
+                <a
+                  href={"/ferien/d/bundesland/#{federal_state}/#{@third_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   {display_name}
                 </a>
@@ -138,7 +150,7 @@
           </div>
         </div>
       </div>
-      <!-- Third dropdown - Bridge Days Current Year -->
+      <!-- Brückentage dropdown with year tabs -->
       <div class="relative" data-dropdown-container>
         <button
           type="button"
@@ -146,7 +158,7 @@
           data-dropdown-trigger
           aria-expanded="false"
         >
-          Brückentage {@current_year}
+          Brückentage
           <svg
             class="size-5 flex-none text-gray-400 dark:text-gray-500"
             viewBox="0 0 20 20"
@@ -163,65 +175,77 @@
         </button>
 
         <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
+          class="absolute top-full -left-8 z-10 mt-3 w-72 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
           data-dropdown-menu
+          data-year-tabs
         >
-          <div class="p-2">
+          <!-- Year tabs -->
+          <div class="flex border-b border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-tl-3xl"
+              data-year-tab={@current_year}
+            >
+              {@current_year}
+            </button>
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
+              data-year-tab={@next_year}
+            >
+              {@next_year}
+            </button>
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-tr-3xl"
+              data-year-tab={@third_year}
+            >
+              {@third_year}
+            </button>
+          </div>
+          <!-- Year content panels -->
+          <div class="p-2 max-h-96 overflow-y-auto" data-year-content={@current_year}>
             <%= for {federal_state, display_name} <- federal_states do %>
               <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_bridge_days_page_for_federal_state?(@conn, federal_state, @current_year) do %>
-                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400 dark:text-gray-500">
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
                   {display_name}
                 </span>
               <% else %>
                 <a
                   href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
-                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   {display_name}
                 </a>
               <% end %>
             <% end %>
           </div>
-        </div>
-      </div>
-      <!-- Fourth dropdown - Bridge Days Next Year -->
-      <div class="relative" data-dropdown-container>
-        <button
-          type="button"
-          class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          data-dropdown-trigger
-          aria-expanded="false"
-        >
-          Brückentage {@next_year}
-          <svg
-            class="size-5 flex-none text-gray-400 dark:text-gray-500"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-            data-slot="icon"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-
-        <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
-          data-dropdown-menu
-        >
-          <div class="p-2">
+          <div class="p-2 max-h-96 overflow-y-auto hidden" data-year-content={@next_year}>
             <%= for {federal_state, display_name} <- federal_states do %>
               <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_bridge_days_page_for_federal_state?(@conn, federal_state, @next_year) do %>
-                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400 dark:text-gray-500">
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
                   {display_name}
                 </span>
               <% else %>
                 <a
                   href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
-                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  {display_name}
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="p-2 max-h-96 overflow-y-auto hidden" data-year-content={@third_year}>
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_bridge_days_page_for_federal_state?(@conn, federal_state, @third_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
+                  {display_name}
+                </span>
+              <% else %>
+                <a
+                  href={"/brueckentage/d/bundesland/#{federal_state}/#{@third_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   {display_name}
                 </a>
@@ -230,7 +254,7 @@
           </div>
         </div>
       </div>
-      <!-- Fifth dropdown - Urlaubsplaner -->
+      <!-- Urlaubsplaner dropdown with year tabs -->
       <div class="relative" data-dropdown-container>
         <button
           type="button"
@@ -255,19 +279,77 @@
         </button>
 
         <div
-          class="absolute top-full -left-8 z-10 mt-3 w-64 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
+          class="absolute top-full right-0 z-10 mt-3 w-72 overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-700 opacity-0 invisible hidden transition-all duration-200"
           data-dropdown-menu
+          data-year-tabs
         >
-          <div class="p-2">
+          <!-- Year tabs -->
+          <div class="flex border-b border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-tl-3xl"
+              data-year-tab={@current_year}
+            >
+              {@current_year}
+            </button>
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
+              data-year-tab={@next_year}
+            >
+              {@next_year}
+            </button>
+            <button
+              type="button"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-tr-3xl"
+              data-year-tab={@third_year}
+            >
+              {@third_year}
+            </button>
+          </div>
+          <!-- Year content panels -->
+          <div class="p-2 max-h-96 overflow-y-auto" data-year-content={@current_year}>
             <%= for {federal_state, display_name} <- federal_states do %>
-              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_urlaubsplaner_page_for_federal_state?(@conn, federal_state) do %>
-                <span class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-400 dark:text-gray-500">
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_urlaubsplaner_page_for_federal_state?(@conn, federal_state, @current_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
                   {display_name}
                 </span>
               <% else %>
                 <a
                   href={"/urlaubsplaner/#{federal_state}/20-tage/#{@current_year}"}
-                  class="block rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  {display_name}
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="p-2 max-h-96 overflow-y-auto hidden" data-year-content={@next_year}>
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_urlaubsplaner_page_for_federal_state?(@conn, federal_state, @next_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
+                  {display_name}
+                </span>
+              <% else %>
+                <a
+                  href={"/urlaubsplaner/#{federal_state}/20-tage/#{@next_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  {display_name}
+                </a>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="p-2 max-h-96 overflow-y-auto hidden" data-year-content={@third_year}>
+            <%= for {federal_state, display_name} <- federal_states do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_urlaubsplaner_page_for_federal_state?(@conn, federal_state, @third_year) do %>
+                <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
+                  {display_name}
+                </span>
+              <% else %>
+                <a
+                  href={"/urlaubsplaner/#{federal_state}/20-tage/#{@third_year}"}
+                  class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   {display_name}
                 </a>
@@ -316,66 +398,113 @@
         </button>
       </div>
       <div class="mt-6 space-y-2">
+        <!-- Schulferien with nested years -->
         <details>
           <summary class="font-semibold text-gray-900 dark:text-gray-100 py-2 cursor-pointer">
-            Schulferien {@current_year}
+            Schulferien
           </summary>
-          <div class="ml-4 space-y-1">
-            <%= for {federal_state, display_name} <- federal_states do %>
-              <a
-                href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
-                class="block py-1 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-              >
-                {display_name}
-              </a>
-            <% end %>
+          <div class="ml-4">
+            <details>
+              <summary class="font-medium text-gray-700 dark:text-gray-300 py-1.5 cursor-pointer">
+                {@current_year}
+              </summary>
+              <div class="ml-4 space-y-1">
+                <%= for {federal_state, display_name} <- federal_states do %>
+                  <a
+                    href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
+                    class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    {display_name}
+                  </a>
+                <% end %>
+              </div>
+            </details>
+            <details>
+              <summary class="font-medium text-gray-700 dark:text-gray-300 py-1.5 cursor-pointer">
+                {@next_year}
+              </summary>
+              <div class="ml-4 space-y-1">
+                <%= for {federal_state, display_name} <- federal_states do %>
+                  <a
+                    href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
+                    class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    {display_name}
+                  </a>
+                <% end %>
+              </div>
+            </details>
+            <details>
+              <summary class="font-medium text-gray-700 dark:text-gray-300 py-1.5 cursor-pointer">
+                {@third_year}
+              </summary>
+              <div class="ml-4 space-y-1">
+                <%= for {federal_state, display_name} <- federal_states do %>
+                  <a
+                    href={"/ferien/d/bundesland/#{federal_state}/#{@third_year}"}
+                    class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    {display_name}
+                  </a>
+                <% end %>
+              </div>
+            </details>
           </div>
         </details>
+        <!-- Brückentage with nested years -->
         <details>
           <summary class="font-semibold text-gray-900 dark:text-gray-100 py-2 cursor-pointer">
-            Schulferien {@next_year}
+            Brückentage
           </summary>
-          <div class="ml-4 space-y-1">
-            <%= for {federal_state, display_name} <- federal_states do %>
-              <a
-                href={"/ferien/d/bundesland/#{federal_state}/#{@next_year}"}
-                class="block py-1 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-              >
-                {display_name}
-              </a>
-            <% end %>
+          <div class="ml-4">
+            <details>
+              <summary class="font-medium text-gray-700 dark:text-gray-300 py-1.5 cursor-pointer">
+                {@current_year}
+              </summary>
+              <div class="ml-4 space-y-1">
+                <%= for {federal_state, display_name} <- federal_states do %>
+                  <a
+                    href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
+                    class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    {display_name}
+                  </a>
+                <% end %>
+              </div>
+            </details>
+            <details>
+              <summary class="font-medium text-gray-700 dark:text-gray-300 py-1.5 cursor-pointer">
+                {@next_year}
+              </summary>
+              <div class="ml-4 space-y-1">
+                <%= for {federal_state, display_name} <- federal_states do %>
+                  <a
+                    href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
+                    class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    {display_name}
+                  </a>
+                <% end %>
+              </div>
+            </details>
+            <details>
+              <summary class="font-medium text-gray-700 dark:text-gray-300 py-1.5 cursor-pointer">
+                {@third_year}
+              </summary>
+              <div class="ml-4 space-y-1">
+                <%= for {federal_state, display_name} <- federal_states do %>
+                  <a
+                    href={"/brueckentage/d/bundesland/#{federal_state}/#{@third_year}"}
+                    class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    {display_name}
+                  </a>
+                <% end %>
+              </div>
+            </details>
           </div>
         </details>
-        <details>
-          <summary class="font-semibold text-gray-900 dark:text-gray-100 py-2 cursor-pointer">
-            Brückentage {@current_year}
-          </summary>
-          <div class="ml-4 space-y-1">
-            <%= for {federal_state, display_name} <- federal_states do %>
-              <a
-                href={"/brueckentage/d/bundesland/#{federal_state}/#{@current_year}"}
-                class="block py-1 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-              >
-                {display_name}
-              </a>
-            <% end %>
-          </div>
-        </details>
-        <details>
-          <summary class="font-semibold text-gray-900 dark:text-gray-100 py-2 cursor-pointer">
-            Brückentage {@next_year}
-          </summary>
-          <div class="ml-4 space-y-1">
-            <%= for {federal_state, display_name} <- federal_states do %>
-              <a
-                href={"/brueckentage/d/bundesland/#{federal_state}/#{@next_year}"}
-                class="block py-1 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-              >
-                {display_name}
-              </a>
-            <% end %>
-          </div>
-        </details>
+        <!-- Urlaubsplaner -->
         <details>
           <summary class="font-semibold text-gray-900 dark:text-gray-100 py-2 cursor-pointer">
             Urlaubsplaner

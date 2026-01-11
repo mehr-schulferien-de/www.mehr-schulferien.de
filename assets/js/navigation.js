@@ -22,6 +22,7 @@ export default class Navigation {
   setup() {
     this.setupMobileMenu();
     this.setupDesktopDropdowns();
+    this.setupYearTabs();
     this.setupDismissibleAlerts();
     this.setupToastNotifications();
   }
@@ -174,6 +175,42 @@ export default class Navigation {
       if (dropdown.isOpen) {
         this.closeDropdown(dropdown);
       }
+    });
+  }
+
+  // Year Tabs Functionality for navigation dropdowns
+  setupYearTabs() {
+    const tabContainers = document.querySelectorAll('[data-year-tabs]');
+
+    tabContainers.forEach(container => {
+      const tabs = container.querySelectorAll('[data-year-tab]');
+      const contents = container.querySelectorAll('[data-year-content]');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const year = tab.dataset.yearTab;
+
+          // Update tab styles
+          tabs.forEach(t => {
+            t.classList.remove('bg-blue-600', 'text-white');
+            t.classList.add('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-100');
+          });
+          tab.classList.add('bg-blue-600', 'text-white');
+          tab.classList.remove('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-100');
+
+          // Show/hide content
+          contents.forEach(content => {
+            if (content.dataset.yearContent === year) {
+              content.classList.remove('hidden');
+            } else {
+              content.classList.add('hidden');
+            }
+          });
+        });
+      });
     });
   }
 
