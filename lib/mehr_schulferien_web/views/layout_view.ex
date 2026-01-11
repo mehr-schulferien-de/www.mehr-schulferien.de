@@ -16,62 +16,53 @@ defmodule MehrSchulferienWeb.LayoutView do
   end
 
   @doc """
-  Checks if the current page matches a federal state vacation page with a specific year.
-  Used to disable menu items when viewing the same state's vacation page.
+  Checks if the current page matches a navigation item for a specific federal state and year.
+  Used to disable menu items when viewing the same state's page.
 
-  Returns true if the current path matches the format:
-  /ferien/:country_slug/bundesland/:federal_state_slug/:year
-  and the federal_state_slug and year match the parameters.
+  The `page_type` parameter specifies which type of page to check:
+  - `:ferien` - vacation pages (/ferien/:country/bundesland/:state/:year)
+  - `:brueckentage` - bridge day pages (/brueckentage/:country/bundesland/:state/:year)
+  - `:urlaubsplaner` - vacation planner pages (/urlaubsplaner/:state/:days/:year)
   """
   def is_current_page_for_federal_state?(conn, federal_state_slug, year) do
-    case conn.path_info do
-      ["ferien", _country_slug, "bundesland", state_slug, year_str] ->
-        state_slug == federal_state_slug && year_str == to_string(year)
-
-      _ ->
-        false
-    end
+    matches_page?(conn.path_info, :ferien, federal_state_slug, year)
   end
 
-  @doc """
-  Checks if the current page matches a federal state bridge days page with a specific year.
-  Used to disable menu items when viewing the same state's bridge days page.
-
-  Returns true if the current path matches the format:
-  /brueckentage/:country_slug/bundesland/:federal_state_slug/:year
-  and the federal_state_slug and year match the parameters.
-  """
   def is_current_bridge_days_page_for_federal_state?(conn, federal_state_slug, year) do
-    case conn.path_info do
-      ["brueckentage", _country_slug, "bundesland", state_slug, year_str] ->
-        state_slug == federal_state_slug && year_str == to_string(year)
-
-      _ ->
-        false
-    end
+    matches_page?(conn.path_info, :brueckentage, federal_state_slug, year)
   end
 
-  @doc """
-  Checks if the current page matches an Urlaubsplaner page for a specific federal state and year.
-  Used to disable menu items when viewing the same state's vacation planner page.
-
-  Returns true if the current path matches the format:
-  /urlaubsplaner/:federal_state_slug/:days/:year
-  or /urlaubsplaner-guenstig/:federal_state_slug/:days/:year
-  and the federal_state_slug and year match the parameters.
-  """
   def is_current_urlaubsplaner_page_for_federal_state?(conn, federal_state_slug, year) do
-    case conn.path_info do
-      ["urlaubsplaner", state_slug, _days, year_str] ->
-        state_slug == federal_state_slug && year_str == to_string(year)
-
-      ["urlaubsplaner-guenstig", state_slug, _days, year_str] ->
-        state_slug == federal_state_slug && year_str == to_string(year)
-
-      _ ->
-        false
-    end
+    matches_page?(conn.path_info, :urlaubsplaner, federal_state_slug, year)
   end
+
+  defp matches_page?(["ferien", _, "bundesland", state, year_str], :ferien, expected_state, year) do
+    state == expected_state && year_str == to_string(year)
+  end
+
+  defp matches_page?(
+         ["brueckentage", _, "bundesland", state, year_str],
+         :brueckentage,
+         expected_state,
+         year
+       ) do
+    state == expected_state && year_str == to_string(year)
+  end
+
+  defp matches_page?(["urlaubsplaner", state, _, year_str], :urlaubsplaner, expected_state, year) do
+    state == expected_state && year_str == to_string(year)
+  end
+
+  defp matches_page?(
+         ["urlaubsplaner-guenstig", state, _, year_str],
+         :urlaubsplaner,
+         expected_state,
+         year
+       ) do
+    state == expected_state && year_str == to_string(year)
+  end
+
+  defp matches_page?(_path_info, _type, _state, _year), do: false
 
   @doc """
   Gets the navigation years (current and next) based on today's date from the connection.

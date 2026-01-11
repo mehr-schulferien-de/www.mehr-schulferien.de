@@ -42,9 +42,7 @@ defmodule MehrSchulferienWeb.NavigationHelper do
   Gets the display name for a federal state slug.
   """
   def federal_state_display_name(slug) do
-    federal_states()
-    |> Enum.find(fn {state_slug, _} -> state_slug == slug end)
-    |> case do
+    case List.keyfind(federal_states(), slug, 0) do
       {_, display_name} -> display_name
       nil -> slug
     end

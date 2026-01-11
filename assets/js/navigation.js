@@ -127,15 +127,15 @@ export default class Navigation {
   toggleDropdown(dropdown) {
     if (dropdown.isOpen) {
       this.closeDropdown(dropdown);
-    } else {
-      // Close other dropdowns first
-      this.dropdowns.forEach(d => {
-        if (d !== dropdown && d.isOpen) {
-          this.closeDropdown(d);
-        }
-      });
-      this.openDropdown(dropdown);
+      return;
     }
+
+    // Close other dropdowns before opening the new one
+    this.dropdowns
+      .filter(d => d !== dropdown && d.isOpen)
+      .forEach(d => this.closeDropdown(d));
+
+    this.openDropdown(dropdown);
   }
 
   openDropdown(dropdown) {
