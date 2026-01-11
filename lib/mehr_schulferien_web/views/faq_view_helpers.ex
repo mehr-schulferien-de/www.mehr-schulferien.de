@@ -153,4 +153,47 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
       _ -> "#{ViewHelpers.weekday(date)} der #{ViewHelpers.format_date(date)}"
     end
   end
+
+  @doc """
+  An humanized answer for whether school is on a specific weekday (e.g., Monday or Friday).
+
+  ## Parameters
+    - periods: List of school-free periods for the target date
+    - date: The target date (e.g., next Monday)
+    - location: The location struct
+    - weekday_name: The German weekday name (e.g., "Montag", "Freitag")
+    - is_today: Whether the target date is today
+
+  ## Examples
+
+      iex> is_school_on_weekday_answer([], ~D[2026-01-12], location, "Montag", false)
+      "Ja, am Montag (12.1.26) ist Schule in Berlin."
+
+      iex> is_school_on_weekday_answer([vacation_period], ~D[2026-01-12], location, "Montag", false)
+      "Nein, am Montag (12.1.26) ist keine Schule in Berlin (Winterferien)."
+  """
+  def is_school_on_weekday_answer(periods, date, location, weekday_name, is_today) do
+    reasons =
+      periods
+      |> Enum.map(& &1.holiday_or_vacation_type.colloquial)
+      |> ViewHelpers.comma_join_with_a_final_und()
+
+    # Format: "Montag (12.1.26)" or "heute, Montag (12.1.26)"
+    date_string = "#{weekday_name} (#{ViewHelpers.format_date(date)})"
+
+    date_prefix =
+      if is_today do
+        "heute, #{date_string}"
+      else
+        "am #{date_string}"
+      end
+
+    case Enum.count(periods) do
+      0 ->
+        "Ja, #{date_prefix} ist Schule in #{location.name}."
+
+      _ ->
+        "Nein, #{date_prefix} ist keine Schule in #{location.name} (#{reasons})."
+    end
+  end
 end

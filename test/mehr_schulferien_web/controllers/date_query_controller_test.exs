@@ -143,4 +143,64 @@ defmodule MehrSchulferienWeb.DateQueryControllerTest do
       assert html_response(conn, 200) =~ "Bremen"
     end
   end
+
+  describe "GET /ist-am-montag-schule/:federal_state_slug" do
+    test "renders page successfully", %{conn: conn, federal_state: federal_state} do
+      conn = get(conn, ~p"/ist-am-montag-schule/#{federal_state.slug}")
+      assert html_response(conn, 200) =~ "Montag"
+      assert html_response(conn, 200) =~ "Schule"
+      assert html_response(conn, 200) =~ federal_state.name
+    end
+
+    test "returns 404 for unknown federal state", %{conn: conn} do
+      conn = get(conn, ~p"/ist-am-montag-schule/unknown")
+      assert html_response(conn, 404)
+    end
+
+    test "handles federal state with same slug as city", %{conn: conn, country: country} do
+      bremen_state =
+        insert(:federal_state, %{name: "Bremen", slug: "bremen", parent_location_id: country.id})
+
+      insert(:city, %{
+        name: "Bremen (Stadt)",
+        slug: "bremen",
+        parent_location_id: bremen_state.id
+      })
+
+      conn = get(conn, ~p"/ist-am-montag-schule/bremen")
+      assert html_response(conn, 200) =~ "Montag"
+      assert html_response(conn, 200) =~ "Bremen"
+      refute html_response(conn, 200) =~ "Stadt"
+    end
+  end
+
+  describe "GET /ist-am-freitag-schule/:federal_state_slug" do
+    test "renders page successfully", %{conn: conn, federal_state: federal_state} do
+      conn = get(conn, ~p"/ist-am-freitag-schule/#{federal_state.slug}")
+      assert html_response(conn, 200) =~ "Freitag"
+      assert html_response(conn, 200) =~ "Schule"
+      assert html_response(conn, 200) =~ federal_state.name
+    end
+
+    test "returns 404 for unknown federal state", %{conn: conn} do
+      conn = get(conn, ~p"/ist-am-freitag-schule/unknown")
+      assert html_response(conn, 404)
+    end
+
+    test "handles federal state with same slug as city", %{conn: conn, country: country} do
+      bremen_state =
+        insert(:federal_state, %{name: "Bremen", slug: "bremen", parent_location_id: country.id})
+
+      insert(:city, %{
+        name: "Bremen (Stadt)",
+        slug: "bremen",
+        parent_location_id: bremen_state.id
+      })
+
+      conn = get(conn, ~p"/ist-am-freitag-schule/bremen")
+      assert html_response(conn, 200) =~ "Freitag"
+      assert html_response(conn, 200) =~ "Bremen"
+      refute html_response(conn, 200) =~ "Stadt"
+    end
+  end
 end

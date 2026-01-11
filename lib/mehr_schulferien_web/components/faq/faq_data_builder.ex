@@ -8,6 +8,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
   alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Helpers.PeriodHelpers
   alias MehrSchulferien.Periods
+  alias MehrSchulferien.Calendars.DateHelpers
 
   def build(assigns) do
     location = assigns.location
@@ -42,10 +43,14 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
     schools_question = build_schools_question(assigns)
     nearby_schools_question = build_nearby_schools_question(assigns)
 
+    # Build weekday-specific questions (Monday and Friday)
+    weekday_school_questions = build_weekday_school_questions(assigns, location, location_prep)
+
     # Collect all questions for schema.org
     all_questions =
       [next_vacation_question] ++
         school_free_questions ++
+        weekday_school_questions ++
         filter_nil([schools_question]) ++
         filter_nil([nearby_schools_question]) ++
         [schulferien_question] ++
@@ -58,6 +63,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
       next_schulferien_periods: next_schulferien_periods,
       grouped_periods: grouped_periods,
       school_free_questions: school_free_questions,
+      weekday_school_questions: weekday_school_questions,
       holiday_questions: holiday_questions,
       yearly_periods_questions: yearly_periods_questions,
       next_vacation_question: next_vacation_question,
@@ -147,6 +153,69 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
         periods: periods
       }
     end)
+  end
+
+  defp build_weekday_school_questions(assigns, location, location_prep) do
+    today = assigns.today
+
+    # Define weekdays to check: Monday (1) and Friday (5)
+    weekday_data = [
+      %{day_of_week: 1, weekday_name: "Montag"},
+      %{day_of_week: 5, weekday_name: "Freitag"}
+    ]
+
+    Enum.map(weekday_data, fn %{day_of_week: day_of_week, weekday_name: weekday_name} ->
+      target_date = DateHelpers.next_weekday(day_of_week, today)
+      is_today = Date.compare(target_date, today) == :eq
+
+      # Get school-free periods for the target date
+      # Reuse existing data if the target date matches one of the pre-computed days
+      periods = get_school_free_periods_for_date(assigns, target_date)
+
+      question = "Ist am #{weekday_name} Schule #{location_prep} #{location.name}?"
+
+      answer =
+        FaqViewHelpers.is_school_on_weekday_answer(
+          periods,
+          target_date,
+          location,
+          weekday_name,
+          is_today
+        )
+
+      %{
+        title: question,
+        answer: answer,
+        day_label: String.downcase(weekday_name),
+        day_date: target_date,
+        periods: periods,
+        is_today: is_today
+      }
+    end)
+  end
+
+  # Get school-free periods for a specific date, reusing pre-computed data when possible
+  defp get_school_free_periods_for_date(assigns, target_date) do
+    cond do
+      Date.compare(target_date, assigns.yesterday) == :eq ->
+        assigns.yesterdays_school_free_periods
+
+      Date.compare(target_date, assigns.today) == :eq ->
+        assigns.todays_school_free_periods
+
+      Date.compare(target_date, assigns.tomorrow) == :eq ->
+        assigns.tomorrows_school_free_periods
+
+      Date.compare(target_date, assigns.day_after_tomorrow) == :eq ->
+        assigns.day_after_tomorrows_school_free_periods
+
+      true ->
+        # For dates not pre-computed (Monday/Friday might be up to 6 days away),
+        # combine school_periods and public_periods and filter for the target date.
+        # Since Monday/Friday are weekdays, we don't need to check for weekends.
+        all_periods = assigns.school_periods ++ assigns.public_periods
+        Periods.find_all_periods(all_periods, target_date)
+    end
   end
 
   defp build_yearly_periods_questions(grouped_periods, assigns, location, location_prep) do

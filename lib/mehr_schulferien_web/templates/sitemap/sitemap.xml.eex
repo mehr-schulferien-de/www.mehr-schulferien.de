@@ -79,6 +79,12 @@
       <url>
         <loc>https://www.mehr-schulferien.de/ist-heute-schulfrei/<%= federal_state.slug %></loc>
       </url>
+      <url>
+        <loc>https://www.mehr-schulferien.de/ist-am-montag-schule/<%= federal_state.slug %></loc>
+      </url>
+      <url>
+        <loc>https://www.mehr-schulferien.de/ist-am-freitag-schule/<%= federal_state.slug %></loc>
+      </url>
 
       <%!-- Years for federal state --%>
       <%= for year <- Map.get(federal_state, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>

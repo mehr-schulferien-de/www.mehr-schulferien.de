@@ -271,4 +271,123 @@ defmodule MehrSchulferien.Calendars.DateHelpersTest do
       assert length(DateHelpers.create_month(2023, 2)) == 28
     end
   end
+
+  describe "next_weekday/2" do
+    test "returns today when today is the target weekday" do
+      # Monday = 1
+      monday = ~D[2026-01-12]
+      assert DateHelpers.next_weekday(1, monday) == monday
+
+      # Friday = 5
+      friday = ~D[2026-01-16]
+      assert DateHelpers.next_weekday(5, friday) == friday
+    end
+
+    test "returns next Monday when today is Tuesday" do
+      tuesday = ~D[2026-01-13]
+      # Next Monday is 6 days later
+      assert DateHelpers.next_weekday(1, tuesday) == ~D[2026-01-19]
+    end
+
+    test "returns next Monday when today is Sunday" do
+      sunday = ~D[2026-01-11]
+      # Next Monday is 1 day later
+      assert DateHelpers.next_weekday(1, sunday) == ~D[2026-01-12]
+    end
+
+    test "returns next Friday when today is Monday" do
+      monday = ~D[2026-01-12]
+      # Next Friday is 4 days later
+      assert DateHelpers.next_weekday(5, monday) == ~D[2026-01-16]
+    end
+
+    test "returns next Friday when today is Saturday" do
+      saturday = ~D[2026-01-17]
+      # Next Friday is 6 days later
+      assert DateHelpers.next_weekday(5, saturday) == ~D[2026-01-23]
+    end
+
+    test "handles all weekdays correctly from a Wednesday" do
+      wednesday = ~D[2026-01-14]
+
+      # Monday (1) - 5 days later
+      assert DateHelpers.next_weekday(1, wednesday) == ~D[2026-01-19]
+      # Tuesday (2) - 6 days later
+      assert DateHelpers.next_weekday(2, wednesday) == ~D[2026-01-20]
+      # Wednesday (3) - today
+      assert DateHelpers.next_weekday(3, wednesday) == wednesday
+      # Thursday (4) - 1 day later
+      assert DateHelpers.next_weekday(4, wednesday) == ~D[2026-01-15]
+      # Friday (5) - 2 days later
+      assert DateHelpers.next_weekday(5, wednesday) == ~D[2026-01-16]
+      # Saturday (6) - 3 days later
+      assert DateHelpers.next_weekday(6, wednesday) == ~D[2026-01-17]
+      # Sunday (7) - 4 days later
+      assert DateHelpers.next_weekday(7, wednesday) == ~D[2026-01-18]
+    end
+  end
+
+  describe "next_monday/1" do
+    test "returns today when today is Monday" do
+      monday = ~D[2026-01-12]
+      assert DateHelpers.next_monday(monday) == monday
+    end
+
+    test "returns next Monday when today is not Monday" do
+      # Tuesday
+      assert DateHelpers.next_monday(~D[2026-01-13]) == ~D[2026-01-19]
+      # Wednesday
+      assert DateHelpers.next_monday(~D[2026-01-14]) == ~D[2026-01-19]
+      # Thursday
+      assert DateHelpers.next_monday(~D[2026-01-15]) == ~D[2026-01-19]
+      # Friday
+      assert DateHelpers.next_monday(~D[2026-01-16]) == ~D[2026-01-19]
+      # Saturday
+      assert DateHelpers.next_monday(~D[2026-01-17]) == ~D[2026-01-19]
+      # Sunday
+      assert DateHelpers.next_monday(~D[2026-01-18]) == ~D[2026-01-19]
+    end
+
+    test "works without explicit date parameter" do
+      # Should use today_berlin() as default
+      result = DateHelpers.next_monday()
+      assert %Date{} = result
+      # Result should be within 7 days of today
+      today = DateHelpers.today_berlin()
+      diff = Date.diff(result, today)
+      assert diff >= 0 and diff <= 6
+    end
+  end
+
+  describe "next_friday/1" do
+    test "returns today when today is Friday" do
+      friday = ~D[2026-01-16]
+      assert DateHelpers.next_friday(friday) == friday
+    end
+
+    test "returns next Friday when today is not Friday" do
+      # Monday
+      assert DateHelpers.next_friday(~D[2026-01-12]) == ~D[2026-01-16]
+      # Tuesday
+      assert DateHelpers.next_friday(~D[2026-01-13]) == ~D[2026-01-16]
+      # Wednesday
+      assert DateHelpers.next_friday(~D[2026-01-14]) == ~D[2026-01-16]
+      # Thursday
+      assert DateHelpers.next_friday(~D[2026-01-15]) == ~D[2026-01-16]
+      # Saturday
+      assert DateHelpers.next_friday(~D[2026-01-17]) == ~D[2026-01-23]
+      # Sunday
+      assert DateHelpers.next_friday(~D[2026-01-18]) == ~D[2026-01-23]
+    end
+
+    test "works without explicit date parameter" do
+      # Should use today_berlin() as default
+      result = DateHelpers.next_friday()
+      assert %Date{} = result
+      # Result should be within 7 days of today
+      today = DateHelpers.today_berlin()
+      diff = Date.diff(result, today)
+      assert diff >= 0 and diff <= 6
+    end
+  end
 end

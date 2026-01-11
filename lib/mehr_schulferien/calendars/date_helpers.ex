@@ -215,4 +215,57 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   def compare_by_month(%Date{year: year_1}, %Date{year: year_2}) do
     if year_1 > year_2, do: :gt, else: :lt
   end
+
+  @doc """
+  Returns the next occurrence of a given day of week (1=Monday, 7=Sunday).
+  If today IS that day, returns today.
+
+  ## Parameters
+    - day_of_week: The target day of week (1=Monday through 7=Sunday)
+    - today: The reference date (defaults to today in Berlin)
+
+  ## Examples
+
+      iex> DateHelpers.next_weekday(1, ~D[2026-01-12])  # Monday, asking for Monday
+      ~D[2026-01-12]
+
+      iex> DateHelpers.next_weekday(1, ~D[2026-01-13])  # Tuesday, asking for Monday
+      ~D[2026-01-19]
+  """
+  def next_weekday(day_of_week, today \\ today_berlin()) do
+    current_day_of_week = Date.day_of_week(today)
+
+    if current_day_of_week == day_of_week do
+      today
+    else
+      days_until = rem(day_of_week - current_day_of_week + 7, 7)
+      Date.add(today, days_until)
+    end
+  end
+
+  @doc """
+  Returns the next Monday. If today is Monday, returns today.
+
+  ## Examples
+
+      iex> DateHelpers.next_monday(~D[2026-01-12])  # A Monday
+      ~D[2026-01-12]
+
+      iex> DateHelpers.next_monday(~D[2026-01-11])  # A Sunday
+      ~D[2026-01-12]
+  """
+  def next_monday(today \\ today_berlin()), do: next_weekday(1, today)
+
+  @doc """
+  Returns the next Friday. If today is Friday, returns today.
+
+  ## Examples
+
+      iex> DateHelpers.next_friday(~D[2026-01-16])  # A Friday
+      ~D[2026-01-16]
+
+      iex> DateHelpers.next_friday(~D[2026-01-12])  # A Monday
+      ~D[2026-01-16]
+  """
+  def next_friday(today \\ today_berlin()), do: next_weekday(5, today)
 end

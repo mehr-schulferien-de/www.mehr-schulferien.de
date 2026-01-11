@@ -53,6 +53,47 @@ defmodule MehrSchulferienWeb.DateQueryController do
   end
 
   @doc """
+  Is there school on the next Monday in a federal state?
+  Path: /ist-am-montag-schule/:federal_state_slug
+  """
+  def is_monday_school(conn, %{"federal_state_slug" => state_slug}) do
+    is_weekday_school(conn, state_slug, 1, "Montag")
+  end
+
+  @doc """
+  Is there school on the next Friday in a federal state?
+  Path: /ist-am-freitag-schule/:federal_state_slug
+  """
+  def is_friday_school(conn, %{"federal_state_slug" => state_slug}) do
+    is_weekday_school(conn, state_slug, 5, "Freitag")
+  end
+
+  # Private helper for weekday school queries
+  defp is_weekday_school(conn, state_slug, day_of_week, weekday_name) do
+    with {:ok, federal_state} <- get_federal_state(state_slug) do
+      today = DateHelpers.today_berlin()
+      target_date = DateHelpers.next_weekday(day_of_week, today)
+      is_today = Date.compare(target_date, today) == :eq
+      result = DateQuery.check_date_status(federal_state, target_date)
+
+      conn
+      |> assign(:result, result)
+      |> assign(:federal_state, federal_state)
+      |> assign(:weekday_name, weekday_name)
+      |> assign(:is_today, is_today)
+      |> assign(:query_type, :weekday_school)
+      |> assign(:page_title, "Ist am #{weekday_name} Schule in #{federal_state.name}?")
+      |> render(:is_weekday_school)
+    else
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(MehrSchulferienWeb.ErrorHTML)
+        |> render(:"404")
+    end
+  end
+
+  @doc """
   Is a specific date a school day in a federal state?
   Path: /ist-schultag/:federal_state_slug/:date
   """

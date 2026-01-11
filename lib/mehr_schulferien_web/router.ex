@@ -208,6 +208,8 @@ defmodule MehrSchulferienWeb.Router do
     # Date Query Routes
     get "/ist-heute-feiertag/:federal_state_slug", DateQueryController, :is_today_public_holiday
     get "/ist-heute-schulfrei/:federal_state_slug", DateQueryController, :is_today_school_free
+    get "/ist-am-montag-schule/:federal_state_slug", DateQueryController, :is_monday_school
+    get "/ist-am-freitag-schule/:federal_state_slug", DateQueryController, :is_friday_school
     get "/ist-schultag/:federal_state_slug/:date", DateQueryController, :is_school_day
     get "/ist-feiertag/:federal_state_slug/:date", DateQueryController, :is_public_holiday
 
