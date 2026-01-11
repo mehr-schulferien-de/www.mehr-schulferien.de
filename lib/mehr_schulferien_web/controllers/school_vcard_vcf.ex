@@ -1,5 +1,10 @@
-defmodule MehrSchulferienWeb.SchoolVCardView do
-  use MehrSchulferienWeb, :view
+defmodule MehrSchulferienWeb.SchoolVCardVCF do
+  @moduledoc """
+  VCF format module for rendering vCard files for schools.
+  """
+  use Phoenix.View,
+    root: "lib/mehr_schulferien_web/templates",
+    path: "school_vcard"
 
   @vcard_version 3.0
 
@@ -7,7 +12,7 @@ defmodule MehrSchulferienWeb.SchoolVCardView do
     location |> generate_vcard() |> List.flatten() |> Enum.join("\n")
   end
 
-  def generate_vcard(location) do
+  defp generate_vcard(location) do
     [
       "BEGIN:VCARD",
       "VERSION:#{@vcard_version}",

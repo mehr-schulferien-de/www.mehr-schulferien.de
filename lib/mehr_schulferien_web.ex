@@ -20,7 +20,7 @@ defmodule MehrSchulferienWeb do
   def controller do
     quote do
       use Phoenix.Controller,
-        formats: [:html, :json, :ics, :xml],
+        formats: [:html, :json, :ics, :xml, :vcf],
         layouts: [html: MehrSchulferienWeb.LayoutView]
 
       import Plug.Conn
