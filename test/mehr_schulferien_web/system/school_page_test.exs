@@ -142,6 +142,30 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
                  school.slug
                )
     end
+
+    test "shows wiki notice with edit and delete links", %{
+      conn: conn,
+      country: country,
+      school: school
+    } do
+      conn =
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show, country.slug, school.slug)
+        )
+
+      html = html_response(conn, 200)
+
+      # Verify the wiki notice is present
+      assert html =~ "Wiki-Seite"
+      assert html =~ "Community aus Freiwilligen gepflegte Informationen"
+      assert html =~ "nicht offiziell"
+      assert html =~ "Im Zweifel bitte direkt bei der jeweiligen Schule nachfragen"
+
+      # Verify edit/delete link is present
+      assert html =~ "Eintrag bearbeiten oder löschen"
+      assert html =~ "/wiki/schools/#{school.slug}/edit"
+    end
   end
 
   defp add_school_with_periods(_) do

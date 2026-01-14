@@ -15,6 +15,7 @@ defmodule MehrSchulferienWeb.SchoolHTML do
   # Import shared components for unified design
   import MehrSchulferienWeb.Shared.TypographyComponent
   import MehrSchulferienWeb.Shared.CardComponent
+  import MehrSchulferienWeb.Shared.AlertComponent
 
   # Import the components we need for our templates
   import MehrSchulferienWeb.School.PeriodsTableComponent
