@@ -79,11 +79,11 @@ defmodule MehrSchulferien.PeriodDisplayTest do
       assert PeriodDisplay.display_period_info?(~D[2024-01-02], dates, period) == false
     end
 
-    test "returns nil for non-school vacation period" do
+    test "returns false for non-school vacation period" do
       period = build(:period, is_school_vacation: false, starts_on: ~D[2024-01-05])
       dates = [~D[2024-01-01], ~D[2024-01-02], ~D[2024-01-03]]
 
-      assert PeriodDisplay.display_period_info?(~D[2024-01-01], dates, period) == nil
+      refute PeriodDisplay.display_period_info?(~D[2024-01-01], dates, period)
     end
   end
 

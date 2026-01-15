@@ -28,6 +28,16 @@ defmodule MehrSchulferien.Helpers.DateConstants do
   @period_display_colspan_multiplier 4
   @period_display_name_buffer 16
 
+  # Cache TTL values (in seconds)
+  # 24 hours - for rarely changing data like countries, federal states, vacation types
+  @cache_ttl_long 86_400
+  # 2 hours
+  @cache_ttl_medium 7200
+  # 1 hour
+  @cache_ttl_standard 3600
+  # 30 minutes - for frequently changing data like periods
+  @cache_ttl_short 1800
+
   def days_per_year, do: @days_per_year
   def days_per_month, do: @days_per_month
   def months_per_year, do: @months_per_year
@@ -43,6 +53,12 @@ defmodule MehrSchulferien.Helpers.DateConstants do
   def max_versions_to_display, do: @max_versions_to_display
   def period_display_colspan_multiplier, do: @period_display_colspan_multiplier
   def period_display_name_buffer, do: @period_display_name_buffer
+
+  # Cache TTL constants
+  def cache_ttl_long, do: @cache_ttl_long
+  def cache_ttl_medium, do: @cache_ttl_medium
+  def cache_ttl_standard, do: @cache_ttl_standard
+  def cache_ttl_short, do: @cache_ttl_short
 
   @doc """
   Calculates date offset in days from a given number of months.

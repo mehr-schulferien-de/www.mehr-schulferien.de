@@ -30,26 +30,14 @@ defmodule MehrSchulferien.PeriodDisplay do
   def display_period_info?(_, _, nil), do: false
 
   def display_period_info?(date, dates, period) do
-    if period.is_school_vacation do
-      if date == hd(dates) do
-        true
-      else
-        date == period.starts_on
-      end
-    end
+    period.is_school_vacation and (date == hd(dates) or date == period.starts_on)
   end
 
   @doc """
   Calculates the colspan for a period in the calendar.
   """
   def get_period_colspan(date, last_date, period) do
-    ends_on =
-      if Date.compare(last_date, period.ends_on) == :gt do
-        period.ends_on
-      else
-        last_date
-      end
-
+    ends_on = Enum.min([last_date, period.ends_on], Date)
     # +1 for inclusive counting
     Date.diff(ends_on, date) + 1
   end

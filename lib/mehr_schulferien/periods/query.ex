@@ -206,42 +206,6 @@ defmodule MehrSchulferien.Periods.Query do
   end
 
   @doc """
-  Optimized version that only selects the columns actually needed for display.
-  Reduces data transfer by ~70% and improves performance by ~40%.
-  """
-  def list_school_free_periods_selective(location_ids, starts_on, ends_on) do
-    query =
-      from(p in Period,
-        join: h in assoc(p, :holiday_or_vacation_type),
-        where:
-          p.location_id in ^location_ids and
-            (p.is_valid_for_students == true or
-               p.is_valid_for_everybody == true) and
-            p.ends_on >= ^starts_on and
-            p.starts_on <= ^ends_on,
-        order_by: [asc: p.starts_on, desc: p.display_priority],
-        select: %Period{
-          id: p.id,
-          starts_on: p.starts_on,
-          ends_on: p.ends_on,
-          location_id: p.location_id,
-          display_priority: p.display_priority,
-          is_public_holiday: p.is_public_holiday,
-          is_school_vacation: p.is_school_vacation,
-          is_valid_for_everybody: p.is_valid_for_everybody,
-          is_valid_for_students: p.is_valid_for_students,
-          holiday_or_vacation_type: %MehrSchulferien.Calendars.HolidayOrVacationType{
-            id: h.id,
-            name: h.name,
-            slug: h.slug
-          }
-        }
-      )
-
-    Repo.all(query)
-  end
-
-  @doc """
   Returns a list of all distinct years that have periods in the database.
   This is used for generating robots.txt rules dynamically.
   """

@@ -32,16 +32,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
     original_zip_code = if school.address, do: school.address.zip_code, else: nil
 
     # Create a combined changeset for both school and address fields
-    changeset =
-      if school.address do
-        # Merge school and address changesets into one form
-        address_changeset = Maps.change_address(school.address)
-        %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
-      else
-        # Create address changeset with school name
-        address_changeset = Maps.change_address(%Address{school_location_id: school.id})
-        %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
-      end
+    changeset = build_school_changeset(school)
 
     {:ok,
      assign(socket,
@@ -201,32 +192,13 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
               end)
             end
 
-            # Update changeset
-            changeset =
-              if updated_school.address do
-                address_changeset = Maps.change_address(updated_school.address)
-
-                %{
-                  address_changeset
-                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                }
-              else
-                address_changeset =
-                  Maps.change_address(%Address{school_location_id: updated_school.id})
-
-                %{
-                  address_changeset
-                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                }
-              end
-
             {:noreply,
              socket
              |> put_flash(:info, "Änderungen wurden erfolgreich gespeichert.")
              |> assign(
                school: updated_school,
                versions: versions,
-               changeset: changeset,
+               changeset: build_school_changeset(updated_school),
                daily_changes: daily_changes,
                limit_reached: limit_reached
              )}
@@ -300,32 +272,13 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
             daily_changes = Wiki.get_daily_change_count(today)
             limit_reached = daily_changes >= Config.daily_change_limit()
 
-            # Update changeset
-            changeset =
-              if updated_school.address do
-                address_changeset = Maps.change_address(updated_school.address)
-
-                %{
-                  address_changeset
-                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                }
-              else
-                address_changeset =
-                  Maps.change_address(%Address{school_location_id: updated_school.id})
-
-                %{
-                  address_changeset
-                  | data: Map.merge(address_changeset.data, %{name: updated_school.name})
-                }
-              end
-
             {:noreply,
              socket
              |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
              |> assign(
                school: updated_school,
                versions: versions,
-               changeset: changeset,
+               changeset: build_school_changeset(updated_school),
                daily_changes: daily_changes,
                limit_reached: limit_reached,
                show_rollback_preview: false,
@@ -454,6 +407,18 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   # Private helper functions
+
+  # Creates a changeset for school address with the school name merged into data
+  defp build_school_changeset(school) do
+    address_changeset =
+      if school.address do
+        Maps.change_address(school.address)
+      else
+        Maps.change_address(%Address{school_location_id: school.id})
+      end
+
+    %{address_changeset | data: Map.merge(address_changeset.data, %{name: school.name})}
+  end
 
   defp get_version_history(school) do
     school_versions = PaperTrail.get_versions(school)

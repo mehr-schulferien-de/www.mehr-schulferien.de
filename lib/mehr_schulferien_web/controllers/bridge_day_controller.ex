@@ -24,40 +24,38 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    country = Locations.get_country_by_slug(country_slug)
+    with {:ok, country} <- fetch_country(country_slug),
+         {:ok, federal_state} <- fetch_federal_state(country, federal_state_slug),
+         {:ok, year_int} <- check_year(year),
+         {:ok, start_date} <- Date.new(year_int, 1, 1),
+         {:ok, end_date} <- Date.new(year_int, 12, 31),
+         true <- has_bridge_days?([country.id, federal_state.id], year_int) do
+      assigns =
+        [country: country, federal_state: federal_state, year: year_int] ++
+          list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
 
-    if is_nil(country) do
-      CH.render_not_found_or_empty_database(conn)
+      render(conn, "show_within_federal_state.html", assigns)
     else
-      federal_state = Locations.get_federal_state_by_slug(federal_state_slug, country)
-
-      if is_nil(federal_state) do
+      {:error, :not_found} ->
         CH.render_not_found_or_empty_database(conn)
-      else
-        with {:ok, year} <- check_year(conn, year),
-             {:ok, start_date} <- Date.new(year, 1, 1),
-             {:ok, end_date} <- Date.new(year, 12, 31),
-             true <- has_bridge_days?([country.id, federal_state.id], year) do
-          assigns =
-            [country: country, federal_state: federal_state, year: year] ++
-              list_bridge_day_data([country.id, federal_state.id], start_date, end_date)
 
-          render(conn, "show_within_federal_state.html", assigns)
-        else
-          # No bridge days for this year
-          false ->
-            conn = Plug.Conn.put_status(conn, :not_found)
-            raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+      _ ->
+        conn = Plug.Conn.put_status(conn, :not_found)
+        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+    end
+  end
 
-          {:error, :invalid_year} ->
-            conn = Plug.Conn.put_status(conn, :not_found)
-            raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+  defp fetch_country(country_slug) do
+    case Locations.get_country_by_slug(country_slug) do
+      nil -> {:error, :not_found}
+      country -> {:ok, country}
+    end
+  end
 
-          _ ->
-            conn = Plug.Conn.put_status(conn, :not_found)
-            raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
-        end
-      end
+  defp fetch_federal_state(country, federal_state_slug) do
+    case Locations.get_federal_state_by_slug(federal_state_slug, country) do
+      nil -> {:error, :not_found}
+      federal_state -> {:ok, federal_state}
     end
   end
 
@@ -79,12 +77,8 @@ defmodule MehrSchulferienWeb.BridgeDayController do
       end
 
     bridge_day_proposal_count =
-      for num <- 2..5 do
-        if filtered_bridge_day_map[num] do
-          Enum.count(filtered_bridge_day_map[num])
-        end
-      end
-      |> Enum.filter(&(!is_nil(&1)))
+      2..5
+      |> Enum.map(&length(Map.get(filtered_bridge_day_map, &1, [])))
       |> Enum.sum()
 
     [
@@ -94,15 +88,13 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     ]
   end
 
-  defp check_year(_conn, year) do
+  defp check_year(year) do
     case Integer.parse(year) do
-      {year, ""} ->
-        # Use the actual now date for validation range, not the custom date
+      {year_int, ""} ->
         current_year = Date.utc_today().year
 
-        # Allow a wider range of years, especially past years (5 years back, 3 years forward)
-        if year in (current_year - 5)..(current_year + 3) do
-          {:ok, year}
+        if year_int in (current_year - 5)..(current_year + 3) do
+          {:ok, year_int}
         else
           {:error, :invalid_year}
         end
@@ -120,15 +112,12 @@ defmodule MehrSchulferienWeb.BridgeDayController do
 
     # Check for at least one bridge day that meets the minimum gain requirement
     Enum.any?(2..5, fn num ->
-      if bridge_day_map[num] do
-        bridge_day_map[num]
-        |> Enum.any?(fn bridge_day ->
-          all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
-          BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
-        end)
-      else
-        false
-      end
+      bridge_day_map
+      |> Map.get(num, [])
+      |> Enum.any?(fn bridge_day ->
+        all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
+        BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+      end)
     end)
   end
 end

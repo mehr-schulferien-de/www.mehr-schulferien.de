@@ -99,18 +99,15 @@ defmodule MehrSchulferienWeb.Live.Shared.BriefeHelpers do
   Validates required fields in form data.
   """
   def validate_form_data(form_data, required_fields) do
-    missing_fields =
-      required_fields
-      |> Enum.filter(fn {field, _label} ->
-        value = Map.get(form_data, field)
-        is_nil(value) or value == ""
-      end)
-      |> Enum.map(fn {_field, label} -> label end)
+    missing_labels =
+      for {field, label} <- required_fields,
+          value = Map.get(form_data, field),
+          is_nil(value) or value == "",
+          do: label
 
-    if Enum.empty?(missing_fields) do
-      :ok
-    else
-      {:error, "Bitte füllen Sie alle Pflichtfelder aus: #{Enum.join(missing_fields, ", ")}"}
+    case missing_labels do
+      [] -> :ok
+      labels -> {:error, "Bitte füllen Sie alle Pflichtfelder aus: #{Enum.join(labels, ", ")}"}
     end
   end
 

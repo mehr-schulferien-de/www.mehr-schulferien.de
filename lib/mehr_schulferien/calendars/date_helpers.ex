@@ -57,14 +57,9 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
     ~D[2023-06-15] # Current date in Berlin timezone
   """
   def get_today_or_custom_date(conn \\ nil) do
-    cond do
-      # If conn is passed and has custom_date in assigns
-      conn && Map.has_key?(conn.assigns, :custom_date) && conn.assigns.custom_date != nil ->
-        conn.assigns.custom_date
-
-      # Default to current date in Berlin
-      true ->
-        today_berlin()
+    case conn do
+      %{assigns: %{custom_date: date}} when not is_nil(date) -> date
+      _ -> today_berlin()
     end
   end
 
@@ -145,6 +140,26 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
     %{1 => "Mo", 2 => "Di", 3 => "Mi", 4 => "Do", 5 => "Fr", 6 => "Sa", 7 => "So"}
   end
 
+  @weekdays_full %{
+    1 => "Montag",
+    2 => "Dienstag",
+    3 => "Mittwoch",
+    4 => "Donnerstag",
+    5 => "Freitag",
+    6 => "Samstag",
+    7 => "Sonntag"
+  }
+
+  @weekdays_short %{
+    1 => "Mo",
+    2 => "Di",
+    3 => "Mi",
+    4 => "Do",
+    5 => "Fr",
+    6 => "Sa",
+    7 => "So"
+  }
+
   @doc """
   Converts a day of week number (1-7) to a German weekday name in different formats.
 
@@ -153,42 +168,10 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   - :short - Short name without dot (e.g., "Mo")
   - :short_with_dot - Short name with dot (e.g., "Mo.")
   """
-  def weekday(day_of_week, format \\ :full) do
-    case format do
-      :full ->
-        case day_of_week do
-          1 -> "Montag"
-          2 -> "Dienstag"
-          3 -> "Mittwoch"
-          4 -> "Donnerstag"
-          5 -> "Freitag"
-          6 -> "Samstag"
-          7 -> "Sonntag"
-        end
-
-      :short ->
-        case day_of_week do
-          1 -> "Mo"
-          2 -> "Di"
-          3 -> "Mi"
-          4 -> "Do"
-          5 -> "Fr"
-          6 -> "Sa"
-          7 -> "So"
-        end
-
-      :short_with_dot ->
-        case day_of_week do
-          1 -> "Mo."
-          2 -> "Di."
-          3 -> "Mi."
-          4 -> "Do."
-          5 -> "Fr."
-          6 -> "Sa."
-          7 -> "So."
-        end
-    end
-  end
+  def weekday(day_of_week, format \\ :full)
+  def weekday(day_of_week, :full), do: @weekdays_full[day_of_week]
+  def weekday(day_of_week, :short), do: @weekdays_short[day_of_week]
+  def weekday(day_of_week, :short_with_dot), do: @weekdays_short[day_of_week] <> "."
 
   @doc """
   Returns a map containing the month numbers as keys and the month German

@@ -95,12 +95,7 @@ defmodule MehrSchulferienWeb.SchoolController do
       ViewHelpers.add_adjoining_duration_to_periods(all_periods, combined_periods)
 
     # Set the appropriate status code based on data availability
-    conn =
-      if has_data do
-        conn
-      else
-        put_status(conn, 404)
-      end
+    conn = if has_data, do: conn, else: put_status(conn, 404)
 
     # Track school visit
     conn = track_location_visit(conn, "s", school.slug)

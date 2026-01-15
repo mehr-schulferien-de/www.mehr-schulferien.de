@@ -34,102 +34,11 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
 
   @impl true
   def handle_event("search", %{"search" => search_params}, socket) do
-    location = Map.get(search_params, "location", "")
-    school_name = Map.get(search_params, "school_name", "")
-    federal_state_id = Map.get(search_params, "federal_state_id", "")
-
-    # Convert location to appropriate field for search
-    search_params_for_query = SchoolSearchLogic.convert_search_params(search_params)
-
-    {schools, total_schools, final_search_params} =
-      cond do
-        # Special case: only federal state is selected (optimize for performance)
-        federal_state_id != "" and location == "" and school_name == "" ->
-          schools = SchoolSearchLogic.search_schools_by_federal_state(federal_state_id)
-          {schools, length(schools), search_params}
-
-        # Check if location is a partial or full zip code
-        SchoolSearchLogic.is_partial_or_full_zip_code?(location) ->
-          results =
-            SchoolSearchLogic.search_schools_by_zip(location, school_name, federal_state_id)
-
-          schools = SchoolSearchLogic.results_to_schools(results)
-
-          # Only update federal state if exactly one city in results
-          cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
-
-          updated_search_params =
-            if length(cities_with_schools) == 1 do
-              # Detect federal state from results
-              if detected_state = SchoolSearchLogic.detect_single_federal_state(results) do
-                Map.put(search_params, "federal_state_id", detected_state)
-              else
-                search_params
-              end
-            else
-              search_params
-            end
-
-          {schools, length(schools), updated_search_params}
-
-        # Regular search with location/school name
-        String.length(location) >= 1 or String.length(school_name) >= 1 ->
-          # Determine search type based on converted params
-          results =
-            cond do
-              search_params_for_query["city"] != "" and school_name != "" ->
-                SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"],
-                  school_name,
-                  federal_state_id
-                )
-
-              search_params_for_query["city"] != "" ->
-                SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"],
-                  "",
-                  federal_state_id
-                )
-
-              school_name != "" ->
-                SchoolSearchLogic.search_schools_by_name(school_name, federal_state_id)
-
-              true ->
-                []
-            end
-
-          schools = SchoolSearchLogic.results_to_schools(results)
-
-          # Only update federal state if exactly one city in results
-          cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
-
-          updated_search_params =
-            if length(cities_with_schools) == 1 and federal_state_id == "" do
-              if detected_state = SchoolSearchLogic.detect_single_federal_state(results) do
-                Map.put(search_params, "federal_state_id", detected_state)
-              else
-                search_params
-              end
-            else
-              search_params
-            end
-
-          {schools, length(schools), updated_search_params}
-
-        # No search criteria
-        true ->
-          {[], 0, search_params}
-      end
-
-    # Limit displayed schools to max_display_schools
-    displayed_schools =
-      schools
-      |> Enum.take(socket.assigns.max_display_schools)
-      |> SchoolSearchLogic.sort_schools(socket.assigns.sort_by, socket.assigns.sort_order)
+    {schools, total_schools, final_search_params} = perform_search(search_params, socket)
 
     {:noreply,
      assign(socket,
-       schools: displayed_schools,
+       schools: schools,
        total_schools_found: total_schools,
        searching: false,
        search_params: final_search_params
@@ -138,142 +47,14 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
 
   @impl true
   def handle_event("validate", %{"search" => search_params}, socket) do
-    location = Map.get(search_params, "location", "")
-    school_name = Map.get(search_params, "school_name", "")
-    federal_state_id = Map.get(search_params, "federal_state_id", "")
+    {schools, total_schools, final_search_params} = perform_search(search_params, socket)
 
-    # Convert location to appropriate field for search
-    search_params_for_query = SchoolSearchLogic.convert_search_params(search_params)
-
-    # Trigger search if any field has sufficient characters
-    socket =
-      cond do
-        # If all fields are empty, clear the results
-        federal_state_id == "" and location == "" and school_name == "" ->
-          assign(socket,
-            schools: [],
-            total_schools_found: 0,
-            search_params: search_params
-          )
-
-        # Special case: only federal state is selected (optimize for performance)
-        federal_state_id != "" and location == "" and school_name == "" ->
-          schools = SchoolSearchLogic.search_schools_by_federal_state(federal_state_id)
-          total_schools = length(schools)
-
-          # Limit displayed schools to max_display_schools
-          displayed_schools =
-            schools
-            |> Enum.take(socket.assigns.max_display_schools)
-            |> SchoolSearchLogic.sort_schools(socket.assigns.sort_by, socket.assigns.sort_order)
-
-          assign(socket,
-            schools: displayed_schools,
-            total_schools_found: total_schools,
-            search_params: search_params
-          )
-
-        # Check if location is a partial or full zip code
-        SchoolSearchLogic.is_partial_or_full_zip_code?(location) ->
-          results =
-            SchoolSearchLogic.search_schools_by_zip(location, school_name, federal_state_id)
-
-          schools = SchoolSearchLogic.results_to_schools(results)
-
-          # Only update federal state if exactly one city in results
-          cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
-
-          updated_search_params =
-            if length(cities_with_schools) == 1 do
-              # Detect federal state from results
-              if detected_state = SchoolSearchLogic.detect_single_federal_state(results) do
-                Map.put(search_params, "federal_state_id", detected_state)
-              else
-                search_params
-              end
-            else
-              search_params
-            end
-
-          total_schools = length(schools)
-
-          # Limit displayed schools to max_display_schools
-          displayed_schools =
-            schools
-            |> Enum.take(socket.assigns.max_display_schools)
-            |> SchoolSearchLogic.sort_schools(socket.assigns.sort_by, socket.assigns.sort_order)
-
-          assign(socket,
-            schools: displayed_schools,
-            total_schools_found: total_schools,
-            search_params: updated_search_params
-          )
-
-        # Regular search with location/school name (single character allowed)
-        String.length(location) >= 1 or String.length(school_name) >= 1 ->
-          # Determine search type based on converted params
-          results =
-            cond do
-              search_params_for_query["city"] != "" and school_name != "" ->
-                SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"],
-                  school_name,
-                  federal_state_id
-                )
-
-              search_params_for_query["city"] != "" ->
-                SchoolSearchLogic.search_schools_by_city(
-                  search_params_for_query["city"],
-                  "",
-                  federal_state_id
-                )
-
-              school_name != "" ->
-                SchoolSearchLogic.search_schools_by_name(school_name, federal_state_id)
-
-              true ->
-                []
-            end
-
-          schools = SchoolSearchLogic.results_to_schools(results)
-
-          # Only update federal state if exactly one city in results
-          cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
-
-          updated_search_params =
-            if length(cities_with_schools) == 1 and federal_state_id == "" do
-              if detected_state = SchoolSearchLogic.detect_single_federal_state(results) do
-                Map.put(search_params, "federal_state_id", detected_state)
-              else
-                search_params
-              end
-            else
-              search_params
-            end
-
-          total_schools = length(schools)
-
-          # Limit displayed schools to max_display_schools
-          displayed_schools =
-            schools
-            |> Enum.take(socket.assigns.max_display_schools)
-            |> SchoolSearchLogic.sort_schools(socket.assigns.sort_by, socket.assigns.sort_order)
-
-          assign(socket,
-            schools: displayed_schools,
-            total_schools_found: total_schools,
-            search_params: updated_search_params
-          )
-
-        true ->
-          assign(socket,
-            schools: [],
-            total_schools_found: 0,
-            search_params: search_params
-          )
-      end
-
-    {:noreply, socket}
+    {:noreply,
+     assign(socket,
+       schools: schools,
+       total_schools_found: total_schools,
+       search_params: final_search_params
+     )}
   end
 
   @impl true
@@ -320,6 +101,94 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
       :error ->
         # Invalid sort field, ignore the request
         {:noreply, socket}
+    end
+  end
+
+  # Unified search logic used by both "search" and "validate" events
+  defp perform_search(search_params, socket) do
+    location = Map.get(search_params, "location", "")
+    school_name = Map.get(search_params, "school_name", "")
+    federal_state_id = Map.get(search_params, "federal_state_id", "")
+
+    search_params_for_query = SchoolSearchLogic.convert_search_params(search_params)
+
+    {schools, updated_params} =
+      cond do
+        # All fields empty - clear results
+        federal_state_id == "" and location == "" and school_name == "" ->
+          {[], search_params}
+
+        # Only federal state selected
+        federal_state_id != "" and location == "" and school_name == "" ->
+          schools = SchoolSearchLogic.search_schools_by_federal_state(federal_state_id)
+          {schools, search_params}
+
+        # Zip code search
+        SchoolSearchLogic.is_partial_or_full_zip_code?(location) ->
+          results =
+            SchoolSearchLogic.search_schools_by_zip(location, school_name, federal_state_id)
+
+          schools = SchoolSearchLogic.results_to_schools(results)
+          updated_params = maybe_detect_federal_state(results, search_params)
+          {schools, updated_params}
+
+        # Location/school name search
+        String.length(location) >= 1 or String.length(school_name) >= 1 ->
+          results =
+            search_by_location_or_name(search_params_for_query, school_name, federal_state_id)
+
+          schools = SchoolSearchLogic.results_to_schools(results)
+
+          updated_params =
+            maybe_detect_federal_state(results, search_params, federal_state_id == "")
+
+          {schools, updated_params}
+
+        # No search criteria
+        true ->
+          {[], search_params}
+      end
+
+    total_schools = length(schools)
+
+    displayed_schools =
+      schools
+      |> Enum.take(socket.assigns.max_display_schools)
+      |> SchoolSearchLogic.sort_schools(socket.assigns.sort_by, socket.assigns.sort_order)
+
+    {displayed_schools, total_schools, updated_params}
+  end
+
+  # Helper to search by location or school name
+  defp search_by_location_or_name(search_params_for_query, school_name, federal_state_id) do
+    city = search_params_for_query["city"]
+
+    cond do
+      city != "" and school_name != "" ->
+        SchoolSearchLogic.search_schools_by_city(city, school_name, federal_state_id)
+
+      city != "" ->
+        SchoolSearchLogic.search_schools_by_city(city, "", federal_state_id)
+
+      school_name != "" ->
+        SchoolSearchLogic.search_schools_by_name(school_name, federal_state_id)
+
+      true ->
+        []
+    end
+  end
+
+  # Helper to detect and set federal state when exactly one city in results
+  defp maybe_detect_federal_state(results, search_params, check_empty_state \\ true) do
+    cities_with_schools = SchoolSearchLogic.group_schools_by_city(results)
+
+    if length(cities_with_schools) == 1 and check_empty_state do
+      case SchoolSearchLogic.detect_single_federal_state(results) do
+        nil -> search_params
+        detected_state -> Map.put(search_params, "federal_state_id", detected_state)
+      end
+    else
+      search_params
     end
   end
 

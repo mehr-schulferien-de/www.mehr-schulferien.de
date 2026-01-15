@@ -15,23 +15,27 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
   defp calculate_vacation_stats(vacation_data) do
     valid_data = Enum.filter(vacation_data, &(&1.period != nil))
 
-    if Enum.empty?(valid_data) do
-      nil
-    else
-      earliest = List.first(valid_data)
-      latest = Enum.max_by(valid_data, fn %{period: p} -> p.starts_on end)
-      durations = Enum.map(valid_data, & &1.duration) |> Enum.uniq() |> Enum.sort()
-      latest_end = Enum.max_by(valid_data, fn %{period: p} -> p.ends_on end)
+    case valid_data do
+      [] ->
+        nil
 
-      %{
-        earliest_state: earliest.state_name,
-        earliest_date: format_date(earliest.period.starts_on),
-        latest_state: latest.state_name,
-        latest_date: format_date(latest.period.starts_on),
-        min_duration: List.first(durations),
-        max_duration: List.last(durations),
-        total_days: Date.diff(latest_end.period.ends_on, earliest.period.starts_on) + 1
-      }
+      [earliest | _] = data ->
+        latest = Enum.max_by(data, fn %{period: p} -> p.starts_on end)
+        latest_end = Enum.max_by(data, fn %{period: p} -> p.ends_on end)
+
+        {min_duration, max_duration} =
+          Enum.min_max_by(data, & &1.duration)
+          |> then(fn {min, max} -> {min.duration, max.duration} end)
+
+        %{
+          earliest_state: earliest.state_name,
+          earliest_date: format_date(earliest.period.starts_on),
+          latest_state: latest.state_name,
+          latest_date: format_date(latest.period.starts_on),
+          min_duration: min_duration,
+          max_duration: max_duration,
+          total_days: Date.diff(latest_end.period.ends_on, earliest.period.starts_on) + 1
+        }
     end
   end
 

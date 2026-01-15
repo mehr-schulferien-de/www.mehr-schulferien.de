@@ -158,18 +158,17 @@ defmodule MehrSchulferienWeb.HomeLive do
       {city_id_int, ""} ->
         expanded_cities = socket.assigns.expanded_cities
 
-        expanded_cities =
-          if MapSet.member?(expanded_cities, city_id_int) do
-            MapSet.delete(expanded_cities, city_id_int)
-          else
-            MapSet.put(expanded_cities, city_id_int)
-          end
+        toggle_fn =
+          if MapSet.member?(expanded_cities, city_id_int),
+            do: &MapSet.delete/2,
+            else: &MapSet.put/2
 
-        socket = assign(socket, :expanded_cities, expanded_cities)
+        socket =
+          socket
+          |> assign(:expanded_cities, toggle_fn.(expanded_cities, city_id_int))
+          |> push_event("maintain-scroll", %{element_id: "city-card-#{city_id_int}"})
 
-        # Push an event to maintain scroll position
-        {:noreply,
-         push_event(socket, "maintain-scroll", %{element_id: "city-card-#{city_id_int}"})}
+        {:noreply, socket}
 
       _ ->
         {:noreply, socket}

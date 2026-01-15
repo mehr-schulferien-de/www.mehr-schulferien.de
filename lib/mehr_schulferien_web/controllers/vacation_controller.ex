@@ -13,48 +13,67 @@ defmodule MehrSchulferienWeb.VacationController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    # Load locations
-    country = Locations.get_country_by_slug("d")
+    vacation_type_slug = String.replace(vacation_slug, "ferien", "")
 
-    if is_nil(country) do
-      CH.render_not_found_or_empty_database(conn)
+    with {:ok, country} <- fetch_country(),
+         {:ok, federal_state} <- fetch_federal_state(country, federal_state_slug),
+         {:ok, vacation_type_record} <- fetch_vacation_type(vacation_type_slug),
+         :ok <- validate_vacation_for_state(federal_state, vacation_type_slug) do
+      render_vacation_page(conn, %{
+        country: country,
+        federal_state: federal_state,
+        vacation_slug: vacation_slug,
+        vacation_type_record: vacation_type_record,
+        year: year
+      })
     else
-      federal_state = Locations.get_federal_state_by_slug(federal_state_slug, country)
-
-      if is_nil(federal_state) do
+      {:error, :not_found} ->
         CH.render_not_found_or_empty_database(conn)
-      else
-        # Extract and load vacation type
-        vacation_type_slug = String.replace(vacation_slug, "ferien", "")
-        vacation_type_record = get_vacation_type_record(vacation_type_slug)
 
-        # Handle invalid vacation type
-        if is_nil(vacation_type_record) do
-          redirect_to_federal_state(
-            conn,
-            "Diese Ferienart existiert nicht.",
-            country,
-            federal_state_slug,
-            year,
-            :error
-          )
-        else
-          # Check if vacation type is valid for the state
-          if not VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
-            message = "#{vacation_type_record.colloquial} gibt es in #{federal_state.name} nicht."
-            redirect_to_federal_state(conn, message, country, federal_state_slug, year, :info)
-          else
-            # Prepare and render vacation data
-            render_vacation_page(conn, %{
-              country: country,
-              federal_state: federal_state,
-              vacation_slug: vacation_slug,
-              vacation_type_record: vacation_type_record,
-              year: year
-            })
-          end
-        end
-      end
+      {:error, :invalid_vacation_type, country} ->
+        redirect_to_federal_state(
+          conn,
+          "Diese Ferienart existiert nicht.",
+          country,
+          federal_state_slug,
+          year,
+          :error
+        )
+
+      {:error, :vacation_not_in_state, country, federal_state, vacation_type_record} ->
+        message = "#{vacation_type_record.colloquial} gibt es in #{federal_state.name} nicht."
+        redirect_to_federal_state(conn, message, country, federal_state_slug, year, :info)
+    end
+  end
+
+  defp fetch_country do
+    case Locations.get_country_by_slug("d") do
+      nil -> {:error, :not_found}
+      country -> {:ok, country}
+    end
+  end
+
+  defp fetch_federal_state(country, federal_state_slug) do
+    case Locations.get_federal_state_by_slug(federal_state_slug, country) do
+      nil -> {:error, :not_found}
+      federal_state -> {:ok, federal_state}
+    end
+  end
+
+  defp fetch_vacation_type(vacation_type_slug) do
+    case get_vacation_type_record(vacation_type_slug) do
+      nil -> {:error, :invalid_vacation_type, Locations.get_country_by_slug("d")}
+      vacation_type_record -> {:ok, vacation_type_record}
+    end
+  end
+
+  defp validate_vacation_for_state(federal_state, vacation_type_slug) do
+    if VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
+      :ok
+    else
+      country = Locations.get_country_by_slug("d")
+      vacation_type_record = get_vacation_type_record(vacation_type_slug)
+      {:error, :vacation_not_in_state, country, federal_state, vacation_type_record}
     end
   end
 
@@ -193,48 +212,53 @@ defmodule MehrSchulferienWeb.VacationController do
     federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
     location_ids = [country.id, federal_state.id]
-    data = CH.prepare_show_year_data(location_ids, today.year, today)
 
-    # Find next vacation
-    next_vacation_period =
-      data.periods
-      |> Enum.filter(fn p ->
-        p.holiday_or_vacation_type.default_is_school_vacation &&
-          Date.compare(p.starts_on, today) == :gt
-      end)
-      |> Enum.sort_by(& &1.starts_on)
-      |> List.first()
-
-    case next_vacation_period do
-      nil ->
-        # No more vacations this year, check next year
-        next_year_data = CH.prepare_show_year_data(location_ids, today.year + 1, today)
-
-        first_vacation =
-          next_year_data.periods
-          |> Enum.filter(& &1.holiday_or_vacation_type.default_is_school_vacation)
-          |> Enum.sort_by(& &1.starts_on)
-          |> List.first()
-
-        if first_vacation do
-          vacation_slug = first_vacation.holiday_or_vacation_type.slug
-
-          redirect(conn,
-            to: "/#{vacation_slug}ferien/#{federal_state_slug}/#{today.year + 1}"
-          )
-        else
-          # Fallback to federal state page
-          redirect(conn,
-            to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state_slug}/#{today.year}"
-          )
-        end
-
-      vacation ->
+    case find_next_vacation(location_ids, today) do
+      {:ok, vacation} ->
         vacation_slug = vacation.holiday_or_vacation_type.slug
 
         redirect(conn,
           to: "/#{vacation_slug}ferien/#{federal_state_slug}/#{vacation.starts_on.year}"
         )
+
+      :not_found ->
+        redirect(conn,
+          to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state_slug}/#{today.year}"
+        )
     end
+  end
+
+  defp find_next_vacation(location_ids, today) do
+    data = CH.prepare_show_year_data(location_ids, today.year, today)
+
+    case find_first_upcoming_vacation(data.periods, today) do
+      nil ->
+        next_year_data = CH.prepare_show_year_data(location_ids, today.year + 1, today)
+
+        case find_first_school_vacation(next_year_data.periods) do
+          nil -> :not_found
+          vacation -> {:ok, vacation}
+        end
+
+      vacation ->
+        {:ok, vacation}
+    end
+  end
+
+  defp find_first_upcoming_vacation(periods, today) do
+    periods
+    |> Enum.filter(fn p ->
+      p.holiday_or_vacation_type.default_is_school_vacation &&
+        Date.compare(p.starts_on, today) == :gt
+    end)
+    |> Enum.sort_by(& &1.starts_on)
+    |> List.first()
+  end
+
+  defp find_first_school_vacation(periods) do
+    periods
+    |> Enum.filter(& &1.holiday_or_vacation_type.default_is_school_vacation)
+    |> Enum.sort_by(& &1.starts_on)
+    |> List.first()
   end
 end
