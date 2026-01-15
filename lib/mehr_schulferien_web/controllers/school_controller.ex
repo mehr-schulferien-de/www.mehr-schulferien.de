@@ -54,6 +54,15 @@ defmodule MehrSchulferienWeb.SchoolController do
   end
 
   defp show_school_page(conn, country, federal_state, county, city, school) do
+    # Check if school was updated during spam attack timeframe
+    if school_updated_during_spam_attack?(school) do
+      render_spam_affected_503(conn)
+    else
+      show_school_page_content(conn, country, federal_state, county, city, school)
+    end
+  end
+
+  defp show_school_page_content(conn, country, federal_state, county, city, school) do
     # Filter blacklisted data from school address before display
     school = filter_blacklisted_address(school)
 
@@ -268,4 +277,42 @@ defmodule MehrSchulferienWeb.SchoolController do
   end
 
   defp filter_blacklisted_address(school), do: school
+
+  # Check if school was updated during the spam attack window
+  # Original: 15.01.2026 20:30-20:50 German time (CET = UTC+1)
+  # Extended by 1 hour before and after to be safe (timezone buffer)
+  # New window: 19:30-21:50 CET = 18:30-20:50 UTC
+  defp school_updated_during_spam_attack?(school) do
+    # Skip spam check in test environment (test schools get current timestamp)
+    if Application.get_env(:mehr_schulferien, :env) == :test do
+      false
+    else
+      case school.updated_at do
+        nil ->
+          false
+
+        updated_at ->
+          # Convert to UTC DateTime for comparison
+          updated_utc = DateTime.from_naive!(updated_at, "Etc/UTC")
+
+          # Spam attack window with 1-hour buffer on each side
+          # 18:30-20:50 UTC = 19:30-21:50 CET (German time)
+          {:ok, spam_start} = DateTime.new(~D[2026-01-15], ~T[18:30:00], "Etc/UTC")
+          {:ok, spam_end} = DateTime.new(~D[2026-01-15], ~T[20:50:00], "Etc/UTC")
+
+          DateTime.compare(updated_utc, spam_start) != :lt &&
+            DateTime.compare(updated_utc, spam_end) != :gt
+      end
+    end
+  end
+
+  # Render 503 Service Unavailable for spam-affected schools
+  # Retry-After tells Google to come back in 3 days (259200 seconds)
+  defp render_spam_affected_503(conn) do
+    conn
+    |> put_status(:service_unavailable)
+    |> put_resp_header("retry-after", "259200")
+    |> put_view(MehrSchulferienWeb.ErrorHTML)
+    |> render("503.html")
+  end
 end
