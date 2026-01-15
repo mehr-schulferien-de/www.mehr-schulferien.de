@@ -1,6 +1,10 @@
 defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
   use MehrSchulferienWeb.ConnCase
 
+  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
+  # To re-enable: remove this line and uncomment wiki routes in router.ex
+  @moduletag :skip
+
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
 

@@ -223,46 +223,59 @@ defmodule MehrSchulferienWeb.Router do
     get "/sitemap.xml", SitemapController, :sitemap
     get "/robots.txt", RobotsController, :index
 
-    # ⚠️ WIKI MAINTENANCE MODE
-    # Catches all /wiki/* routes and shows maintenance page.
-    # To re-enable wiki: comment out or delete this line
+    # ⚠️ WIKI MAINTENANCE MODE - ACTIVE
+    # All wiki routes below are commented out while maintenance mode is active.
+    # The wildcard route catches all /wiki/* requests and shows maintenance page.
+    #
+    # To re-enable wiki functionality:
+    # 1. Comment out the wildcard route below
+    # 2. Uncomment all the specific wiki routes below
+    # 3. Re-enable wiki tests by removing @moduletag :skip from wiki test files
+    #    (see test/mehr_schulferien_web/live/wiki_* and test/mehr_schulferien_web/controllers/wiki_*)
     live "/wiki/*path", WikiMaintenanceLive
 
-    # Wiki section hub
-    live "/wiki", WikiHubLive
+    # ============================================================================
+    # WIKI ROUTES (COMMENTED OUT DURING MAINTENANCE)
+    # ============================================================================
+    # The following routes are temporarily disabled while wiki is in maintenance mode.
+    # DO NOT DELETE - these will be re-enabled when maintenance mode ends.
+    # ============================================================================
 
-    # Wiki blacklist management
-    live "/wiki/blacklist/request", BlacklistRequestLive
-    live "/wiki/blacklist/verify/:token", BlacklistVerifyLive
-    live "/wiki/blacklist/create/:token", BlacklistCreateLive
-
-    # Wiki section for collaborative school address editing
-    live "/wiki/schools/new", WikiSchoolNewLive
-    live "/wiki/schools/:slug", WikiSchoolShowLive
-    live "/wiki/schools/:slug/edit", WikiSchoolEditLive
-    live "/wiki/schools/:slug/ferientage", WikiSchoolFerientageLive
-    post "/wiki/schools/:slug", WikiController, :update_school
-    put "/wiki/schools/:slug", WikiController, :update_school
-    delete "/wiki/schools/:slug", WikiController, :delete_school
-    post "/wiki/schools/:slug/rollback/:version_id", WikiController, :rollback_school
-
-    # Bewegliche Ferientage operations
-    post "/wiki/schools/:slug/bewegliche-ferientage",
-         WikiController,
-         :create_beweglicher_ferientag
-
-    delete "/wiki/schools/:slug/bewegliche-ferientage/:id",
-           WikiController,
-           :delete_beweglicher_ferientag
-
-    # Wiki section for collaborative period editing
-    live "/wiki/periods", WikiPeriodIndexLive
-    live "/wiki/periods/new", WikiPeriodNewLive
-    live "/wiki/periods/:id/edit", WikiPeriodEditLive
-    post "/wiki/periods/:id", WikiController, :update_period
-    put "/wiki/periods/:id", WikiController, :update_period
-    delete "/wiki/periods/:id", WikiController, :delete_period
-    post "/wiki/periods/:id/rollback/:version_id", WikiController, :rollback_period
+    # # Wiki section hub
+    # live "/wiki", WikiHubLive
+    #
+    # # Wiki blacklist management
+    # live "/wiki/blacklist/request", BlacklistRequestLive
+    # live "/wiki/blacklist/verify/:token", BlacklistVerifyLive
+    # live "/wiki/blacklist/create/:token", BlacklistCreateLive
+    #
+    # # Wiki section for collaborative school address editing
+    # live "/wiki/schools/new", WikiSchoolNewLive
+    # live "/wiki/schools/:slug", WikiSchoolShowLive
+    # live "/wiki/schools/:slug/edit", WikiSchoolEditLive
+    # live "/wiki/schools/:slug/ferientage", WikiSchoolFerientageLive
+    # post "/wiki/schools/:slug", WikiController, :update_school
+    # put "/wiki/schools/:slug", WikiController, :update_school
+    # delete "/wiki/schools/:slug", WikiController, :delete_school
+    # post "/wiki/schools/:slug/rollback/:version_id", WikiController, :rollback_school
+    #
+    # # Bewegliche Ferientage operations
+    # post "/wiki/schools/:slug/bewegliche-ferientage",
+    #      WikiController,
+    #      :create_beweglicher_ferientag
+    #
+    # delete "/wiki/schools/:slug/bewegliche-ferientage/:id",
+    #        WikiController,
+    #        :delete_beweglicher_ferientag
+    #
+    # # Wiki section for collaborative period editing
+    # live "/wiki/periods", WikiPeriodIndexLive
+    # live "/wiki/periods/new", WikiPeriodNewLive
+    # live "/wiki/periods/:id/edit", WikiPeriodEditLive
+    # post "/wiki/periods/:id", WikiController, :update_period
+    # put "/wiki/periods/:id", WikiController, :update_period
+    # delete "/wiki/periods/:id", WikiController, :delete_period
+    # post "/wiki/periods/:id/rollback/:version_id", WikiController, :rollback_period
 
     # Federal state routes (SEO-friendly pattern)
     get "/ferien/:country_slug/bundesland/:federal_state_slug", FederalStateController, :show

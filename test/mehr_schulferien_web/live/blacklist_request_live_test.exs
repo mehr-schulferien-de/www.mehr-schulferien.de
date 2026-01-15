@@ -1,6 +1,11 @@
 defmodule MehrSchulferienWeb.BlacklistRequestLiveTest do
   use MehrSchulferienWeb.ConnCase
 
+  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
+  # This test uses wiki routes (/wiki/blacklist/request)
+  # To re-enable: remove this line and uncomment wiki routes in router.ex
+  @moduletag :skip
+
   import Phoenix.LiveViewTest
 
   describe "blacklist request form" do

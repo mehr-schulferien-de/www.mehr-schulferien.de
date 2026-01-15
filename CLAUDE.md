@@ -250,11 +250,49 @@ The project has been fully migrated to Phoenix verified routes and exclusively u
 
 ## Repository Guidelines
 
+## Wiki Maintenance Mode (January 2026)
+
+The wiki functionality is temporarily disabled. To re-enable wiki:
+
+### Steps to Re-enable Wiki
+
+1. **Uncomment wiki routes in router.ex** (`lib/mehr_schulferien_web/router.ex`):
+   - Comment out the maintenance wildcard route: `live "/wiki/*path", WikiMaintenanceLive`
+   - Uncomment all the specific wiki routes below it (marked with "WIKI ROUTES (COMMENTED OUT DURING MAINTENANCE)")
+
+2. **Re-enable wiki tests** - Remove `@moduletag :skip` from these 13 test files:
+   ```
+   test/mehr_schulferien_web/controllers/wiki_controller_test.exs
+   test/mehr_schulferien_web/controllers/wiki_new_school_test.exs
+   test/mehr_schulferien_web/controllers/wiki_update_coordinates_test.exs
+   test/mehr_schulferien_web/live/blacklist_request_live_test.exs
+   test/mehr_schulferien_web/live/wiki_school_delete_test.exs
+   test/mehr_schulferien_web/live/wiki_school_edit_live_new_school_hint_test.exs
+   test/mehr_schulferien_web/live/wiki_school_edit_rollback_test.exs
+   test/mehr_schulferien_web/live/wiki_school_enrichment_test.exs
+   test/mehr_schulferien_web/system/bewegliche_ferientage_integration_test.exs
+   test/mehr_schulferien_web/system/wiki_exact_scenario_test.exs
+   test/mehr_schulferien_web/system/wiki_periods_filter_counts_test.exs
+   test/mehr_schulferien_web/system/wiki_periods_test.exs
+   test/mehr_schulferien_web/system/wiki_school_test.exs
+   ```
+
+3. **Run tests** to verify everything works:
+   ```bash
+   mix test test/mehr_schulferien_web/**/wiki* --trace
+   ```
+
+### Quick Command to Find Skipped Wiki Tests
+```bash
+grep -r "@moduletag :skip" test/ | grep wiki
+```
+
 ## Memories
 
 - Always remember the sitemap.xml file to be up to date if URLs are added, removed or changed.
 - Tests may fail due to cache issues - use `MehrSchulferien.Cache.clear_query_cache()` in tests when needed.
 - Claude Code hooks automatically run `mix format` and `mix test` after each response, ensuring code quality.
+- Wiki functionality is temporarily disabled (Jan 2026) - see "Wiki Maintenance Mode" section above for re-enabling.
 <!-- usage-rules-start -->
 <!-- usage-rules-header -->
 # Usage Rules
