@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.SchoolController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.{Blacklist, Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Helpers.UserAgentHelpers
@@ -54,6 +54,9 @@ defmodule MehrSchulferienWeb.SchoolController do
   end
 
   defp show_school_page(conn, country, federal_state, county, city, school) do
+    # Filter blacklisted data from school address before display
+    school = filter_blacklisted_address(school)
+
     today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
 
@@ -207,6 +210,8 @@ defmodule MehrSchulferienWeb.SchoolController do
   def documents_index(conn, %{"school_slug" => school_slug}) do
     # Get school information
     school = Locations.get_school_by_slug!(school_slug)
+    # Filter blacklisted data from school address before display
+    school = filter_blacklisted_address(school)
     city = Locations.get_location!(school.parent_location_id)
     county = Locations.get_location!(city.parent_location_id)
     federal_state = Locations.get_location!(county.parent_location_id)
@@ -255,4 +260,12 @@ defmodule MehrSchulferienWeb.SchoolController do
       og_image: "/images/entschuldigung-dummy.png"
     )
   end
+
+  # Filters blacklisted fields from school's address
+  defp filter_blacklisted_address(%{address: address} = school) when not is_nil(address) do
+    filtered_address = Blacklist.filter_address(address)
+    %{school | address: filtered_address}
+  end
+
+  defp filter_blacklisted_address(school), do: school
 end

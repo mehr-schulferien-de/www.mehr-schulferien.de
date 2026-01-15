@@ -110,7 +110,8 @@
           submit_class: "bg-blue-600 hover:bg-blue-700",
           submit_focus_class: "focus:ring-blue-500",
           existing_schools: [],
-          zip_code_valid: nil
+          zip_code_valid: nil,
+          blacklist_error: @blacklist_error
         )}
       </div>
     </div>
@@ -139,6 +140,49 @@
           </svg>
           Neue Schule anlegen
         </a>
+      </div>
+      
+<!-- Blacklist Request (Data Removal) -->
+      <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-5 w-5 text-amber-600 dark:text-amber-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-semibold text-amber-900 dark:text-amber-100">
+              Kontaktdaten sperren lassen
+            </h3>
+            <p class="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              Sie möchten bestimmte Kontaktdaten (Telefon, E-Mail, etc.) dauerhaft von unserer Website entfernen lassen?
+            </p>
+            <a
+              href={~p"/wiki/blacklist/request"}
+              class="inline-flex items-center mt-3 px-3 py-1.5 border border-amber-300 dark:border-amber-600 rounded-md text-sm font-medium text-amber-800 dark:text-amber-200 bg-white dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+            >
+              <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                />
+              </svg>
+              Datensperrliste beantragen
+            </a>
+          </div>
+        </div>
       </div>
       
 <!-- Delete School Button (Gefahrenzone) -->

@@ -102,6 +102,16 @@ defmodule MehrSchulferien.Maps.Address do
     |> validate_instagram_url()
     |> validate_coordinates()
     |> validate_founded_year()
+    |> validate_not_blacklisted(:phone_number)
+    |> validate_not_blacklisted(:fax_number)
+    |> validate_not_blacklisted(:email_address)
+    |> validate_not_blacklisted(:homepage_url)
+    |> validate_not_blacklisted(:instagram_url)
+    |> validate_not_blacklisted(:wikipedia_url)
+    |> validate_not_blacklisted(:schuelerzeitung_url)
+    |> validate_not_blacklisted(:street)
+    |> validate_not_blacklisted(:city)
+    |> validate_not_blacklisted(:zip_code)
   end
 
   # Validates homepage URL is well-formed when present (optional field)
@@ -338,5 +348,16 @@ defmodule MehrSchulferien.Maps.Address do
           add_error(changeset, :founded_year, "muss zwischen 1200 und #{current_year} liegen")
         end
     end
+  end
+
+  # Validates that a field value is not blacklisted
+  defp validate_not_blacklisted(changeset, field) do
+    validate_change(changeset, field, fn _, value ->
+      if MehrSchulferien.Blacklist.is_blacklisted?(value, field) do
+        [{field, "Diese Daten sind gesperrt und können nicht eingegeben werden"}]
+      else
+        []
+      end
+    end)
   end
 end

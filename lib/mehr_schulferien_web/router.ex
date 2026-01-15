@@ -223,8 +223,18 @@ defmodule MehrSchulferienWeb.Router do
     get "/sitemap.xml", SitemapController, :sitemap
     get "/robots.txt", RobotsController, :index
 
+    # ⚠️ WIKI MAINTENANCE MODE
+    # Catches all /wiki/* routes and shows maintenance page.
+    # To re-enable wiki: comment out or delete this line
+    live "/wiki/*path", WikiMaintenanceLive
+
     # Wiki section hub
     live "/wiki", WikiHubLive
+
+    # Wiki blacklist management
+    live "/wiki/blacklist/request", BlacklistRequestLive
+    live "/wiki/blacklist/verify/:token", BlacklistVerifyLive
+    live "/wiki/blacklist/create/:token", BlacklistCreateLive
 
     # Wiki section for collaborative school address editing
     live "/wiki/schools/new", WikiSchoolNewLive

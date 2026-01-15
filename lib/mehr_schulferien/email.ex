@@ -778,4 +778,107 @@ defmodule MehrSchulferien.Email do
     Gelöscht am: #{format_datetime(DateTime.utc_now())}
     """)
   end
+
+  # ============================================================================
+  # Blacklist Emails
+  # ============================================================================
+
+  @doc """
+  Sends a magic link email to verify a blacklist request.
+  """
+  def blacklist_verification_email(email, name, token) do
+    verify_url = "https://www.mehr-schulferien.de/wiki/blacklist/verify/#{token}"
+
+    new()
+    |> to({name, email})
+    |> from({@system_email_name, @noreply_email})
+    |> subject("Bestätigung für Datensperrliste - MehrSchulferien")
+    |> html_body("""
+    <h2>Bestätigung Ihrer E-Mail-Adresse</h2>
+    <p>Hallo #{name},</p>
+    <p>Sie haben einen Antrag auf Aufnahme in die Datensperrliste von MehrSchulferien gestellt.</p>
+    <p>Bitte klicken Sie auf den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen:</p>
+    <p><a href="#{verify_url}" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 15px 0;">E-Mail bestätigen</a></p>
+    <p>Oder kopieren Sie diesen Link in Ihren Browser:</p>
+    <p style="word-break: break-all; color: #666;">#{verify_url}</p>
+    <p><strong>Hinweis:</strong> Dieser Link ist 24 Stunden gültig.</p>
+    <p>Falls Sie diesen Antrag nicht gestellt haben, können Sie diese E-Mail ignorieren.</p>
+    <p>Mit freundlichen Grüßen,<br>Ihr MehrSchulferien Team</p>
+    """)
+    |> text_body("""
+    Bestätigung Ihrer E-Mail-Adresse
+
+    Hallo #{name},
+
+    Sie haben einen Antrag auf Aufnahme in die Datensperrliste von MehrSchulferien gestellt.
+
+    Bitte öffnen Sie den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen:
+
+    #{verify_url}
+
+    Hinweis: Dieser Link ist 24 Stunden gültig.
+
+    Falls Sie diesen Antrag nicht gestellt haben, können Sie diese E-Mail ignorieren.
+
+    Mit freundlichen Grüßen,
+    Ihr MehrSchulferien Team
+    """)
+  end
+
+  @doc """
+  Sends admin notification when a new blacklist entry is created.
+  """
+  def blacklist_entry_created_notification(entry, removal_count) do
+    field_type_label = MehrSchulferien.Blacklist.Entry.field_type_labels()[entry.field_type]
+
+    new()
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
+    |> subject("Neuer Blacklist-Eintrag: #{entry.pattern}")
+    |> html_body("""
+    <h2>Neuer Blacklist-Eintrag wurde erstellt</h2>
+
+    <h3>Antragsteller</h3>
+    <p><strong>Name:</strong> #{entry.requester_name}</p>
+    <p><strong>E-Mail:</strong> #{entry.requester_email}</p>
+
+    <h3>Blacklist-Eintrag</h3>
+    <p><strong>Muster:</strong> <code>#{entry.pattern}</code></p>
+    <p><strong>Feldtyp:</strong> #{field_type_label} (#{entry.field_type})</p>
+    #{if entry.reason && entry.reason != "", do: "<p><strong>Begründung:</strong> #{entry.reason}</p>", else: ""}
+
+    <h3>Auswirkungen</h3>
+    <p><strong>Betroffene Schulen:</strong> #{removal_count}</p>
+    <p>Die entsprechenden Daten wurden automatisch aus den betroffenen Schulen entfernt.</p>
+
+    <p><strong>Erstellt am:</strong> #{format_datetime(DateTime.utc_now())}</p>
+
+    <div style="margin-top: 20px; padding: 15px; background-color: #fef3c7; border-left: 4px solid #f59e0b;">
+      <h4 style="margin-top: 0;">Hinweis</h4>
+      <p>Falls dieser Eintrag missbräuchlich ist, kann er in der Datenbank deaktiviert werden:</p>
+      <pre style="background-color: #f9fafb; padding: 10px; border-radius: 4px;">UPDATE blacklist_entries SET is_active = false WHERE id = #{entry.id};</pre>
+    </div>
+    """)
+    |> text_body("""
+    Neuer Blacklist-Eintrag wurde erstellt
+
+    ANTRAGSTELLER
+    Name: #{entry.requester_name}
+    E-Mail: #{entry.requester_email}
+
+    BLACKLIST-EINTRAG
+    Muster: #{entry.pattern}
+    Feldtyp: #{field_type_label} (#{entry.field_type})
+    #{if entry.reason && entry.reason != "", do: "Begründung: #{entry.reason}\n", else: ""}
+    AUSWIRKUNGEN
+    Betroffene Schulen: #{removal_count}
+    Die entsprechenden Daten wurden automatisch aus den betroffenen Schulen entfernt.
+
+    Erstellt am: #{format_datetime(DateTime.utc_now())}
+
+    HINWEIS
+    Falls dieser Eintrag missbräuchlich ist, kann er in der Datenbank deaktiviert werden:
+    UPDATE blacklist_entries SET is_active = false WHERE id = #{entry.id};
+    """)
+  end
 end

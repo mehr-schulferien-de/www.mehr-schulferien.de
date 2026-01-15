@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   import Ecto.Query
 
   alias MehrSchulferien.{
+    Blacklist,
     Locations,
     Maps,
     Wiki,
@@ -46,7 +47,8 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
        show_delete_confirmation: false,
        delete_error: nil,
        original_zip_code: original_zip_code,
-       show_new_school_hint: false
+       show_new_school_hint: false,
+       blacklist_error: nil
      )}
   end
 
@@ -88,134 +90,156 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
         }
       end
 
-    {:noreply, assign(socket, changeset: changeset, show_new_school_hint: show_new_school_hint)}
+    # Check for blacklisted values
+    blacklist_error =
+      case Blacklist.check_params_for_blacklisted_values(address_params) do
+        :ok -> nil
+        {:error, blocked_fields} -> Blacklist.format_blocked_fields_error(blocked_fields)
+      end
+
+    {:noreply,
+     assign(socket,
+       changeset: changeset,
+       show_new_school_hint: show_new_school_hint,
+       blacklist_error: blacklist_error
+     )}
   end
 
   @impl true
   def handle_event("update_school", %{"address" => address_params, "name" => name}, socket) do
-    if socket.assigns.limit_reached do
-      {:noreply,
-       put_flash(
-         socket,
-         :error,
-         "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
-       )}
-    else
-      school = socket.assigns.school
-      today = Date.utc_today()
+    cond do
+      socket.assigns.limit_reached ->
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+         )}
 
-      # Store current state for version history
-      current_state = capture_current_state(school)
+      # Check blacklist before allowing any changes
+      match?({:error, _}, Blacklist.check_params_for_blacklisted_values(address_params)) ->
+        {:error, blocked_fields} = Blacklist.check_params_for_blacklisted_values(address_params)
+        error_message = Blacklist.format_blocked_fields_error(blocked_fields)
+        {:noreply, put_flash(socket, :error, error_message)}
 
-      # Update school name if changed
-      school_result =
-        if name != school.name do
-          location_changeset = MehrSchulferien.Locations.Location.changeset(school, %{name: name})
-          PaperTrail.update(location_changeset, meta: %{ip_address: nil})
-        else
-          {:ok, %{model: school, version: nil}}
-        end
+      true ->
+        school = socket.assigns.school
+        today = Date.utc_today()
 
-      # Handle address update/creation
-      address_result =
-        case school_result do
-          {:ok, %{model: updated_school, version: _school_version}} ->
-            address_params =
-              address_params
-              |> Map.put("school_location_id", updated_school.id)
-              |> Map.put("line1", name)
+        # Store current state for version history
+        current_state = capture_current_state(school)
 
-            if updated_school.address do
-              # Update existing address
-              changeset = Address.changeset(updated_school.address, address_params)
+        # Update school name if changed
+        school_result =
+          if name != school.name do
+            location_changeset =
+              MehrSchulferien.Locations.Location.changeset(school, %{name: name})
 
-              case changeset.changes do
-                changes when map_size(changes) == 0 ->
-                  {:ok, %{model: updated_school.address, version: nil}}
-
-                _ ->
-                  PaperTrail.update(changeset, meta: %{ip_address: nil})
-              end
-            else
-              # Create new address
-              changeset = Address.changeset(%Address{}, address_params)
-              PaperTrail.insert(changeset, meta: %{ip_address: nil})
-            end
-
-          error ->
-            error
-        end
-
-      case {school_result, address_result} do
-        {{:ok, %{model: _updated_school, version: school_version}},
-         {:ok, %{model: _address, version: address_version}}} ->
-          if school_version || address_version do
-            Wiki.increment_daily_change_count(today)
-
-            # Store version with snapshot of previous state
-            store_version_snapshot(school, current_state)
-
-            # Reload data
-            updated_school = Locations.get_school_by_slug!(school.slug)
-            versions = get_version_history(updated_school)
-            daily_changes = Wiki.get_daily_change_count(today)
-            limit_reached = daily_changes >= Config.daily_change_limit()
-
-            # Send email notification (skip in test environment to avoid connection ownership issues)
-            if Application.get_env(:mehr_schulferien, :env) != :test do
-              Task.start(fn ->
-                try do
-                  # Reload school with all associations needed for email
-                  updated_school_with_associations =
-                    Locations.get_location!(updated_school.id)
-                    |> Repo.preload([:address, :parent_location])
-
-                  # Gather change information
-                  changes = gather_changes(school_version, address_version, current_state)
-
-                  # Get country slug for the email
-                  country_slug = get_country_slug_from_school(updated_school_with_associations)
-
-                  # Build and send email
-                  Email.school_updated_notification(
-                    updated_school_with_associations,
-                    updated_school_with_associations.address,
-                    changes,
-                    country_slug
-                  )
-                  |> Mailer.deliver!()
-                rescue
-                  error ->
-                    Logger.error("Failed to send school update email: #{inspect(error)}")
-                    Logger.error(Exception.format(:error, error, __STACKTRACE__))
-                end
-              end)
-            end
-
-            {:noreply,
-             socket
-             |> put_flash(:info, "Änderungen wurden erfolgreich gespeichert.")
-             |> assign(
-               school: updated_school,
-               versions: versions,
-               changeset: build_school_changeset(updated_school),
-               daily_changes: daily_changes,
-               limit_reached: limit_reached
-             )}
+            PaperTrail.update(location_changeset, meta: %{ip_address: nil})
           else
-            {:noreply, put_flash(socket, :info, "Keine Änderungen vorgenommen.")}
+            {:ok, %{model: school, version: nil}}
           end
 
-        {{:error, _}, _} ->
-          {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren des Schulnamens.")}
+        # Handle address update/creation
+        address_result =
+          case school_result do
+            {:ok, %{model: updated_school, version: _school_version}} ->
+              address_params =
+                address_params
+                |> Map.put("school_location_id", updated_school.id)
+                |> Map.put("line1", name)
 
-        {_, {:error, :invalid_address}} ->
-          {:noreply,
-           put_flash(socket, :error, "Ungültige Adresse. Bitte überprüfen Sie die Eingaben.")}
+              if updated_school.address do
+                # Update existing address
+                changeset = Address.changeset(updated_school.address, address_params)
 
-        {_, {:error, _}} ->
-          {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren der Adresse.")}
-      end
+                case changeset.changes do
+                  changes when map_size(changes) == 0 ->
+                    {:ok, %{model: updated_school.address, version: nil}}
+
+                  _ ->
+                    PaperTrail.update(changeset, meta: %{ip_address: nil})
+                end
+              else
+                # Create new address
+                changeset = Address.changeset(%Address{}, address_params)
+                PaperTrail.insert(changeset, meta: %{ip_address: nil})
+              end
+
+            error ->
+              error
+          end
+
+        case {school_result, address_result} do
+          {{:ok, %{model: _updated_school, version: school_version}},
+           {:ok, %{model: _address, version: address_version}}} ->
+            if school_version || address_version do
+              Wiki.increment_daily_change_count(today)
+
+              # Store version with snapshot of previous state
+              store_version_snapshot(school, current_state)
+
+              # Reload data
+              updated_school = Locations.get_school_by_slug!(school.slug)
+              versions = get_version_history(updated_school)
+              daily_changes = Wiki.get_daily_change_count(today)
+              limit_reached = daily_changes >= Config.daily_change_limit()
+
+              # Send email notification (skip in test environment to avoid connection ownership issues)
+              if Application.get_env(:mehr_schulferien, :env) != :test do
+                Task.start(fn ->
+                  try do
+                    # Reload school with all associations needed for email
+                    updated_school_with_associations =
+                      Locations.get_location!(updated_school.id)
+                      |> Repo.preload([:address, :parent_location])
+
+                    # Gather change information
+                    changes = gather_changes(school_version, address_version, current_state)
+
+                    # Get country slug for the email
+                    country_slug = get_country_slug_from_school(updated_school_with_associations)
+
+                    # Build and send email
+                    Email.school_updated_notification(
+                      updated_school_with_associations,
+                      updated_school_with_associations.address,
+                      changes,
+                      country_slug
+                    )
+                    |> Mailer.deliver!()
+                  rescue
+                    error ->
+                      Logger.error("Failed to send school update email: #{inspect(error)}")
+                      Logger.error(Exception.format(:error, error, __STACKTRACE__))
+                  end
+                end)
+              end
+
+              {:noreply,
+               socket
+               |> put_flash(:info, "Änderungen wurden erfolgreich gespeichert.")
+               |> assign(
+                 school: updated_school,
+                 versions: versions,
+                 changeset: build_school_changeset(updated_school),
+                 daily_changes: daily_changes,
+                 limit_reached: limit_reached
+               )}
+            else
+              {:noreply, put_flash(socket, :info, "Keine Änderungen vorgenommen.")}
+            end
+
+          {{:error, _}, _} ->
+            {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren des Schulnamens.")}
+
+          {_, {:error, :invalid_address}} ->
+            {:noreply,
+             put_flash(socket, :error, "Ungültige Adresse. Bitte überprüfen Sie die Eingaben.")}
+
+          {_, {:error, _}} ->
+            {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren der Adresse.")}
+        end
     end
   end
 

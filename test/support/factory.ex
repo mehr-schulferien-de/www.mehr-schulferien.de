@@ -7,6 +7,7 @@ defmodule MehrSchulferien.Factory do
   alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
+  alias MehrSchulferien.Blacklist.{VerificationRequest, Entry, RemovalLog}
 
   def address_factory(attrs) do
     school_id = attrs[:school_location_id] || insert(:school).id
@@ -493,5 +494,61 @@ defmodule MehrSchulferien.Factory do
         ends_on: ends_on
       })
     end
+  end
+
+  # ============================================================================
+  # Blacklist Factories
+  # ============================================================================
+
+  def blacklist_verification_request_factory(attrs \\ %{}) do
+    {_raw_token, token_hash} = VerificationRequest.generate_token()
+
+    verification_request = %VerificationRequest{
+      full_name: sequence(:full_name, &"Test User #{&1}"),
+      email: sequence(:email, &"test#{&1}@example.com"),
+      token_hash: token_hash,
+      expires_at:
+        DateTime.utc_now() |> DateTime.add(24 * 60 * 60, :second) |> DateTime.truncate(:second)
+    }
+
+    merge_attributes(verification_request, attrs)
+  end
+
+  def verified_blacklist_request_factory(attrs \\ %{}) do
+    request = blacklist_verification_request_factory(attrs)
+    %{request | verified_at: DateTime.utc_now() |> DateTime.truncate(:second)}
+  end
+
+  def blacklist_entry_factory(attrs) do
+    verification_request = attrs[:verification_request] || insert(:verified_blacklist_request)
+    pattern = attrs[:pattern] || "+49 30 1234*"
+
+    entry = %Entry{
+      pattern: pattern,
+      pattern_regex: MehrSchulferien.Blacklist.PatternMatcher.to_regex_pattern(pattern),
+      field_type: attrs[:field_type] || "phone_number",
+      requester_name: verification_request.full_name,
+      requester_email: verification_request.email,
+      verification_request_id: verification_request.id,
+      is_active: true
+    }
+
+    merge_attributes(entry, attrs)
+  end
+
+  def blacklist_removal_log_factory(attrs) do
+    entry = attrs[:blacklist_entry] || insert(:blacklist_entry, %{})
+    address = attrs[:address] || insert(:address, %{})
+
+    removal_log = %RemovalLog{
+      blacklist_entry_id: entry.id,
+      address_id: address.id,
+      school_location_id: address.school_location_id,
+      field_name: entry.field_type,
+      original_value: "+49 30 12345678",
+      removed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+    }
+
+    merge_attributes(removal_log, attrs)
   end
 end

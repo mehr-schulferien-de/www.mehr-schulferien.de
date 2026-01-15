@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   use MehrSchulferienWeb, :live_view
 
-  alias MehrSchulferien.{Maps, Wiki, Locations, Email, Mailer, Config}
+  alias MehrSchulferien.{Blacklist, Maps, Wiki, Locations, Email, Mailer, Config}
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Geocoding.Nominatim
@@ -24,7 +24,8 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
        limit_reached: limit_reached,
        existing_schools: [],
        zip_code_valid: nil,
-       city_from_zip: nil
+       city_from_zip: nil,
+       blacklist_error: nil
      )}
   end
 
@@ -86,68 +87,84 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
         }
     }
 
-    {:noreply, assign(socket, changeset: changeset, school_name: name)}
+    # Check for blacklisted values
+    blacklist_error =
+      case Blacklist.check_params_for_blacklisted_values(address_params) do
+        :ok -> nil
+        {:error, blocked_fields} -> Blacklist.format_blocked_fields_error(blocked_fields)
+      end
+
+    {:noreply,
+     assign(socket, changeset: changeset, school_name: name, blacklist_error: blacklist_error)}
   end
 
   @impl true
   def handle_event("save", %{"name" => school_name, "address" => address_params}, socket) do
-    if socket.assigns.limit_reached do
-      {:noreply,
-       put_flash(
-         socket,
-         :error,
-         "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
-       )}
-    else
-      zip_code = Map.get(address_params, "zip_code", "")
+    cond do
+      socket.assigns.limit_reached ->
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
+         )}
 
-      # Validate zip code and get city
-      case validate_and_get_city_from_zip(zip_code) do
-        {:ok, city} ->
-          # Try to create school with address
-          case create_school_with_address(school_name, address_params, city, socket) do
-            {:ok, school} ->
-              # Increment daily change count
-              Wiki.increment_daily_change_count(Date.utc_today())
+      # Check blacklist before allowing creation
+      match?({:error, _}, Blacklist.check_params_for_blacklisted_values(address_params)) ->
+        {:error, blocked_fields} = Blacklist.check_params_for_blacklisted_values(address_params)
+        error_message = Blacklist.format_blocked_fields_error(blocked_fields)
+        {:noreply, put_flash(socket, :error, error_message)}
 
-              # Get country slug for redirect
-              country_slug = get_country_slug_from_school(school)
+      true ->
+        zip_code = Map.get(address_params, "zip_code", "")
 
-              {:noreply,
-               socket
-               |> put_flash(:info, "Schule wurde erfolgreich angelegt. Danke für Ihre Hilfe!")
-               |> redirect(to: ~p"/ferien/#{country_slug || "d"}/schule/#{school.slug}")}
+        # Validate zip code and get city
+        case validate_and_get_city_from_zip(zip_code) do
+          {:ok, city} ->
+            # Try to create school with address
+            case create_school_with_address(school_name, address_params, city, socket) do
+              {:ok, school} ->
+                # Increment daily change count
+                Wiki.increment_daily_change_count(Date.utc_today())
 
-            {:error, :invalid_address} ->
-              changeset =
-                %Address{}
-                |> Address.changeset(address_params)
-                |> Map.put(:errors,
-                  street:
-                    {"Die Adresse konnte nicht georeferenziert werden. Bitte überprüfen Sie die Eingaben.",
-                     []}
-                )
-                |> Map.put(:action, :insert)
-                |> Map.put(:valid?, false)
+                # Get country slug for redirect
+                country_slug = get_country_slug_from_school(school)
 
-              {:noreply, assign(socket, changeset: changeset)}
+                {:noreply,
+                 socket
+                 |> put_flash(:info, "Schule wurde erfolgreich angelegt. Danke für Ihre Hilfe!")
+                 |> redirect(to: ~p"/ferien/#{country_slug || "d"}/schule/#{school.slug}")}
 
-            {:error, changeset} ->
-              {:noreply, assign(socket, changeset: changeset)}
-          end
+              {:error, :invalid_address} ->
+                changeset =
+                  %Address{}
+                  |> Address.changeset(address_params)
+                  |> Map.put(:errors,
+                    street:
+                      {"Die Adresse konnte nicht georeferenziert werden. Bitte überprüfen Sie die Eingaben.",
+                       []}
+                  )
+                  |> Map.put(:action, :insert)
+                  |> Map.put(:valid?, false)
 
-        {:error, :invalid_zip_code} ->
-          changeset =
-            %Address{}
-            |> Address.changeset(address_params)
-            |> Map.put(:errors,
-              zip_code: {"Postleitzahl wurde nicht gefunden oder ist ungültig", []}
-            )
-            |> Map.put(:action, :insert)
-            |> Map.put(:valid?, false)
+                {:noreply, assign(socket, changeset: changeset)}
 
-          {:noreply, assign(socket, changeset: changeset)}
-      end
+              {:error, changeset} ->
+                {:noreply, assign(socket, changeset: changeset)}
+            end
+
+          {:error, :invalid_zip_code} ->
+            changeset =
+              %Address{}
+              |> Address.changeset(address_params)
+              |> Map.put(:errors,
+                zip_code: {"Postleitzahl wurde nicht gefunden oder ist ungültig", []}
+              )
+              |> Map.put(:action, :insert)
+              |> Map.put(:valid?, false)
+
+            {:noreply, assign(socket, changeset: changeset)}
+        end
     end
   end
 

@@ -166,6 +166,11 @@ mix test  # Output should be only dots, no text
   - Use `ml-5` or similar margin for proper indentation
   - Avoid manual bullet points (•) in list items
   - This ensures proper text wrapping where continuation lines align with text, not bullets
+- **Wiki form elements**: All form fields in the wiki area must use consistent styling:
+  - **Standard form input class**: `mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100`
+  - **Key styling rules**: Use `sm:text-sm` (not `text-base`), `px-3 py-2` (not `py-2.5`), `rounded-md`
+  - **Select dropdowns**: Add `appearance-none cursor-pointer` for custom styling
+  - Reference: `lib/mehr_schulferien_web/templates/wiki/_school_form.html.heex`
 
 ### Testing Strategy
 - System tests for full user workflows

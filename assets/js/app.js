@@ -49,6 +49,27 @@ Hooks.ScrollToTop = {
   }
 }
 
+Hooks.PhoneFormatter = {
+  mounted() {
+    console.log("PhoneFormatter hook mounted on:", this.el.id)
+    // Handle phone format event from server
+    this.handleEvent("format_phone", ({formatted}) => {
+      console.log("Received format_phone event with:", formatted)
+      const input = this.el
+      // Only update if value is different to avoid cursor jumping
+      if (input.value !== formatted) {
+        console.log("Updating input from", input.value, "to", formatted)
+        // Save cursor position relative to end (in case length changes)
+        const cursorFromEnd = input.value.length - input.selectionStart
+        input.value = formatted
+        // Restore cursor position from end
+        const newCursorPos = Math.max(0, formatted.length - cursorFromEnd)
+        input.setSelectionRange(newCursorPos, newCursorPos)
+      }
+    })
+  }
+}
+
 
 // Function to get cookie value by name
 function getCookie(name) {
