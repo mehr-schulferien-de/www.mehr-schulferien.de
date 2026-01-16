@@ -194,7 +194,7 @@ defmodule MehrSchulferienWeb.PageController do
 
     # Deployment timestamp - check for priv/static/cache_manifest.json modification time
     # or use application start time as fallback
-    deployment_timestamp = get_deployment_timestamp()
+    {deployment_timestamp, deployment_relative} = get_deployment_timestamp()
 
     render(conn, "debug.html",
       elixir_version: elixir_version,
@@ -205,7 +205,8 @@ defmodule MehrSchulferienWeb.PageController do
       schools_count: schools_count,
       db_status: db_status,
       app_version: app_version,
-      deployment_timestamp: deployment_timestamp
+      deployment_timestamp: deployment_timestamp,
+      deployment_relative: deployment_relative
     )
   end
 
@@ -216,18 +217,42 @@ defmodule MehrSchulferienWeb.PageController do
 
     case File.stat(manifest_path) do
       {:ok, %{mtime: mtime}} ->
-        mtime
-        |> NaiveDateTime.from_erl!()
-        |> DateTime.from_naive!("Etc/UTC")
-        |> DateTime.shift_zone!("Europe/Berlin")
-        |> format_german_datetime()
+        datetime =
+          mtime
+          |> NaiveDateTime.from_erl!()
+          |> DateTime.from_naive!("Etc/UTC")
+          |> DateTime.shift_zone!("Europe/Berlin")
+
+        {format_german_datetime(datetime), relative_time_ago(datetime)}
 
       _ ->
         # Fallback: use application start time
         case :application.get_key(:mehr_schulferien, :start_time) do
-          {:ok, start_time} -> start_time
-          _ -> "Unknown"
+          {:ok, start_time} -> {start_time, ""}
+          _ -> {"Unknown", ""}
         end
+    end
+  end
+
+  defp relative_time_ago(datetime) do
+    now = DateTime.now!("Europe/Berlin")
+    diff_seconds = DateTime.diff(now, datetime, :second)
+
+    cond do
+      diff_seconds < 60 ->
+        "just now"
+
+      diff_seconds < 3600 ->
+        minutes = div(diff_seconds, 60)
+        if minutes == 1, do: "1 minute ago", else: "#{minutes} minutes ago"
+
+      diff_seconds < 86400 ->
+        hours = div(diff_seconds, 3600)
+        if hours == 1, do: "1 hour ago", else: "#{hours} hours ago"
+
+      true ->
+        days = div(diff_seconds, 86400)
+        if days == 1, do: "1 day ago", else: "#{days} days ago"
     end
   end
 
