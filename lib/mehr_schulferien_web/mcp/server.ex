@@ -457,11 +457,13 @@ defmodule MehrSchulferienWeb.MCP.Server do
       cities = Locations.list_cities_of_federal_state(state)
       city_ids = Enum.map(cities, & &1.id)
 
-      # Get all schools in those cities
+      # Get all schools in those cities (excluding quarantined)
       schools =
         Repo.all(
           from l in MehrSchulferien.Locations.Location,
-            where: l.is_school == true and l.parent_location_id in ^city_ids,
+            where:
+              l.is_school == true and l.parent_location_id in ^city_ids and
+                l.is_quarantined == false,
             select: %{
               name: l.name,
               slug: l.slug,
@@ -529,7 +531,9 @@ defmodule MehrSchulferienWeb.MCP.Server do
 
     base_query =
       from l in MehrSchulferien.Locations.Location,
-        where: l.is_school == true and ilike(l.name, ^"%#{search_query}%"),
+        where:
+          l.is_school == true and l.is_quarantined == false and
+            ilike(l.name, ^"%#{search_query}%"),
         limit: 50
 
     # Apply optional filters
@@ -588,7 +592,9 @@ defmodule MehrSchulferienWeb.MCP.Server do
         from l in MehrSchulferien.Locations.Location,
           join: a in MehrSchulferien.Maps.Address,
           on: a.school_location_id == l.id,
-          where: l.is_school == true and like(a.zip_code, ^"#{zip_prefix}%"),
+          where:
+            l.is_school == true and l.is_quarantined == false and
+              like(a.zip_code, ^"#{zip_prefix}%"),
           select: %{
             name: l.name,
             slug: l.slug,
@@ -939,7 +945,7 @@ defmodule MehrSchulferienWeb.MCP.Server do
         "federal_state" -> from l in base_query, where: l.is_federal_state == true
         "county" -> from l in base_query, where: l.is_county == true
         "city" -> from l in base_query, where: l.is_city == true
-        "school" -> from l in base_query, where: l.is_school == true
+        "school" -> from l in base_query, where: l.is_school == true and l.is_quarantined == false
         _ -> base_query
       end
 

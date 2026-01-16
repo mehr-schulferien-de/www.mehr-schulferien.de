@@ -54,11 +54,17 @@ defmodule MehrSchulferienWeb.SchoolController do
   end
 
   defp show_school_page(conn, country, federal_state, county, city, school) do
-    # Check if school was updated during spam attack timeframe
-    if school_updated_during_spam_attack?(school) do
-      render_spam_affected_503(conn)
-    else
-      show_school_page_content(conn, country, federal_state, county, city, school)
+    cond do
+      # Check if school is quarantined
+      Locations.school_quarantined?(school) ->
+        render_quarantined_423(conn)
+
+      # Check if school was updated during spam attack timeframe
+      school_updated_during_spam_attack?(school) ->
+        render_spam_affected_503(conn)
+
+      true ->
+        show_school_page_content(conn, country, federal_state, county, city, school)
     end
   end
 
@@ -314,5 +320,15 @@ defmodule MehrSchulferienWeb.SchoolController do
     |> put_resp_header("retry-after", "259200")
     |> put_view(MehrSchulferienWeb.ErrorHTML)
     |> render("503.html")
+  end
+
+  # Render 423 Locked for quarantined schools
+  # Retry-After tells clients to come back in 7 days (604800 seconds)
+  defp render_quarantined_423(conn) do
+    conn
+    |> put_status(:locked)
+    |> put_resp_header("retry-after", "604800")
+    |> put_view(MehrSchulferienWeb.ErrorHTML)
+    |> render("423.html")
   end
 end

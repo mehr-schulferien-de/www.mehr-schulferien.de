@@ -96,7 +96,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         on: zcm.location_id == city.id,
         left_join: zc in MehrSchulferien.Maps.ZipCode,
         on: zc.id == zcm.zip_code_id,
-        where: s.is_school == true,
+        where: s.is_school == true and s.is_quarantined == false,
         where: like(zc.value, ^zip_pattern) or like(a.zip_code, ^zip_pattern)
 
     query =
@@ -156,7 +156,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         join: federal_state in MehrSchulferien.Locations.Location,
         on: federal_state.id == county.parent_location_id,
         join: s in MehrSchulferien.Locations.Location,
-        on: s.parent_location_id == c.id and s.is_school == true,
+        on: s.parent_location_id == c.id and s.is_school == true and s.is_quarantined == false,
         left_join: a in MehrSchulferien.Maps.Address,
         on: a.school_location_id == s.id,
         where: c.is_city == true and ilike(c.name, ^city_pattern)
@@ -219,7 +219,8 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         on: federal_state.id == county.parent_location_id,
         left_join: a in MehrSchulferien.Maps.Address,
         on: a.school_location_id == s.id,
-        where: s.is_school == true and ilike(s.name, ^school_pattern)
+        where:
+          s.is_school == true and s.is_quarantined == false and ilike(s.name, ^school_pattern)
 
     query =
       if federal_state_id && federal_state_id != "" do
@@ -269,7 +270,7 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
         on: county.id == city.parent_location_id,
         left_join: a in MehrSchulferien.Maps.Address,
         on: a.school_location_id == s.id,
-        where: s.is_school == true,
+        where: s.is_school == true and s.is_quarantined == false,
         where: county.parent_location_id == ^federal_state_id_int,
         distinct: true,
         order_by: [city.name, s.name],

@@ -106,6 +106,7 @@ defmodule MehrSchulferien.Factory do
     school = %Location{
       name: sequence("Kopernikus-Gymnasium"),
       is_school: true,
+      is_quarantined: Map.get(attrs, :is_quarantined, false),
       parent_location_id: city_id,
       slug: sequence("kopernikus-gymnasium")
     }

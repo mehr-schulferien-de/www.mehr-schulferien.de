@@ -61,10 +61,13 @@ defmodule MehrSchulferienWeb.SitemapController do
       cities = Repo.all(cities_with_schools_query)
       city_ids = Enum.map(cities, & &1.id)
 
-      # Get schools in one query
+      # Get schools in one query (excluding quarantined schools)
       schools_query =
         from l in Location,
-          where: l.parent_location_id in ^city_ids and l.is_school == true,
+          where:
+            l.parent_location_id in ^city_ids and
+              l.is_school == true and
+              l.is_quarantined == false,
           limit: ^limit_count
 
       schools = Repo.all(schools_query)

@@ -12,6 +12,13 @@ defmodule MehrSchulferienWeb.Api.V21.FallbackController do
     |> json(MehrSchulferienWeb.Api.V21.ErrorJSON.render("404.json", %{}))
   end
 
+  def call(conn, {:error, :quarantined}) do
+    conn
+    |> put_status(:locked)
+    |> put_resp_header("retry-after", "604800")
+    |> json(MehrSchulferienWeb.Api.V21.ErrorJSON.render("423.json", %{}))
+  end
+
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)

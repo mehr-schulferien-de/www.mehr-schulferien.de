@@ -45,6 +45,20 @@ defmodule MehrSchulferienWeb.Api.V21.ErrorJSON do
     }
   end
 
+  def render("423.json", _assigns) do
+    %{
+      errors: [
+        %{
+          status: "423",
+          title: "Locked",
+          detail:
+            "This school page is temporarily locked and under review. Please try again later."
+        }
+      ],
+      meta: %{api_version: "2.1"}
+    }
+  end
+
   def render("500.json", _assigns) do
     %{
       errors: [

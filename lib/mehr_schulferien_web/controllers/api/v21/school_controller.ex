@@ -118,7 +118,7 @@ defmodule MehrSchulferienWeb.Api.V21.SchoolController do
   defp build_index_query(params) do
     query =
       from l in Location,
-        where: l.is_school == true,
+        where: l.is_school == true and l.is_quarantined == false,
         order_by: [asc: l.name]
 
     query =
@@ -154,6 +154,7 @@ defmodule MehrSchulferienWeb.Api.V21.SchoolController do
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
+      %{is_quarantined: true} -> {:error, :quarantined}
       school -> {:ok, school}
     end
   end

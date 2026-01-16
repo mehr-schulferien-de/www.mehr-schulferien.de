@@ -55,6 +55,9 @@ defmodule MehrSchulferien.Locations.Location do
     field :is_city, :boolean, default: false
     field :is_school, :boolean, default: false
 
+    # Quarantine status for spam prevention (schools only)
+    field :is_quarantined, :boolean, default: false
+
     # Basic location attributes
     field :name, :string
     field :code, :string
@@ -101,6 +104,7 @@ defmodule MehrSchulferien.Locations.Location do
       :is_county,
       :is_city,
       :is_school,
+      :is_quarantined,
       :parent_location_id
     ])
     |> validate_required([:name])

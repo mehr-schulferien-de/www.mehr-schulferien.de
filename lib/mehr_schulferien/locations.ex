@@ -269,6 +269,73 @@ defmodule MehrSchulferien.Locations do
     {:error, :not_a_school}
   end
 
+  #
+  # School quarantine functions
+  #
+
+  @doc """
+  Quarantines a school, marking it as under review for spam.
+  Uses PaperTrail for audit logging.
+
+  Returns `{:ok, %{model: location, version: version}}` on success.
+  """
+  def quarantine_school(%Location{is_school: true} = school) do
+    school
+    |> Location.changeset(%{is_quarantined: true})
+    |> PaperTrail.update()
+  end
+
+  def quarantine_school(%Location{is_school: false}), do: {:error, :not_a_school}
+  def quarantine_school(nil), do: {:error, :not_found}
+
+  @doc """
+  Removes quarantine from a school.
+  Uses PaperTrail for audit logging.
+
+  Returns `{:ok, %{model: location, version: version}}` on success.
+  """
+  def unquarantine_school(%Location{is_school: true} = school) do
+    school
+    |> Location.changeset(%{is_quarantined: false})
+    |> PaperTrail.update()
+  end
+
+  def unquarantine_school(%Location{is_school: false}), do: {:error, :not_a_school}
+  def unquarantine_school(nil), do: {:error, :not_found}
+
+  @doc """
+  Gets a school by slug, including quarantined schools.
+  Used for admin purposes and 423 response rendering.
+  """
+  def get_school_by_slug_including_quarantined(school_slug) do
+    Location
+    |> Repo.get_by(slug: school_slug, is_school: true)
+    |> case do
+      nil -> nil
+      school -> Repo.preload(school, [:address])
+    end
+  end
+
+  @doc """
+  Checks if a school is quarantined.
+  """
+  def school_quarantined?(%Location{is_school: true, is_quarantined: is_quarantined}),
+    do: is_quarantined
+
+  def school_quarantined?(_), do: false
+
+  @doc """
+  Lists all quarantined schools.
+  """
+  def list_quarantined_schools do
+    from(l in Location,
+      where: l.is_school == true and l.is_quarantined == true,
+      preload: [:address],
+      order_by: l.name
+    )
+    |> Repo.all()
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking location changes.
   """
@@ -592,23 +659,33 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Returns the list of schools for a certain city.
+  Excludes quarantined schools.
   """
   def list_schools(city) do
-    city
-    |> list_children_by_flag(:is_school)
-    |> Repo.preload([:address])
+    from(l in Location,
+      where:
+        l.is_school == true and
+          l.parent_location_id == ^city.id and
+          l.is_quarantined == false,
+      preload: [:address]
+    )
+    |> Repo.all()
   end
 
   @doc """
   Returns the list of schools for a certain city with only essential fields.
   Optimized for list displays where full records aren't needed.
+  Excludes quarantined schools.
   Reduces data transfer by ~65%.
   """
   def list_schools_selective(city) do
     from(l in Location,
       left_join: a in MehrSchulferien.Maps.Address,
       on: a.school_location_id == l.id,
-      where: l.is_school == true and l.parent_location_id == ^city.id,
+      where:
+        l.is_school == true and
+          l.parent_location_id == ^city.id and
+          l.is_quarantined == false,
       select: %{
         id: l.id,
         name: l.name,
@@ -643,12 +720,14 @@ defmodule MehrSchulferien.Locations do
       []
     else
       # Use SQL to filter schools by zip prefix - much faster than filtering in Elixir
+      # Excludes quarantined schools
       from(l in Location,
         join: a in MehrSchulferien.Maps.Address,
         on: a.school_location_id == l.id,
         where:
           l.is_school == true and
             l.parent_location_id == ^city.id and
+            l.is_quarantined == false and
             not is_nil(a.zip_code) and
             fragment("LEFT(?, 4)", a.zip_code) in ^city_zip_prefixes,
         preload: [:address],
@@ -670,23 +749,30 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Returns the list of schools for a certain country.
+  Excludes quarantined schools.
   """
   def list_schools_of_country(country) do
     city_ids = country |> list_cities_of_country() |> Enum.map(& &1.id)
 
-    from(l in Location, where: l.is_school == true and l.parent_location_id in ^city_ids)
+    from(l in Location,
+      where:
+        l.is_school == true and
+          l.parent_location_id in ^city_ids and
+          l.is_quarantined == false
+    )
     |> Repo.all()
   end
 
   @doc """
   Returns a list of schools within a given distance from a school.
+  Excludes quarantined schools.
   """
   def list_nearby_schools(school, distance_in_meters) do
     if school.address && school.address.lon && school.address.lat do
       from(l in Location,
         join: a in assoc(l, :address),
         where:
-          l.is_school == true and l.id != ^school.id and
+          l.is_school == true and l.id != ^school.id and l.is_quarantined == false and
             fragment(
               """
               (
@@ -742,9 +828,14 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Returns the total count of schools in the database.
+  Excludes quarantined schools.
   """
   def count_schools do
-    Repo.aggregate(from(l in Location, where: l.is_school == true), :count, :id)
+    Repo.aggregate(
+      from(l in Location, where: l.is_school == true and l.is_quarantined == false),
+      :count,
+      :id
+    )
   end
 
   @doc """
@@ -765,7 +856,7 @@ defmodule MehrSchulferien.Locations do
         on: zcm.location_id == city.id,
         left_join: zc in MehrSchulferien.Maps.ZipCode,
         on: zc.id == zcm.zip_code_id,
-        where: school.is_school == true,
+        where: school.is_school == true and school.is_quarantined == false,
         preload: [:address, parent_location: :parent_location]
       )
 
@@ -817,10 +908,16 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Returns the number of schools for a specific city.
+  Excludes quarantined schools.
   """
   def count_schools(city) do
     Repo.aggregate(
-      from(l in Location, where: l.is_school == true and l.parent_location_id == ^city.id),
+      from(l in Location,
+        where:
+          l.is_school == true and
+            l.parent_location_id == ^city.id and
+            l.is_quarantined == false
+      ),
       :count,
       :id
     )
@@ -1101,13 +1198,17 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Gets all schools by zip code.
+  Excludes quarantined schools.
   """
   def get_schools_by_zip_code(zip_code) when is_binary(zip_code) do
     query =
       from s in Location,
         join: a in MehrSchulferien.Maps.Address,
         on: a.school_location_id == s.id,
-        where: s.is_school == true and a.zip_code == ^zip_code,
+        where:
+          s.is_school == true and
+            a.zip_code == ^zip_code and
+            s.is_quarantined == false,
         preload: [:address, :parent_location],
         order_by: s.name
 
@@ -1125,10 +1226,13 @@ defmodule MehrSchulferien.Locations do
     county_ids = Enum.map(counties, & &1.id)
 
     # Get cities with school counts in a single query
+    # Excludes quarantined schools from the count
     cities_with_school_counts_query =
       from city in Location,
         join: school in Location,
-        on: school.parent_location_id == city.id and school.is_school == true,
+        on:
+          school.parent_location_id == city.id and school.is_school == true and
+            school.is_quarantined == false,
         where: city.parent_location_id in ^county_ids and city.is_city == true,
         group_by: [city.id, city.name, city.slug, city.parent_location_id],
         select: %{
@@ -1299,6 +1403,7 @@ defmodule MehrSchulferien.Locations do
   @doc """
   Finds schools within the same zip code as the given school.
   Returns a list of schools with their addresses preloaded.
+  Excludes quarantined schools.
   """
   def find_schools_by_same_zip_code(%Location{is_school: true} = school) do
     school = Repo.preload(school, :address)
@@ -1310,6 +1415,7 @@ defmodule MehrSchulferien.Locations do
           where:
             s.is_school == true and
               s.id != ^school.id and
+              s.is_quarantined == false and
               a.zip_code == ^zip_code,
           preload: [:address],
           order_by: s.name
@@ -1334,22 +1440,24 @@ defmodule MehrSchulferien.Locations do
         # Earth radius in kilometers
         earth_radius = 6371.0
 
+        # Excludes quarantined schools
         query = """
-        SELECT DISTINCT l.*, 
+        SELECT DISTINCT l.*,
                (#{earth_radius} * acos(
-                 cos(radians($1)) * cos(radians(a.lat)) * 
-                 cos(radians(a.lon) - radians($2)) + 
+                 cos(radians($1)) * cos(radians(a.lat)) *
+                 cos(radians(a.lon) - radians($2)) +
                  sin(radians($1)) * sin(radians(a.lat))
                )) as distance_km
         FROM locations l
         INNER JOIN addresses a ON a.school_location_id = l.id
         WHERE l.is_school = true
+          AND l.is_quarantined = false
           AND l.id != $3
           AND a.lat IS NOT NULL
           AND a.lon IS NOT NULL
           AND (#{earth_radius} * acos(
-                cos(radians($1)) * cos(radians(a.lat)) * 
-                cos(radians(a.lon) - radians($2)) + 
+                cos(radians($1)) * cos(radians(a.lat)) *
+                cos(radians(a.lon) - radians($2)) +
                 sin(radians($1)) * sin(radians(a.lat))
               )) <= $4
         ORDER BY distance_km ASC
@@ -1403,12 +1511,14 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Finds all schools in the same city as the given school.
+  Excludes quarantined schools.
   """
   def find_schools_in_same_city(%Location{is_school: true} = school) do
     from(s in Location,
       where:
         s.is_school == true and
           s.id != ^school.id and
+          s.is_quarantined == false and
           s.parent_location_id == ^school.parent_location_id,
       preload: [:address],
       order_by: s.name
