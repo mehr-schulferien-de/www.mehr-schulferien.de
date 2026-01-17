@@ -42,12 +42,12 @@
           <dt class="text-gray-600">App Version</dt>
           <dd class="font-mono text-gray-900">{@app_version}</dd>
         </div>
-        <div class="flex justify-between">
+        <div>
           <dt class="text-gray-600">Deployment</dt>
-          <dd class="font-mono text-gray-900 text-sm">
+          <dd class="font-mono text-gray-900 text-sm mt-1">
             {@deployment_timestamp}
             <%= if @deployment_relative != "" do %>
-              <span class="text-gray-500 ml-2">({@deployment_relative})</span>
+              <span class="text-gray-500 block sm:inline sm:ml-2">({@deployment_relative})</span>
             <% end %>
           </dd>
         </div>
