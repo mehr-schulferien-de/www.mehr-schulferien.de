@@ -20,9 +20,6 @@ defmodule MehrSchulferien.Blacklist.Entry do
     instagram_url
     wikipedia_url
     schuelerzeitung_url
-    street
-    city
-    zip_code
   )
 
   schema "blacklist_entries" do
@@ -57,10 +54,7 @@ defmodule MehrSchulferien.Blacklist.Entry do
       "homepage_url" => "Homepage-URL",
       "instagram_url" => "Instagram-URL",
       "wikipedia_url" => "Wikipedia-URL",
-      "schuelerzeitung_url" => "Schülerzeitung-URL",
-      "street" => "Straße",
-      "city" => "Stadt",
-      "zip_code" => "Postleitzahl"
+      "schuelerzeitung_url" => "Schülerzeitung-URL"
     }
   end
 

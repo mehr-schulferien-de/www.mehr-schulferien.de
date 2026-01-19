@@ -3,9 +3,52 @@ defmodule MehrSchulferienWeb.WikiController do
   require Logger
   import Ecto.Query
 
-  alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Repo, Config}
+  alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Repo, Config, RateLimiter}
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Geocoding.Nominatim
+
+  # Plugs for authentication, rate limiting, and time restriction
+  plug MehrSchulferienWeb.Plugs.RequireAuthPlug
+  plug MehrSchulferienWeb.Plugs.WikiHoursPlug
+  plug :check_rate_limit
+
+  defp check_rate_limit(conn, _opts) do
+    user = conn.assigns[:current_user]
+
+    case RateLimiter.check_wiki_limits(user.id) do
+      :ok ->
+        # Increment counters for this edit attempt
+        RateLimiter.increment_wiki_counters(user.id)
+        conn
+
+      {:error, :user_hourly_limit} ->
+        conn
+        |> put_flash(
+          :error,
+          "Stündliches Limit erreicht (max 10 Bearbeitungen pro Stunde). Bitte versuchen Sie es später erneut."
+        )
+        |> redirect(to: ~p"/wiki")
+        |> halt()
+
+      {:error, :global_hourly_limit} ->
+        conn
+        |> put_flash(
+          :error,
+          "Das System ist derzeit ausgelastet. Bitte versuchen Sie es in einigen Minuten erneut."
+        )
+        |> redirect(to: ~p"/wiki")
+        |> halt()
+
+      {:error, :global_daily_limit} ->
+        conn
+        |> put_flash(
+          :error,
+          "Das Tageslimit wurde erreicht. Bitte versuchen Sie es morgen erneut."
+        )
+        |> redirect(to: ~p"/wiki")
+        |> halt()
+    end
+  end
 
   defp get_coordinates_with_fallback(name, street, zip_code, city) do
     # First try Nominatim with full address
@@ -36,8 +79,6 @@ defmodule MehrSchulferienWeb.WikiController do
   end
 
   defp get_coordinates_from_zip_mappings(zip_code) when is_binary(zip_code) and zip_code != "" do
-    import Ecto.Query
-
     zip_query =
       from zm in MehrSchulferien.Maps.ZipCodeMapping,
         join: z in MehrSchulferien.Maps.ZipCode,
@@ -218,12 +259,7 @@ defmodule MehrSchulferienWeb.WikiController do
               Logger.info("Email send result: #{inspect(result)}")
             end
 
-            # Run synchronously in test environment to avoid connection ownership issues
-            if Application.get_env(:mehr_schulferien, :env) == :test do
-              email_task.()
-            else
-              Task.start(email_task)
-            end
+            run_async_or_sync(email_task)
           end
 
           # Get country slug for redirect to school vacation page
@@ -322,91 +358,11 @@ defmodule MehrSchulferienWeb.WikiController do
     |> Enum.sort_by(& &1.inserted_at, :desc)
   end
 
-  def rollback_school(conn, %{"slug" => school_slug, "version_id" => version_id}) do
-    school = Locations.get_school_by_slug!(school_slug)
-
-    # Check daily limit
-    today = Date.utc_today()
-    daily_changes = Wiki.get_daily_change_count(today)
-
-    if daily_changes >= Config.daily_change_limit() do
-      conn
-      |> put_flash(
-        :error,
-        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
-      )
-      |> redirect(to: "/wiki/schools/#{school_slug}")
-    else
-      # Determine which model the version belongs to
-      with {version_id_int, ""} <- Integer.parse(version_id),
-           version when not is_nil(version) <-
-             MehrSchulferien.Repo.get(PaperTrail.Version, version_id_int) do
-        rollback_result =
-          case version.item_type do
-            "Location" when version.item_id == school.id ->
-              # Rollback school name
-              # Rollback functionality removed - not implemented
-              case {:error, :not_implemented} do
-                {:ok, %{model: updated_school, version: _version}} ->
-                  # If there's an address, update its line1 to match the new school name
-                  if updated_school.address do
-                    address_changeset =
-                      Address.changeset(updated_school.address, %{line1: updated_school.name})
-
-                    case PaperTrail.update(address_changeset,
-                           meta: %{ip_address: get_client_ip(conn)}
-                         ) do
-                      {:ok, %{model: _address, version: _addr_version}} ->
-                        {:ok, updated_school}
-
-                      {:error, _} ->
-                        # Continue even if address update fails
-                        {:ok, updated_school}
-                    end
-                  else
-                    {:ok, updated_school}
-                  end
-
-                error ->
-                  error
-              end
-
-            "Address" ->
-              # Rollback address
-              if school.address && version.item_id == school.address.id do
-                {:error, :not_implemented}
-              else
-                {:error, :version_not_found}
-              end
-
-            _ ->
-              {:error, :version_not_found}
-          end
-
-        case rollback_result do
-          {:ok, _updated_model} ->
-            # Increment daily change count
-            Wiki.increment_daily_change_count(today)
-
-            # Get country slug for redirect to school vacation page
-            country_slug = get_country_slug_from_school(school)
-
-            conn
-            |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
-            |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}")
-
-          {:error, _} ->
-            conn
-            |> put_flash(:error, "Fehler beim Zurückkehren zur ausgewählten Version.")
-            |> redirect(to: "/wiki/schools/#{school_slug}")
-        end
-      else
-        _ ->
-          conn
-          |> put_flash(:error, "Ungültige Versions-ID.")
-          |> redirect(to: "/wiki/schools/#{school_slug}")
-      end
-    end
+  def rollback_school(conn, %{"slug" => school_slug, "version_id" => _version_id}) do
+    # Rollback functionality is not implemented
+    conn
+    |> put_flash(:error, "Rollback-Funktion ist derzeit nicht verfügbar.")
+    |> redirect(to: "/wiki/schools/#{school_slug}")
   end
 
   defp get_client_ip(conn) do
@@ -423,31 +379,8 @@ defmodule MehrSchulferienWeb.WikiController do
   end
 
   defp get_country_slug_from_school(school) do
-    # Traverse up the hierarchy to find the country
-    # Be flexible about hierarchy levels since test data might skip intermediate levels
-    location = school
-
-    # Keep going up until we find a country or run out of parents
-    location = traverse_to_country(location)
-
-    case location do
-      %{slug: slug, is_country: true} -> slug
-      # Default to Germany
-      _ -> "d"
-    end
+    Locations.get_country_slug_from_location(school)
   end
-
-  defp traverse_to_country(%{is_country: true} = location), do: location
-  defp traverse_to_country(%{parent_location_id: nil}), do: nil
-
-  defp traverse_to_country(%{parent_location_id: parent_id}) do
-    case Locations.get_location(parent_id) do
-      nil -> nil
-      parent -> traverse_to_country(parent)
-    end
-  end
-
-  defp traverse_to_country(_), do: nil
 
   defp gather_changes(school_version, address_version) do
     changes = %{}
@@ -609,12 +542,7 @@ defmodule MehrSchulferienWeb.WikiController do
             Logger.info("Email send result: #{inspect(result)}")
           end
 
-          # Run synchronously in test environment to avoid connection ownership issues
-          if Application.get_env(:mehr_schulferien, :env) == :test do
-            email_task.()
-          else
-            Task.start(email_task)
-          end
+          run_async_or_sync(email_task)
 
           # Redirect to city page if city exists, otherwise to country page
           redirect_path =
@@ -676,12 +604,7 @@ defmodule MehrSchulferienWeb.WikiController do
               Logger.info("Email send result: #{inspect(result)}")
             end
 
-            # Run synchronously in test environment to avoid connection ownership issues
-            if Application.get_env(:mehr_schulferien, :env) == :test do
-              email_task.()
-            else
-              Task.start(email_task)
-            end
+            run_async_or_sync(email_task)
           end
 
           conn
@@ -727,12 +650,7 @@ defmodule MehrSchulferienWeb.WikiController do
             Logger.info("Email send result: #{inspect(result)}")
           end
 
-          # Run synchronously in test environment to avoid connection ownership issues
-          if Application.get_env(:mehr_schulferien, :env) == :test do
-            email_task.()
-          else
-            Task.start(email_task)
-          end
+          run_async_or_sync(email_task)
 
           conn
           |> put_flash(:info, "Ferientermin wurde erfolgreich gelöscht.")
@@ -747,35 +665,19 @@ defmodule MehrSchulferienWeb.WikiController do
   end
 
   def rollback_period(conn, %{"id" => period_id, "version_id" => _version_id}) do
-    _period = MehrSchulferien.Periods.get_period!(period_id)
+    # Rollback functionality is not implemented
+    conn
+    |> put_flash(:error, "Rollback-Funktion ist derzeit nicht verfügbar.")
+    |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+  end
 
-    # Check daily limit
-    today = Date.utc_today()
-    daily_changes = Wiki.get_daily_change_count(today)
-
-    if daily_changes >= Config.daily_change_limit() do
-      conn
-      |> put_flash(
-        :error,
-        "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
-      )
-      |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
+  # Runs a task either synchronously (in test) or asynchronously (in production)
+  # to avoid Ecto connection ownership issues in tests
+  defp run_async_or_sync(task_fn) do
+    if Application.get_env(:mehr_schulferien, :env) == :test do
+      task_fn.()
     else
-      # Rollback functionality removed - not implemented
-      case {:error, :not_implemented} do
-        {:ok, _updated_period} ->
-          # Increment daily change count
-          Wiki.increment_daily_change_count(today)
-
-          conn
-          |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
-          |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
-
-        {:error, _} ->
-          conn
-          |> put_flash(:error, "Fehler beim Zurückkehren zur ausgewählten Version.")
-          |> redirect(to: ~p"/wiki/periods/#{period_id}/edit")
-      end
+      Task.start(task_fn)
     end
   end
 end

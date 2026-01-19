@@ -359,6 +359,22 @@
         </div>
       </div>
     </div>
+    <%= if assigns[:current_user] do %>
+      <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
+        <span
+          class="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[200px]"
+          title={assigns[:current_user].email}
+        >
+          {assigns[:current_user].email}
+        </span>
+        <a
+          href="/auth/logout"
+          class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap"
+        >
+          Abmelden
+        </a>
+      </div>
+    <% end %>
   </nav>
   <!-- Mobile menu -->
   <div
@@ -520,6 +536,19 @@
             <% end %>
           </div>
         </details>
+        <%= if assigns[:current_user] do %>
+          <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              {assigns[:current_user].email}
+            </div>
+            <a
+              href="/auth/logout"
+              class="block py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
+            >
+              Abmelden
+            </a>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

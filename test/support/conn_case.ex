@@ -23,6 +23,7 @@ defmodule MehrSchulferienWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import MehrSchulferien.Factory
+      import MehrSchulferienWeb.ConnCase
 
       use Phoenix.VerifiedRoutes,
         endpoint: MehrSchulferienWeb.Endpoint,
@@ -41,5 +42,47 @@ defmodule MehrSchulferienWeb.ConnCase do
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  @doc """
+  Logs in a wiki user for tests that require authentication.
+
+  ## Example
+
+      setup :log_in_wiki_user
+
+      test "wiki edit requires auth", %{conn: conn} do
+        # conn now has a logged in wiki user
+      end
+  """
+  def log_in_wiki_user(%{conn: conn}) do
+    user = create_wiki_user()
+    conn = log_in_user(conn, user)
+    %{conn: conn, current_user: user}
+  end
+
+  @doc """
+  Creates a wiki user for testing.
+  """
+  def create_wiki_user(attrs \\ %{}) do
+    email = Map.get(attrs, :email, "test-#{System.unique_integer()}@example.com")
+    full_name = Map.get(attrs, :full_name, "Test User")
+
+    {:ok, user} =
+      MehrSchulferien.Accounts.get_or_create_user_by_email(email, full_name: full_name)
+
+    user
+  end
+
+  @doc """
+  Logs a user into the connection's session.
+  """
+  def log_in_user(conn, user) do
+    {token, _token_record} = MehrSchulferien.Accounts.create_session_token(user)
+
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> Plug.Conn.put_session(:wiki_session_token, token)
+    |> Plug.Conn.assign(:current_user, user)
   end
 end

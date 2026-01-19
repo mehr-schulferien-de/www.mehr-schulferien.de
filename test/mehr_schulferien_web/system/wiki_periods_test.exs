@@ -3,7 +3,6 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
 
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
 
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
@@ -13,6 +12,8 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   alias MehrSchulferien.{Periods, Repo}
 
   describe "wiki hub page" do
+    setup [:log_in_wiki_user]
+
     test "displays wiki hub with links to all features", %{conn: conn} do
       # Visit the wiki hub page
       conn = get(conn, "/wiki")
@@ -40,6 +41,8 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   end
 
   describe "period index page" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create test data
       germany = insert(:country, name: "Deutschland")
@@ -196,6 +199,8 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   end
 
   describe "period create functionality" do
+    setup [:log_in_wiki_user]
+
     setup do
       germany = insert(:country, name: "Deutschland")
       bayern = insert(:federal_state, parent_location_id: germany.id, name: "Bayern")
@@ -268,6 +273,8 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   end
 
   describe "period edit functionality" do
+    setup [:log_in_wiki_user]
+
     setup do
       germany = insert(:country, name: "Deutschland")
       bayern = insert(:federal_state, parent_location_id: germany.id, name: "Bayern")
@@ -436,6 +443,8 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   end
 
   describe "daily limit enforcement" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Set up test data
       germany = insert(:country, name: "Deutschland")
@@ -494,6 +503,8 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   end
 
   describe "mobile responsiveness" do
+    setup [:log_in_wiki_user]
+
     test "period index page works on mobile", %{conn: conn} do
       # Insert test data
       germany = insert(:country, name: "Deutschland")
@@ -525,6 +536,8 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   end
 
   describe "dark mode support" do
+    setup [:log_in_wiki_user]
+
     test "all wiki pages have dark mode classes", %{conn: conn} do
       # Test hub page
       conn_hub = get(conn, "/wiki")

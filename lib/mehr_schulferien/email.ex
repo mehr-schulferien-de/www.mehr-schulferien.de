@@ -11,30 +11,33 @@ defmodule MehrSchulferien.Email do
   def welcome_email(user_email, user_name) do
     new()
     |> to({user_name, user_email})
-    |> from({"MehrSchulferien", @noreply_email})
-    |> subject("Willkommen bei MehrSchulferien!")
+    |> from({"mehr-schulferien.de", @noreply_email})
+    |> subject("Willkommen bei mehr-schulferien.de!")
     |> html_body("""
     <h1>Willkommen #{user_name}!</h1>
-    <p>Vielen Dank für Ihre Registrierung bei MehrSchulferien.</p>
+    <p>Vielen Dank für Ihre Registrierung bei mehr-schulferien.de.</p>
     <p>Sie können jetzt alle Funktionen unserer Plattform nutzen, um Schulferien und Feiertage zu verwalten.</p>
-    <p>Mit freundlichen Grüßen,<br>Ihr MehrSchulferien Team</p>
+    <p>Mit freundlichen Grüßen,<br>Ihr mehr-schulferien.de Team</p>
+    <p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>
     """)
     |> text_body("""
     Willkommen #{user_name}!
 
-    Vielen Dank für Ihre Registrierung bei MehrSchulferien.
+    Vielen Dank für Ihre Registrierung bei mehr-schulferien.de.
 
     Sie können jetzt alle Funktionen unserer Plattform nutzen, um Schulferien und Feiertage zu verwalten.
 
     Mit freundlichen Grüßen,
-    Ihr MehrSchulferien Team
+    Ihr mehr-schulferien.de Team
+
+    PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>
     """)
   end
 
   def contact_form_notification(from_email, from_name, subject_line, message) do
     new()
-    |> to({"MehrSchulferien Support", @support_email})
-    |> from({"MehrSchulferien Contact Form", @noreply_email})
+    |> to({"mehr-schulferien.de Support", @support_email})
+    |> from({"mehr-schulferien.de Contact Form", @noreply_email})
     |> reply_to({from_name, from_email})
     |> subject("Kontaktformular: #{subject_line}")
     |> html_body("""
@@ -58,13 +61,14 @@ defmodule MehrSchulferien.Email do
   def vacation_reminder(user_email, user_name, vacation_name, start_date) do
     new()
     |> to({user_name, user_email})
-    |> from({"MehrSchulferien", @noreply_email})
+    |> from({"mehr-schulferien.de", @noreply_email})
     |> subject("Erinnerung: #{vacation_name} beginnt bald")
     |> html_body("""
     <h1>Hallo #{user_name},</h1>
     <p>Dies ist eine Erinnerung, dass <strong>#{vacation_name}</strong> am <strong>#{start_date}</strong> beginnt.</p>
     <p>Vergessen Sie nicht, Ihre Reisepläne rechtzeitig zu organisieren!</p>
-    <p>Mit freundlichen Grüßen,<br>Ihr MehrSchulferien Team</p>
+    <p>Mit freundlichen Grüßen,<br>Ihr mehr-schulferien.de Team</p>
+    <p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>
     """)
     |> text_body("""
     Hallo #{user_name},
@@ -74,17 +78,23 @@ defmodule MehrSchulferien.Email do
     Vergessen Sie nicht, Ihre Reisepläne rechtzeitig zu organisieren!
 
     Mit freundlichen Grüßen,
-    Ihr MehrSchulferien Team
+    Ihr mehr-schulferien.de Team
+
+    PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>
     """)
   end
 
   def test_email(recipient_email) do
     new()
     |> to(recipient_email)
-    |> from({"MehrSchulferien Test", @noreply_email})
-    |> subject("Test Email von MehrSchulferien")
-    |> html_body("<h1>Test Email</h1><p>Dies ist eine Test-E-Mail von MehrSchulferien.</p>")
-    |> text_body("Test Email\n\nDies ist eine Test-E-Mail von MehrSchulferien.")
+    |> from({"mehr-schulferien.de Test", @noreply_email})
+    |> subject("Test Email von mehr-schulferien.de")
+    |> html_body(
+      "<h1>Test Email</h1><p>Dies ist eine Test-E-Mail von mehr-schulferien.de.</p><p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>"
+    )
+    |> text_body(
+      "Test Email\n\nDies ist eine Test-E-Mail von mehr-schulferien.de.\n\nPS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>"
+    )
   end
 
   def school_created_notification(school, address, country_slug \\ "d") do
@@ -780,6 +790,55 @@ defmodule MehrSchulferien.Email do
   end
 
   # ============================================================================
+  # Wiki Authentication Emails
+  # ============================================================================
+
+  @doc """
+  Sends a magic link email for wiki login.
+  """
+  def magic_link_email(user, token) do
+    verify_url = "https://www.mehr-schulferien.de/auth/verify/#{token}"
+
+    new()
+    |> to(user.email)
+    |> from({@system_email_name, @noreply_email})
+    |> subject("Anmeldung bei mehr-schulferien.de Wiki")
+    |> html_body("""
+    <h2>Anmeldung bei mehr-schulferien.de Wiki</h2>
+    <p>Hallo,</p>
+    <p>Sie haben eine Anmeldung beim mehr-schulferien.de Wiki angefordert.</p>
+    <p>Klicken Sie auf den folgenden Link, um sich anzumelden:</p>
+    <p><a href="#{verify_url}" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 15px 0;">Anmelden</a></p>
+    <p>Oder kopieren Sie diesen Link in Ihren Browser:</p>
+    <p style="word-break: break-all; color: #666;">#{verify_url}</p>
+    <p><strong>Hinweis:</strong> Dieser Link ist 15 Minuten gültig.</p>
+    <p>Falls Sie diese Anmeldung nicht angefordert haben, können Sie diese E-Mail ignorieren.</p>
+    <p>Mit freundlichen Grüßen,<br>Ihr mehr-schulferien.de Team</p>
+    <p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>
+    """)
+    |> text_body("""
+    Anmeldung bei mehr-schulferien.de Wiki
+
+    Hallo,
+
+    Sie haben eine Anmeldung beim mehr-schulferien.de Wiki angefordert.
+
+    Öffnen Sie den folgenden Link, um sich anzumelden:
+
+    #{verify_url}
+
+    Hinweis: Dieser Link ist 15 Minuten gültig.
+
+    Falls Sie diese Anmeldung nicht angefordert haben, können Sie diese E-Mail ignorieren.
+
+    Mit freundlichen Grüßen,
+    Ihr mehr-schulferien.de Team
+
+    PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>
+    """)
+  end
+
+  # ============================================================================
   # Blacklist Emails
   # ============================================================================
 
@@ -792,25 +851,26 @@ defmodule MehrSchulferien.Email do
     new()
     |> to({name, email})
     |> from({@system_email_name, @noreply_email})
-    |> subject("Bestätigung für Datensperrliste - MehrSchulferien")
+    |> subject("Bestätigung für Datensperrliste - mehr-schulferien.de")
     |> html_body("""
     <h2>Bestätigung Ihrer E-Mail-Adresse</h2>
     <p>Hallo #{name},</p>
-    <p>Sie haben einen Antrag auf Aufnahme in die Datensperrliste von MehrSchulferien gestellt.</p>
+    <p>Sie haben einen Antrag auf Aufnahme in die Datensperrliste von mehr-schulferien.de gestellt.</p>
     <p>Bitte klicken Sie auf den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen:</p>
     <p><a href="#{verify_url}" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 15px 0;">E-Mail bestätigen</a></p>
     <p>Oder kopieren Sie diesen Link in Ihren Browser:</p>
     <p style="word-break: break-all; color: #666;">#{verify_url}</p>
     <p><strong>Hinweis:</strong> Dieser Link ist 24 Stunden gültig.</p>
     <p>Falls Sie diesen Antrag nicht gestellt haben, können Sie diese E-Mail ignorieren.</p>
-    <p>Mit freundlichen Grüßen,<br>Ihr MehrSchulferien Team</p>
+    <p>Mit freundlichen Grüßen,<br>Ihr mehr-schulferien.de Team</p>
+    <p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>
     """)
     |> text_body("""
     Bestätigung Ihrer E-Mail-Adresse
 
     Hallo #{name},
 
-    Sie haben einen Antrag auf Aufnahme in die Datensperrliste von MehrSchulferien gestellt.
+    Sie haben einen Antrag auf Aufnahme in die Datensperrliste von mehr-schulferien.de gestellt.
 
     Bitte öffnen Sie den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen:
 
@@ -821,7 +881,9 @@ defmodule MehrSchulferien.Email do
     Falls Sie diesen Antrag nicht gestellt haben, können Sie diese E-Mail ignorieren.
 
     Mit freundlichen Grüßen,
-    Ihr MehrSchulferien Team
+    Ihr mehr-schulferien.de Team
+
+    PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>
     """)
   end
 

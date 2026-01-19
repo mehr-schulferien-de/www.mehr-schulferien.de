@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   use MehrSchulferienWeb, :live_view
 
+  on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
+
   alias MehrSchulferien.{Periods, Locations, Calendars, Wiki, Config, Repo, Email, Mailer}
   alias MehrSchulferien.Periods.Period
   import Ecto.Query
@@ -265,40 +267,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   end
 
   defp rollback_to_version(socket, _version_id) do
-    # Rollback functionality removed - not implemented
-    case {:error, :not_implemented} do
-      {:ok, result} ->
-        Wiki.increment_daily_change_count(Date.utc_today())
-
-        # Extract the model from the result (same structure as PaperTrail.update)
-        updated_period = Map.get(result, :model)
-
-        # Reload period with updated data and versions
-        reloaded_period = get_period_with_preloads(updated_period.id)
-        updated_versions = get_period_versions(reloaded_period)
-
-        # Update daily changes count
-        new_daily_changes = socket.assigns.daily_changes + 1
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Erfolgreich zur ausgewählten Version zurückgekehrt.")
-         |> assign(:period, reloaded_period)
-         |> assign(:versions, updated_versions)
-         |> assign(:display_versions, Enum.take(updated_versions, 5))
-         |> assign(:changeset, Periods.change_period(reloaded_period))
-         |> assign(:daily_changes, new_daily_changes)}
-
-      {:error, :already_at_version} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Die Daten entsprechen bereits dieser Version.")}
-
-      {:error, _reason} ->
-        {:noreply,
-         socket
-         |> put_flash(:error, "Fehler beim Zurückkehren zur ausgewählten Version.")}
-    end
+    # Rollback functionality is not implemented
+    {:noreply, put_flash(socket, :error, "Rollback-Funktion ist derzeit nicht verfügbar.")}
   end
 
   defp delete_period(socket) do
@@ -351,7 +321,8 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   defp version_field_name("memo"), do: "Notiz"
   defp version_field_name(field), do: field
 
-  defp format_version_value("starts_on", value) when not is_nil(value) and value != "" do
+  defp format_version_value(field, value)
+       when field in ["starts_on", "ends_on"] and not is_nil(value) and value != "" do
     case value do
       %Date{} = date ->
         format_date(date)
@@ -367,24 +338,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
     end
   end
 
-  defp format_version_value("ends_on", value) when not is_nil(value) and value != "" do
-    case value do
-      %Date{} = date ->
-        format_date(date)
-
-      date_string when is_binary(date_string) ->
-        case Date.from_iso8601(date_string) do
-          {:ok, date} -> format_date(date)
-          _ -> date_string
-        end
-
-      _ ->
-        ""
-    end
-  end
-
-  defp format_version_value("starts_on", _), do: ""
-  defp format_version_value("ends_on", _), do: ""
+  defp format_version_value(field, _) when field in ["starts_on", "ends_on"], do: ""
 
   defp format_version_value("location_id", id) when id != nil and id != "" do
     case Locations.get_location(id) do

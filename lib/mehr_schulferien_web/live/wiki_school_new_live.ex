@@ -1,6 +1,10 @@
 defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   use MehrSchulferienWeb, :live_view
 
+  on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
+
+  import Ecto.Query
+
   alias MehrSchulferien.{Blacklist, Maps, Wiki, Locations, Email, Mailer, Config}
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Locations.Location
@@ -241,8 +245,6 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
                     |> Mailer.deliver()
                   rescue
                     error ->
-                      require Logger
-
                       Logger.error(
                         "Failed to send school creation notification: #{inspect(error)}"
                       )
@@ -296,8 +298,6 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   end
 
   defp get_coordinates_from_zip_mappings(zip_code) when is_binary(zip_code) and zip_code != "" do
-    import Ecto.Query
-
     zip_query =
       from zm in MehrSchulferien.Maps.ZipCodeMapping,
         join: z in MehrSchulferien.Maps.ZipCode,
@@ -322,27 +322,8 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   end
 
   defp get_country_slug_from_school(school) do
-    # Traverse up the hierarchy to find the country
-    location = traverse_to_country(school)
-
-    case location do
-      %{slug: slug, is_country: true} -> slug
-      # Default to Germany
-      _ -> "d"
-    end
+    Locations.get_country_slug_from_location(school)
   end
-
-  defp traverse_to_country(%{is_country: true} = location), do: location
-  defp traverse_to_country(%{parent_location_id: nil}), do: nil
-
-  defp traverse_to_country(%{parent_location_id: parent_id}) do
-    case Locations.get_location(parent_id) do
-      nil -> nil
-      parent -> traverse_to_country(parent)
-    end
-  end
-
-  defp traverse_to_country(_), do: nil
 
   defp get_daily_limit_info do
     today = Date.utc_today()

@@ -1,5 +1,8 @@
 defmodule MehrSchulferienWeb.WikiHubLive do
   use MehrSchulferienWeb, :live_view
+
+  on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
+
   alias MehrSchulferien.Config
 
   @impl true

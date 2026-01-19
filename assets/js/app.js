@@ -70,6 +70,32 @@ Hooks.PhoneFormatter = {
   }
 }
 
+Hooks.StoreSession = {
+  mounted() {
+    // Get session token from data attribute
+    const token = this.el.dataset.token
+    const returnTo = this.el.dataset.returnTo || "/wiki"
+
+    if (token) {
+      // Store session token in cookie (24 hour expiry)
+      document.cookie = `wiki_session_token=${token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax`
+
+      // Notify server that session is stored, then redirect
+      this.pushEvent("session_stored", {}, () => {
+        // Redirect after server acknowledges
+        window.location.href = returnTo
+      })
+    }
+  }
+}
+
+Hooks.AutoSubmitForm = {
+  mounted() {
+    // Auto-submit the form when it's mounted
+    this.el.submit()
+  }
+}
+
 
 // Function to get cookie value by name
 function getCookie(name) {

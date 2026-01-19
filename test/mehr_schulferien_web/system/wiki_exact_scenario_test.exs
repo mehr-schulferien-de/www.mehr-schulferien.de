@@ -1,10 +1,6 @@
 defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
   use MehrSchulferienWeb.ConnCase, async: false
 
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
-
   import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
@@ -12,8 +8,11 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
   alias MehrSchulferien.Maps.Address
 
   describe "exact scenario from screenshot" do
+    setup [:log_in_wiki_user]
+
     @tag :system
-    test "user removes email, homepage AND phone number, should see complete original data in version history" do
+    test "user removes email, homepage AND phone number, should see complete original data in version history",
+         %{conn: conn} do
       # Create the exact test school mentioned in user scenario
       country = get_or_create_deutschland()
 
@@ -69,8 +68,6 @@ defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
         "wikipedia_url" => "",
         "school_location_id" => school.id
       }
-
-      conn = build_conn()
 
       conn =
         post(conn, ~p"/wiki/schools/#{school.slug}", address: updated_params)

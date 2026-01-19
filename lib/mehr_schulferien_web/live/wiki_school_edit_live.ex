@@ -1,5 +1,8 @@
 defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   use MehrSchulferienWeb, :live_view
+
+  on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
+
   import Ecto.Query
 
   alias MehrSchulferien.{
@@ -16,6 +19,23 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   alias MehrSchulferien.Maps.Address
   alias PaperTrail
   require Logger
+
+  # Shared field labels for version history display
+  @field_labels %{
+    "name" => "Schulname",
+    "street" => "Straße",
+    "zip_code" => "PLZ",
+    "city" => "Stadt",
+    "email_address" => "E-Mail",
+    "phone_number" => "Telefon",
+    "homepage_url" => "Homepage",
+    "schuelerzeitung_url" => "Schülerzeitung",
+    "wikipedia_url" => "Wikipedia",
+    "instagram_url" => "Instagram",
+    "students_count" => "Schülerzahl",
+    "founded_year" => "Gründungsjahr",
+    "description" => "Beschreibung"
+  }
 
   @impl true
   def mount(%{"slug" => school_slug}, _session, socket) do
@@ -567,27 +587,10 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   defp extract_changes(version) do
     changes = version.item_changes || %{}
 
-    # Map field names to German labels
-    field_labels = %{
-      "name" => "Schulname",
-      "street" => "Straße",
-      "zip_code" => "PLZ",
-      "city" => "Stadt",
-      "email_address" => "E-Mail",
-      "phone_number" => "Telefon",
-      "homepage_url" => "Homepage",
-      "schuelerzeitung_url" => "Schülerzeitung",
-      "wikipedia_url" => "Wikipedia",
-      "instagram_url" => "Instagram",
-      "students_count" => "Schülerzahl",
-      "founded_year" => "Gründungsjahr",
-      "description" => "Beschreibung"
-    }
-
     Enum.reduce(changes, %{}, fn {field, new_value}, acc ->
       field_str = if is_atom(field), do: Atom.to_string(field), else: field
 
-      if label = field_labels[field_str] do
+      if label = @field_labels[field_str] do
         Map.put(acc, label, new_value)
       else
         acc
@@ -608,41 +611,22 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   defp gather_changes(school_version, address_version, previous_state) do
-    changes = %{}
-
     changes =
       if school_version && school_version.item_changes["name"] do
-        Map.put(changes, "Schulname", {
-          previous_state.name,
-          school_version.item_changes["name"]
-        })
+        %{"Schulname" => {previous_state.name, school_version.item_changes["name"]}}
       else
-        changes
+        %{}
       end
 
-    changes =
-      if address_version do
-        Enum.reduce(address_version.item_changes || %{}, changes, fn {field, new_value}, acc ->
-          field_str = if is_atom(field), do: Atom.to_string(field), else: field
+    if address_version do
+      Enum.reduce(address_version.item_changes || %{}, changes, fn {field, new_value}, acc ->
+        field_str = if is_atom(field), do: Atom.to_string(field), else: field
 
-          field_name =
-            case field_str do
-              "street" -> "Straße"
-              "zip_code" -> "PLZ"
-              "city" -> "Stadt"
-              "email_address" -> "E-Mail"
-              "phone_number" -> "Telefon"
-              "homepage_url" -> "Homepage"
-              "schuelerzeitung_url" -> "Schülerzeitung"
-              "wikipedia_url" -> "Wikipedia"
-              "instagram_url" -> "Instagram"
-              "students_count" -> "Schülerzahl"
-              "founded_year" -> "Gründungsjahr"
-              "description" -> "Beschreibung"
-              _ -> nil
-            end
+        case @field_labels[field_str] do
+          nil ->
+            acc
 
-          if field_name do
+          field_name ->
             old_value =
               if previous_state.address do
                 Map.get(previous_state.address, String.to_atom(field_str))
@@ -651,44 +635,16 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
               end
 
             Map.put(acc, field_name, {old_value, new_value})
-          else
-            acc
-          end
-        end)
-      else
-        changes
-      end
-
-    changes
-  end
-
-  defp get_country_slug_from_school(school) do
-    # Traverse up the hierarchy to find the country
-    location = school
-
-    # Keep going up until we find a country or run out of parents
-    location = traverse_to_country(location)
-
-    case location do
-      %{slug: slug, is_country: true} -> slug
-      # Default to Germany
-      _ -> "d"
+        end
+      end)
+    else
+      changes
     end
   end
 
-  defp traverse_to_country(%{is_country: true} = location), do: location
-
-  defp traverse_to_country(%{parent_location: %{is_country: true} = parent})
-       when not is_nil(parent) do
-    parent
+  defp get_country_slug_from_school(school) do
+    Locations.get_country_slug_from_location(school)
   end
-
-  defp traverse_to_country(%{parent_location: parent}) when not is_nil(parent) do
-    parent = Locations.get_location!(parent.id) |> Repo.preload(:parent_location)
-    traverse_to_country(parent)
-  end
-
-  defp traverse_to_country(_), do: nil
 
   # Check if the zip code has changed to a different valid 5-digit German zip code
   defp zip_code_changed_significantly?(original, new)

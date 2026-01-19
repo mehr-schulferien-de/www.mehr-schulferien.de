@@ -1,0 +1,40 @@
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="text-center max-w-lg">
+    <div class="mx-auto h-20 w-20 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mb-6">
+      <svg
+        class="h-10 w-10 text-amber-600 dark:text-amber-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    </div>
+    <.heading level={1} class="text-4xl mb-4">Wiki Nachtruhe</.heading>
+    <.text variant="lead" class="mb-6">
+      Das Wiki ist derzeit geschlossen.
+    </.text>
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6">
+      <.text class="mb-2">
+        <strong>Öffnungszeiten:</strong> 06:00 - 22:00 Uhr (deutscher Zeit)
+      </.text>
+      <%= if assigns[:current_time] do %>
+        <.text class="text-gray-500 dark:text-gray-400">
+          Aktuelle Zeit: {Calendar.strftime(@current_time, "%H:%M Uhr")}
+        </.text>
+      <% end %>
+    </div>
+    <.text class="mb-6 text-gray-600 dark:text-gray-400">
+      Diese Einschränkung dient dem Schutz vor automatisierten Eingaben während der Nachtstunden.
+      Bitte versuchen Sie es während der Öffnungszeiten erneut.
+    </.text>
+    <.text>
+      <.link href="/" variant="primary">Zurück zur Startseite</.link>
+    </.text>
+  </div>
+</div>

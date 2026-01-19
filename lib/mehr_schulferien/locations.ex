@@ -951,6 +951,31 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
+  Returns the country slug by traversing up the location hierarchy.
+
+  If the location is a country, returns its slug directly.
+  Otherwise, traverses up through parent locations until a country is found.
+  Returns "d" (Germany) as the default if no country is found.
+
+  ## Examples
+
+      iex> get_country_slug_from_location(school)
+      "d"
+  """
+  def get_country_slug_from_location(%Location{is_country: true, slug: slug}), do: slug
+
+  def get_country_slug_from_location(%Location{parent_location_id: nil}), do: "d"
+
+  def get_country_slug_from_location(%Location{parent_location_id: parent_id}) do
+    case get_location(parent_id) do
+      nil -> "d"
+      parent -> get_country_slug_from_location(parent)
+    end
+  end
+
+  def get_country_slug_from_location(_), do: "d"
+
+  @doc """
   Gets a single federal_state by querying for the slug.
 
   Raises `Ecto.NoResultsError` if the federal state does not exist.

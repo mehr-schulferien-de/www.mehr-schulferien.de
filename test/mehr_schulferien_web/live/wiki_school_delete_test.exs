@@ -3,7 +3,6 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
 
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
 
   import Phoenix.LiveViewTest
   import Swoosh.TestAssertions
@@ -13,6 +12,8 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
   alias MehrSchulferien.Maps.Address
 
   describe "school deletion" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create a simple school with address manually to avoid factory issues
       {:ok, city} =

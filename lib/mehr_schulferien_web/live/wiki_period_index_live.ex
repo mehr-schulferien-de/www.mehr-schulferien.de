@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
   use MehrSchulferienWeb, :live_view
 
+  on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
+
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Periods.Period
   alias MehrSchulferienWeb.LocationTrackingHelpers

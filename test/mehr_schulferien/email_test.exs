@@ -14,8 +14,8 @@ defmodule MehrSchulferien.EmailTest do
       email = Email.welcome_email("user@example.com", "Test User")
 
       assert email.to == [{"Test User", "user@example.com"}]
-      assert email.from == {"MehrSchulferien", @noreply_email}
-      assert email.subject == "Willkommen bei MehrSchulferien!"
+      assert email.from == {"mehr-schulferien.de", @noreply_email}
+      assert email.subject == "Willkommen bei mehr-schulferien.de!"
       assert email.html_body =~ "Willkommen Test User!"
       assert email.text_body =~ "Willkommen Test User!"
     end
@@ -29,8 +29,8 @@ defmodule MehrSchulferien.EmailTest do
           "Test message content"
         )
 
-      assert email.to == [{"MehrSchulferien Support", @support_email}]
-      assert email.from == {"MehrSchulferien Contact Form", @noreply_email}
+      assert email.to == [{"mehr-schulferien.de Support", @support_email}]
+      assert email.from == {"mehr-schulferien.de Contact Form", @noreply_email}
       assert email.reply_to == {"Sender Name", "sender@example.com"}
       assert email.subject == "Kontaktformular: Test Subject"
       assert email.html_body =~ "Test message content"
@@ -46,7 +46,7 @@ defmodule MehrSchulferien.EmailTest do
         )
 
       assert email.to == [{"Test User", "user@example.com"}]
-      assert email.from == {"MehrSchulferien", @noreply_email}
+      assert email.from == {"mehr-schulferien.de", @noreply_email}
       assert email.subject == "Erinnerung: Sommerferien beginnt bald"
       assert email.html_body =~ "Sommerferien"
       assert email.html_body =~ "01.07.2024"
@@ -56,8 +56,8 @@ defmodule MehrSchulferien.EmailTest do
       email = Email.test_email("test@example.com")
 
       assert email.to == [{"", "test@example.com"}]
-      assert email.from == {"MehrSchulferien Test", @noreply_email}
-      assert email.subject == "Test Email von MehrSchulferien"
+      assert email.from == {"mehr-schulferien.de Test", @noreply_email}
+      assert email.subject == "Test Email von mehr-schulferien.de"
     end
   end
 

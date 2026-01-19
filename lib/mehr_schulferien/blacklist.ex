@@ -138,6 +138,39 @@ defmodule MehrSchulferien.Blacklist do
   end
 
   @doc """
+  Creates a new blacklist entry for an authenticated wiki user.
+
+  This is used when a user is already logged in via wiki authentication,
+  bypassing the separate verification request flow.
+
+  Returns `{:ok, {entry, removal_logs}}` on success.
+  Returns `{:error, changeset}` on validation failure.
+  """
+  def create_entry_for_user(attrs, user) do
+    attrs_with_requester =
+      attrs
+      |> Map.put(:requester_name, user.full_name || user.email)
+      |> Map.put(:requester_email, user.email)
+
+    changeset = Entry.create_changeset(attrs_with_requester)
+
+    Repo.transaction(fn ->
+      case Repo.insert(changeset) do
+        {:ok, entry} ->
+          # Send admin notification
+          Email.blacklist_entry_created_notification(entry, 0)
+          |> Mailer.deliver()
+
+          removal_logs = remove_matching_data(entry)
+          {entry, removal_logs}
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  @doc """
   Lists all active blacklist entries.
   """
   def list_active_entries do
@@ -179,16 +212,8 @@ defmodule MehrSchulferien.Blacklist do
 
   Returns `true` if the value matches any active blacklist pattern.
   """
-  def is_blacklisted?(nil, _field_type), do: false
-  def is_blacklisted?("", _field_type), do: false
-
-  def is_blacklisted?(value, field_type) when is_binary(value) do
-    field_type_string = to_string(field_type)
-
-    list_active_entries_for_field(field_type_string)
-    |> Enum.any?(fn entry ->
-      PatternMatcher.matches?(value, entry.pattern_regex)
-    end)
+  def is_blacklisted?(value, field_type) do
+    find_blocking_entry(value, field_type) != nil
   end
 
   @blacklistable_fields [

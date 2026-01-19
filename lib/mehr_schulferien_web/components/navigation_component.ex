@@ -12,6 +12,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
   attr :socket, :any, default: nil
   attr :conn, :any, default: nil
   attr :today, Date, required: true
+  attr :current_user, :any, default: nil
 
   def navigation(assigns) do
     {current_year, next_year, third_year} = NavigationHelper.get_navigation_years(assigns.today)
@@ -68,8 +69,13 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             position="right"
           />
         </div>
+        <%= if @current_user do %>
+          <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
+            <.user_menu current_user={@current_user} />
+          </div>
+        <% end %>
       </nav>
-      <.mobile_menu years={@years} federal_states={@federal_states} />
+      <.mobile_menu years={@years} federal_states={@federal_states} current_user={@current_user} />
     </header>
     """
   end
@@ -143,6 +149,29 @@ defmodule MehrSchulferienWeb.NavigationComponent do
         clip-rule="evenodd"
       />
     </svg>
+    """
+  end
+
+  attr :current_user, :any, default: nil
+
+  defp user_menu(assigns) do
+    ~H"""
+    <%= if @current_user do %>
+      <div class="flex items-center gap-x-3">
+        <span
+          class="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[200px]"
+          title={@current_user.email}
+        >
+          {@current_user.email}
+        </span>
+        <a
+          href="/auth/logout"
+          class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 whitespace-nowrap"
+        >
+          Abmelden
+        </a>
+      </div>
+    <% end %>
     """
   end
 
@@ -254,6 +283,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
 
   attr :years, :list, required: true
   attr :federal_states, :list, required: true
+  attr :current_user, :any, default: nil
 
   defp mobile_menu(assigns) do
     [current_year | _] = assigns.years
@@ -295,9 +325,30 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             federal_states={@federal_states}
             path_builder={fn state -> "/urlaubsplaner/#{state}/20-tage/#{@current_year}" end}
           />
+          <.mobile_user_menu current_user={@current_user} />
         </div>
       </div>
     </div>
+    """
+  end
+
+  attr :current_user, :any, default: nil
+
+  defp mobile_user_menu(assigns) do
+    ~H"""
+    <%= if @current_user do %>
+      <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          {@current_user.email}
+        </div>
+        <a
+          href="/auth/logout"
+          class="block py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
+        >
+          Abmelden
+        </a>
+      </div>
+    <% end %>
     """
   end
 

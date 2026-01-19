@@ -3,7 +3,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
 
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
 
   import Phoenix.LiveViewTest
 
@@ -19,8 +18,10 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
   end
 
   describe "data enrichment feature" do
+    setup [:log_in_wiki_user]
+
     setup do
-      # Create test school hierarchy 
+      # Create test school hierarchy
       {:ok, country} =
         Locations.create_location(%{
           name: "Deutschland",
@@ -91,6 +92,8 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
   end
 
   describe "bewegliche Ferientage with flexible date input" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create test school hierarchy
       {:ok, country} =

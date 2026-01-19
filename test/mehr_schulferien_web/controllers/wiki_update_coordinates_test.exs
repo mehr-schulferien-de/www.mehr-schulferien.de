@@ -1,15 +1,13 @@
 defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
   use MehrSchulferienWeb.ConnCase
 
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
-
   import MehrSchulferien.Factory
   import MehrSchulferien.TestHelpers
 
   describe "coordinate updates on address change" do
-    setup do
+    setup %{conn: conn} do
+      # Login wiki user for authenticated requests
+      %{conn: conn} = log_in_wiki_user(%{conn: conn})
       # Create test data hierarchy
       country = get_or_create_deutschland()
       federal_state = insert(:federal_state, %{parent_location_id: country.id, name: "Berlin"})
@@ -78,7 +76,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
 
       {:ok,
        %{
-         conn: build_conn(),
+         conn: conn,
          school: school,
          address: address,
          country: country

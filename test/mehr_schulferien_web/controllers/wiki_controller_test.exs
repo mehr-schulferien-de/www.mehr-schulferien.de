@@ -1,17 +1,14 @@
 defmodule MehrSchulferienWeb.WikiControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
-
   import Phoenix.ConnTest
   import MehrSchulferien.TestHelpers
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Maps.Address
 
   describe "wiki controller" do
-    setup [:create_school_with_address]
+    # Add wiki authentication for POST/PUT/DELETE tests
+    setup [:create_school_with_address, :log_in_wiki_user]
 
     test "shows school wiki page with existing address", %{
       conn: conn,

@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.WikiPeriodNewLive do
   use MehrSchulferienWeb, :live_view
 
+  on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
+
   alias MehrSchulferien.{Periods, Calendars, Wiki, Config, Repo, Email, Mailer}
   alias MehrSchulferien.Periods.Period
   import Ecto.Query

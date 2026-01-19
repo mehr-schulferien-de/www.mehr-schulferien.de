@@ -3,7 +3,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
 
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
@@ -11,6 +10,8 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
   alias MehrSchulferien.Locations
 
   describe "simple rollback functionality" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create a school with an address
       federal_state = insert(:federal_state)

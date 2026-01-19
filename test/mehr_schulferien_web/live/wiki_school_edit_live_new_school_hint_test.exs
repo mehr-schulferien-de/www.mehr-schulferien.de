@@ -3,12 +3,13 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveNewSchoolHintTest do
 
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
 
   describe "new school hint when zip code changes" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create a country, federal state, county and city hierarchy using proper factories
       country = insert(:country, %{name: "Deutschland", slug: "d"})
@@ -152,6 +153,8 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLiveNewSchoolHintTest do
   end
 
   describe "add new school link visibility" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create a country, federal state, county and city hierarchy using proper factories
       country = insert(:country, %{name: "Deutschland", slug: "d2"})

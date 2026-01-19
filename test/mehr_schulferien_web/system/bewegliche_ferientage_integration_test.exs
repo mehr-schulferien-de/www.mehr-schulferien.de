@@ -4,7 +4,6 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # This test uses wiki routes for bewegliche ferientage feature
   # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
 
   import Phoenix.LiveViewTest
 
@@ -12,6 +11,8 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
   alias MehrSchulferien.Maps.ZipCodeMapping
 
   describe "bewegliche Ferientage integration" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create minimal test data
       {:ok, country} =

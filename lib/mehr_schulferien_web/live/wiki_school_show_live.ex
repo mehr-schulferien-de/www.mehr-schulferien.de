@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.WikiSchoolShowLive do
   use MehrSchulferienWeb, :live_view
 
+  on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
+
   alias MehrSchulferien.{
     Blacklist,
     Locations,

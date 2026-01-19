@@ -641,7 +641,6 @@ defmodule MehrSchulferienWeb.BlacklistCreateLive do
                     <li>• E-Mail-Adresse</li>
                     <li>• Homepage</li>
                     <li>• Social Media Links</li>
-                    <li>• Adressdaten</li>
                   </ul>
                 </div>
               </div>
@@ -897,8 +896,5 @@ defmodule MehrSchulferienWeb.BlacklistCreateLive do
   defp placeholder_for_field_type("instagram_url"), do: "https://instagram.com/*"
   defp placeholder_for_field_type("wikipedia_url"), do: "https://de.wikipedia.org/*"
   defp placeholder_for_field_type("schuelerzeitung_url"), do: "https://*.schuelerzeitung.de"
-  defp placeholder_for_field_type("street"), do: "Musterstraße*"
-  defp placeholder_for_field_type("city"), do: "Berlin*"
-  defp placeholder_for_field_type("zip_code"), do: "1234?"
   defp placeholder_for_field_type(_), do: "Muster eingeben..."
 end

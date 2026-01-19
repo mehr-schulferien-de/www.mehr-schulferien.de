@@ -3,12 +3,13 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
 
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
 
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
 
   describe "wiki periods filter counts" do
+    setup [:log_in_wiki_user]
+
     setup do
       # Create test data using factories
       germany = insert(:country, name: "Deutschland", slug: "d")
@@ -75,7 +76,6 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
       )
 
       %{
-        conn: build_conn(),
         hamburg: hamburg,
         sommer: sommer,
         herbst: herbst,
