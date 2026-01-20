@@ -7,16 +7,14 @@ meta_description =
   ) %>
 
 <title>
-  {@vacation_config.name} {MehrSchulferienWeb.Helpers.SeoTitleHelper.format_year_range(
-    @current_year,
-    @next_year
-  )} Deutschland
+  {@vacation_config.name} {@current_year}/{@next_year} Deutschland – Alle 16 Bundesländer | Termine
 </title>
 <meta name="description" content={meta_description} />
 <meta
   name="keywords"
   content={"#{@vacation_config.name} #{@current_year}, #{@vacation_config.name} #{@next_year}, #{@vacation_config.name} Deutschland, #{@vacation_config.keywords}, Schulferien Deutschland, Ferientermine"}
 />
+<link rel="canonical" href={"https://www.mehr-schulferien.de/#{@vacation_type}ferien"} />
 
 <%= if assigns[:noindex] do %>
   <meta name="robots" content="noindex,nofollow" />

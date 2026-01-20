@@ -29,6 +29,10 @@ handwritten_meta_tags =
   name="keywords"
   content={"#{@vacation_name} #{@year}, #{@vacation_name} #{@federal_state.name}, Schulferien #{@federal_state.name} #{@year}, Ferientermine, Kalender"}
 />
+<link
+  rel="canonical"
+  href={"https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"}
+/>
 
 <%= if assigns[:noindex] do %>
   <meta name="robots" content="noindex,nofollow" />
@@ -109,3 +113,32 @@ handwritten_meta_tags =
     }
   })) %>
 </script>
+<!-- Event Schema for vacation period -->
+<%= if @vacation_period do %>
+  <script type="application/ld+json">
+    <%= Phoenix.HTML.raw(Jason.encode!(%{
+      "@context" => "https://schema.org",
+      "@type" => "Event",
+      "name" => "#{@vacation_name} #{@federal_state.name} #{@year}",
+      "description" => "#{@vacation_name} in #{@federal_state.name} #{@year}",
+      "startDate" => Date.to_iso8601(@vacation_period.starts_on),
+      "endDate" => Date.to_iso8601(@vacation_period.ends_on),
+      "eventStatus" => "https://schema.org/EventScheduled",
+      "eventAttendanceMode" => "https://schema.org/OfflineEventAttendanceMode",
+      "location" => %{
+        "@type" => "Place",
+        "name" => @federal_state.name,
+        "address" => %{
+          "@type" => "PostalAddress",
+          "addressRegion" => @federal_state.name,
+          "addressCountry" => "DE"
+        }
+      },
+      "organizer" => %{
+        "@type" => "Organization",
+        "name" => "Kultusministerium #{@federal_state.name}",
+        "url" => "https://www.mehr-schulferien.de"
+      }
+    })) %>
+  </script>
+<% end %>

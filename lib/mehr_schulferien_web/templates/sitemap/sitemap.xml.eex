@@ -1,63 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
+
   <url>
     <loc>https://www.mehr-schulferien.de/</loc>
+    <lastmod><%= Date.to_iso8601(@today) %></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://www.mehr-schulferien.de/developers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api/locations</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api/periods</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api/bridge-days</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api/vacation-optimizer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api/exports</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api/queries</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/api/reference</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/developers/mcp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.mehr-schulferien.de/impressum</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
-  
+
   <%!-- VACATION TYPE OVERVIEW PAGES --%>
+  <%= for vacation_type <- ~w(sommerferien osterferien herbstferien weihnachtsferien winterferien pfingstferien) do %>
   <url>
-    <loc>https://www.mehr-schulferien.de/sommerferien</loc>
+    <loc>https://www.mehr-schulferien.de/<%= vacation_type %></loc>
+    <lastmod><%= Date.to_iso8601(@today) %></lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  <url>
-    <loc>https://www.mehr-schulferien.de/osterferien</loc>
-  </url>
-  <url>
-    <loc>https://www.mehr-schulferien.de/herbstferien</loc>
-  </url>
-  <url>
-    <loc>https://www.mehr-schulferien.de/weihnachtsferien</loc>
-  </url>
-  <url>
-    <loc>https://www.mehr-schulferien.de/winterferien</loc>
-  </url>
-  <url>
-    <loc>https://www.mehr-schulferien.de/pfingstferien</loc>
-  </url>
+  <% end %>
 
   <%= for place <- @countries do %>
     <% country = place[:country] %>
@@ -68,6 +83,9 @@
     <%!-- Country URLs --%>
     <url>
       <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %></loc>
+      <%= if country.last_modified do %><lastmod><%= Date.to_iso8601(country.last_modified) %></lastmod><% end %>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
     </url>
 
     <%!-- Federal States URLs --%>
@@ -75,42 +93,66 @@
       <%!-- Date Query URLs for federal state --%>
       <url>
         <loc>https://www.mehr-schulferien.de/ist-heute-feiertag/<%= federal_state.slug %></loc>
+        <lastmod><%= Date.to_iso8601(@today) %></lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
       </url>
       <url>
         <loc>https://www.mehr-schulferien.de/ist-heute-schulfrei/<%= federal_state.slug %></loc>
+        <lastmod><%= Date.to_iso8601(@today) %></lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
       </url>
       <url>
         <loc>https://www.mehr-schulferien.de/ist-am-montag-schule/<%= federal_state.slug %></loc>
+        <lastmod><%= Date.to_iso8601(@today) %></lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.6</priority>
       </url>
       <url>
         <loc>https://www.mehr-schulferien.de/ist-am-freitag-schule/<%= federal_state.slug %></loc>
+        <lastmod><%= Date.to_iso8601(@today) %></lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.6</priority>
       </url>
 
       <%!-- Years for federal state --%>
       <%= for year <- Map.get(federal_state, :period_years, []) |> Enum.filter(fn y -> y == @today.year or y == @today.year + 1 end) do %>
         <url>
           <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
+          <%= if federal_state.last_modified do %><lastmod><%= Date.to_iso8601(federal_state.last_modified) %></lastmod><% end %>
+          <changefreq>weekly</changefreq>
+          <priority>0.8</priority>
         </url>
 
         <%!-- Vacation-specific URLs for better SEO - only for vacation types that exist for this federal state and year --%>
         <%= for vacation_type <- Map.get(federal_state, :vacation_types_by_year, %{}) |> Map.get(year, []) do %>
           <url>
             <loc>https://www.mehr-schulferien.de/<%= vacation_type.slug %>ferien/<%= federal_state.slug %>/<%= year %></loc>
+            <%= if federal_state.last_modified do %><lastmod><%= Date.to_iso8601(federal_state.last_modified) %></lastmod><% end %>
+            <changefreq>weekly</changefreq>
+            <priority>0.85</priority>
           </url>
         <% end %>
 
         <%!-- Bridge days URLs for federal states --%>
         <url>
           <loc>https://www.mehr-schulferien.de/brueckentage/<%= country.slug %>/bundesland/<%= federal_state.slug %>/<%= year %></loc>
+          <changefreq>weekly</changefreq>
+          <priority>0.7</priority>
         </url>
 
         <%!-- Vacation planner (Urlaubsplaner) URLs --%>
         <%= for days <- [10, 20, 30] do %>
           <url>
             <loc>https://www.mehr-schulferien.de/urlaubsplaner/<%= federal_state.slug %>/<%= days %>-tage/<%= year %></loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.6</priority>
           </url>
           <url>
             <loc>https://www.mehr-schulferien.de/urlaubsplaner-guenstig/<%= federal_state.slug %>/<%= days %>-tage/<%= year %></loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.6</priority>
           </url>
         <% end %>
       <% end %>
@@ -120,6 +162,9 @@
     <%= for city <- cities do %>
       <url>
         <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/stadt/<%= city.slug %></loc>
+        <%= if city.last_modified do %><lastmod><%= Date.to_iso8601(city.last_modified) %></lastmod><% end %>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
       </url>
     <% end %>
 
@@ -128,9 +173,14 @@
       <%!-- Static school pages --%>
       <url>
         <loc>https://www.mehr-schulferien.de/briefe/<%= school.slug %>/entschuldigung</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
       </url>
       <url>
         <loc>https://www.mehr-schulferien.de/ferien/<%= country.slug %>/schule/<%= school.slug %></loc>
+        <%= if school.last_modified do %><lastmod><%= Date.to_iso8601(school.last_modified) %></lastmod><% end %>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
       </url>
     <% end %>
   <% end %>
