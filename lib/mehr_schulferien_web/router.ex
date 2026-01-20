@@ -244,6 +244,10 @@ defmodule MehrSchulferienWeb.Router do
     live "/wiki/blacklist/verify/:token", BlacklistVerifyLive
     live "/wiki/blacklist/create/:token", BlacklistCreateLive
 
+    # Wiki approval magic links (no auth required - token-based)
+    get "/wiki/approve/:token", WikiApprovalController, :approve
+    get "/wiki/reject/:token", WikiApprovalController, :reject
+
     # Wiki school management (viewing - no auth for show)
     live "/wiki/schools/new", WikiSchoolNewLive
     live "/wiki/schools/:slug", WikiSchoolShowLive

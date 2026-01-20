@@ -1,0 +1,64 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div class="text-center">
+      <%= if @action == :approved do %>
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900">
+          <svg
+            class="h-10 w-10 text-green-600 dark:text-green-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+          Änderung genehmigt
+        </h2>
+      <% else %>
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900">
+          <svg
+            class="h-10 w-10 text-red-600 dark:text-red-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+        <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+          Änderung abgelehnt
+        </h2>
+      <% end %>
+
+      <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
+        {@message}
+      </p>
+
+      <div class="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          <strong>Änderungstyp:</strong> {format_change_type(@change_type)}
+        </p>
+      </div>
+
+      <div class="mt-8">
+        <a
+          href="/"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Zur Startseite
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

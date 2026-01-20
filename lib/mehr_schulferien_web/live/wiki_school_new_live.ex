@@ -5,9 +5,9 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
 
   import Ecto.Query
 
-  alias MehrSchulferien.{Blacklist, Maps, Wiki, Locations, Email, Mailer, Config}
+  alias MehrSchulferien.{Blacklist, Maps, Wiki, Locations, Config}
+  alias MehrSchulferien.Wiki.PendingChanges
   alias MehrSchulferien.Maps.Address
-  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Geocoding.Nominatim
   require Logger
 
@@ -126,19 +126,19 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
         # Validate zip code and get city
         case validate_and_get_city_from_zip(zip_code) do
           {:ok, city} ->
-            # Try to create school with address
-            case create_school_with_address(school_name, address_params, city, socket) do
-              {:ok, school} ->
+            # Submit to pending changes queue instead of creating directly
+            case submit_school_to_pending_queue(school_name, address_params, city, socket) do
+              {:ok, _pending_change} ->
                 # Increment daily change count
                 Wiki.increment_daily_change_count(Date.utc_today())
 
-                # Get country slug for redirect
-                country_slug = get_country_slug_from_school(school)
-
                 {:noreply,
                  socket
-                 |> put_flash(:info, "Schule wurde erfolgreich angelegt. Danke für Ihre Hilfe!")
-                 |> redirect(to: ~p"/ferien/#{country_slug || "d"}/schule/#{school.slug}")}
+                 |> put_flash(
+                   :info,
+                   "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+                 )
+                 |> redirect(to: ~p"/wiki")}
 
               {:error, :invalid_address} ->
                 changeset =
@@ -173,6 +173,40 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
     end
   end
 
+  defp submit_school_to_pending_queue(school_name, address_params, city, socket) do
+    zip_code = Map.get(address_params, "zip_code", "")
+
+    # First check if we can get coordinates for this address
+    coords_result =
+      get_coordinates_with_fallback(
+        school_name,
+        address_params["street"],
+        zip_code,
+        address_params["city"] || city.name
+      )
+
+    case coords_result do
+      {:ok, {_lon, _lat}} ->
+        # Coordinates found, proceed with pending change creation
+        pending_attrs = %{
+          change_type: "create_school",
+          payload: %{
+            "school_name" => school_name,
+            "address_params" => address_params,
+            "city_id" => city.id,
+            "zip_code" => zip_code
+          },
+          submitted_by_ip: get_client_ip(socket)
+        }
+
+        PendingChanges.create_pending_change(pending_attrs)
+
+      {:error, :no_coordinates} ->
+        # No coordinates found - return invalid address error
+        {:error, :invalid_address}
+    end
+  end
+
   defp validate_and_get_city_from_zip(zip_code) when is_binary(zip_code) and zip_code != "" do
     try do
       zip_code_record = Maps.get_zip_code_by_value!(zip_code)
@@ -187,88 +221,6 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   end
 
   defp validate_and_get_city_from_zip(_), do: {:error, :invalid_zip_code}
-
-  defp create_school_with_address(school_name, address_params, city, socket) do
-    # Generate unique slug with zip code prefix
-    zip_code = Map.get(address_params, "zip_code", "")
-
-    # Use centralized function to generate unique slug
-    {:ok, school_slug} = Locations.generate_unique_school_slug(school_name, zip_code)
-
-    # Create school location attrs
-    school_attrs = %{
-      name: school_name,
-      slug: school_slug,
-      is_school: true,
-      parent_location_id: city.id
-    }
-
-    school_changeset = Location.changeset(%Location{}, school_attrs)
-
-    # First check if we can get coordinates for this address
-    coords_result =
-      get_coordinates_with_fallback(
-        school_name,
-        address_params["street"],
-        zip_code,
-        address_params["city"] || city.name
-      )
-
-    case coords_result do
-      {:ok, {lon, lat}} ->
-        # Coordinates found, proceed with school creation
-        case PaperTrail.insert(school_changeset, meta: %{ip_address: get_client_ip(socket)}) do
-          {:ok, %{model: school, version: _}} ->
-            # Create address for the school
-            address_attrs =
-              address_params
-              |> Map.put("school_location_id", school.id)
-              |> Map.put("line1", school_name)
-              |> Map.put("lon", lon)
-              |> Map.put("lat", lat)
-
-            address_changeset = Address.changeset(%Address{}, address_attrs)
-
-            case PaperTrail.insert(address_changeset, meta: %{ip_address: get_client_ip(socket)}) do
-              {:ok, %{model: address, version: _}} ->
-                # Reload school with address and parent location chain
-                school =
-                  Locations.get_location!(school.id)
-                  |> MehrSchulferien.Repo.preload([:address, :parent_location])
-
-                # Send email notification
-                Task.start(fn ->
-                  try do
-                    # Get country slug for the email
-                    country_slug = get_country_slug_from_school(school)
-
-                    Email.school_created_notification(school, address, country_slug)
-                    |> Mailer.deliver()
-                  rescue
-                    error ->
-                      Logger.error(
-                        "Failed to send school creation notification: #{inspect(error)}"
-                      )
-                  end
-                end)
-
-                {:ok, school}
-
-              {:error, changeset} ->
-                # Delete the school if address creation fails
-                PaperTrail.delete(school, meta: %{ip_address: get_client_ip(socket)})
-                {:error, changeset}
-            end
-
-          {:error, changeset} ->
-            {:error, changeset}
-        end
-
-      {:error, :no_coordinates} ->
-        # No coordinates found - return invalid address error
-        {:error, :invalid_address}
-    end
-  end
 
   defp get_coordinates_with_fallback(name, street, zip_code, city) do
     # First try Nominatim with full address
@@ -320,10 +272,6 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
       {a, b, c, d} -> "#{a}.#{b}.#{c}.#{d}"
       _ -> "unknown"
     end
-  end
-
-  defp get_country_slug_from_school(school) do
-    Locations.get_country_slug_from_location(school)
   end
 
   defp get_daily_limit_info do

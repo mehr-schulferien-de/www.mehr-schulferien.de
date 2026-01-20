@@ -3,20 +3,17 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
 
   on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
 
-  import Ecto.Query
-
   alias MehrSchulferien.{
     Blacklist,
     Locations,
     Maps,
     Wiki,
-    Email,
-    Mailer,
     Config,
     Repo
   }
 
   alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.Wiki.PendingChanges
   alias PaperTrail
   require Logger
 
@@ -145,121 +142,37 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
 
       true ->
         school = socket.assigns.school
-        today = Date.utc_today()
 
-        # Store current state for version history
-        current_state = capture_current_state(school)
+        # Submit to pending changes queue instead of directly updating
+        pending_attrs = %{
+          change_type: "update_school",
+          payload: %{
+            "school_name" => name,
+            "address_params" => address_params
+          },
+          original_record_id: school.id,
+          submitted_by_ip: get_client_ip(socket)
+        }
 
-        # Update school name if changed
-        school_result =
-          if name != school.name do
-            location_changeset =
-              MehrSchulferien.Locations.Location.changeset(school, %{name: name})
+        case PendingChanges.create_pending_change(pending_attrs) do
+          {:ok, _pending_change} ->
+            Wiki.increment_daily_change_count(Date.utc_today())
 
-            PaperTrail.update(location_changeset, meta: %{ip_address: nil})
-          else
-            {:ok, %{model: school, version: nil}}
-          end
-
-        # Handle address update/creation
-        address_result =
-          case school_result do
-            {:ok, %{model: updated_school, version: _school_version}} ->
-              address_params =
-                address_params
-                |> Map.put("school_location_id", updated_school.id)
-                |> Map.put("line1", name)
-
-              if updated_school.address do
-                # Update existing address
-                changeset = Address.changeset(updated_school.address, address_params)
-
-                case changeset.changes do
-                  changes when map_size(changes) == 0 ->
-                    {:ok, %{model: updated_school.address, version: nil}}
-
-                  _ ->
-                    PaperTrail.update(changeset, meta: %{ip_address: nil})
-                end
-              else
-                # Create new address
-                changeset = Address.changeset(%Address{}, address_params)
-                PaperTrail.insert(changeset, meta: %{ip_address: nil})
-              end
-
-            error ->
-              error
-          end
-
-        case {school_result, address_result} do
-          {{:ok, %{model: _updated_school, version: school_version}},
-           {:ok, %{model: _address, version: address_version}}} ->
-            if school_version || address_version do
-              Wiki.increment_daily_change_count(today)
-
-              # Store version with snapshot of previous state
-              store_version_snapshot(school, current_state)
-
-              # Reload data
-              updated_school = Locations.get_school_by_slug!(school.slug)
-              versions = get_version_history(updated_school)
-              daily_changes = Wiki.get_daily_change_count(today)
-              limit_reached = daily_changes >= Config.daily_change_limit()
-
-              # Send email notification (skip in test environment to avoid connection ownership issues)
-              if Application.get_env(:mehr_schulferien, :env) != :test do
-                Task.start(fn ->
-                  try do
-                    # Reload school with all associations needed for email
-                    updated_school_with_associations =
-                      Locations.get_location!(updated_school.id)
-                      |> Repo.preload([:address, :parent_location])
-
-                    # Gather change information
-                    changes = gather_changes(school_version, address_version, current_state)
-
-                    # Get country slug for the email
-                    country_slug = get_country_slug_from_school(updated_school_with_associations)
-
-                    # Build and send email
-                    Email.school_updated_notification(
-                      updated_school_with_associations,
-                      updated_school_with_associations.address,
-                      changes,
-                      country_slug
-                    )
-                    |> Mailer.deliver!()
-                  rescue
-                    error ->
-                      Logger.error("Failed to send school update email: #{inspect(error)}")
-                      Logger.error(Exception.format(:error, error, __STACKTRACE__))
-                  end
-                end)
-              end
-
-              {:noreply,
-               socket
-               |> put_flash(:info, "Änderungen wurden erfolgreich gespeichert.")
-               |> assign(
-                 school: updated_school,
-                 versions: versions,
-                 changeset: build_school_changeset(updated_school),
-                 daily_changes: daily_changes,
-                 limit_reached: limit_reached
-               )}
-            else
-              {:noreply, put_flash(socket, :info, "Keine Änderungen vorgenommen.")}
-            end
-
-          {{:error, _}, _} ->
-            {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren des Schulnamens.")}
-
-          {_, {:error, :invalid_address}} ->
             {:noreply,
-             put_flash(socket, :error, "Ungültige Adresse. Bitte überprüfen Sie die Eingaben.")}
+             socket
+             |> put_flash(
+               :info,
+               "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+             )
+             |> redirect(to: ~p"/wiki")}
 
-          {_, {:error, _}} ->
-            {:noreply, put_flash(socket, :error, "Fehler beim Aktualisieren der Adresse.")}
+          {:error, _changeset} ->
+            {:noreply,
+             put_flash(
+               socket,
+               :error,
+               "Fehler beim Einreichen der Änderung. Bitte versuchen Sie es erneut."
+             )}
         end
     end
   end
@@ -373,68 +286,34 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
     expected_zip = if school.address, do: school.address.zip_code, else: nil
 
     if zip_code == expected_zip || (expected_zip == nil && zip_code == "") do
-      # Proceed with deletion
-      case Locations.delete_school(school, deletion_reason: reason) do
-        {:ok, %{school: _deleted_school}} ->
-          # Send email notification asynchronously
-          Task.start(fn ->
-            try do
-              # Reload school with preloaded associations for email
-              school_with_address = Repo.preload(school, [:address, :parent_location])
+      # Submit to pending changes queue instead of directly deleting
+      pending_attrs = %{
+        change_type: "delete_school",
+        payload: %{
+          "school_name" => school.name,
+          "deletion_reason" => reason
+        },
+        original_record_id: school.id,
+        submitted_by_ip: get_client_ip(socket)
+      }
 
-              # Get the country slug for the email
-              country_slug = get_country_slug_from_school(school_with_address)
-
-              # Send the deletion notification email with reason
-              Email.school_deleted_notification(
-                school_with_address,
-                school_with_address.address,
-                country_slug,
-                reason
-              )
-              |> Mailer.deliver!()
-            rescue
-              error ->
-                Logger.error("Failed to send school deletion email: #{inspect(error)}")
-                Logger.error(Exception.format(:error, error, __STACKTRACE__))
-            end
-          end)
-
-          # Redirect to a success page or the parent location page
-          parent_url =
-            if school.parent_location_id do
-              parent = Locations.get_location!(school.parent_location_id)
-
-              cond do
-                parent.is_city ->
-                  ~p"/ferien/d/stadt/#{parent.slug}"
-
-                parent.is_county ->
-                  # Counties don't have their own page, redirect to main
-                  ~p"/ferien/d"
-
-                parent.is_federal_state ->
-                  ~p"/ferien/d/bundesland/#{parent.slug}"
-
-                true ->
-                  ~p"/ferien/d"
-              end
-            else
-              ~p"/ferien/d"
-            end
+      case PendingChanges.create_pending_change(pending_attrs) do
+        {:ok, _pending_change} ->
+          Wiki.increment_daily_change_count(Date.utc_today())
 
           {:noreply,
            socket
            |> put_flash(
              :info,
-             "Die Schule wurde erfolgreich gelöscht. Eine Sicherungskopie wurde per E-Mail versendet."
+             "Ihre Löschanfrage wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung umgesetzt."
            )
-           |> redirect(to: parent_url)}
+           |> redirect(to: ~p"/wiki")}
 
-        {:error, reason} ->
+        {:error, _changeset} ->
           {:noreply,
            assign(socket,
-             delete_error: "Fehler beim Löschen der Schule: #{inspect(reason)}"
+             delete_error:
+               "Fehler beim Einreichen der Löschanfrage. Bitte versuchen Sie es erneut."
            )}
       end
     else
@@ -452,6 +331,13 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   end
 
   # Private helper functions
+
+  defp get_client_ip(socket) do
+    case socket.assigns[:remote_ip] do
+      {a, b, c, d} -> "#{a}.#{b}.#{c}.#{d}"
+      _ -> "unknown"
+    end
+  end
 
   # Creates a changeset for school address with the school name merged into data
   defp build_school_changeset(school) do
@@ -492,54 +378,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
       |> Map.put(:changes, changes)
       |> Map.put(:description, describe_changes(changes))
     end)
-  end
-
-  defp capture_current_state(school) do
-    %{
-      name: school.name,
-      address:
-        if school.address do
-          %{
-            street: school.address.street,
-            zip_code: school.address.zip_code,
-            city: school.address.city,
-            email_address: school.address.email_address,
-            phone_number: school.address.phone_number,
-            homepage_url: school.address.homepage_url,
-            schuelerzeitung_url: school.address.schuelerzeitung_url,
-            wikipedia_url: school.address.wikipedia_url,
-            instagram_url: school.address.instagram_url,
-            students_count: school.address.students_count,
-            founded_year: school.address.founded_year,
-            description: school.address.description
-          }
-        else
-          nil
-        end
-    }
-  end
-
-  defp store_version_snapshot(school, state) do
-    # Store snapshot in a simple cache table or as JSON in the version meta
-    # For simplicity, we'll use the version meta field
-    versions =
-      PaperTrail.get_versions(school) ++
-        if(school.address, do: PaperTrail.get_versions(school.address), else: [])
-
-    latest_version =
-      versions
-      |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
-      |> List.first()
-
-    if latest_version do
-      # Update the version meta with the snapshot
-      meta = Map.put(latest_version.meta || %{}, "snapshot", state)
-
-      Repo.update_all(
-        from(v in PaperTrail.Version, where: v.id == ^latest_version.id),
-        set: [meta: meta]
-      )
-    end
   end
 
   defp get_version_snapshot(version_id) do
@@ -609,42 +447,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
       2 -> "#{Enum.join(fields, " und ")} geändert"
       n -> "#{Enum.join(Enum.take(fields, 2), ", ")} und #{n - 2} weitere geändert"
     end
-  end
-
-  defp gather_changes(school_version, address_version, previous_state) do
-    changes =
-      if school_version && school_version.item_changes["name"] do
-        %{"Schulname" => {previous_state.name, school_version.item_changes["name"]}}
-      else
-        %{}
-      end
-
-    if address_version do
-      Enum.reduce(address_version.item_changes || %{}, changes, fn {field, new_value}, acc ->
-        field_str = if is_atom(field), do: Atom.to_string(field), else: field
-
-        case @field_labels[field_str] do
-          nil ->
-            acc
-
-          field_name ->
-            old_value =
-              if previous_state.address do
-                Map.get(previous_state.address, String.to_atom(field_str))
-              else
-                nil
-              end
-
-            Map.put(acc, field_name, {old_value, new_value})
-        end
-      end)
-    else
-      changes
-    end
-  end
-
-  defp get_country_slug_from_school(school) do
-    Locations.get_country_slug_from_location(school)
   end
 
   # Check if the zip code has changed to a different valid 5-digit German zip code

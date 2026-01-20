@@ -943,4 +943,276 @@ defmodule MehrSchulferien.Email do
     UPDATE blacklist_entries SET is_active = false WHERE id = #{entry.id};
     """)
   end
+
+  # ============================================================================
+  # Pending Change Approval Emails
+  # ============================================================================
+
+  @doc """
+  Sends an email notification for a pending wiki change that requires approval.
+
+  Includes magic links for approving or rejecting the change.
+  """
+  def pending_change_notification(pending_change) do
+    base_url = "https://www.mehr-schulferien.de"
+    approve_url = "#{base_url}/wiki/approve/#{pending_change.approval_token}"
+    reject_url = "#{base_url}/wiki/reject/#{pending_change.rejection_token}"
+
+    {subject, details_html, details_text} = format_pending_change_details(pending_change)
+
+    new()
+    |> to({@admin_name, @admin_email})
+    |> from({@system_email_name, @noreply_email})
+    |> subject("Wiki-Änderung zur Prüfung: #{subject}")
+    |> html_body("""
+    <h2>Wiki-Änderung zur Prüfung</h2>
+    <p>Eine neue Wiki-Änderung wurde eingereicht und wartet auf Ihre Genehmigung.</p>
+
+    <h3>Details der Änderung</h3>
+    #{details_html}
+
+    <p><strong>Eingereicht am:</strong> #{format_datetime(pending_change.inserted_at)}</p>
+    <p><strong>IP-Adresse:</strong> #{pending_change.submitted_by_ip || "Nicht verfügbar"}</p>
+
+    <div style="margin-top: 20px;">
+      <a href="#{approve_url}" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 5px; margin-right: 10px; font-weight: bold;">
+        ✓ Genehmigen
+      </a>
+      <a href="#{reject_url}" style="display: inline-block; padding: 12px 24px; background-color: #ef4444; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        ✗ Ablehnen
+      </a>
+    </div>
+
+    <div style="margin-top: 30px; padding: 15px; background-color: #fef3c7; border-left: 4px solid #f59e0b;">
+      <h4 style="margin-top: 0;">Hinweis</h4>
+      <p>Die Änderung wird erst nach Ihrer Genehmigung auf der Live-Seite sichtbar.</p>
+      <p>Bei Ablehnung wird der Benutzer nicht benachrichtigt.</p>
+    </div>
+    """)
+    |> text_body("""
+    Wiki-Änderung zur Prüfung
+
+    Eine neue Wiki-Änderung wurde eingereicht und wartet auf Ihre Genehmigung.
+
+    DETAILS DER ÄNDERUNG
+    #{details_text}
+
+    Eingereicht am: #{format_datetime(pending_change.inserted_at)}
+    IP-Adresse: #{pending_change.submitted_by_ip || "Nicht verfügbar"}
+
+    AKTIONEN
+    Genehmigen: #{approve_url}
+    Ablehnen: #{reject_url}
+
+    HINWEIS
+    Die Änderung wird erst nach Ihrer Genehmigung auf der Live-Seite sichtbar.
+    Bei Ablehnung wird der Benutzer nicht benachrichtigt.
+    """)
+  end
+
+  defp format_pending_change_details(pending_change) do
+    case pending_change.change_type do
+      "create_school" ->
+        payload = pending_change.payload
+        school_name = payload["school_name"] || "Unbekannt"
+        address = payload["address_params"] || %{}
+
+        subject = "Neue Schule: #{school_name}"
+
+        html = """
+        <p><strong>Änderungstyp:</strong> Neue Schule anlegen</p>
+        <p><strong>Schulname:</strong> #{school_name}</p>
+        #{if address["street"], do: "<p><strong>Straße:</strong> #{address["street"]}</p>", else: ""}
+        #{if address["zip_code"], do: "<p><strong>PLZ:</strong> #{address["zip_code"]}</p>", else: ""}
+        #{if address["city"], do: "<p><strong>Stadt:</strong> #{address["city"]}</p>", else: ""}
+        #{if address["homepage_url"], do: "<p><strong>Homepage:</strong> #{address["homepage_url"]}</p>", else: ""}
+        """
+
+        text = """
+        Änderungstyp: Neue Schule anlegen
+        Schulname: #{school_name}
+        #{if address["street"], do: "Straße: #{address["street"]}\n", else: ""}#{if address["zip_code"], do: "PLZ: #{address["zip_code"]}\n", else: ""}#{if address["city"], do: "Stadt: #{address["city"]}\n", else: ""}#{if address["homepage_url"], do: "Homepage: #{address["homepage_url"]}\n", else: ""}
+        """
+
+        {subject, html, text}
+
+      "update_school" ->
+        payload = pending_change.payload
+        school_name = payload["school_name"] || "Unbekannt"
+
+        subject = "Schule bearbeiten: #{school_name}"
+
+        html = """
+        <p><strong>Änderungstyp:</strong> Schule bearbeiten</p>
+        <p><strong>Schulname:</strong> #{school_name}</p>
+        <p><strong>Schul-ID:</strong> #{pending_change.original_record_id}</p>
+        #{format_payload_changes_html(payload)}
+        """
+
+        text = """
+        Änderungstyp: Schule bearbeiten
+        Schulname: #{school_name}
+        Schul-ID: #{pending_change.original_record_id}
+        #{format_payload_changes_text(payload)}
+        """
+
+        {subject, html, text}
+
+      "delete_school" ->
+        payload = pending_change.payload
+        school_name = payload["school_name"] || "ID: #{pending_change.original_record_id}"
+
+        subject = "Schule löschen: #{school_name}"
+
+        html = """
+        <p><strong>Änderungstyp:</strong> Schule löschen</p>
+        <p><strong>Schulname:</strong> #{school_name}</p>
+        <p><strong>Schul-ID:</strong> #{pending_change.original_record_id}</p>
+        #{if payload["deletion_reason"], do: "<p><strong>Löschgrund:</strong> #{payload["deletion_reason"]}</p>", else: ""}
+        """
+
+        text = """
+        Änderungstyp: Schule löschen
+        Schulname: #{school_name}
+        Schul-ID: #{pending_change.original_record_id}
+        #{if payload["deletion_reason"], do: "Löschgrund: #{payload["deletion_reason"]}\n", else: ""}
+        """
+
+        {subject, html, text}
+
+      "create_period" ->
+        payload = pending_change.payload
+
+        subject = "Neuer Ferientermin"
+
+        html = """
+        <p><strong>Änderungstyp:</strong> Neuer Ferientermin</p>
+        <p><strong>Bundesland-ID:</strong> #{payload["location_id"]}</p>
+        <p><strong>Ferienart-ID:</strong> #{payload["holiday_or_vacation_type_id"]}</p>
+        <p><strong>Beginn:</strong> #{payload["starts_on"]}</p>
+        <p><strong>Ende:</strong> #{payload["ends_on"]}</p>
+        #{if payload["memo"], do: "<p><strong>Notiz:</strong> #{payload["memo"]}</p>", else: ""}
+        """
+
+        text = """
+        Änderungstyp: Neuer Ferientermin
+        Bundesland-ID: #{payload["location_id"]}
+        Ferienart-ID: #{payload["holiday_or_vacation_type_id"]}
+        Beginn: #{payload["starts_on"]}
+        Ende: #{payload["ends_on"]}
+        #{if payload["memo"], do: "Notiz: #{payload["memo"]}\n", else: ""}
+        """
+
+        {subject, html, text}
+
+      "update_period" ->
+        payload = pending_change.payload
+
+        subject = "Ferientermin bearbeiten (ID: #{pending_change.original_record_id})"
+
+        html = """
+        <p><strong>Änderungstyp:</strong> Ferientermin bearbeiten</p>
+        <p><strong>Termin-ID:</strong> #{pending_change.original_record_id}</p>
+        <p><strong>Beginn:</strong> #{payload["starts_on"]}</p>
+        <p><strong>Ende:</strong> #{payload["ends_on"]}</p>
+        #{if payload["memo"], do: "<p><strong>Notiz:</strong> #{payload["memo"]}</p>", else: ""}
+        """
+
+        text = """
+        Änderungstyp: Ferientermin bearbeiten
+        Termin-ID: #{pending_change.original_record_id}
+        Beginn: #{payload["starts_on"]}
+        Ende: #{payload["ends_on"]}
+        #{if payload["memo"], do: "Notiz: #{payload["memo"]}\n", else: ""}
+        """
+
+        {subject, html, text}
+
+      "delete_period" ->
+        subject = "Ferientermin löschen (ID: #{pending_change.original_record_id})"
+
+        html = """
+        <p><strong>Änderungstyp:</strong> Ferientermin löschen</p>
+        <p><strong>Termin-ID:</strong> #{pending_change.original_record_id}</p>
+        """
+
+        text = """
+        Änderungstyp: Ferientermin löschen
+        Termin-ID: #{pending_change.original_record_id}
+        """
+
+        {subject, html, text}
+
+      type
+      when type in [
+             "create_beweglicher_ferientag",
+             "update_beweglicher_ferientag",
+             "delete_beweglicher_ferientag"
+           ] ->
+        payload = pending_change.payload
+
+        action =
+          case type do
+            "create_beweglicher_ferientag" -> "Neuer beweglicher Ferientag"
+            "update_beweglicher_ferientag" -> "Beweglicher Ferientag bearbeiten"
+            "delete_beweglicher_ferientag" -> "Beweglicher Ferientag löschen"
+          end
+
+        subject = action
+
+        html = """
+        <p><strong>Änderungstyp:</strong> #{action}</p>
+        <p><strong>Schul-ID:</strong> #{payload["school_id"]}</p>
+        #{if payload["date"], do: "<p><strong>Datum:</strong> #{payload["date"]}</p>", else: ""}
+        #{if payload["memo"], do: "<p><strong>Notiz:</strong> #{payload["memo"]}</p>", else: ""}
+        """
+
+        text = """
+        Änderungstyp: #{action}
+        Schul-ID: #{payload["school_id"]}
+        #{if payload["date"], do: "Datum: #{payload["date"]}\n", else: ""}#{if payload["memo"], do: "Notiz: #{payload["memo"]}\n", else: ""}
+        """
+
+        {subject, html, text}
+
+      _ ->
+        subject = "Wiki-Änderung (#{pending_change.change_type})"
+
+        html = """
+        <p><strong>Änderungstyp:</strong> #{pending_change.change_type}</p>
+        <p><strong>Payload:</strong> #{inspect(pending_change.payload)}</p>
+        """
+
+        text = """
+        Änderungstyp: #{pending_change.change_type}
+        Payload: #{inspect(pending_change.payload)}
+        """
+
+        {subject, html, text}
+    end
+  end
+
+  defp format_payload_changes_html(payload) do
+    address_params = payload["address_params"] || %{}
+
+    changes =
+      address_params
+      |> Enum.filter(fn {_k, v} -> v != nil && v != "" end)
+      |> Enum.map(fn {k, v} -> "<p><strong>#{humanize_field(k)}:</strong> #{v}</p>" end)
+      |> Enum.join("\n")
+
+    if changes == "", do: "", else: "<h4>Adressänderungen:</h4>\n#{changes}"
+  end
+
+  defp format_payload_changes_text(payload) do
+    address_params = payload["address_params"] || %{}
+
+    changes =
+      address_params
+      |> Enum.filter(fn {_k, v} -> v != nil && v != "" end)
+      |> Enum.map(fn {k, v} -> "#{humanize_field(k)}: #{v}" end)
+      |> Enum.join("\n")
+
+    if changes == "", do: "", else: "Adressänderungen:\n#{changes}"
+  end
 end

@@ -3,10 +3,10 @@ defmodule MehrSchulferienWeb.WikiPeriodNewLive do
 
   on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
 
-  alias MehrSchulferien.{Periods, Calendars, Wiki, Config, Repo, Email, Mailer}
+  alias MehrSchulferien.{Periods, Calendars, Wiki, Config, Repo}
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.Wiki.PendingChanges
   import Ecto.Query
-  require Logger
 
   @impl true
   def mount(_params, _session, socket) do
@@ -77,36 +77,45 @@ defmodule MehrSchulferienWeb.WikiPeriodNewLive do
   defp save_period(socket, period_params) do
     period_params = prepare_params_for_create(period_params)
 
-    case Periods.create_period(period_params) do
-      {:ok, period} ->
-        # Increment daily change count
+    # Submit to pending changes queue instead of directly creating
+    pending_attrs = %{
+      change_type: "create_period",
+      payload: %{
+        "location_id" => period_params["location_id"],
+        "holiday_or_vacation_type_id" => period_params["holiday_or_vacation_type_id"],
+        "starts_on" => period_params["starts_on"],
+        "ends_on" => period_params["ends_on"],
+        "memo" => period_params["memo"]
+      },
+      submitted_by_ip: get_client_ip(socket)
+    }
+
+    case PendingChanges.create_pending_change(pending_attrs) do
+      {:ok, _pending_change} ->
         Wiki.increment_daily_change_count(Date.utc_today())
-
-        # Send email notification
-        email_task = fn ->
-          Logger.info("Sending email notification for period creation")
-
-          result =
-            Email.period_created_notification(period)
-            |> Mailer.deliver()
-
-          Logger.info("Email send result: #{inspect(result)}")
-        end
-
-        # Run synchronously in test environment to avoid connection ownership issues
-        if Application.get_env(:mehr_schulferien, :env) == :test do
-          email_task.()
-        else
-          Task.start(email_task)
-        end
 
         {:noreply,
          socket
-         |> put_flash(:info, "Ferientermin wurde erfolgreich erstellt.")
+         |> put_flash(
+           :info,
+           "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+         )
          |> redirect(to: ~p"/wiki/periods")}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
+      {:error, _changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(
+           :error,
+           "Fehler beim Einreichen der Änderung. Bitte versuchen Sie es erneut."
+         )}
+    end
+  end
+
+  defp get_client_ip(socket) do
+    case socket.assigns[:remote_ip] do
+      {a, b, c, d} -> "#{a}.#{b}.#{c}.#{d}"
+      _ -> "unknown"
     end
   end
 

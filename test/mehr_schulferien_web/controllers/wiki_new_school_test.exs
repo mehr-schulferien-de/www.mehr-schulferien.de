@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
 
   # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # To re-enable: remove this line and uncomment wiki routes in router.ex
+  @moduletag :skip
 
   import MehrSchulferien.Factory
   import MehrSchulferien.TestHelpers

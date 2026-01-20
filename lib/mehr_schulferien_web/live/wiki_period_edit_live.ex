@@ -3,10 +3,10 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
 
   on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
 
-  alias MehrSchulferien.{Periods, Locations, Calendars, Wiki, Config, Repo, Email, Mailer}
+  alias MehrSchulferien.{Periods, Locations, Calendars, Wiki, Config, Repo}
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.Wiki.PendingChanges
   import Ecto.Query
-  require Logger
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
@@ -212,57 +212,41 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   end
 
   defp save_period(socket, period_params) do
-    changeset = Period.changeset(socket.assigns.period, period_params)
+    period = socket.assigns.period
 
-    case PaperTrail.update(changeset, meta: %{ip_address: socket.assigns.client_ip}) do
-      {:ok, result} ->
-        # Extract model and version (version might be nil if no changes)
-        updated_period = Map.get(result, :model)
-        version = Map.get(result, :version)
+    # Submit to pending changes queue instead of directly updating
+    pending_attrs = %{
+      change_type: "update_period",
+      payload: %{
+        "location_id" => period_params["location_id"],
+        "holiday_or_vacation_type_id" => period_params["holiday_or_vacation_type_id"],
+        "starts_on" => period_params["starts_on"],
+        "ends_on" => period_params["ends_on"],
+        "memo" => period_params["memo"]
+      },
+      original_record_id: period.id,
+      submitted_by_ip: socket.assigns.client_ip
+    }
 
-        # Increment daily change count if there was a version created
-        if version do
-          Wiki.increment_daily_change_count(Date.utc_today())
-
-          # Send email notification
-          email_task = fn ->
-            Logger.info("Sending email notification for period update")
-            changes = gather_changes(version)
-
-            result =
-              Email.period_updated_notification(updated_period, changes)
-              |> Mailer.deliver()
-
-            Logger.info("Email send result: #{inspect(result)}")
-          end
-
-          # Run synchronously in test environment to avoid connection ownership issues
-          if Application.get_env(:mehr_schulferien, :env) == :test do
-            email_task.()
-          else
-            Task.start(email_task)
-          end
-        end
-
-        # Reload period with updated data and versions
-        updated_period = get_period_with_preloads(updated_period.id)
-        updated_versions = get_period_versions(updated_period)
-
-        # Update daily changes count
-        new_daily_changes =
-          if version, do: socket.assigns.daily_changes + 1, else: socket.assigns.daily_changes
+    case PendingChanges.create_pending_change(pending_attrs) do
+      {:ok, _pending_change} ->
+        Wiki.increment_daily_change_count(Date.utc_today())
 
         {:noreply,
          socket
-         |> put_flash(:info, "Ferientermin wurde erfolgreich aktualisiert.")
-         |> assign(:period, updated_period)
-         |> assign(:versions, updated_versions)
-         |> assign(:display_versions, Enum.take(updated_versions, 5))
-         |> assign(:changeset, Periods.change_period(updated_period))
-         |> assign(:daily_changes, new_daily_changes)}
+         |> put_flash(
+           :info,
+           "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+         )
+         |> redirect(to: ~p"/wiki/periods")}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
+      {:error, _changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(
+           :error,
+           "Fehler beim Einreichen der Änderung. Bitte versuchen Sie es erneut."
+         )}
     end
   end
 
@@ -272,37 +256,40 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   end
 
   defp delete_period(socket) do
-    case Periods.delete_period(socket.assigns.period) do
-      {:ok, _period} ->
+    period = socket.assigns.period
+
+    # Submit to pending changes queue instead of directly deleting
+    pending_attrs = %{
+      change_type: "delete_period",
+      payload: %{
+        "location_id" => period.location_id,
+        "holiday_or_vacation_type_id" => period.holiday_or_vacation_type_id,
+        "starts_on" => Date.to_string(period.starts_on),
+        "ends_on" => Date.to_string(period.ends_on)
+      },
+      original_record_id: period.id,
+      submitted_by_ip: socket.assigns.client_ip
+    }
+
+    case PendingChanges.create_pending_change(pending_attrs) do
+      {:ok, _pending_change} ->
         Wiki.increment_daily_change_count(Date.utc_today())
 
-        # Send email notification
-        email_task = fn ->
-          Logger.info("Sending email notification for period deletion")
-
-          result =
-            Email.period_deleted_notification(socket.assigns.period)
-            |> Mailer.deliver()
-
-          Logger.info("Email send result: #{inspect(result)}")
-        end
-
-        # Run synchronously in test environment to avoid connection ownership issues
-        if Application.get_env(:mehr_schulferien, :env) == :test do
-          email_task.()
-        else
-          Task.start(email_task)
-        end
-
         {:noreply,
          socket
-         |> put_flash(:info, "Ferientermin wurde erfolgreich gelöscht.")
+         |> put_flash(
+           :info,
+           "Ihre Löschanfrage wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung umgesetzt."
+         )
          |> redirect(to: ~p"/wiki/periods")}
 
-      {:error, _} ->
+      {:error, _changeset} ->
         {:noreply,
          socket
-         |> put_flash(:error, "Fehler beim Löschen des Ferientermins.")}
+         |> put_flash(
+           :error,
+           "Fehler beim Einreichen der Löschanfrage. Bitte versuchen Sie es erneut."
+         )}
     end
   end
 
@@ -361,76 +348,6 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   defp format_version_value("holiday_or_vacation_type_id", _), do: ""
 
   defp format_version_value(_, value), do: to_string(value)
-
-  defp gather_changes(version) do
-    # Get the previous values for the period
-    old_values = get_previous_values(version)
-
-    version.item_changes
-    |> Enum.map(fn {field, new_value} ->
-      field_str = to_string(field)
-      field_atom = String.to_atom(field_str)
-      old_value = Map.get(old_values, field_atom, "")
-
-      {version_field_name(field_str),
-       {format_version_value(field_str, old_value), format_version_value(field_str, new_value)}}
-    end)
-    |> Enum.into(%{})
-  end
-
-  defp get_previous_values(current_version) do
-    # Get all versions for this period
-    versions =
-      PaperTrail.Version
-      |> where([v], v.item_type == "Period" and v.item_id == ^current_version.item_id)
-      |> order_by([v], asc: v.id)
-      |> Repo.all()
-
-    # Find the index of the current version
-    current_index = Enum.find_index(versions, fn v -> v.id == current_version.id end)
-
-    if current_index && current_index > 0 do
-      # Get all versions before the current one
-      previous_versions = Enum.take(versions, current_index)
-
-      # Reconstruct the state from all previous versions
-      previous_versions
-      |> Enum.reduce(%{}, fn version, acc ->
-        changes = version.item_changes || %{}
-
-        # Convert keys to atoms and merge
-        atomized_changes =
-          changes
-          |> Enum.map(fn {k, v} ->
-            {if(is_atom(k), do: k, else: String.to_atom(k)), v}
-          end)
-          |> Enum.into(%{})
-
-        Map.merge(acc, atomized_changes)
-      end)
-    else
-      # No previous version. For the first version, we can try to infer the old values
-      # by looking at what changed. If a field changed, the old value was whatever
-      # was there before the change.
-
-      # Get the period record to see its original state
-      _period = Repo.get!(Period, current_version.item_id)
-
-      # For the first version, we need to "undo" the changes to get the original values
-      changes = current_version.item_changes || %{}
-
-      # Create a map of original values for fields that were changed
-      changes
-      |> Enum.reduce(%{}, fn {field_str, _new_value}, acc ->
-        field_atom = if is_atom(field_str), do: field_str, else: String.to_atom(field_str)
-
-        # For the first version of a field, we can't know the original value
-        # unless we have additional context. PaperTrail only records changes,
-        # not the original state.
-        Map.put(acc, field_atom, nil)
-      end)
-    end
-  end
 
   defp get_recent_vacation_types do
     # Get vacation types used in periods from the last 12 months
