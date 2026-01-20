@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.SchoolComponents do
   use Phoenix.Component
 
+  alias MehrSchulferien.Config
+
   use Phoenix.VerifiedRoutes,
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
@@ -104,14 +106,14 @@ defmodule MehrSchulferienWeb.SchoolComponents do
       end
 
     optional_fields =
-      if school.address && school.address.phone_number do
+      if Config.school_contact_info_enabled?() && school.address && school.address.phone_number do
         optional_fields ++ [{"telephone", school.address.phone_number}]
       else
         optional_fields
       end
 
     optional_fields =
-      if school.address && school.address.email_address do
+      if Config.school_contact_info_enabled?() && school.address && school.address.email_address do
         optional_fields ++ [{"email", school.address.email_address}]
       else
         optional_fields

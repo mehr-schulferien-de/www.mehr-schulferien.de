@@ -287,7 +287,8 @@ defmodule MehrSchulferienWeb.WikiController do
             display_versions: Enum.take(versions, 5),
             changeset: changeset,
             daily_changes: daily_changes,
-            limit_reached: false
+            limit_reached: false,
+            school_contact_info_enabled: Config.school_contact_info_enabled?()
           })
 
         {_, {:error, :invalid_address}} ->
@@ -319,7 +320,8 @@ defmodule MehrSchulferienWeb.WikiController do
             display_versions: Enum.take(versions, 5),
             changeset: changeset,
             daily_changes: daily_changes,
-            limit_reached: false
+            limit_reached: false,
+            school_contact_info_enabled: Config.school_contact_info_enabled?()
           })
 
         {_, {:error, changeset}} ->
@@ -332,7 +334,8 @@ defmodule MehrSchulferienWeb.WikiController do
             display_versions: Enum.take(versions, 5),
             changeset: changeset,
             daily_changes: daily_changes,
-            limit_reached: false
+            limit_reached: false,
+            school_contact_info_enabled: Config.school_contact_info_enabled?()
           })
       end
     end

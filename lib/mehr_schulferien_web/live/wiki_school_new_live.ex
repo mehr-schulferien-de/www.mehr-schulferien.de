@@ -29,7 +29,8 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
        existing_schools: [],
        zip_code_valid: nil,
        city_from_zip: nil,
-       blacklist_error: nil
+       blacklist_error: nil,
+       school_contact_info_enabled: Config.school_contact_info_enabled?()
      )}
   end
 

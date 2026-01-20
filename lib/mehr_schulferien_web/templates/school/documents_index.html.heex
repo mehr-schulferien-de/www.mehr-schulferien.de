@@ -209,7 +209,7 @@
                     </.text>
                   </div>
                 </div>
-                <%= if @school.address.phone_number do %>
+                <%= if @school_contact_info_enabled and @school.address.phone_number do %>
                   <div class="flex items-center">
                     <svg
                       class="h-5 w-5 text-gray-400 dark:text-gray-500"
@@ -232,7 +232,7 @@
                     </a>
                   </div>
                 <% end %>
-                <%= if @school.address.email_address do %>
+                <%= if @school_contact_info_enabled and @school.address.email_address do %>
                   <div class="flex items-center">
                     <svg
                       class="h-5 w-5 text-gray-400 dark:text-gray-500"

@@ -6,6 +6,8 @@ defmodule MehrSchulferienWeb.SchoolVCardVCF do
     root: "lib/mehr_schulferien_web/templates",
     path: "school_vcard"
 
+  alias MehrSchulferien.Config
+
   @vcard_version 3.0
 
   def render("vcard.vcf", %{location: location}) do
@@ -35,7 +37,8 @@ defmodule MehrSchulferienWeb.SchoolVCardVCF do
   end
 
   defp maybe_add_email(location) do
-    if location.address && location.address.email_address do
+    if Config.school_contact_info_enabled?() && location.address &&
+         location.address.email_address do
       "EMAIL;INTERNET:#{location.address.email_address}"
     end
   end
@@ -53,7 +56,8 @@ defmodule MehrSchulferienWeb.SchoolVCardVCF do
   end
 
   defp maybe_add_phone(location) do
-    if location.address && location.address.phone_number do
+    if Config.school_contact_info_enabled?() && location.address &&
+         location.address.phone_number do
       "TEL;TYPE=WORK,VOICE:#{location.address.phone_number}"
     end
   end

@@ -94,35 +94,37 @@
     </div>
   </div>
 
-  <div>
-    {label(f, :email_address, "E-Mail",
-      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-    )}
-    {email_input(f, :email_address,
-      class:
-        "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
-      disabled: @limit_reached,
-      placeholder: "z.B. info@schule.de",
-      value: get_field_value(f, :email_address, @address),
-      name: "address[email_address]"
-    )}
-    {error_tag(f, :email_address, class: "mt-1 text-sm text-red-600")}
-  </div>
+  <%= if @school_contact_info_enabled do %>
+    <div>
+      {label(f, :email_address, "E-Mail",
+        class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      )}
+      {email_input(f, :email_address,
+        class:
+          "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
+        disabled: @limit_reached,
+        placeholder: "z.B. info@schule.de",
+        value: get_field_value(f, :email_address, @address),
+        name: "address[email_address]"
+      )}
+      {error_tag(f, :email_address, class: "mt-1 text-sm text-red-600")}
+    </div>
 
-  <div>
-    {label(f, :phone_number, "Telefon",
-      class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-    )}
-    {text_input(f, :phone_number,
-      class:
-        "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
-      disabled: @limit_reached,
-      placeholder: "z.B. +49 30 123456789",
-      value: get_field_value(f, :phone_number, @address),
-      name: "address[phone_number]"
-    )}
-    {error_tag(f, :phone_number, class: "mt-1 text-sm text-red-600")}
-  </div>
+    <div>
+      {label(f, :phone_number, "Telefon",
+        class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      )}
+      {text_input(f, :phone_number,
+        class:
+          "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100",
+        disabled: @limit_reached,
+        placeholder: "z.B. +49 30 123456789",
+        value: get_field_value(f, :phone_number, @address),
+        name: "address[phone_number]"
+      )}
+      {error_tag(f, :phone_number, class: "mt-1 text-sm text-red-600")}
+    </div>
+  <% end %>
 
   <div>
     {label(f, :homepage_url, "Homepage",

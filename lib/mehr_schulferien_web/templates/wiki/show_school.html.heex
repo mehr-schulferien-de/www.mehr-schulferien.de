@@ -38,7 +38,8 @@
             disable_zip_code: false,
             submit_text: "Änderungen speichern",
             submit_class: "bg-blue-600 hover:bg-blue-700",
-            submit_focus_class: "focus:ring-blue-500"
+            submit_focus_class: "focus:ring-blue-500",
+            school_contact_info_enabled: @school_contact_info_enabled
           )}
         </:content>
       </.card>
@@ -77,7 +78,7 @@
                 </dd>
               </div>
             <% end %>
-            <%= if @school.address.email_address do %>
+            <%= if @school_contact_info_enabled and @school.address.email_address do %>
               <div>
                 <dt class="font-bold text-gray-700">E-Mail:</dt>
                 <dd class="text-gray-900">
@@ -85,7 +86,7 @@
                 </dd>
               </div>
             <% end %>
-            <%= if @school.address.phone_number do %>
+            <%= if @school_contact_info_enabled and @school.address.phone_number do %>
               <div>
                 <dt class="font-bold text-gray-700">Telefon:</dt>
                 <dd class="text-gray-900">

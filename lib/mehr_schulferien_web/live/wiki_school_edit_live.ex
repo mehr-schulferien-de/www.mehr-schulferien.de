@@ -68,7 +68,8 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
        delete_error: nil,
        original_zip_code: original_zip_code,
        show_new_school_hint: false,
-       blacklist_error: nil
+       blacklist_error: nil,
+       school_contact_info_enabled: Config.school_contact_info_enabled?()
      )}
   end
 

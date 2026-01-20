@@ -19,7 +19,9 @@ config :mehr_schulferien,
   admin_name: "Stefan Wintermeyer",
   support_email: "support@mehr-schulferien.de",
   noreply_email: "noreply@mehr-schulferien.de",
-  system_email_name: "MehrSchulferien System"
+  system_email_name: "MehrSchulferien System",
+  # Feature flag: Set to true to re-enable school contact info (phone/email) display and editing
+  school_contact_info_enabled: false
 
 # Configure MCP (Model Context Protocol) server
 config :mehr_schulferien, :mcp,

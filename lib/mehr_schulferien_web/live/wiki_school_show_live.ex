@@ -31,7 +31,8 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
        school: school,
        daily_changes: daily_changes,
        limit_reached: limit_reached,
-       bewegliche_ferientage_count: bewegliche_ferientage_count
+       bewegliche_ferientage_count: bewegliche_ferientage_count,
+       school_contact_info_enabled: Config.school_contact_info_enabled?()
      )}
   end
 

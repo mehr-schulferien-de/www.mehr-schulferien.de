@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.SchoolController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Blacklist, Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.{Blacklist, Calendars.DateHelpers, Config, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Helpers.UserAgentHelpers
@@ -216,7 +216,8 @@ defmodule MehrSchulferienWeb.SchoolController do
         other_schools_bewegliche_ferientage: other_schools_bewegliche_ferientage,
         allows_bewegliche_ferientage: allows_bewegliche_ferientage,
         ferientage_limit: ferientage_limit,
-        current_school_year_string: current_school_year_string
+        current_school_year_string: current_school_year_string,
+        school_contact_info_enabled: Config.school_contact_info_enabled?()
       }
       |> Map.merge(Map.new(faq_data))
     )
@@ -272,7 +273,8 @@ defmodule MehrSchulferienWeb.SchoolController do
       today: today,
       page_title: page_title,
       page_description: page_description,
-      og_image: "/images/entschuldigung-dummy.png"
+      og_image: "/images/entschuldigung-dummy.png",
+      school_contact_info_enabled: Config.school_contact_info_enabled?()
     )
   end
 

@@ -9,6 +9,9 @@ import Config
 # Set environment
 config :mehr_schulferien, :env, :test
 
+# Enable school contact info for tests (disabled in production for legal reasons)
+config :mehr_schulferien, school_contact_info_enabled: true
+
 # Configure your database
 config :mehr_schulferien, MehrSchulferien.Repo,
   username: "postgres",
