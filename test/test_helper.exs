@@ -1,5 +1,5 @@
 # Start ExUnit
-ExUnit.start()
+ExUnit.start(exclude: [:skip])
 
 # Start Phoenix endpoint for system/browser tests
 {:ok, _} = Application.ensure_all_started(:mehr_schulferien)

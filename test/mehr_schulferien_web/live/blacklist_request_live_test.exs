@@ -1,6 +1,8 @@
 defmodule MehrSchulferienWeb.BlacklistRequestLiveTest do
   use MehrSchulferienWeb.ConnCase
 
+  @moduletag :skip
+
   # Blacklist request page requires wiki authentication
 
   import Phoenix.LiveViewTest

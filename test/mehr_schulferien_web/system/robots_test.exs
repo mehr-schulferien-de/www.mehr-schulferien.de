@@ -35,6 +35,10 @@ defmodule MehrSchulferienWeb.RobotsSystemTest do
       assert response =~ "Disallow: /ferien/*/stadt/*/#{@past_year}$"
       assert response =~ "Disallow: /ferien/*/schule/*/#{@past_year}$"
 
+      # Check that vCard download URLs are disallowed
+      assert response =~ "Disallow: /ferien/*/schule/*/vcard"
+      assert response =~ "Disallow: /schule/*/vcard"
+
       # Check that current and next year city and school URLs are NOT disallowed (they're allowed)
       refute response =~ "Disallow: /ferien/*/stadt/*/#{@current_year}$"
       refute response =~ "Disallow: /ferien/*/stadt/*/#{@next_year}$"

@@ -78,6 +78,10 @@ defmodule MehrSchulferienWeb.RobotsController do
     Disallow: /admin
     Disallow: /wiki
 
+    # vCard downloads are not useful for search engines
+    Disallow: /ferien/*/schule/*/vcard
+    Disallow: /schule/*/vcard
+
     # Old no longer active routes (redirected to /ferien/)
     Disallow: /land/*
 
