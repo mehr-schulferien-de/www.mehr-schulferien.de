@@ -1,6 +1,7 @@
 defmodule MehrSchulferien.EmailTest do
-  use ExUnit.Case
+  use MehrSchulferien.DataCase
   import Swoosh.TestAssertions
+  import MehrSchulferien.Factory
   alias MehrSchulferien.{Email, Mailer}
 
   @admin_email Application.compile_env!(:mehr_schulferien, :admin_email)
@@ -367,6 +368,138 @@ defmodule MehrSchulferien.EmailTest do
       email = Email.bewegliche_ferientage_bulk_copy_notification(source_school, copy_summary)
       {:ok, _} = Mailer.deliver(email)
       assert_email_sent(email)
+    end
+  end
+
+  describe "pending change notification emails" do
+    test "update_school email contains wiki school URL" do
+      school =
+        insert(:school, name: "Albert-Einstein-Gymnasium", slug: "albert-einstein-gymnasium")
+
+      insert(:address, school_location_id: school.id, street: "Schulstraße 1", city: "Berlin")
+
+      pending_change = %{
+        change_type: "update_school",
+        original_record_id: school.id,
+        payload: %{
+          "school_name" => "Albert-Einstein-Gymnasium",
+          "address_params" => %{"street" => "Neue Straße 5"}
+        },
+        approval_token: "approve-token-123",
+        rejection_token: "reject-token-456",
+        inserted_at: DateTime.utc_now(),
+        submitted_by_ip: "127.0.0.1"
+      }
+
+      email = Email.pending_change_notification(pending_change)
+
+      assert email.html_body =~ "/wiki/schools/albert-einstein-gymnasium"
+      assert email.text_body =~ "/wiki/schools/albert-einstein-gymnasium"
+    end
+
+    test "update_school email contains before/after values with arrow" do
+      school = insert(:school, name: "Test Schule", slug: "test-schule")
+
+      insert(:address,
+        school_location_id: school.id,
+        street: "Alte Straße 1",
+        city: "Berlin",
+        zip_code: "10115"
+      )
+
+      pending_change = %{
+        change_type: "update_school",
+        original_record_id: school.id,
+        payload: %{
+          "school_name" => "Test Schule",
+          "address_params" => %{"street" => "Neue Straße 99", "city" => "Hamburg"}
+        },
+        approval_token: "approve-token-123",
+        rejection_token: "reject-token-456",
+        inserted_at: DateTime.utc_now(),
+        submitted_by_ip: "127.0.0.1"
+      }
+
+      email = Email.pending_change_notification(pending_change)
+
+      # HTML should contain before/after with arrow
+      assert email.html_body =~ "Alte Straße 1"
+      assert email.html_body =~ "Neue Straße 99"
+      assert email.html_body =~ "→"
+      assert email.html_body =~ "Berlin"
+      assert email.html_body =~ "Hamburg"
+
+      # Text should contain before/after with arrow
+      assert email.text_body =~ "Alte Straße 1"
+      assert email.text_body =~ "Neue Straße 99"
+      assert email.text_body =~ "→"
+    end
+
+    test "update_school email contains full school name from DB" do
+      school = insert(:school, name: "Friedrich-Schiller-Gymnasium Berlin", slug: "fsg-berlin")
+      insert(:address, school_location_id: school.id, street: "Schulweg 10")
+
+      pending_change = %{
+        change_type: "update_school",
+        original_record_id: school.id,
+        payload: %{
+          "school_name" => "Friedrich-Schiller-Gymnasium Berlin",
+          "address_params" => %{"street" => "Neuer Schulweg 20"}
+        },
+        approval_token: "approve-token-123",
+        rejection_token: "reject-token-456",
+        inserted_at: DateTime.utc_now(),
+        submitted_by_ip: "127.0.0.1"
+      }
+
+      email = Email.pending_change_notification(pending_change)
+
+      assert email.html_body =~ "Friedrich-Schiller-Gymnasium Berlin"
+      assert email.text_body =~ "Friedrich-Schiller-Gymnasium Berlin"
+    end
+
+    test "update_school with non-existent school falls back gracefully" do
+      pending_change = %{
+        change_type: "update_school",
+        original_record_id: -1,
+        payload: %{
+          "school_name" => "Ghost School",
+          "address_params" => %{"street" => "Nowhere St"}
+        },
+        approval_token: "approve-token-123",
+        rejection_token: "reject-token-456",
+        inserted_at: DateTime.utc_now(),
+        submitted_by_ip: "127.0.0.1"
+      }
+
+      email = Email.pending_change_notification(pending_change)
+
+      # Should not crash, should show fallback content
+      assert email.html_body =~ "Ghost School"
+      assert email.html_body =~ "Schule nicht in der Datenbank gefunden"
+    end
+
+    test "delete_school email contains school URL" do
+      school = insert(:school, name: "Zu löschende Schule", slug: "zu-loeschende-schule")
+      insert(:address, school_location_id: school.id, street: "Abbruchstraße 1")
+
+      pending_change = %{
+        change_type: "delete_school",
+        original_record_id: school.id,
+        payload: %{
+          "school_name" => "Zu löschende Schule",
+          "deletion_reason" => "Schule geschlossen"
+        },
+        approval_token: "approve-token-123",
+        rejection_token: "reject-token-456",
+        inserted_at: DateTime.utc_now(),
+        submitted_by_ip: "127.0.0.1"
+      }
+
+      email = Email.pending_change_notification(pending_change)
+
+      assert email.html_body =~ "/wiki/schools/zu-loeschende-schule"
+      assert email.text_body =~ "/wiki/schools/zu-loeschende-schule"
     end
   end
 end

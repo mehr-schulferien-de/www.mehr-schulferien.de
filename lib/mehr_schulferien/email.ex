@@ -1,5 +1,6 @@
 defmodule MehrSchulferien.Email do
   import Swoosh.Email
+  alias MehrSchulferien.Locations
   alias MehrSchulferien.UrlBuilder
 
   @admin_email Application.compile_env!(:mehr_schulferien, :admin_email)
@@ -1038,36 +1039,68 @@ defmodule MehrSchulferien.Email do
 
       "update_school" ->
         payload = pending_change.payload
-        school_name = payload["school_name"] || "Unbekannt"
+        {school, wiki_url, changes} = build_update_school_context(pending_change)
 
+        school_name = if school, do: school.name, else: payload["school_name"] || "Unbekannt"
         subject = "Schule bearbeiten: #{school_name}"
 
-        html = """
-        <p><strong>Änderungstyp:</strong> Schule bearbeiten</p>
-        <p><strong>Schulname:</strong> #{school_name}</p>
-        <p><strong>Schul-ID:</strong> #{pending_change.original_record_id}</p>
-        #{format_payload_changes_html(payload)}
-        """
+        if school do
+          html = """
+          <p><strong>Änderungstyp:</strong> Schule bearbeiten</p>
+          <p><strong>Schulname:</strong> #{school_name}</p>
+          <p><strong>Schul-ID:</strong> #{pending_change.original_record_id}</p>
+          <p><a href="#{wiki_url}" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;">Schule im Wiki anzeigen</a></p>
+          #{if map_size(changes) > 0, do: "<h4>Änderungen:</h4>\n#{format_changes_html(changes)}", else: format_payload_changes_html(payload)}
+          """
 
-        text = """
-        Änderungstyp: Schule bearbeiten
-        Schulname: #{school_name}
-        Schul-ID: #{pending_change.original_record_id}
-        #{format_payload_changes_text(payload)}
-        """
+          text = """
+          Änderungstyp: Schule bearbeiten
+          Schulname: #{school_name}
+          Schul-ID: #{pending_change.original_record_id}
+          Wiki-Link: #{wiki_url}
+          #{if map_size(changes) > 0, do: "Änderungen:\n#{format_changes_text(changes)}", else: format_payload_changes_text(payload)}
+          """
 
-        {subject, html, text}
+          {subject, html, text}
+        else
+          html = """
+          <p><strong>Änderungstyp:</strong> Schule bearbeiten</p>
+          <p><strong>Schulname:</strong> #{payload["school_name"] || "Unbekannt"}</p>
+          <p><strong>Schul-ID:</strong> #{pending_change.original_record_id}</p>
+          <p><em>Schule nicht in der Datenbank gefunden.</em></p>
+          #{format_payload_changes_html(payload)}
+          """
+
+          text = """
+          Änderungstyp: Schule bearbeiten
+          Schulname: #{payload["school_name"] || "Unbekannt"}
+          Schul-ID: #{pending_change.original_record_id}
+          Schule nicht in der Datenbank gefunden.
+          #{format_payload_changes_text(payload)}
+          """
+
+          {subject, html, text}
+        end
 
       "delete_school" ->
         payload = pending_change.payload
-        school_name = payload["school_name"] || "ID: #{pending_change.original_record_id}"
+        school = load_school_with_address(pending_change.original_record_id)
+
+        school_name =
+          if school,
+            do: school.name,
+            else: payload["school_name"] || "ID: #{pending_change.original_record_id}"
 
         subject = "Schule löschen: #{school_name}"
+
+        wiki_url =
+          if school, do: "https://www.mehr-schulferien.de/wiki/schools/#{school.slug}", else: nil
 
         html = """
         <p><strong>Änderungstyp:</strong> Schule löschen</p>
         <p><strong>Schulname:</strong> #{school_name}</p>
         <p><strong>Schul-ID:</strong> #{pending_change.original_record_id}</p>
+        #{if wiki_url, do: "<p><a href=\"#{wiki_url}\" style=\"display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0;\">Schule im Wiki anzeigen</a></p>", else: ""}
         #{if payload["deletion_reason"], do: "<p><strong>Löschgrund:</strong> #{payload["deletion_reason"]}</p>", else: ""}
         """
 
@@ -1075,7 +1108,7 @@ defmodule MehrSchulferien.Email do
         Änderungstyp: Schule löschen
         Schulname: #{school_name}
         Schul-ID: #{pending_change.original_record_id}
-        #{if payload["deletion_reason"], do: "Löschgrund: #{payload["deletion_reason"]}\n", else: ""}
+        #{if wiki_url, do: "Wiki-Link: #{wiki_url}\n", else: ""}#{if payload["deletion_reason"], do: "Löschgrund: #{payload["deletion_reason"]}\n", else: ""}
         """
 
         {subject, html, text}
@@ -1189,6 +1222,69 @@ defmodule MehrSchulferien.Email do
         """
 
         {subject, html, text}
+    end
+  end
+
+  defp load_school_with_address(school_id) do
+    case Locations.get_location(school_id) do
+      nil -> nil
+      school -> MehrSchulferien.Repo.preload(school, :address)
+    end
+  end
+
+  defp build_update_school_context(pending_change) do
+    case load_school_with_address(pending_change.original_record_id) do
+      nil ->
+        {nil, nil, %{}}
+
+      school ->
+        wiki_url = "https://www.mehr-schulferien.de/wiki/schools/#{school.slug}"
+        changes = build_pending_school_changes(school, pending_change.payload)
+        {school, wiki_url, changes}
+    end
+  end
+
+  defp build_pending_school_changes(school, payload) do
+    changes = %{}
+
+    # Check name change
+    changes =
+      if payload["school_name"] && payload["school_name"] != school.name do
+        Map.put(changes, "Schulname", {school.name, payload["school_name"]})
+      else
+        changes
+      end
+
+    # Check address changes
+    address_params = payload["address_params"] || %{}
+
+    if school.address do
+      field_mappings = [
+        {"street", :street, "Straße"},
+        {"zip_code", :zip_code, "PLZ"},
+        {"city", :city, "Stadt"},
+        {"email_address", :email_address, "E-Mail"},
+        {"phone_number", :phone_number, "Telefon"},
+        {"homepage_url", :homepage_url, "Homepage"},
+        {"wikipedia_url", :wikipedia_url, "Wikipedia"},
+        {"instagram_url", :instagram_url, "Instagram"},
+        {"students_count", :students_count, "Schülerzahl"},
+        {"founded_year", :founded_year, "Gründungsjahr"},
+        {"description", :description, "Beschreibung"}
+      ]
+
+      Enum.reduce(field_mappings, changes, fn {param_key, struct_key, label}, acc ->
+        new_value = address_params[param_key]
+        old_value = Map.get(school.address, struct_key)
+
+        if new_value != nil && to_string(new_value) != to_string(old_value) do
+          Map.put(acc, label, {old_value, new_value})
+        else
+          acc
+        end
+      end)
+    else
+      changes
     end
   end
 
