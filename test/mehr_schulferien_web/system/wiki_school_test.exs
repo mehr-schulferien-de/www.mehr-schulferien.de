@@ -17,7 +17,7 @@ defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
       school: school,
       address: address
     } do
-      # This test validates the specific issue reported: 
+      # This test validates the specific issue reported:
       # "When I enter a new street... and save it nothing happens"
 
       # Step 1: Visit the wiki overview page

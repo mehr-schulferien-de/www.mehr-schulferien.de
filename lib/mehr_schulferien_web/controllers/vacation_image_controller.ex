@@ -1,8 +1,9 @@
 defmodule MehrSchulferienWeb.VacationImageController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Repo, Locations, Calendars.DateHelpers, ImageConverterResvg, ImageCache}
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.Calendars.HolidayOrVacationType
+  alias MehrSchulferien.{ImageCache, ImageConverterResvg, Locations, Repo}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Helpers.HandwrittenDateImage
   import Ecto.Query

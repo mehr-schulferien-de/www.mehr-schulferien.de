@@ -1,9 +1,9 @@
 defmodule MehrSchulferienWeb.BridgeDayImageController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Locations, ImageConverterResvg, ImageCache, Periods}
-  alias MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage
+  alias MehrSchulferien.{ImageCache, ImageConverterResvg, Locations, Periods}
   alias MehrSchulferienWeb.BridgeDayView
+  alias MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage
 
   def handwritten_svg(conn, %{
         "country_slug" => country_slug,

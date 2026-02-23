@@ -4,7 +4,7 @@ defmodule MehrSchulferienWeb.BridgeDayFormatter do
   Used by both MCP server and REST API v2.1 endpoints.
   """
 
-  alias MehrSchulferien.{Periods, BridgeDayCalculations}
+  alias MehrSchulferien.{BridgeDayCalculations, Periods}
   alias MehrSchulferien.Periods.Grouping
 
   @doc """

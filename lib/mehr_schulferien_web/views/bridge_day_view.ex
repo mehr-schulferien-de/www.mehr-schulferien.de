@@ -1,8 +1,8 @@
 defmodule MehrSchulferienWeb.BridgeDayView do
   use MehrSchulferienWeb, :view
 
-  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.BridgeDayCalculations
+  alias MehrSchulferien.Calendars.DateHelpers
 
   def format_month_header(start_date, end_date) do
     months_map = DateHelpers.get_months_map()

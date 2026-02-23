@@ -114,7 +114,7 @@ defmodule MehrSchulferienWeb.Api.V21.VacationOptimizerControllerTest do
 
       response = json_response(conn, 400)
       assert is_list(response["errors"])
-      assert length(response["errors"]) > 0
+      assert response["errors"] != []
     end
 
     test "returns error for invalid days (> 60)", %{conn: conn, bayern: bayern, year: year} do

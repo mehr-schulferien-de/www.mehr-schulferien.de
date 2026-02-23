@@ -261,21 +261,19 @@ defmodule MehrSchulferien.Maps.Address do
     # Clean the input by removing common separators but keep spaces for formatting
     cleaned = String.replace(phone_number, ~r/[-\/\(\)]/, "")
 
-    cond do
+    if String.starts_with?(cleaned, "+") do
       # Already in international format
-      String.starts_with?(cleaned, "+") ->
-        phone_number
-
+      phone_number
+    else
       # Try to parse as German number
-      true ->
-        case ExPhoneNumber.parse(cleaned, "DE") do
-          {:ok, parsed_number} ->
-            ExPhoneNumber.format(parsed_number, :international)
+      case ExPhoneNumber.parse(cleaned, "DE") do
+        {:ok, parsed_number} ->
+          ExPhoneNumber.format(parsed_number, :international)
 
-          _ ->
-            # If parsing fails, leave original unchanged to avoid data loss
-            phone_number
-        end
+        _ ->
+          # If parsing fails, leave original unchanged to avoid data loss
+          phone_number
+      end
     end
   end
 

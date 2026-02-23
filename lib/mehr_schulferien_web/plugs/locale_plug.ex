@@ -26,9 +26,9 @@ defmodule MehrSchulferienWeb.LocalePlug do
   end
 
   defp get_locale(conn) do
-    # Priority: 
+    # Priority:
     # 1. URL parameter "locale"
-    # 2. Session "locale" 
+    # 2. Session "locale"
     # 3. Browser Accept-Language header
     # 4. Default locale
 

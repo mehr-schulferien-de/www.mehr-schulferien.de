@@ -236,7 +236,7 @@ defmodule MehrSchulferien.Email do
 
   defp format_changes_html(changes) when is_map(changes) do
     changes
-    |> Enum.map(fn {field, {old, new}} ->
+    |> Enum.map_join("\n", fn {field, {old, new}} ->
       cond do
         old == "" || old == nil ->
           "<p><strong>#{humanize_field(field)}:</strong> <span style='color: #666;'>(neu)</span> → <span style='color: #059669;'>#{new || "leer"}</span></p>"
@@ -248,14 +248,13 @@ defmodule MehrSchulferien.Email do
           "<p><strong>#{humanize_field(field)}:</strong> <span style='color: #dc2626;'>#{old}</span> → <span style='color: #059669;'>#{new || "leer"}</span></p>"
       end
     end)
-    |> Enum.join("\n")
   end
 
   defp format_changes_html(_), do: "<p>Keine Änderungen verfügbar</p>"
 
   defp format_changes_text(changes) when is_map(changes) do
     changes
-    |> Enum.map(fn {field, {old, new}} ->
+    |> Enum.map_join("\n", fn {field, {old, new}} ->
       cond do
         old == "" || old == nil ->
           "#{humanize_field(field)}: (neu) → #{new || "leer"}"
@@ -267,7 +266,6 @@ defmodule MehrSchulferien.Email do
           "#{humanize_field(field)}: #{old} → #{new || "leer"}"
       end
     end)
-    |> Enum.join("\n")
   end
 
   defp format_changes_text(_), do: "Keine Änderungen verfügbar"
@@ -277,8 +275,7 @@ defmodule MehrSchulferien.Email do
     |> to_string()
     |> String.replace("_", " ")
     |> String.split()
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join(" ")
+    |> Enum.map_join(" ", &String.capitalize/1)
   end
 
   # Build the "before" state by reconstructing old values from changes
@@ -1294,8 +1291,7 @@ defmodule MehrSchulferien.Email do
     changes =
       address_params
       |> Enum.filter(fn {_k, v} -> v != nil && v != "" end)
-      |> Enum.map(fn {k, v} -> "<p><strong>#{humanize_field(k)}:</strong> #{v}</p>" end)
-      |> Enum.join("\n")
+      |> Enum.map_join("\n", fn {k, v} -> "<p><strong>#{humanize_field(k)}:</strong> #{v}</p>" end)
 
     if changes == "", do: "", else: "<h4>Adressänderungen:</h4>\n#{changes}"
   end
@@ -1306,8 +1302,7 @@ defmodule MehrSchulferien.Email do
     changes =
       address_params
       |> Enum.filter(fn {_k, v} -> v != nil && v != "" end)
-      |> Enum.map(fn {k, v} -> "#{humanize_field(k)}: #{v}" end)
-      |> Enum.join("\n")
+      |> Enum.map_join("\n", fn {k, v} -> "#{humanize_field(k)}: #{v}" end)
 
     if changes == "", do: "", else: "Adressänderungen:\n#{changes}"
   end

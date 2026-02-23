@@ -11,9 +11,9 @@ defmodule MehrSchulferien.Accounts do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Repo
   alias MehrSchulferien.Accounts.{User, UserToken}
   alias MehrSchulferien.{Email, Mailer}
+  alias MehrSchulferien.Repo
 
   # ============================================================================
   # User Management

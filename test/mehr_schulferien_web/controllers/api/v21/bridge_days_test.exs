@@ -151,7 +151,7 @@ defmodule MehrSchulferienWeb.Api.V21.BridgeDaysTest do
           bridge_days = data["bridge_days"]
           assert is_list(bridge_days)
 
-          if length(bridge_days) > 0 do
+          if bridge_days != [] do
             bridge_day = hd(bridge_days)
 
             # Check required fields

@@ -88,8 +88,7 @@ defmodule MehrSchulferien.ImageCache do
 
     filename =
       filename_parts
-      |> Enum.map(&to_string/1)
-      |> Enum.join("-")
+      |> Enum.map_join("-", &to_string/1)
       |> String.replace(~r/[^a-zA-Z0-9\-_]/, "_")
 
     Path.join(get_cache_dir(), "#{filename}.webp")

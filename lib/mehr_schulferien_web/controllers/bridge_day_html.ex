@@ -15,8 +15,8 @@ defmodule MehrSchulferienWeb.BridgeDayHTML do
   # Import shared components for unified design
   import MehrSchulferienWeb.Shared.TypographyComponent
 
-  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.BridgeDayCalculations
+  alias MehrSchulferien.Calendars.DateHelpers
 
   def format_month_header(start_date, end_date) do
     months_map = DateHelpers.get_months_map()

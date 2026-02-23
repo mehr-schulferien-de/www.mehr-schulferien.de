@@ -1,8 +1,8 @@
 defmodule MehrSchulferienWeb.FederalState.MonthEventsComponent do
   use Phoenix.Component
 
-  alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Formatters.DateFormatter
+  alias MehrSchulferienWeb.ViewHelpers
   import MehrSchulferienWeb.FederalState.PeriodNameComponent
 
   attr :month_periods, :list, required: true

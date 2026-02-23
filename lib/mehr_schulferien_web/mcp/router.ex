@@ -66,8 +66,8 @@ defmodule MehrSchulferienWeb.MCP.Router do
         "tools/list" -> handle_tools_list(request)
         "tools/call" -> handle_tool_call(request)
         "ping" -> handle_ping(request)
-        nil -> %{error: %{code: -32600, message: "Invalid request - missing method"}}
-        _ -> %{error: %{code: -32601, message: "Method not found"}}
+        nil -> %{error: %{code: -32_600, message: "Invalid request - missing method"}}
+        _ -> %{error: %{code: -32_601, message: "Method not found"}}
       end
 
     send_resp(conn, 200, Jason.encode!(response))
@@ -75,7 +75,7 @@ defmodule MehrSchulferienWeb.MCP.Router do
     e ->
       error_response = %{
         error: %{
-          code: -32700,
+          code: -32_700,
           message: "Parse error",
           data: inspect(e)
         }
@@ -154,7 +154,7 @@ defmodule MehrSchulferienWeb.MCP.Router do
         %{
           jsonrpc: "2.0",
           error: %{
-            code: -32602,
+            code: -32_602,
             message: message
           }
         }
@@ -163,7 +163,7 @@ defmodule MehrSchulferienWeb.MCP.Router do
         %{
           jsonrpc: "2.0",
           error: %{
-            code: -32603,
+            code: -32_603,
             message: "Internal error"
           }
         }
@@ -171,12 +171,10 @@ defmodule MehrSchulferienWeb.MCP.Router do
   end
 
   defp safe_mcp_key_to_atom(key) when is_binary(key) do
-    try do
-      atom = String.to_existing_atom(key)
-      if atom in @known_mcp_argument_keys, do: {:ok, atom}, else: :error
-    rescue
-      ArgumentError -> :error
-    end
+    atom = String.to_existing_atom(key)
+    if atom in @known_mcp_argument_keys, do: {:ok, atom}, else: :error
+  rescue
+    ArgumentError -> :error
   end
 
   defp safe_mcp_key_to_atom(_), do: :error
@@ -325,7 +323,7 @@ defmodule MehrSchulferienWeb.MCP.Router do
           type: "object",
           properties: %{
             school_slug: %{type: "string"},
-            distance_meters: %{type: "integer", minimum: 100, maximum: 50000}
+            distance_meters: %{type: "integer", minimum: 100, maximum: 50_000}
           },
           required: ["school_slug", "distance_meters"]
         }

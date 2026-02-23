@@ -4,43 +4,41 @@ defmodule MehrSchulferienWeb.DocumentPdfController do
   alias MehrSchulferien.{Locations, PdfGenerator}
 
   def download(conn, %{"school_slug" => school_slug, "document_type" => document_type} = params) do
-    try do
-      school = Locations.get_school_by_slug!(school_slug)
+    school = Locations.get_school_by_slug!(school_slug)
 
-      # Extract and validate form data from params
-      form_data = extract_form_data(params, document_type)
+    # Extract and validate form data from params
+    form_data = extract_form_data(params, document_type)
 
-      # Generate PDF based on document type
-      pdf_result =
-        case document_type do
-          "entschuldigung" -> PdfGenerator.generate_entschuldigung_pdf(form_data, school)
-          "beurlaubung" -> PdfGenerator.generate_beurlaubung_pdf(form_data, school)
-          "sportbefreiung" -> PdfGenerator.generate_sportbefreiung_pdf(form_data, school)
-          _ -> {:error, "Unknown document type"}
-        end
-
-      case pdf_result do
-        {:ok, pdf_binary} ->
-          filename = generate_filename(form_data, document_type)
-
-          conn
-          |> send_download({:binary, pdf_binary},
-            filename: filename,
-            content_type: "application/pdf"
-          )
-
-        {:error, reason} ->
-          conn
-          |> put_flash(:error, "PDF konnte nicht erstellt werden: #{reason}")
-          |> redirect(to: "/briefe/#{school_slug}/#{document_type}")
+    # Generate PDF based on document type
+    pdf_result =
+      case document_type do
+        "entschuldigung" -> PdfGenerator.generate_entschuldigung_pdf(form_data, school)
+        "beurlaubung" -> PdfGenerator.generate_beurlaubung_pdf(form_data, school)
+        "sportbefreiung" -> PdfGenerator.generate_sportbefreiung_pdf(form_data, school)
+        _ -> {:error, "Unknown document type"}
       end
-    rescue
-      Ecto.NoResultsError ->
+
+    case pdf_result do
+      {:ok, pdf_binary} ->
+        filename = generate_filename(form_data, document_type)
+
         conn
-        |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorView)
-        |> render("404.html")
+        |> send_download({:binary, pdf_binary},
+          filename: filename,
+          content_type: "application/pdf"
+        )
+
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, "PDF konnte nicht erstellt werden: #{reason}")
+        |> redirect(to: "/briefe/#{school_slug}/#{document_type}")
     end
+  rescue
+    Ecto.NoResultsError ->
+      conn
+      |> put_status(:not_found)
+      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> render("404.html")
   end
 
   defp extract_form_data(params, document_type) do

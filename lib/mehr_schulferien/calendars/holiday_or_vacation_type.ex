@@ -14,8 +14,9 @@ defmodule MehrSchulferien.Calendars.HolidayOrVacationType do
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.{Calendars, Slugs.NameSlug, Periods}
+  alias MehrSchulferien.Calendars
   alias MehrSchulferien.Locations.Location
+  alias MehrSchulferien.{Periods, Slugs.NameSlug}
 
   schema "holiday_or_vacation_types" do
     # Basic attributes

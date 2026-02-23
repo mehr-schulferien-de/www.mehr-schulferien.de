@@ -84,7 +84,7 @@ defmodule MehrSchulferien.CalendarsTest do
       types = Calendars.list_holiday_or_vacation_types()
 
       # Ensure we actually got some results
-      assert length(types) > 0
+      assert types != []
 
       # Check if our inserted type is in the list
       found = Enum.find(types, &(&1.id == holiday_or_vacation_type.id))

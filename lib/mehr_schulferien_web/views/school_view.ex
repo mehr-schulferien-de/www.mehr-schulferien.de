@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.SchoolView do
   use MehrSchulferienWeb, :view
 
-  alias MehrSchulferienWeb.{ViewHelpers}
+  alias MehrSchulferienWeb.ViewHelpers
 
   # Import the components we need for our templates
   import MehrSchulferienWeb.School.PeriodsTableComponent

@@ -2,7 +2,7 @@ defmodule MehrSchulferien.PeriodsLimitTest do
   use MehrSchulferien.DataCase
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.{Periods, Wiki, Config}
+  alias MehrSchulferien.{Config, Periods, Wiki}
 
   # Helper function to find the next weekday from a given date
   defp find_next_weekday(date) do

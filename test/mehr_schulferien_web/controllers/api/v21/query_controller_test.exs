@@ -69,7 +69,7 @@ defmodule MehrSchulferienWeb.Api.V21.QueryControllerTest do
 
       assert data["is_public_holiday"] == false
       assert data["location"]["slug"] == federal_state.slug
-      assert length(data["holidays"]) == 0
+      assert data["holidays"] == []
     end
 
     test "uses today as default date", %{conn: conn, federal_state: federal_state} do
@@ -110,7 +110,7 @@ defmodule MehrSchulferienWeb.Api.V21.QueryControllerTest do
 
       assert data["is_school_day"] == true
       assert data["location"]["slug"] == federal_state.slug
-      assert length(data["school_free_periods"]) == 0
+      assert data["school_free_periods"] == []
     end
 
     test "returns false for weekend", %{conn: conn, federal_state: federal_state} do

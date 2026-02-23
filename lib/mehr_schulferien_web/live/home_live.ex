@@ -1,10 +1,10 @@
 defmodule MehrSchulferienWeb.HomeLive do
   use MehrSchulferienWeb, :live_view
 
-  alias MehrSchulferienWeb.NavigationHelper
-  alias MehrSchulferienWeb.Formatters.DateFormatter
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferienWeb.Formatters.DateFormatter
   alias MehrSchulferienWeb.Live.Shared.{LocationHistoryHelpers, SchoolSearchLogic}
+  alias MehrSchulferienWeb.NavigationHelper
   import MehrSchulferienWeb.Shared.LocationHistoryComponent
 
   @impl true
@@ -112,7 +112,7 @@ defmodule MehrSchulferienWeb.HomeLive do
               socket
             end
 
-          # Further filter by school name if provided  
+          # Further filter by school name if provided
           if String.length(school_name) >= 1 do
             filter_by_school_name(socket, school_name)
           else
@@ -204,12 +204,10 @@ defmodule MehrSchulferienWeb.HomeLive do
   end
 
   defp validate_sort_field(field) when is_binary(field) do
-    try do
-      atom = String.to_existing_atom(field)
-      if atom in @valid_sort_fields, do: {:ok, atom}, else: :error
-    rescue
-      ArgumentError -> :error
-    end
+    atom = String.to_existing_atom(field)
+    if atom in @valid_sort_fields, do: {:ok, atom}, else: :error
+  rescue
+    ArgumentError -> :error
   end
 
   defp validate_sort_field(_), do: :error
@@ -389,7 +387,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           id: s.id,
           name: s.name,
           slug: s.slug,
-          # City fields  
+          # City fields
           city_id: city.id,
           city_name: city.name,
           city_slug: city.slug,
@@ -438,19 +436,17 @@ defmodule MehrSchulferienWeb.HomeLive do
   end
 
   defp handle_federal_state_search(socket, federal_state_id) do
-    try do
-      federal_state_overview = load_federal_state_overview(federal_state_id, socket.assigns.today)
-      cities_with_schools = load_all_cities_with_schools(federal_state_id)
+    federal_state_overview = load_federal_state_overview(federal_state_id, socket.assigns.today)
+    cities_with_schools = load_all_cities_with_schools(federal_state_id)
 
+    socket
+    |> assign(:federal_state_overview, federal_state_overview)
+    |> assign(:cities_with_schools, cities_with_schools)
+    |> assign(:show_all_schools, true)
+    |> assign(:schools, [])
+  rescue
+    Ecto.NoResultsError ->
       socket
-      |> assign(:federal_state_overview, federal_state_overview)
-      |> assign(:cities_with_schools, cities_with_schools)
-      |> assign(:show_all_schools, true)
-      |> assign(:schools, [])
-    rescue
-      Ecto.NoResultsError ->
-        socket
-    end
   end
 
   # Helper functions for the new search logic
@@ -535,7 +531,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
           {city, filtered_schools}
         end)
-        |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
+        |> Enum.filter(fn {_city, schools} -> schools != [] end)
 
       assign(socket, :cities_with_schools, filtered_cities)
     else
@@ -552,7 +548,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
           {city, filtered_schools}
         end)
-        |> Enum.filter(fn {_city, schools} -> length(schools) > 0 end)
+        |> Enum.filter(fn {_city, schools} -> schools != [] end)
 
       assign(socket, :cities_with_schools, filtered_cities)
     end
@@ -619,7 +615,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         }
       end)
 
-    if length(schools) > 0 do
+    if schools != [] do
       # Group schools by city - ensure we're grouping by city ID to avoid issues
       cities_with_schools =
         schools
@@ -691,7 +687,7 @@ defmodule MehrSchulferienWeb.HomeLive do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
-    # Support wildcard searches with * 
+    # Support wildcard searches with *
     city_pattern =
       if String.contains?(city_name, "*") do
         # Replace * with % for SQL wildcard
@@ -734,7 +730,7 @@ defmodule MehrSchulferienWeb.HomeLive do
 
     results = Repo.all(query)
 
-    if length(results) > 0 do
+    if results != [] do
       # Group results by city
       cities_with_schools =
         results
@@ -770,7 +766,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           {city, schools}
         end)
 
-      if length(cities_with_schools) > 0 do
+      if cities_with_schools != [] do
         # Only set federal state if there's exactly one city
         socket =
           if length(cities_with_schools) == 1 do
@@ -821,7 +817,7 @@ defmodule MehrSchulferienWeb.HomeLive do
     import Ecto.Query
     alias MehrSchulferien.Repo
 
-    # Support wildcard searches with * 
+    # Support wildcard searches with *
     school_pattern =
       if String.contains?(school_name, "*") do
         # Replace * with % for SQL wildcard
@@ -887,7 +883,7 @@ defmodule MehrSchulferienWeb.HomeLive do
         }
       end)
 
-    if length(schools) > 0 do
+    if schools != [] do
       # Group schools by city
       cities_with_schools =
         schools
@@ -962,13 +958,11 @@ defmodule MehrSchulferienWeb.HomeLive do
     # Filter for future bridge days and those that meet minimum gain
     all_bridge_days
     |> Enum.filter(fn bridge_day ->
-      # Check if bridge day is in the future
-      Date.compare(bridge_day.starts_on, today) == :gt
-    end)
-    |> Enum.filter(fn bridge_day ->
-      # Check if it meets minimum gain requirements
-      all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
-      MehrSchulferien.BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
+      Date.compare(bridge_day.starts_on, today) == :gt &&
+        MehrSchulferien.BridgeDayCalculations.meets_minimum_gain?(
+          bridge_day,
+          Periods.list_periods_with_bridge_day(public_periods, bridge_day)
+        )
     end)
     |> Enum.sort_by(& &1.starts_on)
     |> Enum.take(3)
@@ -1933,8 +1927,8 @@ defmodule MehrSchulferienWeb.HomeLive do
   # Pre-compute all bridge day data for all federal states in a single batch operation
   # This eliminates N+1 queries during render (was ~60-100 queries, now ~2 queries)
   defp precompute_bridge_days_data(countries, reference_date) do
+    alias MehrSchulferien.Helpers.{DateComparison, DateConstants}
     alias MehrSchulferien.Periods.Grouping
-    alias MehrSchulferien.Helpers.{DateConstants, DateComparison}
 
     # Collect all federal states and their countries
     all_states_with_country =
@@ -1986,8 +1980,8 @@ defmodule MehrSchulferienWeb.HomeLive do
 
   # Find next bridge day using pre-fetched periods (no DB queries)
   defp find_next_bridge_day_from_periods(public_periods, current_date, days_count) do
-    alias MehrSchulferien.Periods.Grouping
     alias MehrSchulferien.Helpers.DateComparison
+    alias MehrSchulferien.Periods.Grouping
 
     if length(public_periods) < 2 do
       nil
@@ -2003,8 +1997,8 @@ defmodule MehrSchulferienWeb.HomeLive do
 
   # Find best bridge day using pre-fetched periods (no DB queries)
   defp find_best_bridge_day_from_periods(public_periods, start_date) do
+    alias MehrSchulferien.Helpers.{DateComparison, DateConstants}
     alias MehrSchulferien.Periods.Grouping
-    alias MehrSchulferien.Helpers.{DateConstants, DateComparison}
 
     if length(public_periods) < 2 do
       nil
@@ -2014,7 +2008,7 @@ defmodule MehrSchulferienWeb.HomeLive do
       opportunities =
         for days <- DateConstants.min_bridge_days()..DateConstants.extended_max_bridge_days(),
             bridge_days = Map.get(bridge_day_map, days, []),
-            length(bridge_days) > 0 do
+            bridge_days != [] do
           vacation_days = days - 1
 
           bridge_days

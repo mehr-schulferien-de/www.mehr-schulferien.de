@@ -246,12 +246,12 @@ defmodule MehrSchulferienWeb.PageController do
         minutes = div(diff_seconds, 60)
         if minutes == 1, do: "1 minute ago", else: "#{minutes} minutes ago"
 
-      diff_seconds < 86400 ->
+      diff_seconds < 86_400 ->
         hours = div(diff_seconds, 3600)
         if hours == 1, do: "1 hour ago", else: "#{hours} hours ago"
 
       true ->
-        days = div(diff_seconds, 86400)
+        days = div(diff_seconds, 86_400)
         if days == 1, do: "1 day ago", else: "#{days} days ago"
     end
   end

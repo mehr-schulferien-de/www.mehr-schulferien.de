@@ -75,7 +75,7 @@ defmodule MehrSchulferienWeb.Api.V2.PeriodControllerTest do
       assert is_list(response["data"])
 
       # Check that each period has the expected fields
-      if length(response["data"]) > 0 do
+      if response["data"] != [] do
         period = hd(response["data"])
 
         assert Map.has_key?(period, "id")

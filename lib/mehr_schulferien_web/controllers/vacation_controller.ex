@@ -2,8 +2,9 @@ defmodule MehrSchulferienWeb.VacationController do
   use MehrSchulferienWeb, :controller
 
   import Ecto.Query
-  alias MehrSchulferien.{Repo, Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, VacationTypes}
+  alias MehrSchulferien.{Locations, Repo}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
 

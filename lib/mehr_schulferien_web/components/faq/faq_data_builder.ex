@@ -4,11 +4,11 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
   Extracted from FaqComponent to improve maintainability.
   """
 
-  alias MehrSchulferienWeb.FaqViewHelpers
-  alias MehrSchulferienWeb.ViewHelpers
-  alias MehrSchulferienWeb.Helpers.PeriodHelpers
-  alias MehrSchulferien.Periods
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.Periods
+  alias MehrSchulferienWeb.FaqViewHelpers
+  alias MehrSchulferienWeb.Helpers.PeriodHelpers
+  alias MehrSchulferienWeb.ViewHelpers
 
   def build(assigns) do
     location = assigns.location
@@ -274,7 +274,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
   end
 
   defp build_schools_question(assigns) do
-    if assigns.city && length(assigns.schools) > 0 do
+    if assigns.city && assigns.schools != [] do
       schools_answer = Enum.map_join(assigns.schools, ", ", fn school -> school.name end)
 
       %{
@@ -287,7 +287,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
   end
 
   defp build_nearby_schools_question(assigns) do
-    if assigns.nearby_schools && length(assigns.nearby_schools) > 0 do
+    if assigns.nearby_schools && assigns.nearby_schools != [] do
       sorted_schools =
         Enum.sort_by(assigns.nearby_schools, fn {school, _distance} -> school.name end)
 
@@ -321,7 +321,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
           "#{school.name} (#{distance_text})"
         end)
 
-      if length(schools_except_last) > 0 do
+      if schools_except_last != [] do
         "#{schools_text} und #{last_school.name} (#{last_distance_text})"
       else
         "#{last_school.name} (#{last_distance_text})"

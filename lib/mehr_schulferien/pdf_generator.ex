@@ -320,12 +320,10 @@ defmodule MehrSchulferien.PdfGenerator do
     zip_city =
       Enum.join(Enum.filter([form_data.zip_code, form_data.city], &(&1 && &1 != "")), " ")
 
-    cond do
-      street && street != "" ->
-        Enum.join([street, zip_city], ", ")
-
-      true ->
-        zip_city
+    if street && street != "" do
+      Enum.join([street, zip_city], ", ")
+    else
+      zip_city
     end
   end
 end

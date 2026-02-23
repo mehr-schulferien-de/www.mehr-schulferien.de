@@ -3,8 +3,8 @@ defmodule MehrSchulferienWeb.WikiPeriodIndexLive do
 
   on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
 
-  alias MehrSchulferien.Repo
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.Repo
   alias MehrSchulferienWeb.LocationTrackingHelpers
   import Ecto.Query
 

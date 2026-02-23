@@ -47,7 +47,7 @@ defmodule MehrSchulferienWeb.Api.V2.HolidayOrVacationTypeControllerTest do
       assert %{"data" => types} = response
       assert is_list(types)
       # We created 2 types, but there might be others in the database
-      assert length(types) >= 1
+      assert types != []
 
       # Find our test types in the response
       summer_data = Enum.find(types, &(&1["id"] == summer_vacation.id))
@@ -75,7 +75,7 @@ defmodule MehrSchulferienWeb.Api.V2.HolidayOrVacationTypeControllerTest do
       end
 
       # At minimum, verify the response structure is correct
-      if length(types) > 0 do
+      if types != [] do
         first_type = hd(types)
         assert Map.has_key?(first_type, "id")
         assert Map.has_key?(first_type, "name")
@@ -91,7 +91,7 @@ defmodule MehrSchulferienWeb.Api.V2.HolidayOrVacationTypeControllerTest do
       assert is_list(response["data"])
 
       # Check that each type has the expected fields
-      if length(response["data"]) > 0 do
+      if response["data"] != [] do
         type = hd(response["data"])
 
         assert Map.has_key?(type, "id")

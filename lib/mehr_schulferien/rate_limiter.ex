@@ -12,8 +12,8 @@ defmodule MehrSchulferien.RateLimiter do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Repo
   alias MehrSchulferien.RateLimiter.Counter
+  alias MehrSchulferien.Repo
 
   @user_hourly_limit 10
   @global_hourly_limit 50
@@ -30,9 +30,8 @@ defmodule MehrSchulferien.RateLimiter do
   """
   def check_wiki_limits(user_id) do
     with :ok <- check_user_hourly(user_id),
-         :ok <- check_global_hourly(),
-         :ok <- check_global_daily() do
-      :ok
+         :ok <- check_global_hourly() do
+      check_global_daily()
     end
   end
 

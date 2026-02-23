@@ -83,7 +83,7 @@ defmodule MehrSchulferienWeb.VacationPlannerHTML do
   @doc """
   Formats a list of holidays for display.
   """
-  def format_holidays(holidays) when is_list(holidays) and length(holidays) > 0 do
+  def format_holidays(holidays) when is_list(holidays) and holidays != [] do
     Enum.join(holidays, ", ")
   end
 

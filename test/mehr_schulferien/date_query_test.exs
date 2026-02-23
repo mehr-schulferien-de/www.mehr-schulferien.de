@@ -106,8 +106,8 @@ defmodule MehrSchulferien.DateQueryTest do
       assert result.is_school_day == true
       assert result.is_school_vacation == false
       assert result.is_weekend == false
-      assert length(result.public_holiday_periods) == 0
-      assert length(result.school_vacation_periods) == 0
+      assert result.public_holiday_periods == []
+      assert result.school_vacation_periods == []
       assert result.explanation == "Regulärer Schultag"
     end
 
@@ -139,7 +139,7 @@ defmodule MehrSchulferien.DateQueryTest do
       {is_holiday, periods} = DateQuery.is_public_holiday?(federal_state, regular_day)
 
       assert is_holiday == false
-      assert length(periods) == 0
+      assert periods == []
     end
   end
 
@@ -155,14 +155,14 @@ defmodule MehrSchulferien.DateQueryTest do
       {is_school_day, periods} = DateQuery.is_school_day?(federal_state, weekend)
 
       assert is_school_day == false
-      assert length(periods) == 0
+      assert periods == []
     end
 
     test "returns true for regular day", %{federal_state: federal_state, regular_day: regular_day} do
       {is_school_day, periods} = DateQuery.is_school_day?(federal_state, regular_day)
 
       assert is_school_day == true
-      assert length(periods) == 0
+      assert periods == []
     end
   end
 
@@ -181,7 +181,7 @@ defmodule MehrSchulferien.DateQueryTest do
       {is_vacation, periods} = DateQuery.is_school_vacation?(federal_state, regular_day)
 
       assert is_vacation == false
-      assert length(periods) == 0
+      assert periods == []
     end
   end
 end

@@ -54,8 +54,8 @@ defmodule MehrSchulferienWeb do
         endpoint: MehrSchulferienWeb.Endpoint,
         router: MehrSchulferienWeb.Router
 
-      alias MehrSchulferienWeb.ViewHelpers
       alias MehrSchulferienWeb.FaqViewHelpers
+      alias MehrSchulferienWeb.ViewHelpers
 
       # Import shared components for unified design
       import MehrSchulferienWeb.Shared.TypographyComponent

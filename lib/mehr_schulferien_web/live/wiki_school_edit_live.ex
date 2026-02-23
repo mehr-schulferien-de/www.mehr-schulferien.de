@@ -5,11 +5,11 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
 
   alias MehrSchulferien.{
     Blacklist,
+    Config,
     Locations,
     Maps,
-    Wiki,
-    Config,
-    Repo
+    Repo,
+    Wiki
   }
 
   alias MehrSchulferien.Maps.Address

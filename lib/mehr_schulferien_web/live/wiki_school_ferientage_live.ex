@@ -4,17 +4,17 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
 
   alias MehrSchulferien.{
-    Locations,
-    Periods,
+    Config,
     Email,
+    Locations,
     Mailer,
-    Wiki,
-    Config
+    Periods,
+    Wiki
   }
 
-  alias MehrSchulferienWeb.Formatters.DateFormatter
   alias MehrSchulferien.Helpers.DateParser
   alias MehrSchulferien.Repo
+  alias MehrSchulferienWeb.Formatters.DateFormatter
 
   @impl true
   def mount(%{"slug" => school_slug}, _session, socket) do
@@ -109,7 +109,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
     # Pre-select all ferientage for copying
     selected_ferientage_ids =
-      if length(bewegliche_ferientage) > 0 do
+      if bewegliche_ferientage != [] do
         MapSet.new(Enum.map(bewegliche_ferientage, & &1.id))
       else
         MapSet.new()
@@ -124,7 +124,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
 
     # Perform initial search if we have bewegliche ferientage to copy
     initial_search_results =
-      if length(bewegliche_ferientage) > 0 && !limit_reached do
+      if bewegliche_ferientage != [] && !limit_reached do
         search_results = perform_school_search(school, initial_search_params)
         selected_dates = Enum.map(bewegliche_ferientage, & &1.starts_on)
         enrich_with_existing_ferientage(search_results, selected_dates)
@@ -312,10 +312,10 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
                       end)
 
                     cond do
-                      length(no_school_day_errors) > 0 ->
+                      no_school_day_errors != [] ->
                         "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden (bereits schulfreie Tage)."
 
-                      length(limit_errors) > 0 ->
+                      limit_errors != [] ->
                         "#{successful} bewegliche Ferientage wurden hinzugefügt. #{failed} konnten nicht angelegt werden (Limit erreicht)."
 
                       true ->
@@ -639,7 +639,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
     # Update search results if we have any
     updated_socket = assign(socket, selected_ferientage: new_selected)
 
-    if length(socket.assigns.search_results) > 0 do
+    if socket.assigns.search_results != [] do
       update_search_results_enrichment(updated_socket)
     else
       {:noreply, updated_socket}
@@ -651,7 +651,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
     all_ferientage_ids = Enum.map(socket.assigns.bewegliche_ferientage, & &1.id)
     updated_socket = assign(socket, selected_ferientage: MapSet.new(all_ferientage_ids))
 
-    if length(socket.assigns.search_results) > 0 do
+    if socket.assigns.search_results != [] do
       update_search_results_enrichment(updated_socket)
     else
       {:noreply, updated_socket}
@@ -662,7 +662,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
   def handle_event("deselect_all_ferientage", _params, socket) do
     updated_socket = assign(socket, selected_ferientage: MapSet.new())
 
-    if length(socket.assigns.search_results) > 0 do
+    if socket.assigns.search_results != [] do
       update_search_results_enrichment(updated_socket)
     else
       {:noreply, updated_socket}
@@ -1250,7 +1250,7 @@ defmodule MehrSchulferienWeb.WikiSchoolFerientageLive do
         |> Map.put(:existing_ferientage_dates, already_has_dates)
         |> Map.put(
           :has_all_selected_dates,
-          length(already_has_dates) == length(selected_dates) && length(selected_dates) > 0
+          length(already_has_dates) == length(selected_dates) && selected_dates != []
         )
       end)
     end

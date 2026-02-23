@@ -51,17 +51,15 @@ defmodule MehrSchulferien.Helpers.DateParser do
   end
 
   defp parse_single_date_or_range(date_string) do
-    cond do
+    if String.contains?(date_string, ".-") do
       # Check for range format: "16.-20.02.2026"
-      String.contains?(date_string, ".-") ->
-        parse_date_range(date_string)
-
+      parse_date_range(date_string)
+    else
       # Single date
-      true ->
-        case parse_single_date(date_string) do
-          {:ok, date} -> {:ok, [date]}
-          error -> error
-        end
+      case parse_single_date(date_string) do
+        {:ok, date} -> {:ok, [date]}
+        error -> error
+      end
     end
   end
 
@@ -126,8 +124,7 @@ defmodule MehrSchulferien.Helpers.DateParser do
     dates
     |> Enum.sort(Date)
     |> group_consecutive_dates()
-    |> Enum.map(&format_date_group/1)
-    |> Enum.join(", ")
+    |> Enum.map_join(", ", &format_date_group/1)
   end
 
   defp group_consecutive_dates(dates) do
@@ -164,9 +161,7 @@ defmodule MehrSchulferien.Helpers.DateParser do
       "#{first.day}.-#{last.day}.#{pad(first.month)}.#{first.year}"
     else
       # Different months: show as separate dates
-      dates
-      |> Enum.map(&format_date/1)
-      |> Enum.join(", ")
+      Enum.map_join(dates, ", ", &format_date/1)
     end
   end
 

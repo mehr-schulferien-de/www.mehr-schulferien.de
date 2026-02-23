@@ -9,13 +9,16 @@ defmodule MehrSchulferien.Wiki.PendingChanges do
   import Ecto.Query
   require Logger
 
+  alias MehrSchulferien.Email
+  alias MehrSchulferien.Geocoding.Nominatim
+  alias MehrSchulferien.Locations
+  alias MehrSchulferien.Locations.Location
+  alias MehrSchulferien.Mailer
+  alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.Periods
+  alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Repo
   alias MehrSchulferien.Wiki.PendingChange
-  alias MehrSchulferien.{Locations, Periods, Email, Mailer}
-  alias MehrSchulferien.Locations.Location
-  alias MehrSchulferien.Maps.Address
-  alias MehrSchulferien.Periods.Period
-  alias MehrSchulferien.Geocoding.Nominatim
 
   @doc """
   Creates a new pending change record.
@@ -220,13 +223,11 @@ defmodule MehrSchulferien.Wiki.PendingChanges do
   end
 
   defp do_send_notification_email(pending_change) do
-    try do
-      Email.pending_change_notification(pending_change)
-      |> Mailer.deliver()
-    rescue
-      error ->
-        Logger.error("Failed to send pending change notification: #{inspect(error)}")
-    end
+    Email.pending_change_notification(pending_change)
+    |> Mailer.deliver()
+  rescue
+    error ->
+      Logger.error("Failed to send pending change notification: #{inspect(error)}")
   end
 
   # Apply change based on type

@@ -9,8 +9,8 @@ defmodule MehrSchulferien.Periods.GroupedQuery do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Repo
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.Repo
 
   @doc """
   Returns school vacation periods with consecutive "Bewegliche Ferientage" grouped together.

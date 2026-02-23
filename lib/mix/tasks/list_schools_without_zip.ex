@@ -31,9 +31,9 @@ defmodule Mix.Tasks.ListSchoolsWithoutZip do
 
   import Ecto.Query
 
-  alias MehrSchulferien.Repo
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.Repo
 
   @shortdoc "Lists schools without zip codes"
 
@@ -233,14 +233,12 @@ defmodule Mix.Tasks.ListSchoolsWithoutZip do
       end)
 
     ([headers] ++ rows)
-    |> Enum.map(&format_csv_row/1)
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", &format_csv_row/1)
   end
 
   defp format_csv_row(row) do
     row
-    |> Enum.map(&escape_csv_field/1)
-    |> Enum.join(",")
+    |> Enum.map_join(",", &escape_csv_field/1)
   end
 
   defp escape_csv_field(field) when is_binary(field) do

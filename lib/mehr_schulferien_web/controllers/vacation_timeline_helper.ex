@@ -12,7 +12,7 @@ defmodule MehrSchulferienWeb.VacationTimelineHelper do
         Map.has_key?(assigns, :custom_start_date) && assigns.custom_start_date != nil ->
           assigns.custom_start_date
 
-        Map.has_key?(assigns, :days) && is_list(assigns.days) && length(assigns.days) > 0 ->
+        Map.has_key?(assigns, :days) && is_list(assigns.days) && assigns.days != [] ->
           days = assigns.days
           List.first(days)
 

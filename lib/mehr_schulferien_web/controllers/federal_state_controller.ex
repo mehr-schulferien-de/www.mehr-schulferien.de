@@ -95,28 +95,26 @@ defmodule MehrSchulferienWeb.FederalStateController do
         "country_slug" => country_slug,
         "federal_state_slug" => federal_state_slug
       }) do
-    try do
-      country = Locations.get_country_by_slug!(country_slug)
-      federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
+    country = Locations.get_country_by_slug!(country_slug)
+    federal_state = Locations.get_federal_state_by_slug!(federal_state_slug, country)
 
-      # Use the optimized function to get counties with cities having schools
-      counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state)
+    # Use the optimized function to get counties with cities having schools
+    counties_with_cities = Locations.list_counties_with_cities_having_schools(federal_state)
 
-      location_ids = [country.id, federal_state.id]
-      today = DateHelpers.get_today_or_custom_date(conn)
+    location_ids = [country.id, federal_state.id]
+    today = DateHelpers.get_today_or_custom_date(conn)
 
-      assigns =
-        [
-          counties_with_cities: counties_with_cities,
-          country: country,
-          federal_state: federal_state
-        ] ++
-          CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
+    assigns =
+      [
+        counties_with_cities: counties_with_cities,
+        country: country,
+        federal_state: federal_state
+      ] ++
+        CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
 
-      render(conn, "county_show.html", assigns)
-    rescue
-      Ecto.NoResultsError ->
-        CH.render_not_found_or_empty_database(conn)
-    end
+    render(conn, "county_show.html", assigns)
+  rescue
+    Ecto.NoResultsError ->
+      CH.render_not_found_or_empty_database(conn)
   end
 end

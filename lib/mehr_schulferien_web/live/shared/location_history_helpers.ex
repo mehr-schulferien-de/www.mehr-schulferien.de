@@ -55,39 +55,33 @@ defmodule MehrSchulferienWeb.Live.Shared.LocationHistoryHelpers do
   # Private helpers
 
   defp load_location("f", slug, country) do
-    try do
-      fs = Locations.get_federal_state_by_slug!(slug, country)
-      %{type: :federal_state, location: fs, name: fs.name, slug: fs.slug}
-    rescue
-      _ -> nil
-    end
+    fs = Locations.get_federal_state_by_slug!(slug, country)
+    %{type: :federal_state, location: fs, name: fs.name, slug: fs.slug}
+  rescue
+    _ -> nil
   end
 
   defp load_location("c", slug, _country) do
-    try do
-      city = Locations.get_city_by_slug!(slug)
-      %{type: :city, location: city, name: city.name, slug: city.slug}
-    rescue
-      _ -> nil
-    end
+    city = Locations.get_city_by_slug!(slug)
+    %{type: :city, location: city, name: city.name, slug: city.slug}
+  rescue
+    _ -> nil
   end
 
   defp load_location("s", slug, _country) do
-    try do
-      school = Locations.get_school_by_slug!(slug)
-      # Get parent city for display
-      city = Locations.get_location!(school.parent_location_id)
+    school = Locations.get_school_by_slug!(slug)
+    # Get parent city for display
+    city = Locations.get_location!(school.parent_location_id)
 
-      %{
-        type: :school,
-        location: school,
-        name: school.name,
-        slug: school.slug,
-        city_name: city.name
-      }
-    rescue
-      _ -> nil
-    end
+    %{
+      type: :school,
+      location: school,
+      name: school.name,
+      slug: school.slug,
+      city_name: city.name
+    }
+  rescue
+    _ -> nil
   end
 
   defp load_location(_, _, _), do: nil

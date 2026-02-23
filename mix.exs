@@ -4,7 +4,7 @@ defmodule MehrSchulferien.MixProject do
   def project do
     [
       app: :mehr_schulferien,
-      version: "4.28.2",
+      version: "4.29.0",
       elixir: "~> 1.19",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
@@ -29,6 +29,7 @@ defmodule MehrSchulferien.MixProject do
   defp deps do
     [
       {:claude, "~> 0.2", only: [:dev], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:usage_rules, "~> 0.1", only: [:dev]},
       {:phoenix, "~> 1.8.0"},
       {:phoenix_ecto, "~> 4.6"},
@@ -64,7 +65,8 @@ defmodule MehrSchulferien.MixProject do
       {:mogrify, "~> 0.9.3"},
       {:resvg, "~> 0.5.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
-      {:csv, "~> 3.2"}
+      {:csv, "~> 3.2"},
+      {:pre_commit, "~> 0.3.4", only: :dev}
     ]
   end
 

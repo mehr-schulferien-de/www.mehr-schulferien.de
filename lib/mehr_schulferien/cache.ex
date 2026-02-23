@@ -240,7 +240,7 @@ defmodule MehrSchulferien.Cache do
       :ets.delete(@location_cache, key)
     end)
 
-    # Cleanup query cache  
+    # Cleanup query cache
     query_expired =
       :ets.select(@query_cache, [
         {{:"$1", :"$2", :"$3"}, [{:<, :"$3", current_time}], [:"$1"]}
@@ -250,7 +250,7 @@ defmodule MehrSchulferien.Cache do
       :ets.delete(@query_cache, key)
     end)
 
-    if length(location_expired) > 0 or length(query_expired) > 0 do
+    if location_expired != [] or query_expired != [] do
       Logger.debug(
         "Cache cleanup: removed #{length(location_expired)} location entries, #{length(query_expired)} query entries"
       )

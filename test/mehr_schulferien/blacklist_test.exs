@@ -257,7 +257,7 @@ defmodule MehrSchulferien.BlacklistTest do
 
       removal_logs = Blacklist.remove_matching_data(entry)
 
-      assert length(removal_logs) == 0
+      assert removal_logs == []
 
       # Verify address was not updated
       unchanged_address = MehrSchulferien.Repo.get!(MehrSchulferien.Maps.Address, address.id)

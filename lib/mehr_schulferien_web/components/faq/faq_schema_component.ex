@@ -35,7 +35,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqSchemaComponent do
       end)
 
     # Only render if we have valid questions
-    if length(valid_questions) > 0 do
+    if valid_questions != [] do
       assigns = assign(assigns, :valid_questions, valid_questions)
 
       ~H"""

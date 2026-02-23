@@ -2,9 +2,10 @@ defmodule MehrSchulferien.Calendars.VacationTypesTest do
   # async: false to prevent database deadlocks - this test uses shared location data
   use MehrSchulferien.DataCase, async: false
 
-  alias MehrSchulferien.Calendars.VacationTypes
+  alias MehrSchulferien.Calendars
   alias MehrSchulferien.Calendars.HolidayOrVacationType
-  alias MehrSchulferien.{Locations, Calendars, Periods}
+  alias MehrSchulferien.Calendars.VacationTypes
+  alias MehrSchulferien.{Locations, Periods}
 
   setup do
     # Create test data
@@ -145,7 +146,7 @@ defmodule MehrSchulferien.Calendars.VacationTypesTest do
 
       result = VacationTypes.list_for_federal_state(federal_state, today)
 
-      assert length(result) == 0
+      assert result == []
     end
 
     test "excludes periods outside the date range", %{
@@ -170,7 +171,7 @@ defmodule MehrSchulferien.Calendars.VacationTypesTest do
 
       result = VacationTypes.list_for_federal_state(federal_state, today)
 
-      assert length(result) == 0
+      assert result == []
     end
 
     test "excludes non-school vacation types", %{
@@ -196,7 +197,7 @@ defmodule MehrSchulferien.Calendars.VacationTypesTest do
 
       result = VacationTypes.list_for_federal_state(federal_state, today)
 
-      assert length(result) == 0
+      assert result == []
     end
 
     test "orders by display priority", %{

@@ -3,8 +3,8 @@ defmodule MehrSchulferien.BridgeDayCalculationsConsolidatedTest do
 
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.BridgeDays
   alias MehrSchulferien.BridgeDayCalculations
+  alias MehrSchulferien.BridgeDays
   alias MehrSchulferien.Periods.BridgeDayPeriod
 
   describe "basic calculations" do
@@ -140,7 +140,7 @@ defmodule MehrSchulferien.BridgeDayCalculationsConsolidatedTest do
       total_free_days =
         BridgeDayCalculations.calculate_total_consecutive_free_days(bridge_day, periods)
 
-      # April 3 (Good Friday) + April 4-5 (weekend) + April 6 (Easter Monday) + 
+      # April 3 (Good Friday) + April 4-5 (weekend) + April 6 (Easter Monday) +
       # April 7 (bridge day) + April 8-11 (following days/weekend) = at least 5 days
       assert total_free_days >= 5
     end
@@ -166,7 +166,7 @@ defmodule MehrSchulferien.BridgeDayCalculationsConsolidatedTest do
       total_free_days =
         BridgeDayCalculations.calculate_total_consecutive_free_days(bridge_day, periods)
 
-      # Should include Dec 24-25 (holidays) + Dec 26-27 (weekend) + 
+      # Should include Dec 24-25 (holidays) + Dec 26-27 (weekend) +
       # Dec 28-30 (bridge days) + Dec 31 - Jan 3 (New Year period)
       assert total_free_days >= 7
     end

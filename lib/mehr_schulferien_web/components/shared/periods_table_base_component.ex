@@ -8,9 +8,9 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
 
   use Phoenix.Component
 
-  alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Formatters.DateFormatter
   alias MehrSchulferienWeb.Shared.BadgeComponent
+  alias MehrSchulferienWeb.ViewHelpers
 
   @month_names %{
     1 => "januar",

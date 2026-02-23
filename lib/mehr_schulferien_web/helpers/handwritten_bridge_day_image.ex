@@ -165,7 +165,7 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage do
     entries =
       display_bridge_days
       |> Enum.with_index()
-      |> Enum.map(fn {bridge_day, index} ->
+      |> Enum.map_join("\n", fn {bridge_day, index} ->
         y_position = start_y + index * line_height
 
         # Format the date
@@ -184,19 +184,19 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage do
 
         """
         <g>
-          <circle cx="#{left_margin - 20}" cy="#{y_position - text_size / 3}" 
-                  r="#{bullet_size}" 
+          <circle cx="#{left_margin - 20}" cy="#{y_position - text_size / 3}"
+                  r="#{bullet_size}"
                   fill="#{bullet_color}"/>
-          <text x="#{left_margin}" y="#{y_position}" 
-                font-family="Arial, Helvetica, sans-serif" 
-                font-size="#{text_size}" 
+          <text x="#{left_margin}" y="#{y_position}"
+                font-family="Arial, Helvetica, sans-serif"
+                font-size="#{text_size}"
                 fill="#1e293b"
                 font-weight="600">
             #{date_str}
           </text>
-          <text x="#{left_margin + date_x_offset}" y="#{y_position}" 
-                font-family="Arial, Helvetica, sans-serif" 
-                font-size="#{text_size}" 
+          <text x="#{left_margin + date_x_offset}" y="#{y_position}"
+                font-family="Arial, Helvetica, sans-serif"
+                font-size="#{text_size}"
                 fill="#059669"
                 font-weight="bold">
             #{gain} Tage frei
@@ -204,7 +204,6 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage do
         </g>
         """
       end)
-      |> Enum.join("\n")
 
     # Add summary if there are more bridge days
     remaining = length(sorted_bridge_days) - length(display_bridge_days)

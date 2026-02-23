@@ -1,9 +1,9 @@
 defmodule MehrSchulferienWeb.WikiApprovalControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  alias MehrSchulferien.Wiki.PendingChanges
-  alias MehrSchulferien.Wiki.PendingChange
   alias MehrSchulferien.{Locations, Periods, Repo}
+  alias MehrSchulferien.Wiki.PendingChange
+  alias MehrSchulferien.Wiki.PendingChanges
   import MehrSchulferien.Factory
 
   describe "approve/2 for create_school" do

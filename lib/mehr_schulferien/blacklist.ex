@@ -12,10 +12,10 @@ defmodule MehrSchulferien.Blacklist do
   import Ecto.Query, warn: false
   require Logger
 
-  alias MehrSchulferien.Repo
   alias MehrSchulferien.Blacklist.{Entry, PatternMatcher, RemovalLog, VerificationRequest}
-  alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.{Email, Mailer}
+  alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.Repo
 
   @rate_limit_requests 3
   @rate_limit_hours 1
@@ -308,10 +308,9 @@ defmodule MehrSchulferien.Blacklist do
   def format_blocked_fields_error(blocked_fields) do
     field_descriptions =
       blocked_fields
-      |> Enum.map(fn {field, _value, pattern} ->
+      |> Enum.map_join(", ", fn {field, _value, pattern} ->
         "#{field_type_to_german_label(field)} (gesperrtes Muster: #{pattern})"
       end)
-      |> Enum.join(", ")
 
     "Die folgenden Daten sind gesperrt und können nicht verwendet werden: #{field_descriptions}"
   end

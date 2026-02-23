@@ -5,10 +5,12 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
 
   import Ecto.Query
 
-  alias MehrSchulferien.{Blacklist, Maps, Wiki, Locations, Config}
-  alias MehrSchulferien.Wiki.PendingChanges
-  alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.{Blacklist, Config}
   alias MehrSchulferien.Geocoding.Nominatim
+  alias MehrSchulferien.{Locations, Maps}
+  alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.Wiki
+  alias MehrSchulferien.Wiki.PendingChanges
   require Logger
 
   @impl true
@@ -208,16 +210,14 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
   end
 
   defp validate_and_get_city_from_zip(zip_code) when is_binary(zip_code) and zip_code != "" do
-    try do
-      zip_code_record = Maps.get_zip_code_by_value!(zip_code)
+    zip_code_record = Maps.get_zip_code_by_value!(zip_code)
 
-      case zip_code_record.locations do
-        [city | _] -> {:ok, city}
-        [] -> {:error, :invalid_zip_code}
-      end
-    rescue
-      Ecto.NoResultsError -> {:error, :invalid_zip_code}
+    case zip_code_record.locations do
+      [city | _] -> {:ok, city}
+      [] -> {:error, :invalid_zip_code}
     end
+  rescue
+    Ecto.NoResultsError -> {:error, :invalid_zip_code}
   end
 
   defp validate_and_get_city_from_zip(_), do: {:error, :invalid_zip_code}

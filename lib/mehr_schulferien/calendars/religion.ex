@@ -3,9 +3,9 @@ defmodule MehrSchulferien.Calendars.Religion do
 
   import Ecto.Changeset
 
-  alias MehrSchulferien.Slugs.NameSlug
   alias MehrSchulferien.Calendars.HolidayOrVacationType
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.Slugs.NameSlug
 
   schema "religions" do
     field :name, :string

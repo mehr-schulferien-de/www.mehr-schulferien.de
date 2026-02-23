@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.System.VacationTypeMobileViewTest do
   use MehrSchulferienWeb.ConnCase, async: false
 
-  alias MehrSchulferien.{Locations, Calendars, Periods}
+  alias MehrSchulferien.{Calendars, Locations, Periods}
 
   describe "vacation type page mobile view" do
     setup do

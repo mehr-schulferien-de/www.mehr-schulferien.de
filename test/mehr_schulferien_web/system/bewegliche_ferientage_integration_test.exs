@@ -9,8 +9,9 @@ defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
 
   import Phoenix.LiveViewTest
 
-  alias MehrSchulferien.{Locations, Maps, Calendars, Repo, Periods}
+  alias MehrSchulferien.{Calendars, Locations, Maps}
   alias MehrSchulferien.Maps.ZipCodeMapping
+  alias MehrSchulferien.{Periods, Repo}
 
   describe "bewegliche Ferientage integration" do
     setup [:log_in_wiki_user]

@@ -52,12 +52,11 @@ defmodule MehrSchulferienWeb.WikiView do
           |> Enum.filter(fn key ->
             Map.has_key?(changes, key) and changes[key] not in [nil, ""]
           end)
-          |> Enum.map(fn key ->
+          |> Enum.map_join(", ", fn key ->
             field_name = field_label(key)
             new_value = format_display_value(changes[key])
             "#{field_name}: #{new_value}"
           end)
-          |> Enum.join(", ")
 
         if initial_values == "" do
           "Initiale Erstellung"
@@ -70,7 +69,7 @@ defmodule MehrSchulferienWeb.WikiView do
         change_descriptions =
           field_order
           |> Enum.filter(fn key -> Map.has_key?(changes, key) end)
-          |> Enum.map(fn key ->
+          |> Enum.map_join(", ", fn key ->
             new_value = changes[key]
             old_value = get_old_value(key, version, all_versions)
 
@@ -80,7 +79,6 @@ defmodule MehrSchulferienWeb.WikiView do
 
             "#{field_name}: #{old_display} → #{new_display}"
           end)
-          |> Enum.join(", ")
 
         if change_descriptions == "" do
           "Keine relevanten Änderungen"
@@ -93,7 +91,7 @@ defmodule MehrSchulferienWeb.WikiView do
         change_descriptions =
           field_order
           |> Enum.filter(fn key -> Map.has_key?(changes, key) end)
-          |> Enum.map(fn key ->
+          |> Enum.map_join(", ", fn key ->
             case Map.get(changes, key) do
               [old_value, new_value] ->
                 field_name = field_label(key)
@@ -107,7 +105,6 @@ defmodule MehrSchulferienWeb.WikiView do
                 "#{field_name}: #{new_display}"
             end
           end)
-          |> Enum.join(", ")
 
         if change_descriptions == "" do
           "Keine relevanten Änderungen"
@@ -297,7 +294,7 @@ defmodule MehrSchulferienWeb.WikiView do
 
   # Internal function that does the actual historical reconstruction
   defp get_version_data_historical(version, all_versions) do
-    # Sort all versions by ID to ensure correct order  
+    # Sort all versions by ID to ensure correct order
     sorted_versions = Enum.sort_by(all_versions, & &1.id)
 
     # Find the current version index
@@ -316,7 +313,7 @@ defmodule MehrSchulferienWeb.WikiView do
       # Reconstruct school fields (name) from school versions
       school_data = reconstruct_school_fields(school_versions)
 
-      # Reconstruct address fields from address versions  
+      # Reconstruct address fields from address versions
       address_data = reconstruct_address_fields(address_versions)
 
       # Combine school and address data

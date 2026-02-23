@@ -3,9 +3,11 @@ defmodule MehrSchulferien.BridgeDays do
   Functions for calculating and handling bridge days.
   """
 
-  alias MehrSchulferien.{Locations, Calendars.DateHelpers, Repo, Periods, BridgeDayCalculations}
+  alias MehrSchulferien.{BridgeDayCalculations, Calendars.DateHelpers}
+  alias MehrSchulferien.Helpers.{DateComparison, DateConstants}
+  alias MehrSchulferien.{Locations, Periods}
   alias MehrSchulferien.Periods.Grouping
-  alias MehrSchulferien.Helpers.{DateConstants, DateComparison}
+  alias MehrSchulferien.Repo
 
   @doc """
   Returns whether a location has bridge days for a specific year.
@@ -308,7 +310,7 @@ defmodule MehrSchulferien.BridgeDays do
       opportunities =
         for days <- DateConstants.min_bridge_days()..DateConstants.extended_max_bridge_days(),
             bridge_days = Map.get(bridge_day_map, days, []),
-            length(bridge_days) > 0 do
+            bridge_days != [] do
           vacation_days = days - 1
 
           # Analyze each bridge day opportunity in this category

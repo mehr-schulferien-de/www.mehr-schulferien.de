@@ -3,8 +3,8 @@ defmodule MehrSchulferien.PeriodsTest do
 
   import MehrSchulferien.Factory
 
-  alias MehrSchulferien.{Periods, Periods.CustomICal, Periods.Period}
   alias MehrSchulferien.Locations
+  alias MehrSchulferien.{Periods, Periods.CustomICal, Periods.Period}
 
   describe "periods" do
     @valid_attrs %{
@@ -152,7 +152,7 @@ defmodule MehrSchulferien.PeriodsTest do
       long_time_periods =
         Periods.list_school_vacation_periods(location_ids, ~D[2020-01-01], ~D[2022-12-31])
 
-      assert length(long_time_periods) > 0
+      assert long_time_periods != []
     end
 
     test "group_periods_single_year/2 groups periods with the same name together", %{
@@ -217,7 +217,7 @@ defmodule MehrSchulferien.PeriodsTest do
       # Test list_school_vacation_periods delegation
       vacation_periods = Periods.list_school_vacation_periods(location_ids, start_date, end_date)
       assert is_list(vacation_periods)
-      assert length(vacation_periods) > 0
+      assert vacation_periods != []
 
       # Test list_public_periods delegation
       public_periods = Periods.list_public_periods(location_ids, start_date, end_date)
@@ -245,15 +245,15 @@ defmodule MehrSchulferien.PeriodsTest do
       # Verify that functions can be called without importing MehrSchulferien.Periods.Query
       # This ensures the delegation works properly and avoids compilation order issues
       vacation_periods =
-        apply(Periods, :list_school_vacation_periods, [location_ids, start_date, end_date])
+        Periods.list_school_vacation_periods(location_ids, start_date, end_date)
 
       assert is_list(vacation_periods)
 
-      public_periods = apply(Periods, :list_public_periods, [location_ids, start_date, end_date])
+      public_periods = Periods.list_public_periods(location_ids, start_date, end_date)
       assert is_list(public_periods)
 
       public_everybody_periods =
-        apply(Periods, :list_public_everybody_periods, [location_ids, start_date, end_date])
+        Periods.list_public_everybody_periods(location_ids, start_date, end_date)
 
       assert is_list(public_everybody_periods)
     end

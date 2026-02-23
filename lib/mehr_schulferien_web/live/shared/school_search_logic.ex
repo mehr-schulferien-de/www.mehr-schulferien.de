@@ -42,20 +42,18 @@ defmodule MehrSchulferienWeb.Live.Shared.SchoolSearchLogic do
   def convert_search_params(search_params) do
     location = Map.get(search_params, "location", "")
 
-    cond do
-      is_partial_or_full_zip_code?(location) ->
-        # It's a zip code (partial or full)
-        search_params
-        |> Map.delete("location")
-        |> Map.put("zip_code", location)
-        |> Map.put("city", "")
-
-      true ->
-        # It's a city name or empty
-        search_params
-        |> Map.delete("location")
-        |> Map.put("city", location)
-        |> Map.put("zip_code", "")
+    if is_partial_or_full_zip_code?(location) do
+      # It's a zip code (partial or full)
+      search_params
+      |> Map.delete("location")
+      |> Map.put("zip_code", location)
+      |> Map.put("city", "")
+    else
+      # It's a city name or empty
+      search_params
+      |> Map.delete("location")
+      |> Map.put("city", location)
+      |> Map.put("zip_code", "")
     end
   end
 

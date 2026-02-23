@@ -94,7 +94,7 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
     test "formats large numbers with thousand separators" do
       assert ViewHelpers.format_number(1_234_567) == "1.234.567"
       assert ViewHelpers.format_number(1_000_000) == "1.000.000"
-      assert ViewHelpers.format_number(99999) == "99.999"
+      assert ViewHelpers.format_number(99_999) == "99.999"
     end
 
     test "formats small numbers without separators" do
@@ -106,7 +106,7 @@ defmodule MehrSchulferienWeb.ViewHelpersTest do
     test "formats numbers at thousand boundaries" do
       assert ViewHelpers.format_number(1000) == "1.000"
       assert ViewHelpers.format_number(1234) == "1.234"
-      assert ViewHelpers.format_number(10000) == "10.000"
+      assert ViewHelpers.format_number(10_000) == "10.000"
     end
 
     test "handles nil gracefully" do

@@ -138,7 +138,7 @@ defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
 
       assert redirected_to(conn, 302) =~ "/ferien/d/schule/#{school.slug}"
 
-      # Verify coordinates are in Berlin area (same zip) 
+      # Verify coordinates are in Berlin area (same zip)
       updated_school = MehrSchulferien.Locations.get_school_by_slug!(school.slug)
       # Berlin coordinates should be approximately 52.5, 13.4 (within 0.2 degrees)
       assert_in_delta updated_school.address.lat, 52.5, 0.2

@@ -91,9 +91,7 @@ defmodule Mix.Tasks.SchoolQuarantine do
         Mix.shell().error("School not found: #{slug}")
 
       school ->
-        if not school.is_quarantined do
-          Mix.shell().info("School is not quarantined: #{school.name}")
-        else
+        if school.is_quarantined do
           case Locations.unquarantine_school(school) do
             {:ok, %{model: updated_school}} ->
               Mix.shell().info("✓ Quarantine removed: #{updated_school.name} (#{slug})")
@@ -101,6 +99,8 @@ defmodule Mix.Tasks.SchoolQuarantine do
             {:error, changeset} ->
               Mix.shell().error("Failed to remove quarantine: #{inspect(changeset.errors)}")
           end
+        else
+          Mix.shell().info("School is not quarantined: #{school.name}")
         end
     end
   end

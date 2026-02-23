@@ -87,7 +87,7 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
     official_duration = Date.diff(vacation_period.ends_on, vacation_period.starts_on) + 1
 
     effective_duration =
-      if length(all_periods) > 0 do
+      if all_periods != [] do
         MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(vacation_period, all_periods)
       else
         official_duration
@@ -266,32 +266,29 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
           # Single column layout
           sorted_periods
           |> Enum.with_index()
-          |> Enum.map(fn {period, index} ->
+          |> Enum.map_join("\n      ", fn {period, index} ->
             generate_compact_vacation_entry(period, index, 0, 1, scale_factor, viewbox_width)
           end)
-          |> Enum.join("\n      ")
 
         2 ->
           # Two column layout
           sorted_periods
           |> Enum.with_index()
-          |> Enum.map(fn {period, index} ->
+          |> Enum.map_join("\n      ", fn {period, index} ->
             column = rem(index, 2)
             row = div(index, 2)
             generate_compact_vacation_entry(period, row, column, 2, scale_factor, viewbox_width)
           end)
-          |> Enum.join("\n      ")
 
         3 ->
           # Three column layout
           sorted_periods
           |> Enum.with_index()
-          |> Enum.map(fn {period, index} ->
+          |> Enum.map_join("\n      ", fn {period, index} ->
             column = rem(index, 3)
             row = div(index, 3)
             generate_compact_vacation_entry(period, row, column, 3, scale_factor, viewbox_width)
           end)
-          |> Enum.join("\n      ")
       end
 
     # Scale all sizes based on scale_factor
@@ -537,10 +534,9 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
   end
 
   defp generate_paper_lines do
-    Enum.map(Enum.take_every(50..290, 30), fn y ->
+    Enum.map_join(Enum.take_every(50..290, 30), "\n      ", fn y ->
       "<line x1=\"50\" y1=\"#{y}\" x2=\"350\" y2=\"#{y + :rand.uniform(3) - 2}\" stroke=\"#E5E7EB\" stroke-width=\"1\" opacity=\"0.5\"/>"
     end)
-    |> Enum.join("\n      ")
   end
 
   defp generate_doodles do

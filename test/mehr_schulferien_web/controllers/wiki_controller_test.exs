@@ -323,7 +323,7 @@ defmodule MehrSchulferienWeb.WikiControllerTest do
       lon: 13.4050
     })
 
-    # Create an address for the school using insert! directly 
+    # Create an address for the school using insert! directly
     address =
       MehrSchulferien.Repo.insert!(%Address{
         street: "Musterstraße 123",

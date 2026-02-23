@@ -130,7 +130,7 @@ defmodule MehrSchulferienWeb.VacationFaqComponent do
               if adjacent_info.has_weekend, do: ["angrenzende Wochenenden"], else: []
 
             holiday_parts =
-              if length(adjacent_info.adjacent_holidays) > 0 do
+              if adjacent_info.adjacent_holidays != [] do
                 Enum.map(adjacent_info.adjacent_holidays, fn h ->
                   h.holiday_or_vacation_type.colloquial
                 end)
@@ -382,7 +382,7 @@ defmodule MehrSchulferienWeb.VacationFaqComponent do
     %{
       consecutive_days: consecutive_days,
       holidays: Enum.reverse(holidays),
-      has_holiday: length(holidays) > 0,
+      has_holiday: holidays != [],
       has_weekend: has_weekend
     }
   end
@@ -409,7 +409,7 @@ defmodule MehrSchulferienWeb.VacationFaqComponent do
     %{
       consecutive_days: consecutive_days,
       holidays: Enum.reverse(holidays),
-      has_holiday: length(holidays) > 0,
+      has_holiday: holidays != [],
       has_weekend: has_weekend
     }
   end

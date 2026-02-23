@@ -4,8 +4,9 @@ defmodule MehrSchulferien.Calendars.VacationTypes do
   """
 
   import Ecto.Query
-  alias MehrSchulferien.{Repo, Periods.Period, Calendars.HolidayOrVacationType}
+  alias MehrSchulferien.Calendars.HolidayOrVacationType
   alias MehrSchulferien.Helpers.DateConstants
+  alias MehrSchulferien.{Periods.Period, Repo}
 
   @doc """
   Returns the vacation types that exist for a given federal state.

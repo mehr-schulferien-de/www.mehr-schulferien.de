@@ -1,9 +1,9 @@
 defmodule MehrSchulferien.Wiki.PendingChangesTest do
   use MehrSchulferien.DataCase
 
-  alias MehrSchulferien.Wiki.PendingChanges
-  alias MehrSchulferien.Wiki.PendingChange
   alias MehrSchulferien.{Locations, Periods, Repo}
+  alias MehrSchulferien.Wiki.PendingChange
+  alias MehrSchulferien.Wiki.PendingChanges
   import MehrSchulferien.Factory
 
   describe "create_pending_change/1" do

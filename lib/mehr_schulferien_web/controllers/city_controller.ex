@@ -3,8 +3,8 @@ defmodule MehrSchulferienWeb.CityController do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
-  alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferienWeb.Helpers.UserAgentHelpers
+  alias MehrSchulferienWeb.ViewHelpers
   import MehrSchulferienWeb.LocationTrackingHelpers
 
   def show_year(conn, %{
@@ -67,7 +67,7 @@ defmodule MehrSchulferienWeb.CityController do
       MehrSchulferien.Periods.list_public_periods(location_ids, full_start, full_end)
 
     # Check if we have data
-    has_data = length(all_periods) > 0
+    has_data = all_periods != []
 
     # Get years with data for navigation - optimized to avoid creating intermediate list
     years_with_data =

@@ -83,7 +83,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         #{render_timeline_header(assigns.days_to_show)}
         <tbody>
           <tr>
-            #{Enum.map(assigns.days_to_show, fn day ->
+            #{Enum.map_join(assigns.days_to_show, "", fn day ->
       is_weekend = Date.day_of_week(day) > 5
       highest_priority_period = find_period_for_day(assigns.timeline_periods, day)
       cell_bg_class = cond do
@@ -94,12 +94,14 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       end
 
       "<td class=\"border border-gray-200 dark:border-gray-700 text-center py-1 w-1/12 text-xs h-[30px] #{cell_bg_class}\">#{day.day}.</td>"
-    end) |> Enum.join("")}
+    end)}
           </tr>
         </tbody>
       </table>
       
-      #{if !is_super_bridge_day do
+      #{if is_super_bridge_day do
+      ""
+    else
       """
       <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-3">
         #{if !assigns.is_future_reference && assigns.days_until > 0 do
@@ -121,8 +123,6 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       end}
       </p>
       """
-    else
-      ""
     end}
       
       #{render_legend(assigns.legend_items)}
@@ -130,10 +130,10 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       <p class="text-sm text-gray-800 dark:text-gray-200 mt-3">
         #{assigns.vacation_days} #{if assigns.vacation_days == 1, do: "eingereichten Urlaubstag", else: "eingereichte Urlaubstage"} = 
         <span class="font-medium">#{assigns.total_free_days} freie Tage #{if is_super_bridge_day, do: "🎉", else: ""}</span>
-        #{if !is_super_bridge_day do
-      "(#{assigns.efficiency_percentage}% Gewinn)"
-    else
+        #{if is_super_bridge_day do
       ""
+    else
+      "(#{assigns.efficiency_percentage}% Gewinn)"
     end}
       </p>
     </div>
@@ -160,7 +160,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
     month_headers =
       sorted_month_groups
       |> Enum.with_index()
-      |> Enum.map(fn {{{year, month}, month_days}, index} ->
+      |> Enum.map_join("", fn {{{year, month}, month_days}, index} ->
         # Only abbreviate months that show 3 or fewer days
         use_abbreviation =
           has_multiple_months &&
@@ -192,10 +192,9 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         </th>
         """
       end)
-      |> Enum.join("")
 
     weekday_headers =
-      Enum.map(days, fn day ->
+      Enum.map_join(days, "", fn day ->
         weekday = Date.day_of_week(day)
         weekday_abbr = DateHelpers.weekday(weekday, :short)
 
@@ -203,7 +202,6 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         <td class="bg-gray-50 dark:bg-gray-800 text-[11px] p-0.5 font-normal h-5 border border-gray-200 dark:border-gray-700 text-center w-1/12 text-gray-900 dark:text-gray-100">#{weekday_abbr}</td>
         """
       end)
-      |> Enum.join("")
 
     """
     <thead>
@@ -220,7 +218,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
   # Render legend separately
   defp render_legend(items) do
     legend_items =
-      Enum.map(items, fn item ->
+      Enum.map_join(items, "", fn item ->
         """
         <li class="flex items-center space-x-3">
           <div class="#{item.color} w-4 h-4 flex-shrink-0"></div>
@@ -228,7 +226,6 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
         </li>
         """
       end)
-      |> Enum.join("")
 
     """
     <ul class="text-sm space-y-1 mt-4 text-gray-900 dark:text-gray-100">

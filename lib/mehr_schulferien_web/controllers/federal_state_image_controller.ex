@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.FederalStateImageController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Locations, Calendars.DateHelpers, ImageConverterResvg, ImageCache}
+  alias MehrSchulferien.{Calendars.DateHelpers, ImageCache, ImageConverterResvg, Locations}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Helpers.HandwrittenDateImage
 
@@ -28,7 +28,7 @@ defmodule MehrSchulferienWeb.FederalStateImageController do
       end)
       |> Enum.sort_by(& &1.starts_on, Date)
 
-    if length(school_vacation_periods) > 0 do
+    if school_vacation_periods != [] do
       # Generate SVG showing all vacation periods for the federal state
       svg_content =
         HandwrittenDateImage.generate_all_vacations_svg_for_social(
@@ -97,7 +97,7 @@ defmodule MehrSchulferienWeb.FederalStateImageController do
       end)
       |> Enum.sort_by(& &1.starts_on, Date)
 
-    if length(school_vacation_periods) > 0 do
+    if school_vacation_periods != [] do
       # Generate SVG showing all vacation periods for the federal state
       svg_content =
         HandwrittenDateImage.generate_all_vacations_svg_for_social(

@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.SchoolSearchLive do
   use MehrSchulferienWeb, :live_view
-  alias MehrSchulferienWeb.Live.Shared.SchoolSearchLogic
   alias MehrSchulferienWeb.Live.Shared.LocationHistoryHelpers
+  alias MehrSchulferienWeb.Live.Shared.SchoolSearchLogic
   import MehrSchulferienWeb.Shared.SchoolSearchFormComponent
   import MehrSchulferienWeb.Shared.LocationHistoryComponent
 
@@ -193,12 +193,10 @@ defmodule MehrSchulferienWeb.SchoolSearchLive do
   end
 
   defp validate_sort_field(field) when is_binary(field) do
-    try do
-      atom = String.to_existing_atom(field)
-      if atom in @valid_sort_fields, do: {:ok, atom}, else: :error
-    rescue
-      ArgumentError -> :error
-    end
+    atom = String.to_existing_atom(field)
+    if atom in @valid_sort_fields, do: {:ok, atom}, else: :error
+  rescue
+    ArgumentError -> :error
   end
 
   defp validate_sort_field(_), do: :error

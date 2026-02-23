@@ -4,7 +4,7 @@ defmodule MehrSchulferienWeb.RedirectController do
   # Note: This controller has been fully migrated to use ~p sigil
 
   # ============== NEW: /cities/ to /ferien/ redirects ==============
-  # 
+  #
   # The old URL format used zip codes in the slug: /cities/33619-bielefeld
   # where 33619 is the postal code (PLZ) for that part of Bielefeld.
   # We need to look up the city by zip code and redirect to the proper city slug.
@@ -57,9 +57,9 @@ defmodule MehrSchulferienWeb.RedirectController do
   # Helper function to find a city by zip code
   defp get_city_by_zip_code!(zip_code) do
     import Ecto.Query
-    alias MehrSchulferien.Repo
     alias MehrSchulferien.Locations.Location
     alias MehrSchulferien.Maps.{ZipCode, ZipCodeMapping}
+    alias MehrSchulferien.Repo
 
     # Find the zip code - use limit 1 to handle duplicates
     zip_query = from z in ZipCode, where: z.value == ^zip_code, limit: 1

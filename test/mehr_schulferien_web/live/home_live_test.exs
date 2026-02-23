@@ -98,7 +98,7 @@ defmodule MehrSchulferienWeb.HomeLiveTest do
       assert html =~ "Bayern"
 
       # Should show single city statistics (only 1 city was created)
-      # Should show federal state name again 
+      # Should show federal state name again
       assert html =~ "Bayern"
 
       # Should show city

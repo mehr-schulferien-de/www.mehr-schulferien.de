@@ -5,8 +5,8 @@ defmodule MehrSchulferienWeb.FaqComponent do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
-  alias MehrSchulferienWeb.Helpers.DistanceHelpers
   alias MehrSchulferienWeb.Components.Faq.{FaqDataBuilder, FaqSchemaComponent}
+  alias MehrSchulferienWeb.Helpers.DistanceHelpers
   import Phoenix.HTML, only: [raw: 1]
 
   attr :conn, :any, required: true

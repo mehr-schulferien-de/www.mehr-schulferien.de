@@ -10,7 +10,7 @@ defmodule MehrSchulferien.InvalidYearError do
   defexception message: "Invalid year", plug_status: 404
 end
 
-defmodule MehrSchulferien.NoHolidayOrVacationTypePeriod do
+defmodule MehrSchulferien.NoHolidayOrVacationTypePeriodError do
   defexception message: "Location has no period of the specified holiday_or_vacation_type",
                plug_status: 404
 end

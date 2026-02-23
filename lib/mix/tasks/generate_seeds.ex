@@ -14,11 +14,11 @@ defmodule Mix.Tasks.GenerateSeeds do
 
   use Mix.Task
 
-  alias MehrSchulferien.Repo
-  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, Religion}
-  alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
+  alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.Repo
 
   import Ecto.Query
 

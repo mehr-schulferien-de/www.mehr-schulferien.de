@@ -3,11 +3,11 @@ defmodule MehrSchulferien.Factory do
 
   use ExMachina.Ecto, repo: MehrSchulferien.Repo
 
+  alias MehrSchulferien.Blacklist.{Entry, RemovalLog, VerificationRequest}
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType, Religion}
-  alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.{Address, ZipCode, ZipCodeMapping}
-  alias MehrSchulferien.Blacklist.{VerificationRequest, Entry, RemovalLog}
+  alias MehrSchulferien.Periods.Period
 
   def address_factory(attrs) do
     school_id = attrs[:school_location_id] || insert(:school).id

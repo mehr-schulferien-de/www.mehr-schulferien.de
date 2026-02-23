@@ -12,9 +12,11 @@ defmodule MehrSchulferienWeb.MCP.Server do
     capabilities: [:tools]
 
   import Ecto.Query, warn: false
-  alias MehrSchulferien.{DateQuery, Locations, Periods, BridgeDays, Repo}
-  alias MehrSchulferien.Locations.Location
+  alias MehrSchulferien.BridgeDays
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.{DateQuery, Locations}
+  alias MehrSchulferien.Locations.Location
+  alias MehrSchulferien.{Periods, Repo}
   alias MehrSchulferienWeb.BridgeDayFormatter
 
   def init(_, frame) do
@@ -121,7 +123,7 @@ defmodule MehrSchulferienWeb.MCP.Server do
         school_slug: {:required, :string, description: "Reference school slug"},
         distance_meters:
           {:required, :integer,
-           min: 100, max: 50000, description: "Distance in meters (100-50000)"}
+           min: 100, max: 50_000, description: "Distance in meters (100-50000)"}
       },
       annotations: %{read_only: true}
     )
@@ -339,20 +341,21 @@ defmodule MehrSchulferienWeb.MCP.Server do
   end
 
   def handle_tool("get_federal_states", %{country_slug: country_slug}, frame) do
-    with {:ok, country} <- get_country_by_slug(country_slug) do
-      states = Locations.list_federal_states(country)
+    case get_country_by_slug(country_slug) do
+      {:ok, country} ->
+        states = Locations.list_federal_states(country)
 
-      result =
-        Enum.map(states, fn state ->
-          %{
-            name: state.name,
-            slug: state.slug,
-            code: state.code
-          }
-        end)
+        result =
+          Enum.map(states, fn state ->
+            %{
+              name: state.name,
+              slug: state.slug,
+              code: state.code
+            }
+          end)
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "Country not found: #{country_slug}", frame}
     end
@@ -363,20 +366,21 @@ defmodule MehrSchulferienWeb.MCP.Server do
         %{country_slug: country_slug, federal_state_slug: state_slug},
         frame
       ) do
-    with {:ok, _country, state} <- get_federal_state_and_country(country_slug, state_slug) do
-      counties = Locations.list_counties(state)
+    case get_federal_state_and_country(country_slug, state_slug) do
+      {:ok, _country, state} ->
+        counties = Locations.list_counties(state)
 
-      result =
-        Enum.map(counties, fn county ->
-          %{
-            name: county.name,
-            slug: county.slug,
-            code: county.code
-          }
-        end)
+        result =
+          Enum.map(counties, fn county ->
+            %{
+              name: county.name,
+              slug: county.slug,
+              code: county.code
+            }
+          end)
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "Federal state not found: #{state_slug}", frame}
     end
@@ -387,61 +391,64 @@ defmodule MehrSchulferienWeb.MCP.Server do
         %{country_slug: country_slug, federal_state_slug: state_slug},
         frame
       ) do
-    with {:ok, _country, state} <- get_federal_state_and_country(country_slug, state_slug) do
-      cities = Locations.list_cities_of_federal_state(state)
+    case get_federal_state_and_country(country_slug, state_slug) do
+      {:ok, _country, state} ->
+        cities = Locations.list_cities_of_federal_state(state)
 
-      result =
-        Enum.map(cities, fn city ->
-          %{
-            name: city.name,
-            slug: city.slug,
-            zip_codes: get_zip_codes(city)
-          }
-        end)
+        result =
+          Enum.map(cities, fn city ->
+            %{
+              name: city.name,
+              slug: city.slug,
+              zip_codes: get_zip_codes(city)
+            }
+          end)
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "Federal state not found: #{state_slug}", frame}
     end
   end
 
   def handle_tool("get_cities_by_country", %{country_slug: country_slug}, frame) do
-    with {:ok, country} <- get_country_by_slug(country_slug) do
-      cities = Locations.list_cities_of_country(country)
+    case get_country_by_slug(country_slug) do
+      {:ok, country} ->
+        cities = Locations.list_cities_of_country(country)
 
-      result =
-        Enum.map(cities, fn city ->
-          %{
-            name: city.name,
-            slug: city.slug,
-            zip_codes: get_zip_codes(city)
-          }
-        end)
+        result =
+          Enum.map(cities, fn city ->
+            %{
+              name: city.name,
+              slug: city.slug,
+              zip_codes: get_zip_codes(city)
+            }
+          end)
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "Country not found: #{country_slug}", frame}
     end
   end
 
   def handle_tool("get_schools_by_city", %{city_slug: city_slug}, frame) do
-    with {:ok, city} <- get_city_by_slug(city_slug) do
-      schools = Locations.list_schools_selective(city)
+    case get_city_by_slug(city_slug) do
+      {:ok, city} ->
+        schools = Locations.list_schools_selective(city)
 
-      result =
-        Enum.map(schools, fn school ->
-          %{
-            name: school.name,
-            slug: school.slug,
-            street: school[:street],
-            zip_code: school[:zip_code]
-          }
-        end)
+        result =
+          Enum.map(schools, fn school ->
+            %{
+              name: school.name,
+              slug: school.slug,
+              street: school[:street],
+              zip_code: school[:zip_code]
+            }
+          end)
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "City not found: #{city_slug}", frame}
     end
@@ -452,49 +459,51 @@ defmodule MehrSchulferienWeb.MCP.Server do
         %{country_slug: country_slug, federal_state_slug: state_slug},
         frame
       ) do
-    with {:ok, _country, state} <- get_federal_state_and_country(country_slug, state_slug) do
-      # Get all cities in the state
-      cities = Locations.list_cities_of_federal_state(state)
-      city_ids = Enum.map(cities, & &1.id)
+    case get_federal_state_and_country(country_slug, state_slug) do
+      {:ok, _country, state} ->
+        # Get all cities in the state
+        cities = Locations.list_cities_of_federal_state(state)
+        city_ids = Enum.map(cities, & &1.id)
 
-      # Get all schools in those cities (excluding quarantined)
-      schools =
-        Repo.all(
-          from l in MehrSchulferien.Locations.Location,
-            where:
-              l.is_school == true and l.parent_location_id in ^city_ids and
-                l.is_quarantined == false,
-            select: %{
-              name: l.name,
-              slug: l.slug,
-              city_id: l.parent_location_id
+        # Get all schools in those cities (excluding quarantined)
+        schools =
+          Repo.all(
+            from l in MehrSchulferien.Locations.Location,
+              where:
+                l.is_school == true and l.parent_location_id in ^city_ids and
+                  l.is_quarantined == false,
+              select: %{
+                name: l.name,
+                slug: l.slug,
+                city_id: l.parent_location_id
+              }
+          )
+
+        # Add city names
+        city_map = Map.new(cities, fn city -> {city.id, city.name} end)
+
+        result =
+          Enum.map(schools, fn school ->
+            %{
+              name: school.name,
+              slug: school.slug,
+              city: city_map[school.city_id]
             }
-        )
+          end)
 
-      # Add city names
-      city_map = Map.new(cities, fn city -> {city.id, city.name} end)
+        {:reply, result, frame}
 
-      result =
-        Enum.map(schools, fn school ->
-          %{
-            name: school.name,
-            slug: school.slug,
-            city: city_map[school.city_id]
-          }
-        end)
-
-      {:reply, result, frame}
-    else
       {:error, :not_found} ->
         {:error, "Federal state not found: #{state_slug}", frame}
     end
   end
 
   def handle_tool("get_location_hierarchy", %{location_slug: slug, location_type: type}, frame) do
-    with {:ok, location} <- get_location_by_type(slug, type) do
-      hierarchy = build_location_hierarchy(location)
-      {:reply, hierarchy, frame}
-    else
+    case get_location_by_type(slug, type) do
+      {:ok, location} ->
+        hierarchy = build_location_hierarchy(location)
+        {:reply, hierarchy, frame}
+
       {:error, :not_found} ->
         {:error, "Location not found: #{slug}", frame}
     end
@@ -503,24 +512,25 @@ defmodule MehrSchulferienWeb.MCP.Server do
   # Tool Handlers - School Information
 
   def handle_tool("get_school_details", %{school_slug: school_slug}, frame) do
-    with {:ok, school} <- get_school_by_slug(school_slug) do
-      school = Repo.preload(school, [:address, :parent_location])
+    case get_school_by_slug(school_slug) do
+      {:ok, school} ->
+        school = Repo.preload(school, [:address, :parent_location])
 
-      result = %{
-        name: school.name,
-        slug: school.slug,
-        type: get_school_type(school),
-        address: format_address(school.address),
-        contact: format_contact(school.address),
-        metadata: format_school_metadata(school.address),
-        location: %{
-          city: school.parent_location && school.parent_location.name,
-          city_slug: school.parent_location && school.parent_location.slug
+        result = %{
+          name: school.name,
+          slug: school.slug,
+          type: get_school_type(school),
+          address: format_address(school.address),
+          contact: format_contact(school.address),
+          metadata: format_school_metadata(school.address),
+          location: %{
+            city: school.parent_location && school.parent_location.name,
+            city_slug: school.parent_location && school.parent_location.slug
+          }
         }
-      }
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "School not found: #{school_slug}", frame}
     end
@@ -561,26 +571,27 @@ defmodule MehrSchulferienWeb.MCP.Server do
         %{school_slug: school_slug, distance_meters: distance},
         frame
       ) do
-    with {:ok, school} <- get_school_by_slug(school_slug) do
-      school = Repo.preload(school, :address)
+    case get_school_by_slug(school_slug) do
+      {:ok, school} ->
+        school = Repo.preload(school, :address)
 
-      if school.address && school.address.lat && school.address.lon do
-        nearby = Locations.list_nearby_schools(school, distance)
+        if school.address && school.address.lat && school.address.lon do
+          nearby = Locations.list_nearby_schools(school, distance)
 
-        result =
-          Enum.map(nearby, fn s ->
-            %{
-              name: s.name,
-              slug: s.slug,
-              distance_meters: s.distance
-            }
-          end)
+          result =
+            Enum.map(nearby, fn s ->
+              %{
+                name: s.name,
+                slug: s.slug,
+                distance_meters: s.distance
+              }
+            end)
 
-        {:reply, result, frame}
-      else
-        {:error, "School has no geographic coordinates", frame}
-      end
-    else
+          {:reply, result, frame}
+        else
+          {:error, "School has no geographic coordinates", frame}
+        end
+
       {:error, :not_found} ->
         {:error, "School not found: #{school_slug}", frame}
     end
@@ -629,44 +640,46 @@ defmodule MehrSchulferienWeb.MCP.Server do
   end
 
   def handle_tool("get_public_holidays", params, frame) do
-    with {:ok, location} <- get_location_by_type(params.location_slug, params.location_type) do
-      {:ok, start_date} = Date.new(params.year, 1, 1)
-      {:ok, end_date} = Date.new(params.year, 12, 31)
+    case get_location_by_type(params.location_slug, params.location_type) do
+      {:ok, location} ->
+        {:ok, start_date} = Date.new(params.year, 1, 1)
+        {:ok, end_date} = Date.new(params.year, 12, 31)
 
-      location_ids = Locations.recursive_location_ids(location)
+        location_ids = Locations.recursive_location_ids(location)
 
-      periods =
-        Periods.list_public_everybody_periods(location_ids, start_date, end_date)
-        |> Repo.preload(:holiday_or_vacation_type)
+        periods =
+          Periods.list_public_everybody_periods(location_ids, start_date, end_date)
+          |> Repo.preload(:holiday_or_vacation_type)
 
-      result = Enum.map(periods, &format_period/1)
+        result = Enum.map(periods, &format_period/1)
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "Location not found: #{params.location_slug}", frame}
     end
   end
 
   def handle_tool("get_next_periods", params, frame) do
-    with {:ok, location} <- get_location_by_type(params.location_slug, params.location_type) do
-      count = params[:count] || 5
-      today = DateHelpers.today_berlin()
+    case get_location_by_type(params.location_slug, params.location_type) do
+      {:ok, location} ->
+        count = params[:count] || 5
+        today = DateHelpers.today_berlin()
 
-      location_ids = Locations.recursive_location_ids(location)
+        location_ids = Locations.recursive_location_ids(location)
 
-      # Get periods for the next 2 years
-      end_date = Date.add(today, 730)
+        # Get periods for the next 2 years
+        end_date = Date.add(today, 730)
 
-      periods =
-        Periods.list_school_free_periods(location_ids, today, end_date)
-        |> Repo.preload(:holiday_or_vacation_type)
-        |> Enum.take(count)
+        periods =
+          Periods.list_school_free_periods(location_ids, today, end_date)
+          |> Repo.preload(:holiday_or_vacation_type)
+          |> Enum.take(count)
 
-      result = Enum.map(periods, &format_period/1)
+        result = Enum.map(periods, &format_period/1)
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "Location not found: #{params.location_slug}", frame}
     end
@@ -728,37 +741,38 @@ defmodule MehrSchulferienWeb.MCP.Server do
   # Tool Handlers - Statistics
 
   def handle_tool("get_vacation_statistics", params, frame) do
-    with {:ok, location} <- get_location_by_type(params.location_slug, params.location_type) do
-      {:ok, start_date} = Date.new(params.year, 1, 1)
-      {:ok, end_date} = Date.new(params.year, 12, 31)
+    case get_location_by_type(params.location_slug, params.location_type) do
+      {:ok, location} ->
+        {:ok, start_date} = Date.new(params.year, 1, 1)
+        {:ok, end_date} = Date.new(params.year, 12, 31)
 
-      location_ids = Locations.recursive_location_ids(location)
+        location_ids = Locations.recursive_location_ids(location)
 
-      vacations = Periods.list_school_free_periods(location_ids, start_date, end_date)
-      holidays = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
+        vacations = Periods.list_school_free_periods(location_ids, start_date, end_date)
+        holidays = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
 
-      vacation_days =
-        vacations
-        |> Enum.map(fn p -> Date.diff(p.ends_on, p.starts_on) + 1 end)
-        |> Enum.sum()
+        vacation_days =
+          vacations
+          |> Enum.map(fn p -> Date.diff(p.ends_on, p.starts_on) + 1 end)
+          |> Enum.sum()
 
-      longest_vacation =
-        vacations
-        |> Enum.map(fn p -> Date.diff(p.ends_on, p.starts_on) + 1 end)
-        |> Enum.max(fn -> 0 end)
+        longest_vacation =
+          vacations
+          |> Enum.map(fn p -> Date.diff(p.ends_on, p.starts_on) + 1 end)
+          |> Enum.max(fn -> 0 end)
 
-      result = %{
-        year: params.year,
-        total_vacation_days: vacation_days,
-        vacation_count: length(vacations),
-        holiday_count: length(holidays),
-        longest_vacation_days: longest_vacation,
-        # Rough estimate
-        school_days_estimate: 365 - vacation_days - 52 * 2
-      }
+        result = %{
+          year: params.year,
+          total_vacation_days: vacation_days,
+          vacation_count: length(vacations),
+          holiday_count: length(holidays),
+          longest_vacation_days: longest_vacation,
+          # Rough estimate
+          school_days_estimate: 365 - vacation_days - 52 * 2
+        }
 
-      {:reply, result, frame}
-    else
+        {:reply, result, frame}
+
       {:error, :not_found} ->
         {:error, "Location not found: #{params.location_slug}", frame}
     end
@@ -771,20 +785,22 @@ defmodule MehrSchulferienWeb.MCP.Server do
 
     schedules =
       Enum.map(params.location_slugs, fn slug ->
-        with {:ok, location} <- get_location_by_type(slug, params.location_type) do
-          location_ids = Locations.recursive_location_ids(location)
+        case get_location_by_type(slug, params.location_type) do
+          {:ok, location} ->
+            location_ids = Locations.recursive_location_ids(location)
 
-          periods =
-            Periods.list_school_free_periods(location_ids, start_date, end_date)
-            |> Repo.preload(:holiday_or_vacation_type)
+            periods =
+              Periods.list_school_free_periods(location_ids, start_date, end_date)
+              |> Repo.preload(:holiday_or_vacation_type)
 
-          {:ok,
-           %{
-             location: slug,
-             periods: Enum.map(periods, &format_period/1)
-           }}
-        else
-          {:error, :not_found} -> {:error, slug}
+            {:ok,
+             %{
+               location: slug,
+               periods: Enum.map(periods, &format_period/1)
+             }}
+
+          {:error, :not_found} ->
+            {:error, slug}
         end
       end)
 
@@ -795,7 +811,7 @@ defmodule MehrSchulferienWeb.MCP.Server do
         _ -> false
       end)
 
-    if length(errors) > 0 do
+    if errors != [] do
       error_slugs = Enum.map(errors, fn {:error, slug} -> slug end)
       {:error, "Locations not found: #{Enum.join(error_slugs, ", ")}", frame}
     else
@@ -829,39 +845,43 @@ defmodule MehrSchulferienWeb.MCP.Server do
   end
 
   def handle_tool("get_bewegliche_ferientage", params, frame) do
-    with {:ok, school} <- get_school_by_slug(params.school_slug) do
-      school = Repo.preload(school, :parent_location)
+    case get_school_by_slug(params.school_slug) do
+      {:ok, school} ->
+        school = Repo.preload(school, :parent_location)
 
-      # Get federal state
-      city = school.parent_location
-      county = city && Repo.get(MehrSchulferien.Locations.Location, city.parent_location_id)
+        # Get federal state
+        city = school.parent_location
+        county = city && Repo.get(MehrSchulferien.Locations.Location, city.parent_location_id)
 
-      federal_state =
-        county && Repo.get(MehrSchulferien.Locations.Location, county.parent_location_id)
+        federal_state =
+          county && Repo.get(MehrSchulferien.Locations.Location, county.parent_location_id)
 
-      if federal_state do
-        used_days =
-          Periods.count_bewegliche_ferientage_for_school_year(school.id, params.school_year)
+        if federal_state do
+          used_days =
+            Periods.count_bewegliche_ferientage_for_school_year(school.id, params.school_year)
 
-        limit =
-          case Periods.get_federal_state_ferientage_limit(federal_state.id, params.school_year) do
-            nil -> nil
-            record -> record.max_bewegliche_ferientage
-          end
+          limit =
+            case Periods.get_federal_state_ferientage_limit(
+                   federal_state.id,
+                   params.school_year
+                 ) do
+              nil -> nil
+              record -> record.max_bewegliche_ferientage
+            end
 
-        result = %{
-          school: school.name,
-          school_year: params.school_year,
-          used_days: used_days,
-          max_days: limit || "No limit set",
-          remaining_days: if(limit, do: limit - used_days, else: "Unknown")
-        }
+          result = %{
+            school: school.name,
+            school_year: params.school_year,
+            used_days: used_days,
+            max_days: limit || "No limit set",
+            remaining_days: if(limit, do: limit - used_days, else: "Unknown")
+          }
 
-        {:reply, result, frame}
-      else
-        {:error, "Could not determine federal state for school", frame}
-      end
-    else
+          {:reply, result, frame}
+        else
+          {:error, "Could not determine federal state for school", frame}
+        end
+
       {:error, :not_found} ->
         {:error, "School not found: #{params.school_slug}", frame}
     end
@@ -964,38 +984,34 @@ defmodule MehrSchulferienWeb.MCP.Server do
   end
 
   def handle_tool("get_location_by_slug", %{slug: slug}, frame) do
-    try do
-      location = Locations.get_location_by_slug!(slug)
+    location = Locations.get_location_by_slug!(slug)
 
-      result = %{
-        name: location.name,
-        slug: location.slug,
-        type: get_location_type(location),
-        code: location.code
-      }
+    result = %{
+      name: location.name,
+      slug: location.slug,
+      type: get_location_type(location),
+      code: location.code
+    }
 
-      {:reply, result, frame}
-    rescue
-      Ecto.NoResultsError ->
-        {:error, "Location not found: #{slug}", frame}
-    end
+    {:reply, result, frame}
+  rescue
+    Ecto.NoResultsError ->
+      {:error, "Location not found: #{slug}", frame}
   end
 
   def handle_tool("validate_slug", %{slug: slug}, frame) do
-    try do
-      location = Locations.get_location_by_slug!(slug)
+    location = Locations.get_location_by_slug!(slug)
 
-      {:reply,
-       %{
-         valid: true,
-         slug: slug,
-         type: get_location_type(location),
-         name: location.name
-       }, frame}
-    rescue
-      Ecto.NoResultsError ->
-        {:reply, %{valid: false, slug: slug}, frame}
-    end
+    {:reply,
+     %{
+       valid: true,
+       slug: slug,
+       type: get_location_type(location),
+       name: location.name
+     }, frame}
+  rescue
+    Ecto.NoResultsError ->
+      {:reply, %{valid: false, slug: slug}, frame}
   end
 
   def handle_tool("check_is_public_holiday", params, frame) do
@@ -1378,12 +1394,10 @@ defmodule MehrSchulferienWeb.MCP.Server do
   end
 
   defp get_location_by_slug_safe(slug) do
-    try do
-      location = Locations.get_location_by_slug!(slug)
-      {:ok, location}
-    rescue
-      Ecto.NoResultsError -> {:error, :not_found}
-    end
+    location = Locations.get_location_by_slug!(slug)
+    {:ok, location}
+  rescue
+    Ecto.NoResultsError -> {:error, :not_found}
   end
 
   defp format_error(:not_found), do: "Location not found"

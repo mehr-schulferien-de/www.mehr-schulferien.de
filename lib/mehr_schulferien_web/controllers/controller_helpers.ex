@@ -116,7 +116,7 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
       Enum.filter(check_years, fn check_year ->
         case Map.get(periods_by_year, check_year) do
           nil -> false
-          periods -> length(periods) > 0
+          periods -> periods != []
         end
       end)
       |> Enum.sort()
@@ -141,7 +141,7 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
       end
 
     # Check if data exists for the requested period
-    has_data = length(extended_periods) > 0
+    has_data = extended_periods != []
 
     # Get public holiday periods for the appropriate date range
     {year_start, year_end} =

@@ -52,7 +52,7 @@ defmodule MehrSchulferien.VacationOptimization.ICalGenerator do
 
   defp build_description(vacation_days, total_free_days, efficiency_pct, related_holidays) do
     holidays_text =
-      if related_holidays && length(related_holidays) > 0 do
+      if related_holidays && related_holidays != [] do
         "\\nEnthält: #{Enum.join(related_holidays, ", ")}"
       else
         ""

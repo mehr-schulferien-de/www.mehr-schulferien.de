@@ -17,9 +17,9 @@ defmodule MehrSchulferienWeb.SitemapController do
   end
 
   defp fetch_all_locations_with_periods do
+    alias MehrSchulferien.Calendars.VacationTypes
     alias MehrSchulferien.Locations.Location
     alias MehrSchulferien.Periods.Period
-    alias MehrSchulferien.Calendars.VacationTypes
 
     # Get all countries
     countries = Locations.list_countries()
@@ -28,7 +28,7 @@ defmodule MehrSchulferienWeb.SitemapController do
     countries
     |> Enum.map(fn country ->
       # For development environment, limit the number of entries
-      limit_count = if Application.get_env(:mehr_schulferien, :env) == :dev, do: 20, else: 10000
+      limit_count = if Application.get_env(:mehr_schulferien, :env) == :dev, do: 20, else: 10_000
 
       # Get federal states
       federal_states_query =

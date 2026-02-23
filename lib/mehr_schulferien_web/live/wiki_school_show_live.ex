@@ -5,10 +5,10 @@ defmodule MehrSchulferienWeb.WikiSchoolShowLive do
 
   alias MehrSchulferien.{
     Blacklist,
+    Config,
     Locations,
     Periods,
-    Wiki,
-    Config
+    Wiki
   }
 
   @impl true

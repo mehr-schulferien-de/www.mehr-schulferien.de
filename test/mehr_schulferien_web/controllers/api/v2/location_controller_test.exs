@@ -86,7 +86,7 @@ defmodule MehrSchulferienWeb.Api.V2.LocationControllerTest do
       assert is_list(response["data"])
 
       # Check that each location has the expected fields
-      if length(response["data"]) > 0 do
+      if response["data"] != [] do
         location = hd(response["data"])
 
         assert Map.has_key?(location, "id")

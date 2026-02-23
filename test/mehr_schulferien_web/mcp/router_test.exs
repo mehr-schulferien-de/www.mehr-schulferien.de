@@ -186,7 +186,7 @@ defmodule MehrSchulferienWeb.MCP.RouterTest do
         })
 
       assert response = json_response(conn, 200)
-      assert response["error"]["code"] == -32601
+      assert response["error"]["code"] == -32_601
       assert response["error"]["message"] == "Method not found"
     end
 
@@ -200,7 +200,7 @@ defmodule MehrSchulferienWeb.MCP.RouterTest do
         })
 
       assert response = json_response(conn, 200)
-      assert response["error"]["code"] == -32600
+      assert response["error"]["code"] == -32_600
       assert response["error"]["message"] == "Invalid request - missing method"
     end
 
@@ -219,9 +219,9 @@ defmodule MehrSchulferienWeb.MCP.RouterTest do
         })
 
       assert response = json_response(conn, 200)
-      # The error might be -32700 (parse error) or -32602 (invalid params)
+      # The error might be -32_700 (parse error) or -32_602 (invalid params)
       # depending on how the server handles unknown tools
-      assert response["error"]["code"] in [-32700, -32602]
+      assert response["error"]["code"] in [-32_700, -32_602]
     end
 
     test "properly converts string keys to atoms in arguments", %{conn: conn} do

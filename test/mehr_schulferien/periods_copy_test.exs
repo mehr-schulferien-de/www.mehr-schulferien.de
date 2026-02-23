@@ -154,7 +154,7 @@ defmodule MehrSchulferien.PeriodsCopyTest do
     end
 
     test "handles empty source ferientage", context do
-      # Create a school with no ferientage  
+      # Create a school with no ferientage
       empty_school =
         insert(:school, parent_location_id: context.target_school1.parent_location_id)
 

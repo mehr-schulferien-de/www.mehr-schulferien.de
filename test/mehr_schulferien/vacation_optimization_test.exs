@@ -72,7 +72,7 @@ defmodule MehrSchulferien.VacationOptimizationTest do
       result = VacationOptimization.find_optimal_windows(location_ids, 2026, 5)
 
       assert is_list(result)
-      assert length(result) > 0
+      assert result != []
 
       best = hd(result)
       assert %Result{} = best
@@ -237,7 +237,7 @@ defmodule MehrSchulferien.VacationOptimizationTest do
 
       assert is_list(results)
 
-      if length(results) > 0 do
+      if results != [] do
         result = hd(results)
         assert result.vacation_days_used >= 1
         assert result.weekend_days >= 0
@@ -266,7 +266,7 @@ defmodule MehrSchulferien.VacationOptimizationTest do
       results = VacationOptimization.find_optimal_windows(location_ids, 2026, 1, top: 10)
 
       assert is_list(results)
-      assert length(results) > 0
+      assert results != []
 
       # Find the result that includes May 14
       may_14_result =

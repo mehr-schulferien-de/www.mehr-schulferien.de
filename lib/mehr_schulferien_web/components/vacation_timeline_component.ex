@@ -269,7 +269,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
         # Use StyleConfig for school vacations
         StyleConfig.get_class(:vacation)
 
-      # Period is a public holiday  
+      # Period is a public holiday
       Map.get(period, :is_public_holiday, false) ->
         StyleConfig.get_class(:holiday)
 

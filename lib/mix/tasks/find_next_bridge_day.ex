@@ -19,7 +19,7 @@ defmodule Mix.Tasks.FindNextBridgeDay do
   """
   use Mix.Task
 
-  alias MehrSchulferien.{BridgeDays, Locations, Calendars.DateHelpers}
+  alias MehrSchulferien.{BridgeDays, Calendars.DateHelpers, Locations}
 
   @country_slug "d"
 
@@ -74,11 +74,9 @@ defmodule Mix.Tasks.FindNextBridgeDay do
   defp find_federal_state(_country, nil), do: nil
 
   defp find_federal_state(country, federal_state_slug) do
-    try do
-      Locations.get_federal_state_by_slug!(federal_state_slug, country)
-    rescue
-      _ -> nil
-    end
+    Locations.get_federal_state_by_slug!(federal_state_slug, country)
+  rescue
+    _ -> nil
   end
 
   defp find_and_display_bridge_day(federal_state, date, days_count) do

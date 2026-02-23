@@ -9,8 +9,8 @@ defmodule MehrSchulferienWeb.Api.V21.QueryController do
   """
   use MehrSchulferienWeb.Api.V21.BaseController
 
-  alias MehrSchulferien.{DateQuery, Locations}
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.{DateQuery, Locations}
 
   @doc """
   Check if a date is a public holiday.
@@ -147,12 +147,10 @@ defmodule MehrSchulferienWeb.Api.V21.QueryController do
   defp get_location(nil), do: {:error, :not_found}
 
   defp get_location(slug) do
-    try do
-      location = Locations.get_location_by_slug!(slug)
-      {:ok, location}
-    rescue
-      Ecto.NoResultsError -> {:error, :not_found}
-    end
+    location = Locations.get_location_by_slug!(slug)
+    {:ok, location}
+  rescue
+    Ecto.NoResultsError -> {:error, :not_found}
   end
 
   defp parse_date_param(nil), do: {:ok, DateHelpers.today_berlin()}

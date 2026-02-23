@@ -3,9 +3,11 @@ defmodule MehrSchulferienWeb.WikiController do
   require Logger
   import Ecto.Query
 
-  alias MehrSchulferien.{Locations, Maps, Wiki, Email, Mailer, Repo, Config, RateLimiter}
-  alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.{Config, Email}
   alias MehrSchulferien.Geocoding.Nominatim
+  alias MehrSchulferien.{Locations, Mailer, Maps}
+  alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.{RateLimiter, Repo, Wiki}
 
   # Plugs for authentication, rate limiting, and time restriction
   plug MehrSchulferienWeb.Plugs.RequireAuthPlug

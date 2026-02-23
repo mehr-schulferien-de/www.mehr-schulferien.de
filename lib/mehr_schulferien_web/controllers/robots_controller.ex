@@ -1,8 +1,8 @@
 defmodule MehrSchulferienWeb.RobotsController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.Periods
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.Periods
 
   def index(conn, params) do
     # Get today's date, either from params or using the helper

@@ -5,8 +5,9 @@ defmodule MehrSchulferien.Calendars do
 
   import Ecto.Query, warn: false
 
+  alias MehrSchulferien.Cache
   alias MehrSchulferien.Calendars.{HolidayOrVacationType, Religion}
-  alias MehrSchulferien.{Cache, Repo}
+  alias MehrSchulferien.Repo
 
   @doc """
   Returns the list of religions.
@@ -65,7 +66,7 @@ defmodule MehrSchulferien.Calendars do
         Repo.all(HolidayOrVacationType)
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -87,7 +88,7 @@ defmodule MehrSchulferien.Calendars do
         Repo.all(query)
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -104,7 +105,7 @@ defmodule MehrSchulferien.Calendars do
         Repo.get!(HolidayOrVacationType, id)
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -115,7 +116,7 @@ defmodule MehrSchulferien.Calendars do
         Repo.get_by!(HolidayOrVacationType, name: name)
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -132,7 +133,7 @@ defmodule MehrSchulferien.Calendars do
         Repo.get_by!(HolidayOrVacationType, slug: slug)
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 

@@ -81,7 +81,7 @@ defmodule MehrSchulferien.Geocoding.Nominatim do
     end
   end
 
-  defp parse_response(response) when is_list(response) and length(response) > 0 do
+  defp parse_response(response) when is_list(response) and response != [] do
     case List.first(response) do
       %{"lon" => lon_str, "lat" => lat_str} ->
         case {parse_coordinate(lon_str), parse_coordinate(lat_str)} do

@@ -76,7 +76,7 @@ defmodule MehrSchulferienWeb.FederalState.PartialDataComponent do
         end)
 
       # Do we have any periods in the next school year?
-      length(next_school_year_periods) == 0
+      next_school_year_periods == []
     end
   end
 

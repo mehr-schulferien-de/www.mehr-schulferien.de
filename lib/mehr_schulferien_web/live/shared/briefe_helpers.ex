@@ -63,12 +63,10 @@ defmodule MehrSchulferienWeb.Live.Shared.BriefeHelpers do
   defp safe_to_atom(key) when is_atom(key), do: {:ok, key}
 
   defp safe_to_atom(key) when is_binary(key) do
-    try do
-      atom = String.to_existing_atom(key)
-      if atom in @known_form_keys, do: {:ok, atom}, else: :error
-    rescue
-      ArgumentError -> :error
-    end
+    atom = String.to_existing_atom(key)
+    if atom in @known_form_keys, do: {:ok, atom}, else: :error
+  rescue
+    ArgumentError -> :error
   end
 
   defp safe_to_atom(_), do: :error

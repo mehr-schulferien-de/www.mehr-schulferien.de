@@ -6,8 +6,8 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
   total consecutive free days by leveraging weekends and public holidays.
   """
 
-  alias MehrSchulferien.VacationOptimization.Result
   alias MehrSchulferien.Periods
+  alias MehrSchulferien.VacationOptimization.Result
 
   @doc """
   Finds optimal vacation windows for the given parameters.

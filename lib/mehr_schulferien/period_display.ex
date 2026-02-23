@@ -3,8 +3,8 @@ defmodule MehrSchulferien.PeriodDisplay do
   Helper functions for displaying periods in views.
   """
 
-  alias MehrSchulferienWeb.ViewHelpers
   alias MehrSchulferien.Helpers.DateConstants
+  alias MehrSchulferienWeb.ViewHelpers
 
   @doc """
   Returns the school period from a list of periods.

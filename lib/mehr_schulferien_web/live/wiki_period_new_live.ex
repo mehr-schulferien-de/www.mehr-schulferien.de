@@ -3,8 +3,9 @@ defmodule MehrSchulferienWeb.WikiPeriodNewLive do
 
   on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
 
-  alias MehrSchulferien.{Periods, Calendars, Wiki, Config, Repo}
+  alias MehrSchulferien.{Calendars, Config, Periods}
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.{Repo, Wiki}
   alias MehrSchulferien.Wiki.PendingChanges
   import Ecto.Query
 

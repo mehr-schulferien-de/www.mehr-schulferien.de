@@ -69,9 +69,7 @@ defmodule MehrSchulferienWeb.FederalState.FaqSchemaComponent do
   end
 
   defp count_vacation_periods(periods) do
-    periods
-    |> Enum.filter(fn p -> p.holiday_or_vacation_type.default_is_school_vacation end)
-    |> Enum.count()
+    Enum.count(periods, fn p -> p.holiday_or_vacation_type.default_is_school_vacation end)
   end
 
   defp next_vacation_answer(periods, federal_state, today) do

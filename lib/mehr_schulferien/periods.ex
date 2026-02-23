@@ -12,7 +12,7 @@ defmodule MehrSchulferien.Periods do
 
   alias MehrSchulferien.{Cache, Calendars}
   alias MehrSchulferien.Calendars.{DateHelpers, HolidayOrVacationType}
-  alias MehrSchulferien.Periods.{Period, Query, DateOperations, Grouping, GroupedQuery}
+  alias MehrSchulferien.Periods.{DateOperations, GroupedQuery, Grouping, Period, Query}
   alias MehrSchulferien.Repo
 
   #
@@ -393,7 +393,7 @@ defmodule MehrSchulferien.Periods do
         )
         |> Repo.all()
 
-      length(existing_periods) > 0
+      existing_periods != []
     end
   end
 
@@ -489,7 +489,7 @@ defmodule MehrSchulferien.Periods do
   Returns a map with results for each target school.
   """
   def copy_specific_bewegliche_ferientage(ferientage_list, target_school_ids) do
-    alias MehrSchulferien.{Wiki, Config}
+    alias MehrSchulferien.{Config, Wiki}
     today = Date.utc_today()
     limit = Config.daily_change_limit()
 
@@ -550,7 +550,7 @@ defmodule MehrSchulferien.Periods do
   end
 
   defp copy_ferientage_to_school_with_limit(source_ferientage, target_school_id, remaining_quota) do
-    alias MehrSchulferien.{Wiki, Config}
+    alias MehrSchulferien.{Config, Wiki}
     today = Date.utc_today()
 
     # Get existing ferientage for target school

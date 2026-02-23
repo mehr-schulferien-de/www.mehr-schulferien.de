@@ -6,8 +6,8 @@ defmodule MehrSchulferien.DateQuery do
   school day, vacation day, or weekend for a given location.
   """
 
-  alias MehrSchulferien.{Locations, Periods}
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.{Locations, Periods}
 
   @type location :: MehrSchulferien.Locations.Location.t()
   @type query_result :: %{
@@ -64,13 +64,12 @@ defmodule MehrSchulferien.DateQuery do
 
     school_vacation_periods =
       school_periods
-      |> Enum.filter(&period_includes_date?(&1, date))
-      |> Enum.filter(&(&1.is_school_vacation == true))
+      |> Enum.filter(&(period_includes_date?(&1, date) and &1.is_school_vacation == true))
       |> MehrSchulferien.Repo.preload(:holiday_or_vacation_type)
 
     # Determine status
-    is_public_holiday = length(public_holiday_periods) > 0
-    is_school_vacation = length(school_vacation_periods) > 0
+    is_public_holiday = public_holiday_periods != []
+    is_school_vacation = school_vacation_periods != []
     is_weekend = weekend?(date)
     is_school_day = not (is_public_holiday or is_school_vacation or is_weekend)
 
@@ -109,7 +108,7 @@ defmodule MehrSchulferien.DateQuery do
       |> Enum.filter(&period_includes_date?(&1, date))
       |> MehrSchulferien.Repo.preload(:holiday_or_vacation_type)
 
-    {length(public_holiday_periods) > 0, public_holiday_periods}
+    {public_holiday_periods != [], public_holiday_periods}
   end
 
   @doc """
@@ -140,7 +139,7 @@ defmodule MehrSchulferien.DateQuery do
         |> Enum.filter(&period_includes_date?(&1, date))
         |> MehrSchulferien.Repo.preload(:holiday_or_vacation_type)
 
-      is_school_day = length(school_free_periods) == 0
+      is_school_day = school_free_periods == []
       {is_school_day, school_free_periods}
     end
   end
@@ -163,7 +162,7 @@ defmodule MehrSchulferien.DateQuery do
       |> Enum.filter(&period_includes_date?(&1, date))
       |> MehrSchulferien.Repo.preload(:holiday_or_vacation_type)
 
-    {length(vacation_periods) > 0, vacation_periods}
+    {vacation_periods != [], vacation_periods}
   end
 
   # Private functions
@@ -181,7 +180,7 @@ defmodule MehrSchulferien.DateQuery do
   defp build_explanation(date, public_holiday_periods, school_vacation_periods) do
     cond do
       # Public holiday and vacation
-      length(public_holiday_periods) > 0 and length(school_vacation_periods) > 0 ->
+      public_holiday_periods != [] and school_vacation_periods != [] ->
         holiday_names =
           Enum.map_join(public_holiday_periods, ", ", & &1.holiday_or_vacation_type.name)
 
@@ -191,11 +190,11 @@ defmodule MehrSchulferien.DateQuery do
         "#{holiday_names} und #{vacation_names}"
 
       # Just public holiday
-      length(public_holiday_periods) > 0 ->
+      public_holiday_periods != [] ->
         Enum.map_join(public_holiday_periods, ", ", & &1.holiday_or_vacation_type.name)
 
       # Just vacation
-      length(school_vacation_periods) > 0 ->
+      school_vacation_periods != [] ->
         Enum.map_join(school_vacation_periods, ", ", & &1.holiday_or_vacation_type.colloquial)
 
       # Weekend

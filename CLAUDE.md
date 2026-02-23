@@ -45,6 +45,7 @@ mix test --warnings-as-errors    # Run tests with warnings as errors
 mix format                       # Format code
 mix format --check-formatted     # Check formatting
 mix compile --warnings-as-errors # Compile with warnings as errors
+mix credo --strict               # Run static code analysis (Credo)
 
 # Asset management
 mix assets.setup                 # Install asset dependencies
@@ -146,7 +147,7 @@ mix test  # Output should be only dots, no text
 
 ### Additional Requirements
 - Claude Code hooks automatically enforce: tests, formatting, compilation after each response
-- Git pre-commit hooks enforce: tests, formatting, compilation, and various file checks
+- Git pre-commit hooks (`pre_commit` package) enforce: formatting, compilation, credo, and tests
 - Use simple solutions with onboard tools/packages when possible
 - Focus only on assigned tasks (DRY principle, but avoid scope creep)
 

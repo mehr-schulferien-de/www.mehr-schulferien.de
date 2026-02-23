@@ -3,8 +3,8 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
   Helper functions for generating sitemap entries.
   """
 
-  alias MehrSchulferien.Periods
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.Periods
 
   @doc """
   Generates a sitemap URL entry with the given attributes.
@@ -61,7 +61,7 @@ defmodule MehrSchulferienWeb.SitemapHelpers do
     bridge_day_map = Periods.group_by_interval(public_periods)
 
     Enum.any?(2..5, fn num ->
-      if bridge_day_map[num], do: Enum.count(bridge_day_map[num]) > 0, else: false
+      if bridge_day_map[num], do: bridge_day_map[num] != [], else: false
     end)
   end
 

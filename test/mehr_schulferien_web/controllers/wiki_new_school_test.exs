@@ -148,7 +148,7 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
 
       # When limit is reached, the form should show it immediately
       assert html =~ "Das Tageslimit wurde erreicht"
-      # Verify inputs are disabled  
+      # Verify inputs are disabled
       assert html =~ ~r/disabled/
     end
 
@@ -202,14 +202,14 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
       })
       |> render_submit()
 
-      # Should create successfully  
+      # Should create successfully
       # Get the created school to find its actual country
       school = MehrSchulferien.Locations.get_school_by_slug!("14467-potsdam-testschule")
 
       # Traverse hierarchy to get country
       country = get_country_from_hierarchy(school)
 
-      # Assert redirect with actual country slug  
+      # Assert redirect with actual country slug
       assert_redirect(view, "/ferien/#{country.slug}/schule/14467-potsdam-testschule")
 
       # Verify coordinates were taken from city's mapping (priority over other locations)

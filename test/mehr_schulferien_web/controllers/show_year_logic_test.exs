@@ -71,7 +71,7 @@ defmodule MehrSchulferienWeb.Controllers.ShowYearLogicTest do
         Enum.filter(check_years, fn check_year ->
           case Map.get(periods_by_year, check_year) do
             nil -> false
-            periods -> length(periods) > 0
+            periods -> periods != []
           end
         end)
         |> Enum.sort()

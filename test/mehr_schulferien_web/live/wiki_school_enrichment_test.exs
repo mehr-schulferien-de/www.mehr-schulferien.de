@@ -8,7 +8,7 @@ defmodule MehrSchulferienWeb.WikiSchoolEnrichmentTest do
 
   import Phoenix.LiveViewTest
 
-  alias MehrSchulferien.{Locations, Maps, Calendars}
+  alias MehrSchulferien.{Calendars, Locations, Maps}
 
   # Helper function to find the next weekday from a given date
   defp find_next_weekday(date) do

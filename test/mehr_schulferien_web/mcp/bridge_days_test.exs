@@ -94,7 +94,7 @@ defmodule MehrSchulferienWeb.MCP.BridgeDaysTest do
       assert is_list(result)
 
       # If there are bridge days, check their structure
-      if length(result) > 0 do
+      if result != [] do
         bridge_day = hd(result)
 
         # Check required fields
@@ -122,7 +122,7 @@ defmodule MehrSchulferienWeb.MCP.BridgeDaysTest do
         assert {:ok, _} = Date.from_iso8601(bridge_day.starts_on)
 
         # Check that related holidays have proper structure
-        if length(bridge_day.related_holidays) > 0 do
+        if bridge_day.related_holidays != [] do
           holiday = hd(bridge_day.related_holidays)
           assert Map.has_key?(holiday, :name)
           assert Map.has_key?(holiday, :starts_on)

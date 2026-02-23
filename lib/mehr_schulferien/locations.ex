@@ -10,9 +10,10 @@ defmodule MehrSchulferien.Locations do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.{Cache, Locations.Location, Locations.DeletedSchool, Repo}
-  alias MehrSchulferien.Periods.DeletedPeriod
+  alias MehrSchulferien.{Cache, Locations.DeletedSchool, Locations.Location}
   alias MehrSchulferien.Maps
+  alias MehrSchulferien.Periods.DeletedPeriod
+  alias MehrSchulferien.Repo
 
   #
   # Internal helpers
@@ -415,7 +416,7 @@ defmodule MehrSchulferien.Locations do
         Repo.all(from l in Location, where: l.is_country == true)
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -440,7 +441,7 @@ defmodule MehrSchulferien.Locations do
         |> Repo.all()
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -554,7 +555,7 @@ defmodule MehrSchulferien.Locations do
         list_children_by_flag(country, :is_federal_state)
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -580,7 +581,7 @@ defmodule MehrSchulferien.Locations do
         |> Repo.all()
       end,
       # Cache for 24 hours
-      ttl: 86400
+      ttl: 86_400
     )
   end
 
@@ -1297,7 +1298,7 @@ defmodule MehrSchulferien.Locations do
       cities = Map.get(cities_by_county, county.id, [])
       {county, cities}
     end)
-    |> Enum.filter(fn {_county, cities} -> length(cities) > 0 end)
+    |> Enum.filter(fn {_county, cities} -> cities != [] end)
   end
 
   #

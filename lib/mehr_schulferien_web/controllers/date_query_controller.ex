@@ -1,25 +1,26 @@
 defmodule MehrSchulferienWeb.DateQueryController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{DateQuery, Locations}
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.{DateQuery, Locations}
 
   @doc """
   Is today a public holiday in a federal state?
   Path: /ist-heute-feiertag/:federal_state_slug
   """
   def is_today_public_holiday(conn, %{"federal_state_slug" => state_slug}) do
-    with {:ok, federal_state} <- get_federal_state(state_slug) do
-      today = DateHelpers.today_berlin()
-      result = DateQuery.check_date_status(federal_state, today)
+    case get_federal_state(state_slug) do
+      {:ok, federal_state} ->
+        today = DateHelpers.today_berlin()
+        result = DateQuery.check_date_status(federal_state, today)
 
-      conn
-      |> assign(:result, result)
-      |> assign(:federal_state, federal_state)
-      |> assign(:query_type, :public_holiday)
-      |> assign(:page_title, "Ist heute ein Feiertag in #{federal_state.name}?")
-      |> render(:is_today_public_holiday)
-    else
+        conn
+        |> assign(:result, result)
+        |> assign(:federal_state, federal_state)
+        |> assign(:query_type, :public_holiday)
+        |> assign(:page_title, "Ist heute ein Feiertag in #{federal_state.name}?")
+        |> render(:is_today_public_holiday)
+
       {:error, :not_found} ->
         conn
         |> put_status(:not_found)
@@ -33,17 +34,18 @@ defmodule MehrSchulferienWeb.DateQueryController do
   Path: /ist-heute-schulfrei/:federal_state_slug
   """
   def is_today_school_free(conn, %{"federal_state_slug" => state_slug}) do
-    with {:ok, federal_state} <- get_federal_state(state_slug) do
-      today = DateHelpers.today_berlin()
-      result = DateQuery.check_date_status(federal_state, today)
+    case get_federal_state(state_slug) do
+      {:ok, federal_state} ->
+        today = DateHelpers.today_berlin()
+        result = DateQuery.check_date_status(federal_state, today)
 
-      conn
-      |> assign(:result, result)
-      |> assign(:federal_state, federal_state)
-      |> assign(:query_type, :school_free)
-      |> assign(:page_title, "Ist heute schulfrei in #{federal_state.name}?")
-      |> render(:is_today_school_free)
-    else
+        conn
+        |> assign(:result, result)
+        |> assign(:federal_state, federal_state)
+        |> assign(:query_type, :school_free)
+        |> assign(:page_title, "Ist heute schulfrei in #{federal_state.name}?")
+        |> render(:is_today_school_free)
+
       {:error, :not_found} ->
         conn
         |> put_status(:not_found)
@@ -70,21 +72,22 @@ defmodule MehrSchulferienWeb.DateQueryController do
 
   # Private helper for weekday school queries
   defp is_weekday_school(conn, state_slug, day_of_week, weekday_name) do
-    with {:ok, federal_state} <- get_federal_state(state_slug) do
-      today = DateHelpers.today_berlin()
-      target_date = DateHelpers.next_weekday(day_of_week, today)
-      is_today = Date.compare(target_date, today) == :eq
-      result = DateQuery.check_date_status(federal_state, target_date)
+    case get_federal_state(state_slug) do
+      {:ok, federal_state} ->
+        today = DateHelpers.today_berlin()
+        target_date = DateHelpers.next_weekday(day_of_week, today)
+        is_today = Date.compare(target_date, today) == :eq
+        result = DateQuery.check_date_status(federal_state, target_date)
 
-      conn
-      |> assign(:result, result)
-      |> assign(:federal_state, federal_state)
-      |> assign(:weekday_name, weekday_name)
-      |> assign(:is_today, is_today)
-      |> assign(:query_type, :weekday_school)
-      |> assign(:page_title, "Ist am #{weekday_name} Schule in #{federal_state.name}?")
-      |> render(:is_weekday_school)
-    else
+        conn
+        |> assign(:result, result)
+        |> assign(:federal_state, federal_state)
+        |> assign(:weekday_name, weekday_name)
+        |> assign(:is_today, is_today)
+        |> assign(:query_type, :weekday_school)
+        |> assign(:page_title, "Ist am #{weekday_name} Schule in #{federal_state.name}?")
+        |> render(:is_weekday_school)
+
       {:error, :not_found} ->
         conn
         |> put_status(:not_found)

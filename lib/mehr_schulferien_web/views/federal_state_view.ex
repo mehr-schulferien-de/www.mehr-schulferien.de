@@ -56,10 +56,9 @@ defmodule MehrSchulferienWeb.FederalStateView do
         vacation_summary =
           vacation_periods
           |> Enum.take(4)
-          |> Enum.map(fn p ->
+          |> Enum.map_join(" ", fn p ->
             "✓ #{p.holiday_or_vacation_type.name} (#{Calendar.strftime(p.starts_on, "%d.%m.")}-#{Calendar.strftime(p.ends_on, "%d.%m.")})"
           end)
-          |> Enum.join(" ")
 
         "Schulferien #{state_name} #{year}: #{vacation_summary}. Plus Feiertage, Brückentage, iCal-Export und Kalenderansicht."
     end

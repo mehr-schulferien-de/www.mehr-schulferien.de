@@ -3,8 +3,9 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
 
   on_mount {MehrSchulferienWeb.WikiAuth, :require_auth}
 
-  alias MehrSchulferien.{Periods, Locations, Calendars, Wiki, Config, Repo}
+  alias MehrSchulferien.{Calendars, Config, Locations, Periods}
   alias MehrSchulferien.Periods.Period
+  alias MehrSchulferien.{Repo, Wiki}
   alias MehrSchulferien.Wiki.PendingChanges
   import Ecto.Query
 
@@ -337,12 +338,10 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
   defp format_version_value("location_id", _), do: ""
 
   defp format_version_value("holiday_or_vacation_type_id", id) when id != nil and id != "" do
-    try do
-      type = Calendars.get_holiday_or_vacation_type!(id)
-      type.name
-    rescue
-      Ecto.NoResultsError -> "ID: #{id}"
-    end
+    type = Calendars.get_holiday_or_vacation_type!(id)
+    type.name
+  rescue
+    Ecto.NoResultsError -> "ID: #{id}"
   end
 
   defp format_version_value("holiday_or_vacation_type_id", _), do: ""

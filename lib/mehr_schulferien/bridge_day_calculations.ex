@@ -7,7 +7,7 @@ defmodule MehrSchulferien.BridgeDayCalculations do
   @doc """
   Calculates the total number of free days in a sequence of periods.
   """
-  def get_number_max_days(periods) when is_list(periods) and length(periods) > 0 do
+  def get_number_max_days(periods) when is_list(periods) and periods != [] do
     start_date = hd(periods).starts_on
     end_date = List.last(periods).ends_on
     Date.diff(end_date, start_date) + 1
