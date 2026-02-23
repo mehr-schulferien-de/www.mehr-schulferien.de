@@ -15,7 +15,6 @@ defmodule MehrSchulferienWeb.WikiSchoolEditLive do
   alias MehrSchulferien.Maps.Address
   alias MehrSchulferien.Wiki.PendingChanges
   alias PaperTrail
-  require Logger
 
   # Shared field labels for version history display
   @field_labels %{

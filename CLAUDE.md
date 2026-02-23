@@ -9,8 +9,8 @@ This is a Phoenix/Elixir web application for "mehr-schulferien.de" - a German we
 ## Development Setup
 
 ### Prerequisites
-- Erlang 27.3.4
-- Elixir 1.18.4-otp-27 
+- Erlang 28.3.2
+- Elixir 1.19.5-otp-28
 - Node.js > 6.8.0
 - PostgreSQL
 - LaTeX packages for PDF generation (see README.md for platform-specific instructions)

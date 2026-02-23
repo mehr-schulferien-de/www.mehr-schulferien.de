@@ -173,11 +173,11 @@ defmodule MehrSchulferien.StyleConfigTest do
       # html_class_to_day_type was removed - using period_to_day_type instead
       period = %{is_school_vacation: true}
 
-      assert is_atom(StyleConfig.period_to_day_type(period)) or
-               is_nil(StyleConfig.period_to_day_type(%{}))
+      result = StyleConfig.period_to_day_type(period)
+      assert is_atom(result)
 
-      assert is_atom(StyleConfig.period_to_day_type(%{is_school_vacation: true})) or
-               is_nil(StyleConfig.period_to_day_type(%{}))
+      result2 = StyleConfig.period_to_day_type(%{is_school_vacation: true})
+      assert is_atom(result2)
     end
   end
 end

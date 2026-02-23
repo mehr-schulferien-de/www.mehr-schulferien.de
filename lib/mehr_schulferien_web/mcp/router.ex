@@ -5,7 +5,6 @@ defmodule MehrSchulferienWeb.MCP.Router do
   """
 
   use Plug.Router
-  require Logger
 
   plug Plug.Parsers,
     parsers: [:json],

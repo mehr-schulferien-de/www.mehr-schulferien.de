@@ -235,7 +235,7 @@ defmodule MehrSchulferien.BridgeDayCalculationsConsolidatedTest do
       result = BridgeDays.find_next_bridge_day(hamburg, current_date)
 
       # Should find a bridge day after May 4
-      assert result == nil or result.starts_on > current_date
+      assert result == nil or Date.compare(result.starts_on, current_date) == :gt
     end
 
     test "returns nil when no bridge days exist in the future" do
