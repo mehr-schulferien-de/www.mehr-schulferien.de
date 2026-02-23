@@ -47,19 +47,10 @@ defmodule MehrSchulferienWeb.VacationController do
     end
   end
 
-  defp fetch_country do
-    case Locations.get_country_by_slug("d") do
-      nil -> {:error, :not_found}
-      country -> {:ok, country}
-    end
-  end
+  defp fetch_country, do: CH.fetch_country()
 
-  defp fetch_federal_state(country, federal_state_slug) do
-    case Locations.get_federal_state_by_slug(federal_state_slug, country) do
-      nil -> {:error, :not_found}
-      federal_state -> {:ok, federal_state}
-    end
-  end
+  defp fetch_federal_state(country, federal_state_slug),
+    do: CH.fetch_federal_state(federal_state_slug, country)
 
   defp fetch_vacation_type(vacation_type_slug) do
     case get_vacation_type_record(vacation_type_slug) do

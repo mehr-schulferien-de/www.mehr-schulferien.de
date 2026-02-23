@@ -2,7 +2,8 @@ defmodule MehrSchulferienWeb.DateQueryController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.Calendars.DateHelpers
-  alias MehrSchulferien.{DateQuery, Locations}
+  alias MehrSchulferien.DateQuery
+  alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   @doc """
   Is today a public holiday in a federal state?
@@ -158,12 +159,7 @@ defmodule MehrSchulferienWeb.DateQueryController do
 
   # Private helpers
 
-  defp get_federal_state(slug) do
-    case Locations.get_federal_state_by_slug(slug) do
-      nil -> {:error, :not_found}
-      federal_state -> {:ok, federal_state}
-    end
-  end
+  defp get_federal_state(slug), do: CH.fetch_federal_state(slug)
 
   defp parse_date(date_str) do
     case Date.from_iso8601(date_str) do

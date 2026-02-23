@@ -3,7 +3,56 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
   Helper functions for use with controllers.
   """
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Periods}
+  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+
+  @doc """
+  Fetches the default country (Germany) by slug.
+  Returns `{:ok, country}` or `{:error, :not_found}`.
+  """
+  def fetch_country(country_slug \\ "d") do
+    case Locations.get_country_by_slug(country_slug) do
+      nil -> {:error, :not_found}
+      country -> {:ok, country}
+    end
+  end
+
+  @doc """
+  Fetches a federal state by slug, optionally scoped to a country.
+  Returns `{:ok, federal_state}` or `{:error, :not_found}`.
+  """
+  def fetch_federal_state(federal_state_slug) do
+    case Locations.get_federal_state_by_slug(federal_state_slug) do
+      nil -> {:error, :not_found}
+      federal_state -> {:ok, federal_state}
+    end
+  end
+
+  def fetch_federal_state(federal_state_slug, country) do
+    case Locations.get_federal_state_by_slug(federal_state_slug, country) do
+      nil -> {:error, :not_found}
+      federal_state -> {:ok, federal_state}
+    end
+  end
+
+  @doc """
+  Validates a year string is a valid integer within an acceptable range.
+  Returns `{:ok, year_int}` or `{:error, :invalid_year}`.
+  """
+  def check_year(year_string) do
+    case Integer.parse(year_string) do
+      {year, ""} ->
+        current_year = Date.utc_today().year
+
+        if year in (current_year - 5)..(current_year + 3) do
+          {:ok, year}
+        else
+          {:error, :invalid_year}
+        end
+
+      _ ->
+        {:error, :invalid_year}
+    end
+  end
 
   def list_period_data(location_ids, today) do
     current_year = today.year
@@ -274,12 +323,12 @@ defmodule MehrSchulferienWeb.ControllerHelpers do
     if @env == :prod do
       conn
       |> put_status(:not_found)
-      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> put_view(MehrSchulferienWeb.ErrorHTML)
       |> render("404.html")
     else
       conn
       |> put_status(:service_unavailable)
-      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> put_view(MehrSchulferienWeb.ErrorHTML)
       |> render("empty_database.html")
     end
   end

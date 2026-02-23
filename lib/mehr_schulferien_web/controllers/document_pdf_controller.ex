@@ -37,7 +37,7 @@ defmodule MehrSchulferienWeb.DocumentPdfController do
     Ecto.NoResultsError ->
       conn
       |> put_status(:not_found)
-      |> put_view(MehrSchulferienWeb.ErrorView)
+      |> put_view(MehrSchulferienWeb.ErrorHTML)
       |> render("404.html")
   end
 

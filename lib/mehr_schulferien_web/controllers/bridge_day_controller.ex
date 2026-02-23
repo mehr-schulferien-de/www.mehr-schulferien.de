@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.BridgeDayController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
+  alias MehrSchulferien.{Calendars.DateHelpers, Periods}
   alias MehrSchulferienWeb.BridgeDayView
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
@@ -45,19 +45,10 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     end
   end
 
-  defp fetch_country(country_slug) do
-    case Locations.get_country_by_slug(country_slug) do
-      nil -> {:error, :not_found}
-      country -> {:ok, country}
-    end
-  end
+  defp fetch_country(country_slug), do: CH.fetch_country(country_slug)
 
-  defp fetch_federal_state(country, federal_state_slug) do
-    case Locations.get_federal_state_by_slug(federal_state_slug, country) do
-      nil -> {:error, :not_found}
-      federal_state -> {:ok, federal_state}
-    end
-  end
+  defp fetch_federal_state(country, federal_state_slug),
+    do: CH.fetch_federal_state(federal_state_slug, country)
 
   defp list_bridge_day_data(location_ids, start_date, end_date) do
     public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
@@ -88,21 +79,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
     ]
   end
 
-  defp check_year(year) do
-    case Integer.parse(year) do
-      {year_int, ""} ->
-        current_year = Date.utc_today().year
-
-        if year_int in (current_year - 5)..(current_year + 3) do
-          {:ok, year_int}
-        else
-          {:error, :invalid_year}
-        end
-
-      _ ->
-        {:error, :invalid_year}
-    end
-  end
+  defp check_year(year), do: CH.check_year(year)
 
   def has_bridge_days?(location_ids, year) do
     {:ok, start_date} = Date.new(year, 1, 1)

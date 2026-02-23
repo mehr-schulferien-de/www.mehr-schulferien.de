@@ -607,7 +607,7 @@ defmodule MehrSchulferien.Locations do
     county
     |> list_children_by_flag(:is_city)
     |> Repo.preload([:zip_codes])
-    |> Enum.sort(&(&1.name >= &2.name))
+    |> Enum.sort_by(& &1.name)
   end
 
   @doc """
@@ -1013,20 +1013,13 @@ defmodule MehrSchulferien.Locations do
   Raises `Ecto.NoResultsError` if either the federal state or country does not exist.
   """
   def get_federal_state_and_country_by_slug!(country_slug, federal_state_slug) do
-    query =
-      from fs in Location,
-        join: c in Location,
-        on: fs.parent_location_id == c.id,
-        where:
-          c.slug == ^country_slug and
-            c.is_country == true and
-            fs.slug == ^federal_state_slug and
-            fs.is_federal_state == true,
-        select: {fs, c}
+    case query_federal_state_and_country(country_slug, federal_state_slug) do
+      {federal_state, country} ->
+        {federal_state, country}
 
-    case Repo.one(query) do
-      {federal_state, country} -> {federal_state, country}
-      nil -> raise Ecto.NoResultsError, queryable: query
+      nil ->
+        query = federal_state_and_country_query(country_slug, federal_state_slug)
+        raise Ecto.NoResultsError, queryable: query
     end
   end
 
@@ -1036,21 +1029,27 @@ defmodule MehrSchulferien.Locations do
   Returns `{:ok, {federal_state, country}}` if found, or `{:error, :not_found}` if not.
   """
   def get_federal_state_and_country_by_slug(country_slug, federal_state_slug) do
-    query =
-      from fs in Location,
-        join: c in Location,
-        on: fs.parent_location_id == c.id,
-        where:
-          c.slug == ^country_slug and
-            c.is_country == true and
-            fs.slug == ^federal_state_slug and
-            fs.is_federal_state == true,
-        select: {fs, c}
-
-    case Repo.one(query) do
+    case query_federal_state_and_country(country_slug, federal_state_slug) do
       {federal_state, country} -> {:ok, {federal_state, country}}
       nil -> {:error, :not_found}
     end
+  end
+
+  defp federal_state_and_country_query(country_slug, federal_state_slug) do
+    from fs in Location,
+      join: c in Location,
+      on: fs.parent_location_id == c.id,
+      where:
+        c.slug == ^country_slug and
+          c.is_country == true and
+          fs.slug == ^federal_state_slug and
+          fs.is_federal_state == true,
+      select: {fs, c}
+  end
+
+  defp query_federal_state_and_country(country_slug, federal_state_slug) do
+    federal_state_and_country_query(country_slug, federal_state_slug)
+    |> Repo.one()
   end
 
   @doc """
@@ -1153,27 +1152,21 @@ defmodule MehrSchulferien.Locations do
   def show_city_to_country_map(country_slug, city_slug) do
     country = get_country_by_slug!(country_slug)
     city = get_city_by_slug!(city_slug)
-    county = get_location!(city.parent_location_id)
-    federal_state = get_location!(county.parent_location_id)
 
-    if country.id != federal_state.parent_location_id do
-      raise MehrSchulferien.CountryNotParentError
-    end
+    hierarchy = resolve_hierarchy!(city)
+    validate_country_parent!(country, hierarchy.federal_state)
 
-    %{country: country, federal_state: federal_state, county: county, city: city}
+    Map.merge(%{country: country, city: city}, hierarchy)
   end
 
   def show_city_to_country_map_safe(country_slug, city_slug) do
     with country when not is_nil(country) <- get_country_by_slug(country_slug),
          city when not is_nil(city) <- get_city_by_slug(city_slug),
-         county when not is_nil(county) <- get_location(city.parent_location_id),
-         federal_state when not is_nil(federal_state) <- get_location(county.parent_location_id) do
-      if country.id == federal_state.parent_location_id do
-        {:ok, %{country: country, federal_state: federal_state, county: county, city: city}}
-      else
-        {:error, :invalid_hierarchy}
-      end
+         {:ok, hierarchy} <- resolve_hierarchy_safe(city),
+         :ok <- validate_country_parent_safe(country, hierarchy.federal_state) do
+      {:ok, Map.merge(%{country: country, city: city}, hierarchy)}
     else
+      {:error, reason} -> {:error, reason}
       _ -> {:error, :not_found}
     end
   end
@@ -1185,36 +1178,54 @@ defmodule MehrSchulferien.Locations do
     country = get_country_by_slug!(country_slug)
     school = get_school_by_slug!(school_slug)
     city = get_location!(school.parent_location_id)
-    county = get_location!(city.parent_location_id)
-    federal_state = get_location!(county.parent_location_id)
 
-    if country.id != federal_state.parent_location_id do
-      raise MehrSchulferien.CountryNotParentError
-    end
+    hierarchy = resolve_hierarchy!(city)
+    validate_country_parent!(country, hierarchy.federal_state)
 
-    %{country: country, federal_state: federal_state, county: county, city: city, school: school}
+    Map.merge(%{country: country, city: city, school: school}, hierarchy)
   end
 
   def show_school_to_country_map_safe(country_slug, school_slug) do
     with country when not is_nil(country) <- get_country_by_slug(country_slug),
          school when not is_nil(school) <- get_school_by_slug(school_slug),
          city when not is_nil(city) <- get_location(school.parent_location_id),
-         county when not is_nil(county) <- get_location(city.parent_location_id),
+         {:ok, hierarchy} <- resolve_hierarchy_safe(city),
+         :ok <- validate_country_parent_safe(country, hierarchy.federal_state) do
+      {:ok, Map.merge(%{country: country, city: city, school: school}, hierarchy)}
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, :not_found}
+    end
+  end
+
+  # Resolves county and federal_state from a city (raising version)
+  defp resolve_hierarchy!(city) do
+    county = get_location!(city.parent_location_id)
+    federal_state = get_location!(county.parent_location_id)
+    %{county: county, federal_state: federal_state}
+  end
+
+  # Resolves county and federal_state from a city (safe version)
+  defp resolve_hierarchy_safe(city) do
+    with county when not is_nil(county) <- get_location(city.parent_location_id),
          federal_state when not is_nil(federal_state) <- get_location(county.parent_location_id) do
-      if country.id == federal_state.parent_location_id do
-        {:ok,
-         %{
-           country: country,
-           federal_state: federal_state,
-           county: county,
-           city: city,
-           school: school
-         }}
-      else
-        {:error, :invalid_hierarchy}
-      end
+      {:ok, %{county: county, federal_state: federal_state}}
     else
       _ -> {:error, :not_found}
+    end
+  end
+
+  defp validate_country_parent!(country, federal_state) do
+    if country.id != federal_state.parent_location_id do
+      raise MehrSchulferien.CountryNotParentError
+    end
+  end
+
+  defp validate_country_parent_safe(country, federal_state) do
+    if country.id == federal_state.parent_location_id do
+      :ok
+    else
+      {:error, :invalid_hierarchy}
     end
   end
 
@@ -1491,18 +1502,19 @@ defmodule MehrSchulferien.Locations do
 
         result = Ecto.Adapters.SQL.query!(Repo, query, [lat, lon, school.id, radius_km])
 
+        distance_idx = Enum.find_index(result.columns, &(&1 == "distance_km"))
+
         # Convert results to Location structs with distance
-        Enum.map(result.rows, fn row ->
-          location = Repo.load(Location, {result.columns, row})
-          location = Repo.preload(location, :address)
+        locations_with_distance =
+          Enum.map(result.rows, fn row ->
+            location = Repo.load(Location, {result.columns, row})
+            distance = if distance_idx, do: Enum.at(row, distance_idx), else: nil
+            Map.put(location, :distance_km, distance)
+          end)
 
-          # Find the distance value (last column)
-          distance_idx = Enum.find_index(result.columns, &(&1 == "distance_km"))
-          distance = if distance_idx, do: Enum.at(row, distance_idx), else: nil
-
-          # Add distance as a virtual field
-          Map.put(location, :distance_km, distance)
-        end)
+        # Batch preload addresses in a single query instead of N+1
+        locations_with_distance
+        |> Repo.preload(:address)
 
       _ ->
         []

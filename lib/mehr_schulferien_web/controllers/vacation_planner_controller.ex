@@ -3,6 +3,7 @@ defmodule MehrSchulferienWeb.VacationPlannerController do
 
   alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods, VacationOptimization}
   alias MehrSchulferien.VacationOptimization.Optimizer
+  alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   @doc """
   Redirects to the current year for normal variant.
@@ -146,28 +147,9 @@ defmodule MehrSchulferienWeb.VacationPlannerController do
     end
   end
 
-  defp check_year(year_string) do
-    case Integer.parse(year_string) do
-      {year, ""} ->
-        current_year = Date.utc_today().year
+  defp check_year(year_string), do: CH.check_year(year_string)
 
-        if year in (current_year - 5)..(current_year + 3) do
-          {:ok, year}
-        else
-          {:error, :invalid_year}
-        end
-
-      _ ->
-        {:error, :invalid_year}
-    end
-  end
-
-  defp get_federal_state(slug) do
-    case Locations.get_federal_state_by_slug(slug) do
-      nil -> {:error, :not_found}
-      federal_state -> {:ok, federal_state}
-    end
-  end
+  defp get_federal_state(slug), do: CH.fetch_federal_state(slug)
 
   defp get_country(federal_state) do
     case Locations.get_location(federal_state.parent_location_id) do

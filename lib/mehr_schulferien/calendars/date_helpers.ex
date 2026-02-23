@@ -5,7 +5,6 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
 
   require Logger
 
-  @leap_years [2020, 2024, 2028, 2032, 2036, 2040, 2044, 2048]
   @days_in_month %{
     1 => 31,
     2 => 28,
@@ -179,8 +178,11 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   """
   def get_months_map, do: @months
 
-  defp get_days_in_month(year, month) when month == 2 and year in @leap_years, do: 29
-  defp get_days_in_month(_, month), do: @days_in_month[month]
+  defp get_days_in_month(year, 2) do
+    if Date.leap_year?(%Date{year: year, month: 1, day: 1}), do: 29, else: 28
+  end
+
+  defp get_days_in_month(_year, month), do: @days_in_month[month]
 
   @doc """
   Compares two days by comparing just month and year.

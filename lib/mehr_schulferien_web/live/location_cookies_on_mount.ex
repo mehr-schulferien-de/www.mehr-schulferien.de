@@ -3,13 +3,7 @@ defmodule MehrSchulferienWeb.LocationCookiesOnMount do
   LiveView on_mount callback to inject location cookies into session
   """
 
-  require Logger
-
-  def on_mount(:default, _params, session, socket) do
-    # Log for debugging
-    Logger.info("LocationCookiesOnMount - Session: #{inspect(session)}")
-
-    # Continue with the socket unchanged but session data available in mount
+  def on_mount(:default, _params, _session, socket) do
     {:cont, socket}
   end
 end

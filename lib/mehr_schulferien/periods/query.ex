@@ -123,15 +123,7 @@ defmodule MehrSchulferien.Periods.Query do
   range.
   """
   def list_school_free_periods(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          (p.is_valid_for_students == true or
-             p.is_valid_for_everybody == true) and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      order_by: [asc: p.starts_on, desc: p.display_priority]
-    )
+    school_free_periods_query(location_ids, starts_on, ends_on)
     |> Repo.all()
     |> Repo.preload([:holiday_or_vacation_type, :location])
   end
@@ -190,19 +182,21 @@ defmodule MehrSchulferien.Periods.Query do
   Returns all periods for a list of locations with preloaded data in a single query.
   """
   def list_school_free_periods_with_preload(location_ids, starts_on, ends_on) do
-    query =
-      from(p in Period,
-        where:
-          p.location_id in ^location_ids and
-            (p.is_valid_for_students == true or
-               p.is_valid_for_everybody == true) and
-            p.ends_on >= ^starts_on and
-            p.starts_on <= ^ends_on,
-        order_by: [asc: p.starts_on, desc: p.display_priority],
-        preload: [:holiday_or_vacation_type, :location]
-      )
+    school_free_periods_query(location_ids, starts_on, ends_on)
+    |> preload([:holiday_or_vacation_type, :location])
+    |> Repo.all()
+  end
 
-    Repo.all(query)
+  defp school_free_periods_query(location_ids, starts_on, ends_on) do
+    from(p in Period,
+      where:
+        p.location_id in ^location_ids and
+          (p.is_valid_for_students == true or
+             p.is_valid_for_everybody == true) and
+          p.ends_on >= ^starts_on and
+          p.starts_on <= ^ends_on,
+      order_by: [asc: p.starts_on, desc: p.display_priority]
+    )
   end
 
   @doc """

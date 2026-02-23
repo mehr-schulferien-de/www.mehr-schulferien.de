@@ -22,7 +22,7 @@ defmodule MehrSchulferienWeb.SchoolController do
       {:error, :not_found} ->
         conn
         |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> put_view(MehrSchulferienWeb.ErrorHTML)
         |> render("404.html")
 
       {:error, _} ->
@@ -45,7 +45,7 @@ defmodule MehrSchulferienWeb.SchoolController do
       {:error, :not_found} ->
         conn
         |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorView)
+        |> put_view(MehrSchulferienWeb.ErrorHTML)
         |> render("404.html")
 
       {:error, _} ->

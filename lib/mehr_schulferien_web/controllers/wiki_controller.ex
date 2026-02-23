@@ -123,7 +123,7 @@ defmodule MehrSchulferienWeb.WikiController do
         :error,
         "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
       )
-      |> redirect(to: "/wiki/schools/#{school_slug}")
+      |> redirect(to: ~p"/wiki/schools/#{school_slug}")
     else
       # Extract school and address params
       school_params = Map.take(params, ["name"])
@@ -367,7 +367,7 @@ defmodule MehrSchulferienWeb.WikiController do
     # Rollback functionality is not implemented
     conn
     |> put_flash(:error, "Rollback-Funktion ist derzeit nicht verfügbar.")
-    |> redirect(to: "/wiki/schools/#{school_slug}")
+    |> redirect(to: ~p"/wiki/schools/#{school_slug}")
   end
 
   defp get_client_ip(conn) do
@@ -510,7 +510,7 @@ defmodule MehrSchulferienWeb.WikiController do
         :error,
         "Das tägliche Limit von #{Config.daily_change_limit()} Änderungen wurde erreicht. Bitte versuchen Sie es morgen erneut."
       )
-      |> redirect(to: "/wiki/schools/#{school_slug}")
+      |> redirect(to: ~p"/wiki/schools/#{school_slug}")
     else
       # Get the school with address preloaded for email
       school = Repo.preload(school, :address)
@@ -567,7 +567,7 @@ defmodule MehrSchulferienWeb.WikiController do
         {:error, reason} ->
           conn
           |> put_flash(:error, "Fehler beim Löschen der Schule: #{inspect(reason)}")
-          |> redirect(to: "/wiki/schools/#{school_slug}")
+          |> redirect(to: ~p"/wiki/schools/#{school_slug}")
       end
     end
   end

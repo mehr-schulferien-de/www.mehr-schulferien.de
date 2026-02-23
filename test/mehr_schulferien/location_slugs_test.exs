@@ -10,7 +10,16 @@ defmodule MehrSchulferien.LocationSlugsTest do
   end
 
   describe "base slugs" do
-    test "default slug is simple" do
+    test "default slug is generated from name", %{country: country} do
+      attrs = %{
+        is_federal_state: true,
+        name: "Bayern",
+        code: "BY",
+        parent_location_id: country.id
+      }
+
+      {:ok, location} = Locations.create_location(attrs)
+      assert location.slug == "bayern"
     end
   end
 
