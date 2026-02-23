@@ -8,6 +8,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
 
   attr :level, :integer, default: 1, values: [1, 2, 3, 4, 5, 6]
   attr :class, :string, default: ""
+  attr :show_ad, :boolean, default: true
   slot :inner_block, required: true
 
   def heading(assigns) do
@@ -30,6 +31,19 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
     <.dynamic tag={@tag} class={@computed_class}>
       {render_slot(@inner_block)}
     </.dynamic>
+    <%= if @level == 1 and @show_ad do %>
+      <div class="mt-3 mb-2">
+        <div class="inline-block bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg px-5 py-2.5 text-sm text-white shadow-lg shadow-pink-500/30">
+          Online-Datine? Online-Dating!
+          <a
+            href="https://animina.de?ad=2"
+            class="font-bold underline decoration-2 ml-1 hover:text-pink-100"
+          >
+            animina.de
+          </a>
+        </div>
+      </div>
+    <% end %>
     """
   end
 
