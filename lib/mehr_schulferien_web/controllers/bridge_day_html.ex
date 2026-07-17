@@ -18,6 +18,30 @@ defmodule MehrSchulferienWeb.BridgeDayHTML do
   alias MehrSchulferien.BridgeDayCalculations
   alias MehrSchulferien.Calendars.DateHelpers
 
+  @doc """
+  SEO title for the federal state bridge day page. Leads with the number of
+  bridge day opportunities because concrete numbers lift SERP click-through.
+  """
+  def bridge_day_page_title(federal_state, year, proposal_count) when proposal_count > 0 do
+    "Brückentage #{federal_state.name} #{year}: #{proposal_count} Chancen für mehr Urlaub"
+  end
+
+  def bridge_day_page_title(federal_state, year, _proposal_count) do
+    "Brückentage #{federal_state.name} #{year} - Clever Urlaub planen"
+  end
+
+  @doc """
+  SEO meta description for the federal state bridge day page.
+  """
+  def bridge_day_page_description(federal_state, year, proposal_count)
+      when proposal_count > 0 do
+    "Die #{proposal_count} besten Brückentage #{year} in #{federal_state.name}: Termine mit Wochentag, nötige Urlaubstage und Gewinn an freien Tagen. Jetzt Urlaub clever planen."
+  end
+
+  def bridge_day_page_description(federal_state, year, _proposal_count) do
+    "Brückentage #{year} in #{federal_state.name}: Feiertage, Termine und Tipps für die clevere Urlaubsplanung."
+  end
+
   def format_month_header(start_date, end_date) do
     months_map = DateHelpers.get_months_map()
     first_month = start_date.month

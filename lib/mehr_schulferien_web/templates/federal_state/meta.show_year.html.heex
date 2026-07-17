@@ -13,6 +13,10 @@
 <%= if assigns[:noindex] do %>
   <meta name="robots" content="noindex,nofollow" />
 <% end %>
+<link
+  rel="canonical"
+  href={url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}")}
+/>
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta
@@ -29,8 +33,20 @@
 />
 <meta property="og:site_name" content="mehr-schulferien.de" />
 <meta property="og:locale" content="de_DE" />
+<!-- OpenGraph Image -->
+<meta
+  property="og:image"
+  content={"https://www.mehr-schulferien.de/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}/handwritten.webp"}
+/>
+<meta property="og:image:type" content="image/webp" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta
+  property="og:image:alt"
+  content={"Schulferien #{@federal_state.name} #{@year} - Handgeschriebene Übersicht"}
+/>
 <!-- Twitter -->
-<meta property="twitter:card" content="summary" />
+<meta property="twitter:card" content="summary_large_image" />
 <meta
   property="twitter:url"
   content={url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}")}
@@ -39,6 +55,10 @@
 <meta
   property="twitter:description"
   content={"Alle Schulferien #{@year} für #{@federal_state.name}: Oster-, Sommer-, Herbst- und Weihnachtsferien."}
+/>
+<meta
+  property="twitter:image"
+  content={"https://www.mehr-schulferien.de/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}/handwritten.webp"}
 />
 <!-- Pagination for year navigation -->
 <% prev_year = @year - 1 %>

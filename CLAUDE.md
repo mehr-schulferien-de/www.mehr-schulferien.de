@@ -108,7 +108,7 @@ The project uses Claude Code hooks that automatically run after each response:
 
 #### What Makes Tests "Clean"
 - **NO debug output**: Remove all `IO.puts`, `IO.inspect`, `dbg()` from tests
-- **NO skipped tests**: Either fix or remove `@tag :skip` tests
+- **NO skipped tests**: Either fix or remove `@tag :skip` tests. Sanctioned exception: modules tagged `@moduletag :pdflatex` need the pdflatex binary and are auto-excluded by `test/test_helper.exs` when it is not installed locally (CI installs TeX Live, so they always run there). Tag any new test that shells out to pdflatex with it.
 - **NO placeholder tests**: Never use `assert true` - write real assertions
 - **NO warnings/errors in output**: Test output should be dots only (`.` for pass, `*` for pending)
 - **NO flaky tests**: Tests must pass consistently, not randomly

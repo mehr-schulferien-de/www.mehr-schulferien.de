@@ -20,49 +20,8 @@ defmodule MehrSchulferienWeb.FederalStateView do
     MehrSchulferienWeb.ViewHelpers.format_zip_codes(city)
   end
 
-  @doc """
-  Generates dynamic meta description for federal state pages based on vacation proximity
-  """
-  def dynamic_federal_state_description(state_name, year, periods, today) do
-    vacation_periods =
-      Enum.filter(periods, & &1.holiday_or_vacation_type.default_is_school_vacation)
-
-    # Find current or next vacation
-    current_vacation =
-      Enum.find(vacation_periods, fn p ->
-        Date.compare(today, p.starts_on) != :lt && Date.compare(today, p.ends_on) != :gt
-      end)
-
-    next_vacation =
-      if is_nil(current_vacation) do
-        vacation_periods
-        |> Enum.filter(fn p -> Date.compare(p.starts_on, today) == :gt end)
-        |> Enum.sort_by(& &1.starts_on)
-        |> List.first()
-      end
-
-    cond do
-      current_vacation ->
-        days_left = Date.diff(current_vacation.ends_on, today)
-
-        "🎉 #{current_vacation.holiday_or_vacation_type.name} in #{state_name} laufen noch #{days_left} Tage! Alle Schulferien #{year}: Termine, Kalender, iCal-Export & Brückentage."
-
-      next_vacation && Date.diff(next_vacation.starts_on, today) <= 30 ->
-        days_until = Date.diff(next_vacation.starts_on, today)
-
-        "⏰ Nur noch #{days_until} Tage bis #{next_vacation.holiday_or_vacation_type.name} #{state_name}! Alle Schulferien #{year} mit Kalender, iCal & Reiseplanung."
-
-      true ->
-        vacation_summary =
-          vacation_periods
-          |> Enum.take(4)
-          |> Enum.map_join(" ", fn p ->
-            "✓ #{p.holiday_or_vacation_type.name} (#{Calendar.strftime(p.starts_on, "%d.%m.")}-#{Calendar.strftime(p.ends_on, "%d.%m.")})"
-          end)
-
-        "Schulferien #{state_name} #{year}: #{vacation_summary}. Plus Feiertage, Brückentage, iCal-Export und Kalenderansicht."
-    end
-  end
+  defdelegate dynamic_federal_state_description(state_name, year, periods, today),
+    to: MehrSchulferienWeb.FederalStateHTML
 
   def get_vacation_type_days([period]), do: get_period_days(period)
 

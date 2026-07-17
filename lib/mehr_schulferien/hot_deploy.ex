@@ -204,7 +204,7 @@ defmodule MehrSchulferien.HotDeploy do
     target_dir = Path.join([upgrades_dir, version, "beams"])
     File.mkdir_p!(target_dir)
 
-    case System.cmd("tar", ["-xzf", tarball_path, "-C", target_dir]) do
+    case System.cmd("tar", ["-xzf", tarball_path, "-C", target_dir], stderr_to_stdout: true) do
       {_, 0} -> :ok
       {output, code} -> {:error, {:tar_failed, code, output}}
     end

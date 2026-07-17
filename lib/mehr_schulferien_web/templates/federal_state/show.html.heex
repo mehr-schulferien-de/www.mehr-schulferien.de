@@ -1,0 +1,270 @@
+<div class="mt-6 sm:mt-8">
+  <div>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+      <.heading level={1}>
+        Schulferien {@federal_state.name}
+      </.heading>
+
+      <.pagination
+        conn={@conn}
+        country={@country}
+        location={@federal_state}
+        location_type={:federal_state}
+        years_with_data={@years_with_data}
+        year={@current_year}
+      />
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+      <div class="lg:w-2/3">
+        <.card padding="p-4">
+          <:content>
+            <%= if @has_data do %>
+              <% current_periods = Enum.filter(@periods, &(&1.starts_on.year == @current_year)) %>
+              <% next_periods = Enum.filter(@periods, &(&1.starts_on.year == @next_year)) %>
+              <%= if current_periods != [] do %>
+                <.periods_table
+                  periods={current_periods}
+                  all_periods={@all_periods}
+                  today={@today}
+                  federal_state={@federal_state}
+                  conn={@conn}
+                  year={@current_year}
+                />
+              <% end %>
+              <%= if next_periods != [] do %>
+                <div class="mt-6">
+                  <.periods_table
+                    periods={next_periods}
+                    all_periods={@all_periods}
+                    today={@today}
+                    federal_state={@federal_state}
+                    conn={@conn}
+                    year={@next_year}
+                  />
+                </div>
+              <% end %>
+              <.last_updated periods={@periods} federal_state={@federal_state} />
+              <!-- Year pages for specific years -->
+              <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
+                <.heading
+                  level={2}
+                  class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1"
+                >
+                  Jahresübersichten
+                </.heading>
+                <.text variant="muted" class="mb-3">
+                  Alle Ferientermine eines Jahres mit Kalenderansicht und Brückentagen.
+                </.text>
+                <div class="flex flex-wrap gap-2">
+                  <%= for year <- @years_with_data do %>
+                    <a
+                      href={
+                        ~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}"
+                      }
+                      class="px-3 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 bg-white dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-300 dark:border-blue-700 rounded-md transition-colors"
+                    >
+                      Schulferien {year}
+                    </a>
+                  <% end %>
+                </div>
+              </div>
+              <!-- iCal Export Box -->
+              <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-4">
+                <div>
+                  <.heading
+                    level={2}
+                    class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1 flex items-center"
+                  >
+                    <svg
+                      class="w-4 h-4 mr-2 text-gray-600 dark:text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    iCal Download
+                  </.heading>
+                  <.text variant="muted" class="mb-3">
+                    Importieren Sie die Schulferien direkt in Ihren Kalender.
+                  </.text>
+                  <div class="grid grid-cols-2 gap-2">
+                    <%= link to: "/api/v2.1/federal-states/#{@federal_state.slug}/icalendar?vacation_types=school&year=#{@current_year}",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
+                        download: "schulferien-#{@federal_state.slug}-#{@current_year}.ics" do %>
+                      📅 {@current_year}
+                    <% end %>
+                    <%= link to: "/api/v2.1/federal-states/#{@federal_state.slug}/icalendar?vacation_types=school&year=#{@next_year}",
+                        class: "flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors",
+                        download: "schulferien-#{@federal_state.slug}-#{@next_year}.ics" do %>
+                      📅 {@next_year}
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% else %>
+              <.no_data
+                conn={@conn}
+                country={@country}
+                federal_state={@federal_state}
+                year={@current_year}
+                years_with_data={@years_with_data}
+              />
+            <% end %>
+          </:content>
+        </.card>
+      </div>
+      <div class="lg:w-1/3">
+        <% # Show handwritten date visualization if we have vacation data %>
+        <%= if @has_data and length(@periods) > 0 do %>
+          <% school_vacation_periods =
+            Enum.filter(@periods, fn period ->
+              # Include only multi-day vacations, not single school-free days
+              Date.diff(period.ends_on, period.starts_on) > 0 and
+                period.starts_on.year == @current_year
+            end) %>
+
+          <%= if length(school_vacation_periods) > 0 do %>
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+              <.heading level={3} class="text-lg text-gray-800 dark:text-gray-200 mb-3">
+                Ferientermine als Notiz
+              </.heading>
+              <div class="w-full" style="max-width: 400px; margin: 0 auto;">
+                {Phoenix.HTML.raw(
+                  MehrSchulferienWeb.Helpers.HandwrittenDateImage.generate_all_vacations_svg(
+                    school_vacation_periods,
+                    @federal_state.name,
+                    @current_year
+                  )
+                )}
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+
+        <% # Quick links to vacation-specific pages %>
+        <%= if length(@vacation_types) > 0 do %>
+          <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <.heading level={3} class="text-lg text-blue-900 dark:text-blue-100 mb-3">
+              Direkt zu den Ferien:
+            </.heading>
+            <div class="grid grid-cols-2 gap-2">
+              <%= for vacation_type <- @vacation_types do %>
+                <a
+                  href={"/#{vacation_type.slug}ferien/#{@federal_state.slug}/#{@current_year}"}
+                  class="px-3 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 bg-white dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-300 dark:border-blue-700 rounded-md transition-colors text-center"
+                >
+                  {vacation_type.colloquial}
+                </a>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+        <% # Quick links to date query tools %>
+        <div class="mt-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+          <.heading level={3} class="text-lg text-green-900 dark:text-green-100 mb-3">
+            Schnelle Abfragen:
+          </.heading>
+          <div class="grid grid-cols-1 gap-2">
+            <a
+              href={~p"/ist-heute-feiertag/#{@federal_state.slug}"}
+              class="px-3 py-2 text-sm font-medium text-green-700 dark:text-green-300 bg-white dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/40 border border-green-300 dark:border-green-700 rounded-md transition-colors text-center"
+            >
+              🎉 Ist heute ein Feiertag?
+            </a>
+            <a
+              href={~p"/ist-heute-schulfrei/#{@federal_state.slug}"}
+              class="px-3 py-2 text-sm font-medium text-green-700 dark:text-green-300 bg-white dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/40 border border-green-300 dark:border-green-700 rounded-md transition-colors text-center"
+            >
+              🎒 Ist heute schulfrei?
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= if @has_data do %>
+      <% # Use DateCalculations helper for date calculations
+      date_data = MehrSchulferienWeb.Helpers.DateCalculations.calculate_surrounding_dates(@today)
+      yesterday = date_data.yesterday
+      tomorrow = date_data.tomorrow
+      day_after_tomorrow = date_data.day_after_tomorrow
+
+      # Use PeriodHelpers for filtering periods
+      yesterdays_school_free_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(@periods, yesterday)
+
+      todays_school_free_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(@periods, @today)
+
+      tomorrows_school_free_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(@periods, tomorrow)
+
+      day_after_tomorrows_school_free_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(
+          @periods,
+          day_after_tomorrow
+        )
+
+      # Find public holiday periods for specific days
+      public_holidays =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.public_holiday_periods(@public_periods)
+
+      yesterdays_public_holiday_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(
+          public_holidays,
+          yesterday
+        )
+
+      todays_public_holiday_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(public_holidays, @today)
+
+      tomorrows_public_holiday_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(public_holidays, tomorrow)
+
+      day_after_tomorrows_public_holiday_periods =
+        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(
+          public_holidays,
+          day_after_tomorrow
+        ) %>
+
+      <.faq
+        conn={@conn}
+        country={@country}
+        federal_state={@federal_state}
+        location={@federal_state}
+        next_schoolday={ViewHelpers.next_schoolday(@public_periods ++ @periods)}
+        current_year={@current_year}
+        today={@today}
+        yesterday={yesterday}
+        tomorrow={tomorrow}
+        day_after_tomorrow={day_after_tomorrow}
+        school_periods={@periods}
+        public_periods={@public_periods}
+        months={MehrSchulferienWeb.Helpers.MonthHelpers.months_map()}
+        yesterdays_school_free_periods={yesterdays_school_free_periods}
+        todays_school_free_periods={todays_school_free_periods}
+        tomorrows_school_free_periods={tomorrows_school_free_periods}
+        day_after_tomorrows_school_free_periods={day_after_tomorrows_school_free_periods}
+        yesterdays_public_holiday_periods={yesterdays_public_holiday_periods}
+        todays_public_holiday_periods={todays_public_holiday_periods}
+        tomorrows_public_holiday_periods={tomorrows_public_holiday_periods}
+        day_after_tomorrows_public_holiday_periods={day_after_tomorrows_public_holiday_periods}
+      />
+    <% end %>
+
+    <.schema_org_event periods={@periods} federal_state={@federal_state} country={@country} />
+    <.itemlist_schema
+      periods={@periods}
+      all_periods={@all_periods}
+      federal_state={@federal_state}
+      year={@current_year}
+    />
+  </div>
+</div>

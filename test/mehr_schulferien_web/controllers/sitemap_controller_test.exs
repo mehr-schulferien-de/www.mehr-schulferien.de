@@ -3,6 +3,11 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
   import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
+    # The sitemap is built from Locations.list_countries/0, which caches into
+    # the location hierarchy cache. Stale country ids from other tests would
+    # make the federal state lookups come up empty.
+    MehrSchulferien.Cache.clear_all_location_hierarchies()
+    MehrSchulferien.Cache.clear_query_cache()
     {:ok, %{conn: conn}}
   end
 
@@ -13,6 +18,17 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
       conn = get(conn, "/sitemap.xml")
       assert response_content_type(conn, :xml)
       assert response(conn, 200) =~ ~r/<loc>.*\/ferien\/#{country.slug}.*<\/loc>/
+    end
+
+    test "contains the evergreen year-less federal state URL", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn = get(conn, "/sitemap.xml")
+
+      assert response(conn, 200) =~
+               "<loc>https://www.mehr-schulferien.de/ferien/#{country.slug}/bundesland/#{federal_state.slug}</loc>"
     end
   end
 

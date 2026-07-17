@@ -71,6 +71,28 @@ defmodule MehrSchulferienWeb.BridgeDaySystemTest do
       assert html =~ ~s("@context":"https://schema.org")
     end
 
+    test "SEO title, description and canonical target the searcher's benefit", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn =
+        get(
+          conn,
+          ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@future_year}"
+        )
+
+      html = html_response(conn, 200)
+
+      assert html =~ ~r/<title>\s*Brückentage #{federal_state.name} #{@future_year}:/
+      assert html =~ "Chancen für mehr Urlaub"
+      assert html =~ "Jetzt Urlaub clever planen"
+      assert html =~ ~s(rel="canonical")
+
+      assert html =~
+               "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@future_year}\""
+    end
+
     test "navigation arrows and year links", %{
       conn: conn,
       country: country,

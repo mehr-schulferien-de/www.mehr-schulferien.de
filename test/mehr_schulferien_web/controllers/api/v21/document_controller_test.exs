@@ -5,6 +5,9 @@ defmodule MehrSchulferienWeb.Api.V21.DocumentControllerTest do
   import MehrSchulferien.TestHelpers
 
   @moduletag :capture_log
+  # Real PDF generation: runs only where the pdflatex binary is installed
+  # (always the case in CI). See test/test_helper.exs.
+  @moduletag :pdflatex
 
   setup %{conn: conn} do
     # Create location hierarchy

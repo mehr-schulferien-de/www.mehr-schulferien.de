@@ -15,6 +15,9 @@ defmodule MehrSchulferienWeb.EntschuldigungPdfSystemTest do
   import MehrSchulferien.TestHelpers, except: [create_school: 1]
 
   @moduletag :system
+  # Real PDF generation: runs only where the pdflatex binary is installed
+  # (always the case in CI). See test/test_helper.exs.
+  @moduletag :pdflatex
 
   @valid_params %{
     "first_name" => "Max",

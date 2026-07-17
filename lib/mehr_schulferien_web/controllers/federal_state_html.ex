@@ -60,24 +60,32 @@ defmodule MehrSchulferienWeb.FederalStateHTML do
       current_vacation ->
         days_left = Date.diff(current_vacation.ends_on, today)
 
-        "🎉 #{current_vacation.holiday_or_vacation_type.name} in #{state_name} laufen noch #{days_left} Tage! Alle Schulferien #{year}: Termine, Kalender, iCal-Export & Brückentage."
+        "🎉 Die #{vacation_display_name(current_vacation)} in #{state_name} laufen noch #{days_text(days_left)}! Alle Schulferien #{year}: Termine, Kalender, iCal-Export & Brückentage."
 
       next_vacation && Date.diff(next_vacation.starts_on, today) <= 30 ->
         days_until = Date.diff(next_vacation.starts_on, today)
 
-        "⏰ Nur noch #{days_until} Tage bis #{next_vacation.holiday_or_vacation_type.name} #{state_name}! Alle Schulferien #{year} mit Kalender, iCal & Reiseplanung."
+        "⏰ Nur noch #{days_text(days_until)} bis zu den #{vacation_display_name(next_vacation)} in #{state_name}! Alle Schulferien #{year} mit Kalender, iCal & Reiseplanung."
 
       true ->
         vacation_summary =
           vacation_periods
           |> Enum.take(4)
           |> Enum.map_join(" ", fn p ->
-            "✓ #{p.holiday_or_vacation_type.name} (#{Calendar.strftime(p.starts_on, "%d.%m.")}-#{Calendar.strftime(p.ends_on, "%d.%m.")})"
+            "✓ #{vacation_display_name(p)} (#{Calendar.strftime(p.starts_on, "%d.%m.")}-#{Calendar.strftime(p.ends_on, "%d.%m.")})"
           end)
 
         "Schulferien #{state_name} #{year}: #{vacation_summary}. Plus Feiertage, Brückentage, iCal-Export und Kalenderansicht."
     end
   end
+
+  # "Sommerferien" instead of the raw type name "Sommer"
+  defp vacation_display_name(period) do
+    period.holiday_or_vacation_type.colloquial || period.holiday_or_vacation_type.name
+  end
+
+  defp days_text(1), do: "1 Tag"
+  defp days_text(days), do: "#{days} Tage"
 
   def get_vacation_type_days([period]), do: get_period_days(period)
 

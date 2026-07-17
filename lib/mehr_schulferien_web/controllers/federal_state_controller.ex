@@ -1,7 +1,7 @@
 defmodule MehrSchulferienWeb.FederalStateController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Locations}
+  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
   alias MehrSchulferien.Calendars.VacationTypes
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
@@ -26,12 +26,67 @@ defmodule MehrSchulferienWeb.FederalStateController do
   end
 
   def show(conn, %{"country_slug" => country_slug, "federal_state_slug" => federal_state_slug}) do
+    case Locations.get_federal_state_and_country_by_slug(country_slug, federal_state_slug) do
+      {:ok, {federal_state, country}} ->
+        show_evergreen(conn, federal_state, country)
+
+      {:error, :not_found} ->
+        CH.render_not_found_or_empty_database(conn)
+    end
+  end
+
+  # Evergreen page for the head term "Schulferien <Bundesland>": one stable URL
+  # per state showing the current and next school year, mirroring the year-less
+  # city pages that rank well.
+  defp show_evergreen(conn, federal_state, country) do
     today = DateHelpers.get_today_or_custom_date(conn)
     current_year = today.year
+    next_year = current_year + 1
+    location_ids = [country.id, federal_state.id]
 
-    redirect(conn,
-      to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{current_year}",
-      status: :temporary_redirect
+    {:ok, full_start} = Date.new(current_year, 1, 1)
+    {:ok, full_end} = Date.new(next_year, 12, 31)
+    {:ok, cutoff_date} = Date.new(next_year, 8, 2)
+
+    school_periods =
+      Periods.list_school_vacation_periods(location_ids, full_start, full_end,
+        starts_on_cutoff: cutoff_date
+      )
+
+    public_periods = Periods.list_public_periods(location_ids, full_start, full_end)
+
+    has_data = school_periods != []
+    conn = if has_data, do: conn, else: put_status(conn, 404)
+    conn = track_location_visit(conn, "f", federal_state.slug)
+
+    years_with_data =
+      school_periods |> Enum.map(& &1.starts_on.year) |> Enum.uniq() |> Enum.sort()
+
+    all_periods = school_periods ++ public_periods
+
+    periods_with_duration =
+      ViewHelpers.add_adjoining_duration_to_periods(school_periods, all_periods)
+
+    vacation_types = VacationTypes.list_for_year(federal_state, current_year)
+    faq_data = CH.list_faq_data(location_ids, today)
+
+    render(
+      conn,
+      "show.html",
+      %{
+        country: country,
+        federal_state: federal_state,
+        periods: periods_with_duration,
+        public_periods: public_periods,
+        all_periods: all_periods,
+        current_year: current_year,
+        next_year: next_year,
+        years_with_data: years_with_data,
+        today: today,
+        has_data: has_data,
+        vacation_types: vacation_types
+      }
+      |> Map.merge(Map.new(faq_data))
     )
   end
 

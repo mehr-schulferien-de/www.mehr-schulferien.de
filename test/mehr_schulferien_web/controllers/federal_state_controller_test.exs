@@ -45,4 +45,196 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     assert html_response(conn, 404) =~ federal_state.name
     assert html_response(conn, 404) =~ "#{year_without_data}"
   end
+
+  describe "evergreen federal state page (year-less URL)" do
+    setup %{country: country, federal_state: federal_state} do
+      today = Date.utc_today()
+
+      summer_type =
+        insert(:holiday_or_vacation_type,
+          name: "Sommer",
+          default_is_school_vacation: true,
+          country_location_id: country.id
+        )
+
+      insert(:period,
+        location_id: federal_state.id,
+        holiday_or_vacation_type_id: summer_type.id,
+        starts_on: today,
+        ends_on: Date.add(today, 14),
+        is_school_vacation: true,
+        is_valid_for_students: true
+      )
+
+      winter_type =
+        insert(:holiday_or_vacation_type,
+          name: "Winter",
+          default_is_school_vacation: true,
+          country_location_id: country.id
+        )
+
+      insert(:period,
+        location_id: federal_state.id,
+        holiday_or_vacation_type_id: winter_type.id,
+        starts_on: Date.new!(today.year + 1, 2, 1),
+        ends_on: Date.new!(today.year + 1, 2, 10),
+        is_school_vacation: true,
+        is_valid_for_students: true
+      )
+
+      holiday_type =
+        insert(:holiday_or_vacation_type,
+          name: "Neujahr",
+          default_is_public_holiday: true,
+          default_is_school_vacation: false,
+          country_location_id: country.id
+        )
+
+      insert(:period,
+        location_id: federal_state.id,
+        holiday_or_vacation_type_id: holiday_type.id,
+        starts_on: Date.add(today, 30),
+        ends_on: Date.add(today, 30),
+        is_public_holiday: true,
+        is_valid_for_everybody: true
+      )
+
+      {:ok, current_year: today.year, next_year: today.year + 1}
+    end
+
+    test "renders a real page with head-term H1 and both years of data", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state,
+      current_year: current_year,
+      next_year: next_year
+    } do
+      conn = get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}")
+      html = html_response(conn, 200)
+
+      assert html =~ "Schulferien #{federal_state.name}"
+      assert html =~ "#{current_year}"
+      assert html =~ "#{next_year}"
+    end
+
+    test "has a self-referencing canonical to the year-less URL", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn = get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}")
+      html = html_response(conn, 200)
+
+      assert html =~ ~s(rel="canonical")
+      assert html =~ "/ferien/#{country.slug}/bundesland/#{federal_state.slug}\""
+    end
+
+    test "links to the year pages for year-specific queries", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state,
+      current_year: current_year
+    } do
+      conn = get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}")
+
+      assert html_response(conn, 200) =~
+               "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}"
+    end
+
+    test "returns 404 when the state has no vacation data", %{
+      conn: conn,
+      country: country
+    } do
+      empty_state =
+        insert(:federal_state, %{slug: "saarland", parent_location_id: country.id})
+
+      conn = get(conn, "/ferien/#{country.slug}/bundesland/#{empty_state.slug}")
+
+      assert conn.status == 404
+    end
+  end
+
+  describe "SEO meta tags on the year page" do
+    setup %{country: country, federal_state: federal_state} do
+      vacation_type =
+        insert(:holiday_or_vacation_type,
+          name: "Sommer",
+          default_is_school_vacation: true,
+          country_location_id: country.id
+        )
+
+      insert(:period,
+        location_id: federal_state.id,
+        holiday_or_vacation_type_id: vacation_type.id,
+        starts_on: Date.utc_today(),
+        ends_on: Date.add(Date.utc_today(), 14),
+        is_school_vacation: true,
+        is_valid_for_students: true
+      )
+
+      holiday_type =
+        insert(:holiday_or_vacation_type,
+          name: "Neujahr",
+          default_is_public_holiday: true,
+          default_is_school_vacation: false,
+          country_location_id: country.id
+        )
+
+      insert(:period,
+        location_id: federal_state.id,
+        holiday_or_vacation_type_id: holiday_type.id,
+        starts_on: Date.add(Date.utc_today(), 30),
+        ends_on: Date.add(Date.utc_today(), 30),
+        is_public_holiday: true,
+        is_valid_for_everybody: true
+      )
+
+      {:ok, year: Date.utc_today().year}
+    end
+
+    test "renders a self-referencing canonical link", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state,
+      year: year
+    } do
+      conn = get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year}")
+
+      assert html_response(conn, 200) =~
+               ~s(rel="canonical")
+
+      assert html_response(conn, 200) =~
+               "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year}\""
+    end
+
+    test "renders og:image and large Twitter card pointing to the handwritten image", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state,
+      year: year
+    } do
+      conn = get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year}")
+      html = html_response(conn, 200)
+
+      assert html =~ ~s(property="og:image")
+
+      assert html =~
+               "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year}/handwritten.webp"
+
+      assert html =~ ~s(property="twitter:card" content="summary_large_image")
+    end
+
+    test "does not include the dead Universal Analytics snippet", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state,
+      year: year
+    } do
+      conn = get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{year}")
+      html = html_response(conn, 200)
+
+      refute html =~ "google-analytics.com"
+      refute html =~ "UA-774512"
+    end
+  end
 end

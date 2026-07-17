@@ -4,6 +4,12 @@ defmodule MehrSchulferienWeb.BridgeDayView do
   alias MehrSchulferien.BridgeDayCalculations
   alias MehrSchulferien.Calendars.DateHelpers
 
+  defdelegate bridge_day_page_title(federal_state, year, proposal_count),
+    to: MehrSchulferienWeb.BridgeDayHTML
+
+  defdelegate bridge_day_page_description(federal_state, year, proposal_count),
+    to: MehrSchulferienWeb.BridgeDayHTML
+
   def format_month_header(start_date, end_date) do
     months_map = DateHelpers.get_months_map()
     first_month = start_date.month
