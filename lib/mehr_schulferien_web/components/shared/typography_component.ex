@@ -37,23 +37,32 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
       assign(assigns, :house_ad, if(assigns.level == 1 and assigns.show_ad, do: Ads.current()))
 
     ~H"""
-    <.dynamic tag={@tag} class={@computed_class}>
-      {render_slot(@inner_block)}
-    </.dynamic>
     <%= if @house_ad do %>
-      <div class="mt-3 mb-2">
-        <div class="inline-block bg-gradient-to-r from-blue-700 to-blue-500 rounded-lg px-5 py-2.5 text-sm text-white shadow-lg shadow-blue-500/30">
-          <span class="mr-1 text-xs uppercase tracking-wide opacity-75">Anzeige</span>
-          {@house_ad.hook}
-          <a
-            href={"/ads/#{@house_ad.id}"}
-            rel="sponsored"
-            class="font-bold underline decoration-2 ml-1 hover:text-blue-100 whitespace-nowrap"
-          >
-            {@house_ad.label}
-          </a>
+      <%!-- One wrapper for heading + ad: in flex header rows (h1 | year nav)
+      they must act as a single flex item, otherwise the ad becomes its own
+      column and squeezes the title into hyphenated fragments. --%>
+      <div class="min-w-0">
+        <.dynamic tag={@tag} class={@computed_class}>
+          {render_slot(@inner_block)}
+        </.dynamic>
+        <div class="mt-3 mb-2">
+          <div class="inline-block bg-gradient-to-r from-blue-700 to-blue-500 rounded-lg px-5 py-2.5 text-sm text-white shadow-lg shadow-blue-500/30 hyphens-none">
+            <span class="mr-1 text-xs uppercase tracking-wide opacity-75">Anzeige</span>
+            {@house_ad.hook}
+            <a
+              href={"/ads/#{@house_ad.id}"}
+              rel="sponsored"
+              class="font-bold underline decoration-2 ml-1 hover:text-blue-100 whitespace-nowrap"
+            >
+              {@house_ad.label}
+            </a>
+          </div>
         </div>
       </div>
+    <% else %>
+      <.dynamic tag={@tag} class={@computed_class}>
+        {render_slot(@inner_block)}
+      </.dynamic>
     <% end %>
     """
   end

@@ -48,4 +48,25 @@ defmodule MehrSchulferienWeb.HouseAdTest do
       refute html =~ "/ads/"
     end
   end
+
+  test "heading and ad share one wrapper so flex headers keep them stacked" do
+    html = heading(%{level: 1, show_ad: true})
+
+    # Without a wrapper the h1 and the ad pill become separate flex items in
+    # header rows (h1 | ad | year nav) and squeeze the title into hyphenated
+    # lines like "Bran-denburg". The wrapper keeps the ad below the h1.
+    assert [_, inside_wrapper] = String.split(html, ~s(<div class="min-w-0">), parts: 2)
+    assert inside_wrapper =~ "<h1"
+    assert inside_wrapper =~ "/ads/"
+
+    # The ad copy must not hyphenate mid-word ("Kos-tenlos")
+    assert html =~ "hyphens-none"
+  end
+
+  test "without an ad the heading renders without the wrapper" do
+    html = heading(%{level: 1, show_ad: false})
+
+    refute html =~ ~s(<div class="min-w-0">)
+    assert html =~ "<h1"
+  end
 end

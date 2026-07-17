@@ -35,6 +35,16 @@ html {
   -ms-hyphens: auto;
 }
 
+/* Headings must wrap at word boundaries, never mid-word ("Bran-denburg").
+   Explicit hyphens (Mecklenburg-Vorpommern) still allow a break. */
+h1,
+h2,
+h3 {
+  hyphens: manual;
+  -webkit-hyphens: manual;
+  -ms-hyphens: manual;
+}
+
 /* LiveView form update animations */
 @keyframes highlightUpdate {
   0% {

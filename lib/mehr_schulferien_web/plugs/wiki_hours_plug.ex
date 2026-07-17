@@ -31,10 +31,22 @@ defmodule MehrSchulferienWeb.Plugs.WikiHoursPlug do
   Checks if the wiki is currently closed.
 
   Returns `true` if the current Berlin time is between 22:00 and 06:00.
+  The `:wiki_hours_override` application env (`:open` / `:closed`) bypasses
+  the clock - the test env sets `:open` so the suite does not start failing
+  every evening at 22:00.
   """
   def wiki_closed? do
-    hour = current_berlin_time().hour
-    hour >= @closed_start or hour < @closed_end
+    case Application.get_env(:mehr_schulferien, :wiki_hours_override) do
+      :open ->
+        false
+
+      :closed ->
+        true
+
+      _ ->
+        hour = current_berlin_time().hour
+        hour >= @closed_start or hour < @closed_end
+    end
   end
 
   @doc """

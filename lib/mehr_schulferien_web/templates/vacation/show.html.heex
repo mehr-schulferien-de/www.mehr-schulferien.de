@@ -28,34 +28,34 @@
                   @vacation_period,
                   @all_periods
                 ) %>
-              <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <.heading level={2} class="text-lg text-blue-900 mb-2">
+              <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                <.heading level={2} class="text-lg text-blue-900 dark:text-blue-100 mb-2">
                   {@vacation_name} {@year}
                 </.heading>
-                <div class="text-xl font-bold text-blue-800">
+                <div class="text-xl font-bold text-blue-800 dark:text-blue-200">
                   {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
                     @vacation_period.starts_on
                   )} - {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
                     @vacation_period.ends_on
                   )}
                 </div>
-                <div class="text-sm text-blue-700 mt-1">
+                <div class="text-sm text-blue-700 dark:text-blue-300 mt-1">
                   {official_duration} Tage
                   <%= if effective_duration > official_duration do %>
-                    <span class="text-green-700 font-semibold">
+                    <span class="text-green-700 dark:text-green-400 font-semibold">
                       (insgesamt {effective_duration} freie Tage*)
                     </span>
                   <% end %>
                 </div>
                 <%= if effective_duration > official_duration do %>
-                  <div class="text-xs text-blue-600 mt-2 italic">
+                  <div class="text-xs text-blue-600 dark:text-blue-300 mt-2 italic">
                     * inkl. angrenzende Wochenenden und Feiertage
                   </div>
                 <% end %>
               </div>
 
               <% # Show all vacation periods for comparison %>
-              <.heading level={3} class="text-lg text-gray-800 mb-3">
+              <.heading level={3} class="text-lg text-gray-800 dark:text-gray-200 mb-3">
                 Alle Schulferien {@federal_state.name} {@year}
               </.heading>
               <.periods_table periods={@periods} all_periods={@all_periods} today={@today} />
@@ -164,8 +164,8 @@
 
         <% # Show handwritten date visualization if we have vacation data %>
         <%= if @vacation_period do %>
-          <div class="mt-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-            <.heading level={3} class="text-lg text-gray-800 mb-3">
+          <div class="mt-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+            <.heading level={3} class="text-lg text-gray-800 dark:text-gray-200 mb-3">
               Ferientermine als Notiz
             </.heading>
             <div class="w-full" style="max-width: 400px; margin: 0 auto;">
@@ -183,11 +183,11 @@
         <% end %>
 
         <% # Info box about vacation planning %>
-        <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <.heading level={3} class="text-lg text-yellow-900 mb-2">
+        <div class="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <.heading level={3} class="text-lg text-yellow-900 dark:text-yellow-200 mb-2">
             {@vacation_name} planen
           </.heading>
-          <.text variant="small" class="text-yellow-800">
+          <.text variant="small" class="text-yellow-800 dark:text-yellow-300">
             {vacation_planning_tip(@vacation_type)}
           </.text>
         </div>

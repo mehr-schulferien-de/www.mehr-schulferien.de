@@ -9,6 +9,10 @@ import Config
 # Set environment
 config :mehr_schulferien, :env, :test
 
+# The wiki night curfew (22:00-06:00 Berlin time) reads the real clock;
+# without this override the whole wiki suite would fail every evening.
+config :mehr_schulferien, wiki_hours_override: :open
+
 # Enable school contact info for tests (disabled in production for legal reasons)
 config :mehr_schulferien, school_contact_info_enabled: true
 
