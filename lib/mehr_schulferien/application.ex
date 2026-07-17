@@ -16,6 +16,15 @@ defmodule MehrSchulferien.Application do
       MehrSchulferien.Cache
     ]
 
+    # The house-ad statistics buffer. Not started in test (config flag);
+    # tests that measure start their own supervised instance.
+    ad_children =
+      if Application.get_env(:mehr_schulferien, :start_ad_recorder, true) do
+        [MehrSchulferien.Ads.Recorder]
+      else
+        []
+      end
+
     # MCP Server children (conditional)
     mcp_children =
       if Application.get_env(:mehr_schulferien, :mcp_enabled, true) do
@@ -36,7 +45,7 @@ defmodule MehrSchulferien.Application do
       end
 
     # Endpoint always starts last
-    children = base_children ++ mcp_children ++ [MehrSchulferienWeb.Endpoint]
+    children = base_children ++ ad_children ++ mcp_children ++ [MehrSchulferienWeb.Endpoint]
 
     opts = [strategy: :one_for_one, name: MehrSchulferien.Supervisor]
     Supervisor.start_link(children, opts)

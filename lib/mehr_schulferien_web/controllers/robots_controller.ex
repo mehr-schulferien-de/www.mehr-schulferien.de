@@ -78,6 +78,9 @@ defmodule MehrSchulferienWeb.RobotsController do
     Disallow: /admin
     Disallow: /wiki
 
+    # Ad-click tracking redirects, not content (they would skew the stats)
+    Disallow: /ads
+
     # vCard downloads are not useful for search engines
     Disallow: /ferien/*/schule/*/vcard
     Disallow: /schule/*/vcard

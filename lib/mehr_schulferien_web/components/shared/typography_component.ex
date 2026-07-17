@@ -6,6 +6,8 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
   use Phoenix.Component
   use PhoenixHTMLHelpers
 
+  alias MehrSchulferien.Ads
+
   attr :level, :integer, default: 1, values: [1, 2, 3, 4, 5, 6]
   attr :class, :string, default: ""
   attr :show_ad, :boolean, default: true
@@ -27,19 +29,28 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
     assigns = assign(assigns, :tag, tag)
     assigns = assign(assigns, :computed_class, "#{base_classes} #{assigns.class}")
 
+    # The rotating house ad (MehrSchulferien.Ads): the same variant for every
+    # visitor within the hour, so a LiveView's static and connected render
+    # agree. Clicks route through /ads/:id and are counted before the
+    # redirect; impressions are counted per page view by AdImpressionPlug.
+    assigns =
+      assign(assigns, :house_ad, if(assigns.level == 1 and assigns.show_ad, do: Ads.current()))
+
     ~H"""
     <.dynamic tag={@tag} class={@computed_class}>
       {render_slot(@inner_block)}
     </.dynamic>
-    <%= if @level == 1 and @show_ad do %>
+    <%= if @house_ad do %>
       <div class="mt-3 mb-2">
-        <div class="inline-block bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg px-5 py-2.5 text-sm text-white shadow-lg shadow-pink-500/30">
-          Online-Datine? Online-Dating!
+        <div class="inline-block bg-gradient-to-r from-blue-700 to-blue-500 rounded-lg px-5 py-2.5 text-sm text-white shadow-lg shadow-blue-500/30">
+          <span class="mr-1 text-xs uppercase tracking-wide opacity-75">Anzeige</span>
+          {@house_ad.hook}
           <a
-            href="https://animina.de?ad=2"
-            class="font-bold underline decoration-2 ml-1 hover:text-pink-100"
+            href={"/ads/#{@house_ad.id}"}
+            rel="sponsored"
+            class="font-bold underline decoration-2 ml-1 hover:text-blue-100"
           >
-            animina.de
+            {@house_ad.label}
           </a>
         </div>
       </div>

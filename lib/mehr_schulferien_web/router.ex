@@ -12,6 +12,7 @@ defmodule MehrSchulferienWeb.Router do
     plug MehrSchulferienWeb.Plugs.DateAssignsPlug
     plug MehrSchulferienWeb.Plugs.LocationCookiesPlug
     plug MehrSchulferienWeb.Plugs.VisitorTrackingPlug
+    plug MehrSchulferienWeb.Plugs.AdImpressionPlug
     plug MehrSchulferienWeb.Plugs.AuthPlug
   end
 
@@ -192,6 +193,10 @@ defmodule MehrSchulferienWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
+
+    # House-ad click tracking: counts the click, then forwards to the
+    # advertised site (robots.txt disallows /ads so crawlers stay out).
+    get "/ads/:id", AdController, :click
     get "/sommerferien", PageController, :summer_vacations
     get "/osterferien", PageController, :easter_vacations
     get "/herbstferien", PageController, :fall_vacations

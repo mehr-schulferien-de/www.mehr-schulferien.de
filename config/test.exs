@@ -39,3 +39,7 @@ config :mehr_schulferien, MehrSchulferien.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable Swoosh mailbox in test
 config :swoosh, :serve_mailbox, false
+
+# The ad-stats Recorder is not auto-started in test: the SQL sandbox owns
+# the database, so tests that measure start their own supervised instance.
+config :mehr_schulferien, start_ad_recorder: false
