@@ -65,7 +65,10 @@
             📄 Beispiel: Entschuldigung erstellen
           </summary>
           <div class="p-4">
-            <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
+            <.code_block
+              class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"
+              content={
+                ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
   -H "Content-Type: application/json" \\
   -d '{
     "type": "entschuldigung",
@@ -81,7 +84,9 @@
     "teacher_name": "Schmidt",
     "teacher_salutation": "Frau"
   }' \\
-  --output entschuldigung.pdf| %></pre>
+  --output entschuldigung.pdf|
+              }
+            />
           </div>
         </details>
 
@@ -90,7 +95,10 @@
             📝 Beispiel: Beurlaubungsantrag erstellen
           </summary>
           <div class="p-4">
-            <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
+            <.code_block
+              class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"
+              content={
+                ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
   -H "Content-Type: application/json" \\
   -d '{
     "type": "beurlaubung",
@@ -104,7 +112,9 @@
     "end_date": "2025-02-14",
     "detailed_reason": "Familiäre Angelegenheiten"
   }' \\
-  --output beurlaubung.pdf| %></pre>
+  --output beurlaubung.pdf|
+              }
+            />
           </div>
         </details>
 
@@ -113,7 +123,10 @@
             🏃 Beispiel: Sportbefreiung erstellen
           </summary>
           <div class="p-4">
-            <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"><%= ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
+            <.code_block
+              class="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-sm"
+              content={
+                ~s|curl -X POST https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/documents \\
   -H "Content-Type: application/json" \\
   -d '{
     "type": "sportbefreiung",
@@ -128,7 +141,9 @@
     "detailed_reason": "Verletzung am Fuß",
     "medical_certificate": true
   }' \\
-  --output sportbefreiung.pdf| %></pre>
+  --output sportbefreiung.pdf|
+              }
+            />
           </div>
         </details>
       </div>
@@ -139,7 +154,7 @@
         </.heading>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Parameter</th>
@@ -262,9 +277,9 @@
         </div>
 
         <p class="mb-2 font-medium">Beispiel Fehler-Response:</p>
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+        <.code_block content={~s|{
   "error": "School not found"
-}| %></pre>
+}|} />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           HTTP-Status-Codes

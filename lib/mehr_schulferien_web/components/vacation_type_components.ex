@@ -227,11 +227,11 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
               <dd class="mt-1 text-lg font-semibold text-gray-900">
                 {@stats.total_days} Tage
                 <span class="text-sm font-normal text-gray-500">
-                  (<%= if @stats.min_duration == @stats.max_duration do %>
-                    je {@stats.min_duration} Tage Ferien
+                  <%= if @stats.min_duration == @stats.max_duration do %>
+                    (je {@stats.min_duration} Tage Ferien)
                   <% else %>
-                    {@stats.min_duration}-{@stats.max_duration} Tage Ferien
-                  <% end %>)
+                    ({@stats.min_duration}-{@stats.max_duration} Tage Ferien)
+                  <% end %>
                 </span>
               </dd>
             </div>

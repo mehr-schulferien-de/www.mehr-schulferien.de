@@ -180,45 +180,4 @@ defmodule MehrSchulferienWeb.Shared.TableComponent do
     </tr>
     """
   end
-
-  # Responsive table wrapper
-  attr :class, :string, default: ""
-  slot :inner_block, required: true
-
-  def table_wrapper(assigns) do
-    ~H"""
-    <div class={"overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg #{@class}"}>
-      {render_slot(@inner_block)}
-    </div>
-    """
-  end
-
-  # Empty state for tables
-  attr :message, :string, default: "Keine Daten vorhanden"
-  attr :class, :string, default: ""
-
-  def empty_state(assigns) do
-    ~H"""
-    <tr>
-      <td colspan="100%" class={"px-6 py-12 text-center #{@class}"}>
-        <div class="text-gray-500">
-          <svg
-            class="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          <p class="mt-2 text-sm">{@message}</p>
-        </div>
-      </td>
-    </tr>
-    """
-  end
 end

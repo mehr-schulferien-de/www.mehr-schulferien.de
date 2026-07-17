@@ -138,6 +138,29 @@ defmodule MehrSchulferienWeb.Shared.DesignTokens do
     }
   end
 
+  # Standard wiki form field styles (see CLAUDE.md "Wiki form elements").
+  # Kept as plain strings so they can be used directly in class attributes
+  # and composed with extra classes, e.g. class={"#{DesignTokens.form_input()} w-20"}.
+  def form_input do
+    "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+  end
+
+  # Same as form_input/0 but without the placeholder color classes
+  # (used for date and other inputs that never show a placeholder).
+  def form_input_no_placeholder do
+    "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+  end
+
+  # Select dropdown variant of form_input/0 with custom appearance handling.
+  def form_select do
+    "mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none cursor-pointer"
+  end
+
+  # Table style for the developers documentation pages.
+  def table_class do
+    "min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700"
+  end
+
   # Typography scale
   def typography do
     %{

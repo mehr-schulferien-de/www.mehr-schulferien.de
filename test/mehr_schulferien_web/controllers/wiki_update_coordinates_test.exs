@@ -1,8 +1,6 @@
 defmodule MehrSchulferienWeb.WikiUpdateCoordinatesTest do
   use MehrSchulferienWeb.ConnCase
 
-  @moduletag :skip
-
   import MehrSchulferien.Factory
   import MehrSchulferien.TestHelpers
 

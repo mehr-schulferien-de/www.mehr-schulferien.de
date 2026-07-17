@@ -1,8 +1,6 @@
 defmodule MehrSchulferienWeb.WikiControllerTest do
   use MehrSchulferienWeb.ConnCase
 
-  @moduletag :skip
-
   import Phoenix.ConnTest
   import MehrSchulferien.TestHelpers
   alias MehrSchulferien.Locations

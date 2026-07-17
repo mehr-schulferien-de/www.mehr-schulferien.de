@@ -33,7 +33,7 @@
         </.heading>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Endpunkt</th>
@@ -68,7 +68,7 @@
         </.heading>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Parameter</th>
@@ -107,13 +107,25 @@
         </.heading>
 
         <p class="mb-2 font-medium">Schuljahr 2024/2025 für Bayern (nur Schulferien):</p>
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/icalendar?year=2024&vacation_types=school</pre>
+        <.code_block
+          class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+          content={
+            ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/icalendar?year=2024&vacation_types=school|
+          }
+        />
 
         <p class="mb-2 font-medium">Kalenderjahr 2024 für München (alle Ferien & Feiertage):</p>
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/icalendar?year=2024&vacation_types=all&calendar_year=true</pre>
+        <.code_block
+          class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+          content={
+            ~s|GET https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/icalendar?year=2024&vacation_types=all&calendar_year=true|
+          }
+        />
 
         <p class="mb-2 font-medium">Nur Schulferien für eine spezifische Schule:</p>
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/icalendar?year=2024&vacation_types=school</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/icalendar?year=2024&vacation_types=school|
+        } />
 
         <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">
           <p class="text-sm text-blue-700 dark:text-blue-300">
@@ -146,7 +158,9 @@
           Beispiel
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/vcard</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/schools/gymnasium-muenchen-nord/vcard|
+        } />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           Enthaltene Informationen

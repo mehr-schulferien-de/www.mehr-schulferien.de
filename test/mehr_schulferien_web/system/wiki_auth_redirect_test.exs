@@ -7,8 +7,6 @@ defmodule MehrSchulferienWeb.System.WikiAuthRedirectTest do
   """
   use MehrSchulferienWeb.ConnCase, async: false
 
-  @moduletag :skip
-
   import Phoenix.LiveViewTest
   import Swoosh.TestAssertions
 

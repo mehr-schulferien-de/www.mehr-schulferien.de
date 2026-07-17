@@ -41,7 +41,7 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
   end
 
   def get_translations do
-    %{
+    Map.merge(MehrSchulferienWeb.DocumentLiveBase.shared_translations(), %{
       "Create Leave of Absence Request" => %{
         "de" => "Beurlaubungsvordruck erstellen",
         "en" => "Create Leave of Absence Form Template",
@@ -51,16 +51,6 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "pl" => "Utwórz wniosek o zwolnienie",
         "fr" => "Créer une demande de congé",
         "uk" => "Створити заяву про відпустку"
-      },
-      "For %{school_name}" => %{
-        "de" => "Für %{school_name}",
-        "en" => "For %{school_name}",
-        "ru" => "Для %{school_name}",
-        "ar" => "لـ %{school_name}",
-        "tr" => "%{school_name} için",
-        "pl" => "Dla %{school_name}",
-        "fr" => "Pour %{school_name}",
-        "uk" => "Для %{school_name}"
       },
       "Request approval in advance" => %{
         "de" => "Vordruck für Antrag vorab erstellen",
@@ -82,16 +72,6 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "fr" => "Télécharger PDF",
         "uk" => "Завантажити PDF"
       },
-      "Sender" => %{
-        "de" => "Absender",
-        "en" => "Sender",
-        "ru" => "Отправитель",
-        "ar" => "المرسل",
-        "tr" => "Gönderen",
-        "pl" => "Nadawca",
-        "fr" => "Expéditeur",
-        "uk" => "Відправник"
-      },
       "Your personal information for the leave request" => %{
         "de" => "Ihre persönlichen Daten für den Beurlaubungsantrag",
         "en" => "Your personal information for the leave request",
@@ -101,86 +81,6 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "pl" => "Twoje dane osobowe do wniosku o zwolnienie",
         "fr" => "Vos informations personnelles pour la demande de congé",
         "uk" => "Ваша особиста інформація для заяви про відпустку"
-      },
-      "First Name" => %{
-        "de" => "Vorname",
-        "en" => "First Name",
-        "ru" => "Имя",
-        "ar" => "الاسم الأول",
-        "tr" => "Ad",
-        "pl" => "Imię",
-        "fr" => "Prénom",
-        "uk" => "Ім'я"
-      },
-      "Last Name" => %{
-        "de" => "Nachname",
-        "en" => "Last Name",
-        "ru" => "Фамилия",
-        "ar" => "اسم العائلة",
-        "tr" => "Soyad",
-        "pl" => "Nazwisko",
-        "fr" => "Nom de famille",
-        "uk" => "Прізвище"
-      },
-      "School and Student Information" => %{
-        "de" => "Schul- und Schülerdaten",
-        "en" => "School and Student Information",
-        "ru" => "Информация о школе и ученике",
-        "ar" => "معلومات المدرسة والطالب",
-        "tr" => "Okul ve Öğrenci Bilgileri",
-        "pl" => "Informacje o szkole i uczniu",
-        "fr" => "Informations sur l'école et l'élève",
-        "uk" => "Інформація про школу та учня"
-      },
-      "Title (optional)" => %{
-        "de" => "Titel (optional)",
-        "en" => "Title (optional)",
-        "ru" => "Титул (необязательно)",
-        "ar" => "اللقب (اختياري)",
-        "tr" => "Unvan (isteğe bağlı)",
-        "pl" => "Tytuł (opcjonalnie)",
-        "fr" => "Titre (optionnel)",
-        "uk" => "Титул (необов'язково)"
-      },
-      "Street and House Number (optional)" => %{
-        "de" => "Straße und Hausnummer (optional)",
-        "en" => "Street and House Number (optional)",
-        "ru" => "Улица и номер дома (необязательно)",
-        "ar" => "الشارع ورقم المنزل (اختياري)",
-        "tr" => "Sokak ve Kapı Numarası (isteğe bağlı)",
-        "pl" => "Ulica i numer domu (opcjonalnie)",
-        "fr" => "Rue et numéro de maison (optionnel)",
-        "uk" => "Вулиця та номер будинку (необов'язково)"
-      },
-      "ZIP Code" => %{
-        "de" => "PLZ",
-        "en" => "ZIP Code",
-        "ru" => "Почтовый индекс",
-        "ar" => "الرمز البريدي",
-        "tr" => "Posta Kodu",
-        "pl" => "Kod pocztowy",
-        "fr" => "Code postal",
-        "uk" => "Поштовий індекс"
-      },
-      "City" => %{
-        "de" => "Stadt",
-        "en" => "City",
-        "ru" => "Город",
-        "ar" => "المدينة",
-        "tr" => "Şehir",
-        "pl" => "Miasto",
-        "fr" => "Ville",
-        "uk" => "Місто"
-      },
-      "Information about the school and student" => %{
-        "de" => "Informationen über die Schule und den Schüler",
-        "en" => "Information about the school and student",
-        "ru" => "Информация о школе и ученике",
-        "ar" => "معلومات حول المدرسة والطالب",
-        "tr" => "Okul ve öğrenci hakkında bilgiler",
-        "pl" => "Informacje o szkole i uczniu",
-        "fr" => "Informations sur l'école et l'élève",
-        "uk" => "Інформація про школу та учня"
       },
       "Class Teacher Salutation" => %{
         "de" => "Anrede Klassenlehrer(in)",
@@ -192,26 +92,6 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "fr" => "Salutation du professeur principal",
         "uk" => "Звернення до класного керівника"
       },
-      "Mr." => %{
-        "de" => "Herr",
-        "en" => "Mr.",
-        "ru" => "Г-н",
-        "ar" => "السيد",
-        "tr" => "Bay",
-        "pl" => "Pan",
-        "fr" => "M.",
-        "uk" => "Пан"
-      },
-      "Ms." => %{
-        "de" => "Frau",
-        "en" => "Ms.",
-        "ru" => "Г-жа",
-        "ar" => "السيدة",
-        "tr" => "Bayan",
-        "pl" => "Pani",
-        "fr" => "Mme",
-        "uk" => "Пані"
-      },
       "Class Teacher Name" => %{
         "de" => "Name Klassenlehrer(in)",
         "en" => "Class Teacher Name",
@@ -221,66 +101,6 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "pl" => "Nazwisko wychowawcy",
         "fr" => "Nom du professeur principal",
         "uk" => "Ім'я класного керівника"
-      },
-      "Student Name" => %{
-        "de" => "Name des Schülers/der Schülerin",
-        "en" => "Student Name",
-        "ru" => "Имя ученика",
-        "ar" => "اسم الطالب",
-        "tr" => "Öğrenci Adı",
-        "pl" => "Imię i nazwisko ucznia",
-        "fr" => "Nom de l'élève",
-        "uk" => "Ім'я учня"
-      },
-      "Class" => %{
-        "de" => "Klasse",
-        "en" => "Class",
-        "ru" => "Класс",
-        "ar" => "الصف",
-        "tr" => "Sınıf",
-        "pl" => "Klasa",
-        "fr" => "Classe",
-        "uk" => "Клас"
-      },
-      "My relationship to the student:" => %{
-        "de" => "Meine Beziehung zum Schüler:",
-        "en" => "My relationship to the student:",
-        "ru" => "Мое отношение к ученику:",
-        "ar" => "علاقتي بالطالب:",
-        "tr" => "Öğrenci ile ilişkim:",
-        "pl" => "Mój stosunek do ucznia:",
-        "fr" => "Ma relation avec l'élève:",
-        "uk" => "Мої стосунки з учнем:"
-      },
-      "my son" => %{
-        "de" => "mein Sohn",
-        "en" => "my son",
-        "ru" => "мой сын",
-        "ar" => "ابني",
-        "tr" => "oğlum",
-        "pl" => "mój syn",
-        "fr" => "mon fils",
-        "uk" => "мій син"
-      },
-      "my daughter" => %{
-        "de" => "meine Tochter",
-        "en" => "my daughter",
-        "ru" => "моя дочь",
-        "ar" => "ابنتي",
-        "tr" => "kızım",
-        "pl" => "moja córka",
-        "fr" => "ma fille",
-        "uk" => "моя дочка"
-      },
-      "neither son nor daughter, but I have custody" => %{
-        "de" => "weder Sohn, noch Tochter, aber ich bin sorgeberechtigt",
-        "en" => "neither son nor daughter, but I have custody",
-        "ru" => "ни сын, ни дочь, но у меня есть опека",
-        "ar" => "لا ابن ولا ابنة، لكن لدي حضانة",
-        "tr" => "ne oğul ne kız, ama velayetim var",
-        "pl" => "ani syn, ani córka, ale mam opiekę prawną",
-        "fr" => "ni fils ni fille, mais j'ai la garde",
-        "uk" => "ні син, ні дочка, але я маю опіку"
       },
       "Leave Request Details" => %{
         "de" => "Beurlaubungsdetails",
@@ -301,26 +121,6 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "pl" => "Powód i okres zwolnienia",
         "fr" => "Motif et période de congé",
         "uk" => "Причина та період відпустки"
-      },
-      "Start Date" => %{
-        "de" => "Startdatum",
-        "en" => "Start Date",
-        "ru" => "Дата начала",
-        "ar" => "تاريخ البداية",
-        "tr" => "Başlangıç Tarihi",
-        "pl" => "Data rozpoczęcia",
-        "fr" => "Date de début",
-        "uk" => "Дата початку"
-      },
-      "End Date" => %{
-        "de" => "Enddatum",
-        "en" => "End Date",
-        "ru" => "Дата окончания",
-        "ar" => "تاريخ النهاية",
-        "tr" => "Bitiş Tarihi",
-        "pl" => "Data zakończenia",
-        "fr" => "Date de fin",
-        "uk" => "Дата закінчення"
       },
       "Detailed Reason" => %{
         "de" => "Begründung",
@@ -361,16 +161,6 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
           "uk" =>
             "Згенеруйте безкоштовну заяву про відпустку відповідно до %{standard}. Ви можете роздрукувати PDF або підписати його цифровим підписом і надіслати до школи електронною поштою."
         },
-      "Preview Example" => %{
-        "de" => "Beispiel Vorschau",
-        "en" => "Preview Example",
-        "ru" => "Пример предварительного просмотра",
-        "ar" => "مثال للمعاينة",
-        "tr" => "Önizleme Örneği",
-        "pl" => "Przykład podglądu",
-        "fr" => "Exemple d'aperçu",
-        "uk" => "Приклад попереднього перегляду"
-      },
       "Religious Holidays (Optional)" => %{
         "de" => "Religiöse Feiertage (Optional)",
         "en" => "Religious Holidays (Optional)",
@@ -401,7 +191,7 @@ defmodule MehrSchulferienWeb.BeurlaubungLive do
         "fr" => "-- Sélectionner une fête --",
         "uk" => "-- Виберіть свято --"
       }
-    }
+    })
   end
 
   # Get religious holidays for the dropdown

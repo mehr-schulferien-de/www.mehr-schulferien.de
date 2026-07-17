@@ -78,6 +78,22 @@ defmodule MehrSchulferienWeb.WikiPeriodNewLive do
   defp save_period(socket, period_params) do
     period_params = prepare_params_for_create(period_params)
 
+    # Field validation must block the submission itself, not only surface
+    # during live-validate - otherwise invalid data lands in the pending
+    # queue and fails on approval.
+    changeset =
+      %Period{}
+      |> Period.changeset(period_params)
+      |> Map.put(:action, :insert)
+
+    if changeset.valid? do
+      queue_period(socket, period_params)
+    else
+      {:noreply, assign(socket, :changeset, changeset)}
+    end
+  end
+
+  defp queue_period(socket, period_params) do
     # Submit to pending changes queue instead of directly creating
     pending_attrs = %{
       change_type: "create_period",

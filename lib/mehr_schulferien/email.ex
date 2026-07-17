@@ -841,51 +841,6 @@ defmodule MehrSchulferien.Email do
   # ============================================================================
 
   @doc """
-  Sends a magic link email to verify a blacklist request.
-  """
-  def blacklist_verification_email(email, name, token) do
-    verify_url = "https://www.mehr-schulferien.de/wiki/blacklist/verify/#{token}"
-
-    new()
-    |> to({name, email})
-    |> from({@system_email_name, @noreply_email})
-    |> subject("Bestätigung für Datensperrliste - mehr-schulferien.de")
-    |> html_body("""
-    <h2>Bestätigung Ihrer E-Mail-Adresse</h2>
-    <p>Hallo #{name},</p>
-    <p>Sie haben einen Antrag auf Aufnahme in die Datensperrliste von mehr-schulferien.de gestellt.</p>
-    <p>Bitte klicken Sie auf den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen:</p>
-    <p><a href="#{verify_url}" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 15px 0;">E-Mail bestätigen</a></p>
-    <p>Oder kopieren Sie diesen Link in Ihren Browser:</p>
-    <p style="word-break: break-all; color: #666;">#{verify_url}</p>
-    <p><strong>Hinweis:</strong> Dieser Link ist 24 Stunden gültig.</p>
-    <p>Falls Sie diesen Antrag nicht gestellt haben, können Sie diese E-Mail ignorieren.</p>
-    <p>Mit freundlichen Grüßen,<br>Ihr mehr-schulferien.de Team</p>
-    <p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>
-    """)
-    |> text_body("""
-    Bestätigung Ihrer E-Mail-Adresse
-
-    Hallo #{name},
-
-    Sie haben einen Antrag auf Aufnahme in die Datensperrliste von mehr-schulferien.de gestellt.
-
-    Bitte öffnen Sie den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen:
-
-    #{verify_url}
-
-    Hinweis: Dieser Link ist 24 Stunden gültig.
-
-    Falls Sie diesen Antrag nicht gestellt haben, können Sie diese E-Mail ignorieren.
-
-    Mit freundlichen Grüßen,
-    Ihr mehr-schulferien.de Team
-
-    PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>
-    """)
-  end
-
-  @doc """
   Sends admin notification when a new blacklist entry is created.
   """
   def blacklist_entry_created_notification(entry, removal_count) do

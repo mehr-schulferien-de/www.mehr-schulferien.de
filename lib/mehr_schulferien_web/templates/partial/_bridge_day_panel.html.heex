@@ -1,4 +1,4 @@
-<% max_days = MehrSchulferienWeb.BridgeDayView.get_number_max_days(@all_periods) %>
+<% max_days = MehrSchulferienWeb.BridgeDayHelpers.get_number_max_days(@all_periods) %>
 <% bridge_days_number = @bridge_day.number_days %>
 <% _number_public_holidays_and_weekend_days = max_days - bridge_days_number %>
 <% first_day = hd(@all_periods).starts_on %>
@@ -9,7 +9,7 @@
     <div class="p-4">
       <header>
         <.heading level={3} class="text-lg mb-3" itemprop="name">
-          {MehrSchulferienWeb.BridgeDayView.format_month_header(first_day, last_day)}
+          {MehrSchulferienWeb.BridgeDayHelpers.format_month_header(first_day, last_day)}
           <small class="text-gray-500">{@year}</small>
         </.heading>
       </header>

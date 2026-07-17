@@ -1,4 +1,4 @@
-<% reference_date = MehrSchulferienWeb.BridgeDayView.get_reference_date(@conn)
+<% reference_date = MehrSchulferienWeb.BridgeDayHelpers.get_reference_date(@conn)
 # Get today's date for comparison
 today = Date.utc_today()
 
@@ -313,7 +313,7 @@ end %>
 
           # Format Event data
           month_header =
-            MehrSchulferienWeb.BridgeDayView.format_month_header(
+            MehrSchulferienWeb.BridgeDayHelpers.format_month_header(
               bridge_day.starts_on,
               bridge_day.ends_on
             )
@@ -463,11 +463,11 @@ end %>
                   else: "text-xl font-semibold mb-4 text-gray-900 dark:text-white"
               }
             >
-              {MehrSchulferienWeb.BridgeDayView.format_month_header(
+              {MehrSchulferienWeb.BridgeDayHelpers.format_month_header(
                 bridge_day.starts_on,
                 bridge_day.ends_on
               )}
-              <%= if bridge_day.starts_on.year == bridge_day.ends_on.year && !String.contains?(MehrSchulferienWeb.BridgeDayView.format_month_header(bridge_day.starts_on, bridge_day.ends_on), Integer.to_string(bridge_day.starts_on.year)) do %>
+              <%= if bridge_day.starts_on.year == bridge_day.ends_on.year && !String.contains?(MehrSchulferienWeb.BridgeDayHelpers.format_month_header(bridge_day.starts_on, bridge_day.ends_on), Integer.to_string(bridge_day.starts_on.year)) do %>
                 <span class={
                   if is_past_bridge_day,
                     do: "text-gray-600 dark:text-gray-400",

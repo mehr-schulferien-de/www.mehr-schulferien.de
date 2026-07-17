@@ -109,6 +109,7 @@ defmodule MehrSchulferienWeb.VacationPlannerController do
         year: year,
         days: days,
         variant: variant,
+        vc: variant_config(variant),
         optimal_windows: optimal_windows,
         distinct_results: distinct_results_with_dates,
         public_periods: public_periods,
@@ -117,14 +118,7 @@ defmodule MehrSchulferienWeb.VacationPlannerController do
         page_title: page_title
       ]
 
-      template =
-        if variant == :budget do
-          "show_budget.html"
-        else
-          "show.html"
-        end
-
-      render(conn, template, assigns)
+      render(conn, "show.html", assigns)
     else
       {:error, :invalid_days} ->
         raise_not_found(conn)
@@ -138,6 +132,42 @@ defmodule MehrSchulferienWeb.VacationPlannerController do
       _ ->
         raise_not_found(conn)
     end
+  end
+
+  # Variant configuration for the shared show.html template.
+  #
+  # Tailwind classes are stored as COMPLETE strings (never built from
+  # interpolated fragments) so the Tailwind scanner picks them up.
+  defp variant_config(:budget) do
+    %{
+      mode: :budget,
+      lead_class: "mt-2 text-green-700 dark:text-green-400",
+      tab_normal_class:
+        "px-4 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700",
+      tab_budget_class:
+        "px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-white shadow-sm",
+      pill_active_class: "bg-green-600 text-white",
+      summary_class: "cursor-pointer text-green-600 dark:text-green-400 hover:underline",
+      state_link_class: "text-sm text-green-600 dark:text-green-400 hover:underline",
+      info_box_class:
+        "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
+    }
+  end
+
+  defp variant_config(:normal) do
+    %{
+      mode: :normal,
+      lead_class: "mt-2",
+      tab_normal_class:
+        "px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white shadow-sm",
+      tab_budget_class:
+        "px-4 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700",
+      pill_active_class: "bg-blue-600 text-white",
+      summary_class: "cursor-pointer text-blue-600 dark:text-blue-400 hover:underline",
+      state_link_class: "text-sm text-blue-600 dark:text-blue-400 hover:underline",
+      info_box_class:
+        "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4"
+    }
   end
 
   defp parse_days(days_string) do

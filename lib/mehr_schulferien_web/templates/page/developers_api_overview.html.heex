@@ -121,13 +121,15 @@
           Beispiel: Schulferien für Bayern im Jahr 2025 abrufen:
         </p>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?start_date=2025-01-01&end_date=2025-12-31&type=vacation| %></pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?start_date=2025-01-01&end_date=2025-12-31&type=vacation|
+        } />
 
         <p class="mb-4">
           Antwort:
         </p>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+        <.code_block content={~s|{
   "data": [
     {
       "id": 123,
@@ -142,7 +144,7 @@
   "meta": {
     "api_version": "2.1"
   }
-}| %></pre>
+}|} />
       </div>
 
       <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 mb-6">

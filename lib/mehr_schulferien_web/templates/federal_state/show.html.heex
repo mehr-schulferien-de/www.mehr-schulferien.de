@@ -190,50 +190,6 @@
     </div>
 
     <%= if @has_data do %>
-      <% # Use DateCalculations helper for date calculations
-      date_data = MehrSchulferienWeb.Helpers.DateCalculations.calculate_surrounding_dates(@today)
-      yesterday = date_data.yesterday
-      tomorrow = date_data.tomorrow
-      day_after_tomorrow = date_data.day_after_tomorrow
-
-      # Use PeriodHelpers for filtering periods
-      yesterdays_school_free_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(@periods, yesterday)
-
-      todays_school_free_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(@periods, @today)
-
-      tomorrows_school_free_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(@periods, tomorrow)
-
-      day_after_tomorrows_school_free_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(
-          @periods,
-          day_after_tomorrow
-        )
-
-      # Find public holiday periods for specific days
-      public_holidays =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.public_holiday_periods(@public_periods)
-
-      yesterdays_public_holiday_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(
-          public_holidays,
-          yesterday
-        )
-
-      todays_public_holiday_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(public_holidays, @today)
-
-      tomorrows_public_holiday_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(public_holidays, tomorrow)
-
-      day_after_tomorrows_public_holiday_periods =
-        MehrSchulferienWeb.Helpers.PeriodHelpers.periods_active_on_date(
-          public_holidays,
-          day_after_tomorrow
-        ) %>
-
       <.faq
         conn={@conn}
         country={@country}
@@ -242,20 +198,9 @@
         next_schoolday={ViewHelpers.next_schoolday(@public_periods ++ @periods)}
         current_year={@current_year}
         today={@today}
-        yesterday={yesterday}
-        tomorrow={tomorrow}
-        day_after_tomorrow={day_after_tomorrow}
         school_periods={@periods}
         public_periods={@public_periods}
         months={MehrSchulferienWeb.Helpers.MonthHelpers.months_map()}
-        yesterdays_school_free_periods={yesterdays_school_free_periods}
-        todays_school_free_periods={todays_school_free_periods}
-        tomorrows_school_free_periods={tomorrows_school_free_periods}
-        day_after_tomorrows_school_free_periods={day_after_tomorrows_school_free_periods}
-        yesterdays_public_holiday_periods={yesterdays_public_holiday_periods}
-        todays_public_holiday_periods={todays_public_holiday_periods}
-        tomorrows_public_holiday_periods={tomorrows_public_holiday_periods}
-        day_after_tomorrows_public_holiday_periods={day_after_tomorrows_public_holiday_periods}
       />
     <% end %>
 

@@ -155,10 +155,12 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage do
     # Take up to 3 bridge days for the display
     display_bridge_days = Enum.take(sorted_bridge_days, 3)
 
-    # Calculate layout parameters
+    # Calculate layout parameters. The list starts high enough that even
+    # three entries plus the "+ N weitere" summary line stay inside the
+    # viewBox - anything below viewbox_height gets cut off when rendered.
     text_size = if scale_factor > 1.5, do: 42, else: 32
-    line_height = if scale_factor > 1.5, do: 70, else: 55
-    start_y = viewbox_height * 0.56
+    line_height = if scale_factor > 1.5, do: 70, else: 48
+    start_y = viewbox_height * 0.48
     left_margin = viewbox_width * 0.15
 
     # Generate each bridge day entry
@@ -175,7 +177,7 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage do
         all_periods =
           MehrSchulferien.Periods.list_periods_with_bridge_day(public_periods, bridge_day)
 
-        gain = MehrSchulferienWeb.BridgeDayView.get_number_max_days(all_periods)
+        gain = MehrSchulferienWeb.BridgeDayHelpers.get_number_max_days(all_periods)
 
         # Professional bullet point
         bullet_color = "#3b82f6"
@@ -212,13 +214,20 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage do
       if remaining > 0 do
         y_position = start_y + length(display_bridge_days) * line_height + 15
 
+        summary_text =
+          if remaining == 1 do
+            "+ 1 weiterer Brückentag"
+          else
+            "+ #{remaining} weitere Brückentage"
+          end
+
         """
-        <text x="#{left_margin}" y="#{y_position}" 
-              font-family="Arial, Helvetica, sans-serif" 
-              font-size="#{text_size * 0.8}" 
+        <text x="#{left_margin}" y="#{y_position}"
+              font-family="Arial, Helvetica, sans-serif"
+              font-size="#{text_size * 0.8}"
               fill="#64748b"
               font-style="italic">
-          + #{remaining} weitere Brückentage
+          #{summary_text}
         </text>
         """
       else

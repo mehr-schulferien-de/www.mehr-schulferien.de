@@ -271,6 +271,226 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
   end
 
   @doc """
+  Returns the translations that are identical across all three document
+  LiveViews (Entschuldigung, Beurlaubung, Sportbefreiung). Each LiveView
+  merges its document-specific entries over this map in `get_translations/0`.
+  """
+  def shared_translations do
+    %{
+      "For %{school_name}" => %{
+        "de" => "Für %{school_name}",
+        "en" => "For %{school_name}",
+        "ru" => "Для %{school_name}",
+        "ar" => "لـ %{school_name}",
+        "tr" => "%{school_name} için",
+        "pl" => "Dla %{school_name}",
+        "fr" => "Pour %{school_name}",
+        "uk" => "Для %{school_name}"
+      },
+      "Sender" => %{
+        "de" => "Absender",
+        "en" => "Sender",
+        "ru" => "Отправитель",
+        "ar" => "المرسل",
+        "tr" => "Gönderen",
+        "pl" => "Nadawca",
+        "fr" => "Expéditeur",
+        "uk" => "Відправник"
+      },
+      "First Name" => %{
+        "de" => "Vorname",
+        "en" => "First Name",
+        "ru" => "Имя",
+        "ar" => "الاسم الأول",
+        "tr" => "Ad",
+        "pl" => "Imię",
+        "fr" => "Prénom",
+        "uk" => "Ім'я"
+      },
+      "Last Name" => %{
+        "de" => "Nachname",
+        "en" => "Last Name",
+        "ru" => "Фамилия",
+        "ar" => "اسم العائلة",
+        "tr" => "Soyad",
+        "pl" => "Nazwisko",
+        "fr" => "Nom de famille",
+        "uk" => "Прізвище"
+      },
+      "School and Student Information" => %{
+        "de" => "Schul- und Schülerdaten",
+        "en" => "School and Student Information",
+        "ru" => "Информация о школе и ученике",
+        "ar" => "معلومات المدرسة والطالب",
+        "tr" => "Okul ve Öğrenci Bilgileri",
+        "pl" => "Informacje o szkole i uczniu",
+        "fr" => "Informations sur l'école et l'élève",
+        "uk" => "Інформація про школу та учня"
+      },
+      "Title (optional)" => %{
+        "de" => "Titel (optional)",
+        "en" => "Title (optional)",
+        "ru" => "Титул (необязательно)",
+        "ar" => "اللقب (اختياري)",
+        "tr" => "Unvan (isteğe bağlı)",
+        "pl" => "Tytuł (opcjonalnie)",
+        "fr" => "Titre (optionnel)",
+        "uk" => "Титул (необов'язково)"
+      },
+      "Street and House Number (optional)" => %{
+        "de" => "Straße und Hausnummer (optional)",
+        "en" => "Street and House Number (optional)",
+        "ru" => "Улица и номер дома (необязательно)",
+        "ar" => "الشارع ورقم المنزل (اختياري)",
+        "tr" => "Sokak ve Kapı Numarası (isteğe bağlı)",
+        "pl" => "Ulica i numer domu (opcjonalnie)",
+        "fr" => "Rue et numéro de maison (optionnel)",
+        "uk" => "Вулиця та номер будинку (необов'язково)"
+      },
+      "ZIP Code" => %{
+        "de" => "PLZ",
+        "en" => "ZIP Code",
+        "ru" => "Почтовый индекс",
+        "ar" => "الرمز البريدي",
+        "tr" => "Posta Kodu",
+        "pl" => "Kod pocztowy",
+        "fr" => "Code postal",
+        "uk" => "Поштовий індекс"
+      },
+      "City" => %{
+        "de" => "Stadt",
+        "en" => "City",
+        "ru" => "Город",
+        "ar" => "المدينة",
+        "tr" => "Şehir",
+        "pl" => "Miasto",
+        "fr" => "Ville",
+        "uk" => "Місто"
+      },
+      "Information about the school and student" => %{
+        "de" => "Informationen über die Schule und den Schüler",
+        "en" => "Information about the school and student",
+        "ru" => "Информация о школе и ученике",
+        "ar" => "معلومات حول المدرسة والطالب",
+        "tr" => "Okul ve öğrenci hakkında bilgiler",
+        "pl" => "Informacje o szkole i uczniu",
+        "fr" => "Informations sur l'école et l'élève",
+        "uk" => "Інформація про школу та учня"
+      },
+      "Mr." => %{
+        "de" => "Herr",
+        "en" => "Mr.",
+        "ru" => "Г-н",
+        "ar" => "السيد",
+        "tr" => "Bay",
+        "pl" => "Pan",
+        "fr" => "M.",
+        "uk" => "Пан"
+      },
+      "Ms." => %{
+        "de" => "Frau",
+        "en" => "Ms.",
+        "ru" => "Г-жа",
+        "ar" => "السيدة",
+        "tr" => "Bayan",
+        "pl" => "Pani",
+        "fr" => "Mme",
+        "uk" => "Пані"
+      },
+      "Student Name" => %{
+        "de" => "Name des Schülers/der Schülerin",
+        "en" => "Student Name",
+        "ru" => "Имя ученика",
+        "ar" => "اسم الطالب",
+        "tr" => "Öğrenci Adı",
+        "pl" => "Imię i nazwisko ucznia",
+        "fr" => "Nom de l'élève",
+        "uk" => "Ім'я учня"
+      },
+      "Class" => %{
+        "de" => "Klasse",
+        "en" => "Class",
+        "ru" => "Класс",
+        "ar" => "الصف",
+        "tr" => "Sınıf",
+        "pl" => "Klasa",
+        "fr" => "Classe",
+        "uk" => "Клас"
+      },
+      "My relationship to the student:" => %{
+        "de" => "Meine Beziehung zum Schüler:",
+        "en" => "My relationship to the student:",
+        "ru" => "Мое отношение к ученику:",
+        "ar" => "علاقتي بالطالب:",
+        "tr" => "Öğrenci ile ilişkim:",
+        "pl" => "Mój stosunek do ucznia:",
+        "fr" => "Ma relation avec l'élève:",
+        "uk" => "Мої стосунки з учнем:"
+      },
+      "my son" => %{
+        "de" => "mein Sohn",
+        "en" => "my son",
+        "ru" => "мой сын",
+        "ar" => "ابني",
+        "tr" => "oğlum",
+        "pl" => "mój syn",
+        "fr" => "mon fils",
+        "uk" => "мій син"
+      },
+      "my daughter" => %{
+        "de" => "meine Tochter",
+        "en" => "my daughter",
+        "ru" => "моя дочь",
+        "ar" => "ابنتي",
+        "tr" => "kızım",
+        "pl" => "moja córka",
+        "fr" => "ma fille",
+        "uk" => "моя дочка"
+      },
+      "neither son nor daughter, but I have custody" => %{
+        "de" => "weder Sohn, noch Tochter, aber ich bin sorgeberechtigt",
+        "en" => "neither son nor daughter, but I have custody",
+        "ru" => "ни сын, ни дочь, но у меня есть опека",
+        "ar" => "لا ابن ولا ابنة، لكن لدي حضانة",
+        "tr" => "ne oğul ne kız, ama velayetim var",
+        "pl" => "ani syn, ani córka, ale mam opiekę prawną",
+        "fr" => "ni fils ni fille, mais j'ai la garde",
+        "uk" => "ні син, ні дочка, але я маю опіку"
+      },
+      "Start Date" => %{
+        "de" => "Startdatum",
+        "en" => "Start Date",
+        "ru" => "Дата начала",
+        "ar" => "تاريخ البداية",
+        "tr" => "Başlangıç Tarihi",
+        "pl" => "Data rozpoczęcia",
+        "fr" => "Date de début",
+        "uk" => "Дата початку"
+      },
+      "End Date" => %{
+        "de" => "Enddatum",
+        "en" => "End Date",
+        "ru" => "Дата окончания",
+        "ar" => "تاريخ النهاية",
+        "tr" => "Bitiş Tarihi",
+        "pl" => "Data zakończenia",
+        "fr" => "Date de fin",
+        "uk" => "Дата закінчення"
+      },
+      "Preview Example" => %{
+        "de" => "Beispiel Vorschau",
+        "en" => "Preview Example",
+        "ru" => "Пример предварительного просмотра",
+        "ar" => "مثال للمعاينة",
+        "tr" => "Önizleme Örneği",
+        "pl" => "Przykład podglądu",
+        "fr" => "Exemple d'aperçu",
+        "uk" => "Приклад попереднього перегляду"
+      }
+    }
+  end
+
+  @doc """
   Returns common translations shared by all document types.
   """
   def common_translations do

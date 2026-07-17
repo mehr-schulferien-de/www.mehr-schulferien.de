@@ -128,7 +128,7 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
       #{render_legend(assigns.legend_items)}
       
       <p class="text-sm text-gray-800 dark:text-gray-200 mt-3">
-        #{assigns.vacation_days} #{if assigns.vacation_days == 1, do: "eingereichten Urlaubstag", else: "eingereichte Urlaubstage"} = 
+        #{assigns.vacation_days} #{if assigns.vacation_days == 1, do: "eingereichter Urlaubstag", else: "eingereichte Urlaubstage"} =
         <span class="font-medium">#{assigns.total_free_days} freie Tage #{if is_super_bridge_day, do: "🎉", else: ""}</span>
         #{if is_super_bridge_day do
       ""
@@ -169,8 +169,9 @@ defmodule MehrSchulferienWeb.BridgeDayTimelineComponent do
 
         month_name =
           if use_abbreviation do
-            # For months with 3 or fewer days, use abbreviated format
-            String.at(months_map[month], 0) <> "."
+            # For months with 3 or fewer days, use the readable three-letter
+            # abbreviation ("Dez.") - a single letter ("D.") is too cryptic.
+            DateHelpers.month_abbreviation(month)
           else
             # Otherwise use full month name
             months_map[month]

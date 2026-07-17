@@ -5,12 +5,20 @@
     </.heading>
     <%= if length(@optimal_windows) > 0 do %>
       <% best = hd(@optimal_windows) %>
-      <.text variant="lead" class="mt-2">
-        Mit {@days} Urlaubstagen bis zu {best.total_free_days} freie Tage am Stück!
+      <.text variant="lead" class={@vc.lead_class}>
+        <%= if @vc.mode == :budget do %>
+          Mit {@days} Urlaubstagen bis zu {best.total_free_days} freie Tage am Stück – außerhalb der Schulferien!
+        <% else %>
+          Mit {@days} Urlaubstagen bis zu {best.total_free_days} freie Tage am Stück!
+        <% end %>
       </.text>
     <% else %>
-      <.text variant="lead" class="mt-2">
-        Optimieren Sie Ihren Urlaub mit {@days} Tagen.
+      <.text variant="lead" class={@vc.lead_class}>
+        <%= if @vc.mode == :budget do %>
+          Optimieren Sie Ihren Urlaub mit {@days} Tagen – außerhalb der Schulferien.
+        <% else %>
+          Optimieren Sie Ihren Urlaub mit {@days} Tagen.
+        <% end %>
       </.text>
     <% end %>
   </div>
@@ -18,14 +26,14 @@
 <!-- Variant Toggle -->
   <div class="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 p-1 mb-6">
     <a
-      href={~p"/urlaubsplaner/#{@federal_state.slug}/#{format_days_url(@days)}/#{@year}"}
-      class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white shadow-sm"
+      href={planner_path(:normal, @federal_state.slug, @days, @year)}
+      class={@vc.tab_normal_class}
     >
       Maximale Freizeit
     </a>
     <a
-      href={~p"/urlaubsplaner-guenstig/#{@federal_state.slug}/#{format_days_url(@days)}/#{@year}"}
-      class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+      href={planner_path(:budget, @federal_state.slug, @days, @year)}
+      class={@vc.tab_budget_class}
     >
       Außerhalb Schulferien (günstiger)
     </a>
@@ -33,7 +41,13 @@
   
 <!-- Results Section with Calendar View -->
   <%= if length(@distinct_results) > 0 do %>
-    <.heading level={2} class="mb-4">Top Urlaubszeiträume</.heading>
+    <.heading level={2} class="mb-4">
+      <%= if @vc.mode == :budget do %>
+        Top Urlaubszeiträume (außerhalb Schulferien)
+      <% else %>
+        Top Urlaubszeiträume
+      <% end %>
+    </.heading>
 
     <.vacation_planner_legend />
 
@@ -55,6 +69,11 @@
             </div>
           </div>
           <div class="flex items-center gap-2 mt-2 sm:mt-0">
+            <%= if @vc.mode == :budget do %>
+              <span class="px-2 py-1 rounded text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                Außerhalb Schulferien
+              </span>
+            <% end %>
             <span class={"px-3 py-1 rounded-full text-sm font-medium #{efficiency_badge_class(result.efficiency_percentage)}"}>
               {format_efficiency(result.efficiency_percentage)} Effizienz
             </span>
@@ -108,9 +127,23 @@
     <% end %>
   <% else %>
     <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-      <.text variant="base" class="text-yellow-800 dark:text-yellow-200">
-        Für {@year} wurden keine optimalen Urlaubszeiträume gefunden. Versuchen Sie ein anderes Jahr.
-      </.text>
+      <%= if @vc.mode == :budget do %>
+        <.text variant="base" class="text-yellow-800 dark:text-yellow-200">
+          Für {@year} wurden keine Urlaubszeiträume außerhalb der Schulferien gefunden.
+          Versuchen Sie die
+          <a
+            href={planner_path(:normal, @federal_state.slug, @days, @year)}
+            class="underline"
+          >
+            normale Variante
+          </a>
+          für mehr Optionen.
+        </.text>
+      <% else %>
+        <.text variant="base" class="text-yellow-800 dark:text-yellow-200">
+          Für {@year} wurden keine optimalen Urlaubszeiträume gefunden. Versuchen Sie ein anderes Jahr.
+        </.text>
+      <% end %>
     </div>
   <% end %>
   
@@ -123,8 +156,8 @@
         <div class="flex flex-wrap gap-2 mt-4">
           <%= for days <- quick_day_options() do %>
             <a
-              href={~p"/urlaubsplaner/#{@federal_state.slug}/#{format_days_url(days)}/#{@year}"}
-              class={"px-3 py-1 rounded font-medium #{if @days == days, do: "bg-blue-600 text-white", else: "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"}"}
+              href={planner_path(@vc.mode, @federal_state.slug, days, @year)}
+              class={"px-3 py-1 rounded font-medium #{if @days == days, do: @vc.pill_active_class, else: "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"}"}
             >
               {days} Tage
             </a>
@@ -132,14 +165,14 @@
         </div>
 
         <details class="mt-4">
-          <summary class="cursor-pointer text-blue-600 dark:text-blue-400 hover:underline">
+          <summary class={@vc.summary_class}>
             Alle Tage anzeigen (1-60)
           </summary>
           <div class="mt-2 grid grid-cols-10 gap-1 text-sm">
             <%= for days <- 1..60 do %>
               <a
-                href={~p"/urlaubsplaner/#{@federal_state.slug}/#{format_days_url(days)}/#{@year}"}
-                class={"px-2 py-1 text-center rounded #{if @days == days, do: "bg-blue-600 text-white", else: "bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"}"}
+                href={planner_path(@vc.mode, @federal_state.slug, days, @year)}
+                class={"px-2 py-1 text-center rounded #{if @days == days, do: @vc.pill_active_class, else: "bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"}"}
               >
                 {days}
               </a>
@@ -156,8 +189,8 @@
         <div class="flex flex-wrap gap-2 mt-4">
           <%= for year <- year_range do %>
             <a
-              href={~p"/urlaubsplaner/#{@federal_state.slug}/#{format_days_url(@days)}/#{year}"}
-              class={"px-3 py-1 rounded font-medium #{if @year == year, do: "bg-blue-600 text-white", else: "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"}"}
+              href={planner_path(@vc.mode, @federal_state.slug, @days, year)}
+              class={"px-3 py-1 rounded font-medium #{if @year == year, do: @vc.pill_active_class, else: "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"}"}
             >
               {year}
             </a>
@@ -187,28 +220,35 @@
           Kurze Urlaubsoptimierung (1-4 Tage)
         </p>
       </a>
-      <a
-        href={
-          ~p"/urlaubsplaner-guenstig/#{@federal_state.slug}/#{format_days_url(@days)}/#{@year}"
-        }
-        class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md border border-gray-200 dark:border-gray-700"
-      >
-        <strong class="text-gray-900 dark:text-white">Günstig-Variante</strong>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Außerhalb der Schulferien</p>
-      </a>
+      <%= if @vc.mode == :budget do %>
+        <a
+          href={planner_path(:normal, @federal_state.slug, @days, @year)}
+          class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md border border-gray-200 dark:border-gray-700"
+        >
+          <strong class="text-gray-900 dark:text-white">Normal-Variante</strong>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Maximale Freizeit (inkl. Schulferien)
+          </p>
+        </a>
+      <% else %>
+        <a
+          href={planner_path(:budget, @federal_state.slug, @days, @year)}
+          class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md border border-gray-200 dark:border-gray-700"
+        >
+          <strong class="text-gray-900 dark:text-white">Günstig-Variante</strong>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Außerhalb der Schulferien</p>
+        </a>
+      <% end %>
     </div>
     
 <!-- Other Federal States -->
     <details class="mt-6">
-      <summary class="cursor-pointer text-blue-600 dark:text-blue-400 hover:underline">
+      <summary class={@vc.summary_class}>
         Urlaubsplaner für andere Bundesländer
       </summary>
       <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
         <%= for state <- @all_federal_states do %>
-          <a
-            href={~p"/urlaubsplaner/#{state.slug}/#{format_days_url(@days)}/#{@year}"}
-            class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-          >
+          <a href={planner_path(@vc.mode, state.slug, @days, @year)} class={@vc.state_link_class}>
             {state.name}
           </a>
         <% end %>
@@ -218,20 +258,38 @@
   
 <!-- Explanation Section -->
   <div class="mt-12 border-t dark:border-gray-700 pt-8">
-    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-      <.heading level={3} class="text-blue-800 dark:text-blue-300">
-        So funktioniert der Urlaubsplaner
-      </.heading>
-      <.text variant="base" class="mt-2 text-blue-700 dark:text-blue-200">
-        Der Urlaubsplaner analysiert alle Feiertage und Wochenenden in {@federal_state.name} und berechnet automatisch die optimalen Zeitfenster für Ihren Urlaub.
-        Mit {@days} Urlaubstagen finden wir die Zeiträume, in denen Sie
-        die längste zusammenhängende Freizeit erreichen können.
-      </.text>
-      <ul class="list-disc ml-5 mt-2 text-blue-700 dark:text-blue-200 text-sm">
-        <li><strong>Effizienz</strong>: Je höher, desto mehr freie Tage pro Urlaubstag</li>
-        <li><strong>Berücksichtigt</strong>: Wochenenden + Feiertage + Ihre Urlaubstage</li>
-        <li><strong>Jahreswechsel</strong>: Automatisch einberechnet</li>
-      </ul>
+    <div class={@vc.info_box_class}>
+      <%= if @vc.mode == :budget do %>
+        <.heading level={3} class="text-green-800 dark:text-green-300">
+          So funktioniert der Urlaubsplaner (Günstig-Variante)
+        </.heading>
+        <.text variant="base" class="mt-2 text-green-700 dark:text-green-200">
+          Diese Variante zeigt optimale Urlaubszeiträume, die <strong>nicht in die Schulferien fallen</strong>.
+          Hotels und Flüge sind dann oft deutlich günstiger, da weniger Familien verreisen.
+          Ideal für kinderlose Paare und flexible Arbeitnehmer.
+        </.text>
+        <ul class="list-disc ml-5 mt-2 text-green-700 dark:text-green-200 text-sm">
+          <li><strong>Günstiger</strong>: Reisen außerhalb der Hochsaison</li>
+          <li><strong>Weniger Touristen</strong>: Beliebte Ziele sind leerer</li>
+          <li>
+            <strong>Feiertage nutzen</strong>: Wochenenden und Feiertage für maximale Effizienz
+          </li>
+        </ul>
+      <% else %>
+        <.heading level={3} class="text-blue-800 dark:text-blue-300">
+          So funktioniert der Urlaubsplaner
+        </.heading>
+        <.text variant="base" class="mt-2 text-blue-700 dark:text-blue-200">
+          Der Urlaubsplaner analysiert alle Feiertage und Wochenenden in {@federal_state.name} und berechnet automatisch die optimalen Zeitfenster für Ihren Urlaub.
+          Mit {@days} Urlaubstagen finden wir die Zeiträume, in denen Sie
+          die längste zusammenhängende Freizeit erreichen können.
+        </.text>
+        <ul class="list-disc ml-5 mt-2 text-blue-700 dark:text-blue-200 text-sm">
+          <li><strong>Effizienz</strong>: Je höher, desto mehr freie Tage pro Urlaubstag</li>
+          <li><strong>Berücksichtigt</strong>: Wochenenden + Feiertage + Ihre Urlaubstage</li>
+          <li><strong>Jahreswechsel</strong>: Automatisch einberechnet</li>
+        </ul>
+      <% end %>
     </div>
   </div>
 </div>

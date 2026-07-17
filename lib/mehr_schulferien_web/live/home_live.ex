@@ -1619,7 +1619,7 @@ defmodule MehrSchulferienWeb.HomeLive do
             <%= cond do %>
               <% @search_params["location"] == "" and @search_params["school_name"] == "" and @search_params["federal_state_id"] == "" -> %>
                 <.alert variant="info">
-                  {format_number(@total_schools_in_system)} Schulen gefunden. Bitte geben Sie genauere Suchkriterien ein.
+                  Durchsuchen Sie {format_number(@total_schools_in_system)} Schulen: Wählen Sie ein Bundesland oder geben Sie Stadt, PLZ oder Schulnamen ein.
                 </.alert>
               <% true -> %>
                 <.alert variant="info">

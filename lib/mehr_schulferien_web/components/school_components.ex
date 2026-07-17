@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.SchoolComponents do
   use Phoenix.Component
 
   alias MehrSchulferien.Config
+  alias MehrSchulferienWeb.Shared.SchemaOrgComponent
 
   use Phoenix.VerifiedRoutes,
     endpoint: MehrSchulferienWeb.Endpoint,
@@ -51,33 +52,19 @@ defmodule MehrSchulferienWeb.SchoolComponents do
   end
 
   def schema_org_event(assigns) do
-    ~H"""
-    <%= for period <- @periods, period.holiday_or_vacation_type do %>
-      <script type="application/ld+json">
-        <%= Phoenix.HTML.raw(Jason.encode!(%{
-          "@context" => "http://schema.org",
-          "@type" => "Event",
-          "name" => period.holiday_or_vacation_type.colloquial,
-          "startDate" => period.starts_on,
-          "endDate" => period.ends_on,
-          "eventAttendanceMode" => "https://schema.org/OfflineEventAttendanceMode",
-          "eventStatus" => "https://schema.org/EventScheduled",
-          "location" => %{
-            "@type" => "Place",
-            "name" => @school.name,
-            "address" => %{
-              "@type" => "PostalAddress",
-              "streetAddress" => if(@school.address && @school.address.street, do: @school.address.street, else: ""),
-              "addressLocality" => @city.name,
-              "postalCode" => if(@school.address && @school.address.zip_code, do: @school.address.zip_code, else: ""),
-              "addressRegion" => @federal_state.name,
-              "addressCountry" => @country.code
-            }
-          }
-        })) %>
-      </script>
-    <% end %>
-    """
+    school = assigns.school
+
+    assigns =
+      assign(assigns, :place, %{
+        name: school.name,
+        street: if(school.address && school.address.street, do: school.address.street, else: ""),
+        locality: assigns.city.name,
+        zip: if(school.address && school.address.zip_code, do: school.address.zip_code, else: ""),
+        region: assigns.federal_state.name,
+        country: assigns.country.code
+      })
+
+    SchemaOrgComponent.schema_org_event(assigns)
   end
 
   def schema_org_school(assigns) do

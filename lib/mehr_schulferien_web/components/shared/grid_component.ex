@@ -5,44 +5,6 @@ defmodule MehrSchulferienWeb.Shared.GridComponent do
   """
   use Phoenix.Component
 
-  attr :cols, :string, default: "1", values: ["1", "2", "3", "4", "6", "auto"]
-  attr :gap, :string, default: "6", values: ["2", "3", "4", "5", "6", "8"]
-  attr :class, :string, default: ""
-  attr :responsive, :boolean, default: true
-  slot :inner_block, required: true
-
-  def grid(assigns) do
-    base_classes = "grid"
-    gap_classes = "gap-#{assigns.gap}"
-
-    cols_classes =
-      if assigns.responsive do
-        case assigns.cols do
-          "1" -> "grid-cols-1"
-          "2" -> "grid-cols-1 sm:grid-cols-2"
-          "3" -> "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-          "4" -> "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
-          "6" -> "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
-          "auto" -> "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        end
-      else
-        "grid-cols-#{assigns.cols}"
-      end
-
-    assigns =
-      assign(
-        assigns,
-        :computed_class,
-        "#{base_classes} #{cols_classes} #{gap_classes} #{assigns.class}"
-      )
-
-    ~H"""
-    <div class={@computed_class}>
-      {render_slot(@inner_block)}
-    </div>
-    """
-  end
-
   # Specific grid for cards/panels
   attr :variant, :string, default: "default", values: ["default", "compact", "wide"]
   attr :class, :string, default: ""
@@ -61,49 +23,6 @@ defmodule MehrSchulferienWeb.Shared.GridComponent do
     ~H"""
     <div class={@computed_class}>
       {render_slot(@inner_block)}
-    </div>
-    """
-  end
-
-  # Two column layout with sidebar
-  attr :sidebar_position, :string, default: "right", values: ["left", "right"]
-  attr :sidebar_width, :string, default: "1/3", values: ["1/4", "1/3", "2/5"]
-  attr :gap, :string, default: "6"
-  attr :class, :string, default: ""
-  slot :main, required: true
-  slot :sidebar, required: true
-
-  def two_column(assigns) do
-    container_classes = "flex flex-col lg:flex-row gap-#{assigns.gap}"
-
-    {main_classes, sidebar_classes} =
-      case assigns.sidebar_width do
-        "1/4" -> {"lg:w-3/4", "lg:w-1/4"}
-        "1/3" -> {"lg:w-2/3", "lg:w-1/3"}
-        "2/5" -> {"lg:w-3/5", "lg:w-2/5"}
-      end
-
-    assigns = assign(assigns, :container_classes, "#{container_classes} #{assigns.class}")
-    assigns = assign(assigns, :main_classes, main_classes)
-    assigns = assign(assigns, :sidebar_classes, sidebar_classes)
-
-    ~H"""
-    <div class={@container_classes}>
-      <%= if @sidebar_position == "left" do %>
-        <aside class={@sidebar_classes}>
-          {render_slot(@sidebar)}
-        </aside>
-        <main class={@main_classes}>
-          {render_slot(@main)}
-        </main>
-      <% else %>
-        <main class={@main_classes}>
-          {render_slot(@main)}
-        </main>
-        <aside class={@sidebar_classes}>
-          {render_slot(@sidebar)}
-        </aside>
-      <% end %>
     </div>
     """
   end

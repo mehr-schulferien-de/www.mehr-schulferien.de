@@ -22,6 +22,7 @@ defmodule MehrSchulferienWeb.SchoolHTML do
   import MehrSchulferienWeb.FederalState.CalendarLegendComponent
   import MehrSchulferienWeb.FederalState.MonthCalendarComponent
   import MehrSchulferienWeb.SchoolComponents
+  import MehrSchulferienWeb.DeveloperSectionComponent
   import MehrSchulferienWeb.FaqComponent
 
   def format_date_range(period, short_format \\ false) do

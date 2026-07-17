@@ -8,43 +8,8 @@ defmodule MehrSchulferien.Periods.Query do
 
   import Ecto.Query, warn: false
 
-  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Repo
-
-  @doc """
-  Returns a list of previous periods for a federal_state.
-  """
-  def list_previous_periods(federal_state, holiday_or_vacation_type) do
-    today = DateHelpers.today_berlin()
-
-    from(p in Period,
-      where:
-        p.location_id == ^federal_state.id and
-          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
-          p.ends_on < ^today,
-      order_by: [desc: p.starts_on]
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns a list of current and future periods for a federal_state.
-  """
-  def list_current_and_future_periods(federal_state, holiday_or_vacation_type) do
-    today = DateHelpers.today_berlin()
-
-    from(p in Period,
-      where:
-        p.location_id == ^federal_state.id and
-          p.holiday_or_vacation_type_id == ^holiday_or_vacation_type.id and
-          p.ends_on >= ^today,
-      order_by: p.starts_on
-    )
-    |> Repo.all()
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
 
   @doc """
   Returns a list of school vacation periods for a certain time frame.
@@ -126,65 +91,6 @@ defmodule MehrSchulferien.Periods.Query do
     school_free_periods_query(location_ids, starts_on, ends_on)
     |> Repo.all()
     |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  @doc """
-  Returns a list of periods for multiple countries and their federal states in a single query.
-  The returned data is a map of location_id to periods for efficient lookups.
-  """
-  def list_school_free_periods_for_countries(countries, starts_on, ends_on) do
-    # Extract country IDs
-    country_ids = Enum.map(countries, & &1.id)
-
-    # Get federal states for all countries in a single query
-    federal_states =
-      from(l in MehrSchulferien.Locations.Location,
-        where: l.is_federal_state == true and l.parent_location_id in ^country_ids,
-        preload: [:periods]
-      )
-      |> Repo.all()
-
-    # Extract federal state IDs
-    federal_state_ids = Enum.map(federal_states, & &1.id)
-
-    # All location IDs needed for periods
-    all_location_ids = country_ids ++ federal_state_ids
-
-    # Fetch all periods in a single query
-    all_periods =
-      from(p in Period,
-        where:
-          p.location_id in ^all_location_ids and
-            (p.is_valid_for_students == true or
-               p.is_valid_for_everybody == true) and
-            p.ends_on >= ^starts_on and
-            p.starts_on <= ^ends_on,
-        order_by: [asc: p.starts_on, desc: p.display_priority],
-        preload: [:holiday_or_vacation_type, :location]
-      )
-      |> Repo.all()
-
-    # Build a map of location_id -> periods for easy lookups
-    periods_by_location =
-      Enum.group_by(all_periods, & &1.location_id)
-
-    # Group federal states by country
-    federal_states_by_country =
-      Enum.group_by(federal_states, & &1.parent_location_id)
-
-    %{
-      periods_by_location: periods_by_location,
-      federal_states_by_country: federal_states_by_country
-    }
-  end
-
-  @doc """
-  Returns all periods for a list of locations with preloaded data in a single query.
-  """
-  def list_school_free_periods_with_preload(location_ids, starts_on, ends_on) do
-    school_free_periods_query(location_ids, starts_on, ends_on)
-    |> preload([:holiday_or_vacation_type, :location])
-    |> Repo.all()
   end
 
   defp school_free_periods_query(location_ids, starts_on, ends_on) do

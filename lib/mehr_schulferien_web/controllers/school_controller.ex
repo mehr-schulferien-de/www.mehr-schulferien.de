@@ -291,26 +291,21 @@ defmodule MehrSchulferienWeb.SchoolController do
   # Extended by 1 hour before and after to be safe (timezone buffer)
   # New window: 19:30-21:50 CET = 18:30-20:50 UTC
   defp school_updated_during_spam_attack?(school) do
-    # Skip spam check in test environment (test schools get current timestamp)
-    if Application.get_env(:mehr_schulferien, :env) == :test do
-      false
-    else
-      case school.updated_at do
-        nil ->
-          false
+    case school.updated_at do
+      nil ->
+        false
 
-        updated_at ->
-          # Convert to UTC DateTime for comparison
-          updated_utc = DateTime.from_naive!(updated_at, "Etc/UTC")
+      updated_at ->
+        # Convert to UTC DateTime for comparison
+        updated_utc = DateTime.from_naive!(updated_at, "Etc/UTC")
 
-          # Spam attack window with 1-hour buffer on each side
-          # 18:30-20:50 UTC = 19:30-21:50 CET (German time)
-          {:ok, spam_start} = DateTime.new(~D[2026-01-15], ~T[18:30:00], "Etc/UTC")
-          {:ok, spam_end} = DateTime.new(~D[2026-01-15], ~T[20:50:00], "Etc/UTC")
+        # Spam attack window with 1-hour buffer on each side
+        # 18:30-20:50 UTC = 19:30-21:50 CET (German time)
+        {:ok, spam_start} = DateTime.new(~D[2026-01-15], ~T[18:30:00], "Etc/UTC")
+        {:ok, spam_end} = DateTime.new(~D[2026-01-15], ~T[20:50:00], "Etc/UTC")
 
-          DateTime.compare(updated_utc, spam_start) != :lt &&
-            DateTime.compare(updated_utc, spam_end) != :gt
-      end
+        DateTime.compare(updated_utc, spam_start) != :lt &&
+          DateTime.compare(updated_utc, spam_end) != :gt
     end
   end
 

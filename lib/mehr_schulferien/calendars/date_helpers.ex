@@ -3,22 +3,6 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   Date helper functions.
   """
 
-  require Logger
-
-  @days_in_month %{
-    1 => 31,
-    2 => 28,
-    3 => 31,
-    4 => 30,
-    5 => 31,
-    6 => 30,
-    7 => 31,
-    8 => 31,
-    9 => 30,
-    10 => 31,
-    11 => 30,
-    12 => 31
-  }
   @months %{
     1 => "Januar",
     2 => "Februar",
@@ -88,13 +72,7 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
         {year + 1, month - 12}
       end
 
-    days_in_month = get_days_in_month(actual_year, actual_month)
-
-    if !days_in_month do
-      Logger.warning(fn ->
-        "#################### Huh? No days in month #{inspect(actual_month)}/#{inspect(actual_year)}"
-      end)
-    end
+    days_in_month = Date.days_in_month(Date.new!(actual_year, actual_month, 1))
 
     for day <- 1..days_in_month do
       %Date{year: actual_year, month: actual_month, day: day, calendar: Calendar.ISO}
@@ -132,13 +110,6 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
     create_days(today_berlin(), 90)
   end
 
-  @doc """
-  Returns a map of abbreviated day names, with day numbers (1-7) as keys.
-  """
-  def short_days_map do
-    %{1 => "Mo", 2 => "Di", 3 => "Mi", 4 => "Do", 5 => "Fr", 6 => "Sa", 7 => "So"}
-  end
-
   @weekdays_full %{
     1 => "Montag",
     2 => "Dienstag",
@@ -160,6 +131,11 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   }
 
   @doc """
+  Returns a map of abbreviated day names, with day numbers (1-7) as keys.
+  """
+  def short_days_map, do: @weekdays_short
+
+  @doc """
   Converts a day of week number (1-7) to a German weekday name in different formats.
 
   ## Format options:
@@ -178,11 +154,56 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   """
   def get_months_map, do: @months
 
-  defp get_days_in_month(year, 2) do
-    if Date.leap_year?(%Date{year: year, month: 1, day: 1}), do: 29, else: 28
-  end
+  @month_abbreviations %{
+    1 => "Jan.",
+    2 => "Feb.",
+    3 => "Mär.",
+    4 => "Apr.",
+    5 => "Mai",
+    6 => "Jun.",
+    7 => "Jul.",
+    8 => "Aug.",
+    9 => "Sep.",
+    10 => "Okt.",
+    11 => "Nov.",
+    12 => "Dez."
+  }
 
-  defp get_days_in_month(_year, month), do: @days_in_month[month]
+  @doc """
+  Returns the German three-letter abbreviation for a month number,
+  e.g. `month_abbreviation(12)` -> "Dez.".
+  """
+  def month_abbreviation(month), do: @month_abbreviations[month]
+
+  @month_slugs %{
+    1 => "januar",
+    2 => "februar",
+    3 => "maerz",
+    4 => "april",
+    5 => "mai",
+    6 => "juni",
+    7 => "juli",
+    8 => "august",
+    9 => "september",
+    10 => "oktober",
+    11 => "november",
+    12 => "dezember"
+  }
+
+  @doc """
+  URL-safe lowercase month slug for anchors and ids, e.g. `month_slug(3)` ->
+  "maerz". Anchor links and element ids must use the same transliteration,
+  otherwise deep links (e.g. "#maerz2026") never match.
+  """
+  def month_slug(month), do: @month_slugs[month]
+
+  @doc """
+  Formats a date in German long form, e.g. "3. August" or, with `:with_year`,
+  "3. August 2026". `Calendar.strftime/2` with "%B" would produce English
+  month names, which must never appear in the German UI texts.
+  """
+  def german_date(date), do: "#{date.day}. #{@months[date.month]}"
+  def german_date(date, :with_year), do: german_date(date) <> " #{date.year}"
 
   @doc """
   Compares two days by comparing just month and year.

@@ -47,6 +47,24 @@ defmodule MehrSchulferienWeb.VacationPlannerControllerTest do
       assert html_response(conn, 200) =~ "30"
     end
 
+    test "renders normal variant accents and cross-link", %{
+      conn: conn,
+      federal_state: federal_state
+    } do
+      conn = get(conn, "/urlaubsplaner/#{federal_state.slug}/30-tage/2026")
+
+      response = html_response(conn, 200)
+      # Active toggle tab is blue in the normal variant
+      assert response =~ "bg-blue-600 text-white shadow-sm"
+      refute response =~ "bg-green-600 text-white shadow-sm"
+      # Blue info box explaining the planner
+      assert response =~ "So funktioniert der Urlaubsplaner"
+      assert response =~ "bg-blue-50 dark:bg-blue-900/20"
+      # Cross-link card points to the budget variant
+      assert response =~ "Günstig-Variante"
+      refute response =~ "Normal-Variante"
+    end
+
     test "handles single digit days", %{conn: conn, federal_state: federal_state} do
       conn = get(conn, "/urlaubsplaner/#{federal_state.slug}/5-tage/2026")
 
@@ -103,6 +121,24 @@ defmodule MehrSchulferienWeb.VacationPlannerControllerTest do
       assert html_response(conn, 200) =~ "Schulferien" or
                html_response(conn, 200) =~ "günstig" or
                html_response(conn, 200) =~ "Außerhalb"
+    end
+
+    test "renders budget variant accents and cross-link", %{
+      conn: conn,
+      federal_state: federal_state
+    } do
+      conn = get(conn, "/urlaubsplaner-guenstig/#{federal_state.slug}/30-tage/2026")
+
+      response = html_response(conn, 200)
+      # Active toggle tab is green in the budget variant
+      assert response =~ "bg-green-600 text-white shadow-sm"
+      refute response =~ "bg-blue-600 text-white shadow-sm"
+      # Green info box explaining the budget variant
+      assert response =~ "So funktioniert der Urlaubsplaner (Günstig-Variante)"
+      assert response =~ "bg-green-50 dark:bg-green-900/20"
+      # Cross-link card points back to the normal variant
+      assert response =~ "Normal-Variante"
+      assert response =~ "Maximale Freizeit (inkl. Schulferien)"
     end
 
     test "excludes school vacation periods in calculation", %{

@@ -24,6 +24,7 @@ defmodule MehrSchulferienWeb.CityHTML do
   import MehrSchulferienWeb.FederalState.NoDataComponent
   import MehrSchulferienWeb.FederalState.PartialDataComponent
   import MehrSchulferienWeb.CityComponents
+  import MehrSchulferienWeb.DeveloperSectionComponent
   import MehrSchulferienWeb.FaqComponent
 
   def format_zip_codes(city) do

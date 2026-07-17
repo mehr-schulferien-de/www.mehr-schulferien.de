@@ -1,11 +1,7 @@
 defmodule MehrSchulferienWeb.System.BeweglicheFerientageIntegrationTest do
   use MehrSchulferienWeb.ConnCase, async: false
 
-  @moduletag :skip
-
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
   # This test uses wiki routes for bewegliche ferientage feature
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
 
   import Phoenix.LiveViewTest
 

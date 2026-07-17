@@ -9,12 +9,12 @@
         <div class="text-center py-8">
           <%= if @result.is_public_holiday do %>
             <div class="text-6xl font-bold text-green-600 mb-4">JA</div>
-            <.text size="xl" class="mb-4">
+            <.text variant="lead" class="mb-4">
               Heute ist {@result.explanation} in {@federal_state.name}.
             </.text>
           <% else %>
             <div class="text-6xl font-bold text-gray-600 mb-4">NEIN</div>
-            <.text size="xl" class="mb-4">
+            <.text variant="lead" class="mb-4">
               Heute ist kein Feiertag in {@federal_state.name}.
             </.text>
             <%= if @result.is_weekend do %>
@@ -53,8 +53,12 @@
       <a href={~p"/ferien/d/bundesland/#{@federal_state.slug}"} class="block">
         <.card class="hover:shadow-lg transition-shadow">
           <:content>
-            <.text size="lg" weight="semibold">Ferienkalender {@federal_state.name}</.text>
-            <.text size="sm" class="text-gray-600">Alle Ferien und Feiertage im Überblick</.text>
+            <p class="text-lg font-semibold text-blue-700 dark:text-blue-400">
+              Ferienkalender {@federal_state.name}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Alle Ferien und Feiertage im Überblick
+            </p>
           </:content>
         </.card>
       </a>
@@ -62,10 +66,12 @@
       <a href={~p"/brueckentage/d/bundesland/#{@federal_state.slug}"} class="block">
         <.card class="hover:shadow-lg transition-shadow">
           <:content>
-            <.text size="lg" weight="semibold">Brückentage {@federal_state.name}</.text>
-            <.text size="sm" class="text-gray-600">
+            <p class="text-lg font-semibold text-blue-700 dark:text-blue-400">
+              Brückentage {@federal_state.name}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               Optimale Urlaubsplanung mit Brückentagen
-            </.text>
+            </p>
           </:content>
         </.card>
       </a>
@@ -73,7 +79,7 @@
   </div>
 
   <div class="text-center text-gray-600">
-    <.text size="sm">
+    <.text variant="small">
       Stand: {Calendar.strftime(@result.date, "%d.%m.%Y")}
     </.text>
   </div>

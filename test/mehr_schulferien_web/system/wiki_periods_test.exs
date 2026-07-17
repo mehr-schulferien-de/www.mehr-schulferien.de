@@ -1,16 +1,13 @@
 defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
   use MehrSchulferienWeb.ConnCase
 
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
-
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory
 
   alias MehrSchulferien.{Periods, Repo}
+  alias MehrSchulferien.Wiki.PendingChanges
 
   describe "wiki hub page" do
     setup [:log_in_wiki_user]
@@ -152,9 +149,10 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
           country_location_id: germany.id
         )
 
-      # Create the period with a date that ensures it's found
-      # Use a date within the last 12 months to ensure the vacation type is considered "recent"
-      start_date = Date.utc_today() |> Date.add(-30)
+      # Use an upcoming period: past periods are rendered without an edit
+      # link on purpose (they cannot be edited), which is why this test used
+      # to fail with a period 30 days in the past.
+      start_date = Date.utc_today() |> Date.add(30)
       end_date = start_date |> Date.add(14)
 
       period =
@@ -176,19 +174,10 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
         "years" => "#{period_year}"
       }
 
-      {:ok, _view, _html} = live(conn, "/wiki/periods?" <> URI.encode_query(params))
+      {:ok, _view, html} = live(conn, "/wiki/periods?" <> URI.encode_query(params))
 
-      # TODO: Fix this test - the period is created but not appearing in filtered results
-      # The wiki periods functionality works correctly, but the test filtering doesn't
-      # properly select the created test data. This may be related to:
-      # 1. The vacation type selection logic that looks for "recent" types
-      # 2. Database transaction isolation in tests
-      # 3. The complex filter query logic in the LiveView
-      #
-      # For now, we're just verifying the page loads without errors
-      # assert String.contains?(html, "/wiki/periods/#{period.id}/edit")
-      # Verify period was created successfully
-      assert period.id != nil
+      # The filtered list must contain the period with its edit link
+      assert html =~ "/wiki/periods/#{period.id}/edit"
     end
 
     test "shows add new period button", %{conn: conn} do
@@ -216,7 +205,11 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       %{bayern: bayern, sommerferien: sommerferien}
     end
 
-    test "user can create a new period", %{conn: conn, bayern: bayern, sommerferien: sommerferien} do
+    test "user can submit a new period which is created after approval", %{
+      conn: conn,
+      bayern: bayern,
+      sommerferien: sommerferien
+    } do
       {:ok, view, _html} = live(conn, "/wiki/periods/new")
 
       # Verify page title
@@ -235,12 +228,27 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       )
       |> render_submit()
 
-      # Should redirect to periods index
+      # The submission goes into the pending-changes queue and redirects to the index
       flash = assert_redirect(view, "/wiki/periods")
-      assert flash["info"] == "Ferientermin wurde erfolgreich erstellt."
 
-      # Verify period was created
-      period = Periods.list_periods() |> List.last()
+      assert flash["info"] ==
+               "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "create_period"
+      assert pending_change.payload["location_id"] == to_string(bayern.id)
+      assert pending_change.payload["holiday_or_vacation_type_id"] == to_string(sommerferien.id)
+      assert pending_change.payload["starts_on"] == "2024-07-15"
+      assert pending_change.payload["ends_on"] == "2024-08-26"
+      assert pending_change.payload["memo"] == "Test Sommerferien"
+
+      # The period must not exist before approval
+      assert Periods.list_periods() == []
+
+      # Approving the change creates the period
+      {:ok, %{period: period}} = PendingChanges.approve_change!(pending_change)
+
+      period = Periods.get_period!(period.id)
       assert period.location_id == bayern.id
       assert period.holiday_or_vacation_type_id == sommerferien.id
       assert period.starts_on == ~D[2024-07-15]
@@ -248,28 +256,41 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       assert period.memo == "Test Sommerferien"
     end
 
-    test "shows validation errors for invalid data", %{
+    test "shows validation errors for invalid data and rejects them at approval", %{
       conn: conn,
       bayern: bayern,
       sommerferien: sommerferien
     } do
       {:ok, view, _html} = live(conn, "/wiki/periods/new")
 
-      # Submit with invalid data (end date before start date) but with required fields
-      view
-      |> form("form",
-        period: %{
-          location_id: bayern.id,
-          holiday_or_vacation_type_id: sommerferien.id,
-          starts_on: "2024-08-26",
-          ends_on: "2024-07-15"
-        }
-      )
-      |> render_submit()
+      # Invalid data: end date before start date
+      invalid_params = %{
+        location_id: bayern.id,
+        holiday_or_vacation_type_id: sommerferien.id,
+        starts_on: "2024-08-26",
+        ends_on: "2024-07-15"
+      }
 
-      # Should show error on the form
-      html = render(view)
+      # Live validation shows the error while editing
+      html =
+        view
+        |> form("form", period: invalid_params)
+        |> render_change()
+
       assert html =~ "should be less than or equal to"
+
+      # Submitting must be blocked as well - invalid data never reaches the
+      # pending queue
+      html =
+        view
+        |> form("form", period: invalid_params)
+        |> render_submit()
+
+      assert html =~ "should be less than or equal to"
+      assert PendingChanges.list_pending() == []
+
+      # No period was created
+      assert Periods.list_periods() == []
     end
   end
 
@@ -303,7 +324,7 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       %{period: period, bayern: bayern, sommerferien: sommerferien}
     end
 
-    test "user can edit an existing period", %{conn: conn, period: period} do
+    test "user can submit an edit which is applied after approval", %{conn: conn, period: period} do
       {:ok, view, _html} = live(conn, "/wiki/periods/#{period.id}/edit")
 
       # Verify page shows current data
@@ -327,15 +348,31 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       )
       |> render_submit()
 
-      # Should show success message (stays on same page)
-      html = render(view)
-      assert html =~ "Ferientermin wurde erfolgreich aktualisiert."
+      # The edit is queued for review and the user is sent back to the index
+      flash = assert_redirect(view, "/wiki/periods")
 
-      # Verify changes were saved
-      updated_period = Periods.get_period!(period.id)
+      assert flash["info"] ==
+               "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "update_period"
+      assert pending_change.original_record_id == period.id
+      assert pending_change.payload["starts_on"] == Date.to_string(new_start)
+      assert pending_change.payload["ends_on"] == Date.to_string(new_end)
+      assert pending_change.payload["memo"] == "Updated memo"
+
+      # The period is unchanged before approval
+      unchanged_period = Periods.get_period!(period.id)
+      assert unchanged_period.starts_on == period.starts_on
+      assert unchanged_period.ends_on == period.ends_on
+      assert unchanged_period.memo == "Original memo"
+
+      # Approving applies the change and records a version
+      {:ok, %{period: updated_period}} = PendingChanges.approve_change!(pending_change)
       assert updated_period.starts_on == new_start
       assert updated_period.ends_on == new_end
       assert updated_period.memo == "Updated memo"
+      assert [_version] = PaperTrail.get_versions(updated_period)
     end
 
     test "shows version history", %{conn: conn, period: period} do
@@ -361,7 +398,10 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       assert html =~ "← Zurücksetzen"
     end
 
-    test "user can delete a period", %{conn: conn, period: period} do
+    test "user can submit a delete request which is applied after approval", %{
+      conn: conn,
+      period: period
+    } do
       {:ok, view, _html} = live(conn, "/wiki/periods/#{period.id}/edit")
 
       # Click delete button to show modal
@@ -379,11 +419,24 @@ defmodule MehrSchulferienWeb.WikiPeriodsSystemTest do
       |> element("button[phx-click='delete']", "Endgültig löschen")
       |> render_click()
 
-      # Should redirect
+      # The delete request is queued for review
       flash = assert_redirect(view, "/wiki/periods")
-      assert flash["info"] == "Ferientermin wurde erfolgreich gelöscht."
 
-      # Verify period was deleted
+      assert flash["info"] ==
+               "Ihre Löschanfrage wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung umgesetzt."
+
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "delete_period"
+      assert pending_change.original_record_id == period.id
+      assert pending_change.payload["starts_on"] == Date.to_string(period.starts_on)
+      assert pending_change.payload["ends_on"] == Date.to_string(period.ends_on)
+
+      # The period still exists before approval
+      assert Periods.get_period!(period.id)
+
+      # Approving deletes the period
+      {:ok, %{period: _deleted}} = PendingChanges.approve_change!(pending_change)
+
       assert_raise Ecto.NoResultsError, fn ->
         Periods.get_period!(period.id)
       end

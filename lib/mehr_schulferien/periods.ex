@@ -54,32 +54,6 @@ defmodule MehrSchulferien.Periods do
     |> Repo.all()
   end
 
-  # Alias for backwards compatibility
-  defdelegate list_school_free_periods_selective(location_ids, starts_on, ends_on),
-    to: __MODULE__,
-    as: :list_school_free_periods_optimized
-
-  @doc """
-  Ultra-lightweight query for period counts and date ranges.
-  Used for generating navigation and overview data.
-  """
-  def list_periods_summary(location_ids, starts_on, ends_on) do
-    from(p in Period,
-      where:
-        p.location_id in ^location_ids and
-          p.ends_on >= ^starts_on and
-          p.starts_on <= ^ends_on,
-      select: %{
-        id: p.id,
-        starts_on: p.starts_on,
-        ends_on: p.ends_on,
-        is_public_holiday: p.is_public_holiday,
-        is_school_vacation: p.is_school_vacation
-      }
-    )
-    |> Repo.all()
-  end
-
   @doc """
   Returns the list of periods.
   """
@@ -173,13 +147,8 @@ defmodule MehrSchulferien.Periods do
   # Period queries by time - delegated to Query module
   #
 
-  defdelegate list_previous_periods(federal_state, holiday_or_vacation_type), to: Query
-  defdelegate list_current_and_future_periods(federal_state, holiday_or_vacation_type), to: Query
   defdelegate list_school_vacation_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_school_vacation_periods(location_ids, starts_on, ends_on, opts), to: Query
-
-  defdelegate list_grouped_school_vacation_periods(location_ids, starts_on, ends_on),
-    to: GroupedQuery
 
   defdelegate list_grouped_school_vacation_periods_v2(location_ids, starts_on, ends_on),
     to: GroupedQuery
@@ -187,8 +156,6 @@ defmodule MehrSchulferien.Periods do
   defdelegate list_public_everybody_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_public_periods(location_ids, starts_on, ends_on), to: Query
   defdelegate list_school_free_periods(location_ids, starts_on, ends_on), to: Query
-  defdelegate list_school_free_periods_for_countries(countries, starts_on, ends_on), to: Query
-  defdelegate list_school_free_periods_with_preload(location_ids, starts_on, ends_on), to: Query
   defdelegate list_years_with_periods(), to: Query
 
   #
@@ -275,14 +242,7 @@ defmodule MehrSchulferien.Periods do
   Returns nil if not found (e.g., in test environment).
   """
   def get_beweglicher_ferientag_type do
-    import Ecto.Query
-
-    query =
-      from h in HolidayOrVacationType,
-        where: h.slug == "beweglicher-ferientag",
-        limit: 1
-
-    Repo.one(query)
+    Repo.get_by(HolidayOrVacationType, slug: "beweglicher-ferientag")
   end
 
   @doc """
@@ -297,29 +257,6 @@ defmodule MehrSchulferien.Periods do
         from(p in Period,
           where:
             p.location_id == ^school_id and p.holiday_or_vacation_type_id == ^beweglicher_type.id,
-          order_by: [asc: p.starts_on],
-          preload: [:holiday_or_vacation_type]
-        )
-        |> Repo.all()
-    end
-  end
-
-  @doc """
-  Lists upcoming bewegliche Ferientage for a school.
-  """
-  def list_upcoming_bewegliche_ferientage_for_school(school_id) do
-    case get_beweglicher_ferientag_type() do
-      nil ->
-        []
-
-      beweglicher_type ->
-        today = Date.utc_today()
-
-        from(p in Period,
-          where:
-            p.location_id == ^school_id and
-              p.holiday_or_vacation_type_id == ^beweglicher_type.id and
-              p.starts_on >= ^today,
           order_by: [asc: p.starts_on],
           preload: [:holiday_or_vacation_type]
         )
@@ -703,28 +640,6 @@ defmodule MehrSchulferien.Periods do
         )
         |> Repo.one()
     end
-  end
-
-  @doc """
-  Checks if any periods exist for a specific location and year.
-  Useful for determining if vacation pages should exist.
-  """
-  def period_exists_for_year?(location_id, year) when is_integer(year) do
-    start_date = Date.new!(year, 1, 1)
-    end_date = Date.new!(year, 12, 31)
-
-    from(p in Period,
-      where:
-        p.location_id == ^location_id and
-          p.starts_on <= ^end_date and
-          p.ends_on >= ^start_date,
-      limit: 1
-    )
-    |> Repo.exists?()
-  end
-
-  def period_exists_for_year?(location_id, year) when is_binary(year) do
-    period_exists_for_year?(location_id, String.to_integer(year))
   end
 
   @doc """

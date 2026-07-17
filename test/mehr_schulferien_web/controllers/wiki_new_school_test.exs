@@ -1,10 +1,6 @@
 defmodule MehrSchulferienWeb.WikiNewSchoolTest do
   use MehrSchulferienWeb.ConnCase
 
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
-
   import MehrSchulferien.Factory
   import MehrSchulferien.TestHelpers
   import Phoenix.LiveViewTest
@@ -44,7 +40,9 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
       assert has_element?(view, "input[name=\"address[zip_code]\"]")
     end
 
-    test "creates new school with valid data and populates coordinates", %{conn: conn} do
+    test "queues new school for approval and creates it with coordinates on approval", %{
+      conn: conn
+    } do
       {:ok, view, _html} = live(conn, "/wiki/schools/new")
 
       view
@@ -62,10 +60,21 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
       })
       |> render_submit()
 
-      # Should redirect to the new school page
-      assert_redirect(view, "/ferien/d/schule/10115-test-grundschule-berlin")
+      # The submission goes into the pending-changes queue and returns to /wiki
+      assert_redirect(view, "/wiki")
 
-      # Verify school was created with correct slug
+      [pending_change] = MehrSchulferien.Wiki.PendingChanges.list_pending()
+      assert pending_change.change_type == "create_school"
+      assert pending_change.payload["school_name"] == "Test Grundschule Berlin"
+
+      # The school itself must not exist before approval
+      assert_raise Ecto.NoResultsError, fn ->
+        MehrSchulferien.Locations.get_school_by_slug!("10115-test-grundschule-berlin")
+      end
+
+      # Approving the change creates the school
+      {:ok, _result} = MehrSchulferien.Wiki.PendingChanges.approve_change!(pending_change)
+
       school = MehrSchulferien.Locations.get_school_by_slug!("10115-test-grundschule-berlin")
       assert school.name == "Test Grundschule Berlin"
       assert school.is_school == true
@@ -202,15 +211,11 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
       })
       |> render_submit()
 
-      # Should create successfully
-      # Get the created school to find its actual country
-      school = MehrSchulferien.Locations.get_school_by_slug!("14467-potsdam-testschule")
+      # The submission is queued and the user is sent back to /wiki
+      assert_redirect(view, "/wiki")
 
-      # Traverse hierarchy to get country
-      country = get_country_from_hierarchy(school)
-
-      # Assert redirect with actual country slug
-      assert_redirect(view, "/ferien/#{country.slug}/schule/14467-potsdam-testschule")
+      [pending_change] = MehrSchulferien.Wiki.PendingChanges.list_pending()
+      {:ok, _result} = MehrSchulferien.Wiki.PendingChanges.approve_change!(pending_change)
 
       # Verify coordinates were taken from city's mapping (priority over other locations)
       school = MehrSchulferien.Locations.get_school_by_slug!("14467-potsdam-testschule")
@@ -220,44 +225,6 @@ defmodule MehrSchulferienWeb.WikiNewSchoolTest do
       # Coordinates should be close to one of the mappings we created
       assert school.address.lat >= 52.3 and school.address.lat <= 52.5
       assert school.address.lon >= 13.0 and school.address.lon <= 13.1
-    end
-  end
-
-  # Helper function to get country from location hierarchy
-  defp get_country_from_hierarchy(location) do
-    # Use the existing get_country_slug_from_location to get slug
-    slug = get_country_slug_from_location(location)
-    # Then fetch the country by slug
-    MehrSchulferien.Repo.get_by!(MehrSchulferien.Locations.Location, slug: slug, is_country: true)
-  end
-
-  # Helper function to get country slug from a location
-  defp get_country_slug_from_location(location) do
-    # Use a recursive query to get all ancestors up to the country
-    query = """
-    WITH RECURSIVE location_hierarchy AS (
-      -- Base case: start with the given location
-      SELECT id, parent_location_id, slug, is_country
-      FROM locations
-      WHERE id = $1
-      
-      UNION ALL
-      
-      -- Recursive case: find parent of each location
-      SELECT l.id, l.parent_location_id, l.slug, l.is_country
-      FROM locations l
-      INNER JOIN location_hierarchy lh ON l.id = lh.parent_location_id
-    )
-    SELECT slug 
-    FROM location_hierarchy
-    WHERE is_country = true
-    LIMIT 1
-    """
-
-    case MehrSchulferien.Repo.query(query, [location.id]) do
-      {:ok, %{rows: [[slug]]}} -> slug
-      # fallback to default
-      _ -> "d"
     end
   end
 end

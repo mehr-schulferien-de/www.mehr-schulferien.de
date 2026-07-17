@@ -9,7 +9,7 @@
         <div class="text-center py-8">
           <%= if @result.is_public_holiday do %>
             <div class="text-6xl font-bold text-green-600 mb-4">JA</div>
-            <.text size="xl" class="mb-4">
+            <.text variant="lead" class="mb-4">
               Der {Calendar.strftime(@result.date, "%d.%m.%Y")} ist ein Feiertag in {@federal_state.name}.
             </.text>
             <.text class="text-gray-600">
@@ -17,7 +17,7 @@
             </.text>
           <% else %>
             <div class="text-6xl font-bold text-gray-600 mb-4">NEIN</div>
-            <.text size="xl" class="mb-4">
+            <.text variant="lead" class="mb-4">
               Der {Calendar.strftime(@result.date, "%d.%m.%Y")} ist kein Feiertag in {@federal_state.name}.
             </.text>
             <%= if @result.is_weekend do %>
@@ -72,12 +72,12 @@
       <a href={~p"/ferien/#{@federal_state.slug}/#{@result.date.year}"} class="block">
         <.card class="hover:shadow-lg transition-shadow">
           <:content>
-            <.text size="lg" weight="semibold">
+            <p class="text-lg font-semibold text-blue-700 dark:text-blue-400">
               Ferienkalender {@federal_state.name} {@result.date.year}
-            </.text>
-            <.text size="sm" class="text-gray-600">
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               Alle Ferien und Feiertage für {@result.date.year}
-            </.text>
+            </p>
           </:content>
         </.card>
       </a>
@@ -90,12 +90,12 @@
       >
         <.card class="hover:shadow-lg transition-shadow">
           <:content>
-            <.text size="lg" weight="semibold">
+            <p class="text-lg font-semibold text-blue-700 dark:text-blue-400">
               Brückentage {@federal_state.name} {@result.date.year}
-            </.text>
-            <.text size="sm" class="text-gray-600">
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               Optimale Urlaubsplanung mit Brückentagen
-            </.text>
+            </p>
           </:content>
         </.card>
       </a>

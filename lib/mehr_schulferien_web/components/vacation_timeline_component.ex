@@ -421,34 +421,28 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     |> List.first()
   end
 
-  # Get German month name for anchor links
+  # Get German month slug for anchor links
   defp get_german_month_name(month_number) do
-    case month_number do
-      1 -> "januar"
-      2 -> "februar"
-      3 -> "maerz"
-      4 -> "april"
-      5 -> "mai"
-      6 -> "juni"
-      7 -> "juli"
-      8 -> "august"
-      9 -> "september"
-      10 -> "oktober"
-      11 -> "november"
-      12 -> "dezember"
-      _ -> ""
-    end
+    MehrSchulferien.Calendars.DateHelpers.month_slug(month_number) || ""
   end
 
-  # Smart month name display based on available space
+  # Smart month name display based on available space. The thresholds are
+  # calibrated for the narrowest supported viewport (~390px): a label that
+  # cannot fit gets clipped mid-letter by overflow-hidden, which looks broken,
+  # so tiny slivers show no label at all (the title attribute still names the
+  # month on hover).
+  defp get_month_display_name(_month_name, days_count, _percentage_width) when days_count <= 4 do
+    ""
+  end
+
   defp get_month_display_name(month_name, days_count, _percentage_width) do
     cond do
-      # 1-3 days: Just first letter
-      days_count <= 3 ->
+      # 5-8 days: just the first letter
+      days_count <= 8 ->
         String.at(month_name, 0) <> "."
 
-      # 4-6 days: Very short abbreviation (3 letters)
-      days_count <= 6 ->
+      # 9-14 days: three-letter abbreviation
+      days_count <= 14 ->
         case month_name do
           "Januar" -> "Jan."
           "Februar" -> "Feb."
@@ -465,16 +459,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
           _ -> String.slice(month_name, 0, 3) <> "."
         end
 
-      # 7-10 days: 4-letter abbreviation where needed
-      days_count <= 10 ->
-        case month_name do
-          "September" -> "Sept."
-          "November" -> "Nov."
-          "Dezember" -> "Dez."
-          _ -> month_name
-        end
-
-      # More than 10 days: Full name
+      # More than 14 days: full name
       true ->
         month_name
     end

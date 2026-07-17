@@ -122,6 +122,18 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
         error_message = Blacklist.format_blocked_fields_error(blocked_fields)
         {:noreply, put_flash(socket, :error, error_message)}
 
+      # Field validation (URL formats etc.) must block the submission itself,
+      # not only surface during live-validate - otherwise invalid data lands
+      # in the pending queue and fails on approval.
+      address_field_errors(address_params) != [] ->
+        changeset =
+          %Address{}
+          |> Address.changeset(address_params)
+          |> Map.update!(:errors, &Keyword.delete(&1, :school_location_id))
+          |> Map.put(:action, :insert)
+
+        {:noreply, assign(socket, changeset: changeset)}
+
       true ->
         zip_code = Map.get(address_params, "zip_code", "")
 
@@ -173,6 +185,16 @@ defmodule MehrSchulferienWeb.WikiSchoolNewLive do
             {:noreply, assign(socket, changeset: changeset)}
         end
     end
+  end
+
+  # The Address changeset requires :school_location_id, which cannot exist
+  # before the school is approved and created - ignore that error when
+  # pre-validating user input.
+  defp address_field_errors(address_params) do
+    %Address{}
+    |> Address.changeset(address_params)
+    |> Map.get(:errors)
+    |> Keyword.delete(:school_location_id)
   end
 
   defp submit_school_to_pending_queue(school_name, address_params, city, socket) do

@@ -24,7 +24,7 @@
         </.heading>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Methode</th>
@@ -90,13 +90,15 @@
           Request
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer?year=2026&amp;days=10</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer?year=2026&days=10|
+        } />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           Response
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+        <.code_block content={~s|{
   "data": {
     "location": {
       "id": 2,
@@ -139,7 +141,7 @@
   "meta": {
     "api_version": "2.1"
   }
-}| %></pre>
+}|} />
       </div>
 
       <div class="mb-8">
@@ -225,7 +227,9 @@
           Request
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer/icalendar?year=2026&amp;days=10</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/vacation-optimizer/icalendar?year=2026&days=10|
+        } />
 
         <p class="mb-4">
           Response: <code>text/calendar</code>
@@ -237,7 +241,7 @@
           Beispiel iCal-Inhalt
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">BEGIN:VCALENDAR
+        <.code_block content={~s|BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//mehr-schulferien.de//Urlaubsplaner//DE
 X-WR-CALNAME:Urlaubsplaner Bayern 2026 (10 Tage)
@@ -246,13 +250,13 @@ BEGIN:VEVENT
 DTSTART;VALUE=DATE:20260418
 DTEND;VALUE=DATE:20260505
 SUMMARY:Optimaler Urlaub (Rang 1) - 17 Tage
-DESCRIPTION:10 Urlaubstage &rarr; 17 freie Tage (70% Effizienz)\n
-  Enth&auml;lt: Tag der Arbeit\n
+DESCRIPTION:10 Urlaubstage → 17 freie Tage (70% Effizienz)\\n
+  Enthält: Tag der Arbeit\\n
   Berechnet von mehr-schulferien.de
 URL:https://www.mehr-schulferien.de/urlaubsplaner/bayern/10-tage/2026
 END:VEVENT
 
-END:VCALENDAR</pre>
+END:VCALENDAR|} />
       </div>
 
       <div class="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-600 p-4 mb-6">

@@ -320,7 +320,7 @@ defmodule MehrSchulferienWeb.BlacklistRequestLive do
                     <select
                       name="form[field_type]"
                       id="form_field_type"
-                      class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none cursor-pointer"
+                      class={DesignTokens.form_select()}
                     >
                       <%= for {value, label} <- Entry.field_type_labels() do %>
                         <option value={value} selected={@form_data.field_type == value}>
@@ -516,7 +516,7 @@ defmodule MehrSchulferienWeb.BlacklistRequestLive do
                     name="form[reason]"
                     id="form_reason"
                     rows="3"
-                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                    class={DesignTokens.form_input()}
                     placeholder="z.B. Telefonnummer der Schule hat sich geändert"
                   >{@form_data.reason}</textarea>
                 </div>

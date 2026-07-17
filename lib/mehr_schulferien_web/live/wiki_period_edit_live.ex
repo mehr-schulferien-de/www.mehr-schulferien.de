@@ -522,7 +522,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                   <select
                     id="period_location_id"
                     name="period[location_id]"
-                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    class={DesignTokens.form_input_no_placeholder()}
                     disabled={@limit_reached or @is_past_period}
                     required
                   >
@@ -547,7 +547,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                   <select
                     id="period_holiday_or_vacation_type_id"
                     name="period[holiday_or_vacation_type_id]"
-                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    class={DesignTokens.form_input_no_placeholder()}
                     disabled={@limit_reached or @is_past_period}
                     required
                   >
@@ -577,7 +577,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                     id="period_starts_on"
                     name="period[starts_on]"
                     value={Ecto.Changeset.get_field(@changeset, :starts_on)}
-                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    class={DesignTokens.form_input_no_placeholder()}
                     disabled={@limit_reached or @is_past_period}
                     required
                   />
@@ -595,7 +595,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                     id="period_ends_on"
                     name="period[ends_on]"
                     value={Ecto.Changeset.get_field(@changeset, :ends_on)}
-                    class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 text-gray-900 dark:text-gray-100"
+                    class={DesignTokens.form_input_no_placeholder()}
                     disabled={@limit_reached or @is_past_period}
                     required
                   />
@@ -613,7 +613,7 @@ defmodule MehrSchulferienWeb.WikiPeriodEditLive do
                   id="period_memo"
                   name="period[memo]"
                   rows="4"
-                  class="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                  class={DesignTokens.form_input()}
                   disabled={@limit_reached or @is_past_period}
                   placeholder="Zusätzliche Informationen zu diesem Ferientermin..."
                 >{Ecto.Changeset.get_field(@changeset, :memo) || ""}</textarea>

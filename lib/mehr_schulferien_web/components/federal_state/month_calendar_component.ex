@@ -2,6 +2,7 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
   use Phoenix.Component
 
   import MehrSchulferienWeb.FederalState.MonthEventsComponent
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferienWeb.FederalState.PartialDataComponent
 
   attr :month, :integer, required: true
@@ -11,26 +12,13 @@ defmodule MehrSchulferienWeb.FederalState.MonthCalendarComponent do
   attr :all_periods, :list, required: true
 
   def month_calendar(assigns) do
-    month_name =
-      case assigns.month do
-        1 -> "Januar"
-        2 -> "Februar"
-        3 -> "März"
-        4 -> "April"
-        5 -> "Mai"
-        6 -> "Juni"
-        7 -> "Juli"
-        8 -> "August"
-        9 -> "September"
-        10 -> "Oktober"
-        11 -> "November"
-        12 -> "Dezember"
-      end
+    month_name = DateHelpers.get_months_map()[assigns.month]
 
     first_day_of_month = Date.new!(assigns.year, assigns.month, 1)
     first_weekday = Date.day_of_week(first_day_of_month)
     days_in_month = Date.days_in_month(first_day_of_month)
-    month_id = "#{String.downcase(month_name)}#{assigns.year}"
+    # URL-safe id ("maerz2026", not "märz2026") so timeline anchor links match
+    month_id = "#{DateHelpers.month_slug(assigns.month)}#{assigns.year}"
     last_day_of_month = Date.new!(assigns.year, assigns.month, days_in_month)
 
     # Use the more accurate function to determine if this month should be crossed out

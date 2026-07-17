@@ -7,100 +7,8 @@ defmodule MehrSchulferien.Periods.GroupedQuery do
   for post-processing in Elixir.
   """
 
-  import Ecto.Query, warn: false
-
   alias MehrSchulferien.Periods.Period
   alias MehrSchulferien.Repo
-
-  @doc """
-  Returns school vacation periods with consecutive "Bewegliche Ferientage" grouped together.
-
-  This uses a window function approach to identify consecutive periods and group them.
-  """
-  def list_grouped_school_vacation_periods(location_ids, starts_on, ends_on) do
-    # First, get all periods normally
-    regular_periods_query =
-      from(p in Period,
-        join: h in assoc(p, :holiday_or_vacation_type),
-        where:
-          p.location_id in ^location_ids and
-            p.is_valid_for_students == true and
-            p.is_school_vacation == true and
-            p.ends_on >= ^starts_on and
-            p.starts_on <= ^ends_on and
-            h.name != "Beweglicher Ferientag",
-        order_by: p.starts_on
-      )
-
-    # Get grouped Bewegliche Ferientage using a CTE
-    grouped_bewegliche_query = """
-    WITH consecutive_groups AS (
-      SELECT 
-        p.id,
-        p.starts_on,
-        p.ends_on,
-        p.memo,
-        p.location_id,
-        p.holiday_or_vacation_type_id,
-        p.is_public_holiday,
-        p.is_school_vacation,
-        p.is_valid_for_students,
-        p.is_valid_for_everybody,
-        p.display_priority,
-        p.created_by_email_address,
-        p.is_listed_below_month,
-        -- Create a group identifier for consecutive dates
-        p.starts_on - INTERVAL '1 day' * ROW_NUMBER() OVER (
-          PARTITION BY p.location_id, p.holiday_or_vacation_type_id, COALESCE(p.memo, '')
-          ORDER BY p.starts_on
-        ) as group_id
-      FROM periods p
-      JOIN holiday_or_vacation_types h ON h.id = p.holiday_or_vacation_type_id
-      WHERE 
-        p.location_id = ANY($1::int[]) AND
-        p.is_valid_for_students = true AND
-        p.is_school_vacation = true AND
-        p.ends_on >= $2 AND
-        p.starts_on <= $3 AND
-        h.name = 'Beweglicher Ferientag'
-    )
-    SELECT 
-      MIN(id) as id,
-      MIN(starts_on) as starts_on,
-      MAX(ends_on) as ends_on,
-      MIN(memo) as memo,
-      MIN(location_id) as location_id,
-      MIN(holiday_or_vacation_type_id) as holiday_or_vacation_type_id,
-      MIN(is_public_holiday::int)::boolean as is_public_holiday,
-      MIN(is_school_vacation::int)::boolean as is_school_vacation,
-      MIN(is_valid_for_students::int)::boolean as is_valid_for_students,
-      MIN(is_valid_for_everybody::int)::boolean as is_valid_for_everybody,
-      MIN(display_priority) as display_priority,
-      MIN(created_by_email_address) as created_by_email_address,
-      MIN(is_listed_below_month::int)::boolean as is_listed_below_month,
-      COUNT(*) as merged_count
-    FROM consecutive_groups
-    GROUP BY group_id, location_id, holiday_or_vacation_type_id, COALESCE(memo, '')
-    """
-
-    # Execute the grouped query
-    grouped_bewegliche =
-      Ecto.Adapters.SQL.query!(
-        Repo,
-        grouped_bewegliche_query,
-        [location_ids, starts_on, ends_on]
-      )
-      |> Map.get(:rows)
-      |> Enum.map(&row_to_period/1)
-
-    # Get regular periods
-    regular_periods = Repo.all(regular_periods_query)
-
-    # Combine and sort
-    (regular_periods ++ grouped_bewegliche)
-    |> Enum.sort_by(& &1.starts_on, Date)
-    |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
 
   @doc """
   Alternative approach using a simpler window function for PostgreSQL.
@@ -195,43 +103,6 @@ defmodule MehrSchulferien.Periods.GroupedQuery do
     result.rows
     |> Enum.map(&row_to_period_full(&1, result.columns))
     |> Repo.preload([:holiday_or_vacation_type, :location])
-  end
-
-  # Helper to convert a database row to a Period struct
-  defp row_to_period(row) do
-    [
-      id,
-      starts_on,
-      ends_on,
-      memo,
-      location_id,
-      holiday_or_vacation_type_id,
-      is_public_holiday,
-      is_school_vacation,
-      is_valid_for_students,
-      is_valid_for_everybody,
-      display_priority,
-      created_by_email_address,
-      is_listed_below_month,
-      merged_count
-    ] = row
-
-    %Period{
-      id: id,
-      starts_on: starts_on,
-      ends_on: ends_on,
-      memo: memo,
-      location_id: location_id,
-      holiday_or_vacation_type_id: holiday_or_vacation_type_id,
-      is_public_holiday: is_public_holiday,
-      is_school_vacation: is_school_vacation,
-      is_valid_for_students: is_valid_for_students,
-      is_valid_for_everybody: is_valid_for_everybody,
-      display_priority: display_priority,
-      created_by_email_address: created_by_email_address,
-      is_listed_below_month: is_listed_below_month
-    }
-    |> Map.put(:merged_count, merged_count)
   end
 
   defp row_to_period_full(row, columns) do

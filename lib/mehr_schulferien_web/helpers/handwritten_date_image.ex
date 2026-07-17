@@ -499,6 +499,25 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
     # Use full vacation name
     vacation_name = period.holiday_or_vacation_type.colloquial
 
+    # Shrink the font for long names so the text never runs off the paper.
+    # A glyph in this handwriting font is roughly 0.52em wide.
+    column_end =
+      if column == num_columns - 1 do
+        viewbox_width - 10
+      else
+        start_offset + (column + 1) * column_width
+      end
+
+    available_width = column_end - x_base
+    estimated_width = String.length(vacation_name) * name_size * 0.52
+
+    name_size =
+      if estimated_width > available_width do
+        max(round(name_size * available_width / estimated_width), 14)
+      else
+        name_size
+      end
+
     # Even more compact line spacing
     line_spacing =
       if scale_factor > 2.5 do

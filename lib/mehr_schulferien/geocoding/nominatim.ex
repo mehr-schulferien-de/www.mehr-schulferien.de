@@ -32,6 +32,17 @@ defmodule MehrSchulferien.Geocoding.Nominatim do
   Returns `{:ok, {longitude, latitude}}` on success, or `{:error, reason}` on failure.
   """
   def geocode_address(street, zip_code, city, country \\ "Deutschland") do
+    if Application.get_env(:mehr_schulferien, :env) == :test do
+      # Never call the external service from tests: it rate-limits (429),
+      # slows the suite and pollutes the output. Callers fall back to
+      # zip_code_mappings, which test data provides.
+      {:error, :geocoding_disabled_in_test}
+    else
+      do_geocode_address(street, zip_code, city, country)
+    end
+  end
+
+  defp do_geocode_address(street, zip_code, city, country) do
     # Ensure rate limiting
     enforce_rate_limit()
 

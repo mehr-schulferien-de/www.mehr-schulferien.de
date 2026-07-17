@@ -247,6 +247,9 @@ defmodule MehrSchulferien.Blacklist do
   def check_params_for_blacklisted_values(params) when is_map(params) do
     alias MehrSchulferien.Helpers.PhoneFormatter
 
+    # One query for all fields instead of one query per field
+    entries_by_field = active_entries_by_field()
+
     blocked_fields =
       @blacklistable_fields
       |> Enum.flat_map(fn field ->
@@ -266,7 +269,7 @@ defmodule MehrSchulferien.Blacklist do
 
           # Find if any of the values match a blacklist entry
           Enum.find_value(values_to_check, [], fn val ->
-            case find_blocking_entry(val, field_string) do
+            case blocking_entry(entries_by_field, val, field_string) do
               nil -> nil
               entry -> [{field_string, value, entry.pattern}]
             end
@@ -300,6 +303,21 @@ defmodule MehrSchulferien.Blacklist do
     end)
   end
 
+  # All active entries grouped by field type - loads the whole blacklist in
+  # ONE query so multi-field checks don't hit the DB once per field.
+  defp active_entries_by_field do
+    Enum.group_by(list_active_entries(), & &1.field_type)
+  end
+
+  defp blocking_entry(entries_by_field, value, field_type)
+       when is_binary(value) and value != "" do
+    entries_by_field
+    |> Map.get(to_string(field_type), [])
+    |> Enum.find(fn entry -> PatternMatcher.matches?(value, entry.pattern_regex) end)
+  end
+
+  defp blocking_entry(_entries_by_field, _value, _field_type), do: nil
+
   @doc """
   Formats blocked fields into a user-friendly error message.
 
@@ -326,10 +344,14 @@ defmodule MehrSchulferien.Blacklist do
   def filter_address(nil), do: nil
 
   def filter_address(%Address{} = address) do
+    # Runs on every school page render: fetch the blacklist once instead of
+    # querying per field.
+    entries_by_field = active_entries_by_field()
+
     Enum.reduce(@blacklistable_fields, address, fn field, acc ->
       value = Map.get(acc, field)
 
-      if is_blacklisted?(value, field) do
+      if blocking_entry(entries_by_field, value, field) do
         Map.put(acc, field, nil)
       else
         acc

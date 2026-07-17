@@ -687,84 +687,58 @@ defmodule MehrSchulferien.Wiki.PendingChanges do
   defp format_value(%Date{} = date), do: Date.to_string(date)
   defp format_value(value), do: value
 
-  # Email notification helpers
-  defp send_school_created_email(school, address) do
+  # Email notification helpers. Delivery happens async in a fire-and-forget
+  # task and is suppressed in the test environment.
+  defp deliver_async(build_email) do
     if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        country_slug = Locations.get_country_slug_from_location(school)
-        Email.school_created_notification(school, address, country_slug) |> Mailer.deliver()
-      end)
+      Task.start(fn -> build_email.() |> Mailer.deliver() end)
     end
+  end
+
+  defp send_school_created_email(school, address) do
+    deliver_async(fn ->
+      country_slug = Locations.get_country_slug_from_location(school)
+      Email.school_created_notification(school, address, country_slug)
+    end)
   end
 
   defp send_school_updated_email(school, address, changes) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        country_slug = Locations.get_country_slug_from_location(school)
-
-        Email.school_updated_notification(school, address, changes, country_slug)
-        |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn ->
+      country_slug = Locations.get_country_slug_from_location(school)
+      Email.school_updated_notification(school, address, changes, country_slug)
+    end)
   end
 
   defp send_school_deleted_email(school, address, reason) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        country_slug = Locations.get_country_slug_from_location(school)
-
-        Email.school_deleted_notification(school, address, country_slug, reason)
-        |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn ->
+      country_slug = Locations.get_country_slug_from_location(school)
+      Email.school_deleted_notification(school, address, country_slug, reason)
+    end)
   end
 
   defp send_period_created_email(period) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        Email.period_created_notification(period) |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn -> Email.period_created_notification(period) end)
   end
 
   defp send_period_updated_email(period, changes) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        Email.period_updated_notification(period, changes) |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn -> Email.period_updated_notification(period, changes) end)
   end
 
   defp send_period_deleted_email(period) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        Email.period_deleted_notification(period) |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn -> Email.period_deleted_notification(period) end)
   end
 
   defp send_beweglicher_ferientag_created_email(period, school) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        Email.beweglicher_ferientag_created_notification(period, school) |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn -> Email.beweglicher_ferientag_created_notification(period, school) end)
   end
 
   defp send_beweglicher_ferientag_updated_email(period, school, changes) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        Email.beweglicher_ferientag_updated_notification(period, school, changes)
-        |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn ->
+      Email.beweglicher_ferientag_updated_notification(period, school, changes)
+    end)
   end
 
   defp send_beweglicher_ferientag_deleted_email(period, school) do
-    if Application.get_env(:mehr_schulferien, :env) != :test do
-      Task.start(fn ->
-        Email.beweglicher_ferientag_deleted_notification(period, school) |> Mailer.deliver()
-      end)
-    end
+    deliver_async(fn -> Email.beweglicher_ferientag_deleted_notification(period, school) end)
   end
 end

@@ -44,18 +44,6 @@ defmodule MehrSchulferien.VacationOptimization do
   end
 
   @doc """
-  Finds the single best vacation window.
-
-  Convenience function that returns only the top result.
-  """
-  def find_best_window(location_ids, year, vacation_days, opts \\ []) do
-    case find_optimal_windows(location_ids, year, vacation_days, Keyword.put(opts, :top, 1)) do
-      [result | _] -> result
-      [] -> nil
-    end
-  end
-
-  @doc """
   Finds the best cross-year vacation window (spanning December to January).
 
   Useful for finding optimal holiday season vacation periods.

@@ -11,28 +11,14 @@ defmodule MehrSchulferienWeb.RedirectController do
 
   # Old /cities/ URL pattern redirects
   def redirect_cities(conn, %{"city_slug" => old_city_slug}) do
-    # Extract the zip code from the old slug (format: "33619-bielefeld")
-    case String.split(old_city_slug, "-", parts: 2) do
-      [zip_code, _name] ->
-        # Look up the city by zip code
-        city = get_city_by_zip_code!(zip_code)
-
-        # Navigate up the hierarchy to find the country
-        county = MehrSchulferien.Locations.get_location!(city.parent_location_id)
-        federal_state = MehrSchulferien.Locations.get_location!(county.parent_location_id)
-        country = MehrSchulferien.Locations.get_location!(federal_state.parent_location_id)
-
-        conn
-        |> put_status(:moved_permanently)
-        |> redirect(to: "/ferien/#{country.slug}/stadt/#{city.slug}")
-
-      _ ->
-        # Fallback if slug format is unexpected
-        raise Ecto.NoResultsError, queryable: MehrSchulferien.Locations.Location
-    end
+    redirect_old_city_slug(conn, old_city_slug, nil)
   end
 
   def redirect_cities_with_year(conn, %{"city_slug" => old_city_slug, "year" => year}) do
+    redirect_old_city_slug(conn, old_city_slug, year)
+  end
+
+  defp redirect_old_city_slug(conn, old_city_slug, year) do
     # Extract the zip code from the old slug (format: "33619-bielefeld")
     case String.split(old_city_slug, "-", parts: 2) do
       [zip_code, _name] ->
@@ -44,9 +30,12 @@ defmodule MehrSchulferienWeb.RedirectController do
         federal_state = MehrSchulferien.Locations.get_location!(county.parent_location_id)
         country = MehrSchulferien.Locations.get_location!(federal_state.parent_location_id)
 
+        path = "/ferien/#{country.slug}/stadt/#{city.slug}"
+        path = if year, do: "#{path}/#{year}", else: path
+
         conn
         |> put_status(:moved_permanently)
-        |> redirect(to: "/ferien/#{country.slug}/stadt/#{city.slug}/#{year}")
+        |> redirect(to: path)
 
       _ ->
         # Fallback if slug format is unexpected
@@ -187,74 +176,6 @@ defmodule MehrSchulferienWeb.RedirectController do
     |> redirect(to: "/brueckentage/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
-  # ============== LEGACY redirects that can now redirect to /ferien/ ==============
-
-  # City redirects - these were already redirecting properly
-  def redirect_city_year(conn, %{
-        "country_slug" => country_slug,
-        "city_slug" => city_slug,
-        "year" => year
-      }) do
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country_slug}/stadt/#{city_slug}/#{year}")
-  end
-
-  def redirect_city(conn, %{"country_slug" => country_slug, "city_slug" => city_slug}) do
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country_slug}/stadt/#{city_slug}")
-  end
-
-  # Federal state redirects - these were already redirecting properly
-  def redirect_federal_state_year(conn, %{
-        "country_slug" => country_slug,
-        "federal_state_slug" => federal_state_slug,
-        "year" => year
-      }) do
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
-  end
-
-  def redirect_federal_state(conn, %{
-        "country_slug" => country_slug,
-        "federal_state_slug" => federal_state_slug
-      }) do
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
-  end
-
-  def redirect_federal_state_category(conn, %{
-        "country_slug" => country_slug,
-        "federal_state_slug" => federal_state_slug,
-        "holiday_or_vacation_type_slug" => _holiday_or_vacation_type_slug
-      }) do
-    # Note: :show_holiday_or_vacation_type route doesn't exist in current router
-    # Redirecting to federal state page instead
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
-  end
-
-  # School redirects - these were already redirecting properly
-  def redirect_school_year(conn, %{
-        "country_slug" => country_slug,
-        "school_slug" => school_slug,
-        "year" => year
-      }) do
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}/#{year}")
-  end
-
-  def redirect_school(conn, %{"country_slug" => country_slug, "school_slug" => school_slug}) do
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/ferien/#{country_slug}/schule/#{school_slug}")
-  end
-
   # Public holiday redirects - now redirects to federal state page
   def redirect_public_holiday(conn, %{
         "country_slug" => country_slug,
@@ -264,31 +185,6 @@ defmodule MehrSchulferienWeb.RedirectController do
     conn
     |> put_status(:moved_permanently)
     |> redirect(to: ~p"/ferien/#{country_slug}/bundesland/#{federal_state_slug}")
-  end
-
-  # Bridge day redirects - update to use new /brueckentage/ URLs
-  def redirect_bridge_days(conn, %{
-        "country_slug" => country_slug,
-        "federal_state_slug" => federal_state_slug
-      }) do
-    # Get the current year
-    today = MehrSchulferien.Calendars.DateHelpers.today_berlin()
-    current_year = today.year
-
-    conn
-    |> redirect(
-      to: "/brueckentage/#{country_slug}/bundesland/#{federal_state_slug}/#{current_year}"
-    )
-  end
-
-  def redirect_bridge_days_year(conn, %{
-        "country_slug" => country_slug,
-        "federal_state_slug" => federal_state_slug,
-        "year" => year
-      }) do
-    conn
-    |> put_status(:moved_permanently)
-    |> redirect(to: ~p"/brueckentage/#{country_slug}/bundesland/#{federal_state_slug}/#{year}")
   end
 
   # Misc redirects

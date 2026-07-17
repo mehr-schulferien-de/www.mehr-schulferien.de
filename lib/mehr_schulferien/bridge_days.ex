@@ -7,97 +7,12 @@ defmodule MehrSchulferien.BridgeDays do
   alias MehrSchulferien.Helpers.{DateComparison, DateConstants}
   alias MehrSchulferien.{Locations, Periods}
   alias MehrSchulferien.Periods.Grouping
-  alias MehrSchulferien.Repo
 
   @doc """
   Returns whether a location has bridge days for a specific year.
   """
   def has_bridge_days?(location_ids, year) do
     MehrSchulferienWeb.BridgeDayController.has_bridge_days?(location_ids, year)
-  end
-
-  @doc """
-  Bulk check for bridge days across multiple federal states and years.
-  Returns a map of {federal_state_id, year} => boolean
-
-  This is much more efficient than calling has_bridge_days? multiple times.
-  """
-  def bulk_has_bridge_days?(country, federal_states, years) do
-    # Prepare all location ID combinations
-    all_location_combos =
-      for state <- federal_states, year <- years do
-        {{state.id, year}, [country.id, state.id], year}
-      end
-
-    # Get min and max dates for the query
-    current_year = Date.utc_today().year
-    min_year = Enum.min(years, fn -> current_year end)
-    max_year = Enum.max(years, fn -> current_year end)
-    {:ok, start_date} = Date.new(min_year, 1, 1)
-    {:ok, end_date} = Date.new(max_year, 12, 31)
-
-    # Get all location IDs
-    all_location_ids = [country.id | Enum.map(federal_states, & &1.id)]
-
-    # Fetch all public periods for all locations and years at once
-    all_periods = Periods.list_public_everybody_periods(all_location_ids, start_date, end_date)
-
-    # Process each combination
-    Enum.reduce(all_location_combos, %{}, fn {{state_id, year}, location_ids, year}, acc ->
-      # Filter periods for this specific year and locations
-      {:ok, year_start} = Date.new(year, 1, 1)
-      {:ok, year_end} = Date.new(year, 12, 31)
-
-      year_periods =
-        Enum.filter(all_periods, fn period ->
-          period.location_id in location_ids and
-            DateComparison.is_on_or_before?(period.starts_on, year_end) and
-            DateComparison.is_on_or_after?(period.ends_on, year_start)
-        end)
-
-      # Check if there are bridge days
-      bridge_day_map = Grouping.group_by_interval(year_periods)
-
-      has_bridge_days =
-        Enum.any?(DateConstants.min_bridge_days()..DateConstants.max_bridge_days(), fn num ->
-          if bridge_day_map[num] do
-            bridge_day_map[num]
-            |> Enum.any?(fn bridge_day ->
-              all_periods = Grouping.list_periods_with_bridge_day(year_periods, bridge_day)
-              BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
-            end)
-          else
-            false
-          end
-        end)
-
-      Map.put(acc, {state_id, year}, has_bridge_days)
-    end)
-  end
-
-  @doc """
-  Calculates bridge day efficiency metrics using SQL.
-  Returns a map with vacation_days, total_free_days, and efficiency_percentage.
-
-  ## Examples
-
-      iex> calculate_bridge_day_efficiency()
-      %{vacation_days: 1, total_free_days: 4, efficiency_percentage: 300}
-  """
-  def calculate_bridge_day_efficiency do
-    # This is a simplified version that could be expanded with more complex SQL logic
-    # if needed to calculate based on real bridge day data
-    query = "SELECT 1 as vacation_days, 4 as total_free_days, 300 as efficiency_percentage"
-
-    result = Repo.query!(query, [])
-
-    [vacation_days, total_free_days, efficiency_percentage] = result.rows |> List.first()
-
-    %{
-      vacation_days: vacation_days,
-      total_free_days: total_free_days,
-      efficiency_percentage: efficiency_percentage
-    }
   end
 
   @doc """

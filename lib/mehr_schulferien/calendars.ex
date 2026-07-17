@@ -138,6 +138,22 @@ defmodule MehrSchulferien.Calendars do
   end
 
   @doc """
+  Gets the school vacation type for a "...ferien" URL slug (e.g. "osterferien").
+
+  Removes the "ferien" part from the given slug and returns the
+  `HolidayOrVacationType` with the resulting slug where
+  `default_is_school_vacation` is `true`, or `nil` if none exists.
+  """
+  def get_vacation_type_by_ferien_slug(ferien_slug) do
+    vacation_type_slug = String.replace(ferien_slug, "ferien", "")
+
+    Repo.one(
+      from hvt in HolidayOrVacationType,
+        where: hvt.slug == ^vacation_type_slug and hvt.default_is_school_vacation == true
+    )
+  end
+
+  @doc """
   Creates a holiday_or_vacation_type.
   """
   def create_holiday_or_vacation_type(attrs \\ %{}) do

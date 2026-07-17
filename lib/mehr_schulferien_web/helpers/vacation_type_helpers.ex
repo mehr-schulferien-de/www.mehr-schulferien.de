@@ -4,6 +4,7 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
   Provides SEO content, data fetching, and formatting functions.
   """
 
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.{Locations, Periods}
 
   @vacation_configs %{
@@ -143,8 +144,8 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
       earliest = List.first(valid_periods)
       latest = Enum.max_by(valid_periods, fn %{period: p} -> p.starts_on end)
 
-      earliest_date = Calendar.strftime(earliest.period.starts_on, "%-d. %B")
-      latest_date = Calendar.strftime(latest.period.starts_on, "%-d. %B")
+      earliest_date = DateHelpers.german_date(earliest.period.starts_on)
+      latest_date = DateHelpers.german_date(latest.period.starts_on)
       earliest_state = earliest.state.name
       latest_state = latest.state.name
 

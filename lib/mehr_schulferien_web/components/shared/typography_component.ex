@@ -48,7 +48,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
           <a
             href={"/ads/#{@house_ad.id}"}
             rel="sponsored"
-            class="font-bold underline decoration-2 ml-1 hover:text-blue-100"
+            class="font-bold underline decoration-2 ml-1 hover:text-blue-100 whitespace-nowrap"
           >
             {@house_ad.label}
           </a>
@@ -106,34 +106,6 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
     <a href={@href} target={@target} rel={@rel} class={@computed_class}>
       {render_slot(@inner_block)}
     </a>
-    """
-  end
-
-  # Helper component for inline code
-  attr :class, :string, default: ""
-  slot :inner_block, required: true
-
-  def code(assigns) do
-    ~H"""
-    <code class={"px-1.5 py-0.5 text-sm font-mono bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded #{@class}"}>
-      {render_slot(@inner_block)}
-    </code>
-    """
-  end
-
-  # Page title component that combines heading with optional subtitle
-  attr :title, :string, required: true
-  attr :subtitle, :string, default: nil
-  attr :class, :string, default: ""
-
-  def page_title(assigns) do
-    ~H"""
-    <div class={"mb-6 #{@class}"}>
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-2">{@title}</h1>
-      <%= if @subtitle do %>
-        <p class="text-lg text-gray-600 dark:text-gray-300">{@subtitle}</p>
-      <% end %>
-    </div>
     """
   end
 

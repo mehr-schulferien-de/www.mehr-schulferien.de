@@ -353,141 +353,87 @@
           <:content>
             <.heading level={2} class="text-xl mb-4">Verfügbare Vordrucke</.heading>
             <div class="space-y-4">
-              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-start justify-between">
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0">
+              <% document_cards = [
+                %{
+                  title: "Entschuldigungsvordruck",
+                  description:
+                    "Vordruck zum Download für die Entschuldigung von Fehlzeiten nach Krankheit oder anderen Gründen",
+                  url_suffix: "entschuldigung",
+                  icon_class: "h-8 w-8 text-teal-600",
+                  icon_path:
+                    "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+                  button_class:
+                    "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                },
+                %{
+                  title: "Beurlaubungsvordruck",
+                  description:
+                    "Vordruck zum Download für den Antrag auf Beurlaubung vom Unterricht (vorab einzureichen)",
+                  url_suffix: "beurlaubung",
+                  icon_class: "h-8 w-8 text-blue-600",
+                  icon_path:
+                    "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+                  button_class:
+                    "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                },
+                %{
+                  title: "Sportbefreiungsvordruck",
+                  description:
+                    "Vordruck zum Download für den Antrag auf Befreiung vom Sportunterricht",
+                  url_suffix: "sportbefreiung",
+                  icon_class: "h-8 w-8 text-purple-600",
+                  icon_path: "M13 10V3L4 14h7v7l9-11h-7z",
+                  button_class:
+                    "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                }
+              ] %>
+              <%= for card <- document_cards do %>
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start">
+                      <div class="flex-shrink-0">
+                        <svg
+                          class={card.icon_class}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d={card.icon_path}
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-4">
+                        <.heading level={3} class="text-lg">{card.title}</.heading>
+                        <.text variant="muted" class="mt-1">
+                          {card.description}
+                        </.text>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <%= link to: "/briefe/#{@school.slug}/#{card.url_suffix}", class: card.button_class do %>
                       <svg
-                        class="h-8 w-8 text-teal-600"
+                        class="mr-2 h-4 w-4"
                         fill="none"
-                        viewBox="0 0 24 24"
                         stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                         />
                       </svg>
-                    </div>
-                    <div class="ml-4">
-                      <.heading level={3} class="text-lg">Entschuldigungsvordruck</.heading>
-                      <.text variant="muted" class="mt-1">
-                        Vordruck zum Download für die Entschuldigung von Fehlzeiten nach Krankheit oder anderen Gründen
-                      </.text>
-                    </div>
+                      Vordruck erstellen
+                    <% end %>
                   </div>
                 </div>
-                <div class="mt-4">
-                  <%= link to: "/briefe/#{@school.slug}/entschuldigung", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" do %>
-                    <svg
-                      class="mr-2 h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      />
-                    </svg>
-                    Vordruck erstellen
-                  <% end %>
-                </div>
-              </div>
-              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-start justify-between">
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                      <svg
-                        class="h-8 w-8 text-blue-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                    <div class="ml-4">
-                      <.heading level={3} class="text-lg">Beurlaubungsvordruck</.heading>
-                      <.text variant="muted" class="mt-1">
-                        Vordruck zum Download für den Antrag auf Beurlaubung vom Unterricht (vorab einzureichen)
-                      </.text>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4">
-                  <%= link to: "/briefe/#{@school.slug}/beurlaubung", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
-                    <svg
-                      class="mr-2 h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      />
-                    </svg>
-                    Vordruck erstellen
-                  <% end %>
-                </div>
-              </div>
-              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-start justify-between">
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                      <svg
-                        class="h-8 w-8 text-purple-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                      </svg>
-                    </div>
-                    <div class="ml-4">
-                      <.heading level={3} class="text-lg">Sportbefreiungsvordruck</.heading>
-                      <.text variant="muted" class="mt-1">
-                        Vordruck zum Download für den Antrag auf Befreiung vom Sportunterricht
-                      </.text>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4">
-                  <%= link to: "/briefe/#{@school.slug}/sportbefreiung", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" do %>
-                    <svg
-                      class="mr-2 h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      />
-                    </svg>
-                    Vordruck erstellen
-                  <% end %>
-                </div>
-              </div>
+              <% end %>
             </div>
           </:content>
         </.card>

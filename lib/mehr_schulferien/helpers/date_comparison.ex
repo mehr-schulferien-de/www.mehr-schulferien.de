@@ -112,18 +112,4 @@ defmodule MehrSchulferien.Helpers.DateComparison do
   def filter_before(list, date, date_fn) do
     Enum.filter(list, fn item -> is_before?(date_fn.(item), date) end)
   end
-
-  @doc """
-  Filters a list of items on or after a given date using a date extractor function.
-  """
-  def filter_on_or_after(list, date, date_fn) do
-    Enum.filter(list, fn item -> is_on_or_after?(date_fn.(item), date) end)
-  end
-
-  @doc """
-  Filters a list of items on or before a given date using a date extractor function.
-  """
-  def filter_on_or_before(list, date, date_fn) do
-    Enum.filter(list, fn item -> is_on_or_before?(date_fn.(item), date) end)
-  end
 end

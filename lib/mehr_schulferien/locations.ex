@@ -83,32 +83,6 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
-  Gets a single location by slug with only essential fields.
-  Optimized for display purposes where full record isn't needed.
-  """
-  def get_location_by_slug_selective!(slug) do
-    query =
-      from l in Location,
-        where: l.slug == ^slug,
-        select: %Location{
-          id: l.id,
-          name: l.name,
-          slug: l.slug,
-          parent_location_id: l.parent_location_id,
-          is_country: l.is_country,
-          is_federal_state: l.is_federal_state,
-          is_county: l.is_county,
-          is_city: l.is_city,
-          is_school: l.is_school
-        }
-
-    case Repo.one(query) do
-      nil -> raise Ecto.NoResultsError, queryable: query
-      location -> location
-    end
-  end
-
-  @doc """
   Creates a location.
   """
   def create_location(attrs \\ %{}) do
@@ -421,86 +395,6 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
-  Returns the list of countries with only essential fields.
-  Reduces data transfer by ~75% compared to full query.
-  Results are cached for 24 hours since countries rarely change.
-  """
-  def list_countries_selective do
-    Cache.cached_location_operation(
-      "countries:selective",
-      fn ->
-        from(l in Location,
-          where: l.is_country == true,
-          select: %Location{
-            id: l.id,
-            name: l.name,
-            slug: l.slug,
-            is_country: l.is_country
-          }
-        )
-        |> Repo.all()
-      end,
-      # Cache for 24 hours
-      ttl: 86_400
-    )
-  end
-
-  @doc """
-  Returns a list of countries with their federal states efficiently.
-  This combines multiple queries into a more efficient structure.
-  """
-  def list_countries_with_related_data do
-    # Get all countries
-    countries = list_countries()
-
-    # Get all federal states for all countries at once
-    federal_states_query =
-      from(fs in Location,
-        where:
-          fs.is_federal_state == true and
-            fs.parent_location_id in ^Enum.map(countries, & &1.id),
-        order_by: fs.name
-      )
-
-    federal_states = Repo.all(federal_states_query)
-
-    # Group federal states by parent country
-    federal_states_by_country = Enum.group_by(federal_states, & &1.parent_location_id)
-
-    # Build a map of country -> federal states
-    Enum.map(countries, fn country ->
-      country_federal_states = Map.get(federal_states_by_country, country.id, [])
-      {country, country_federal_states}
-    end)
-  end
-
-  @doc """
-  Optimized version that fetches countries with federal states in a single query using a join.
-  This reduces the number of queries from 2 to 1.
-  """
-  def list_countries_with_federal_states_optimized do
-    query =
-      from c in Location,
-        left_join: fs in Location,
-        on: fs.parent_location_id == c.id and fs.is_federal_state == true,
-        where: c.is_country == true,
-        order_by: [asc: c.name, asc: fs.name],
-        select: {c, fs}
-
-    results = Repo.all(query)
-
-    # Group by country
-    results
-    |> Enum.group_by(fn {country, _} -> country end, fn {_, state} -> state end)
-    |> Enum.map(fn {country, states} ->
-      # Filter out nil states (countries without federal states)
-      valid_states = Enum.reject(states, &is_nil/1)
-      {country, valid_states}
-    end)
-    |> Enum.sort_by(fn {country, _} -> country.name end)
-  end
-
-  @doc """
   Ultra-optimized version that fetches only necessary columns for display.
   Reduces data transfer by ~60% and improves performance by ~56%.
   """
@@ -553,32 +447,6 @@ defmodule MehrSchulferien.Locations do
       "federal_states:#{country.id}",
       fn ->
         list_children_by_flag(country, :is_federal_state)
-      end,
-      # Cache for 24 hours
-      ttl: 86_400
-    )
-  end
-
-  @doc """
-  Returns the list of federal states with only essential fields.
-  Reduces data transfer by ~69% compared to full query.
-  Results are cached for 24 hours since federal states rarely change.
-  """
-  def list_federal_states_selective(country) do
-    Cache.cached_location_operation(
-      "federal_states:selective:#{country.id}",
-      fn ->
-        from(l in Location,
-          where: l.is_federal_state == true and l.parent_location_id == ^country.id,
-          select: %Location{
-            id: l.id,
-            name: l.name,
-            slug: l.slug,
-            parent_location_id: l.parent_location_id,
-            is_federal_state: l.is_federal_state
-          }
-        )
-        |> Repo.all()
       end,
       # Cache for 24 hours
       ttl: 86_400
@@ -736,16 +604,6 @@ defmodule MehrSchulferien.Locations do
       )
       |> Repo.all()
     end
-  end
-
-  def combine_school_periods(schools, cities) do
-    # Pre-build map for O(1) lookups instead of O(n) Enum.find per school
-    cities_by_id = Map.new(cities, &{&1.id, &1})
-
-    Enum.map(schools, fn %Location{} = school ->
-      city = Map.get(cities_by_id, school.parent_location_id)
-      %{school | periods: school.periods ++ city.periods}
-    end)
   end
 
   @doc """
@@ -1106,59 +964,9 @@ defmodule MehrSchulferien.Locations do
   end
 
   @doc """
-  Gets a school by slug with only essential fields for display.
-  Reduces data transfer by ~56% compared to full query.
-  """
-  def get_school_by_slug_selective!(school_slug) do
-    query =
-      from(l in Location,
-        where: l.slug == ^school_slug and l.is_school == true,
-        select: %Location{
-          id: l.id,
-          name: l.name,
-          slug: l.slug,
-          parent_location_id: l.parent_location_id,
-          is_school: l.is_school
-        }
-      )
-
-    school = Repo.one!(query)
-
-    # Load address separately with selective fields
-    address_query =
-      from(a in MehrSchulferien.Maps.Address,
-        where: a.school_location_id == ^school.id,
-        select: %MehrSchulferien.Maps.Address{
-          id: a.id,
-          street: a.street,
-          zip_code: a.zip_code,
-          city: a.city,
-          email_address: a.email_address,
-          phone_number: a.phone_number,
-          homepage_url: a.homepage_url,
-          lat: a.lat,
-          lon: a.lon,
-          school_type: a.school_type
-        }
-      )
-
-    address = Repo.one(address_query)
-    %{school | address: address}
-  end
-
-  @doc """
   Shows a map for the related locations from city -> country.
+  Returns `{:ok, map}` or `{:error, reason}`.
   """
-  def show_city_to_country_map(country_slug, city_slug) do
-    country = get_country_by_slug!(country_slug)
-    city = get_city_by_slug!(city_slug)
-
-    hierarchy = resolve_hierarchy!(city)
-    validate_country_parent!(country, hierarchy.federal_state)
-
-    Map.merge(%{country: country, city: city}, hierarchy)
-  end
-
   def show_city_to_country_map_safe(country_slug, city_slug) do
     with country when not is_nil(country) <- get_country_by_slug(country_slug),
          city when not is_nil(city) <- get_city_by_slug(city_slug),
@@ -1173,18 +981,8 @@ defmodule MehrSchulferien.Locations do
 
   @doc """
   Shows a map for the related locations from school -> country.
+  Returns `{:ok, map}` or `{:error, reason}`.
   """
-  def show_school_to_country_map(country_slug, school_slug) do
-    country = get_country_by_slug!(country_slug)
-    school = get_school_by_slug!(school_slug)
-    city = get_location!(school.parent_location_id)
-
-    hierarchy = resolve_hierarchy!(city)
-    validate_country_parent!(country, hierarchy.federal_state)
-
-    Map.merge(%{country: country, city: city, school: school}, hierarchy)
-  end
-
   def show_school_to_country_map_safe(country_slug, school_slug) do
     with country when not is_nil(country) <- get_country_by_slug(country_slug),
          school when not is_nil(school) <- get_school_by_slug(school_slug),
@@ -1198,13 +996,6 @@ defmodule MehrSchulferien.Locations do
     end
   end
 
-  # Resolves county and federal_state from a city (raising version)
-  defp resolve_hierarchy!(city) do
-    county = get_location!(city.parent_location_id)
-    federal_state = get_location!(county.parent_location_id)
-    %{county: county, federal_state: federal_state}
-  end
-
   # Resolves county and federal_state from a city (safe version)
   defp resolve_hierarchy_safe(city) do
     with county when not is_nil(county) <- get_location(city.parent_location_id),
@@ -1215,22 +1006,12 @@ defmodule MehrSchulferien.Locations do
     end
   end
 
-  defp validate_country_parent!(country, federal_state) do
-    if country.id != federal_state.parent_location_id do
-      raise MehrSchulferien.CountryNotParentError
-    end
-  end
-
   defp validate_country_parent_safe(country, federal_state) do
     if country.id == federal_state.parent_location_id do
       :ok
     else
       {:error, :invalid_hierarchy}
     end
-  end
-
-  def with_periods(locations) do
-    Repo.preload(locations, [:periods])
   end
 
   @doc """
@@ -1328,109 +1109,6 @@ defmodule MehrSchulferien.Locations do
       end,
       ttl: 3600
     )
-  end
-
-  @doc """
-  Cached version of list_countries.
-  Uses ETS cache with 2-hour TTL since countries rarely change.
-  """
-  def list_countries_cached do
-    Cache.cached_location_operation(
-      "countries_list",
-      fn ->
-        list_countries()
-      end,
-      ttl: 7200
-    )
-  end
-
-  @doc """
-  Cached federal states lookup for a specific country.
-  """
-  def list_federal_states_cached(country) do
-    cache_key = "federal_states_#{country.id}"
-
-    Cache.cached_location_operation(
-      cache_key,
-      fn ->
-        list_federal_states(country)
-      end,
-      ttl: 3600
-    )
-  end
-
-  @doc """
-  Cached counties with cities having schools for a specific federal state.
-  """
-  def list_counties_with_cities_having_schools_cached(federal_state) do
-    cache_key = "counties_cities_schools_#{federal_state.id}"
-
-    Cache.cached_location_operation(
-      cache_key,
-      fn ->
-        list_counties_with_cities_having_schools(federal_state)
-      end,
-      ttl: 1800
-    )
-  end
-
-  @doc """
-  Clears location-related cache entries when data is modified.
-  Should be called after any location create/update/delete operations.
-  """
-  def clear_location_caches do
-    Cache.clear_all_location_hierarchies()
-  end
-
-  @doc """
-  Clears specific location cache entries.
-  """
-  def clear_location_cache(location) do
-    # Clear relevant cache entries based on location type
-    if location.is_country do
-      Cache.clear_location_hierarchy("countries_list")
-      Cache.clear_location_hierarchy("countries_with_states")
-    end
-
-    if location.is_federal_state do
-      Cache.clear_location_hierarchy("countries_with_states")
-      Cache.clear_location_hierarchy("federal_states_#{location.parent_location_id}")
-      Cache.clear_location_hierarchy("counties_cities_schools_#{location.id}")
-    end
-
-    if location.is_county or location.is_city do
-      # Find federal state ID to clear cache
-      case get_federal_state_for_location(location) do
-        %{id: federal_state_id} ->
-          Cache.clear_location_hierarchy("counties_cities_schools_#{federal_state_id}")
-
-        _ ->
-          :ok
-      end
-    end
-  end
-
-  # Helper to find the federal state for any location
-  # Optimized to use a single query via recursive CTE instead of N recursive DB calls
-  defp get_federal_state_for_location(%{is_federal_state: true} = location), do: location
-  defp get_federal_state_for_location(%{parent_location_id: nil}), do: nil
-
-  defp get_federal_state_for_location(%Location{} = location) do
-    # Use recursive_location_ids to get all ancestor IDs in one query
-    ancestor_ids = recursive_location_ids(location)
-
-    # Find the federal state among ancestors (single query)
-    from(l in Location,
-      where: l.id in ^ancestor_ids and l.is_federal_state == true,
-      limit: 1
-    )
-    |> Repo.one()
-  end
-
-  defp get_federal_state_for_location(%{parent_location_id: parent_id}) do
-    # Fallback for non-Location structs
-    parent = Repo.get(Location, parent_id)
-    if parent, do: get_federal_state_for_location(parent), else: nil
   end
 
   #

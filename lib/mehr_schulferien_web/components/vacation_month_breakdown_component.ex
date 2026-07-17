@@ -54,11 +54,12 @@ defmodule MehrSchulferienWeb.VacationMonthBreakdownComponent do
   end
 
   defp group_by_month(states_data) do
+    months = MehrSchulferien.Calendars.DateHelpers.get_months_map()
     valid_states = Enum.filter(states_data, &(&1.period != nil))
 
     valid_states
     |> Enum.group_by(fn state_info ->
-      Calendar.strftime(state_info.period.starts_on, "%B")
+      months[state_info.period.starts_on.month]
     end)
     |> Enum.sort_by(
       fn {_month_name, states} ->

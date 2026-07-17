@@ -1,16 +1,13 @@
 defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
   use MehrSchulferienWeb.ConnCase
 
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
-
   import Phoenix.LiveViewTest
   import Swoosh.TestAssertions
 
   alias MehrSchulferien.{Locations, Repo}
   alias MehrSchulferien.Locations.Location
   alias MehrSchulferien.Maps.Address
+  alias MehrSchulferien.Wiki.PendingChanges
 
   describe "school deletion" do
     setup [:log_in_wiki_user]
@@ -133,11 +130,10 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
       assert Locations.get_school_by_slug!(school.slug)
     end
 
-    test "successfully deletes school with correct ZIP code", %{
+    test "queues deletion with correct ZIP code and deletes the school after approval", %{
       conn: conn,
       school: school,
-      address: address,
-      city: city
+      address: address
     } do
       {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
@@ -152,10 +148,30 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
                "deletion_reason" => "School closed permanently"
              })
 
-      # Should redirect
-      assert_redirected(view, ~p"/ferien/d/stadt/#{city.slug}")
+      # The delete request goes into the pending-changes queue
+      flash = assert_redirect(view, "/wiki")
 
-      # School should be deleted
+      assert flash["info"] ==
+               "Ihre Löschanfrage wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung umgesetzt."
+
+      # School still exists before approval
+      assert Locations.get_school_by_slug!(school.slug)
+
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "delete_school"
+      assert pending_change.original_record_id == school.id
+      assert pending_change.payload["school_name"] == school.name
+      assert pending_change.payload["deletion_reason"] == "School closed permanently"
+
+      # The review notification email was sent on submission
+      assert_email_sent(
+        subject: "Wiki-Änderung zur Prüfung: Schule löschen: #{school.name}",
+        to: {"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"}
+      )
+
+      # Approving the change deletes the school
+      {:ok, _result} = PendingChanges.approve_change!(pending_change)
+
       assert_raise Ecto.NoResultsError, fn ->
         Locations.get_school_by_slug!(school.slug)
       end
@@ -166,18 +182,13 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
       assert deleted_school.name == school.name
       assert deleted_school.slug == school.slug
       assert deleted_school.deletion_reason == "School closed permanently"
-
-      # Wait for async email
-      Process.sleep(100)
-
-      # Check email was sent
-      assert_email_sent(
-        subject: "Schule gelöscht: #{school.name}",
-        to: {"Stefan Wintermeyer", "sw@wintermeyer-consulting.de"}
-      )
     end
 
-    test "includes deletion reason in email", %{conn: conn, school: school, address: address} do
+    test "includes deletion reason in the review notification email", %{
+      conn: conn,
+      school: school,
+      address: address
+    } do
       {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
       # Open delete modal and submit
@@ -190,10 +201,9 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
         "deletion_reason" => "Duplicate entry - merged with another school"
       })
 
-      # Wait for async email
-      Process.sleep(100)
+      assert_redirect(view, "/wiki")
 
-      # Check email contains deletion reason
+      # The notification email contains the deletion reason
       assert_email_sent(fn email ->
         assert email.html_body =~ "Löschgrund:"
         assert email.html_body =~ "Duplicate entry - merged with another school"
@@ -201,7 +211,7 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
       end)
     end
 
-    test "email contains all school and address data", %{
+    test "review notification email contains change details and approval links", %{
       conn: conn,
       school: school,
       address: address
@@ -218,32 +228,33 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
         "deletion_reason" => "Test"
       })
 
-      # Wait a bit for async email to be sent
-      Process.sleep(100)
+      assert_redirect(view, "/wiki")
 
-      # Check email contains all data
+      [pending_change] = PendingChanges.list_pending()
+
+      # Check the notification email describes the pending change
       assert_email_sent(fn email ->
-        # School data
-        assert email.html_body =~ school.name
-        assert email.html_body =~ school.slug
-        assert email.html_body =~ "ID:</strong> #{school.id}"
+        assert email.subject == "Wiki-Änderung zur Prüfung: Schule löschen: #{school.name}"
 
-        # Address data
-        assert email.html_body =~ address.street
-        assert email.html_body =~ address.zip_code
-        assert email.html_body =~ address.city
-        assert email.html_body =~ address.email_address
-        assert email.html_body =~ address.phone_number
-        assert email.html_body =~ address.homepage_url
+        # Change details
+        assert email.html_body =~ "Wiki-Änderung zur Prüfung"
+        assert email.html_body =~ "Änderungstyp:</strong> Schule löschen"
+        assert email.html_body =~ "Schulname:</strong> #{school.name}"
+        assert email.html_body =~ "Schul-ID:</strong> #{school.id}"
+        assert email.html_body =~ "/wiki/schools/#{school.slug}"
+        assert email.html_body =~ "Löschgrund:</strong> Test"
 
-        # SQL recovery commands
-        assert email.html_body =~ "SQL für Wiederherstellung"
-        assert email.html_body =~ "INSERT INTO locations"
-        assert email.html_body =~ "deleted_schools WHERE original_id = #{school.id}"
+        # Approve/reject magic links
+        assert email.html_body =~ "/wiki/approve/#{pending_change.approval_token}"
+        assert email.html_body =~ "/wiki/reject/#{pending_change.rejection_token}"
+
+        # Text part mirrors the details
+        assert email.text_body =~ "Änderungstyp: Schule löschen"
+        assert email.text_body =~ "Löschgrund: Test"
       end)
     end
 
-    test "deletes school without address", %{conn: conn} do
+    test "queues deletion for school without address and deletes it after approval", %{conn: conn} do
       # Create school without address
       {:ok, school} =
         %Location{
@@ -266,21 +277,28 @@ defmodule MehrSchulferienWeb.WikiSchoolDeleteTest do
                "deletion_reason" => "No address test"
              })
 
-      # Should redirect
-      assert_redirected(view, ~p"/ferien/d")
+      # The delete request is queued for review
+      flash = assert_redirect(view, "/wiki")
 
-      # School should be deleted
+      assert flash["info"] ==
+               "Ihre Löschanfrage wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung umgesetzt."
+
+      # School still exists until the change is approved
+      assert Locations.get_school_by_slug!(school.slug)
+
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "delete_school"
+      assert pending_change.payload["deletion_reason"] == "No address test"
+
+      # The review notification email was sent on submission
+      assert_email_sent(subject: "Wiki-Änderung zur Prüfung: Schule löschen: #{school.name}")
+
+      # Approving the change deletes the school
+      {:ok, _result} = PendingChanges.approve_change!(pending_change)
+
       assert_raise Ecto.NoResultsError, fn ->
         Locations.get_school_by_slug!(school.slug)
       end
-
-      # Wait for async email
-      Process.sleep(100)
-
-      # Check email was sent
-      assert_email_sent(fn email ->
-        assert email.html_body =~ "Keine Adressdaten vorhanden"
-      end)
     end
   end
 end

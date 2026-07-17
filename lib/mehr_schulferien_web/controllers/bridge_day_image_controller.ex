@@ -2,7 +2,7 @@ defmodule MehrSchulferienWeb.BridgeDayImageController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{ImageCache, ImageConverterResvg, Locations, Periods}
-  alias MehrSchulferienWeb.BridgeDayView
+  alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.Helpers.HandwrittenBridgeDayImage
 
   def handwritten_svg(conn, %{
@@ -10,24 +10,8 @@ defmodule MehrSchulferienWeb.BridgeDayImageController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
-    case validate_and_load_data(country_slug, federal_state_slug, year) do
-      {:ok, data} ->
-        %{
-          federal_state: federal_state,
-          year_int: year_int,
-          bridge_day_map: bridge_day_map,
-          public_periods: public_periods
-        } = data
-
-        # Generate SVG showing normal bridge days
-        svg_content =
-          HandwrittenBridgeDayImage.generate_svg_for_social(
-            bridge_day_map,
-            federal_state.name,
-            year_int,
-            public_periods
-          )
-
+    case build_svg(country_slug, federal_state_slug, year) do
+      {:ok, svg_content} ->
         conn
         |> put_resp_content_type("image/svg+xml")
         |> put_resp_header("cache-control", "public, max-age=86400")
@@ -49,7 +33,7 @@ defmodule MehrSchulferienWeb.BridgeDayImageController do
     case ImageCache.get_or_generate_webp(
            cache_key_parts: ["bridge_day", country_slug, federal_state_slug, year],
            generator_fn: fn ->
-             generate_bridge_day_webp(country_slug, federal_state_slug, year, conn)
+             generate_bridge_day_webp(country_slug, federal_state_slug, year)
            end
          ) do
       {:ok, webp_content} ->
@@ -62,8 +46,28 @@ defmodule MehrSchulferienWeb.BridgeDayImageController do
     end
   end
 
+  # Validates the parameters, loads the bridge day data and builds the
+  # social media SVG. Returns {:ok, svg_content} or {:error, reason}.
+  defp build_svg(country_slug, federal_state_slug, year) do
+    case validate_and_load_data(country_slug, federal_state_slug, year) do
+      {:ok, data} ->
+        svg_content =
+          HandwrittenBridgeDayImage.generate_svg_for_social(
+            data.bridge_day_map,
+            data.federal_state.name,
+            data.year_int,
+            data.public_periods
+          )
+
+        {:ok, svg_content}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
   defp validate_and_load_data(country_slug, federal_state_slug, year_str) do
-    with {:ok, year_int} <- parse_year(year_str),
+    with {:ok, year_int} <- CH.check_year(year_str),
          country <- Locations.get_country_by_slug!(country_slug),
          federal_state <- Locations.get_federal_state_by_slug!(federal_state_slug, country),
          true <- has_bridge_days?([country.id, federal_state.id], year_int),
@@ -81,7 +85,7 @@ defmodule MehrSchulferienWeb.BridgeDayImageController do
             bridge_days
             |> Enum.filter(fn bridge_day ->
               all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
-              BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+              MehrSchulferien.BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
             end)
 
           {num, filtered_bridge_days}
@@ -102,22 +106,6 @@ defmodule MehrSchulferienWeb.BridgeDayImageController do
     end
   end
 
-  defp parse_year(year_str) do
-    case Integer.parse(year_str) do
-      {year, ""} ->
-        current_year = Date.utc_today().year
-
-        if year in (current_year - 5)..(current_year + 3) do
-          {:ok, year}
-        else
-          {:error, :invalid_year}
-        end
-
-      _ ->
-        {:error, :invalid_year}
-    end
-  end
-
   defp has_bridge_days?(location_ids, year) do
     MehrSchulferienWeb.BridgeDayController.has_bridge_days?(location_ids, year)
   end
@@ -129,25 +117,9 @@ defmodule MehrSchulferienWeb.BridgeDayImageController do
     |> send_resp(200, webp_content)
   end
 
-  defp generate_bridge_day_webp(country_slug, federal_state_slug, year, _conn) do
-    case validate_and_load_data(country_slug, federal_state_slug, year) do
-      {:ok, data} ->
-        %{
-          federal_state: federal_state,
-          year_int: year_int,
-          bridge_day_map: bridge_day_map,
-          public_periods: public_periods
-        } = data
-
-        # Generate SVG
-        svg_content =
-          HandwrittenBridgeDayImage.generate_svg_for_social(
-            bridge_day_map,
-            federal_state.name,
-            year_int,
-            public_periods
-          )
-
+  defp generate_bridge_day_webp(country_slug, federal_state_slug, year) do
+    case build_svg(country_slug, federal_state_slug, year) do
+      {:ok, svg_content} ->
         # Convert to WebP
         ImageConverterResvg.svg_content_to_webp_binary(svg_content)
 

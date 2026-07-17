@@ -12,12 +12,12 @@ defmodule MehrSchulferienWeb.PageHTML do
 
   # Import shared components for unified design
   import MehrSchulferienWeb.Shared.TypographyComponent
-  import MehrSchulferienWeb.Shared.GridComponent
   import MehrSchulferienWeb.Shared.CardComponent
-  import MehrSchulferienWeb.Shared.ButtonComponent
+  import MehrSchulferienWeb.Shared.CodeBlockComponent
+
+  alias MehrSchulferienWeb.Shared.DesignTokens
 
   alias MehrSchulferien.BridgeDays
-  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.{Locations, PeriodDisplay}
 
   def count_schools do

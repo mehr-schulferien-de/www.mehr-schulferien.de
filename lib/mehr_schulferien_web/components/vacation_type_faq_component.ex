@@ -7,6 +7,8 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
 
   import MehrSchulferienWeb.Shared.TypographyComponent
 
+  alias MehrSchulferien.Calendars.DateHelpers
+
   attr :vacation_type, :string, required: true
   attr :vacation_config, :map, required: true
   attr :current_year, :integer, required: true
@@ -132,8 +134,8 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
         earliest = List.first(valid_periods)
         latest = Enum.max_by(valid_periods, fn %{period: p} -> p.starts_on end)
 
-        earliest_date = Calendar.strftime(earliest.period.starts_on, "%-d. %B")
-        latest_date = Calendar.strftime(latest.period.starts_on, "%-d. %B")
+        earliest_date = DateHelpers.german_date(earliest.period.starts_on)
+        latest_date = DateHelpers.german_date(latest.period.starts_on)
 
         "Die #{vacation_name} #{year} beginnen je nach Bundesland zwischen dem #{earliest_date} (#{earliest.state.name}) und dem #{latest_date} (#{latest.state.name})."
     end
@@ -146,7 +148,7 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
 
       valid_periods ->
         earliest = List.first(valid_periods)
-        date = Calendar.strftime(earliest.period.starts_on, "%-d. %B %Y")
+        date = DateHelpers.german_date(earliest.period.starts_on, :with_year)
 
         "#{earliest.state.name} hat #{year} die frühesten #{vacation_name}. Sie beginnen am #{date}."
     end
@@ -159,7 +161,7 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
 
       valid_periods ->
         latest = Enum.max_by(valid_periods, fn %{period: p} -> p.starts_on end)
-        date = Calendar.strftime(latest.period.starts_on, "%-d. %B %Y")
+        date = DateHelpers.german_date(latest.period.starts_on, :with_year)
 
         "#{latest.state.name} hat #{year} die spätesten #{vacation_name}. Sie beginnen am #{date}."
     end

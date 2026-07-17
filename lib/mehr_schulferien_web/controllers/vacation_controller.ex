@@ -1,10 +1,10 @@
 defmodule MehrSchulferienWeb.VacationController do
   use MehrSchulferienWeb, :controller
 
-  import Ecto.Query
+  alias MehrSchulferien.Calendars
   alias MehrSchulferien.Calendars.DateHelpers
-  alias MehrSchulferien.Calendars.{HolidayOrVacationType, VacationTypes}
-  alias MehrSchulferien.{Locations, Repo}
+  alias MehrSchulferien.Calendars.VacationTypes
+  alias MehrSchulferien.Locations
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
   alias MehrSchulferienWeb.ViewHelpers
 
@@ -18,8 +18,9 @@ defmodule MehrSchulferienWeb.VacationController do
 
     with {:ok, country} <- fetch_country(),
          {:ok, federal_state} <- fetch_federal_state(country, federal_state_slug),
-         {:ok, vacation_type_record} <- fetch_vacation_type(vacation_type_slug),
-         :ok <- validate_vacation_for_state(federal_state, vacation_type_slug) do
+         {:ok, vacation_type_record} <- fetch_vacation_type(vacation_slug),
+         :ok <-
+           validate_vacation_for_state(federal_state, vacation_type_slug, vacation_type_record) do
       render_vacation_page(conn, %{
         country: country,
         federal_state: federal_state,
@@ -52,30 +53,20 @@ defmodule MehrSchulferienWeb.VacationController do
   defp fetch_federal_state(country, federal_state_slug),
     do: CH.fetch_federal_state(federal_state_slug, country)
 
-  defp fetch_vacation_type(vacation_type_slug) do
-    case get_vacation_type_record(vacation_type_slug) do
+  defp fetch_vacation_type(vacation_slug) do
+    case Calendars.get_vacation_type_by_ferien_slug(vacation_slug) do
       nil -> {:error, :invalid_vacation_type, Locations.get_country_by_slug("d")}
       vacation_type_record -> {:ok, vacation_type_record}
     end
   end
 
-  defp validate_vacation_for_state(federal_state, vacation_type_slug) do
+  defp validate_vacation_for_state(federal_state, vacation_type_slug, vacation_type_record) do
     if VacationTypes.exists_for_state?(federal_state, vacation_type_slug) do
       :ok
     else
       country = Locations.get_country_by_slug("d")
-      vacation_type_record = get_vacation_type_record(vacation_type_slug)
       {:error, :vacation_not_in_state, country, federal_state, vacation_type_record}
     end
-  end
-
-  # Private helper functions
-
-  defp get_vacation_type_record(vacation_type_slug) do
-    Repo.one(
-      from hvt in HolidayOrVacationType,
-        where: hvt.slug == ^vacation_type_slug and hvt.default_is_school_vacation == true
-    )
   end
 
   defp redirect_to_federal_state(conn, message, country, federal_state_slug, year, flash_type) do

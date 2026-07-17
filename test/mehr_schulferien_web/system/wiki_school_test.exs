@@ -1,8 +1,6 @@
 defmodule MehrSchulferienWeb.WikiSchoolSystemTest do
   use MehrSchulferienWeb.ConnCase
 
-  @moduletag :skip
-
   import Phoenix.ConnTest
   import Phoenix.LiveViewTest
 

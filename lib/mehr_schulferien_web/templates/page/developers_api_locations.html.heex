@@ -24,7 +24,7 @@
         </.heading>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Standorttyp</th>
@@ -72,19 +72,21 @@
           Alle Bundesländer abrufen
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states</pre>
+        <.code_block content={~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states|} />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           Spezifisches Bundesland abrufen
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern|
+        } />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           Alle Städte abrufen
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/cities</pre>
+        <.code_block content={~s|GET https://www.mehr-schulferien.de/api/v2.1/cities|} />
 
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Optional: Filterung nach Bundesland möglich mit <code>?federal_state=bayern</code>
@@ -94,7 +96,7 @@
           Schulen abrufen
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/schools</pre>
+        <.code_block content={~s|GET https://www.mehr-schulferien.de/api/v2.1/schools|} />
 
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Optional: Filterung mit <code>?city=muenchen</code>
@@ -111,7 +113,7 @@
           Alle Standort-Endpunkte geben JSON im folgenden Format zurück:
         </p>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+        <.code_block content={~s|{
   "data": [
     {
       "id": 2,
@@ -130,7 +132,7 @@
   "meta": {
     "api_version": "2.1"
   }
-}| %></pre>
+}|} />
       </div>
 
       <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-6">

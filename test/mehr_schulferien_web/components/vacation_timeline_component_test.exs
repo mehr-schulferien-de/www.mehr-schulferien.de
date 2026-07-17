@@ -695,6 +695,37 @@ defmodule MehrSchulferienWeb.VacationTimelineComponentTest do
     assert html =~ "bg-green-600"
   end
 
+  test "omits the label for months with three or fewer visible days" do
+    # An 80-day window starting mid-July ends with a 2-day sliver of October.
+    # A label cannot fit into that sliver at any viewport width, so the header
+    # must stay empty (the full month name remains available as title attr).
+    start_date = ~D[2026-07-17]
+    days_to_show = create_days(start_date, 80)
+
+    html =
+      VacationTimelineComponent.render(%{
+        days_to_show: days_to_show,
+        months: get_test_months(),
+        all_periods: [],
+        days_count: 80,
+        months_with_days: [
+          {"Juli", 15, 2026, 7},
+          {"August", 31, 2026, 8},
+          {"September", 30, 2026, 9},
+          {"Oktober", 4, 2026, 10}
+        ]
+      })
+      |> Phoenix.HTML.Safe.to_iodata()
+      |> IO.iodata_to_binary()
+
+    # Wide months keep their full names
+    assert html =~ "August"
+    assert html =~ "September"
+    # The sliver month shows no (possibly clipped) label text, only the tooltip
+    assert html =~ ~s(title="Oktober")
+    refute html =~ ~r/>\s*O\.?\s*<\/th>/
+  end
+
   # Helper functions
   defp create_days(start_date, count) do
     Enum.map(0..(count - 1), fn i -> Date.add(start_date, i) end)

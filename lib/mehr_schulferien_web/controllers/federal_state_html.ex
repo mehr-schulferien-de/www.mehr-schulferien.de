@@ -26,6 +26,7 @@ defmodule MehrSchulferienWeb.FederalStateHTML do
   import MehrSchulferienWeb.FederalState.NoDataComponent
   import MehrSchulferienWeb.FederalState.PartialDataComponent
   import MehrSchulferienWeb.FederalStateComponents
+  import MehrSchulferienWeb.DeveloperSectionComponent
   import MehrSchulferienWeb.FaqComponent
   import MehrSchulferienWeb.FederalState.FaqSchemaComponent
   import MehrSchulferienWeb.FederalState.ItemListSchemaComponent

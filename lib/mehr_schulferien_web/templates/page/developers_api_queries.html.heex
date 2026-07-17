@@ -33,10 +33,20 @@
             Prüft, ob ein bestimmtes Datum ein gesetzlicher Feiertag ist.
           </p>
 
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|GET /api/v2.1/queries/is-public-holiday?location_slug=bayern&date=2025-12-25| %></pre>
+          <.code_block
+            class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+            content={
+              ~s|GET /api/v2.1/queries/is-public-holiday?location_slug=bayern&date=2025-12-25|
+            }
+          />
 
           <p class="mb-2 font-semibold">Curl-Beispiel:</p>
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|curl "https://www.mehr-schulferien.de/api/v2.1/queries/is-public-holiday?location_slug=bayern&date=2025-12-25"| %></pre>
+          <.code_block
+            class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+            content={
+              ~s|curl "https://www.mehr-schulferien.de/api/v2.1/queries/is-public-holiday?location_slug=bayern&date=2025-12-25"|
+            }
+          />
 
           <p class="mb-2 font-semibold">Query-Parameter:</p>
           <ul class="ml-5 list-disc space-y-2 mb-4">
@@ -50,7 +60,7 @@
           </ul>
 
           <p class="mb-2 font-semibold">Beispiel-Antwort:</p>
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+          <.code_block content={~s|{
   "data": {
     "date": "2025-12-25",
     "location": {
@@ -70,7 +80,7 @@
   "meta": {
     "api_version": "2.1"
   }
-}| %></pre>
+}|} />
         </div>
 
         <div class="mb-8">
@@ -82,10 +92,18 @@
             Prüft, ob ein bestimmtes Datum ein Schultag ist (kein Wochenende, kein Feiertag, keine Ferien).
           </p>
 
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|GET /api/v2.1/queries/is-school-day?location_slug=bayern&date=2025-09-15| %></pre>
+          <.code_block
+            class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+            content={~s|GET /api/v2.1/queries/is-school-day?location_slug=bayern&date=2025-09-15|}
+          />
 
           <p class="mb-2 font-semibold">Curl-Beispiel:</p>
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|curl "https://www.mehr-schulferien.de/api/v2.1/queries/is-school-day?location_slug=bayern&date=2025-09-15"| %></pre>
+          <.code_block
+            class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+            content={
+              ~s|curl "https://www.mehr-schulferien.de/api/v2.1/queries/is-school-day?location_slug=bayern&date=2025-09-15"|
+            }
+          />
 
           <p class="mb-2 font-semibold">Query-Parameter:</p>
           <ul class="ml-5 list-disc space-y-2 mb-4">
@@ -99,7 +117,7 @@
           </ul>
 
           <p class="mb-2 font-semibold">Beispiel-Antwort:</p>
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+          <.code_block content={~s|{
   "data": {
     "date": "2025-09-15",
     "location": {
@@ -113,7 +131,7 @@
   "meta": {
     "api_version": "2.1"
   }
-}| %></pre>
+}|} />
         </div>
 
         <div class="mb-8">
@@ -126,10 +144,18 @@
             und eine menschenlesbare Erklärung.
           </p>
 
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|GET /api/v2.1/queries/check-date?location_slug=bayern&date=2025-12-25| %></pre>
+          <.code_block
+            class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+            content={~s|GET /api/v2.1/queries/check-date?location_slug=bayern&date=2025-12-25|}
+          />
 
           <p class="mb-2 font-semibold">Curl-Beispiel:</p>
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"><%= ~s|curl "https://www.mehr-schulferien.de/api/v2.1/queries/check-date?location_slug=bayern&date=2025-12-25"| %></pre>
+          <.code_block
+            class="bg-gray-100 dark:bg-gray-800 p-4 mb-4 rounded overflow-x-auto text-sm"
+            content={
+              ~s|curl "https://www.mehr-schulferien.de/api/v2.1/queries/check-date?location_slug=bayern&date=2025-12-25"|
+            }
+          />
 
           <p class="mb-2 font-semibold">Query-Parameter:</p>
           <ul class="ml-5 list-disc space-y-2 mb-4">
@@ -143,7 +169,7 @@
           </ul>
 
           <p class="mb-2 font-semibold">Beispiel-Antwort:</p>
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+          <.code_block content={~s|{
   "data": {
     "date": "2025-12-25",
     "location": {
@@ -175,7 +201,7 @@
   "meta": {
     "api_version": "2.1"
   }
-}| %></pre>
+}|} />
         </div>
       </div>
 
@@ -186,12 +212,18 @@
 
         <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-4">
           <p class="font-semibold mb-2">Ist heute Feiertag in Hessen?</p>
-          <pre class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"><%= ~s|GET /api/v2.1/queries/is-public-holiday?location_slug=hessen| %></pre>
+          <.code_block
+            class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"
+            content={~s|GET /api/v2.1/queries/is-public-holiday?location_slug=hessen|}
+          />
         </div>
 
         <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-4">
           <p class="font-semibold mb-2">Ist morgen schulfrei in Berlin?</p>
-          <pre class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"><%= ~s|GET /api/v2.1/queries/check-date?location_slug=berlin&date=<morgen>| %></pre>
+          <.code_block
+            class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"
+            content={~s|GET /api/v2.1/queries/check-date?location_slug=berlin&date=<morgen>|}
+          />
           <p class="text-sm mt-2 text-blue-700 dark:text-blue-300">
             Hinweis: <code>&lt;morgen&gt;</code> durch tatsächliches Datum ersetzen
           </p>
@@ -201,7 +233,12 @@
           <p class="font-semibold mb-2">
             Umfassender Status für eine spezifische Schule an einem bestimmten Datum
           </p>
-          <pre class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"><%= ~s|GET /api/v2.1/queries/check-date?location_slug=85354-gymnasium-freising&date=2025-07-28| %></pre>
+          <.code_block
+            class="bg-white dark:bg-gray-900 p-2 rounded text-sm overflow-x-auto"
+            content={
+              ~s|GET /api/v2.1/queries/check-date?location_slug=85354-gymnasium-freising&date=2025-07-28|
+            }
+          />
         </div>
       </div>
 
@@ -250,7 +287,7 @@
         </p>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Status-Code</th>
@@ -275,7 +312,7 @@
         </div>
 
         <p class="mb-2 font-semibold">Beispiel-Fehlermeldung:</p>
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+        <.code_block content={~s|{
   "errors": [
     {
       "status": "404",
@@ -283,7 +320,7 @@
       "detail": "Location not found"
     }
   ]
-}| %></pre>
+}|} />
       </div>
 
       <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 mb-6">

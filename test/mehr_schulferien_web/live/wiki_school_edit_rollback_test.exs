@@ -1,16 +1,13 @@
 defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
   use MehrSchulferienWeb.ConnCase
 
-  # WIKI MAINTENANCE MODE: Tests skipped while wiki is disabled
-  # To re-enable: remove this line and uncomment wiki routes in router.ex
-  @moduletag :skip
-
   import Phoenix.LiveViewTest
   import MehrSchulferien.Factory
 
   alias MehrSchulferien.Locations
+  alias MehrSchulferien.Wiki.PendingChanges
 
-  describe "simple rollback functionality" do
+  describe "school edit approval workflow and version timeline" do
     setup [:log_in_wiki_user]
 
     setup do
@@ -52,165 +49,166 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
       assert html =~ "Noch keine Änderungen vorhanden"
     end
 
-    test "creates version and shows in timeline after single change", %{
+    test "queues a change, applies it on approval and shows the version in the timeline", %{
       conn: conn,
       school: school
     } do
       {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
-      # Make a change to school name
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "Updated School Name",
-               "address" => %{
-                 "street" => school.address.street,
-                 "zip_code" => school.address.zip_code,
-                 "city" => school.address.city
-               }
-             })
-             |> render_submit()
+      # Make a change to school name - it gets queued, not applied
+      view
+      |> form("form[phx-submit=\"update_school\"]", %{
+        "name" => "Updated School Name",
+        "address" => %{
+          "street" => school.address.street,
+          "zip_code" => school.address.zip_code,
+          "city" => school.address.city
+        }
+      })
+      |> render_submit()
 
-      # Refresh the page to see the version
+      flash = assert_redirect(view, "/wiki")
+
+      assert flash["info"] ==
+               "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+
+      # Nothing changed yet and no version was recorded
+      assert Locations.get_school_by_slug!(school.slug).name == "Test School"
+
       {:ok, _view, html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
+      assert html =~ "Noch keine Änderungen vorhanden"
 
-      # Check timeline shows the change - versions are now stored properly
+      # Approve the queued change
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "update_school"
+      assert pending_change.original_record_id == school.id
+      assert pending_change.payload["school_name"] == "Updated School Name"
+
+      {:ok, %{school: updated_school}} = PendingChanges.approve_change!(pending_change)
+      assert updated_school.name == "Updated School Name"
+
+      # Timeline now shows the change
+      {:ok, _view, html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
+      assert html =~ "geändert"
+      refute html =~ "Noch keine Änderungen vorhanden"
+    end
+
+    test "multiple approved changes appear in the timeline", %{conn: conn, school: school} do
+      # First change - update school name
+      submit_and_approve_edit(conn, school.slug, "First Update", %{
+        "street" => school.address.street,
+        "zip_code" => school.address.zip_code,
+        "city" => school.address.city
+      })
+
+      # Second change - update street
+      submit_and_approve_edit(conn, school.slug, "First Update", %{
+        "street" => "New Street 123",
+        "zip_code" => school.address.zip_code,
+        "city" => school.address.city
+      })
+
+      # Third change - update multiple fields
+      %{school: final_school} =
+        submit_and_approve_edit(conn, school.slug, "Final Name", %{
+          "street" => "New Street 123",
+          "zip_code" => "20000",
+          "city" => "New City",
+          "phone_number" => "+49 987 654321"
+        })
+
+      assert final_school.name == "Final Name"
+      assert final_school.address.street == "New Street 123"
+      assert final_school.address.zip_code == "20000"
+
+      # Timeline shows the changes
+      {:ok, _view, html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
       assert html =~ "Änderungen"
       assert html =~ "geändert"
       refute html =~ "Noch keine Änderungen vorhanden"
     end
 
-    test "creates multiple versions and shows all in timeline", %{conn: conn, school: school} do
-      {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
-
-      # First change - update school name
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "First Update",
-               "address" => %{
-                 "street" => school.address.street,
-                 "zip_code" => school.address.zip_code,
-                 "city" => school.address.city
-               }
-             })
-             |> render_submit()
-
-      # Second change - update street
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "First Update",
-               "address" => %{
-                 "street" => "New Street 123",
-                 "zip_code" => school.address.zip_code,
-                 "city" => school.address.city
-               }
-             })
-             |> render_submit()
-
-      # Third change - update multiple fields
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "Final Name",
-               "address" => %{
-                 "street" => "New Street 123",
-                 "zip_code" => "20000",
-                 "city" => "New City",
-                 "phone_number" => "+49 987 654321"
-               }
-             })
-             |> render_submit()
-
-      # Refresh the page
-      {:ok, _view, html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
-
-      # Check timeline shows changes
-      assert html =~ "Änderungen"
-      # Should see different change descriptions
-      assert html =~ "geändert"
-    end
-
-    test "shows rollback preview modal with before/after comparison", %{
+    test "does not offer rollback for approved versions without snapshot", %{
       conn: conn,
       school: school
     } do
-      {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
+      # Queue and approve a change so a version exists
+      submit_and_approve_edit(conn, school.slug, "Changed School", %{
+        "street" => "Changed Street",
+        "zip_code" => "99999",
+        "city" => "Changed City"
+      })
 
-      # Make a change first
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "Changed School",
-               "address" => %{
-                 "street" => "Changed Street",
-                 "zip_code" => "99999",
-                 "city" => "Changed City"
-               }
-             })
-             |> render_submit()
+      {:ok, view, html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
-      # Refresh to get the version with snapshot
-      {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
+      # The version is in the timeline, but versions created via the approval
+      # workflow carry no snapshot, so no restore button is offered
+      assert html =~ "geändert"
+      refute html =~ "Wiederherstellen"
 
-      # Click rollback button (if it exists - need to check snapshot is stored)
-      # This test may need adjustment based on how snapshots are stored
-      html = render(view)
-
-      if html =~ "Wiederherstellen" do
-        # Find and click the first rollback button
-        view
-        |> element("button", "Wiederherstellen")
-        |> render_click()
-
-        # Check modal appears with comparison
-        html = render(view)
-        assert html =~ "Version wiederherstellen"
-        assert html =~ "Möchten Sie zu dieser Version zurückkehren?"
-        assert html =~ "Aktueller Zustand"
-        assert html =~ "Nach Wiederherstellung"
-      end
-    end
-
-    test "successfully rolls back to previous version", %{conn: conn, school: school} do
-      {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
-
-      # Store initial state
-      _initial_name = school.name
-      _initial_street = school.address.street
-
-      # Make first change
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "First Change",
-               "address" => %{
-                 "street" => "First Street",
-                 "zip_code" => school.address.zip_code,
-                 "city" => school.address.city
-               }
-             })
-             |> render_submit()
-
-      # Make second change
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "Second Change",
-               "address" => %{
-                 "street" => "Second Street",
-                 "zip_code" => "22222",
-                 "city" => "Second City"
-               }
-             })
-             |> render_submit()
-
-      # Verify current state
+      # Even triggering the rollback flow directly is refused without a snapshot
       updated_school = Locations.get_school_by_slug!(school.slug)
-      assert updated_school.name == "Second Change"
-      assert updated_school.address.street == "Second Street"
+      [version | _] = PaperTrail.get_versions(updated_school)
 
-      # Now we would test rollback, but this requires snapshot functionality to be working
-      # This is a placeholder for the actual rollback test
+      render_click(view, "show_rollback_preview", %{"version_id" => to_string(version.id)})
+
+      html = render(view)
+      assert html =~ "Version wiederherstellen"
+      assert html =~ "Möchten Sie zu dieser Version zurückkehren?"
+
+      render_click(view, "confirm_rollback", %{"version_id" => to_string(version.id)})
+
+      assert render(view) =~ "Version konnte nicht wiederhergestellt werden."
+
+      # State is unchanged by the refused rollback
+      assert Locations.get_school_by_slug!(school.slug).name == "Changed School"
     end
 
-    test "multiple changes and rollbacks work correctly", %{conn: conn, school: school} do
+    test "queued changes apply only after approval, preserving order", %{
+      conn: conn,
+      school: school
+    } do
+      # First edit is queued - nothing applied yet
       {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
+      view
+      |> form("form[phx-submit=\"update_school\"]", %{
+        "name" => "First Change",
+        "address" => %{
+          "street" => "First Street",
+          "zip_code" => school.address.zip_code,
+          "city" => school.address.city
+        }
+      })
+      |> render_submit()
+
+      assert_redirect(view, "/wiki")
+
+      unchanged = Locations.get_school_by_slug!(school.slug)
+      assert unchanged.name == "Test School"
+      assert unchanged.address.street == "Initial Street"
+
+      # Approve the first change
+      [first_pending] = PendingChanges.list_pending()
+      {:ok, %{school: after_first}} = PendingChanges.approve_change!(first_pending)
+      assert after_first.name == "First Change"
+      assert after_first.address.street == "First Street"
+
+      # Second edit, queued and approved
+      %{school: after_second} =
+        submit_and_approve_edit(conn, school.slug, "Second Change", %{
+          "street" => "Second Street",
+          "zip_code" => "22222",
+          "city" => "Second City"
+        })
+
+      assert after_second.name == "Second Change"
+      assert after_second.address.street == "Second Street"
+      assert after_second.address.zip_code == "22222"
+      assert after_second.address.city == "Second City"
+    end
+
+    test "sequential queued changes apply in order", %{conn: conn, school: school} do
       # Track all states
       states = [
         %{name: school.name, street: school.address.street, city: school.address.city},
@@ -219,20 +217,15 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
         %{name: "State 3", street: "Street 3", city: "City 3"}
       ]
 
-      # Apply changes
+      # Apply changes, each one queued and approved
       for i <- 1..3 do
         state = Enum.at(states, i)
 
-        assert view
-               |> form("form[phx-submit=\"update_school\"]", %{
-                 "name" => state.name,
-                 "address" => %{
-                   "street" => state.street,
-                   "zip_code" => school.address.zip_code,
-                   "city" => state.city
-                 }
-               })
-               |> render_submit()
+        submit_and_approve_edit(conn, school.slug, state.name, %{
+          "street" => state.street,
+          "zip_code" => school.address.zip_code,
+          "city" => state.city
+        })
       end
 
       # Verify final state
@@ -259,21 +252,29 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
 
       {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
-      # Add address data
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => school.name,
-               "address" => %{
-                 "street" => "New Street",
-                 "zip_code" => "12345",
-                 "city" => "New City",
-                 "phone_number" => "+49 123 456789"
-               }
-             })
-             |> render_submit()
+      # Add address data - queued for approval
+      view
+      |> form("form[phx-submit=\"update_school\"]", %{
+        "name" => school.name,
+        "address" => %{
+          "street" => "New Street",
+          "zip_code" => "12345",
+          "city" => "New City",
+          "phone_number" => "+49 123 456789"
+        }
+      })
+      |> render_submit()
 
-      # Verify address was created
-      updated_school = Locations.get_school_by_slug!(school.slug)
+      assert_redirect(view, "/wiki")
+
+      # No address exists before approval
+      assert is_nil(Locations.get_school_by_slug!(school.slug).address)
+
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "update_school"
+
+      # Approving creates the address
+      {:ok, %{school: updated_school}} = PendingChanges.approve_change!(pending_change)
       assert updated_school.address
       assert updated_school.address.street == "New Street"
       assert updated_school.address.zip_code == "12345"
@@ -281,23 +282,16 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
     end
 
     test "timeline UI shows correct styling and elements", %{conn: conn, school: school} do
-      {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
-
-      # Make some changes to create timeline items
+      # Make some changes (queued and approved) to create timeline items
       for i <- 1..3 do
-        assert view
-               |> form("form[phx-submit=\"update_school\"]", %{
-                 "name" => "Update #{i}",
-                 "address" => %{
-                   "street" => school.address.street,
-                   "zip_code" => school.address.zip_code,
-                   "city" => school.address.city
-                 }
-               })
-               |> render_submit()
+        submit_and_approve_edit(conn, school.slug, "Update #{i}", %{
+          "street" => school.address.street,
+          "zip_code" => school.address.zip_code,
+          "city" => school.address.city
+        })
       end
 
-      # Refresh and check timeline UI
+      # Check timeline UI
       {:ok, _view, html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
       # Check for timeline elements
@@ -339,28 +333,39 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
     test "handles complex field updates correctly", %{conn: conn, school: school} do
       {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school.slug}/edit")
 
-      # Update all possible fields
-      assert view
-             |> form("form[phx-submit=\"update_school\"]", %{
-               "name" => "Complete Update",
-               "address" => %{
-                 "street" => "Complete Street 999",
-                 "zip_code" => "88888",
-                 "city" => "Complete City",
-                 "phone_number" => "+49 999 888777",
-                 "email_address" => "complete@school.de",
-                 "homepage_url" => "https://complete.school.de",
-                 "wikipedia_url" => "https://wikipedia.org/complete",
-                 "instagram_url" => "https://instagram.com/complete",
-                 "students_count" => "1500",
-                 "founded_year" => "2000",
-                 "description" => "Complete description of the school"
-               }
-             })
-             |> render_submit()
+      # Update all possible fields - queued for approval
+      view
+      |> form("form[phx-submit=\"update_school\"]", %{
+        "name" => "Complete Update",
+        "address" => %{
+          "street" => "Complete Street 999",
+          "zip_code" => "88888",
+          "city" => "Complete City",
+          "phone_number" => "+49 999 888777",
+          "email_address" => "complete@school.de",
+          "homepage_url" => "https://complete.school.de",
+          "wikipedia_url" => "https://wikipedia.org/complete",
+          "instagram_url" => "https://instagram.com/complete",
+          "students_count" => "1500",
+          "founded_year" => "2000",
+          "description" => "Complete description of the school"
+        }
+      })
+      |> render_submit()
 
-      # Verify all fields were updated
-      updated_school = Locations.get_school_by_slug!(school.slug)
+      assert_redirect(view, "/wiki")
+
+      [pending_change] = PendingChanges.list_pending()
+      assert pending_change.change_type == "update_school"
+      assert pending_change.payload["school_name"] == "Complete Update"
+      assert pending_change.payload["address_params"]["street"] == "Complete Street 999"
+
+      # Nothing is applied before approval
+      assert Locations.get_school_by_slug!(school.slug).name == "Test School"
+
+      {:ok, %{school: updated_school}} = PendingChanges.approve_change!(pending_change)
+
+      # Verify all fields were updated after approval
       assert updated_school.name == "Complete Update"
       assert updated_school.address.street == "Complete Street 999"
       assert updated_school.address.zip_code == "88888"
@@ -374,5 +379,31 @@ defmodule MehrSchulferienWeb.WikiSchoolEditRollbackTest do
       assert updated_school.address.founded_year == 2000
       assert updated_school.address.description == "Complete description of the school"
     end
+  end
+
+  # Submits a school edit via the LiveView form, asserts it is queued as a
+  # pending change and approves it. Returns the approve result
+  # (%{school: school, address: address}).
+  defp submit_and_approve_edit(conn, school_slug, name, address_attrs) do
+    {:ok, view, _html} = live(conn, ~p"/wiki/schools/#{school_slug}/edit")
+
+    view
+    |> form("form[phx-submit=\"update_school\"]", %{
+      "name" => name,
+      "address" => address_attrs
+    })
+    |> render_submit()
+
+    flash = assert_redirect(view, "/wiki")
+
+    assert flash["info"] ==
+             "Ihre Änderung wurde zur Überprüfung eingereicht. Sie wird nach Genehmigung auf der Seite sichtbar."
+
+    [pending_change] = PendingChanges.list_pending()
+    assert pending_change.change_type == "update_school"
+    assert pending_change.payload["school_name"] == name
+
+    {:ok, result} = PendingChanges.approve_change!(pending_change)
+    result
   end
 end

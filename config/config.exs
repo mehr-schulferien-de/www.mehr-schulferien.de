@@ -36,7 +36,7 @@ config :mehr_schulferien, MehrSchulferienWeb.Endpoint,
   adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   secret_key_base: "your-secret-key-base-here",
-  render_errors: [view: MehrSchulferienWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [view: MehrSchulferienWeb.ErrorHTML, accepts: ~w(html json), layout: false],
   pubsub_server: MehrSchulferien.PubSub,
   live_view: [signing_salt: "your-signing-salt-here"]
 

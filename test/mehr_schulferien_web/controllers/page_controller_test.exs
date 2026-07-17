@@ -97,6 +97,18 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     # Check for some content
     assert response =~ "Stefan Wintermeyer"
     assert response =~ "Datenschutzerklärung"
+
+    # The browser tab shows a page-specific title, not the generic fallback
+    assert response =~ "<title>\n  Impressum und Datenschutzerklärung"
+  end
+
+  test "footer shows the current year in the copyright line", %{conn: conn} do
+    conn = get(conn, "/impressum")
+    response = html_response(conn, 200)
+
+    current_year = MehrSchulferien.Calendars.DateHelpers.today_berlin().year
+    assert response =~ "© #{current_year}"
+    refute response =~ "© #{current_year - 1}"
   end
 
   test "GET /debug returns 200 and shows system info", %{conn: conn} do

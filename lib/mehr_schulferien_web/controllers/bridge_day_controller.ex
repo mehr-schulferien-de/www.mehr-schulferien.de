@@ -2,7 +2,6 @@ defmodule MehrSchulferienWeb.BridgeDayController do
   use MehrSchulferienWeb, :controller
 
   alias MehrSchulferien.{Calendars.DateHelpers, Periods}
-  alias MehrSchulferienWeb.BridgeDayView
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
 
   def index_within_federal_state(conn, %{
@@ -61,7 +60,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
           bridge_days
           |> Enum.filter(fn bridge_day ->
             all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
-            BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+            MehrSchulferien.BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
           end)
 
         {num, filtered_bridge_days}
@@ -93,7 +92,7 @@ defmodule MehrSchulferienWeb.BridgeDayController do
       |> Map.get(num, [])
       |> Enum.any?(fn bridge_day ->
         all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
-        BridgeDayView.meets_minimum_gain?(bridge_day, all_periods)
+        MehrSchulferien.BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
       end)
     end)
   end

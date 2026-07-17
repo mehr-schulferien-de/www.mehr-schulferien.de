@@ -299,40 +299,28 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
             <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">REST API Beispiel</h3>
-            <div class="relative">
-              <button
-                onclick="copyToClipboard(this)"
-                data-content='curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?year=2025'
-                class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
-                title="In Zwischenablage kopieren"
-              >
-                Kopieren
-              </button>
-              <pre
-                class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"
-                tabindex="0"
-              ><code>curl -H "Accept: application/json" \
-  https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?year=2025</code></pre>
-            </div>
+            <.code_block
+              copy={
+                ~s|curl -H "Accept: application/json" https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?year=2025|
+              }
+              class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"
+              tabindex="0"
+              content={~s|curl -H "Accept: application/json" \\
+  https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?year=2025|}
+            />
           </div>
 
           <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
             <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">
               MCP Server Beispiel
             </h3>
-            <div class="relative">
-              <button
-                onclick="copyToClipboard(this)"
-                data-content='curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d &#39;{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_vacations","arguments":{"location_slug":"bayern","location_type":"federal_state","start_date":"2025-01-01","end_date":"2025-12-31"}},"id":1}&#39;'
-                class="absolute top-2 right-2 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
-                title="In Zwischenablage kopieren"
-              >
-                Kopieren
-              </button>
-              <pre
-                class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"
-                tabindex="0"
-              ><code><%= ~s|curl -X POST https://www.mehr-schulferien.de/mcp \
+            <.code_block
+              copy={
+                ~s|curl -X POST https://www.mehr-schulferien.de/mcp -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"get_vacations","arguments":{"location_slug":"bayern","location_type":"federal_state","start_date":"2025-01-01","end_date":"2025-12-31"}},"id":1}'|
+              }
+              class="bg-gray-900 text-gray-100 p-3 pr-20 rounded text-sm overflow-x-auto"
+              tabindex="0"
+              content={~s|curl -X POST https://www.mehr-schulferien.de/mcp \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -347,8 +335,8 @@
       }
     },
     "id": 1
-  }'| %></code></pre>
-            </div>
+  }'|}
+            />
           </div>
         </div>
       </div>

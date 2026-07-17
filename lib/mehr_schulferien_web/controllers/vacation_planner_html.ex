@@ -74,6 +74,20 @@ defmodule MehrSchulferienWeb.VacationPlannerHTML do
   end
 
   @doc """
+  Returns the vacation planner path for the given variant mode.
+
+  Kept as two explicit `~p` sigils (instead of interpolating the base
+  segment) so verified routes can check both paths at compile time.
+  """
+  def planner_path(:budget, federal_state_slug, days, year) do
+    ~p"/urlaubsplaner-guenstig/#{federal_state_slug}/#{format_days_url(days)}/#{year}"
+  end
+
+  def planner_path(_mode, federal_state_slug, days, year) do
+    ~p"/urlaubsplaner/#{federal_state_slug}/#{format_days_url(days)}/#{year}"
+  end
+
+  @doc """
   Returns the quick-select day options.
   """
   def quick_day_options do

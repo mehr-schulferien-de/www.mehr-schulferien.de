@@ -237,4 +237,18 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
       refute html =~ "UA-774512"
     end
   end
+
+  test "GET landkreise-und-staedte sets a page-specific title", %{
+    conn: conn,
+    country: country,
+    federal_state: federal_state
+  } do
+    conn =
+      get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/landkreise-und-staedte")
+
+    response = html_response(conn, 200)
+
+    assert response =~ "Landkreise und Städte in #{federal_state.name}"
+    refute response =~ "<title>\n  Schulferien, Feiertage, Brückentage und bewegliche Ferientage"
+  end
 end

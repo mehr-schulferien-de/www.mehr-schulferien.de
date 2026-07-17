@@ -7,6 +7,9 @@ defmodule MehrSchulferienWeb.Api.V2.VCardController do
 
     conn
     |> update_headers(slug)
+    # Reuse the vCard renderer of the regular download route - Phoenix cannot
+    # infer it here because no Api.V2.VCardVCF module exists.
+    |> put_view(MehrSchulferienWeb.SchoolVCardVCF)
     |> render("vcard.vcf", location: location)
   end
 
@@ -15,6 +18,6 @@ defmodule MehrSchulferienWeb.Api.V2.VCardController do
 
     conn
     |> put_resp_header("content-type", "text/vcard;charset=utf-8")
-    |> put_resp_header("content-disposition", "attachment;filename = #{filename}")
+    |> put_resp_header("content-disposition", "attachment;filename=#{filename}")
   end
 end

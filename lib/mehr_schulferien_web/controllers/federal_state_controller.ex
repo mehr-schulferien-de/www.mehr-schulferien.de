@@ -163,7 +163,8 @@ defmodule MehrSchulferienWeb.FederalStateController do
       [
         counties_with_cities: counties_with_cities,
         country: country,
-        federal_state: federal_state
+        federal_state: federal_state,
+        page_title: "Landkreise und Städte in #{federal_state.name} - Schulferien und Feiertage"
       ] ++
         CH.list_period_data(location_ids, today) ++ CH.list_faq_data(location_ids, today)
 

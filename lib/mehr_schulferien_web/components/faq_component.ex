@@ -6,7 +6,7 @@ defmodule MehrSchulferienWeb.FaqComponent do
     router: MehrSchulferienWeb.Router
 
   alias MehrSchulferienWeb.Components.Faq.{FaqDataBuilder, FaqSchemaComponent}
-  alias MehrSchulferienWeb.Helpers.DistanceHelpers
+  alias MehrSchulferienWeb.Helpers.{DateCalculations, DistanceHelpers, PeriodHelpers}
   import Phoenix.HTML, only: [raw: 1]
 
   attr :conn, :any, required: true
@@ -16,25 +16,18 @@ defmodule MehrSchulferienWeb.FaqComponent do
   attr :next_schoolday, :any, required: true
   attr :current_year, :integer, required: true
   attr :today, :any, required: true
-  attr :yesterday, :any, required: true
-  attr :tomorrow, :any, required: true
-  attr :day_after_tomorrow, :any, required: true
   attr :school_periods, :list, required: true
   attr :public_periods, :list, required: true
   attr :months, :map, required: true
-  attr :yesterdays_school_free_periods, :list, required: true
-  attr :todays_school_free_periods, :list, required: true
-  attr :tomorrows_school_free_periods, :list, required: true
-  attr :day_after_tomorrows_school_free_periods, :list, required: true
-  attr :yesterdays_public_holiday_periods, :list, required: true
-  attr :todays_public_holiday_periods, :list, required: true
-  attr :tomorrows_public_holiday_periods, :list, required: true
-  attr :day_after_tomorrows_public_holiday_periods, :list, required: true
   attr :city, :any, default: nil
   attr :schools, :list, default: []
   attr :nearby_schools, :list, default: []
 
   def faq(assigns) do
+    # Derive the surrounding dates and the per-day school-free and
+    # public-holiday period lists from school_periods/public_periods/today
+    assigns = assign_derived_date_data(assigns)
+
     # Process all FAQ data once
     faq_data = FaqDataBuilder.build(assigns)
 
@@ -122,6 +115,36 @@ defmodule MehrSchulferienWeb.FaqComponent do
 
     <FaqSchemaComponent.faq_schema faq_data={@faq_data} is_school_page={@is_school_page} />
     """
+  end
+
+  defp assign_derived_date_data(assigns) do
+    %{yesterday: yesterday, tomorrow: tomorrow, day_after_tomorrow: day_after_tomorrow} =
+      DateCalculations.calculate_surrounding_dates(assigns.today)
+
+    school_periods = assigns.school_periods
+    public_holidays = PeriodHelpers.public_holiday_periods(assigns.public_periods)
+
+    assign(assigns,
+      yesterday: yesterday,
+      tomorrow: tomorrow,
+      day_after_tomorrow: day_after_tomorrow,
+      yesterdays_school_free_periods:
+        PeriodHelpers.periods_active_on_date(school_periods, yesterday),
+      todays_school_free_periods:
+        PeriodHelpers.periods_active_on_date(school_periods, assigns.today),
+      tomorrows_school_free_periods:
+        PeriodHelpers.periods_active_on_date(school_periods, tomorrow),
+      day_after_tomorrows_school_free_periods:
+        PeriodHelpers.periods_active_on_date(school_periods, day_after_tomorrow),
+      yesterdays_public_holiday_periods:
+        PeriodHelpers.periods_active_on_date(public_holidays, yesterday),
+      todays_public_holiday_periods:
+        PeriodHelpers.periods_active_on_date(public_holidays, assigns.today),
+      tomorrows_public_holiday_periods:
+        PeriodHelpers.periods_active_on_date(public_holidays, tomorrow),
+      day_after_tomorrows_public_holiday_periods:
+        PeriodHelpers.periods_active_on_date(public_holidays, day_after_tomorrow)
+    )
   end
 
   defp faq_question(assigns) do

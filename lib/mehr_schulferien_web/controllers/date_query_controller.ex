@@ -23,10 +23,7 @@ defmodule MehrSchulferienWeb.DateQueryController do
         |> render(:is_today_public_holiday)
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorHTML)
-        |> render(:"404")
+        render_error(conn, :not_found)
     end
   end
 
@@ -48,10 +45,7 @@ defmodule MehrSchulferienWeb.DateQueryController do
         |> render(:is_today_school_free)
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorHTML)
-        |> render(:"404")
+        render_error(conn, :not_found)
     end
   end
 
@@ -90,10 +84,7 @@ defmodule MehrSchulferienWeb.DateQueryController do
         |> render(:is_weekday_school)
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorHTML)
-        |> render(:"404")
+        render_error(conn, :not_found)
     end
   end
 
@@ -114,16 +105,10 @@ defmodule MehrSchulferienWeb.DateQueryController do
       |> render(:is_school_day)
     else
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorHTML)
-        |> render(:"404")
+        render_error(conn, :not_found)
 
       {:error, :invalid_date} ->
-        conn
-        |> put_status(:bad_request)
-        |> put_view(MehrSchulferienWeb.ErrorHTML)
-        |> render(:"400")
+        render_error(conn, :bad_request)
     end
   end
 
@@ -144,20 +129,23 @@ defmodule MehrSchulferienWeb.DateQueryController do
       |> render(:is_public_holiday)
     else
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> put_view(MehrSchulferienWeb.ErrorHTML)
-        |> render(:"404")
+        render_error(conn, :not_found)
 
       {:error, :invalid_date} ->
-        conn
-        |> put_status(:bad_request)
-        |> put_view(MehrSchulferienWeb.ErrorHTML)
-        |> render(:"400")
+        render_error(conn, :bad_request)
     end
   end
 
   # Private helpers
+
+  defp render_error(conn, status) do
+    template = if status == :bad_request, do: :"400", else: :"404"
+
+    conn
+    |> put_status(status)
+    |> put_view(MehrSchulferienWeb.ErrorHTML)
+    |> render(template)
+  end
 
   defp get_federal_state(slug), do: CH.fetch_federal_state(slug)
 
@@ -168,23 +156,5 @@ defmodule MehrSchulferienWeb.DateQueryController do
     end
   end
 
-  defp format_date(date) do
-    months = [
-      "Januar",
-      "Februar",
-      "März",
-      "April",
-      "Mai",
-      "Juni",
-      "Juli",
-      "August",
-      "September",
-      "Oktober",
-      "November",
-      "Dezember"
-    ]
-
-    month_name = Enum.at(months, date.month - 1)
-    "#{date.day}. #{month_name} #{date.year}"
-  end
+  defp format_date(date), do: DateHelpers.german_date(date, :with_year)
 end

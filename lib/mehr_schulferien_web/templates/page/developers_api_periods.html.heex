@@ -30,7 +30,7 @@
         </p>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Endpunkt</th>
@@ -67,7 +67,7 @@
         </.heading>
 
         <div class="overflow-x-auto mb-6">
-          <table class="min-w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+          <table class={DesignTokens.table_class()}>
             <thead>
               <tr class="bg-gray-100 dark:bg-gray-900">
                 <th class="py-2 px-4 border-b text-left">Parameter</th>
@@ -113,19 +113,25 @@
           Alle Ferien und Feiertage für Bayern in 2025
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?start_date=2025-01-01&end_date=2025-12-31</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/federal-states/bayern/periods?start_date=2025-01-01&end_date=2025-12-31|
+        } />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           Nur Schulferien für München
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/periods?type=vacation&start_date=2025-01-01&end_date=2025-12-31</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/cities/muenchen/periods?type=vacation&start_date=2025-01-01&end_date=2025-12-31|
+        } />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           Nur Feiertage für einen Landkreis
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm">GET https://www.mehr-schulferien.de/api/v2.1/counties/muenchen-landkreis/periods?type=holiday&start_date=2025-01-01&end_date=2025-12-31</pre>
+        <.code_block content={
+          ~s|GET https://www.mehr-schulferien.de/api/v2.1/counties/muenchen-landkreis/periods?type=holiday&start_date=2025-01-01&end_date=2025-12-31|
+        } />
       </div>
 
       <div class="mb-8">
@@ -133,7 +139,7 @@
           Response-Format
         </.heading>
 
-        <pre class="bg-gray-100 dark:bg-gray-800 p-4 mb-6 rounded overflow-x-auto text-sm"><%= ~s|{
+        <.code_block content={~s|{
   "data": [
     {
       "id": 123,
@@ -167,7 +173,7 @@
       "end_date": "2025-12-31"
     }
   }
-}| %></pre>
+}|} />
 
         <.heading level={3} class="text-xl text-gray-700 dark:text-gray-300 mt-6 mb-3">
           Feld-Beschreibungen

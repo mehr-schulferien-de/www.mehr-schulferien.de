@@ -1,8 +1,6 @@
 defmodule MehrSchulferienWeb.System.WikiExactScenarioTest do
   use MehrSchulferienWeb.ConnCase, async: false
 
-  @moduletag :skip
-
   import Phoenix.LiveViewTest
 
   import MehrSchulferien.Factory

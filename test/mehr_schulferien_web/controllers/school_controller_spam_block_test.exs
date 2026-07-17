@@ -1,12 +1,6 @@
 defmodule MehrSchulferienWeb.SchoolControllerSpamBlockTest do
   use MehrSchulferienWeb.ConnCase
 
-  # SPAM CHECK DISABLED IN TEST ENV: Tests skipped because the spam attack
-  # timeframe check is disabled in test environment to avoid blocking test schools.
-  # The feature is active in production. To re-enable tests, remove the env check
-  # in school_controller.ex:school_updated_during_spam_attack?/1
-  @moduletag :skip
-
   import Ecto.Query
   import MehrSchulferien.Factory
 
