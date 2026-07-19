@@ -66,7 +66,10 @@ defmodule MehrSchulferienWeb.DocumentLiveBase do
            form_data: form_data,
            page_title: page_title,
            locale: locale,
-           document_type: @document_type
+           document_type: @document_type,
+           # Per-school letter pages are near-identical tools, not search
+           # landing pages; noindex keeps ~120k thin URLs out of the index.
+           noindex: true
          )
          |> assign(meta_data)}
       end

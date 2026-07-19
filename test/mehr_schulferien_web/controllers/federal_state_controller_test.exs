@@ -46,6 +46,57 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
     assert html_response(conn, 404) =~ "#{year_without_data}"
   end
 
+  describe "past year pages" do
+    # The year gate never reads the real clock: each request pins "today"
+    # via the ?today= override provided by DateAssignsPlug.
+    test "a past year 301-redirects to the evergreen state page", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn =
+        get(
+          conn,
+          "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/2021?today=15.06.2026"
+        )
+
+      assert redirected_to(conn, 301) ==
+               "/ferien/#{country.slug}/bundesland/#{federal_state.slug}"
+    end
+
+    test "the current year renders instead of redirecting", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn =
+        get(
+          conn,
+          "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/2026?today=15.06.2026"
+        )
+
+      # No period data is inserted here, so the page renders with a 404
+      # status - the important part is that it does NOT redirect.
+      assert conn.status == 404
+      assert html_response(conn, 404) =~ federal_state.name
+    end
+
+    test "a year starts redirecting once it lies in the past", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn =
+        get(
+          conn,
+          "/ferien/#{country.slug}/bundesland/#{federal_state.slug}/2026?today=15.06.2027"
+        )
+
+      assert redirected_to(conn, 301) ==
+               "/ferien/#{country.slug}/bundesland/#{federal_state.slug}"
+    end
+  end
+
   describe "evergreen federal state page (year-less URL)" do
     setup %{country: country, federal_state: federal_state} do
       today = Date.utc_today()

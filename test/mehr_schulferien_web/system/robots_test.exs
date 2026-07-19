@@ -2,97 +2,39 @@ defmodule MehrSchulferienWeb.RobotsSystemTest do
   use MehrSchulferienWeb.ConnCase
   import Phoenix.ConnTest
 
-  import MehrSchulferien.Factory
-  import MehrSchulferien.TestHelpers
-  @current_year Date.utc_today().year
-  @next_year @current_year + 1
-  @past_year @current_year - 2
-
-  setup %{conn: conn} do
-    {:ok, %{conn: conn}}
-  end
-
   describe "robots.txt" do
-    setup [:add_federal_state, :add_periods_for_multiple_years]
-
-    test "robots.txt endpoint returns 200 status and correct content", %{conn: conn} do
+    test "returns 200 with the static crawl rules", %{conn: conn} do
       conn = get(conn, "/robots.txt")
 
-      # Check status and content type
       assert conn.status == 200
       assert get_resp_header(conn, "content-type") == ["text/plain; charset=utf-8"]
 
-      # Check content includes expected parts
       response = response(conn, 200)
       assert response =~ "User-agent: *"
       assert response =~ "Disallow: /api"
-
-      # Check it includes current and next year in the comment
-      assert response =~
-               "Allow current year (#{@current_year}) and next year (#{@next_year}) for all pages"
-
-      # Check that past year city and school URLs are disallowed
-      assert response =~ "Disallow: /ferien/*/stadt/*/#{@past_year}$"
-      assert response =~ "Disallow: /ferien/*/schule/*/#{@past_year}$"
-
-      # Check that vCard download URLs are disallowed
+      assert response =~ "Disallow: /users"
+      assert response =~ "Disallow: /sessions"
+      assert response =~ "Disallow: /password_resets"
+      assert response =~ "Disallow: /admin"
+      assert response =~ "Disallow: /wiki"
+      assert response =~ "Disallow: /ads"
       assert response =~ "Disallow: /ferien/*/schule/*/vcard"
       assert response =~ "Disallow: /schule/*/vcard"
-
-      # Check that current and next year city and school URLs are NOT disallowed (they're allowed)
-      refute response =~ "Disallow: /ferien/*/stadt/*/#{@current_year}$"
-      refute response =~ "Disallow: /ferien/*/stadt/*/#{@next_year}$"
-      refute response =~ "Disallow: /ferien/*/schule/*/#{@current_year}$"
-      refute response =~ "Disallow: /ferien/*/schule/*/#{@next_year}$"
+      assert response =~ "Sitemap: https://www.mehr-schulferien.de/sitemap.xml"
     end
-  end
 
-  defp add_federal_state(_) do
-    country = get_or_create_deutschland()
+    test "does not block redirected URLs (year pages, legacy /land/ routes)", %{conn: conn} do
+      # Year-suffixed city/school/state/bridge-day URLs and legacy /land/
+      # routes 301 to their evergreen replacements. Blocking them in
+      # robots.txt would prevent crawlers from ever seeing those redirects,
+      # leaving the URLs stuck in the search index forever (GSC showed
+      # ~107k URLs in that limbo).
+      response = conn |> get("/robots.txt") |> response(200)
 
-    federal_state =
-      insert(:federal_state, %{
-        parent_location_id: country.id,
-        slug: "brandenburg",
-        name: "Brandenburg"
-      })
-
-    {:ok, %{country: country, federal_state: federal_state}}
-  end
-
-  defp add_periods_for_multiple_years(%{federal_state: federal_state}) do
-    # Add periods for past year, current year and next year to ensure
-    # all these years appear in the database and are processed for robots.txt
-
-    holiday_type = insert(:holiday_or_vacation_type, %{name: "Test Holiday"})
-
-    # Past year period
-    insert(:public_holiday, %{
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@past_year, 5, 1),
-      ends_on: Date.new!(@past_year, 5, 1),
-      display_priority: 1
-    })
-
-    # Current year period
-    insert(:public_holiday, %{
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@current_year, 5, 1),
-      ends_on: Date.new!(@current_year, 5, 1),
-      display_priority: 1
-    })
-
-    # Next year period
-    insert(:public_holiday, %{
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@next_year, 5, 1),
-      ends_on: Date.new!(@next_year, 5, 1),
-      display_priority: 1
-    })
-
-    {:ok, %{federal_state: federal_state}}
+      refute response =~ ~r{Disallow: /ferien/\*/stadt/}
+      refute response =~ ~r{Disallow: /ferien/\*/schule/\*/20}
+      refute response =~ ~r{Disallow: /brueckentage/}
+      refute response =~ "Disallow: /land"
+    end
   end
 end

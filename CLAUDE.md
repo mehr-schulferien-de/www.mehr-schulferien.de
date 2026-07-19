@@ -251,6 +251,16 @@ The project has been fully migrated to Phoenix verified routes and exclusively u
 
 ## Repository Guidelines
 
+### Router gotcha: `constraints:` are decorative
+
+Phoenix does NOT enforce the `constraints: [year: ~r/.../]` options used
+throughout `router.ex` - routes match on segment count and literal
+prefixes only, in definition order. A URL like `/brueckentage/d/2027`
+is happily captured by the earlier `/:vacation_slug/:federal_state_slug/:year`
+catch-all no matter what constraints say. When adding a route with a
+literal first segment, place it ABOVE the `/:vacation_slug/...`
+catch-alls and validate params in the controller (`CH.check_year/1`).
+
 ## Memories
 
 - Always remember the sitemap.xml file to be up to date if URLs are added, removed or changed.

@@ -104,7 +104,19 @@ defmodule MehrSchulferienWeb.FederalStateController do
           raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
         end
 
-        show_year_with_data(conn, federal_state, country, year)
+        today = DateHelpers.get_today_or_custom_date(conn)
+
+        case Integer.parse(year) do
+          {year_int, ""} when year_int < today.year ->
+            # Past years keep no value of their own; consolidate them (and
+            # any links pointing at them) into the evergreen state page.
+            conn
+            |> put_status(:moved_permanently)
+            |> redirect(to: ~p"/ferien/#{country.slug}/bundesland/#{federal_state.slug}")
+
+          _ ->
+            show_year_with_data(conn, federal_state, country, year)
+        end
 
       {:error, :not_found} ->
         CH.render_not_found_or_empty_database(conn)

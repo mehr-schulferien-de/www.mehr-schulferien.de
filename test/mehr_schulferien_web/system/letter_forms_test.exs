@@ -61,6 +61,29 @@ defmodule MehrSchulferienWeb.LetterFormsSystemTest do
   ]
   @common_student_fields ["#form_name_of_student", "#form_class_name"]
 
+  describe "search engine directives" do
+    setup [:create_school]
+
+    # ~30k schools x 4 letter variants are near-identical pages; Google
+    # leaves them in "crawled - currently not indexed" limbo. They are
+    # tools, not landing pages, so they carry noindex. The robots meta
+    # lives in the root layout, hence the dead render via get/2.
+    test "letter pages carry a noindex robots meta tag", %{conn: conn, school: school} do
+      for path <- ["entschuldigung", "beurlaubung", "sportbefreiung"] do
+        html = conn |> get("/briefe/#{school.slug}/#{path}") |> html_response(200)
+        assert html =~ ~s(<meta name="robots" content="noindex)
+      end
+    end
+
+    test "the per-school documents index carries a noindex robots meta tag", %{
+      conn: conn,
+      school: school
+    } do
+      html = conn |> get("/briefe/#{school.slug}") |> html_response(200)
+      assert html =~ ~s(<meta name="robots" content="noindex)
+    end
+  end
+
   describe "common functionality for all letter forms" do
     setup [:create_school]
 

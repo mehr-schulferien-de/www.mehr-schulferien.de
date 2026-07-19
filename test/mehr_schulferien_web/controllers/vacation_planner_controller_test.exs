@@ -47,6 +47,25 @@ defmodule MehrSchulferienWeb.VacationPlannerControllerTest do
       assert html_response(conn, 200) =~ "30"
     end
 
+    test "carries a noindex robots meta tag", %{conn: conn, federal_state: federal_state} do
+      # The day-count x state x year combinatorics generate tens of
+      # thousands of near-identical URLs that Google refuses to index
+      # ("crawled - currently not indexed"). They are tools for humans,
+      # not landing pages, so they must not compete for the crawl budget.
+      conn = get(conn, "/urlaubsplaner/#{federal_state.slug}/30-tage/2026")
+
+      assert html_response(conn, 200) =~ ~s(<meta name="robots" content="noindex)
+    end
+
+    test "budget variant carries a noindex robots meta tag too", %{
+      conn: conn,
+      federal_state: federal_state
+    } do
+      conn = get(conn, "/urlaubsplaner-guenstig/#{federal_state.slug}/30-tage/2026")
+
+      assert html_response(conn, 200) =~ ~s(<meta name="robots" content="noindex)
+    end
+
     test "renders normal variant accents and cross-link", %{
       conn: conn,
       federal_state: federal_state

@@ -98,8 +98,11 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
 
       for {slug, name} <- federal_states do
         assert html =~ name
-        # Check all 3 years for Schulferien
-        assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2025"}
+        # The current-year tab links the evergreen (year-less) state page so
+        # the sitewide nav funnels link equity to the head-term URL; future
+        # years keep their year pages.
+        assert html =~ ~r{href="/ferien/d/bundesland/#{slug}"}
+        refute html =~ ~r{href="/ferien/d/bundesland/#{slug}/2025"}
         assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2026"}
         assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2027"}
         # Check all 3 years for Brückentage
@@ -170,6 +173,23 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
       html = render_navigation(navigation_assigns)
 
       # Should show Bayern as non-clickable in 2025 panel
+      assert html =~ ~r/<span[^>]*class="[^"]*text-gray-400[^"]*"[^>]*>.*Bayern.*<\/span>/s
+    end
+
+    test "highlights the evergreen state page in the current year panel", %{conn: conn} do
+      conn_evergreen = get(conn, "/ferien/d/bundesland/bayern")
+
+      navigation_assigns = %{
+        current_year: 2025,
+        next_year: 2026,
+        third_year: 2027,
+        conn: conn_evergreen
+      }
+
+      html = render_navigation(navigation_assigns)
+
+      # The current-year panel links the evergreen page, so being on the
+      # evergreen page counts as "you are here" and grays Bayern out.
       assert html =~ ~r/<span[^>]*class="[^"]*text-gray-400[^"]*"[^>]*>.*Bayern.*<\/span>/s
     end
 

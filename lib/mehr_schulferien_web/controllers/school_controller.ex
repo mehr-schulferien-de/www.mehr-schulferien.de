@@ -274,7 +274,10 @@ defmodule MehrSchulferienWeb.SchoolController do
       page_title: page_title,
       page_description: page_description,
       og_image: "/images/entschuldigung-dummy.png",
-      school_contact_info_enabled: Config.school_contact_info_enabled?()
+      school_contact_info_enabled: Config.school_contact_info_enabled?(),
+      # Per-school letter pages are near-identical tools, not search
+      # landing pages; noindex keeps ~120k thin URLs out of the index.
+      noindex: true
     )
   end
 

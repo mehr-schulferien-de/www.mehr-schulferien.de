@@ -2,158 +2,44 @@ defmodule MehrSchulferienWeb.SitemapSystemTest do
   use MehrSchulferienWeb.ConnCase
   import Phoenix.ConnTest
 
-  import MehrSchulferien.Factory
-  import MehrSchulferien.TestHelpers
-  @current_year Date.utc_today().year
-  @next_year @current_year + 1
-
-  setup %{conn: conn} do
-    {:ok, %{conn: conn}}
-  end
-
   describe "sitemap.xml" do
-    setup [:add_country_with_data]
-
-    test "sitemap.xml endpoint returns 200 status and correct format", %{
-      conn: conn,
-      country: _country,
-      federal_state: _federal_state,
-      city: _city,
-      school: _school
-    } do
+    test "is a sitemap index pointing to the per-type child sitemaps", %{conn: conn} do
       conn = get(conn, "/sitemap.xml")
 
-      # Check status and content type
       assert conn.status == 200
       assert response_content_type(conn, :xml)
 
-      # Check XML format
       response = response(conn, 200)
       assert response =~ ~s(<?xml version="1.0" encoding="UTF-8"?>)
-      assert response =~ ~s(<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
+      assert response =~ ~s(<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
 
-      # Check main pages - homepage URL
-      assert response =~ ~r{<loc>https?://[^<]+/</loc>}
-
-      # Check developers page
-      assert response =~ ~r{<loc>https?://[^<]+/developers</loc>}
-
-      # Check vacation type overview pages
-      assert response =~ ~r{<loc>https?://[^<]+/sommerferien</loc>}
-      assert response =~ ~r{<loc>https?://[^<]+/osterferien</loc>}
-      assert response =~ ~r{<loc>https?://[^<]+/herbstferien</loc>}
-      assert response =~ ~r{<loc>https?://[^<]+/weihnachtsferien</loc>}
-      assert response =~ ~r{<loc>https?://[^<]+/winterferien</loc>}
-      assert response =~ ~r{<loc>https?://[^<]+/pfingstferien</loc>}
-
-      # Check country URL is present
-      assert response =~ ~r{<loc>https?://[^<]+/ferien/d</loc>}
-
-      # We don't check federal state, city and school URLs in this test since
-      # they depend on the data existing in the correct format in the sitemap
-      # which we've already verified in controller tests
+      for child <- ~w(static bundeslaender staedte schulen) do
+        assert response =~ "https://www.mehr-schulferien.de/sitemap-#{child}.xml"
+      end
     end
   end
 
-  defp add_country_with_data(_) do
-    country = get_or_create_deutschland()
+  describe "sitemap-static.xml" do
+    test "contains the static pages", %{conn: conn} do
+      conn = get(conn, "/sitemap-static.xml")
 
-    federal_state =
-      insert(:federal_state, %{
-        parent_location_id: country.id,
-        slug: "brandenburg",
-        name: "Brandenburg"
-      })
+      assert conn.status == 200
+      assert response_content_type(conn, :xml)
 
-    city =
-      insert(:city, %{
-        parent_location_id: country.id,
-        slug: "berlin",
-        name: "Berlin"
-      })
+      response = response(conn, 200)
+      assert response =~ ~s(<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
 
-    school =
-      insert(:school, %{
-        parent_location_id: city.id,
-        slug: "sample-school",
-        name: "Sample School"
-      })
+      # Homepage
+      assert response =~ ~r{<loc>https?://[^<]+/</loc>}
 
-    # Add a holiday type for testing
-    holiday_type =
-      insert(:holiday_or_vacation_type, %{
-        name: "Test Holiday",
-        country_location_id: country.id
-      })
+      # Developers page
+      assert response =~ ~r{<loc>https?://[^<]+/developers</loc>}
 
-    # Add periods for federal state
-    create_period(%{
-      is_public_holiday: true,
-      is_valid_for_everybody: true,
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@current_year, 5, 1),
-      ends_on: Date.new!(@current_year, 5, 1),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
-    })
-
-    # Create a bridge day for the current year
-    create_period(%{
-      is_public_holiday: false,
-      is_valid_for_everybody: true,
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@current_year, 4, 30),
-      ends_on: Date.new!(@current_year, 4, 30),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
-    })
-
-    # Periods for city - current year
-    create_period(%{
-      is_public_holiday: true,
-      location_id: city.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@current_year, 6, 1),
-      ends_on: Date.new!(@current_year, 6, 5),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
-    })
-
-    # Periods for city - next year
-    create_period(%{
-      is_public_holiday: true,
-      location_id: city.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@next_year, 6, 1),
-      ends_on: Date.new!(@next_year, 6, 5),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
-    })
-
-    # Periods for school
-    create_period(%{
-      is_public_holiday: true,
-      location_id: school.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(@current_year, 7, 1),
-      ends_on: Date.new!(@current_year, 7, 31),
-      display_priority: 1,
-      created_by_email_address: "test@example.com"
-    })
-
-    {:ok,
-     %{
-       country: country,
-       federal_state: federal_state,
-       city: city,
-       school: school
-     }}
-  end
-
-  defp create_period(attrs) do
-    {:ok, period} = MehrSchulferien.Periods.create_period(attrs)
-    period
+      # Vacation type overview pages
+      for slug <-
+            ~w(sommerferien osterferien herbstferien weihnachtsferien winterferien pfingstferien) do
+        assert response =~ ~r{<loc>https?://[^<]+/#{slug}</loc>}
+      end
+    end
   end
 end

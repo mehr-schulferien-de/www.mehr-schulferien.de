@@ -30,7 +30,9 @@ defmodule MehrSchulferienWeb.Router do
   pipeline :redirects do
     plug :accepts, ["html"]
     plug :put_layout, false
-    plug :put_status, 302
+    # Legacy routes moved permanently; 301 lets search engines transfer
+    # the old URLs' equity to the new ones instead of keeping both.
+    plug :put_status, 301
   end
 
   pipeline :pdf do
@@ -231,8 +233,12 @@ defmodule MehrSchulferienWeb.Router do
     get "/ferien/:country_slug", CountryController, :show,
       constraints: [country_slug: ~r/^(?!20[2-3][0-9]$)[a-zA-Z][a-zA-Z0-9_-]*$/]
 
-    # Sitemap and robots
-    get "/sitemap.xml", SitemapController, :sitemap
+    # Sitemap (index + per-type children) and robots
+    get "/sitemap.xml", SitemapController, :index
+    get "/sitemap-static.xml", SitemapController, :static
+    get "/sitemap-bundeslaender.xml", SitemapController, :federal_states
+    get "/sitemap-staedte.xml", SitemapController, :cities
+    get "/sitemap-schulen.xml", SitemapController, :schools
     get "/robots.txt", RobotsController, :index
 
     # ========== Auth Routes (public) ==========
@@ -346,6 +352,14 @@ defmodule MehrSchulferienWeb.Router do
 
     # Next vacation URL
     get "/naechste-ferien/:federal_state_slug", VacationController, :next_vacation
+
+    # National bridge day overview ("brückentage 2027" head term).
+    # MUST come before the /:vacation_slug/:federal_state_slug/:year
+    # catch-all below, which would otherwise swallow /brueckentage/d/2027.
+    get "/brueckentage/:country_slug/:year",
+        BridgeDayController,
+        :index_country,
+        constraints: [year: ~r/20[2-3][0-9]/]
 
     # Year-agnostic vacation URLs (redirect to current year)
     get "/:vacation_slug/:federal_state_slug", VacationController, :vacation_current,

@@ -100,15 +100,18 @@
             </button>
           </div>
           <!-- Year content panels -->
+          <%!-- The current-year tab links the evergreen state page: it shows the
+               current and next school year, and the sitewide nav should funnel
+               link equity to the head-term URL instead of a year page. --%>
           <div class="p-2 max-h-96 overflow-y-auto" data-year-content={@current_year}>
             <%= for {federal_state, display_name} <- federal_states do %>
-              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_current_page_for_federal_state?(@conn, federal_state, @current_year) do %>
+              <%= if assigns[:conn] && MehrSchulferienWeb.LayoutView.is_evergreen_or_current_year_state_page?(@conn, federal_state, @current_year) do %>
                 <span class="block rounded-lg px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
                   {display_name}
                 </span>
               <% else %>
                 <a
-                  href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
+                  href={"/ferien/d/bundesland/#{federal_state}"}
                   class="block rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   {display_name}
@@ -427,7 +430,7 @@
               <div class="ml-4 space-y-1">
                 <%= for {federal_state, display_name} <- federal_states do %>
                   <a
-                    href={"/ferien/d/bundesland/#{federal_state}/#{@current_year}"}
+                    href={"/ferien/d/bundesland/#{federal_state}"}
                     class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   >
                     {display_name}

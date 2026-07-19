@@ -34,6 +34,20 @@ defmodule MehrSchulferienWeb.BridgeDayHelpers do
     "Brückentage #{year} in #{federal_state.name}: Feiertage, Termine und Tipps für die clevere Urlaubsplanung."
   end
 
+  @doc """
+  SEO title for the national bridge day overview page ("brückentage <jahr>").
+  """
+  def country_bridge_day_page_title(year) do
+    "Brückentage #{year}: Alle Bundesländer im Vergleich"
+  end
+
+  @doc """
+  SEO meta description for the national bridge day overview page.
+  """
+  def country_bridge_day_page_description(year, state_count) do
+    "Brückentage #{year} für alle #{state_count} Bundesländer im Überblick: Termine, nötige Urlaubstage und die besten Chancen auf lange Wochenenden. Jetzt Urlaub clever planen."
+  end
+
   def format_month_header(start_date, end_date) do
     months_map = DateHelpers.get_months_map()
     first_month = start_date.month

@@ -49,7 +49,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
         <div class="hidden lg:flex lg:gap-x-8">
           <.desktop_dropdown
             label="Schulferien"
-            path_prefix="/ferien/d/bundesland"
+            path_builder={fn state, year -> schulferien_path(state, year, @current_year) end}
             years={@years}
             federal_states={@federal_states}
             position="left"
@@ -281,6 +281,15 @@ defmodule MehrSchulferienWeb.NavigationComponent do
     "#{prefix}/#{state}/#{year}"
   end
 
+  # The current-year tab links the evergreen state page: it shows the
+  # current and next school year, and the sitewide nav should funnel link
+  # equity to the head-term URL instead of a year page that expires.
+  defp schulferien_path(state, year, current_year) when year == current_year,
+    do: "/ferien/d/bundesland/#{state}"
+
+  defp schulferien_path(state, year, _current_year),
+    do: "/ferien/d/bundesland/#{state}/#{year}"
+
   attr :years, :list, required: true
   attr :federal_states, :list, required: true
   attr :current_user, :any, default: nil
@@ -312,7 +321,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             title="Schulferien"
             years={@years}
             federal_states={@federal_states}
-            path_prefix="/ferien/d/bundesland"
+            path_builder={fn state, year -> schulferien_path(state, year, @current_year) end}
           />
           <.mobile_section
             title="Brückentage"
@@ -355,7 +364,8 @@ defmodule MehrSchulferienWeb.NavigationComponent do
   attr :title, :string, required: true
   attr :years, :list, required: true
   attr :federal_states, :list, required: true
-  attr :path_prefix, :string, required: true
+  attr :path_prefix, :string, default: nil
+  attr :path_builder, :any, default: nil
 
   defp mobile_section(assigns) do
     ~H"""
@@ -372,7 +382,7 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             <div class="ml-4 space-y-1">
               <%= for {federal_state, display_name} <- @federal_states do %>
                 <a
-                  href={"#{@path_prefix}/#{federal_state}/#{year}"}
+                  href={build_path(@path_prefix, @path_builder, federal_state, year)}
                   class="block py-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   {display_name}

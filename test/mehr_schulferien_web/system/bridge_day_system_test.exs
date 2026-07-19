@@ -143,6 +143,84 @@ defmodule MehrSchulferienWeb.BridgeDaySystemTest do
       conn = get(conn, "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/foobar")
       assert conn.status == 404
     end
+
+    # The year gate never reads the real clock: each request pins "today"
+    # via the ?today= override provided by DateAssignsPlug.
+    test "a past year 301-redirects to the current year page", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn =
+        get(
+          conn,
+          "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/2021?today=15.06.2026"
+        )
+
+      assert redirected_to(conn, 301) ==
+               "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/2026"
+    end
+
+    test "the current year does not redirect even without data", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn =
+        get(
+          conn,
+          "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/2030?today=15.06.2030"
+        )
+
+      assert conn.status == 404
+    end
+  end
+
+  describe "national bridge day overview" do
+    setup [:add_federal_state, :add_periods]
+
+    test "renders per-state cards linking the state bridge day pages", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      conn = get(conn, "/brueckentage/#{country.slug}/#{@current_year}")
+      html = html_response(conn, 200)
+
+      assert html =~ "Brückentage #{@current_year}"
+      assert html =~ federal_state.name
+
+      assert html =~
+               "/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{@current_year}"
+    end
+
+    test "has an SEO title with the year and a self-referencing canonical", %{
+      conn: conn,
+      country: country
+    } do
+      conn = get(conn, "/brueckentage/#{country.slug}/#{@current_year}")
+      html = html_response(conn, 200)
+
+      assert html =~ "<title>"
+      assert html =~ "Brückentage #{@current_year}"
+      assert html =~ ~s(rel="canonical")
+      assert html =~ "/brueckentage/#{country.slug}/#{@current_year}\""
+    end
+
+    test "a past year 301-redirects to the current year", %{
+      conn: conn,
+      country: country
+    } do
+      conn = get(conn, "/brueckentage/#{country.slug}/2021?today=15.06.2026")
+
+      assert redirected_to(conn, 301) == "/brueckentage/#{country.slug}/2026"
+    end
+
+    test "404 for years without any bridge days", %{conn: conn, country: country} do
+      conn = get(conn, "/brueckentage/#{country.slug}/2035?today=15.06.2035")
+
+      assert conn.status == 404
+    end
   end
 
   # Setup functions

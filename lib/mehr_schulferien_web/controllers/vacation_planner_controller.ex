@@ -115,7 +115,11 @@ defmodule MehrSchulferienWeb.VacationPlannerController do
         public_periods: public_periods,
         school_vacation_periods: school_vacation_periods,
         all_federal_states: all_federal_states,
-        page_title: page_title
+        page_title: page_title,
+        # The state x day-count x year combinatorics are tools for humans,
+        # not search landing pages: Google leaves them in "crawled -
+        # currently not indexed" limbo and they drain the crawl budget.
+        noindex: true
       ]
 
       render(conn, "show.html", assigns)

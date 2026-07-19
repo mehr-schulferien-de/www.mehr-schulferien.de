@@ -45,6 +45,14 @@ find_adjacent_holidays = fn periods, holiday ->
 end %>
 
 <div class="mt-6 sm:mt-8">
+  <p class="mb-3 text-sm">
+    <a
+      href={~p"/brueckentage/#{@country.slug}/#{@year}"}
+      class="text-blue-600 dark:text-blue-400 hover:underline"
+    >
+      ← Brückentage {@year}: alle Bundesländer im Vergleich
+    </a>
+  </p>
   <% # Dynamic Teaser Calculation %>
   <% all_bridge_days = Enum.flat_map(@bridge_day_map, fn {_k, v} -> v || [] end) %>
   <% min_leave = Enum.map(all_bridge_days, & &1.number_days) |> Enum.sum() %>

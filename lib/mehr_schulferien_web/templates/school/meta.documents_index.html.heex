@@ -1,4 +1,7 @@
 <title>{@page_title}</title>
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
 <meta
   name="description"
   content={"Erstellen Sie kostenlos Entschuldigungsschreiben, Beurlaubungen und Sportbefreiungen für #{@school.name}. Einfache Formulare, professionelle PDFs zum Download."}

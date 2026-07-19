@@ -3,93 +3,169 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
   import MehrSchulferien.TestHelpers
 
   setup %{conn: conn} do
-    # The sitemap is built from Locations.list_countries/0, which caches into
-    # the location hierarchy cache. Stale country ids from other tests would
-    # make the federal state lookups come up empty.
+    # The sitemaps are built from Locations.list_countries/0, which caches
+    # into the location hierarchy cache. Stale country ids from other tests
+    # would make the federal state lookups come up empty.
     MehrSchulferien.Cache.clear_all_location_hierarchies()
     MehrSchulferien.Cache.clear_query_cache()
     {:ok, %{conn: conn}}
   end
 
-  describe "GET /sitemap.xml" do
-    setup [:add_federal_state_with_bridge_days]
-
-    test "access the sitemap in format xml", %{conn: conn, country: country} do
+  describe "GET /sitemap.xml (sitemap index)" do
+    test "lists the per-type child sitemaps", %{conn: conn} do
       conn = get(conn, "/sitemap.xml")
+
       assert response_content_type(conn, :xml)
-      assert response(conn, 200) =~ ~r/<loc>.*\/ferien\/#{country.slug}.*<\/loc>/
+      response = response(conn, 200)
+
+      assert response =~ "<sitemapindex"
+
+      for child <- ~w(static bundeslaender staedte schulen) do
+        assert response =~
+                 "<loc>https://www.mehr-schulferien.de/sitemap-#{child}.xml</loc>"
+      end
+    end
+  end
+
+  describe "child sitemaps" do
+    setup [:add_locations_with_periods]
+
+    test "static: contains homepage, vacation overviews and country page", %{
+      conn: conn,
+      country: country
+    } do
+      response = response(get(conn, "/sitemap-static.xml"), 200)
+
+      assert response =~ "<loc>https://www.mehr-schulferien.de/</loc>"
+      assert response =~ "<loc>https://www.mehr-schulferien.de/sommerferien</loc>"
+      assert response =~ "<loc>https://www.mehr-schulferien.de/ferien/#{country.slug}</loc>"
+      assert response =~ "<loc>https://www.mehr-schulferien.de/briefe</loc>"
+      assert response =~ "<loc>https://www.mehr-schulferien.de/impressum</loc>"
     end
 
-    test "contains the evergreen year-less federal state URL", %{
+    test "static: contains the national bridge day overview pages", %{
+      conn: conn,
+      country: country
+    } do
+      current_year = Date.utc_today().year
+      response = response(get(conn, "/sitemap-static.xml"), 200)
+
+      for year <- [current_year, current_year + 1] do
+        assert response =~
+                 "<loc>https://www.mehr-schulferien.de/brueckentage/#{country.slug}/#{year}</loc>"
+      end
+    end
+
+    test "bundeslaender: contains the evergreen year-less federal state URL", %{
       conn: conn,
       country: country,
       federal_state: federal_state
     } do
-      conn = get(conn, "/sitemap.xml")
+      response = response(get(conn, "/sitemap-bundeslaender.xml"), 200)
 
-      assert response(conn, 200) =~
+      assert response =~
                "<loc>https://www.mehr-schulferien.de/ferien/#{country.slug}/bundesland/#{federal_state.slug}</loc>"
+    end
+
+    test "bundeslaender: contains year, bridge day and date query URLs", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      current_year = Date.utc_today().year
+      response = response(get(conn, "/sitemap-bundeslaender.xml"), 200)
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/ferien/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}</loc>"
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}</loc>"
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/ist-heute-schulfrei/#{federal_state.slug}</loc>"
+    end
+
+    test "bundeslaender: does not contain noindexed thin pages (urlaubsplaner)", %{conn: conn} do
+      # Urlaubsplaner pages carry a noindex meta tag; listing them in the
+      # sitemap would send crawlers to pages they are told not to index.
+      refute response(get(conn, "/sitemap-bundeslaender.xml"), 200) =~ "urlaubsplaner"
+    end
+
+    test "staedte: contains all cities, including those without schools", %{
+      conn: conn,
+      country: country,
+      city: city,
+      city_without_school: city_without_school
+    } do
+      response = response(get(conn, "/sitemap-staedte.xml"), 200)
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/ferien/#{country.slug}/stadt/#{city.slug}</loc>"
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/ferien/#{country.slug}/stadt/#{city_without_school.slug}</loc>"
+    end
+
+    test "schulen: lists school ferien pages but not the noindexed briefe pages", %{
+      conn: conn,
+      country: country,
+      school: school
+    } do
+      response = response(get(conn, "/sitemap-schulen.xml"), 200)
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/ferien/#{country.slug}/schule/#{school.slug}</loc>"
+
+      refute response =~ "briefe"
+    end
+
+    test "schulen: leaves out quarantined schools", %{
+      conn: conn,
+      quarantined_school: quarantined_school
+    } do
+      refute response(get(conn, "/sitemap-schulen.xml"), 200) =~ quarantined_school.slug
     end
   end
 
-  defp add_federal_state_with_bridge_days(_) do
+  defp add_locations_with_periods(_) do
     country = get_or_create_deutschland()
     federal_state = insert(:federal_state, %{parent_location_id: country.id, slug: "berlin"})
 
-    # Add a holiday type for bridge days
     holiday_type =
       insert(:holiday_or_vacation_type, %{
         name: "Test Holiday",
         country_location_id: country.id
       })
 
-    # Get the current year
     current_year = Date.utc_today().year
 
-    # Create a public holiday in the current year to create a bridge day
-    insert(:public_holiday, %{
-      is_valid_for_everybody: true,
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(current_year, 5, 1),
-      ends_on: Date.new!(current_year, 5, 1),
-      display_priority: 1
-    })
+    # Public holidays for the current and next year so both year pages
+    # qualify for the bundeslaender sitemap.
+    for year <- [current_year, current_year + 1] do
+      insert(:public_holiday, %{
+        is_valid_for_everybody: true,
+        location_id: federal_state.id,
+        holiday_or_vacation_type_id: holiday_type.id,
+        starts_on: Date.new!(year, 5, 1),
+        ends_on: Date.new!(year, 5, 1),
+        display_priority: 1
+      })
+    end
 
-    # Create a day off before the public holiday to form a bridge day
-    insert(:period, %{
-      is_public_holiday: false,
-      is_valid_for_everybody: true,
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(current_year, 4, 30),
-      ends_on: Date.new!(current_year, 4, 30),
-      display_priority: 1
-    })
+    county = insert(:county, %{parent_location_id: federal_state.id})
+    city = insert(:city, %{parent_location_id: county.id})
+    city_without_school = insert(:city, %{parent_location_id: county.id})
+    school = insert(:school, %{parent_location_id: city.id})
+    quarantined_school = insert(:school, %{parent_location_id: city.id, is_quarantined: true})
 
-    # Create a public holiday for next year too
-    next_year = current_year + 1
-
-    insert(:public_holiday, %{
-      is_valid_for_everybody: true,
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(next_year, 5, 1),
-      ends_on: Date.new!(next_year, 5, 1),
-      display_priority: 1
-    })
-
-    # Create a day off before the public holiday to form a bridge day for next year
-    insert(:period, %{
-      is_public_holiday: false,
-      is_valid_for_everybody: true,
-      location_id: federal_state.id,
-      holiday_or_vacation_type_id: holiday_type.id,
-      starts_on: Date.new!(next_year, 4, 30),
-      ends_on: Date.new!(next_year, 4, 30),
-      display_priority: 1
-    })
-
-    {:ok, %{country: country, federal_state: federal_state}}
+    {:ok,
+     %{
+       country: country,
+       federal_state: federal_state,
+       city: city,
+       city_without_school: city_without_school,
+       school: school,
+       quarantined_school: quarantined_school
+     }}
   end
 end

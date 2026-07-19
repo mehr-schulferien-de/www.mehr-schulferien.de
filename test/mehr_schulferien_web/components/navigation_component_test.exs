@@ -75,8 +75,9 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html =~ "Nordrhein-Westfalen"
       assert html =~ "Schleswig-Holstein"
 
-      # Check that links are properly formatted
-      assert html =~ ~r/href="\/ferien\/d\/bundesland\/baden-wuerttemberg\/2025"/
+      # Check that links are properly formatted. The current-year tab links
+      # the evergreen (year-less) state page, future years keep year pages.
+      assert html =~ ~r/href="\/ferien\/d\/bundesland\/baden-wuerttemberg"/
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2026"/
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2027"/
       assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/hamburg\/2025"/
@@ -161,8 +162,9 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
 
       # Check that each federal state appears in all navigation sections for all 3 years
       for state <- federal_states do
-        # Schulferien - all 3 years
-        assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2025"/
+        # Schulferien - evergreen page for the current year, then year pages
+        assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}"/
+        refute html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2025"/
         assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2026"/
         assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2027"/
         # Brückentage - all 3 years
@@ -192,8 +194,9 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html_2024 =~ ~r/data-year-tab="2024"/
       assert html_2024 =~ ~r/data-year-tab="2025"/
       assert html_2024 =~ ~r/data-year-tab="2026"/
-      # Check links for all 3 years
-      assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2024"/
+      # Current year links the evergreen page, future years keep year pages
+      assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern"/
+      refute html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2024"/
       assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2025"/
       assert html_2024 =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2026"/
 
@@ -205,8 +208,9 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html_2026 =~ ~r/data-year-tab="2026"/
       assert html_2026 =~ ~r/data-year-tab="2027"/
       assert html_2026 =~ ~r/data-year-tab="2028"/
-      # Check links for all 3 years
-      assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2026"/
+      # Current year links the evergreen page, future years keep year pages
+      assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin"/
+      refute html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2026"/
       assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2027"/
       assert html_2026 =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2028"/
     end

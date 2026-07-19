@@ -1,8 +1,77 @@
 defmodule MehrSchulferienWeb.BridgeDayController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{Calendars.DateHelpers, Periods}
+  alias MehrSchulferien.{Calendars.DateHelpers, Locations, Periods}
   alias MehrSchulferienWeb.ControllerHelpers, as: CH
+
+  @doc """
+  National overview: all federal states with their bridge day opportunities
+  for one year. Targets the Germany-wide "brückentage <jahr>" queries that
+  previously landed on individual state pages.
+  """
+  def index_country(conn, %{"country_slug" => country_slug, "year" => year}) do
+    today = DateHelpers.get_today_or_custom_date(conn)
+
+    with {:ok, country} <- fetch_country(country_slug),
+         {:ok, year_int} <- check_year(year) do
+      if year_int < today.year do
+        # Past bridge days are worthless; consolidate into the current year.
+        conn
+        |> put_status(:moved_permanently)
+        |> redirect(to: ~p"/brueckentage/#{country.slug}/#{today.year}")
+      else
+        render_country_overview(conn, country, year_int)
+      end
+    else
+      {:error, :not_found} ->
+        CH.render_not_found_or_empty_database(conn)
+
+      _ ->
+        conn = Plug.Conn.put_status(conn, :not_found)
+        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+    end
+  end
+
+  defp render_country_overview(conn, country, year_int) do
+    states_with_counts =
+      country
+      |> Locations.list_federal_states()
+      |> Enum.map(fn federal_state ->
+        {federal_state, bridge_day_proposal_count([country.id, federal_state.id], year_int)}
+      end)
+
+    total_count = states_with_counts |> Enum.map(&elem(&1, 1)) |> Enum.sum()
+
+    if total_count == 0 do
+      conn = Plug.Conn.put_status(conn, :not_found)
+      raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+    else
+      render(conn, "index_country.html",
+        country: country,
+        year: year_int,
+        states_with_counts: states_with_counts,
+        total_count: total_count
+      )
+    end
+  end
+
+  defp bridge_day_proposal_count(location_ids, year) do
+    {:ok, start_date} = Date.new(year, 1, 1)
+    {:ok, end_date} = Date.new(year, 12, 31)
+    public_periods = Periods.list_public_everybody_periods(location_ids, start_date, end_date)
+    bridge_day_map = Periods.group_by_interval(public_periods)
+
+    2..5
+    |> Enum.map(fn num ->
+      bridge_day_map
+      |> Map.get(num, [])
+      |> Enum.count(fn bridge_day ->
+        all_periods = Periods.list_periods_with_bridge_day(public_periods, bridge_day)
+        MehrSchulferien.BridgeDayCalculations.meets_minimum_gain?(bridge_day, all_periods)
+      end)
+    end)
+    |> Enum.sum()
+  end
 
   def index_within_federal_state(conn, %{
         "country_slug" => country_slug,
@@ -23,10 +92,35 @@ defmodule MehrSchulferienWeb.BridgeDayController do
         "federal_state_slug" => federal_state_slug,
         "year" => year
       }) do
+    today = DateHelpers.get_today_or_custom_date(conn)
+
     with {:ok, country} <- fetch_country(country_slug),
          {:ok, federal_state} <- fetch_federal_state(country, federal_state_slug),
-         {:ok, year_int} <- check_year(year),
-         {:ok, start_date} <- Date.new(year_int, 1, 1),
+         {:ok, year_int} <- check_year(year) do
+      if year_int < today.year do
+        # Bridge day opportunities are worthless once the year is over;
+        # consolidate past-year URLs (and links to them) into the current
+        # year instead of serving 404s.
+        conn
+        |> put_status(:moved_permanently)
+        |> redirect(
+          to: ~p"/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}/#{today.year}"
+        )
+      else
+        render_bridge_days(conn, country, federal_state, year_int)
+      end
+    else
+      {:error, :not_found} ->
+        CH.render_not_found_or_empty_database(conn)
+
+      _ ->
+        conn = Plug.Conn.put_status(conn, :not_found)
+        raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router
+    end
+  end
+
+  defp render_bridge_days(conn, country, federal_state, year_int) do
+    with {:ok, start_date} <- Date.new(year_int, 1, 1),
          {:ok, end_date} <- Date.new(year_int, 12, 31),
          true <- has_bridge_days?([country.id, federal_state.id], year_int) do
       assigns =
@@ -35,9 +129,6 @@ defmodule MehrSchulferienWeb.BridgeDayController do
 
       render(conn, "show_within_federal_state.html", assigns)
     else
-      {:error, :not_found} ->
-        CH.render_not_found_or_empty_database(conn)
-
       _ ->
         conn = Plug.Conn.put_status(conn, :not_found)
         raise Phoenix.Router.NoRouteError, conn: conn, router: MehrSchulferienWeb.Router

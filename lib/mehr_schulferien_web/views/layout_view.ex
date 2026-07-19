@@ -28,6 +28,21 @@ defmodule MehrSchulferienWeb.LayoutView do
     matches_page?(conn.path_info, :ferien, federal_state_slug, year)
   end
 
+  @doc """
+  True on the evergreen (year-less) state page or the current-year page for
+  that state. The nav's current-year tab links the evergreen page, so both
+  count as "you are here".
+  """
+  def is_evergreen_or_current_year_state_page?(conn, federal_state_slug, current_year) do
+    case conn.path_info do
+      ["ferien", _, "bundesland", state] ->
+        state == federal_state_slug
+
+      _ ->
+        is_current_page_for_federal_state?(conn, federal_state_slug, current_year)
+    end
+  end
+
   def is_current_bridge_days_page_for_federal_state?(conn, federal_state_slug, year) do
     matches_page?(conn.path_info, :brueckentage, federal_state_slug, year)
   end

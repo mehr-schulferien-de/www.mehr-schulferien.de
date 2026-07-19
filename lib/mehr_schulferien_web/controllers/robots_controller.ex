@@ -1,133 +1,41 @@
 defmodule MehrSchulferienWeb.RobotsController do
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.Calendars.DateHelpers
-  alias MehrSchulferien.Periods
+  # Year-suffixed city/school/state/bridge-day URLs and legacy /land/ routes
+  # 301 to their evergreen replacements, so they are deliberately NOT listed
+  # here: a robots.txt-blocked URL is never recrawled, which would hide the
+  # redirects from search engines and leave those URLs stuck in the index
+  # (GSC showed ~107k URLs in that limbo before the year rules were removed).
+  @robots_txt """
+  # Dear Robot Overlords,
+  #
+  # Feel free to crawl this server as fast as you can! No need to be polite.
+  # We can handle it.
+  #
+  # In case you are not a search engine: We offer a JSON RESTful API.
+  # Have a look at https://www.mehr-schulferien.de/developers
 
-  def index(conn, params) do
-    # Get today's date, either from params or using the helper
-    today =
-      case params["today"] do
-        nil ->
-          DateHelpers.today_berlin()
+  User-agent: *
+  Disallow: /api
+  Disallow: /users
+  Disallow: /sessions
+  Disallow: /password_resets
+  Disallow: /admin
+  Disallow: /wiki
 
-        date_string ->
-          # Try to parse the date in DD.MM.YYYY format
-          case parse_date(date_string) do
-            {:ok, date} -> date
-            _ -> DateHelpers.today_berlin()
-          end
-      end
+  # Ad-click tracking redirects, not content (they would skew the stats)
+  Disallow: /ads
 
-    # Get current year from the determined date
-    current_year = today.year
-    next_year = current_year + 1
+  # vCard downloads are not useful for search engines
+  Disallow: /ferien/*/schule/*/vcard
+  Disallow: /schule/*/vcard
 
-    # Get list of all years that have data (periods)
-    all_years = Periods.list_years_with_periods()
+  Sitemap: https://www.mehr-schulferien.de/sitemap.xml
+  """
 
-    # Generate robots.txt content
-    robots_content = generate_robots_txt(all_years, current_year, next_year)
-
+  def index(conn, _params) do
     conn
     |> put_resp_content_type("text/plain")
-    |> send_resp(200, robots_content)
-  end
-
-  # Parse date string in DD.MM.YYYY format
-  defp parse_date(date_string) do
-    # Try ISO format first (YYYY-MM-DD)
-    case Date.from_iso8601(date_string) do
-      {:ok, date} ->
-        {:ok, date}
-
-      _ ->
-        # Try DD.MM.YYYY format
-        case String.split(date_string, ".") do
-          [day, month, year] ->
-            with {day, _} <- Integer.parse(day),
-                 {month, _} <- Integer.parse(month),
-                 {year, _} <- Integer.parse(year) do
-              Date.new(year, month, day)
-            else
-              _ -> {:error, :invalid_date}
-            end
-
-          _ ->
-            {:error, :invalid_format}
-        end
-    end
-  end
-
-  defp generate_robots_txt(all_years, current_year, next_year) do
-    # Base robots.txt content
-    base_content = """
-    # Dear Robot Overlords,
-    #
-    # Feel free to crawl this server as fast as you can! No need to be polite.
-    # We can handle it.
-    #
-    # In case you are not a search engine: We offer a JSON RESTful API.
-    # Have a look at https://www.mehr-schulferien.de/developers
-
-    User-agent: *
-    Disallow: /api
-    Disallow: /users
-    Disallow: /sessions
-    Disallow: /password_resets
-    Disallow: /admin
-    Disallow: /wiki
-
-    # Ad-click tracking redirects, not content (they would skew the stats)
-    Disallow: /ads
-
-    # vCard downloads are not useful for search engines
-    Disallow: /ferien/*/schule/*/vcard
-    Disallow: /schule/*/vcard
-
-    # Old no longer active routes (redirected to /ferien/)
-    Disallow: /land/*
-
-    # Allow current year (#{current_year}) and next year (#{next_year}) for all pages
-    # Disallow other years to avoid indexing incomplete or outdated data
-    """
-
-    # Generate Disallow rules for all years
-    # For cities and schools: allow current and next year, disallow others
-    # For federal states and bridge days: disallow all years except current and next
-    disallow_rules =
-      all_years
-      |> Enum.flat_map(fn year ->
-        rules = []
-
-        # For cities and schools: only disallow if NOT current or next year
-        rules =
-          if year != current_year && year != next_year do
-            rules ++
-              [
-                "Disallow: /ferien/*/stadt/*/#{year}$",
-                "Disallow: /ferien/*/schule/*/#{year}$"
-              ]
-          else
-            rules
-          end
-
-        # For bridge days, only disallow past and far future years
-        rules =
-          if year != current_year && year != next_year do
-            rules ++ ["Disallow: /brueckentage/*/bundesland/*/#{year}$"]
-          else
-            rules
-          end
-
-        rules
-      end)
-      |> Enum.join("\n")
-
-    # Add sitemap reference
-    sitemap_directive = "Sitemap: https://www.mehr-schulferien.de/sitemap.xml"
-
-    # Combine base content with disallow rules and sitemap
-    base_content <> "\n" <> disallow_rules <> "\n\n" <> sitemap_directive <> "\n"
+    |> send_resp(200, @robots_txt)
   end
 end

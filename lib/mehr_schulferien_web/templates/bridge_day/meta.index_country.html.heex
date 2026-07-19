@@ -1,0 +1,26 @@
+<title>{country_bridge_day_page_title(@year)}</title>
+<meta
+  name="description"
+  content={country_bridge_day_page_description(@year, length(@states_with_counts))}
+/>
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<link rel="canonical" href={url(~p"/brueckentage/#{@country.slug}/#{@year}")} />
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={url(~p"/brueckentage/#{@country.slug}/#{@year}")} />
+<meta property="og:title" content={country_bridge_day_page_title(@year)} />
+<meta
+  property="og:description"
+  content={country_bridge_day_page_description(@year, length(@states_with_counts))}
+/>
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+<!-- Twitter -->
+<meta property="twitter:card" content="summary" />
+<meta property="twitter:title" content={country_bridge_day_page_title(@year)} />
+<meta
+  property="twitter:description"
+  content={country_bridge_day_page_description(@year, length(@states_with_counts))}
+/>
