@@ -1,0 +1,27 @@
+#!/bin/sh
+# Tracked pre-commit hook. Enable it once per checkout with:
+#
+#   git config core.hooksPath .githooks
+#
+# `mix setup` does this for you. Replaces the old `pre_commit` hex package,
+# which was unmaintained, emitted compile warnings, broke dev compilation in
+# git worktrees, and ran a bare `git stash` that is unsafe with the shared
+# stash stack.
+#
+# Each check runs on its own line (no pipes / trailing commands) so the real
+# exit status is what the hook sees. Skip with `git commit --no-verify`.
+set -e
+
+echo "pre-commit: mix format --check-formatted"
+mix format --check-formatted
+
+echo "pre-commit: mix compile --warnings-as-errors"
+mix compile --warnings-as-errors
+
+echo "pre-commit: mix credo --strict"
+mix credo --strict
+
+echo "pre-commit: mix test"
+mix test
+
+echo "pre-commit: all checks passed"

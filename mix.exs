@@ -65,14 +65,19 @@ defmodule MehrSchulferien.MixProject do
       {:mogrify, "~> 0.9.3"},
       {:resvg, "~> 0.5.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
-      {:csv, "~> 3.2"},
-      {:pre_commit, "~> 0.3.4", only: :dev}
+      {:csv, "~> 3.2"}
     ]
   end
 
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: [
+        "deps.get",
+        "ecto.setup",
+        "assets.setup",
+        "assets.build",
+        "cmd git config core.hooksPath .githooks"
+      ],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],

@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # Configure your database
 config :mehr_schulferien, MehrSchulferien.Repo,

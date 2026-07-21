@@ -147,7 +147,10 @@ mix test  # Output should be only dots, no text
 
 ### Additional Requirements
 - Claude Code hooks automatically enforce: tests, formatting, compilation after each response
-- Git pre-commit hooks (`pre_commit` package) enforce: formatting, compilation, credo, and tests
+- Git pre-commit hook (`.githooks/pre-commit`, tracked in the repo) enforces:
+  formatting, compilation with warnings-as-errors, credo, and tests. Enable it
+  with `git config core.hooksPath .githooks` (done automatically by `mix setup`).
+  Skip it for a single commit with `git commit --no-verify`.
 - Use simple solutions with onboard tools/packages when possible
 - Focus only on assigned tasks (DRY principle, but avoid scope creep)
 
@@ -364,4 +367,4 @@ _A library for parsing, formatting, and validating international phone numbers. 
 ## Git Workflow and Interactions Memories
 
 - You are allowed to git commit and git push code but ask the user first or wait for the user to tell you to do it.
-- **IMPORTANT**: Git pre-commit hooks automatically run the test quality checklist before commits
+- **IMPORTANT**: The tracked git pre-commit hook (`.githooks/pre-commit`, enabled via `git config core.hooksPath .githooks` or `mix setup`) runs the test quality checklist before commits
