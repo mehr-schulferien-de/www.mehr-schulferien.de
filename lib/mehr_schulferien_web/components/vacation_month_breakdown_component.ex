@@ -35,7 +35,7 @@ defmodule MehrSchulferienWeb.VacationMonthBreakdownComponent do
               <%= for state_info <- states do %>
                 <li class="text-sm text-gray-700 dark:text-gray-300">
                   <a
-                    href={"/#{@vacation_type}ferien/#{state_info.state.slug}/#{@current_year}"}
+                    href={"/#{MehrSchulferien.Calendars.VacationSlug.url_slug(@vacation_type)}/#{state_info.state.slug}/#{@current_year}"}
                     class="hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
                   >
                     {state_info.state.name}

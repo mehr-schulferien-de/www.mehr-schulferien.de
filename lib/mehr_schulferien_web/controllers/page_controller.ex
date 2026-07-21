@@ -61,6 +61,7 @@ defmodule MehrSchulferienWeb.PageController do
 
     render(conn, "vacation_type.html",
       vacation_type: vacation_type,
+      vacation_url_slug: MehrSchulferien.Calendars.VacationSlug.url_slug(vacation_type),
       vacation_config: config,
       current_year: current_year,
       next_year: current_year + 1,

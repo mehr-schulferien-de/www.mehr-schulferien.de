@@ -16,7 +16,7 @@ defmodule MehrSchulferienWeb.VacationImageControllerTest do
 
     vacation_type =
       insert(:holiday_or_vacation_type,
-        slug: "oster",
+        slug: "ostern",
         name: "Ostern",
         colloquial: "Osterferien",
         default_is_school_vacation: true,

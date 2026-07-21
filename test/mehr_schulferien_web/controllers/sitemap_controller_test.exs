@@ -56,6 +56,51 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
       end
     end
 
+    test "static: contains the national season year pages and Feiertage pages", %{
+      conn: conn,
+      country: country
+    } do
+      current_year = Date.utc_today().year
+      response = response(get(conn, "/sitemap-static.xml"), 200)
+
+      for year <- [current_year, current_year + 1] do
+        assert response =~ "<loc>https://www.mehr-schulferien.de/sommerferien/#{year}</loc>"
+
+        assert response =~
+                 "<loc>https://www.mehr-schulferien.de/feiertage/#{country.slug}/#{year}</loc>"
+      end
+
+      assert response =~ "<loc>https://www.mehr-schulferien.de/feiertage/#{country.slug}</loc>"
+    end
+
+    test "bundeslaender: contains evergreen season, bridge day and Feiertage URLs", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      current_year = Date.utc_today().year
+      response = response(get(conn, "/sitemap-bundeslaender.xml"), 200)
+
+      # Season URLs use the canonical German compound slug (osterferien,
+      # not the generated "osternferien").
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/osterferien/#{federal_state.slug}</loc>"
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/osterferien/#{federal_state.slug}/#{current_year}</loc>"
+
+      refute response =~ "osternferien"
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/brueckentage/#{country.slug}/bundesland/#{federal_state.slug}</loc>"
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/feiertage/#{country.slug}/bundesland/#{federal_state.slug}</loc>"
+
+      assert response =~
+               "<loc>https://www.mehr-schulferien.de/feiertage/#{country.slug}/bundesland/#{federal_state.slug}/#{current_year}</loc>"
+    end
+
     test "bundeslaender: contains the evergreen year-less federal state URL", %{
       conn: conn,
       country: country,
@@ -149,6 +194,28 @@ defmodule MehrSchulferienWeb.SitemapControllerTest do
         starts_on: Date.new!(year, 5, 1),
         ends_on: Date.new!(year, 5, 1),
         display_priority: 1
+      })
+    end
+
+    # A school vacation type with periods in both years so the season
+    # URLs (evergreen and per year) appear in the bundeslaender sitemap.
+    easter_type =
+      insert(:holiday_or_vacation_type, %{
+        name: "Ostern",
+        slug: "ostern",
+        colloquial: "Osterferien",
+        default_is_school_vacation: true,
+        country_location_id: country.id
+      })
+
+    for year <- [current_year, current_year + 1] do
+      insert(:period, %{
+        location_id: federal_state.id,
+        holiday_or_vacation_type_id: easter_type.id,
+        starts_on: Date.new!(year, 3, 25),
+        ends_on: Date.new!(year, 4, 5),
+        is_school_vacation: true,
+        is_valid_for_students: true
       })
     end
 

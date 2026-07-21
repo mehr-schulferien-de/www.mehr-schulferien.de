@@ -1,20 +1,19 @@
-<% canonical_url =
-  "https://www.mehr-schulferien.de/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}"
+<% canonical_url = "https://www.mehr-schulferien.de/feiertage/#{@country.slug}/#{@year}"
 
-page_title = "Brückentage #{@federal_state.name} – die besten Chancen #{@current_year}"
+page_title = "Feiertage #{@year}: alle gesetzlichen Feiertage in Deutschland"
 
 meta_description =
-  if @bridge_day_proposal_count > 0 do
-    "Brückentage #{@federal_state.name}: #{@bridge_day_proposal_count} Chancen, mit wenigen Urlaubstagen lange Auszeiten zu gewinnen – inklusive Super-Brückentagen und Planung für #{@current_year + 1}."
+  if @has_data do
+    "Feiertage #{@year} in Deutschland: alle bundesweiten und länderspezifischen gesetzlichen Feiertage mit Datum, Wochentag und Bundesländern."
   else
-    "Brückentage #{@federal_state.name}: alle Chancen, mit wenigen Urlaubstagen lange Auszeiten zu gewinnen – inklusive Planung für #{@current_year + 1}."
+    "Feiertage #{@year} in Deutschland: alle gesetzlichen Feiertage im Überblick."
   end %>
 
 <title>{page_title}</title>
 <meta name="description" content={meta_description} />
 <meta
   name="keywords"
-  content={"Brückentage #{@federal_state.name}, Brückentage #{@current_year}, Brückentage #{@current_year + 1}, Urlaubsplanung #{@federal_state.name}"}
+  content={"Feiertage #{@year}, gesetzliche Feiertage #{@year}, Feiertage Deutschland #{@year}"}
 />
 <link rel="canonical" href={canonical_url} />
 
@@ -37,8 +36,7 @@ meta_description =
 <script type="application/ld+json">
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
     %{name: "Startseite", item: "https://www.mehr-schulferien.de"},
-    %{name: "Ferien Deutschland", item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}"},
-    %{name: "#{@federal_state.name}", item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"},
-    %{name: "Brückentage #{@federal_state.name}", item: canonical_url}
+    %{name: "Feiertage Deutschland", item: "https://www.mehr-schulferien.de/feiertage/#{@country.slug}"},
+    %{name: "Feiertage #{@year}", item: canonical_url}
   ]) %>
 </script>

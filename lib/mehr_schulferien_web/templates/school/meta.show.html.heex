@@ -1,11 +1,44 @@
+<% # Navigational searchers type the school's name; the title leads with
+# it and the description leads with the concrete benefit (the next
+# vacation dates) to earn the click.
+truncated_name = MehrSchulferienWeb.Helpers.SeoTitleHelper.truncate_school_name(@school.name, 50)
+
+next_vacation =
+  @periods
+  |> Enum.filter(fn p ->
+    p.holiday_or_vacation_type.default_is_school_vacation &&
+      Date.compare(p.ends_on, @today) != :lt
+  end)
+  |> Enum.sort_by(& &1.starts_on, Date)
+  |> List.first()
+
+next_vacation_sentence =
+  case next_vacation do
+    nil ->
+      nil
+
+    period ->
+      name = period.holiday_or_vacation_type.colloquial || period.holiday_or_vacation_type.name
+
+      if Date.compare(period.starts_on, @today) == :gt do
+        "Nächste Ferien: #{name} vom #{Calendar.strftime(period.starts_on, "%d.%m.")} bis #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}."
+      else
+        "Aktuelle Ferien: #{name} bis #{Calendar.strftime(period.ends_on, "%d.%m.%Y")}."
+      end
+  end
+
+meta_description =
+  [
+    next_vacation_sentence,
+    "Alle Ferientermine, Feiertage und bewegliche Ferientage für #{@school.name} in #{@city.name} (#{@federal_state.name}) im Schuljahr #{@current_school_year}/#{@current_school_year + 1}."
+  ]
+  |> Enum.reject(&is_nil/1)
+  |> Enum.join(" ") %>
+
 <title>
-  <% truncated_name =
-    MehrSchulferienWeb.Helpers.SeoTitleHelper.truncate_school_name(@school.name, 50) %> Schulferien {truncated_name}
+  {truncated_name}: Ferien & freie Tage {@current_school_year}/{@current_school_year + 1}
 </title>
-<meta
-  name="description"
-  content={"Aktuelle Schulferien und Ferientermine für #{@school.name} in #{@city.name} (#{@federal_state.name}). Übersicht über alle Ferienzeiten im Schuljahr #{@current_school_year}/#{@current_school_year + 1}."}
-/>
+<meta name="description" content={meta_description} />
 <meta
   name="keywords"
   content={"Schulferien, #{@school.name}, #{@city.name}, #{@federal_state.name}, Ferientermine, #{@current_school_year}, Ferien"}

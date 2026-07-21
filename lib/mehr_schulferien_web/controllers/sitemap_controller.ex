@@ -6,6 +6,7 @@ defmodule MehrSchulferienWeb.SitemapController do
   import Ecto.Query
 
   alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferien.Calendars.VacationSlug
   alias MehrSchulferien.Calendars.VacationTypes
   alias MehrSchulferien.Locations
   alias MehrSchulferien.Locations.Location
@@ -60,6 +61,33 @@ defmodule MehrSchulferienWeb.SitemapController do
         }
       end
 
+    # National per-year season pages ("sommerferien 2027") next to the
+    # evergreen overviews above.
+    vacation_year_overviews =
+      for slug <- @vacation_overview_slugs, year <- [today.year, today.year + 1] do
+        %{
+          loc: "#{@base_url}/#{slug}/#{year}",
+          changefreq: "weekly",
+          priority: "0.8"
+        }
+      end
+
+    # National Feiertage pages: evergreen plus current and next year.
+    feiertage_overviews =
+      for country <- countries do
+        [
+          %{loc: "#{@base_url}/feiertage/#{country.slug}", changefreq: "weekly", priority: "0.9"}
+          | for year <- [today.year, today.year + 1] do
+              %{
+                loc: "#{@base_url}/feiertage/#{country.slug}/#{year}",
+                changefreq: "weekly",
+                priority: "0.8"
+              }
+            end
+        ]
+      end
+      |> List.flatten()
+
     developer_pages =
       for path <- @developer_paths do
         %{loc: "#{@base_url}/#{path}", changefreq: "monthly", priority: "0.4"}
@@ -68,8 +96,10 @@ defmodule MehrSchulferienWeb.SitemapController do
     entries =
       [%{loc: "#{@base_url}/", lastmod: today, changefreq: "daily", priority: "1.0"}] ++
         vacation_overviews ++
+        vacation_year_overviews ++
         country_pages ++
         bridge_day_overviews ++
+        feiertage_overviews ++
         [%{loc: "#{@base_url}/briefe", changefreq: "monthly", priority: "0.6"}] ++
         developer_pages ++
         [%{loc: "#{@base_url}/impressum", changefreq: "yearly", priority: "0.3"}]
@@ -168,6 +198,42 @@ defmodule MehrSchulferienWeb.SitemapController do
 
     evergreen = %{loc: state_url, lastmod: last_modified, changefreq: "weekly", priority: "0.9"}
 
+    # Evergreen season pages (/osterferien/bayern) and the evergreen
+    # bridge day and Feiertage pages for this state.
+    evergreen_season_pages =
+      for vacation_type <- VacationTypes.list_for_federal_state(state, today) do
+        %{
+          loc: "#{@base_url}/#{VacationSlug.url_slug(vacation_type)}/#{state.slug}",
+          lastmod: last_modified,
+          changefreq: "weekly",
+          priority: "0.85"
+        }
+      end
+
+    evergreen_bridge_day_page = %{
+      loc: "#{@base_url}/brueckentage/#{country.slug}/bundesland/#{state.slug}",
+      lastmod: last_modified,
+      changefreq: "weekly",
+      priority: "0.8"
+    }
+
+    feiertage_pages = [
+      %{
+        loc: "#{@base_url}/feiertage/#{country.slug}/bundesland/#{state.slug}",
+        lastmod: last_modified,
+        changefreq: "weekly",
+        priority: "0.85"
+      }
+      | for year <- years do
+          %{
+            loc: "#{@base_url}/feiertage/#{country.slug}/bundesland/#{state.slug}/#{year}",
+            lastmod: last_modified,
+            changefreq: "weekly",
+            priority: "0.7"
+          }
+        end
+    ]
+
     date_query_pages =
       [
         {"ist-heute-feiertag", "0.7"},
@@ -189,7 +255,7 @@ defmodule MehrSchulferienWeb.SitemapController do
         season_pages =
           for vacation_type <- VacationTypes.list_for_year(state, year) do
             %{
-              loc: "#{@base_url}/#{vacation_type.slug}ferien/#{state.slug}/#{year}",
+              loc: "#{@base_url}/#{VacationSlug.url_slug(vacation_type)}/#{state.slug}/#{year}",
               lastmod: last_modified,
               changefreq: "weekly",
               priority: "0.85"
@@ -212,7 +278,9 @@ defmodule MehrSchulferienWeb.SitemapController do
         ]
       end
 
-    [evergreen | date_query_pages] ++ List.flatten(year_pages)
+    [evergreen | date_query_pages] ++
+      evergreen_season_pages ++
+      [evergreen_bridge_day_page | feiertage_pages] ++ List.flatten(year_pages)
   end
 
   defp city_country_slugs do

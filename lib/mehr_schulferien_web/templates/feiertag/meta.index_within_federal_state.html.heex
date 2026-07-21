@@ -1,0 +1,62 @@
+<% canonical_url =
+  "https://www.mehr-schulferien.de/feiertage/#{@country.slug}/bundesland/#{@federal_state.slug}"
+
+page_title = "Feiertage #{@federal_state.name} #{@current_year} & #{@next_year}"
+
+meta_description =
+  "Alle gesetzlichen Feiertage in #{@federal_state.name} für #{@current_year} und #{@next_year} mit Datum und Wochentag – plus Brückentage und Schulferien."
+
+faq_entities =
+  for {year, holidays} <- @holidays_by_year, holidays != [] do
+    %{
+      "@type" => "Question",
+      "name" => "Wie viele gesetzliche Feiertage hat #{@federal_state.name} #{year}?",
+      "acceptedAnswer" => %{
+        "@type" => "Answer",
+        "text" =>
+          "#{@federal_state.name} hat #{year} insgesamt #{length(holidays)} gesetzliche Feiertage: #{Enum.map_join(holidays, ", ", &"#{&1.holiday_or_vacation_type.name} (#{Calendar.strftime(&1.starts_on, "%d.%m.%Y")})")}."
+      }
+    }
+  end %>
+
+<title>{page_title}</title>
+<meta name="description" content={meta_description} />
+<meta
+  name="keywords"
+  content={"Feiertage #{@federal_state.name}, gesetzliche Feiertage #{@federal_state.name}, Feiertage #{@current_year}, Feiertage #{@next_year}"}
+/>
+<link rel="canonical" href={canonical_url} />
+
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical_url} />
+<meta property="og:title" content={page_title} />
+<meta property="og:description" content={meta_description} />
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonical_url} />
+<meta property="twitter:title" content={page_title} />
+<meta property="twitter:description" content={meta_description} />
+<!-- Breadcrumb Navigation -->
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: "Startseite", item: "https://www.mehr-schulferien.de"},
+    %{name: "Feiertage Deutschland", item: "https://www.mehr-schulferien.de/feiertage/#{@country.slug}"},
+    %{name: "Feiertage #{@federal_state.name}", item: canonical_url}
+  ]) %>
+</script>
+<!-- FAQ Schema -->
+<%= if faq_entities != [] do %>
+  <script type="application/ld+json">
+    <%= Phoenix.HTML.raw(Jason.encode!(%{
+      "@context" => "https://schema.org",
+      "@type" => "FAQPage",
+      "mainEntity" => faq_entities
+    })) %>
+  </script>
+<% end %>

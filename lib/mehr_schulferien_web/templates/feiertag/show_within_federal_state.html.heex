@@ -1,0 +1,63 @@
+<div class="mt-6 sm:mt-8">
+  <.heading level={1} class="mb-4">Feiertage {@federal_state.name} {@year}</.heading>
+
+  <%= if @has_data do %>
+    <.text class="text-gray-700 dark:text-gray-300 mb-6">
+      {@federal_state.name} hat {@year} insgesamt {length(@holidays)} gesetzliche Feiertage<%= if weekend_count(
+                                                                                                      @holidays
+                                                                                                    ) >
+                                                                                                      0 do %>
+        , davon {weekend_count(@holidays)} an einem Wochenende
+      <% end %>.
+    </.text>
+
+    <.card padding="p-4">
+      <:content>
+        {render("_holiday_table.html", holidays: @holidays)}
+      </:content>
+    </.card>
+
+    <div class="mt-6 flex flex-wrap gap-4 text-sm">
+      <a
+        href={~p"/feiertage/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Feiertage {@federal_state.name}: aktuelle Übersicht
+      </a>
+      <a
+        href={~p"/feiertage/#{@country.slug}/#{@year}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Feiertage {@year}: alle Bundesländer
+      </a>
+      <a
+        href={~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Brückentage {@federal_state.name}
+      </a>
+      <a
+        href={~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Schulferien {@federal_state.name}
+      </a>
+    </div>
+  <% else %>
+    <.card padding="p-6">
+      <:content>
+        <.text class="text-gray-700 dark:text-gray-300">
+          Für {@year} liegen noch keine Feiertagstermine für {@federal_state.name} vor.
+        </.text>
+        <div class="mt-4">
+          <a
+            href={~p"/feiertage/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+            class="text-blue-600 hover:text-blue-800"
+          >
+            Zur aktuellen Feiertagsübersicht {@federal_state.name} →
+          </a>
+        </div>
+      </:content>
+    </.card>
+  <% end %>
+</div>

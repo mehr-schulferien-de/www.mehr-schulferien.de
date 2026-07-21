@@ -106,7 +106,10 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
         assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2026"}
         assert html =~ ~r{href="/ferien/d/bundesland/#{slug}/2027"}
         # Check all 3 years for Brückentage
-        assert html =~ ~r{href="/brueckentage/d/bundesland/#{slug}/2025"}
+        # Current year links the evergreen bridge day page, later years
+        # keep their year pages.
+        assert html =~ ~r{href="/brueckentage/d/bundesland/#{slug}"}
+        refute html =~ ~r{href="/brueckentage/d/bundesland/#{slug}/2025"}
         assert html =~ ~r{href="/brueckentage/d/bundesland/#{slug}/2026"}
         assert html =~ ~r{href="/brueckentage/d/bundesland/#{slug}/2027"}
         # Check all 3 years for Urlaubsplaner
@@ -193,12 +196,12 @@ defmodule MehrSchulferienWeb.LayoutNavigationTest do
       assert html =~ ~r/<span[^>]*class="[^"]*text-gray-400[^"]*"[^>]*>.*Bayern.*<\/span>/s
     end
 
-    test "has only 3 dropdowns", %{navigation_assigns: navigation_assigns} do
+    test "has only 4 dropdowns", %{navigation_assigns: navigation_assigns} do
       html = render_navigation(navigation_assigns)
 
-      # Count data-dropdown-container occurrences (should be exactly 3)
+      # Schulferien, Brückentage, Feiertage, Urlaubsplaner
       dropdown_count = html |> String.split("data-dropdown-container") |> length() |> Kernel.-(1)
-      assert dropdown_count == 3
+      assert dropdown_count == 4
     end
 
     test "dropdowns have scrollable content", %{navigation_assigns: navigation_assigns} do

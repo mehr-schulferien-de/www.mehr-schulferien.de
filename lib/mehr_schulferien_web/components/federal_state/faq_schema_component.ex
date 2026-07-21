@@ -13,14 +13,18 @@ defmodule MehrSchulferienWeb.FederalState.FaqSchemaComponent do
       # Take main vacation types
       |> Enum.take(6)
       |> Enum.map(fn period ->
+        # Use the period's own year: on evergreen pages the periods span
+        # two years and would otherwise all be labeled with the page year.
+        period_year = period.starts_on.year
+
         %{
           "@type" => "Question",
           "name" =>
-            "Wann sind #{period.holiday_or_vacation_type.name} #{assigns.year} in #{assigns.federal_state.name}?",
+            "Wann sind #{period.holiday_or_vacation_type.name} #{period_year} in #{assigns.federal_state.name}?",
           "acceptedAnswer" => %{
             "@type" => "Answer",
             "text" =>
-              "Die #{period.holiday_or_vacation_type.name} #{assigns.year} in #{assigns.federal_state.name} sind vom #{Calendar.strftime(period.starts_on, "%d.%m.%Y")} bis #{Calendar.strftime(period.ends_on, "%d.%m.%Y")} (#{Date.diff(period.ends_on, period.starts_on) + 1} Tage)."
+              "Die #{period.holiday_or_vacation_type.name} #{period_year} in #{assigns.federal_state.name} sind vom #{Calendar.strftime(period.starts_on, "%d.%m.%Y")} bis #{Calendar.strftime(period.ends_on, "%d.%m.%Y")} (#{Date.diff(period.ends_on, period.starts_on) + 1} Tage)."
           }
         }
       end)

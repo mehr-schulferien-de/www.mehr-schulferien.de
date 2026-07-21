@@ -162,3 +162,189 @@ is built from GSC striking-distance data. In rough priority order:
    Data-driven PR (16 regional angles per story), an embeddable
    Ferien-widget for schools/municipalities, and promoting the API to
    developer communities are the realistic link sources for this niche.
+
+## 2026-07-21: Full analysis on upgraded Ahrefs plan (Content Gap + GSC Insights)
+
+Ahrefs subscription upgraded; Content Gap and GSC Insights (connected
+GSC property) are now available. Snapshot of all numbers, then a
+re-prioritized roadmap.
+
+### Data snapshot
+
+**GSC, last 3 months (to 2026-07-19):** 49,800 clicks / 1.63M
+impressions / CTR 3.1% / avg position 10.4. That is ~550 clicks/day.
+Ahrefs' estimate (603/month) undercounts real traffic ~27x because the
+long-tail school/city queries are below its keyword database radar -
+never treat Ahrefs traffic numbers as absolute for this site.
+
+**Ahrefs:** DR 10 (fell from 15 during June - watch), UR 9. 489
+backlinks / 167 ref domains (only 52 followed, 31%; 99.8% of links have
+UR < 10). 533 tracked keywords, 771 by-location rows; tracked keyword
+count roughly halved from Feb to May (seasonal Easter drop + school
+pages losing positions in May/June). 256 pages with traffic; none above
+1,000/month. Crawl: 191k pages crawled, 82.7% HTTP 200, 17.2%
+redirects, 148 404s, 34 5xx.
+
+**Index status (GSC, data through 10.07, i.e. BEFORE the 19.07 index
+diet deploy):** 54.6k indexed / 267k known. Blocked by robots.txt
+107,379; crawled-not-indexed 79,086; 404 10,716; redirect 5,749;
+noindex 114 (will explode as urlaubsplaner/briefe noindex gets
+recrawled - that is expected and fine). Sitemap index healthy: read
+21.07, 44,846 URLs discovered. Verification checkpoints from 2026-07-19
+stand unchanged.
+
+**Evergreen state pages are working** (5 weeks in): the Thüringen
+evergreen page is now the site's top page in Ahrefs (68/month est.);
+"osterferien thüringen 2026" (8.5K vol) moved 41→24, "ferien thüringen
+2025" entered at 26. National + state Brückentage queries sit at
+positions 7-16 with real impressions ("brückentage 2027 sachsen" pos
+6.9, CTR 2.9%). The pattern is validated; the remaining head-term gap
+is time + internal links + authority.
+
+**Content Gap vs schulferien.org (DE, they top-10, we not in top 100):
+23,294 keywords.** The gap clusters, with monthly volumes:
+
+| Cluster | Examples (volume) | Our asset |
+|---|---|---|
+| ferien/schulferien state+year | ferien bayern 2026 (265K), ferien niedersachsen 2025 (190K) | evergreen state pages, too young/weak |
+| Season + state (+year) | weihnachtsferien nrw 2025 (185K), pfingstferien bayern 2026 (163K), osterferien bayern 2026 (87K) | season pages exist but crippled (below) |
+| **Feiertage** | feiertage nrw 2026 (146K), feiertage 2026 (94K), feiertage bayern 2026 (91K), feiertage hessen 2026 (85K) | **nothing** - 314 GSC queries land at pos 40-70 on wrong pages |
+| National season | herbstferien 2024 (215K), sommerferien 2026 (93K), sommerferien nrw (99K) | none - random city pages soak these at pos 4-9 with 0% CTR |
+| Kalender/generic | kalender 2026 (334K), ostern 2026 (497K), pfingsten 2026 (344K) | none (future option, off-topic-ish) |
+
+KD on almost all of these is 0-8: the blocker is authority + page
+quality, not keyword difficulty.
+
+**Season pages are structurally crippled** (worst technical finding):
+
+1. URL slugs are generated as `#{db_slug}ferien`, producing
+   **osternferien, weihnachtenferien, pfingstenferien, fruehjahrferien,
+   himmelfahrtferien** - words nobody searches. Live sitemap counts:
+   32 weihnachtenferien, 30 osternferien, 6 pfingstenferien URLs.
+2. The CORRECT terms (`/osterferien/hessen/2026`,
+   `/weihnachtsferien/rheinland-pfalz/2026`) exist as URLs but
+   **302-redirect to the generic state year page** - searchers' exact
+   phrases bounce away while the content sits on the wrong slug.
+3. Year-less season URLs (`/sommerferien/niedersachsen`) are 302s to
+   the current year - the exact anti-pattern that kept state pages
+   invisible until 2026-07-17.
+4. Past-year season pages render 200 forever
+   (`/osternferien/hessen/2022` is still live) - stale duplicates
+   competing with current pages.
+
+Same evergreen gap for Brückentage: `/brueckentage/d/bundesland/<slug>`
+is still a 302 to the year page (roadmap item 1 from 2026-07-19,
+unchanged).
+
+**School pages: huge impressions, ~zero CTR.** Dozens of school-name
+queries with 600-3,400 impressions each at positions 6-11 and 0-0.6%
+CTR (heinrich schütz schule 3,420 impr / 2 clicks; oberschule pulsnitz
+2,739 / 1; ohain schule 2,716 / 0). These are navigational searches for
+the school's own website; we rank but give no reason to click. Titles
+that lead with the concrete benefit ("Nächste Ferien: ... ab 23.07.")
+are the only realistic lever; expectations moderate.
+
+### Re-prioritized roadmap (supersedes 2026-07-19 ordering)
+
+**P1 - season + bridge day URL structure (engineering, proven pattern):**
+1. Correct season slugs as canonical URLs (osterferien,
+   weihnachtsferien, pfingstferien, fruehjahrsferien) with 301s from
+   the old grammatical-monster slugs; keep DB slugs, map at URL layer.
+2. Evergreen season-state pages (`/sommerferien/<state>` as real page,
+   current + next year, self-canonical, sitemap) - replicate the state
+   page pattern.
+3. Evergreen Brückentage state pages (same).
+4. Past-year season pages 301 to the evergreen season page.
+
+**P2 - Feiertage page family (largest new-content lever):**
+`/feiertage/d/bundesland/<slug>` evergreen + per-year, national
+`/feiertage/d/<year>`; holiday data already exists in periods. Internal
+links from every state page + nav. Targets the 85-146K volume cluster
+where we have literally nothing.
+
+**P3 - national season pages:** `/sommerferien/d/<year>` etc. with
+per-state date table (targets "sommerferien 2026" 93K + "herbstferien
+<jahr>" and stops city pages soaking these queries at 0% CTR).
+
+**P4 - CTR work:** school page titles/meta leading with next vacation
+dates; FAQ blocks + FAQPage schema on state/season pages ("wann sind
+sommerferien" 585 impr pos 8 across 180 URLs).
+
+**P5 - authority (unchanged Phase 3):** DR 10 vs schulferien.org ~70s
+stays the head-term ceiling. Data PR, embeddable widget, API developer
+marketing. Note "ferien api" / "feiertage api" queries already bring
+the /developers pages impressions - the API angle has organic demand.
+
+### How to verify success
+
+| Check | Baseline 2026-07-21 | Success looks like |
+|---|---|---|
+| "osterferien/weihnachtsferien/pfingstferien <state> <year>" positions | Not ranking (wrong slugs 302 away) | Corrected URLs indexed, climbing into top 20 by season peaks |
+| "feiertage <state> <year>" | 314 queries pos 40-70 on wrong pages | Dedicated pages ranking; any top-20 appearance is progress |
+| Evergreen state pages | Thüringen pos 24 on "osterferien thüringen 2026" | Several states in top 10-20 on season+state queries by Oct 2026 |
+| Brückentage evergreen | 302 redirect | Real page, year queries consolidating onto it |
+| DR trend | 10 (down from 15) | Stabilize, then climb with Phase 3 links |
+
+## 2026-07-21: P1-P4 shipped (v4.33.0)
+
+Implementation of the re-prioritized roadmap above, same day. All
+changes test-covered (1,200 tests green, credo clean).
+
+**P1 - season + bridge day URL structure:**
+
+1. New `MehrSchulferien.Calendars.VacationSlug` maps DB slugs to the
+   German compound URL slugs (ostern→osterferien,
+   weihnachten→weihnachtsferien, pfingsten→pfingstferien,
+   fruehjahr→fruehjahrsferien, himmelfahrt→himmelfahrtsferien). The
+   correct slugs now RENDER; the old generated slugs (osternferien,
+   weihnachtenferien, ...) 301 to them. Every link builder (state
+   templates, components, handwritten images, next-vacation redirect,
+   sitemap) emits the canonical slug. This also fixed the national
+   season overview pages, whose rel=canonical pointed at 404 URLs
+   (/osterferien declared canonical /osternferien).
+2. Evergreen season-state pages: `/osterferien/<state>` etc. are real
+   pages (current + next year, next-occurrence hero, FAQ + FAQPage/
+   Event schema, self-canonical, sitemap 0.85) instead of 302s.
+3. Evergreen Brückentage state pages: `/brueckentage/d/bundesland/
+   <slug>` renders the dormant evergreen template again (current-year
+   proposals + year links, proper canonical/OG meta, sitemap). Nav
+   current-year tabs (both implementations) now funnel to the evergreen
+   bridge day pages, mirroring the state pages.
+4. Past-year season pages 301 to the evergreen season page (the
+   /osternferien/hessen/2022 zombie class is gone). Year params are
+   validated in the controller (router constraints are decorative).
+
+**P2 - Feiertage page family** (new FeiertagController + templates):
+`/feiertage/d` (evergreen national), `/feiertage/d/<year>` (per-holiday
+rows with "bundesweit" vs state list), `/feiertage/d/bundesland/<slug>`
+(evergreen, FAQPage schema with holiday counts) and `.../<year>`.
+Past years 301 to the evergreen pages. All in the sitemap, plus a
+fourth "Feiertage" nav dropdown (desktop + mobile, both nav
+implementations) with cross-links to Brückentage and Schulferien.
+
+**P3 - national season year pages:** `/sommerferien/<year>` etc. render
+the all-states table for that year (self-canonical, ItemList schema,
+past years 301 to `/sommerferien`). In the static sitemap for current +
+next year. Targets "sommerferien 2026" (93K) and stops random city
+pages from soaking those queries.
+
+**P4 - CTR:**
+
+- School page titles lead with the school name ("<Name>: Ferien & freie
+  Tage 2026/2027") and the meta description leads with the next
+  vacation dates ("Nächste Ferien: Herbstferien vom 23.10. bis
+  03.11."). Navigational searchers finally get a reason to click.
+- FAQPage schema added to the evergreen state pages (was only on year
+  pages); the schema component now labels questions with each period's
+  own year instead of the page year.
+
+**Not shipped (P5, non-code):** data-driven PR, the embeddable widget
+and API developer marketing remain open - they need editorial/outreach
+work, not routes.
+
+### How to verify success
+
+Same checkpoints as above (Oct 2026, Jan 2027). Additionally check in
+GSC after 2-4 weeks: the legacy season URLs report "Seite mit
+Weiterleitung", the corrected slugs gather impressions, and
+`/feiertage/` pages appear in the page report at all.

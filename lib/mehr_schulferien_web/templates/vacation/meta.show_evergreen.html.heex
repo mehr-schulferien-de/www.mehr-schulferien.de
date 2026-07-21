@@ -1,0 +1,95 @@
+<% canonical_url = "https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}"
+
+meta_description =
+  case @next_period do
+    nil ->
+      "#{@vacation_name} in #{@federal_state.name}: alle aktuellen und kommenden Termine im Überblick."
+
+    period ->
+      "#{@vacation_name} #{@federal_state.name}: #{Calendar.strftime(period.starts_on, "%d.%m.")}–#{Calendar.strftime(period.ends_on, "%d.%m.%Y")}. Alle Termine für #{@current_year} und #{@next_year} mit Kalender und Planungstipps."
+  end
+
+faq_entities =
+  Enum.map(@periods, fn period ->
+    %{
+      "@type" => "Question",
+      "name" => "Wann sind #{@vacation_name} #{period.starts_on.year} in #{@federal_state.name}?",
+      "acceptedAnswer" => %{
+        "@type" => "Answer",
+        "text" =>
+          "Die #{@vacation_name} #{period.starts_on.year} in #{@federal_state.name} sind vom #{Calendar.strftime(period.starts_on, "%d.%m.%Y")} bis #{Calendar.strftime(period.ends_on, "%d.%m.%Y")} (#{Date.diff(period.ends_on, period.starts_on) + 1} Tage)."
+      }
+    }
+  end) %>
+
+<title>{@page_title}</title>
+<meta name="description" content={meta_description} />
+<meta
+  name="keywords"
+  content={"#{@vacation_name} #{@federal_state.name}, #{@vacation_name} #{@current_year}, #{@vacation_name} #{@next_year}, Schulferien #{@federal_state.name}"}
+/>
+<link rel="canonical" href={canonical_url} />
+
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical_url} />
+<meta property="og:title" content={@page_title} />
+<meta property="og:description" content={meta_description} />
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonical_url} />
+<meta property="twitter:title" content={@page_title} />
+<meta property="twitter:description" content={meta_description} />
+<!-- Breadcrumb Navigation -->
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: "Startseite", item: "https://www.mehr-schulferien.de"},
+    %{name: "Ferien Deutschland", item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}"},
+    %{name: "#{@federal_state.name}", item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"},
+    %{name: "#{@vacation_name} #{@federal_state.name}", item: canonical_url}
+  ]) %>
+</script>
+<!-- FAQ Schema -->
+<%= if faq_entities != [] do %>
+  <script type="application/ld+json">
+    <%= Phoenix.HTML.raw(Jason.encode!(%{
+      "@context" => "https://schema.org",
+      "@type" => "FAQPage",
+      "mainEntity" => faq_entities
+    })) %>
+  </script>
+<% end %>
+<!-- Event Schema for the next vacation period -->
+<%= if @next_period do %>
+  <script type="application/ld+json">
+    <%= Phoenix.HTML.raw(Jason.encode!(%{
+      "@context" => "https://schema.org",
+      "@type" => "Event",
+      "name" => "#{@vacation_name} #{@federal_state.name} #{@next_period.starts_on.year}",
+      "description" => "#{@vacation_name} in #{@federal_state.name} #{@next_period.starts_on.year}",
+      "startDate" => Date.to_iso8601(@next_period.starts_on),
+      "endDate" => Date.to_iso8601(@next_period.ends_on),
+      "eventStatus" => "https://schema.org/EventScheduled",
+      "eventAttendanceMode" => "https://schema.org/OfflineEventAttendanceMode",
+      "location" => %{
+        "@type" => "Place",
+        "name" => @federal_state.name,
+        "address" => %{
+          "@type" => "PostalAddress",
+          "addressRegion" => @federal_state.name,
+          "addressCountry" => "DE"
+        }
+      },
+      "organizer" => %{
+        "@type" => "Organization",
+        "name" => "Kultusministerium #{@federal_state.name}",
+        "url" => "https://www.mehr-schulferien.de"
+      }
+    })) %>
+  </script>
+<% end %>

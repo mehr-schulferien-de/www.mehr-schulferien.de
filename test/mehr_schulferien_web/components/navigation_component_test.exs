@@ -80,7 +80,7 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/baden-wuerttemberg"/
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/bayern\/2026"/
       assert html =~ ~r/href="\/ferien\/d\/bundesland\/berlin\/2027"/
-      assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/hamburg\/2025"/
+      assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/hamburg"/
       assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/hessen\/2026"/
     end
 
@@ -167,8 +167,9 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
         refute html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2025"/
         assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2026"/
         assert html =~ ~r/href="\/ferien\/d\/bundesland\/#{state}\/2027"/
-        # Brückentage - all 3 years
-        assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}\/2025"/
+        # Brückentage - evergreen page for the current year, then year pages
+        assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}"/
+        refute html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}\/2025"/
         assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}\/2026"/
         assert html =~ ~r/href="\/brueckentage\/d\/bundesland\/#{state}\/2027"/
         # Urlaubsplaner - all 3 years
@@ -231,14 +232,14 @@ defmodule MehrSchulferienWeb.NavigationComponentTest do
       assert html =~ ~r/href="\/urlaubsplaner\/hessen\/20-tage\/2026"/
     end
 
-    test "has only 3 dropdowns (Schulferien, Brückentage, Urlaubsplaner)" do
+    test "has only 4 dropdowns (Schulferien, Brückentage, Feiertage, Urlaubsplaner)" do
       assigns = %{socket: nil, conn: nil, today: ~D[2025-06-23]}
 
       html = render_component(&NavigationComponent.navigation/1, assigns)
 
-      # Count data-dropdown-container occurrences (should be exactly 3)
+      # Count data-dropdown-container occurrences (should be exactly 4)
       dropdown_count = html |> String.split("data-dropdown-container") |> length() |> Kernel.-(1)
-      assert dropdown_count == 3
+      assert dropdown_count == 4
     end
 
     test "dropdown has scrollable content area" do

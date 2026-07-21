@@ -361,6 +361,25 @@ defmodule MehrSchulferienWeb.Router do
         :index_country,
         constraints: [year: ~r/20[2-3][0-9]/]
 
+    # Feiertage pages ("feiertage <bundesland> <jahr>" head terms). MUST
+    # also come before the /:vacation_slug catch-alls: Phoenix does not
+    # enforce constraints, so /feiertage/d would otherwise be captured.
+    get "/feiertage/:country_slug/bundesland/:federal_state_slug/:year",
+        FeiertagController,
+        :show_within_federal_state,
+        constraints: [year: ~r/20[2-3][0-9]/]
+
+    get "/feiertage/:country_slug/bundesland/:federal_state_slug",
+        FeiertagController,
+        :index_within_federal_state
+
+    get "/feiertage/:country_slug/:year",
+        FeiertagController,
+        :index_country,
+        constraints: [year: ~r/20[2-3][0-9]/]
+
+    get "/feiertage/:country_slug", FeiertagController, :show_country
+
     # Year-agnostic vacation URLs (redirect to current year)
     get "/:vacation_slug/:federal_state_slug", VacationController, :vacation_current,
       constraints: [vacation_slug: ~r/[a-z-]+ferien/]

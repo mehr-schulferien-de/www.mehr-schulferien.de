@@ -1,0 +1,98 @@
+<div class="mt-6 sm:mt-8">
+  <.heading level={1} class="mb-4">Feiertage {@year} in Deutschland</.heading>
+
+  <%= if @has_data do %>
+    <.text class="text-gray-700 dark:text-gray-300 mb-6">
+      Alle gesetzlichen Feiertage {@year} auf einen Blick – bundesweite Feiertage und die zusätzlichen Feiertage der einzelnen Bundesländer.
+    </.text>
+
+    <.card padding="p-4">
+      <:content>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead>
+              <tr>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Datum
+                </th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Wochentag
+                </th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Feiertag
+                </th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Gilt in
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+              <%= for row <- @holiday_rows do %>
+                <tr>
+                  <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                    {Calendar.strftime(row.period.starts_on, "%d.%m.%Y")}
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
+                    {weekday_name(row.period.starts_on)}
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
+                    {row.period.holiday_or_vacation_type.name}
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
+                    <%= if row.states == :all do %>
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                        bundesweit
+                      </span>
+                    <% else %>
+                      {states_label(row.states)}
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </:content>
+    </.card>
+
+    <section class="mt-8">
+      <.heading level={2} class="text-xl mb-4">Feiertage nach Bundesland</.heading>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <%= for state <- @states do %>
+          <a
+            href={~p"/feiertage/#{@country.slug}/bundesland/#{state.slug}/#{@year}"}
+            class="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Feiertage {state.name} {@year}
+          </a>
+        <% end %>
+      </div>
+    </section>
+
+    <div class="mt-6 flex flex-wrap gap-4 text-sm">
+      <a href={~p"/feiertage/#{@country.slug}"} class="text-blue-600 hover:text-blue-800">
+        Feiertage: aktuelle Übersicht
+      </a>
+      <a
+        href={~p"/feiertage/#{@country.slug}/#{@year + 1}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Feiertage {@year + 1}
+      </a>
+      <a
+        href={~p"/brueckentage/#{@country.slug}/#{@year}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Brückentage {@year}
+      </a>
+    </div>
+  <% else %>
+    <.card padding="p-6">
+      <:content>
+        <.text class="text-gray-700 dark:text-gray-300">
+          Für {@year} liegen noch keine Feiertagstermine vor.
+        </.text>
+      </:content>
+    </.card>
+  <% end %>
+</div>

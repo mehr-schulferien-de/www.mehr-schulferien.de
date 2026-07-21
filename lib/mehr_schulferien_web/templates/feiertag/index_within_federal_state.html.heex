@@ -1,0 +1,82 @@
+<div class="mt-6 sm:mt-8">
+  <.heading level={1} class="mb-4">Feiertage {@federal_state.name}</.heading>
+
+  <%= if @has_data do %>
+    <.text class="text-gray-700 dark:text-gray-300 mb-6">
+      Alle gesetzlichen Feiertage in {@federal_state.name} für {@current_year} und {@next_year} im Überblick.
+    </.text>
+
+    <%= for {year, holidays} <- @holidays_by_year do %>
+      <%= if holidays != [] do %>
+        <section class="mb-8">
+          <div class="flex items-center justify-between mb-3">
+            <.heading level={2} class="text-xl">
+              Feiertage {@federal_state.name} {year}
+            </.heading>
+            <a
+              href={~p"/feiertage/#{@country.slug}/bundesland/#{@federal_state.slug}/#{year}"}
+              class="text-sm text-blue-600 hover:text-blue-800"
+            >
+              Details {year} →
+            </a>
+          </div>
+          <.card padding="p-4">
+            <:content>
+              {render("_holiday_table.html", holidays: holidays)}
+            </:content>
+          </.card>
+        </section>
+      <% end %>
+    <% end %>
+
+    <% # Visible FAQ section %>
+    <div class="mt-8">
+      <.heading level={2} class="text-xl sm:text-2xl mb-4">
+        Häufige Fragen zu den Feiertagen in {@federal_state.name}
+      </.heading>
+      <div class="space-y-4">
+        <%= for {year, holidays} <- @holidays_by_year, holidays != [] do %>
+          <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <.heading level={3} class="text-base text-gray-900 dark:text-gray-100 mb-1">
+              Wie viele gesetzliche Feiertage hat {@federal_state.name} {year}?
+            </.heading>
+            <.text variant="small" class="text-gray-700 dark:text-gray-300">
+              {@federal_state.name} hat {year} insgesamt {length(holidays)} gesetzliche Feiertage<%= if weekend_count(
+                                                                                                            holidays
+                                                                                                          ) >
+                                                                                                            0 do %>
+                , davon fallen {weekend_count(holidays)} auf ein Wochenende
+              <% end %>.
+            </.text>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap gap-4 text-sm">
+      <a href={~p"/feiertage/#{@country.slug}"} class="text-blue-600 hover:text-blue-800">
+        Feiertage: alle Bundesländer
+      </a>
+      <a
+        href={~p"/brueckentage/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Brückentage {@federal_state.name}
+      </a>
+      <a
+        href={~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+        class="text-blue-600 hover:text-blue-800"
+      >
+        Schulferien {@federal_state.name}
+      </a>
+    </div>
+  <% else %>
+    <.card padding="p-6">
+      <:content>
+        <.text class="text-gray-700 dark:text-gray-300">
+          Für {@federal_state.name} liegen aktuell keine Feiertagstermine vor.
+        </.text>
+      </:content>
+    </.card>
+  <% end %>
+</div>

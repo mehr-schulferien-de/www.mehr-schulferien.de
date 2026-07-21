@@ -1,0 +1,62 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <.heading level={1} class="text-3xl mb-4">
+      {@vacation_config.name} {@year} in Deutschland
+    </.heading>
+    <.text variant="lead" class="text-gray-700 dark:text-gray-300">
+      Alle Termine der {@vacation_config.name}
+      {@year} für alle 16 Bundesländer auf einen Blick. {@vacation_config.meta_focus}
+    </.text>
+  </div>
+
+  <%= if @has_data do %>
+    <MehrSchulferienWeb.VacationTypeComponents.vacation_statistics
+      vacation_data={@states_data}
+      vacation_name={@vacation_config.name}
+    />
+
+    <section class="mt-8">
+      <.heading level={2} class="text-2xl mb-4">
+        {@vacation_config.name} {@year}: Termine nach Bundesland
+      </.heading>
+
+      <MehrSchulferienWeb.VacationTypeComponents.vacation_overview_table
+        vacation_data={@states_data}
+        vacation_type={@vacation_db_slug}
+        year={@year}
+        conn={@conn}
+      />
+    </section>
+  <% else %>
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <.heading level={2} class="text-lg text-blue-900 mb-3">
+        {@vacation_config.name} {@year}
+      </.heading>
+      <.text class="text-gray-700">
+        Die Termine für die {@vacation_config.name}
+        {@year} wurden von den Kultusministerien noch nicht veröffentlicht. Sie werden in der Regel 12-18 Monate im Voraus festgelegt.
+      </.text>
+    </div>
+  <% end %>
+
+  <MehrSchulferienWeb.VacationTypeComponents.vacation_planning_tips vacation_type={
+    @vacation_db_slug
+  } />
+  <!-- Link back to the evergreen national overview and other years -->
+  <section class="mt-12 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+    <.heading level={3} class="text-lg mb-4">Weitere Übersichten</.heading>
+    <div class="flex flex-wrap gap-4">
+      <a href={"/#{@vacation_type}"} class="text-blue-600 hover:text-blue-800 font-medium">
+        {@vacation_config.name}: aktuelle Übersicht
+      </a>
+      <a href={"/#{@vacation_type}/#{@year + 1}"} class="text-blue-600 hover:text-blue-800">
+        {@vacation_config.name} {@year + 1}
+      </a>
+    </div>
+  </section>
+</div>
+<!-- Structured Data -->
+<MehrSchulferienWeb.VacationTypeComponents.vacation_structured_data structured_data={
+  @structured_data
+} />

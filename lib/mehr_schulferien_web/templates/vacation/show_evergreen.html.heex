@@ -1,0 +1,201 @@
+<div class="mt-6 sm:mt-8">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+    <.heading level={1}>
+      {@vacation_name} {@federal_state.name}
+    </.heading>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-6">
+    <div class="lg:w-2/3">
+      <.card padding="p-4">
+        <:content>
+          <%= if @has_data do %>
+            <%= if @next_period do %>
+              <% official_duration =
+                Date.diff(@next_period.ends_on, @next_period.starts_on) + 1 %>
+              <% effective_duration =
+                MehrSchulferienWeb.ViewHelpers.calculate_effective_duration(
+                  @next_period,
+                  @all_periods
+                ) %>
+              <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                <.heading level={2} class="text-lg text-blue-900 dark:text-blue-100 mb-2">
+                  <%= if Date.compare(@next_period.starts_on, @today) == :gt do %>
+                    Nächste {@vacation_name}: {@next_period.starts_on.year}
+                  <% else %>
+                    Aktuelle {@vacation_name}: {@next_period.starts_on.year}
+                  <% end %>
+                </.heading>
+                <div class="text-xl font-bold text-blue-800 dark:text-blue-200">
+                  {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                    @next_period.starts_on
+                  )} - {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                    @next_period.ends_on
+                  )}
+                </div>
+                <div class="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                  {official_duration} Tage
+                  <%= if effective_duration > official_duration do %>
+                    <span class="text-green-700 dark:text-green-400 font-semibold">
+                      (insgesamt {effective_duration} freie Tage*)
+                    </span>
+                  <% end %>
+                </div>
+                <%= if effective_duration > official_duration do %>
+                  <div class="text-xs text-blue-600 dark:text-blue-300 mt-2 italic">
+                    * inkl. angrenzende Wochenenden und Feiertage
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <.heading level={3} class="text-lg text-gray-800 dark:text-gray-200 mb-3">
+              Alle Termine {@current_year} und {@next_year}
+            </.heading>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead>
+                  <tr>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Jahr
+                    </th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Zeitraum
+                    </th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Dauer
+                    </th>
+                    <th class="px-3 py-2"></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                  <%= for period <- @periods do %>
+                    <tr>
+                      <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {period.starts_on.year}
+                      </td>
+                      <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
+                        {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                          period.starts_on
+                        )} - {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                          period.ends_on
+                        )}
+                      </td>
+                      <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
+                        {Date.diff(period.ends_on, period.starts_on) + 1} Tage
+                      </td>
+                      <td class="px-3 py-2 text-sm">
+                        <a
+                          href={"/#{@vacation_type}/#{@federal_state.slug}/#{period.starts_on.year}"}
+                          class="text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                        >
+                          Details →
+                        </a>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <% # Links to other vacation types (evergreen URLs) %>
+            <%= if length(@vacation_types) > 1 do %>
+              <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <.heading level={3} class="text-base text-gray-800 dark:text-gray-200 mb-3">
+                  Weitere Ferientermine {@federal_state.name}:
+                </.heading>
+                <div class="flex flex-wrap gap-2">
+                  <%= for vt <- @vacation_types do %>
+                    <% vacation_key = MehrSchulferien.Calendars.VacationSlug.url_slug(vt) %>
+                    <%= if vacation_key != @vacation_type do %>
+                      <a
+                        href={"/#{vacation_key}/#{@federal_state.slug}"}
+                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 border border-blue-300 rounded-md transition-colors"
+                      >
+                        {vt.colloquial}
+                      </a>
+                    <% else %>
+                      <span class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
+                        {vt.colloquial}
+                      </span>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+
+            <div class="mt-4">
+              <a
+                href={~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+                class="text-blue-600 hover:text-blue-800 text-sm"
+              >
+                ← Alle Schulferien {@federal_state.name}
+              </a>
+            </div>
+          <% else %>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <.heading level={2} class="text-lg text-blue-900 mb-3">
+                {@vacation_name} in {@federal_state.name}
+              </.heading>
+              <.text class="text-gray-700 mb-4">
+                Für {@vacation_name} in {@federal_state.name} liegen aktuell keine
+                Termine vor. Die Termine werden vom Kultusministerium {@federal_state.name} festgelegt und veröffentlicht.
+              </.text>
+              <a
+                href={~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"}
+                class="inline-flex items-center text-blue-600 hover:text-blue-800"
+              >
+                Alle Schulferien {@federal_state.name} ansehen →
+              </a>
+            </div>
+          <% end %>
+        </:content>
+      </.card>
+    </div>
+
+    <div class="lg:w-1/3">
+      <.ical_panel
+        conn={@conn}
+        entity_slug={@federal_state.slug}
+        entity_name={@federal_state.name}
+        entity_type="federal_state"
+        year={@current_year}
+      />
+
+      <div class="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+        <.heading level={3} class="text-lg text-yellow-900 dark:text-yellow-200 mb-2">
+          {@vacation_name} planen
+        </.heading>
+        <.text variant="small" class="text-yellow-800 dark:text-yellow-300">
+          {vacation_planning_tip(@vacation_type)}
+        </.text>
+      </div>
+    </div>
+  </div>
+
+  <% # Visible FAQ section %>
+  <%= if @has_data do %>
+    <div class="mt-8">
+      <.heading level={2} class="text-xl sm:text-2xl mb-4">
+        Häufige Fragen zu den {@vacation_name}n in {@federal_state.name}
+      </.heading>
+      <div class="space-y-4">
+        <%= for period <- @periods do %>
+          <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <.heading level={3} class="text-base text-gray-900 dark:text-gray-100 mb-1">
+              Wann sind {@vacation_name} {period.starts_on.year} in {@federal_state.name}?
+            </.heading>
+            <.text variant="small" class="text-gray-700 dark:text-gray-300">
+              Die {@vacation_name} {period.starts_on.year} in {@federal_state.name} sind vom {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(
+                period.starts_on
+              )} bis {MehrSchulferienWeb.Formatters.DateFormatter.format_date_full(period.ends_on)} ({Date.diff(
+                period.ends_on,
+                period.starts_on
+              ) + 1} Tage).
+            </.text>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,37 @@
+<% canonical_url = "https://www.mehr-schulferien.de/feiertage/#{@country.slug}"
+
+page_title = "Feiertage in Deutschland #{@current_year} & #{@next_year}"
+
+meta_description =
+  "Alle gesetzlichen Feiertage in Deutschland für #{@current_year} und #{@next_year}: bundesweite Feiertage und die zusätzlichen Feiertage jedes Bundeslandes." %>
+
+<title>{page_title}</title>
+<meta name="description" content={meta_description} />
+<meta
+  name="keywords"
+  content={"Feiertage, gesetzliche Feiertage, Feiertage Deutschland, Feiertage #{@current_year}, Feiertage #{@next_year}"}
+/>
+<link rel="canonical" href={canonical_url} />
+
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical_url} />
+<meta property="og:title" content={page_title} />
+<meta property="og:description" content={meta_description} />
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonical_url} />
+<meta property="twitter:title" content={page_title} />
+<meta property="twitter:description" content={meta_description} />
+<!-- Breadcrumb Navigation -->
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: "Startseite", item: "https://www.mehr-schulferien.de"},
+    %{name: "Feiertage Deutschland", item: canonical_url}
+  ]) %>
+</script>

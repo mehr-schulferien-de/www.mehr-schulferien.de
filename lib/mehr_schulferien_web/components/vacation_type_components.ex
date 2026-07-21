@@ -95,7 +95,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
           <%= if data.period && MehrSchulferien.Calendars.VacationTypes.exists_for_year?(data.state, @vacation_type, @year) do %>
             <div class="mt-3 pt-3 border-t border-gray-200">
               <a
-                href={"/#{@vacation_type}ferien/#{data.state_slug}/#{@year}"}
+                href={"/#{MehrSchulferien.Calendars.VacationSlug.url_slug(@vacation_type)}/#{data.state_slug}/#{@year}"}
                 class="text-sm text-blue-600 hover:text-blue-900 font-medium"
               >
                 Details anzeigen →
@@ -167,7 +167,7 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                 <%= if data.period && MehrSchulferien.Calendars.VacationTypes.exists_for_year?(data.state, @vacation_type, @year) do %>
                   <a
-                    href={"/#{@vacation_type}ferien/#{data.state_slug}/#{@year}"}
+                    href={"/#{MehrSchulferien.Calendars.VacationSlug.url_slug(@vacation_type)}/#{data.state_slug}/#{@year}"}
                     class="text-blue-600 hover:text-blue-900"
                   >
                     Details <span class="sr-only">für {data.state_name}</span>

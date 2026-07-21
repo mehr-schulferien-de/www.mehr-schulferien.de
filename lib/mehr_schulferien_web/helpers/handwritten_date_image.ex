@@ -603,7 +603,8 @@ defmodule MehrSchulferienWeb.Helpers.HandwrittenDateImage do
         _all_periods \\ []
       ) do
     # Get the vacation type slug from the vacation_period
-    vacation_slug = "#{vacation_period.holiday_or_vacation_type.slug}ferien"
+    vacation_slug =
+      MehrSchulferien.Calendars.VacationSlug.url_slug(vacation_period.holiday_or_vacation_type)
 
     # Get the federal state slug from conn assigns
     federal_state = conn.assigns[:federal_state]

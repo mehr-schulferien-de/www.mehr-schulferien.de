@@ -82,6 +82,13 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
   end
 
   @doc """
+  Whether a national overview config exists for this vacation type's
+  database slug. Guards against `get_vacation_config/1`'s fallback to the
+  Sommerferien config, which would render wrong data for unknown types.
+  """
+  def has_vacation_config?(vacation_type), do: Map.has_key?(@vacation_configs, vacation_type)
+
+  @doc """
   Fetch vacation data for all federal states for a specific vacation type and year
   """
   def fetch_vacation_data_for_type(vacation_type, year) do
@@ -174,6 +181,15 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
     next_year_item_list = generate_year_item_list(config, next_year, next_year_data, conn)
 
     [current_year_item_list, next_year_item_list]
+  end
+
+  @doc """
+  Generate the ItemList structured data for a single year, used by the
+  national per-year season pages.
+  """
+  def generate_year_structured_data(vacation_type, year, states_data) do
+    config = get_vacation_config(vacation_type)
+    generate_year_item_list(config, year, states_data, nil)
   end
 
   defp generate_year_item_list(config, year, states_data, _conn) do

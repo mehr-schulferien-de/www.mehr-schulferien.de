@@ -56,7 +56,14 @@ defmodule MehrSchulferienWeb.NavigationComponent do
           />
           <.desktop_dropdown
             label="Brückentage"
-            path_prefix="/brueckentage/d/bundesland"
+            path_builder={fn state, year -> brueckentage_path(state, year, @current_year) end}
+            years={@years}
+            federal_states={@federal_states}
+            position="left"
+          />
+          <.desktop_dropdown
+            label="Feiertage"
+            path_builder={fn state, year -> feiertage_path(state, year, @current_year) end}
             years={@years}
             federal_states={@federal_states}
             position="left"
@@ -290,6 +297,20 @@ defmodule MehrSchulferienWeb.NavigationComponent do
   defp schulferien_path(state, year, _current_year),
     do: "/ferien/d/bundesland/#{state}/#{year}"
 
+  # Same evergreen funneling for the bridge day pages.
+  defp brueckentage_path(state, year, current_year) when year == current_year,
+    do: "/brueckentage/d/bundesland/#{state}"
+
+  defp brueckentage_path(state, year, _current_year),
+    do: "/brueckentage/d/bundesland/#{state}/#{year}"
+
+  # And for the Feiertage pages.
+  defp feiertage_path(state, year, current_year) when year == current_year,
+    do: "/feiertage/d/bundesland/#{state}"
+
+  defp feiertage_path(state, year, _current_year),
+    do: "/feiertage/d/bundesland/#{state}/#{year}"
+
   attr :years, :list, required: true
   attr :federal_states, :list, required: true
   attr :current_user, :any, default: nil
@@ -327,7 +348,13 @@ defmodule MehrSchulferienWeb.NavigationComponent do
             title="Brückentage"
             years={@years}
             federal_states={@federal_states}
-            path_prefix="/brueckentage/d/bundesland"
+            path_builder={fn state, year -> brueckentage_path(state, year, @current_year) end}
+          />
+          <.mobile_section
+            title="Feiertage"
+            years={@years}
+            federal_states={@federal_states}
+            path_builder={fn state, year -> feiertage_path(state, year, @current_year) end}
           />
           <.mobile_section_simple
             title="Urlaubsplaner"

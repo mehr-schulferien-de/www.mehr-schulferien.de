@@ -157,7 +157,7 @@
             <div class="grid grid-cols-2 gap-2">
               <%= for vacation_type <- @vacation_types do %>
                 <a
-                  href={"/#{vacation_type.slug}ferien/#{@federal_state.slug}/#{@current_year}"}
+                  href={"/#{MehrSchulferien.Calendars.VacationSlug.url_slug(vacation_type)}/#{@federal_state.slug}"}
                   class="px-3 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 bg-white dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-300 dark:border-blue-700 rounded-md transition-colors text-center"
                 >
                   {vacation_type.colloquial}
@@ -211,5 +211,8 @@
       federal_state={@federal_state}
       year={@current_year}
     />
+    <%= if @has_data do %>
+      <.faq_schema federal_state={@federal_state} year={@current_year} periods={@periods} />
+    <% end %>
   </div>
 </div>

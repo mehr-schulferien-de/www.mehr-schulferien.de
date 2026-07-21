@@ -168,6 +168,46 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
     end
   end
 
+  describe "school page meta (CTR: navigational searchers need a reason to click)" do
+    setup [:add_school_with_periods]
+
+    test "title leads with the school name and the school year", %{
+      conn: conn,
+      country: country,
+      school: school
+    } do
+      conn = get(conn, TestRouteHelpers.school_path(conn, :show, country.slug, school.slug))
+
+      current_school_year =
+        if Date.utc_today().month >= 8, do: @current_year, else: @current_year - 1
+
+      assert html_response(conn, 200) =~
+               "#{school.name}: Ferien & freie Tage #{current_school_year}/#{current_school_year + 1}"
+    end
+
+    test "meta description leads with the next vacation dates", %{
+      conn: conn,
+      country: country,
+      school: school
+    } do
+      # Pin the clock to just before the autumn vacation of the current
+      # school year so "next vacation" is deterministic.
+      current_school_year =
+        if Date.utc_today().month >= 8, do: @current_year, else: @current_year - 1
+
+      conn =
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show, country.slug, school.slug) <>
+            "?today=01.10.#{current_school_year}"
+        )
+
+      response = html_response(conn, 200)
+      assert response =~ "Nächste Ferien"
+      assert response =~ "Herbstferien"
+    end
+  end
+
   defp add_school_with_periods(_) do
     # Create the location hierarchy
     country = get_or_create_deutschland()
