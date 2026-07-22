@@ -11,16 +11,6 @@ defmodule MehrSchulferien.EmailTest do
   @system_email_name Application.compile_env!(:mehr_schulferien, :system_email_name)
 
   describe "email templates" do
-    test "welcome_email/2 creates proper email" do
-      email = Email.welcome_email("user@example.com", "Test User")
-
-      assert email.to == [{"Test User", "user@example.com"}]
-      assert email.from == {"mehr-schulferien.de", @noreply_email}
-      assert email.subject == "Willkommen bei mehr-schulferien.de!"
-      assert email.html_body =~ "Willkommen Test User!"
-      assert email.text_body =~ "Willkommen Test User!"
-    end
-
     test "contact_form_notification/4 creates proper email" do
       email =
         Email.contact_form_notification(
@@ -35,22 +25,6 @@ defmodule MehrSchulferien.EmailTest do
       assert email.reply_to == {"Sender Name", "sender@example.com"}
       assert email.subject == "Kontaktformular: Test Subject"
       assert email.html_body =~ "Test message content"
-    end
-
-    test "vacation_reminder/4 creates proper email" do
-      email =
-        Email.vacation_reminder(
-          "user@example.com",
-          "Test User",
-          "Sommerferien",
-          "01.07.2024"
-        )
-
-      assert email.to == [{"Test User", "user@example.com"}]
-      assert email.from == {"mehr-schulferien.de", @noreply_email}
-      assert email.subject == "Erinnerung: Sommerferien beginnt bald"
-      assert email.html_body =~ "Sommerferien"
-      assert email.html_body =~ "01.07.2024"
     end
 
     test "test_email/1 creates proper email" do

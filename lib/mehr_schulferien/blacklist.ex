@@ -119,8 +119,8 @@ defmodule MehrSchulferien.Blacklist do
   def create_entry(attrs, verification_request) do
     attrs_with_requester =
       attrs
-      |> Map.put(:requester_name, verification_request.full_name)
-      |> Map.put(:requester_email, verification_request.email)
+      |> Map.put(:full_name, verification_request.full_name)
+      |> Map.put(:email, verification_request.email)
       |> Map.put(:verification_request_id, verification_request.id)
 
     changeset = Entry.create_changeset(attrs_with_requester)
@@ -149,8 +149,8 @@ defmodule MehrSchulferien.Blacklist do
   def create_entry_for_user(attrs, user) do
     attrs_with_requester =
       attrs
-      |> Map.put(:requester_name, user.full_name || user.email)
-      |> Map.put(:requester_email, user.email)
+      |> Map.put(:full_name, user.full_name || user.email)
+      |> Map.put(:email, user.email)
 
     changeset = Entry.create_changeset(attrs_with_requester)
 
