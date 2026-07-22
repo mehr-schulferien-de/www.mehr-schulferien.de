@@ -528,8 +528,8 @@ defmodule MehrSchulferien.Factory do
       pattern: pattern,
       pattern_regex: MehrSchulferien.Blacklist.PatternMatcher.to_regex_pattern(pattern),
       field_type: attrs[:field_type] || "phone_number",
-      requester_name: verification_request.full_name,
-      requester_email: verification_request.email,
+      full_name: verification_request.full_name,
+      email: verification_request.email,
       verification_request_id: verification_request.id,
       is_active: true
     }

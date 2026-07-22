@@ -27,8 +27,8 @@ defmodule MehrSchulferien.Blacklist.Entry do
     field :pattern_regex, :string
     field :field_type, :string
     field :reason, :string
-    field :requester_name, :string
-    field :requester_email, :string
+    field :full_name, :string
+    field :email, :string
     field :is_active, :boolean, default: true
 
     belongs_to :verification_request, VerificationRequest
@@ -65,12 +65,12 @@ defmodule MehrSchulferien.Blacklist.Entry do
       :pattern,
       :field_type,
       :reason,
-      :requester_name,
-      :requester_email,
+      :full_name,
+      :email,
       :is_active,
       :verification_request_id
     ])
-    |> validate_required([:pattern, :field_type, :requester_name, :requester_email])
+    |> validate_required([:pattern, :field_type, :full_name, :email])
     |> validate_inclusion(:field_type, @allowed_field_types,
       message: "muss ein gültiger Feldtyp sein"
     )
@@ -123,9 +123,9 @@ defmodule MehrSchulferien.Blacklist.Entry do
   end
 
   defp normalize_email(changeset) do
-    case get_change(changeset, :requester_email) do
+    case get_change(changeset, :email) do
       nil -> changeset
-      email -> put_change(changeset, :requester_email, String.downcase(String.trim(email)))
+      email -> put_change(changeset, :email, String.downcase(String.trim(email)))
     end
   end
 end

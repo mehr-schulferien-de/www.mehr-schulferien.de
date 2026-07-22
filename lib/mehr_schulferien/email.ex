@@ -9,32 +9,6 @@ defmodule MehrSchulferien.Email do
   @noreply_email Application.compile_env!(:mehr_schulferien, :noreply_email)
   @system_email_name Application.compile_env!(:mehr_schulferien, :system_email_name)
 
-  def welcome_email(user_email, user_name) do
-    new()
-    |> to({user_name, user_email})
-    |> from({"mehr-schulferien.de", @noreply_email})
-    |> subject("Willkommen bei mehr-schulferien.de!")
-    |> html_body("""
-    <h1>Willkommen #{user_name}!</h1>
-    <p>Vielen Dank für Ihre Registrierung bei mehr-schulferien.de.</p>
-    <p>Sie können jetzt alle Funktionen unserer Plattform nutzen, um Schulferien und Feiertage zu verwalten.</p>
-    <p>Mit freundlichen Grüßen,<br>Ihr mehr-schulferien.de Team</p>
-    <p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>
-    """)
-    |> text_body("""
-    Willkommen #{user_name}!
-
-    Vielen Dank für Ihre Registrierung bei mehr-schulferien.de.
-
-    Sie können jetzt alle Funktionen unserer Plattform nutzen, um Schulferien und Feiertage zu verwalten.
-
-    Mit freundlichen Grüßen,
-    Ihr mehr-schulferien.de Team
-
-    PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>
-    """)
-  end
-
   def contact_form_notification(from_email, from_name, subject_line, message) do
     new()
     |> to({"mehr-schulferien.de Support", @support_email})
@@ -56,32 +30,6 @@ defmodule MehrSchulferien.Email do
 
     Nachricht:
     #{message}
-    """)
-  end
-
-  def vacation_reminder(user_email, user_name, vacation_name, start_date) do
-    new()
-    |> to({user_name, user_email})
-    |> from({"mehr-schulferien.de", @noreply_email})
-    |> subject("Erinnerung: #{vacation_name} beginnt bald")
-    |> html_body("""
-    <h1>Hallo #{user_name},</h1>
-    <p>Dies ist eine Erinnerung, dass <strong>#{vacation_name}</strong> am <strong>#{start_date}</strong> beginnt.</p>
-    <p>Vergessen Sie nicht, Ihre Reisepläne rechtzeitig zu organisieren!</p>
-    <p>Mit freundlichen Grüßen,<br>Ihr mehr-schulferien.de Team</p>
-    <p><em>PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer &lt;sw@wintermeyer-consulting.de&gt;</em></p>
-    """)
-    |> text_body("""
-    Hallo #{user_name},
-
-    Dies ist eine Erinnerung, dass #{vacation_name} am #{start_date} beginnt.
-
-    Vergessen Sie nicht, Ihre Reisepläne rechtzeitig zu organisieren!
-
-    Mit freundlichen Grüßen,
-    Ihr mehr-schulferien.de Team
-
-    PS: Wenden Sie sich bei Fragen bitte an Stefan Wintermeyer <sw@wintermeyer-consulting.de>
     """)
   end
 
@@ -854,8 +802,8 @@ defmodule MehrSchulferien.Email do
     <h2>Neuer Blacklist-Eintrag wurde erstellt</h2>
 
     <h3>Antragsteller</h3>
-    <p><strong>Name:</strong> #{entry.requester_name}</p>
-    <p><strong>E-Mail:</strong> #{entry.requester_email}</p>
+    <p><strong>Name:</strong> #{entry.full_name}</p>
+    <p><strong>E-Mail:</strong> #{entry.email}</p>
 
     <h3>Blacklist-Eintrag</h3>
     <p><strong>Muster:</strong> <code>#{entry.pattern}</code></p>
@@ -878,8 +826,8 @@ defmodule MehrSchulferien.Email do
     Neuer Blacklist-Eintrag wurde erstellt
 
     ANTRAGSTELLER
-    Name: #{entry.requester_name}
-    E-Mail: #{entry.requester_email}
+    Name: #{entry.full_name}
+    E-Mail: #{entry.email}
 
     BLACKLIST-EINTRAG
     Muster: #{entry.pattern}

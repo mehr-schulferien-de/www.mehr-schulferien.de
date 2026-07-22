@@ -120,8 +120,8 @@ defmodule MehrSchulferien.BlacklistTest do
       assert {:ok, {entry, removal_logs}} = Blacklist.create_entry(attrs, verification_request)
       assert entry.pattern == "+49 30 1234*"
       assert entry.field_type == "phone_number"
-      assert entry.requester_name == verification_request.full_name
-      assert entry.requester_email == verification_request.email
+      assert entry.full_name == verification_request.full_name
+      assert entry.email == verification_request.email
       assert entry.is_active == true
       assert is_list(removal_logs)
     end

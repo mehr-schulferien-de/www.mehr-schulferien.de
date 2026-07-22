@@ -68,8 +68,8 @@ Enum.each(spam_patterns, fn {pattern, field_type, reason} ->
              pattern: pattern,
              field_type: field_type,
              reason: reason,
-             requester_name: system_name,
-             requester_email: system_requester
+             full_name: system_name,
+             email: system_requester
            })
          ) do
       {:ok, _entry} ->
