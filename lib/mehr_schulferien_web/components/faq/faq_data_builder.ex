@@ -48,7 +48,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
 
     # Collect all questions for schema.org
     all_questions =
-      [next_vacation_question] ++
+      filter_nil([next_vacation_question]) ++
         school_free_questions ++
         weekday_school_questions ++
         filter_nil([schools_question]) ++
@@ -56,7 +56,7 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
         [schulferien_question] ++
         yearly_periods_questions ++
         holiday_questions ++
-        [next_holiday_question]
+        filter_nil([next_holiday_question])
 
     %{
       sorted_periods: sorted_periods,
@@ -244,13 +244,20 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
   end
 
   defp build_next_vacation_question(location, location_prep, assigns) do
-    next_vacation_answer =
-      FaqViewHelpers.next_school_vacation_answer(location, assigns.school_periods, assigns.today)
+    case FaqViewHelpers.next_school_vacation_answer(
+           location,
+           assigns.school_periods,
+           assigns.today
+         ) do
+      nil ->
+        nil
 
-    %{
-      title: "Wann sind die nächsten Schulferien #{location_prep} #{location.name}?",
-      answer: next_vacation_answer
-    }
+      next_vacation_answer ->
+        %{
+          title: "Wann sind die nächsten Schulferien #{location_prep} #{location.name}?",
+          answer: next_vacation_answer
+        }
+    end
   end
 
   defp build_schulferien_question(location, location_prep, next_schulferien_periods) do
@@ -260,17 +267,26 @@ defmodule MehrSchulferienWeb.Components.Faq.FaqDataBuilder do
     }
   end
 
+  # Returns nil when nothing is ahead any more, so the question is dropped
+  # instead of promising an answer the data cannot deliver.
   defp build_next_holiday_question(location, location_prep, assigns) do
     public_holiday_periods = PeriodHelpers.public_holiday_periods(assigns.public_periods)
 
-    next_holiday_answer =
-      FaqViewHelpers.next_public_holiday_answer(location, public_holiday_periods, assigns.today)
+    case FaqViewHelpers.next_public_holiday_answer(
+           location,
+           public_holiday_periods,
+           assigns.today
+         ) do
+      nil ->
+        nil
 
-    %{
-      title: "Wann ist der nächste Feiertag #{location_prep} #{location.name}?",
-      answer: next_holiday_answer,
-      filtered_periods: public_holiday_periods
-    }
+      next_holiday_answer ->
+        %{
+          title: "Wann ist der nächste Feiertag #{location_prep} #{location.name}?",
+          answer: next_holiday_answer,
+          filtered_periods: public_holiday_periods
+        }
+    end
   end
 
   defp build_schools_question(assigns) do

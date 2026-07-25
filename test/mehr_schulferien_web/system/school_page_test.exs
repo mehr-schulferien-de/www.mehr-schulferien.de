@@ -22,51 +22,42 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       country: country,
       school: school
     } do
-      conn =
-        get(
-          conn,
-          TestRouteHelpers.school_path(conn, :show, country.slug, school.slug)
-        )
-
-      # Verify basic page content
-      assert html_response(conn, 200) =~ "Schulferien #{school.name}"
-
-      # Check that the periods table exists for current school year
-      # Dynamically determine current school year based on current date
+      # The fixture places its periods relative to the running school year, so
+      # the clock is pinned to that school year's October. Without a pin the
+      # assertions would mean something different depending on the day the
+      # suite happens to run.
       current_school_year =
         if Date.utc_today().month >= 8, do: @current_year, else: @current_year - 1
 
-      assert html_response(conn, 200) =~
-               "Schuljahr #{current_school_year}/#{current_school_year + 1}"
+      conn =
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show, country.slug, school.slug) <>
+            "?today=01.10.#{current_school_year}"
+        )
 
-      # Check for calendar months based on the current school year
-      # The template shows months for the current and next school year
-      # Current school year runs from August to July of the following year
-      if Date.utc_today().month >= 8 do
-        # We're after August, so current school year is @current_year/@current_year+1
-        # Should show Aug-Dec of @current_year and Jan-Jul of @next_year
-        assert html_response(conn, 200) =~ "August #{@current_year}"
-        assert html_response(conn, 200) =~ "Dezember #{@current_year}"
-        assert html_response(conn, 200) =~ "Januar #{@next_year}"
-        assert html_response(conn, 200) =~ "Juli #{@next_year}"
+      response = html_response(conn, 200)
 
-        # Next school year (@next_year/@next_year+1) should also be shown
-        assert html_response(conn, 200) =~ "August #{@next_year}"
-        assert html_response(conn, 200) =~ "Dezember #{@next_year}"
-      else
-        # We're before August, so current school year is @current_year-1/@current_year
-        # Should show Aug-Dec of @current_year-1 and Jan-Jul of @current_year
-        assert html_response(conn, 200) =~ "August #{@current_year - 1}"
-        assert html_response(conn, 200) =~ "Dezember #{@current_year - 1}"
-        assert html_response(conn, 200) =~ "Januar #{@current_year}"
-        assert html_response(conn, 200) =~ "Juli #{@current_year}"
+      # Verify basic page content
+      assert response =~ "Schulferien #{school.name}"
 
-        # Next school year (@current_year/@next_year) should also be shown
-        assert html_response(conn, 200) =~ "August #{@current_year}"
-        assert html_response(conn, 200) =~ "Dezember #{@current_year}"
-        assert html_response(conn, 200) =~ "Januar #{@next_year}"
-        assert html_response(conn, 200) =~ "Juli #{@next_year}"
-      end
+      # Both school years get their own section
+      assert response =~ "Schuljahr #{current_school_year}/#{current_school_year + 1}"
+      assert response =~ "Schuljahr #{current_school_year + 1}/#{current_school_year + 2}"
+
+      # The calendar view starts at the running month, so the months of the
+      # current school year that are already over are not rendered
+      refute response =~ "August #{current_school_year}"
+      assert response =~ "Oktober #{current_school_year}"
+      assert response =~ "Dezember #{current_school_year}"
+      assert response =~ "Januar #{current_school_year + 1}"
+      assert response =~ "Juli #{current_school_year + 1}"
+
+      # The next school year is shown in full
+      assert response =~ "August #{current_school_year + 1}"
+      assert response =~ "Dezember #{current_school_year + 1}"
+      assert response =~ "Januar #{current_school_year + 2}"
+      assert response =~ "Juli #{current_school_year + 2}"
     end
 
     test "shows correct FAQ sections with only current year question", %{
@@ -176,10 +167,18 @@ defmodule MehrSchulferienWeb.SchoolPageSystemTest do
       country: country,
       school: school
     } do
-      conn = get(conn, TestRouteHelpers.school_path(conn, :show, country.slug, school.slug))
-
+      # Pinned to a date well inside the school year. The title rolls over to
+      # the next school year once the Sommerferien start, which is covered in
+      # SchoolControllerSchoolYearRolloverTest.
       current_school_year =
         if Date.utc_today().month >= 8, do: @current_year, else: @current_year - 1
+
+      conn =
+        get(
+          conn,
+          TestRouteHelpers.school_path(conn, :show, country.slug, school.slug) <>
+            "?today=01.10.#{current_school_year}"
+        )
 
       assert html_response(conn, 200) =~
                "#{school.name}: Ferien & freie Tage #{current_school_year}/#{current_school_year + 1}"

@@ -41,6 +41,9 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
   - `:show_mobile_dates` - Whether to show mobile-optimized dates
   - `:show_memo` - Whether to show period memo
   - `:show_year_in_dates` - Whether to always show year in dates for clarity
+  - `:clickable` - Whether the row jumps to its month in the calendar view.
+    Set to `false` for rows whose month is no longer rendered, so the row
+    does not offer a dead anchor.
   """
   attr :period, :map, required: true
   attr :all_periods, :list, required: true
@@ -51,6 +54,7 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
   attr :show_mobile_dates, :boolean, default: false
   attr :show_memo, :boolean, default: false
   attr :show_year_in_dates, :boolean, default: false
+  attr :clickable, :boolean, default: true
 
   slot :period_name do
     attr :class, :string
@@ -91,12 +95,12 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
 
     ~H"""
     <tr
-      class={"cursor-pointer transition-colors #{cond do
+      class={"transition-colors #{if @clickable, do: "cursor-pointer"} #{cond do
         @is_current -> "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
         @is_next_year -> "bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
         true -> "hover:bg-gray-50 dark:hover:bg-gray-700"
       end} #{if @is_past, do: "text-gray-600 dark:text-gray-400"}"}
-      onclick={"window.location.href='#{@row_href}'"}
+      onclick={if @clickable, do: "window.location.href='#{@row_href}'"}
     >
       <td class="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm font-medium align-top">
         <%= if @period_link_builder do %>

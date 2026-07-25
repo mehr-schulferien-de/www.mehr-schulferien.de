@@ -30,25 +30,25 @@ next_vacation_sentence =
 meta_description =
   [
     next_vacation_sentence,
-    "Alle Ferientermine, Feiertage und bewegliche Ferientage für #{@school.name} in #{@city.name} (#{@federal_state.name}) im Schuljahr #{@current_school_year}/#{@current_school_year + 1}."
+    "Alle Ferientermine, Feiertage und bewegliche Ferientage für #{@school.name} in #{@city.name} (#{@federal_state.name}) im Schuljahr #{@display_school_year}/#{@display_school_year + 1}."
   ]
   |> Enum.reject(&is_nil/1)
   |> Enum.join(" ") %>
 
 <title>
-  {truncated_name}: Ferien & freie Tage {@current_school_year}/{@current_school_year + 1}
+  {truncated_name}: Ferien & freie Tage {@display_school_year}/{@display_school_year + 1}
 </title>
 <meta name="description" content={meta_description} />
 <meta
   name="keywords"
-  content={"Schulferien, #{@school.name}, #{@city.name}, #{@federal_state.name}, Ferientermine, #{@current_school_year}, Ferien"}
+  content={"Schulferien, #{@school.name}, #{@city.name}, #{@federal_state.name}, Ferientermine, #{@display_school_year}, Ferien"}
 />
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={url(~p"/ferien/#{@country.slug}/schule/#{@school.slug}")} />
 <meta
   property="og:title"
-  content={"Schulferien #{@school.name} #{@current_school_year}/#{@current_school_year + 1}"}
+  content={"Schulferien #{@school.name} #{@display_school_year}/#{@display_school_year + 1}"}
 />
 <meta
   property="og:description"
@@ -61,7 +61,7 @@ meta_description =
 <meta property="twitter:url" content={url(~p"/ferien/#{@country.slug}/schule/#{@school.slug}")} />
 <meta
   property="twitter:title"
-  content={"Schulferien #{@school.name} #{@current_school_year}/#{@current_school_year + 1}"}
+  content={"Schulferien #{@school.name} #{@display_school_year}/#{@display_school_year + 1}"}
 />
 <meta
   property="twitter:description"

@@ -709,16 +709,24 @@
           end) %>
 
         <%= for school_year <- [@current_school_year, @next_school_year] do %>
-          <% school_year_periods = Map.get(periods_by_school_year, school_year, []) %>
-          <%= if length(school_year_periods) > 0 do %>
+          <% school_year_periods = Map.get(periods_by_school_year, school_year, [])
+
+          # August to December of the school year, then January to July of the
+          # next calendar year - but only from the running month onwards. In
+          # late July the old school year would otherwise render eleven months
+          # nobody is planning around any more.
+          months =
+            ([8, 9, 10, 11, 12] ++ [1, 2, 3, 4, 5, 6, 7])
+            |> Enum.map(fn month ->
+              {if(month >= 8, do: school_year, else: school_year + 1), month}
+            end)
+            |> Enum.filter(fn {year, month} -> {year, month} >= {@today.year, @today.month} end) %>
+          <%= if school_year_periods != [] and months != [] do %>
             <.heading level={3} class="text-lg text-gray-800 dark:text-gray-200 mb-4 mt-6">
               Schuljahr {school_year}/{school_year + 1}
             </.heading>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-              <% # Show August to December of the school year, then January to July of the next calendar year
-              months = [8, 9, 10, 11, 12] ++ [1, 2, 3, 4, 5, 6, 7] %>
-              <%= for month <- months do %>
-                <% year = if month >= 8, do: school_year, else: school_year + 1 %>
+              <%= for {year, month} <- months do %>
                 <.month_calendar
                   month={month}
                   year={year}
@@ -756,8 +764,10 @@
       country={@country}
     />
 
+    <% # Google drops Event markup whose endDate has passed and flags it in
+    # Search Console, so only still-relevant dates are marked up. %>
     <.schema_org_event
-      periods={@periods}
+      periods={Enum.filter(@periods, &(Date.compare(&1.ends_on, @today) != :lt))}
       school={@school}
       city={@city}
       federal_state={@federal_state}

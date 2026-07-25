@@ -91,16 +91,20 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   An humanized answer for the next school vacations.
   """
   def next_school_vacation_answer(location, periods, today \\ DateHelpers.today_berlin()) do
-    [period] = Periods.next_periods(periods, today, 1)
+    case Periods.next_periods(periods, today, 1) do
+      [] ->
+        nil
 
-    if Date.diff(period.starts_on, today) > 0 do
-      distance_in_words =
-        day_distance_in_words(Date.diff(period.starts_on, today))
+      [period] ->
+        if Date.diff(period.starts_on, today) > 0 do
+          distance_in_words =
+            day_distance_in_words(Date.diff(period.starts_on, today))
 
-      "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{location.name}:
+          "#{distance_in_words} starten die #{period.holiday_or_vacation_type.colloquial} in #{location.name}:
     #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
-    else
-      "Aktuell sind #{period.holiday_or_vacation_type.colloquial} in #{location.name}: #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
+        else
+          "Aktuell sind #{period.holiday_or_vacation_type.colloquial} in #{location.name}: #{ViewHelpers.format_date_range(period.starts_on, period.ends_on, nil)}"
+        end
     end
   end
 
@@ -113,14 +117,18 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   An humanized answer for the next public holiday date.
   """
   def next_public_holiday_answer(location, public_periods, today \\ DateHelpers.today_berlin()) do
-    [period] = Periods.next_periods(public_periods, today, 1)
+    case Periods.next_periods(public_periods, today, 1) do
+      [] ->
+        nil
 
-    case Date.diff(period.starts_on, today) do
-      1 ->
-        "Morgen ist #{period.holiday_or_vacation_type.colloquial} in #{location.name}."
+      [period] ->
+        case Date.diff(period.starts_on, today) do
+          1 ->
+            "Morgen ist #{period.holiday_or_vacation_type.colloquial} in #{location.name}."
 
-      n ->
-        "In #{n} Tagen ist #{period.holiday_or_vacation_type.colloquial} in #{location.name}."
+          n ->
+            "In #{n} Tagen ist #{period.holiday_or_vacation_type.colloquial} in #{location.name}."
+        end
     end
   end
 

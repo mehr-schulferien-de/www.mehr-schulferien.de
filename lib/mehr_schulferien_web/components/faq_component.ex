@@ -147,6 +147,12 @@ defmodule MehrSchulferienWeb.FaqComponent do
     )
   end
 
+  # A question is nil when the underlying data has nothing to answer with,
+  # for example once the last known vacation of a location has passed.
+  defp faq_question(%{question: nil} = assigns) do
+    ~H""
+  end
+
   defp faq_question(assigns) do
     ~H"""
     <div>

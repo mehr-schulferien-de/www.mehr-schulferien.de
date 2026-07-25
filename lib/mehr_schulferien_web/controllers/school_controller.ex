@@ -99,6 +99,13 @@ defmodule MehrSchulferienWeb.SchoolController do
     # Check if we have data
     has_data = all_periods != []
 
+    # The nominal school year only flips on 1 August, but for a reader the
+    # school year is over the moment its Sommerferien start - up to six weeks
+    # earlier, and on a date that differs per federal state. Titles, meta
+    # descriptions and og tags follow that earlier rollover, so a search in
+    # July advertises the school year people are actually looking for.
+    display_school_year = display_school_year(current_school_year, all_periods, today)
+
     # Get years with data for navigation
     years_with_data =
       all_periods
@@ -207,6 +214,7 @@ defmodule MehrSchulferienWeb.SchoolController do
         all_periods: all_periods ++ all_public_periods,
         current_school_year: current_school_year,
         next_school_year: next_school_year,
+        display_school_year: display_school_year,
         years_with_data: years_with_data,
         today: today,
         has_data: has_data,
@@ -280,6 +288,26 @@ defmodule MehrSchulferienWeb.SchoolController do
       noindex: true
     )
   end
+
+  # Returns the school year that the page should advertise in its title and
+  # meta tags. It is the nominal one until the last date of that school year
+  # (its Sommerferien) has begun, from then on the next one.
+  defp display_school_year(current_school_year, periods, today) do
+    last_start =
+      periods
+      |> Enum.filter(&(school_year_of(&1.starts_on) == current_school_year))
+      |> Enum.map(& &1.starts_on)
+      |> Enum.max(Date, fn -> nil end)
+
+    if last_start && Date.compare(today, last_start) != :lt do
+      current_school_year + 1
+    else
+      current_school_year
+    end
+  end
+
+  defp school_year_of(%Date{month: month, year: year}) when month >= 8, do: year
+  defp school_year_of(%Date{year: year}), do: year - 1
 
   # Filters blacklisted fields from school's address
   defp filter_blacklisted_address(%{address: address} = school) when not is_nil(address) do
