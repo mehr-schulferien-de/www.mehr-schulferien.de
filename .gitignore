@@ -42,3 +42,6 @@ mehr_schulferien-*.tar
 
 # Node modules
 node_modules/
+
+# Claude Code worktrees
+/.claude/worktrees/
