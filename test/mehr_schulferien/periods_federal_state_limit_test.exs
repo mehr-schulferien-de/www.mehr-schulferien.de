@@ -87,6 +87,58 @@ defmodule MehrSchulferien.PeriodsFederalStateLimitTest do
       assert result.max_bewegliche_ferientage == 3
     end
 
+    test "get_federal_state_ferientage_limit/2 carries the last known limit forward", %{
+      federal_state: federal_state,
+      limit: limit
+    } do
+      # Nobody enters the new school year's limits on 1 August, so a missing row
+      # has to keep the feature running instead of switching it off silently.
+      result = Periods.get_federal_state_ferientage_limit(federal_state.id, "2026/2027")
+      assert result.id == limit.id
+      assert result.max_bewegliche_ferientage == 3
+    end
+
+    test "get_federal_state_ferientage_limit/2 prefers an exact match over an older one", %{
+      federal_state: federal_state
+    } do
+      {:ok, newer} =
+        %FederalStateFerientageLimit{}
+        |> FederalStateFerientageLimit.changeset(%{
+          federal_state_id: federal_state.id,
+          school_year: "2025/2026",
+          max_bewegliche_ferientage: 5
+        })
+        |> Repo.insert()
+
+      result = Periods.get_federal_state_ferientage_limit(federal_state.id, "2025/2026")
+      assert result.id == newer.id
+      assert result.max_bewegliche_ferientage == 5
+    end
+
+    test "get_federal_state_ferientage_limit/2 does not reach back from a future row", %{
+      federal_state: federal_state
+    } do
+      refute Periods.get_federal_state_ferientage_limit(federal_state.id, "2023/2024")
+    end
+
+    test "get_federal_state_ferientage_limit/2 carries a zero limit forward", %{
+      federal_state: federal_state
+    } do
+      # A state that abolished bewegliche Ferientage records a 0 row, and that 0
+      # has to survive the carry-forward instead of falling back to an older year.
+      {:ok, _zero} =
+        %FederalStateFerientageLimit{}
+        |> FederalStateFerientageLimit.changeset(%{
+          federal_state_id: federal_state.id,
+          school_year: "2025/2026",
+          max_bewegliche_ferientage: 0
+        })
+        |> Repo.insert()
+
+      result = Periods.get_federal_state_ferientage_limit(federal_state.id, "2026/2027")
+      assert result.max_bewegliche_ferientage == 0
+    end
+
     test "count_bewegliche_ferientage_for_school_year/2 counts correctly", %{school: school} do
       # Initially should be 0
       assert Periods.count_bewegliche_ferientage_for_school_year(school.id, "2024/2025") == 0

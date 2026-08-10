@@ -113,11 +113,20 @@ defmodule MehrSchulferienWeb.MCP.Router do
 
   # Known MCP argument keys to prevent atom table exhaustion
   @known_mcp_argument_keys ~w(
-    location_slug location_type year country_slug federal_state_slug
-    city_slug school_slug query type start_date end_date count
-    date distance_meters lat lng limit offset format
+    location_slug location_slugs location_type year years country_slug
+    federal_state_slug city_slug school_slug school_year slug zip_prefix
+    query type start_date end_date count
+    date distance_meters lat lng limit offset format include_metadata
     vacation_type religion include_holidays include_vacations
   )a
+
+  @doc """
+  Argument keys the JSON-RPC layer converts from string to atom.
+
+  Anything outside this list is silently dropped before it reaches the tool
+  handler, so every parameter a tool declares has to be listed here.
+  """
+  def known_argument_keys, do: @known_mcp_argument_keys
 
   defp handle_tool_call(request) do
     tool_name = get_in(request, ["params", "name"])

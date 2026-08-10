@@ -600,16 +600,28 @@ defmodule MehrSchulferien.Periods do
   end
 
   @doc """
-  Gets the bewegliche Ferientage limit for a federal state and school year.
-  Returns nil if no limit is defined.
+  Gets the bewegliche Ferientage limit in effect for a federal state and school year.
+
+  Falls back to the most recent earlier school year when the requested one has no
+  row of its own. The limits are maintained by hand, so without that fallback the
+  whole feature switched itself off every 1 August until somebody noticed - the
+  school page stopped offering the entry form and no error was logged anywhere.
+
+  A state that drops bewegliche Ferientage therefore needs an explicit row with 0
+  rather than a deleted one. Returns nil only when the state has no row at all up
+  to that school year. The returned record keeps its own `school_year`, which may
+  predate the one asked for.
   """
   def get_federal_state_ferientage_limit(federal_state_id, school_year) do
     alias MehrSchulferien.Periods.FederalStateFerientageLimit
 
-    Repo.get_by(FederalStateFerientageLimit,
-      federal_state_id: federal_state_id,
-      school_year: school_year
+    # The YYYY/YYYY+1 format sorts chronologically as a string, so no parsing.
+    from(l in FederalStateFerientageLimit,
+      where: l.federal_state_id == ^federal_state_id and l.school_year <= ^school_year,
+      order_by: [desc: l.school_year],
+      limit: 1
     )
+    |> Repo.one()
   end
 
   @doc """

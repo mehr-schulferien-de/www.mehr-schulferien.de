@@ -264,6 +264,89 @@ defmodule MehrSchulferienWeb.MCP.RouterTest do
       end
     end
 
+    test "accepts every argument name the registered tools declare" do
+      # The JSON-RPC layer drops any argument key that is not on the allowlist,
+      # so a tool whose parameter is missing there crashes with a KeyError the
+      # moment somebody calls it. Deriving the expectation from the registered
+      # tools keeps the allowlist from drifting when a new tool is added.
+      {:ok, frame} = MehrSchulferienWeb.MCP.Server.init(nil, %Hermes.Server.Frame{})
+
+      declared =
+        frame.private[:__mcp_components__]
+        |> Enum.flat_map(&Map.keys(Map.get(&1.input_schema, "properties", %{})))
+        |> Enum.uniq()
+
+      allowed =
+        MehrSchulferienWeb.MCP.Router.known_argument_keys()
+        |> MapSet.new(&Atom.to_string/1)
+
+      assert Enum.reject(declared, &MapSet.member?(allowed, &1)) == []
+    end
+
+    test "handles tools/call with get_bewegliche_ferientage", %{conn: conn} do
+      country = insert(:country)
+      federal_state = insert(:federal_state, %{parent_location_id: country.id})
+      county = insert(:county, %{parent_location_id: federal_state.id})
+      city = insert(:city, %{parent_location_id: county.id})
+      school = insert(:school, %{parent_location_id: city.id})
+
+      MehrSchulferien.Repo.insert!(%MehrSchulferien.Periods.FederalStateFerientageLimit{
+        federal_state_id: federal_state.id,
+        school_year: "2025/2026",
+        max_bewegliche_ferientage: 4
+      })
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> post("/mcp", %{
+          "jsonrpc" => "2.0",
+          "method" => "tools/call",
+          "params" => %{
+            "name" => "get_bewegliche_ferientage",
+            "arguments" => %{
+              "school_slug" => school.slug,
+              "school_year" => "2025/2026"
+            }
+          },
+          "id" => 1
+        })
+
+      assert response = json_response(conn, 200)
+      refute Map.has_key?(response, "error")
+
+      [content] = response["result"]["content"]
+      result = Jason.decode!(content["text"])
+
+      assert result["school_year"] == "2025/2026"
+      assert result["max_days"] == 4
+      assert result["used_days"] == 0
+    end
+
+    test "handles tools/call with validate_slug", %{conn: conn} do
+      country = insert(:country)
+      federal_state = insert(:federal_state, %{parent_location_id: country.id})
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> post("/mcp", %{
+          "jsonrpc" => "2.0",
+          "method" => "tools/call",
+          "params" => %{
+            "name" => "validate_slug",
+            "arguments" => %{"slug" => federal_state.slug}
+          },
+          "id" => 1
+        })
+
+      assert response = json_response(conn, 200)
+      refute Map.has_key?(response, "error")
+
+      [content] = response["result"]["content"]
+      assert Jason.decode!(content["text"])["valid"] == true
+    end
+
     test "health endpoint returns ok", %{conn: conn} do
       conn = get(conn, "/mcp/health")
 
