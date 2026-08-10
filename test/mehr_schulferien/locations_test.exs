@@ -78,6 +78,30 @@ defmodule MehrSchulferien.LocationsTest do
     end
   end
 
+  describe "get_location_by_slug!/1" do
+    test "returns the location with the given slug" do
+      location = insert(:federal_state, %{slug: "unique-slug"})
+      assert Locations.get_location_by_slug!("unique-slug").id == location.id
+    end
+
+    test "prefers the broader location when several share a slug" do
+      # "hessen" is both a federal state and a municipality in Sachsen-Anhalt,
+      # and an ambiguous lookup used to raise Ecto.MultipleResultsError, which
+      # surfaced as a 500 on the public API.
+      federal_state = insert(:federal_state, %{slug: "hessen", name: "Hessen"})
+      _city = insert(:city, %{slug: "hessen", name: "Hessen"})
+
+      assert Locations.get_location_by_slug!("hessen").id == federal_state.id
+    end
+
+    test "raises Ecto.NoResultsError when nothing matches" do
+      # Callers rescue exactly this to turn a miss into a 404.
+      assert_raise Ecto.NoResultsError, fn ->
+        Locations.get_location_by_slug!("does-not-exist")
+      end
+    end
+  end
+
   describe "federal state data" do
     test "list_federal_states/1 returns a certain country's federal states" do
       country = insert(:country)

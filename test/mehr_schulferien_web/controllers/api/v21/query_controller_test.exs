@@ -57,6 +57,27 @@ defmodule MehrSchulferienWeb.Api.V21.QueryControllerTest do
       assert hd(data["holidays"])["name"] == "Neujahr"
     end
 
+    test "answers for a slug shared by several locations", %{
+      conn: conn,
+      federal_state: federal_state,
+      new_year_day: new_year_day
+    } do
+      # A city can carry a federal state's slug, and the ambiguous lookup used
+      # to blow up with Ecto.MultipleResultsError, so the endpoint returned 500
+      # for ?location_slug=hessen while unique slugs answered fine.
+      county = insert(:county, %{parent_location_id: federal_state.id})
+      _namesake_city = insert(:city, %{slug: federal_state.slug, parent_location_id: county.id})
+
+      conn =
+        get(
+          conn,
+          "/api/v2.1/queries/is-public-holiday?location_slug=#{federal_state.slug}&date=#{Date.to_iso8601(new_year_day)}"
+        )
+
+      response = json_response(conn, 200)
+      assert response["data"]["is_public_holiday"] == true
+    end
+
     test "returns false for regular day", %{conn: conn, federal_state: federal_state} do
       conn =
         get(

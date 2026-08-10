@@ -76,10 +76,35 @@ defmodule MehrSchulferien.Locations do
   @doc """
   Gets a single location by querying the slug.
 
+  Slugs are not unique across the hierarchy: "hessen" is both a federal state
+  and a municipality in Sachsen-Anhalt. A plain `get_by!` raised
+  `Ecto.MultipleResultsError` on those, which reached the public API as a 500.
+  The broadest match wins instead, because a bare slug without a location type
+  means the country or the federal state to everyone who asks for it.
+
   Raises `Ecto.NoResultsError` if the Location does not exist.
   """
   def get_location_by_slug!(slug) do
-    Repo.get_by!(Location, slug: slug)
+    location =
+      from(l in Location,
+        where: l.slug == ^slug,
+        order_by: [
+          asc:
+            fragment(
+              "CASE WHEN ? THEN 0 WHEN ? THEN 1 WHEN ? THEN 2 WHEN ? THEN 3 ELSE 4 END",
+              l.is_country,
+              l.is_federal_state,
+              l.is_county,
+              l.is_city
+            ),
+          # Stable pick when two locations of the same kind collide.
+          asc: l.id
+        ],
+        limit: 1
+      )
+      |> Repo.one()
+
+    location || raise Ecto.NoResultsError, queryable: Location
   end
 
   @doc """
