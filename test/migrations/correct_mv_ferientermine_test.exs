@@ -2,34 +2,20 @@ defmodule MehrSchulferien.Migrations.CorrectMvFerientermineTest do
   use MehrSchulferien.DataCase
 
   import MehrSchulferien.Factory
+  import MehrSchulferien.MigrationHelpers
 
   alias MehrSchulferien.Periods.Period
 
-  [migration_file] =
-    Path.wildcard("priv/repo/migrations/*_correct_mv_ferientermine_after_afervo_amendment.exs")
-
-  Code.require_file(migration_file)
-
-  @migration MehrSchulferien.Repo.Migrations.CorrectMvFerientermineAfterAfervoAmendment
+  @migration require_migration!("correct_mv_ferientermine_after_afervo_amendment")
 
   @slugs ~w(herbst weihnachten winter ostern himmelfahrt pfingsten christi-himmelfahrt)
 
   setup do
     country = insert(:country)
 
-    types =
-      Map.new(@slugs, fn slug ->
-        {slug,
-         insert(:holiday_or_vacation_type,
-           name: slug,
-           slug: slug,
-           country_location_id: country.id
-         )}
-      end)
-
     mv = insert(:federal_state, code: "MV", parent_location_id: country.id)
 
-    %{country: country, types: types, mv: mv}
+    %{country: country, types: insert_types(country, @slugs), mv: mv}
   end
 
   # The rows production holds for 2026/2027 and 2027/2028, taken from the
@@ -60,51 +46,17 @@ defmodule MehrSchulferien.Migrations.CorrectMvFerientermineTest do
           {~D[2028-06-02], ~D[2028-06-06]}
         ] do
       insert_vacation(types["pfingsten"], mv, starts_on, ends_on,
-        display_priority: nil,
+        display_priority: 3,
         is_listed_below_month: false
       )
     end
 
     for date <- [~D[2027-05-06], ~D[2027-05-07], ~D[2028-05-25], ~D[2028-05-26]] do
-      insert_public_holiday(types["christi-himmelfahrt"], mv, date)
+      insert_holiday(types["christi-himmelfahrt"], mv, date)
     end
 
     # The Brückentag after the Winterferien 2028, stored as a public holiday.
-    insert_public_holiday(types["winter"], mv, ~D[2028-02-18])
-  end
-
-  defp insert_vacation(type, location, starts_on, ends_on, attrs \\ []) do
-    insert(
-      :school_vacation,
-      Keyword.merge(
-        [
-          location_id: location.id,
-          holiday_or_vacation_type: type,
-          starts_on: starts_on,
-          ends_on: ends_on,
-          is_valid_for_students: true,
-          is_listed_below_month: true,
-          display_priority: 5
-        ],
-        attrs
-      )
-    )
-  end
-
-  defp insert_public_holiday(type, location, date) do
-    insert(:public_holiday,
-      location_id: location.id,
-      holiday_or_vacation_type: type,
-      starts_on: date,
-      ends_on: date,
-      is_valid_for_everybody: true,
-      is_listed_below_month: true,
-      display_priority: 10
-    )
-  end
-
-  defp migrate(version \\ 1) do
-    assert :ok = Ecto.Migrator.up(Repo, version, @migration, log: false, migration_lock: false)
+    insert_holiday(types["winter"], mv, ~D[2028-02-18])
   end
 
   defp periods_of(location) do
@@ -138,7 +90,7 @@ defmodule MehrSchulferien.Migrations.CorrectMvFerientermineTest do
   test "brings the stored periods in line with the amended AFerVO", context do
     insert_production_rows(context)
 
-    migrate()
+    run_migration(@migration)
 
     assert periods_of(context.mv) == @corrected
   end
@@ -146,7 +98,7 @@ defmodule MehrSchulferien.Migrations.CorrectMvFerientermineTest do
   test "stores the Brückentag and Pfingstferien as listed school vacation", context do
     insert_production_rows(context)
 
-    migrate()
+    run_migration(@migration)
 
     for {starts_on, ends_on} <- [
           {~D[2028-02-18], ~D[2028-02-18]},
@@ -170,14 +122,14 @@ defmodule MehrSchulferien.Migrations.CorrectMvFerientermineTest do
     insert_production_rows(context)
     insert_vacation(context.types["ostern"], context.mv, ~D[2027-03-24], ~D[2027-04-02])
 
-    migrate()
-    migrate(2)
+    run_migration(@migration)
+    run_migration(@migration)
 
     assert periods_of(context.mv) == @corrected
   end
 
   test "inserts a corrected period that is missing entirely", %{mv: mv} do
-    migrate()
+    run_migration(@migration)
 
     periods = periods_of(mv)
 
@@ -192,7 +144,7 @@ defmodule MehrSchulferien.Migrations.CorrectMvFerientermineTest do
     insert_vacation(types["herbst"], berlin, ~D[2026-10-19], ~D[2026-10-24])
     insert_vacation(types["himmelfahrt"], berlin, ~D[2027-05-14], ~D[2027-05-18])
 
-    migrate()
+    run_migration(@migration)
 
     assert periods_of(berlin) == [
              {"herbst", ~D[2026-10-19], ~D[2026-10-24]},
@@ -203,7 +155,7 @@ defmodule MehrSchulferien.Migrations.CorrectMvFerientermineTest do
   test "does nothing on a database without Mecklenburg-Vorpommern", %{mv: mv} do
     Repo.delete!(mv)
 
-    migrate()
+    run_migration(@migration)
 
     assert Repo.aggregate(Period, :count) == 0
   end
