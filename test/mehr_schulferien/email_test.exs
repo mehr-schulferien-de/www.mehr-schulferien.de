@@ -476,4 +476,51 @@ defmodule MehrSchulferien.EmailTest do
       assert email.text_body =~ "/wiki/schools/zu-loeschende-schule"
     end
   end
+
+  describe "school_deleted_notification/2" do
+    test "its restore SQL brings the periods back with their display settings" do
+      school = insert(:school)
+
+      period =
+        insert(:school_vacation,
+          location_id: school.id,
+          is_valid_for_students: true,
+          is_listed_below_month: true,
+          display_priority: 7,
+          memo: "Beweglicher Ferientag"
+        )
+
+      {:ok, _} = MehrSchulferien.Locations.delete_school(school)
+
+      [_, sql] =
+        Regex.run(
+          ~r{<pre[^>]*>(.*?)</pre>}s,
+          Email.school_deleted_notification(school, nil).html_body
+        )
+
+      sql
+      |> String.split(";")
+      |> Enum.filter(&(&1 =~ "INSERT INTO"))
+      |> Enum.each(&Repo.query!/1)
+
+      restored = Repo.get!(MehrSchulferien.Periods.Period, period.id)
+
+      assert Map.take(restored, [
+               :display_priority,
+               :is_school_vacation,
+               :is_valid_for_students,
+               :is_listed_below_month,
+               :created_by_email_address,
+               :memo
+             ]) ==
+               Map.take(period, [
+                 :display_priority,
+                 :is_school_vacation,
+                 :is_valid_for_students,
+                 :is_listed_below_month,
+                 :created_by_email_address,
+                 :memo
+               ])
+    end
+  end
 end

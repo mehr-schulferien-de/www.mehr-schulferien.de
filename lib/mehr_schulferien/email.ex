@@ -396,8 +396,8 @@ defmodule MehrSchulferien.Email do
     end}
 
       -- Perioden wiederherstellen
-      INSERT INTO periods (id, holiday_or_vacation_type_id, location_id, starts_on, ends_on, inserted_at, updated_at)
-      SELECT original_id, holiday_or_vacation_type_id, location_id, starts_on, ends_on, original_inserted_at, original_updated_at
+      INSERT INTO periods (id, holiday_or_vacation_type_id, location_id, starts_on, ends_on, created_by_email_address, is_listed_below_month, is_public_holiday, is_school_vacation, is_valid_for_students, is_valid_for_everybody, memo, display_priority, inserted_at, updated_at)
+      SELECT original_id, holiday_or_vacation_type_id, location_id, starts_on, ends_on, created_by_email_address, is_listed_below_month, is_public_holiday, is_school_vacation, is_valid_for_students, is_valid_for_everybody, memo, display_priority, original_inserted_at, original_updated_at
       FROM deleted_periods WHERE deleted_school_original_id = #{school.id};
       </pre>
     </div>

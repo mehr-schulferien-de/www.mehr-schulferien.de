@@ -217,6 +217,7 @@ defmodule MehrSchulferien.LocationsTest do
           ends_on: ~D[2024-08-31],
           is_school_vacation: true,
           is_valid_for_students: true,
+          display_priority: 5,
           created_by_email_address: "test@example.com"
         })
 
@@ -228,6 +229,7 @@ defmodule MehrSchulferien.LocationsTest do
           ends_on: ~D[2024-12-25],
           is_public_holiday: true,
           is_valid_for_everybody: true,
+          display_priority: 10,
           created_by_email_address: "test@example.com"
         })
 
