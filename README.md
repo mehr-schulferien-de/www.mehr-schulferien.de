@@ -21,6 +21,8 @@ iex -S mix phx.server
 
 Visit [`localhost:4000`](http://localhost:4000) in your browser.
 
+Before committing or deploying, run `mise exec -- mix precommit` (format, compiler, Credo and tests).
+
 ## System Requirements
 
 ### Required Dependencies
@@ -47,11 +49,18 @@ sudo apt-get install imagemagick libfontconfig1-dev webp fonts-comic-neue
 
 ## Documentation
 
+- [SEO implementation and measurement plan](docs/seo-implementation-2026-09-19.md)
+- [SEO review, September 2026](docs/seo-review-2026-09-19.md) - Search Console results, priorities, and calendar/FAQ corrections
 - [URL Parameters](docs/url_parameters.md) - Information about available URL parameters for customizing views
 - [API v2.1 Documentation](docs/api_v2.1.md) - REST API documentation with improved structure (recommended)
 - [API v2.0 Documentation](docs/api_v2.md) - Legacy REST API documentation
 
 ## Key Features
+
+- **House ad**: the LinkedIn-alternative copy for vutuv uses campaign ID 7; previous campaign IDs remain available for historical reports and links.
+
+- **Free holiday widget** at `/ferien-widget`: selectable federal state, iframe preview and copyable embed code; embedded calendars contain no scripts, ads or cookies.
+- **Source-linked holiday pages** with upcoming dates, state-specific notes and school-return answers for cities.
 
 - **Multi-language support** via Gettext
 - **Ferien, Feiertage and Brückentage pages** per federal state and nationwide, each with a stable evergreen URL (e.g. `/osterferien/bayern`, `/feiertage/d/bundesland/bayern`, `/brueckentage/d/bundesland/bayern`) plus per-year pages
@@ -158,4 +167,3 @@ psql -U postgres -f backup.sql
 ## Contributing
 
 See the [contributing guide](https://github.com/mehr-schulferien-de/www.mehr-schulferien.de/blob/master/CONTRIBUTING.md) for more information about setting up your development environment and opening pull requests.
-

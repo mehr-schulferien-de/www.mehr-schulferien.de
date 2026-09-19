@@ -15,6 +15,11 @@
       />
     </div>
 
+    <MehrSchulferienWeb.FerienContentComponent.next_vacation
+      periods={@periods}
+      today={@today}
+      federal_state={@federal_state}
+    />
     <div class="flex flex-col lg:flex-row gap-6">
       <div class="lg:w-2/3">
         <.card padding="p-4">
@@ -45,6 +50,17 @@
                 </div>
               <% end %>
               <.last_updated periods={@periods} federal_state={@federal_state} />
+              <MehrSchulferienWeb.FerienContentComponent.source_note federal_state={
+                @federal_state
+              } />
+              <p class="mt-4 text-sm">
+                <a
+                  href={"/ferien-widget?bundesland=#{@federal_state.slug}"}
+                  class="text-blue-700 dark:text-blue-300 underline underline-offset-4"
+                >
+                  Diesen Ferienkalender auf Ihrer Schulwebsite einbinden
+                </a>
+              </p>
               <!-- Year pages for specific years -->
               <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
                 <.heading
@@ -210,9 +226,15 @@
       all_periods={@all_periods}
       federal_state={@federal_state}
       year={@current_year}
+      next_year={@next_year}
     />
     <%= if @has_data do %>
-      <.faq_schema federal_state={@federal_state} year={@current_year} periods={@periods} />
+      <.faq_schema
+        federal_state={@federal_state}
+        year={@current_year}
+        periods={@periods}
+        today={@today}
+      />
     <% end %>
   </div>
 </div>

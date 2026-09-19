@@ -63,8 +63,8 @@ handwritten_meta_tags =
 <script type="application/ld+json">
   <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
     %{name: "Startseite", item: "https://www.mehr-schulferien.de"},
-    %{name: "Ferien Deutschland", item: "https://www.mehr-schulferien.de/ferien/deutschland"},
-    %{name: "#{@federal_state.name}", item: "https://www.mehr-schulferien.de/ferien/deutschland/bundesland/#{@federal_state.slug}"},
+    %{name: "Ferien Deutschland", item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}"},
+    %{name: "#{@federal_state.name}", item: "https://www.mehr-schulferien.de/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"},
     %{name: "#{@vacation_name} #{@year}", item: "https://www.mehr-schulferien.de/#{@vacation_type}/#{@federal_state.slug}/#{@year}"}
   ]) %>
 </script>
@@ -95,13 +95,13 @@ handwritten_meta_tags =
           "@type" => "ListItem",
           "position" => 2,
           "name" => "Ferien Deutschland",
-          "item" => "https://www.mehr-schulferien.de/ferien/deutschland"
+          "item" => "https://www.mehr-schulferien.de/ferien/#{@country.slug}"
         },
         %{
           "@type" => "ListItem",
           "position" => 3,
           "name" => @federal_state.name,
-          "item" => "https://www.mehr-schulferien.de/ferien/deutschland/bundesland/#{@federal_state.slug}"
+          "item" => "https://www.mehr-schulferien.de/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}"
         },
         %{
           "@type" => "ListItem",

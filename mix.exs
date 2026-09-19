@@ -4,7 +4,7 @@ defmodule MehrSchulferien.MixProject do
   def project do
     [
       app: :mehr_schulferien,
-      version: "4.33.3",
+      version: "4.33.4",
       elixir: "~> 1.19",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
@@ -15,6 +15,8 @@ defmodule MehrSchulferien.MixProject do
       listeners: [Phoenix.CodeReloader]
     ]
   end
+
+  def cli, do: [preferred_envs: [precommit: :test]]
 
   def application do
     [
@@ -71,6 +73,12 @@ defmodule MehrSchulferien.MixProject do
 
   defp aliases do
     [
+      precommit: [
+        "format --check-formatted",
+        "compile --warnings-as-errors",
+        "credo --strict",
+        "test"
+      ],
       setup: [
         "deps.get",
         "ecto.setup",

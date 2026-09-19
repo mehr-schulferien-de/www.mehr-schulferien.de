@@ -4,9 +4,17 @@
     @next_year
   )} ({@federal_state.name})
 </title>
+<link rel="canonical" href={url(~p"/ferien/#{@country.slug}/stadt/#{@city.slug}")} />
 <meta
   name="description"
-  content={"Schulferien #{@current_year}/#{@next_year} für #{@city.name} in #{@federal_state.name}: Oster-, Sommer-, Herbst- und Weihnachtsferien. Alle Termine, iCal-Export und Kalenderansicht."}
+  content={
+    MehrSchulferienWeb.FerienContent.description(
+      @city.name,
+      "#{@current_year}/#{@next_year}",
+      @periods,
+      @today
+    )
+  }
 />
 <meta
   name="keywords"

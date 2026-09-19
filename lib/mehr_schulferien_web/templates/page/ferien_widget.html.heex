@@ -1,0 +1,91 @@
+<div class="my-8 max-w-5xl mx-auto">
+  <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
+    Ferienkalender für Ihre Schulwebsite
+  </h1>
+  <p class="mt-4 max-w-prose text-lg text-gray-700 dark:text-gray-300">
+    Zeigen Sie Eltern die nächsten Schulferien direkt auf Ihrer Website. Kostenlos, werbefrei und beim Aufruf automatisch aus unserem aktuellen Datenbestand geladen.
+  </p>
+  <form action="/ferien-widget" method="get" class="my-6 flex flex-wrap items-end gap-3">
+    <div>
+      <label
+        for="widget-bundesland"
+        class="block font-medium text-gray-900 dark:text-gray-100 mb-2"
+      >
+        Bundesland
+      </label>
+      <select
+        id="widget-bundesland"
+        name="bundesland"
+        class="w-full sm:w-80 rounded-md border-gray-300 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+      >
+        <option
+          :for={state <- @states}
+          value={state.slug}
+          selected={@selected && state.id == @selected.id}
+        >
+          {state.name}
+        </option>
+      </select>
+    </div>
+    <button
+      type="submit"
+      class="rounded-md bg-blue-700 px-4 py-2 text-white font-medium hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+    >
+      Vorschau anzeigen
+    </button>
+  </form>
+  <div :if={@selected} class="grid lg:grid-cols-2 gap-8 items-start">
+    <section aria-labelledby="widget-vorschau">
+      <h2 id="widget-vorschau" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+        Vorschau: {@selected.name}
+      </h2>
+      <iframe
+        src={"/ferien-widget/#{@selected.slug}"}
+        title={"Vorschau Schulferien #{@selected.name}"}
+        width="100%"
+        height="480"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        class="border border-gray-300 dark:border-gray-600 rounded-md"
+      >
+      </iframe>
+    </section>
+    <section aria-labelledby="widget-einbau">
+      <h2 id="widget-einbau" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+        In Ihre Website einfügen
+      </h2>
+      <p class="text-gray-700 dark:text-gray-300 mb-4">
+        Kopieren Sie den Code in einen HTML-Block Ihres Redaktionssystems. Breite und Höhe lassen sich an Ihre Seite anpassen. Eine Anmeldung ist nicht nötig.
+      </p>
+      <label
+        for="widget-code"
+        class="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2"
+      >
+        HTML-Code zum Kopieren
+      </label>
+      <textarea
+        id="widget-code"
+        readonly
+        rows="7"
+        class="w-full rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 text-sm font-mono"
+      >{@embed_code}</textarea>
+      <p class="mt-4 text-sm text-gray-700 dark:text-gray-300">
+        Das eingebettete Widget verwendet keine Cookies, Werbung oder JavaScript. Beim Laden verbindet sich der Browser mit mehr-schulferien.de. Die Darstellung folgt dem hellen oder dunklen Systemmodus.
+      </p>
+      <p class="mt-3 text-sm text-gray-700 dark:text-gray-300">
+        Es zeigt landesweite Termine. Ergänzen Sie bewegliche Ferientage und schulinterne Termine auf Ihrer eigenen Website. Ein zusätzlicher Link zu uns ist freiwillig.
+      </p>
+      <p class="mt-4">
+        <a
+          href={"/ferien/d/bundesland/#{@selected.slug}"}
+          class="text-blue-700 dark:text-blue-300 underline underline-offset-4"
+        >
+          Alle Schulferien in {@selected.name} und Kalender-Download
+        </a>
+      </p>
+    </section>
+  </div>
+  <p :if={is_nil(@selected)} class="text-gray-700 dark:text-gray-300">
+    Zurzeit sind keine Bundesländer verfügbar.
+  </p>
+</div>

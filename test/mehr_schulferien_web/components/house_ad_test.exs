@@ -32,6 +32,8 @@ defmodule MehrSchulferienWeb.HouseAdTest do
     assert html =~ ~s(rel="sponsored")
     # German ad-labelling duty: the pill is marked as an ad.
     assert html =~ "Anzeige"
+    text = html |> Floki.parse_document!() |> Floki.text() |> String.replace(~r/\s+/, " ")
+    assert text =~ "Keinen Bock mehr auf LinkedIn? → vutuv.de (schneller, besser, weniger nervig)"
     refute html =~ "animina"
   end
 

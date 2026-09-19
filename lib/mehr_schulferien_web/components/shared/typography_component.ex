@@ -56,6 +56,7 @@ defmodule MehrSchulferienWeb.Shared.TypographyComponent do
             >
               {@house_ad.label}
             </a>
+            {Map.get(@house_ad, :suffix)}
           </div>
         </div>
       </div>

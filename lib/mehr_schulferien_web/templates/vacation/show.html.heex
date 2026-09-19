@@ -15,6 +15,11 @@
       />
     </div>
 
+    <MehrSchulferienWeb.FerienContentComponent.national_link
+      vacation_type={@vacation_type}
+      vacation_name={@vacation_name}
+      year={@year}
+    />
     <div class="flex flex-col lg:flex-row gap-6">
       <div class="lg:w-2/3">
         <.card padding="p-4">
@@ -60,6 +65,13 @@
               </.heading>
               <.periods_table periods={@periods} all_periods={@all_periods} today={@today} />
               <.last_updated periods={@periods} federal_state={@federal_state} />
+              <MehrSchulferienWeb.FerienContentComponent.state_link
+                federal_state={@federal_state}
+                country={@country}
+              />
+              <MehrSchulferienWeb.FerienContentComponent.source_note federal_state={
+                @federal_state
+              } />
 
               <% # Links to other vacation types %>
               <%= if length(@vacation_types) > 1 do %>

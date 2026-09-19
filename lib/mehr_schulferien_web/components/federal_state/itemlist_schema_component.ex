@@ -6,6 +6,7 @@ defmodule MehrSchulferienWeb.FederalState.ItemListSchemaComponent do
   attr :all_periods, :list, required: true
   attr :federal_state, :any, required: true
   attr :year, :integer, required: true
+  attr :next_year, :integer, default: nil
 
   def itemlist_schema(assigns) do
     # Create list items for each vacation period
@@ -24,7 +25,7 @@ defmodule MehrSchulferienWeb.FederalState.ItemListSchemaComponent do
           "item" => %{
             "@type" => "Event",
             "name" =>
-              "#{period.holiday_or_vacation_type.name} #{assigns.federal_state.name} #{assigns.year}",
+              "#{period.holiday_or_vacation_type.name} #{assigns.federal_state.name} #{period.starts_on.year}",
             "startDate" => period.starts_on,
             "endDate" => period.ends_on,
             "duration" => "P#{days}D",
@@ -45,13 +46,20 @@ defmodule MehrSchulferienWeb.FederalState.ItemListSchemaComponent do
 
     assigns = assign(assigns, :vacation_items, vacation_items)
 
+    assigns =
+      assign(
+        assigns,
+        :year_label,
+        if(assigns.next_year, do: "#{assigns.year}/#{assigns.next_year}", else: "#{assigns.year}")
+      )
+
     ~H"""
     <script type="application/ld+json">
       <%= Phoenix.HTML.raw(Jason.encode!(%{
         "@context" => "https://schema.org",
         "@type" => "ItemList",
-        "name" => "Schulferien #{@federal_state.name} #{@year}",
-        "description" => "Vollständige Liste aller Schulferien #{@year} in #{@federal_state.name} mit Terminen und Dauer",
+        "name" => "Schulferien #{@federal_state.name} #{@year_label}",
+        "description" => "Schulferien #{@year_label} in #{@federal_state.name} mit Terminen und Dauer",
         "numberOfItems" => length(@vacation_items),
         "itemListElement" => @vacation_items
       })) %>

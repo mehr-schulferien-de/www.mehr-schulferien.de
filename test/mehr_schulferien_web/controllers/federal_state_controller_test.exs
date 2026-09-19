@@ -98,6 +98,51 @@ defmodule MehrSchulferienWeb.FederalStateControllerTest do
   end
 
   describe "evergreen federal state page (year-less URL)" do
+    test "includes autumn and Christmas of the next calendar year", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state
+    } do
+      for {name, starts_on, ends_on} <- [
+            {"Herbst", ~D[2027-10-11], ~D[2027-10-23]},
+            {"Weihnachten", ~D[2027-12-24], ~D[2028-01-08]}
+          ] do
+        type =
+          insert(:holiday_or_vacation_type,
+            name: name,
+            default_is_school_vacation: true,
+            country_location_id: country.id
+          )
+
+        insert(:period,
+          location_id: federal_state.id,
+          holiday_or_vacation_type_id: type.id,
+          starts_on: starts_on,
+          ends_on: ends_on,
+          is_school_vacation: true,
+          is_valid_for_students: true
+        )
+      end
+
+      conn =
+        get(conn, "/ferien/#{country.slug}/bundesland/#{federal_state.slug}?today=19.09.2026")
+
+      html = html_response(conn, 200)
+      assert html =~ "11.10.27"
+      assert html =~ "24.12.2027"
+
+      schema =
+        html
+        |> Floki.parse_document!()
+        |> Floki.find("script[type='application/ld+json']")
+        |> Enum.map(&(Floki.text(&1, js: true) |> Jason.decode!()))
+        |> Enum.find(&(&1["@type"] == "ItemList"))
+
+      autumn = Enum.find(schema["itemListElement"], &(&1["item"]["startDate"] == "2027-10-11"))
+      assert autumn["item"]["name"] =~ "2027"
+      assert schema["name"] =~ "2026/2027"
+    end
+
     setup %{country: country, federal_state: federal_state} do
       today = Date.utc_today()
 

@@ -1063,6 +1063,8 @@ defmodule MehrSchulferienWeb.HomeLive do
           </:below_form>
         </.school_search_form>
 
+        <MehrSchulferienWeb.FerienContentComponent.national_seasons year={@current_year} />
+
         <%= if @show_all_schools do %>
           <div class="mb-8">
             <.heading level={2} class="mb-3 sm:mb-4 text-lg sm:text-2xl">

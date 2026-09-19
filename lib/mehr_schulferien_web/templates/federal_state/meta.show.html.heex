@@ -1,10 +1,15 @@
 <title>
-  Schulferien {@federal_state.name} {@current_year}/{@next_year} - Alle Ferientermine
+  Schulferien {MehrSchulferienWeb.FerienContent.search_name(@federal_state)} {@current_year} &amp; {@next_year}: Termine und Kalender
 </title>
 <meta
   name="description"
   content={
-    dynamic_federal_state_description(@federal_state.name, @current_year, @periods, @today)
+    MehrSchulferienWeb.FerienContent.description(
+      @federal_state.name,
+      "#{@current_year}/#{@next_year}",
+      @periods,
+      @today
+    )
   }
 />
 <meta

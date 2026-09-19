@@ -53,7 +53,7 @@ defmodule MehrSchulferienWeb.FederalStateHTML do
       if is_nil(current_vacation) do
         vacation_periods
         |> Enum.filter(fn p -> Date.compare(p.starts_on, today) == :gt end)
-        |> Enum.sort_by(& &1.starts_on)
+        |> Enum.sort_by(& &1.starts_on, Date)
         |> List.first()
       end
 

@@ -22,6 +22,22 @@
       />
     </div>
 
+    <MehrSchulferienWeb.FerienContentComponent.next_vacation
+      periods={@periods}
+      today={@today}
+      federal_state={@federal_state}
+    />
+    <MehrSchulferienWeb.FerienContentComponent.school_return
+      periods={@periods}
+      all_periods={@all_periods}
+      today={@today}
+      city={@city}
+    />
+    <MehrSchulferienWeb.FerienContentComponent.state_link
+      federal_state={@federal_state}
+      country={@country}
+      place={@city.name}
+    />
     <div class="flex flex-col lg:flex-row gap-6">
       <div class="lg:w-2/3">
         <.card padding="p-4">

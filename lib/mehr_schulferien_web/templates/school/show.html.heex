@@ -44,6 +44,10 @@
               />
             <% end %>
             <!-- Bewegliche Ferientage from other schools with same zip code -->
+            <MehrSchulferienWeb.FerienContentComponent.state_link
+              federal_state={@federal_state}
+              country={@country}
+            />
             <%= if @school_bewegliche_ferientage == [] && @other_schools_bewegliche_ferientage != [] do %>
               <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                 <div class="flex items-start">

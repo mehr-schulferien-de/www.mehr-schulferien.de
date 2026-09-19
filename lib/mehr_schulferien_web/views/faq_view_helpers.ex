@@ -15,11 +15,14 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
       |> Enum.map(& &1.holiday_or_vacation_type.colloquial)
       |> ViewHelpers.comma_join_with_a_final_und()
 
-    case Enum.count(periods) do
-      0 ->
+    cond do
+      periods == [] and Date.day_of_week(date) in [6, 7] ->
+        "Ja, #{humanized_date(date)} #{ist_in_time(date)} schulfrei in #{location.name} (Wochenende)."
+
+      periods == [] ->
         "Nein, #{humanized_date(date)} #{ist_in_time(date)} nicht schulfrei in #{location.name}."
 
-      _ ->
+      true ->
         "Ja, #{humanized_date(date)} #{ist_in_time(date)} schulfrei in #{location.name} (#{reasons})."
     end
   end
@@ -117,6 +120,8 @@ defmodule MehrSchulferienWeb.FaqViewHelpers do
   An humanized answer for the next public holiday date.
   """
   def next_public_holiday_answer(location, public_periods, today \\ DateHelpers.today_berlin()) do
+    public_periods = Enum.sort_by(public_periods, & &1.starts_on, Date)
+
     case Periods.next_periods(public_periods, today, 1) do
       [] ->
         nil

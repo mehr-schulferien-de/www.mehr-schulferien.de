@@ -1,5 +1,12 @@
 # SEO Work Log
 
+Latest review: [2026-09-19](seo-review-2026-09-19.md). Index cleanup is
+progressing, but the state Ferien family has not gained measurable clicks
+(7 before the July changes vs 6 in the latest comparable 28-day window).
+The review also corrects unsupported causal claims and inconsistent dates
+in the historical notes below. Local calendar/FAQ regression fixes are
+prepared; they have not been deployed as part of the review.
+
 Dated log of SEO changes with baseline numbers and verification criteria,
 so future sessions can check whether the work paid off. Data source:
 Google Search Console (GSC), property `https://www.mehr-schulferien.de`.

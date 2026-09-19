@@ -213,7 +213,12 @@ defmodule MehrSchulferienWeb.VacationController do
       years_with_data: MehrSchulferien.Periods.list_years_with_periods(),
       meta_title_type: :vacation,
       page_title:
-        "#{params.vacation_type_record.colloquial} #{params.federal_state.name} #{params.year}"
+        MehrSchulferienWeb.FerienContent.season_title(
+          params.vacation_type_record.colloquial,
+          params.federal_state,
+          params.year,
+          params.vacation_period_with_adjoining
+        )
     }
   end
 
@@ -316,7 +321,12 @@ defmodule MehrSchulferienWeb.VacationController do
       next_year: next_year,
       has_data: has_data,
       page_title:
-        "#{vacation_type_record.colloquial} #{federal_state.name} #{current_year} & #{next_year}"
+        MehrSchulferienWeb.FerienContent.season_title(
+          vacation_type_record.colloquial,
+          federal_state,
+          "#{current_year} & #{next_year}",
+          next_period
+        )
     })
   end
 

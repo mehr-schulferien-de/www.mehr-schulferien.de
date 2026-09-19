@@ -27,6 +27,15 @@ defmodule MehrSchulferienWeb.Router do
     plug MehrSchulferienWeb.Plugs.CorsPlug
   end
 
+  pipeline :public_widget do
+    plug :accepts, ["html"]
+  end
+
+  scope "/ferien-widget", MehrSchulferienWeb do
+    pipe_through :public_widget
+    get "/:slug", FerienWidgetController, :show
+  end
+
   pipeline :redirects do
     plug :accepts, ["html"]
     plug :put_layout, false
@@ -217,6 +226,7 @@ defmodule MehrSchulferienWeb.Router do
     get "/developers/api/reference", PageController, :developers_api_reference
     get "/developers/mcp", PageController, :developers_mcp
     get "/impressum", PageController, :impressum
+    get "/ferien-widget", FerienWidgetController, :index
     get "/debug", PageController, :debug
 
     # Date Query Routes

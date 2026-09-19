@@ -102,6 +102,7 @@ defmodule MehrSchulferienWeb.SitemapController do
         feiertage_overviews ++
         [%{loc: "#{@base_url}/briefe", changefreq: "monthly", priority: "0.6"}] ++
         developer_pages ++
+        [%{loc: "#{@base_url}/ferien-widget", changefreq: "monthly", priority: "0.5"}] ++
         [%{loc: "#{@base_url}/impressum", changefreq: "yearly", priority: "0.3"}]
 
     render_xml(conn, "urlset.xml", entries: entries)

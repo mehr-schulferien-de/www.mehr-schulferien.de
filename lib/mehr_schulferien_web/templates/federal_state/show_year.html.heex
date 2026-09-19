@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
       <.heading level={1}>
-        Schulferien {@federal_state.name}
+        Schulferien {@federal_state.name} {@year}
       </.heading>
 
       <.pagination
@@ -15,6 +15,10 @@
       />
     </div>
 
+    <MehrSchulferienWeb.FerienContentComponent.state_link
+      federal_state={@federal_state}
+      country={@country}
+    />
     <div class="flex flex-col lg:flex-row gap-6">
       <div class="lg:w-2/3">
         <.card padding="p-4">
@@ -30,6 +34,9 @@
               />
               <.partial_data periods={@periods} federal_state={@federal_state} year={@year} />
               <.last_updated periods={@periods} federal_state={@federal_state} />
+              <MehrSchulferienWeb.FerienContentComponent.source_note federal_state={
+                @federal_state
+              } />
               <!-- iCal Export Box -->
               <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-4">
                 <div>
@@ -187,7 +194,7 @@
 
     <.schema_org_event periods={@periods} federal_state={@federal_state} country={@country} />
     <%= unless @today.year == @year do %>
-      <.faq_schema federal_state={@federal_state} year={@year} periods={@periods} />
+      <.faq_schema federal_state={@federal_state} year={@year} periods={@periods} today={@today} />
     <% end %>
     <.itemlist_schema
       periods={@periods}

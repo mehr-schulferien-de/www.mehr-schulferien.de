@@ -35,13 +35,21 @@ defmodule MehrSchulferien.AdsTest do
       assert Ads.variant_for_bucket(42) == Ads.variant_for_bucket(42)
     end
 
-    test "consecutive hour buckets cycle through every variant" do
+    test "every hour shows the new LinkedIn alternative without reusing historical ids" do
       seen =
         1..500
         |> Enum.map(&Ads.variant_for_bucket/1)
         |> Enum.uniq()
 
-      assert length(seen) == length(Ads.variants())
+      assert [
+               %{
+                 id: 7,
+                 hook: "Keinen Bock mehr auf LinkedIn? →",
+                 suffix: "(schneller, besser, weniger nervig)"
+               }
+             ] = seen
+
+      assert Ads.get_variant(5).hook == "Im Beruf gefunden werden? Dein kostenloses Profil:"
     end
   end
 

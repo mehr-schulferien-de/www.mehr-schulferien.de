@@ -6,11 +6,12 @@ defmodule MehrSchulferien.Ads do
 
   ## How it works
 
-  * `variants/0` is the fixed list of ad variants. Ids are stable and
+  * `variants/0` includes active and historical ad variants. Ids are stable and
     load-bearing: they appear in the click URLs (`/ads/:id`), in the
     `?ad=` param that reaches the vutuv logs, and in the `ad_stats`
     rows — never renumber an id, retire it and add a new one.
-  * `current/0` picks the variant for the current hour, deterministically
+  * Only ids in `@active_variant_ids` are displayed (currently just 7).
+    `current/0` picks an active variant for the current hour, deterministically
     (`:erlang.phash2` over the hour bucket). Every render in the same hour
     shows the same variant, so a LiveView's static and connected render
     agree (no flicker) and the hour-of-day bias washes out over the days.
@@ -61,8 +62,17 @@ defmodule MehrSchulferien.Ads do
       hook: "Das offene Business-Netzwerk aus Deutschland. Kostenlos.",
       label: "vutuv.de",
       target: "https://vutuv.de?ad=6"
+    },
+    %{
+      id: 7,
+      hook: "Keinen Bock mehr auf LinkedIn? →",
+      label: "vutuv.de",
+      suffix: "(schneller, besser, weniger nervig)",
+      target: "https://vutuv.de?ad=7"
     }
   ]
+
+  @active_variant_ids [7]
 
   @doc "All ad variants, ids stable (see the moduledoc)."
   def variants, do: @variants
@@ -80,7 +90,8 @@ defmodule MehrSchulferien.Ads do
   count divides 24).
   """
   def variant_for_bucket(bucket) do
-    Enum.at(@variants, :erlang.phash2(bucket, length(@variants)))
+    active = Enum.filter(@variants, &(&1.id in @active_variant_ids))
+    Enum.at(active, :erlang.phash2(bucket, length(active)))
   end
 
   @doc "Counts one ad impression for the currently shown variant."

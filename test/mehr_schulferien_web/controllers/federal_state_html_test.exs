@@ -16,6 +16,21 @@ defmodule MehrSchulferienWeb.FederalStateHTMLTest do
   end
 
   describe "dynamic_federal_state_description/4" do
+    test "selects the nearest vacation chronologically across months and years" do
+      periods = [
+        vacation_period("Winter", "Winterferien", ~D[2027-01-02], ~D[2027-01-09]),
+        vacation_period("Weihnachten", "Weihnachtsferien", ~D[2026-12-23], ~D[2026-12-31]),
+        vacation_period("Herbst", "Herbstferien", ~D[2026-10-19], ~D[2026-10-31])
+      ]
+
+      assert FederalStateHTML.dynamic_federal_state_description(
+               "Brandenburg",
+               2026,
+               periods,
+               ~D[2026-10-14]
+             ) =~ "Nur noch 5 Tage bis zu den Herbstferien"
+    end
+
     test "uses the colloquial vacation name during a running vacation" do
       period = vacation_period("Sommer", "Sommerferien", ~D[2026-07-04], ~D[2026-08-22])
       today = ~D[2026-07-17]

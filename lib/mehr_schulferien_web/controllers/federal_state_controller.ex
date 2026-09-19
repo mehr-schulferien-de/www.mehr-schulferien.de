@@ -36,7 +36,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
   end
 
   # Evergreen page for the head term "Schulferien <Bundesland>": one stable URL
-  # per state showing the current and next school year, mirroring the year-less
+  # per state showing the current and next calendar year, mirroring the year-less
   # city pages that rank well.
   defp show_evergreen(conn, federal_state, country) do
     today = DateHelpers.get_today_or_custom_date(conn)
@@ -46,12 +46,7 @@ defmodule MehrSchulferienWeb.FederalStateController do
 
     {:ok, full_start} = Date.new(current_year, 1, 1)
     {:ok, full_end} = Date.new(next_year, 12, 31)
-    {:ok, cutoff_date} = Date.new(next_year, 8, 2)
-
-    school_periods =
-      Periods.list_school_vacation_periods(location_ids, full_start, full_end,
-        starts_on_cutoff: cutoff_date
-      )
+    school_periods = Periods.list_school_vacation_periods(location_ids, full_start, full_end)
 
     public_periods = Periods.list_public_periods(location_ids, full_start, full_end)
 

@@ -51,16 +51,12 @@ defmodule MehrSchulferienWeb.CityController do
     {:ok, full_start} = Date.new(current_year, 1, 1)
     {:ok, full_end} = Date.new(current_year + 1, 12, 31)
 
-    # Calculate cutoff date (August 2 of next year)
-    {:ok, cutoff_date} = Date.new(current_year + 1, 8, 2)
-
-    # Use SQL filter for cutoff_date instead of Elixir filter
+    # The page advertises both calendar years, including autumn and Christmas.
     all_periods =
       MehrSchulferien.Periods.list_school_vacation_periods(
         location_ids,
         full_start,
-        full_end,
-        starts_on_cutoff: cutoff_date
+        full_end
       )
 
     all_public_periods =
