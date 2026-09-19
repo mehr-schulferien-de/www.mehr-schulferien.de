@@ -19,9 +19,10 @@ defmodule MehrSchulferienWeb.VacationTypeComponents do
       [] ->
         nil
 
-      [earliest | _] = data ->
-        latest = Enum.max_by(data, fn %{period: p} -> p.starts_on end)
-        latest_end = Enum.max_by(data, fn %{period: p} -> p.ends_on end)
+      data ->
+        earliest = Enum.min_by(data, & &1.period.starts_on, Date)
+        latest = Enum.max_by(data, & &1.period.starts_on, Date)
+        latest_end = Enum.max_by(data, & &1.period.ends_on, Date)
 
         {min_duration, max_duration} =
           Enum.min_max_by(data, & &1.duration)

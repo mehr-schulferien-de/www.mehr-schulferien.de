@@ -131,8 +131,8 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
         "Die Termine für #{vacation_name} #{year} werden etwa 12-18 Monate im Voraus von den Kultusministerien der Länder festgelegt."
 
       valid_periods ->
-        earliest = List.first(valid_periods)
-        latest = Enum.max_by(valid_periods, fn %{period: p} -> p.starts_on end)
+        earliest = Enum.min_by(valid_periods, & &1.period.starts_on, Date)
+        latest = Enum.max_by(valid_periods, & &1.period.starts_on, Date)
 
         earliest_date = DateHelpers.german_date(earliest.period.starts_on)
         latest_date = DateHelpers.german_date(latest.period.starts_on)
@@ -147,7 +147,7 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
         "Die Termine für #{vacation_name} #{year} sind noch nicht bekannt."
 
       valid_periods ->
-        earliest = List.first(valid_periods)
+        earliest = Enum.min_by(valid_periods, & &1.period.starts_on, Date)
         date = DateHelpers.german_date(earliest.period.starts_on, :with_year)
 
         "#{earliest.state.name} hat #{year} die frühesten #{vacation_name}. Sie beginnen am #{date}."
@@ -160,7 +160,7 @@ defmodule MehrSchulferienWeb.VacationTypeFaqComponent do
         "Die Termine für #{vacation_name} #{year} sind noch nicht bekannt."
 
       valid_periods ->
-        latest = Enum.max_by(valid_periods, fn %{period: p} -> p.starts_on end)
+        latest = Enum.max_by(valid_periods, & &1.period.starts_on, Date)
         date = DateHelpers.german_date(latest.period.starts_on, :with_year)
 
         "#{latest.state.name} hat #{year} die spätesten #{vacation_name}. Sie beginnen am #{date}."

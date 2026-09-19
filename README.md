@@ -63,7 +63,7 @@ sudo apt-get install imagemagick libfontconfig1-dev webp fonts-comic-neue
 - **Source-linked holiday pages** with upcoming dates, state-specific notes and school-return answers for cities.
 
 - **Multi-language support** via Gettext
-- **Ferien, Feiertage and Brückentage pages** per federal state and nationwide, each with a stable evergreen URL (e.g. `/osterferien/bayern`, `/feiertage/d/bundesland/bayern`, `/brueckentage/d/bundesland/bayern`) plus per-year pages
+- **Ferien, Feiertage and Brückentage pages** per federal state and nationwide, each with a stable evergreen URL (e.g. `/osterferien/bayern`, `/feiertage/d/bundesland/bayern`, `/brueckentage/d/bundesland/bayern`) plus per-year pages (seasonal pages use the holiday start year and retain dates extending into January)
 - **PDF generation** for excuse letters (Entschuldigung/Beurlaubung)
 - **iCal export** for calendar integration
 - **REST API** (v2.1) for programmatic access

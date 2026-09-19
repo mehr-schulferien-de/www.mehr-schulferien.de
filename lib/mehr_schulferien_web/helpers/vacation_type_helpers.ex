@@ -111,15 +111,16 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
       # Get vacation periods for this state
       periods =
         Periods.list_school_vacation_periods(location_ids, start_date, end_date)
+        # Season years refer to the start year, not any year the period overlaps.
         |> Enum.filter(fn period ->
-          period.holiday_or_vacation_type &&
+          period.starts_on.year == year && period.holiday_or_vacation_type &&
             (String.downcase(period.holiday_or_vacation_type.slug) == config.slug ||
                String.contains?(
                  String.downcase(period.holiday_or_vacation_type.name),
                  config.slug
                ))
         end)
-        |> Enum.sort_by(& &1.starts_on)
+        |> Enum.sort_by(& &1.starts_on, Date)
 
       # Get the main vacation period (usually there's only one per type per year)
       main_period = List.first(periods)
@@ -131,9 +132,12 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
           if(main_period, do: Date.diff(main_period.ends_on, main_period.starts_on) + 1, else: 0)
       }
     end)
-    |> Enum.sort_by(fn %{period: period} ->
-      if period, do: period.starts_on, else: ~D[2099-12-31]
-    end)
+    |> Enum.sort_by(
+      fn %{period: period} ->
+        if period, do: period.starts_on, else: ~D[2099-12-31]
+      end,
+      Date
+    )
   end
 
   @doc """
@@ -148,8 +152,8 @@ defmodule MehrSchulferienWeb.Helpers.VacationTypeHelpers do
     if Enum.empty?(valid_periods) do
       "#{config.name} #{year} in Deutschland. #{config.description_suffix}"
     else
-      earliest = List.first(valid_periods)
-      latest = Enum.max_by(valid_periods, fn %{period: p} -> p.starts_on end)
+      earliest = Enum.min_by(valid_periods, & &1.period.starts_on, Date)
+      latest = Enum.max_by(valid_periods, & &1.period.starts_on, Date)
 
       earliest_date = DateHelpers.german_date(earliest.period.starts_on)
       latest_date = DateHelpers.german_date(latest.period.starts_on)
