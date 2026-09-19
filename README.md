@@ -49,6 +49,8 @@ sudo apt-get install imagemagick libfontconfig1-dev webp fonts-comic-neue
 
 ## Documentation
 
+- [Crawl controls and verified Googlebot baseline](docs/seo/crawl-control-2026-09-19.md) - robots rules, log evidence and repeatable measurement
+
 - [SEO implementation and measurement plan](docs/seo-implementation-2026-09-19.md)
 - [SEO review, September 2026](docs/seo-review-2026-09-19.md) - Search Console results, priorities, and calendar/FAQ corrections
 - [URL Parameters](docs/url_parameters.md) - Information about available URL parameters for customizing views

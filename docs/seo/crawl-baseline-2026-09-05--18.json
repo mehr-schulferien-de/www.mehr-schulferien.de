@@ -1,0 +1,108 @@
+{
+  "period": "2026-09-05 through 2026-09-18 Europe/Berlin",
+  "files": 15,
+  "candidate_ip_count": 187,
+  "verified_ip_count": 101,
+  "unverified_requests": 426,
+  "malformed_googlebot_lines": 0,
+  "verified_groups": [
+    {
+      "group": "school holiday pages",
+      "requests": 8702,
+      "body_bytes": 147440447
+    },
+    {
+      "group": "unattributed paths (shared log)",
+      "requests": 4473,
+      "body_bytes": 9389737
+    },
+    {
+      "group": "school letter tools",
+      "requests": 3551,
+      "body_bytes": 41454468
+    },
+    {
+      "group": "city holiday pages",
+      "requests": 3444,
+      "body_bytes": 56307037
+    },
+    {
+      "group": "city/school year redirects",
+      "requests": 1276,
+      "body_bytes": 144226
+    },
+    {
+      "group": "vacation planners",
+      "requests": 999,
+      "body_bytes": 10425178
+    },
+    {
+      "group": "legacy redirect paths",
+      "requests": 878,
+      "body_bytes": 107865
+    },
+    {
+      "group": "season pages",
+      "requests": 365,
+      "body_bytes": 2907829
+    },
+    {
+      "group": "state holiday pages",
+      "requests": 166,
+      "body_bytes": 1719167
+    },
+    {
+      "group": "other holiday landing pages",
+      "requests": 127,
+      "body_bytes": 1083326
+    }
+  ],
+  "verified_statuses": {
+    "school holiday pages 200": 8686,
+    "city holiday pages 200": 3434,
+    "unattributed paths (shared log) 301": 1566,
+    "school letter tools 200": 3551,
+    "unattributed paths (shared log) 200": 2402,
+    "vacation planners 200": 999,
+    "legacy redirect paths 301": 844,
+    "city/school year redirects 301": 1276,
+    "state holiday pages 200": 124,
+    "other holiday landing pages 200": 120,
+    "unattributed paths (shared log) 404": 504,
+    "state holiday pages 301": 40,
+    "season pages 301": 96,
+    "season pages 404": 45,
+    "season pages 200": 218,
+    "city holiday pages 301": 7,
+    "legacy redirect paths 404": 34,
+    "state holiday pages 404": 2,
+    "other holiday landing pages 301": 7,
+    "school holiday pages 500": 3,
+    "city holiday pages 500": 3,
+    "season pages 302": 6,
+    "school holiday pages 404": 3,
+    "unattributed paths (shared log) 499": 1,
+    "school holiday pages 301": 10
+  },
+  "candidate_requests_by_day": {
+    "2026-09-05": 1812,
+    "2026-09-06": 1748,
+    "2026-09-07": 2772,
+    "2026-09-08": 2263,
+    "2026-09-09": 981,
+    "2026-09-10": 747,
+    "2026-09-11": 915,
+    "2026-09-12": 1526,
+    "2026-09-13": 1557,
+    "2026-09-14": 1738,
+    "2026-09-15": 2515,
+    "2026-09-16": 1700,
+    "2026-09-17": 1461,
+    "2026-09-18": 2672
+  },
+  "limitations": [
+    "Shared combined log has no hostname; only recognizable site-specific paths are attributable. Root, assets and unknown paths cannot be assigned reliably.",
+    "Log has response-body byte counts but no request or upstream timing.",
+    "DNS verification is performed at analysis time; lookup failures remain unverified."
+  ]
+}
