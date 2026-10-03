@@ -198,6 +198,24 @@ defmodule MehrSchulferien.Calendars.DateHelpers do
   def month_slug(month), do: @month_slugs[month]
 
   @doc """
+  Element id of a month in the Kalenderansicht, e.g. `month_anchor(2026, 3)`
+  -> "maerz2026". The calendar and every link into it build the id here.
+  """
+  def month_anchor(year, month), do: "#{month_slug(month)}#{year}"
+
+  @doc """
+  The months a date range touches as `{year, month}` tuples, in order, e.g.
+  23.12.2026 - 08.01.2027 -> `[{2026, 12}, {2027, 1}]`.
+  """
+  def months_in_range(first, last) do
+    first
+    |> Date.beginning_of_month()
+    |> Stream.iterate(&Date.shift(&1, month: 1))
+    |> Stream.take_while(&(Date.compare(&1, last) != :gt))
+    |> Enum.map(&{&1.year, &1.month})
+  end
+
+  @doc """
   Formats a date in German long form, e.g. "3. August" or, with `:with_year`,
   "3. August 2026". `Calendar.strftime/2` with "%B" would produce English
   month names, which must never appear in the German UI texts.

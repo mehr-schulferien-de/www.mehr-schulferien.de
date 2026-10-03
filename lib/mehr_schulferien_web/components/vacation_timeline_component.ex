@@ -1,6 +1,7 @@
 defmodule MehrSchulferienWeb.VacationTimelineComponent do
   use Phoenix.Component
 
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.StyleConfig
 
   @doc """
@@ -92,11 +93,8 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
 
               link_url =
                 if has_link do
-                  vacation_year = day.year
-                  vacation_month = day.month
-                  month_name = get_german_month_name(vacation_month)
-                  anchor = "#{month_name}#{vacation_year}"
-                  "/ferien/d/bundesland/#{federal_state.slug}/#{vacation_year}##{anchor}"
+                  anchor = DateHelpers.month_anchor(day.year, day.month)
+                  "/ferien/d/bundesland/#{federal_state.slug}/#{day.year}##{anchor}"
                 end %>
 
               <%= if has_link do %>
@@ -150,9 +148,7 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
             <%= if federal_state do %>
               <% # Create link to vacation page with month anchor for both vacations and holidays
               period_year = period.starts_on.year
-              period_month = period.starts_on.month
-              month_name = get_german_month_name(period_month)
-              anchor = "#{month_name}#{period_year}"
+              anchor = DateHelpers.month_anchor(period_year, period.starts_on.month)
               link_url = "/ferien/d/bundesland/#{federal_state.slug}/#{period_year}##{anchor}" %>
               <a
                 href={link_url}
@@ -419,11 +415,6 @@ defmodule MehrSchulferienWeb.VacationTimelineComponent do
     end)
     |> Enum.sort_by(& &1.starts_on, Date)
     |> List.first()
-  end
-
-  # Get German month slug for anchor links
-  defp get_german_month_name(month_number) do
-    MehrSchulferien.Calendars.DateHelpers.month_slug(month_number) || ""
   end
 
   # Smart month name display based on available space. The thresholds are

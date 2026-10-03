@@ -63,7 +63,12 @@
               <.heading level={3} class="text-lg text-gray-800 dark:text-gray-200 mb-3">
                 Alle Schulferien {@federal_state.name} {@year}
               </.heading>
-              <.periods_table periods={@periods} all_periods={@all_periods} today={@today} />
+              <.periods_table
+                periods={@periods}
+                all_periods={@all_periods}
+                today={@today}
+                calendar_months={get_relevant_months(@vacation_period)}
+              />
               <.last_updated periods={@periods} federal_state={@federal_state} />
               <MehrSchulferienWeb.FerienContentComponent.state_link
                 federal_state={@federal_state}
@@ -217,10 +222,10 @@
         <% # Show only the months relevant to this vacation %>
         <% relevant_months = get_relevant_months(@vacation_period) %>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <%= for month <- relevant_months do %>
+          <%= for {year, month} <- relevant_months do %>
             <.month_calendar
               month={month}
-              year={@year}
+              year={year}
               periods={@periods}
               public_periods={@public_periods}
               all_periods={@all_periods}

@@ -22,13 +22,10 @@ defmodule MehrSchulferienWeb.CountryController do
             &Map.put(&2, &1.name, list_year_periods(country, &1, start_date, end_date))
           )
 
-        months = DateHelpers.get_months_map()
-
         render(conn, "show.html",
           country: country,
           current_year: current_year,
           federal_states: federal_states,
-          months: months,
           periods: periods
         )
     end

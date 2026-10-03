@@ -10,6 +10,7 @@ defmodule MehrSchulferienWeb.SchoolHTML do
     endpoint: MehrSchulferienWeb.Endpoint,
     router: MehrSchulferienWeb.Router
 
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferienWeb.ViewHelpers
 
   # Import shared components for unified design
@@ -33,6 +34,18 @@ defmodule MehrSchulferienWeb.SchoolHTML do
     weekday = ViewHelpers.weekday(date)
     date_string = ViewHelpers.format_date(date, if(short_format, do: :short))
     "#{weekday}, #{date_string}"
+  end
+
+  @doc """
+  The months the Kalenderansicht renders for a school year, as `{year, month}`
+  tuples: August to December, then January to July of the next calendar year -
+  but only from the running month onwards. In late July the old school year
+  would otherwise render eleven months nobody is planning around any more.
+  """
+  def calendar_months(school_year, today) do
+    Date.new!(school_year, 8, 1)
+    |> DateHelpers.months_in_range(Date.new!(school_year + 1, 7, 31))
+    |> Enum.filter(&(&1 >= {today.year, today.month}))
   end
 
   def period_collection_for_year_table(school_periods, public_periods, year) do

@@ -8,24 +8,10 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
 
   use Phoenix.Component
 
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferienWeb.Formatters.DateFormatter
   alias MehrSchulferienWeb.Shared.BadgeComponent
   alias MehrSchulferienWeb.ViewHelpers
-
-  @month_names %{
-    1 => "januar",
-    2 => "februar",
-    3 => "märz",
-    4 => "april",
-    5 => "mai",
-    6 => "juni",
-    7 => "juli",
-    8 => "august",
-    9 => "september",
-    10 => "oktober",
-    11 => "november",
-    12 => "dezember"
-  }
 
   @doc """
   Renders a period table row.
@@ -36,25 +22,23 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
   - `:all_periods` - All periods for effective duration calculation
   - `:today` - Current date for highlighting
   - `:current_year` - Current year for coloring next year periods
-  - `:row_click_href` - Optional href for row click navigation
   - `:period_link_builder` - Optional function to build period link
   - `:show_mobile_dates` - Whether to show mobile-optimized dates
   - `:show_memo` - Whether to show period memo
   - `:show_year_in_dates` - Whether to always show year in dates for clarity
-  - `:clickable` - Whether the row jumps to its month in the calendar view.
-    Set to `false` for rows whose month is no longer rendered, so the row
-    does not offer a dead anchor.
+  - `:calendar_months` - The `{year, month}` tuples the page renders in its
+    calendar view. A row jumps to the first of them its period touches; a row
+    without one is not clickable, so it never offers a dead anchor.
   """
   attr :period, :map, required: true
   attr :all_periods, :list, required: true
   attr :today, :any, default: Date.utc_today()
   attr :current_year, :integer, default: nil
-  attr :row_click_href, :string, default: nil
   attr :period_link_builder, :any, default: nil
   attr :show_mobile_dates, :boolean, default: false
   attr :show_memo, :boolean, default: false
   attr :show_year_in_dates, :boolean, default: false
-  attr :clickable, :boolean, default: true
+  attr :calendar_months, :list, default: []
 
   slot :period_name do
     attr :class, :string
@@ -74,14 +58,12 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     is_beweglicher_ferientag =
       assigns.period.holiday_or_vacation_type.name == "Beweglicher Ferientag"
 
-    month_name = @month_names[assigns.period.starts_on.month]
-
     days = Date.diff(assigns.period.ends_on, assigns.period.starts_on) + 1
 
     effective_duration =
       ViewHelpers.calculate_effective_duration(assigns.period, assigns.all_periods)
 
-    row_href = assigns.row_click_href || "##{month_name}#{period_year}"
+    row_anchor = calendar_anchor(assigns.period, assigns.calendar_months)
 
     assigns =
       assigns
@@ -91,16 +73,19 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
       |> assign(:is_beweglicher_ferientag, is_beweglicher_ferientag)
       |> assign(:days, days)
       |> assign(:effective_duration, effective_duration)
-      |> assign(:row_href, row_href)
+      |> assign(:row_anchor, row_anchor)
 
     ~H"""
     <tr
-      class={"transition-colors #{if @clickable, do: "cursor-pointer"} #{cond do
+      class={"transition-colors #{if @row_anchor, do: "cursor-pointer"} #{cond do
         @is_current -> "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
         @is_next_year -> "bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
         true -> "hover:bg-gray-50 dark:hover:bg-gray-700"
       end} #{if @is_past, do: "text-gray-600 dark:text-gray-400"}"}
-      onclick={if @clickable, do: "window.location.href='#{@row_href}'"}
+      onclick={
+        if @row_anchor,
+          do: "if(!event.target.closest('a'))window.location.href='##{@row_anchor}'"
+      }
     >
       <td class="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm font-medium align-top">
         <%= if @period_link_builder do %>
@@ -310,8 +295,16 @@ defmodule MehrSchulferienWeb.Shared.PeriodsTableBaseComponent do
     end
   end
 
-  @doc """
-  Gets the month name for a given month number.
-  """
-  def month_name(month_number), do: @month_names[month_number]
+  # A period that began before the first rendered month (a running vacation,
+  # Weihnachtsferien on a calendar-year page) still jumps to the month it
+  # reaches into.
+  defp calendar_anchor(period, calendar_months) do
+    period.starts_on
+    |> DateHelpers.months_in_range(period.ends_on)
+    |> Enum.find(&(&1 in calendar_months))
+    |> case do
+      nil -> nil
+      {year, month} -> DateHelpers.month_anchor(year, month)
+    end
+  end
 end

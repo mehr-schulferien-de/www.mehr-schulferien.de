@@ -14,6 +14,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
   attr :conn, :any, default: nil
   attr :year, :integer, default: nil
   attr :current_year, :integer, default: nil
+  attr :calendar_months, :list, default: []
 
   def periods_table(assigns) do
     ~H"""
@@ -52,6 +53,7 @@ defmodule MehrSchulferienWeb.FederalState.PeriodsTableComponent do
               all_periods={@all_periods}
               today={@today}
               current_year={@current_year}
+              calendar_months={@calendar_months}
               period_link_builder={
                 if @federal_state && @conn && vacation_type_slug(period) do
                   fn p -> vacation_url(@conn, p, @federal_state) end

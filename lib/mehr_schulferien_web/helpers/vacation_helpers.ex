@@ -7,6 +7,7 @@ defmodule MehrSchulferienWeb.VacationHelpers do
   both import this module so each helper exists exactly once.
   """
 
+  alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferienWeb.Formatters.DateFormatter
 
   @doc """
@@ -41,27 +42,26 @@ defmodule MehrSchulferienWeb.VacationHelpers do
   end
 
   @doc """
-  Returns the relevant months to display for a vacation period
+  Returns the months to display for a vacation period as `{year, month}`
+  tuples. Carrying the year keeps a vacation across New Year from rendering
+  its January in the year it started.
   """
   def get_relevant_months(%{starts_on: starts_on, ends_on: ends_on}) do
-    start_month = starts_on.month
-    end_month = ends_on.month
+    months = DateHelpers.months_in_range(starts_on, ends_on)
 
-    # Handle year transition
-    if start_month > end_month do
+    if starts_on.year != ends_on.year do
       # Vacation spans year boundary (e.g., Christmas vacation)
-      Enum.to_list(start_month..12) ++ Enum.to_list(1..end_month)
+      months
     else
-      # Normal case
-      months = Enum.to_list(start_month..end_month)
-
       # Add one month before and after if reasonable
       months_with_context =
-        if start_month > 1, do: [start_month - 1 | months], else: months
+        if starts_on.month > 1,
+          do: [{starts_on.year, starts_on.month - 1} | months],
+          else: months
 
       months_with_context =
-        if end_month < 12 and length(months_with_context) < 3,
-          do: months_with_context ++ [end_month + 1],
+        if ends_on.month < 12 and length(months_with_context) < 3,
+          do: months_with_context ++ [{ends_on.year, ends_on.month + 1}],
           else: months_with_context
 
       # Limit to max 3 months for better layout

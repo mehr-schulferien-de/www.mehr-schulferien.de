@@ -1,3 +1,4 @@
+<% calendar_months = for month <- 1..12, do: {@year, month} %>
 <div class="mt-6 sm:mt-8">
   <div>
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
@@ -31,6 +32,7 @@
                 federal_state={@federal_state}
                 conn={@conn}
                 year={@year}
+                calendar_months={calendar_months}
               />
               <.partial_data periods={@periods} federal_state={@federal_state} year={@year} />
               <.last_updated periods={@periods} federal_state={@federal_state} />
@@ -164,10 +166,10 @@
         <.calendar_legend />
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <%= for month <- 1..12 do %>
+          <%= for {year, month} <- calendar_months do %>
             <.month_calendar
               month={month}
-              year={@year}
+              year={year}
               periods={@periods}
               public_periods={@public_periods}
               all_periods={@all_periods}

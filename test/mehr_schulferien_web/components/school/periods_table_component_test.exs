@@ -283,8 +283,53 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
     test "generates correct anchor links for calendar navigation" do
       periods = [
         build_period(~D[2025-08-04], ~D[2025-08-15], "Sommerferien"),
-        build_period(~D[2025-10-28], ~D[2025-11-01], "Herbstferien")
+        build_period(~D[2025-10-28], ~D[2025-11-01], "Herbstferien"),
+        build_period(~D[2026-03-30], ~D[2026-04-10], "Osterferien")
       ]
+
+      assigns = %{
+        periods: periods,
+        all_periods: periods,
+        today: ~D[2025-09-01],
+        current_school_year: 2025,
+        next_school_year: 2026,
+        calendar_months: [{2025, 9}, {2025, 10}, {2025, 11}, {2026, 3}, {2026, 4}]
+      }
+
+      html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
+
+      assert html =~ "window.location.href=&#39;#oktober2025&#39;"
+
+      # The calendar ids are URL-safe, so the anchor must not carry the umlaut
+      assert html =~ "window.location.href=&#39;#maerz2026&#39;"
+      refute html =~ "#märz2026"
+
+      # The August Sommerferien are over, so their row does not offer an anchor
+      # into a month the calendar view no longer renders
+      assert html =~ "Sommerferien"
+      refute html =~ "#august2025"
+    end
+
+    test "a running period jumps to the first month that is still rendered" do
+      periods = [build_period(~D[2025-09-29], ~D[2025-10-10], "Herbstferien")]
+
+      assigns = %{
+        periods: periods,
+        all_periods: periods,
+        today: ~D[2025-10-03],
+        current_school_year: 2025,
+        next_school_year: 2026,
+        calendar_months: [{2025, 10}, {2025, 11}]
+      }
+
+      html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
+
+      assert html =~ "#oktober2025"
+      refute html =~ "#september2025"
+    end
+
+    test "rows are not clickable on a page without a calendar view" do
+      periods = [build_period(~D[2025-10-28], ~D[2025-11-01], "Herbstferien")]
 
       assigns = %{
         periods: periods,
@@ -296,13 +341,8 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponentTest do
 
       html = render_component(&PeriodsTableComponent.periods_table/1, assigns)
 
-      # Check for correct anchor links - using escaped quotes in HTML
-      assert html =~ "onclick=\"window.location.href=&#39;#oktober2025&#39;\""
-
-      # The August Sommerferien are over, so their row does not offer an anchor
-      # into a month the calendar view no longer renders
-      assert html =~ "Sommerferien"
-      refute html =~ "#august2025"
+      refute html =~ "onclick"
+      refute html =~ "cursor-pointer"
     end
   end
 

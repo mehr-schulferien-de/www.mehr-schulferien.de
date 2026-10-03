@@ -390,4 +390,26 @@ defmodule MehrSchulferien.Calendars.DateHelpersTest do
       assert diff >= 0 and diff <= 6
     end
   end
+
+  describe "month_anchor/2" do
+    test "is URL-safe for März" do
+      assert DateHelpers.month_anchor(2027, 3) == "maerz2027"
+    end
+  end
+
+  describe "months_in_range/2" do
+    test "lists every month a range touches" do
+      assert DateHelpers.months_in_range(~D[2027-03-22], ~D[2027-04-02]) ==
+               [{2027, 3}, {2027, 4}]
+    end
+
+    test "carries the year across New Year" do
+      assert DateHelpers.months_in_range(~D[2026-12-23], ~D[2027-01-08]) ==
+               [{2026, 12}, {2027, 1}]
+    end
+
+    test "returns a single month for a single day at the end of a month" do
+      assert DateHelpers.months_in_range(~D[2027-01-31], ~D[2027-01-31]) == [{2027, 1}]
+    end
+  end
 end

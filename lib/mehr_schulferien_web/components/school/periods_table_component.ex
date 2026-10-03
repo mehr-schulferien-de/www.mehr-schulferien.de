@@ -8,6 +8,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
   attr :today, :any, default: Date.utc_today()
   attr :current_school_year, :integer, required: true
   attr :next_school_year, :integer, required: true
+  attr :calendar_months, :list, default: []
 
   def periods_table(assigns) do
     # Group by school year, then split each year into finished and still
@@ -64,7 +65,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                     today={@today}
                     current_school_year={@current_school_year}
                     school_year={group.school_year}
-                    clickable={false}
+                    calendar_months={@calendar_months}
                   />
                 </div>
               </details>
@@ -77,7 +78,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
                 today={@today}
                 current_school_year={@current_school_year}
                 school_year={group.school_year}
-                clickable={true}
+                calendar_months={@calendar_months}
               />
             <% end %>
           </div>
@@ -94,7 +95,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
   attr :today, :any, required: true
   attr :current_school_year, :integer, required: true
   attr :school_year, :integer, required: true
-  attr :clickable, :boolean, required: true
+  attr :calendar_months, :list, required: true
 
   defp period_table(assigns) do
     ~H"""
@@ -131,7 +132,7 @@ defmodule MehrSchulferienWeb.School.PeriodsTableComponent do
             show_mobile_dates={true}
             show_memo={true}
             show_year_in_dates={true}
-            clickable={@clickable}
+            calendar_months={@calendar_months}
           />
         <% end %>
       </tbody>
