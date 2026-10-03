@@ -5,6 +5,8 @@ defmodule MehrSchulferienWeb.VacationPlanner.VacationPlannerCalendarComponent do
   """
   use Phoenix.Component
 
+  alias MehrSchulferien.Calendars.DateHelpers
+  alias MehrSchulferienWeb.Helpers.MonthHelpers
   alias MehrSchulferienWeb.Shared.DesignTokens
 
   attr :result, :map, required: true
@@ -23,7 +25,7 @@ defmodule MehrSchulferienWeb.VacationPlanner.VacationPlannerCalendarComponent do
   """
   def vacation_planner_calendar(assigns) do
     # Determine which months to display based on the result's date range
-    months = get_relevant_months(assigns.result.start_date, assigns.result.end_date)
+    months = DateHelpers.months_in_range(assigns.result.start_date, assigns.result.end_date)
 
     # Convert vacation_dates list to a MapSet for O(1) lookups
     vacation_dates_set = MapSet.new(assigns.vacation_dates)
@@ -58,7 +60,7 @@ defmodule MehrSchulferienWeb.VacationPlanner.VacationPlannerCalendarComponent do
   attr :school_vacation_periods, :list, default: []
 
   defp month_calendar(assigns) do
-    month_name = get_month_name(assigns.month)
+    month_name = MonthHelpers.month_name(assigns.month)
     first_day_of_month = Date.new!(assigns.year, assigns.month, 1)
     first_weekday = Date.day_of_week(first_day_of_month)
     days_in_month = Date.days_in_month(first_day_of_month)
@@ -175,31 +177,6 @@ defmodule MehrSchulferienWeb.VacationPlanner.VacationPlannerCalendarComponent do
     """
   end
 
-  # Determine which months to display based on the date range
-  defp get_relevant_months(start_date, end_date) do
-    start_month = {start_date.year, start_date.month}
-    end_month = {end_date.year, end_date.month}
-
-    # Generate all months from start to end
-    generate_months(start_month, end_month, [])
-    |> Enum.reverse()
-  end
-
-  defp generate_months({year, month} = current, end_month, acc) do
-    if current > end_month do
-      acc
-    else
-      next =
-        if month == 12 do
-          {year + 1, 1}
-        else
-          {year, month + 1}
-        end
-
-      generate_months(next, end_month, [current | acc])
-    end
-  end
-
   # Get CSS classes for a day based on its type
   defp get_day_classes(
          date,
@@ -255,9 +232,5 @@ defmodule MehrSchulferienWeb.VacationPlanner.VacationPlannerCalendarComponent do
       Date.compare(period.starts_on, date) != :gt and
         Date.compare(period.ends_on, date) != :lt
     end)
-  end
-
-  defp get_month_name(month) do
-    MehrSchulferien.Calendars.DateHelpers.get_months_map()[month]
   end
 end
