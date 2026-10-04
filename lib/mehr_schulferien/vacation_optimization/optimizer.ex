@@ -120,10 +120,17 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
 
   defp find_all_windows(day_map, vacation_days, year_start, year_end, avoid_school_vacations) do
     dates = day_map |> Map.keys() |> Enum.sort(Date)
+    calendar_end = List.last(dates)
 
     if avoid_school_vacations do
       # For budget mode: find windows in gaps between school vacations
-      find_windows_avoiding_school_vacations(day_map, vacation_days, year_end)
+      find_windows_avoiding_school_vacations(
+        dates,
+        day_map,
+        vacation_days,
+        year_end,
+        calendar_end
+      )
     else
       # For normal mode: calculate windows from each possible start date
       dates
@@ -133,7 +140,7 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
           Date.compare(date, year_end) != :gt
       end)
       |> Enum.map(fn start_date ->
-        calculate_window_from_start(start_date, vacation_days, day_map, false)
+        calculate_window_from_start(start_date, vacation_days, day_map, calendar_end, false)
       end)
       |> Enum.filter(fn result -> result != nil and result.total_free_days > 0 end)
       |> deduplicate_overlapping_windows()
@@ -141,16 +148,27 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
   end
 
   # Find optimal windows that completely avoid school vacation periods
-  defp find_windows_avoiding_school_vacations(day_map, vacation_days, year_end) do
-    dates = day_map |> Map.keys() |> Enum.sort(Date)
-
+  defp find_windows_avoiding_school_vacations(
+         dates,
+         day_map,
+         vacation_days,
+         year_end,
+         calendar_end
+       ) do
     # Find all non-school-vacation date ranges (gaps between school vacations)
     non_school_ranges = find_non_school_vacation_ranges(dates, day_map)
 
     # For each gap, find the best window using the vacation budget
     non_school_ranges
     |> Enum.flat_map(fn {range_start, range_end} ->
-      find_windows_in_range(range_start, range_end, vacation_days, day_map, year_end)
+      find_windows_in_range(
+        range_start,
+        range_end,
+        vacation_days,
+        day_map,
+        year_end,
+        calendar_end
+      )
     end)
     |> Enum.filter(fn result -> result != nil and result.total_free_days > 0 end)
     |> deduplicate_overlapping_windows()
@@ -191,26 +209,33 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
   end
 
   # Find optimal windows within a specific date range
-  defp find_windows_in_range(range_start, range_end, vacation_days, day_map, year_end) do
+  defp find_windows_in_range(
+         range_start,
+         range_end,
+         vacation_days,
+         day_map,
+         year_end,
+         calendar_end
+       ) do
     # Try starting from each date in the range. A window has to start in the
     # requested year, so the days after it are no start dates.
     range_start
     |> Date.range(range_end)
     |> Enum.take_while(&(Date.compare(&1, year_end) != :gt))
     |> Enum.map(fn start_date ->
-      calculate_window_in_range(start_date, range_end, vacation_days, day_map)
+      calculate_window_in_range(start_date, vacation_days, day_map, calendar_end)
     end)
     |> Enum.filter(&(&1 != nil))
   end
 
-  # Calculate optimal window starting from a date, confined to a range
-  defp calculate_window_in_range(start_date, range_end, vacation_budget, day_map) do
-    # First, expand backwards to include any adjacent free days (within the range)
-    {actual_start, backward_free} = expand_backward_in_range(start_date, day_map, range_end)
+  # Calculate optimal window starting from a date inside a range
+  defp calculate_window_in_range(start_date, vacation_budget, day_map, calendar_end) do
+    # First, expand backwards to include any adjacent free days
+    {actual_start, backward_free} = expand_backward(start_date, day_map)
 
-    # Then expand forward using vacation days (within the range)
+    # Then expand forward using vacation days
     {actual_end, forward_stats} =
-      expand_forward_in_range(start_date, range_end, vacation_budget, day_map)
+      expand_forward_in_range(start_date, calendar_end, vacation_budget, day_map)
 
     if forward_stats.vacation_used == 0 and backward_free.total == 0 do
       nil
@@ -226,7 +251,7 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
     end
   end
 
-  defp expand_backward_in_range(start_date, day_map, _range_end) do
+  defp expand_backward(start_date, day_map) do
     initial_stats = %{total: 0, weekends: 0, holidays: 0}
 
     # Go backwards from start_date - 1
@@ -255,7 +280,7 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
     end)
   end
 
-  defp expand_forward_in_range(start_date, range_end, vacation_budget, day_map) do
+  defp expand_forward_in_range(start_date, calendar_end, vacation_budget, day_map) do
     initial_stats = %{
       vacation_used: 0,
       total_free: 0,
@@ -266,12 +291,9 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
       related_holidays: MapSet.new()
     }
 
-    # Get all dates from start_date to the end of the day_map (beyond range_end)
+    # Walk to the end of the calendar, beyond the range the window starts in.
     # This allows extending into school vacations if needed
-    all_dates = day_map |> Map.keys() |> Enum.sort(Date)
-    max_date = List.last(all_dates) || range_end
-
-    Date.range(start_date, max_date)
+    Date.range(start_date, calendar_end)
     |> Enum.reduce_while({start_date, initial_stats}, fn date, {_current_end, stats} ->
       {type, period} = Map.get(day_map, date, {:workday, nil})
 
@@ -338,22 +360,23 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
   Calculates the optimal window starting from a given date.
 
   Uses a greedy approach: expand forward consuming vacation days for workdays,
-  getting free days for weekends/holidays.
+  getting free days for weekends/holidays. `calendar_end` is the last day of
+  `day_map`, where the walk forward stops at the latest.
   """
-  def calculate_window_from_start(start_date, vacation_budget, day_map, avoid_school_vacations) do
-    # Try to expand from this start date
-    dates = day_map |> Map.keys() |> Enum.sort(Date)
-    start_idx = Enum.find_index(dates, fn d -> d == start_date end)
-
-    if start_idx == nil do
-      nil
-    else
+  def calculate_window_from_start(
+        start_date,
+        vacation_budget,
+        day_map,
+        calendar_end,
+        avoid_school_vacations
+      ) do
+    if Map.has_key?(day_map, start_date) do
       # First, expand backwards to include any adjacent free days
-      {actual_start, backward_free} = expand_backward(start_date, day_map, dates)
+      {actual_start, backward_free} = expand_backward(start_date, day_map)
 
       # Then expand forward using vacation days
       {actual_end, forward_stats} =
-        expand_forward(start_date, vacation_budget, day_map, dates, avoid_school_vacations)
+        expand_forward(start_date, calendar_end, vacation_budget, day_map, avoid_school_vacations)
 
       if forward_stats.vacation_used == 0 and backward_free.total == 0 do
         nil
@@ -370,35 +393,7 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
     end
   end
 
-  defp expand_backward(start_date, day_map, dates) do
-    start_idx = Enum.find_index(dates, fn d -> d == start_date end) || 0
-
-    # Go backwards from start_date - 1
-    initial_stats = %{total: 0, weekends: 0, holidays: 0}
-
-    Enum.reduce_while((start_idx - 1)..0//-1, {start_date, initial_stats}, fn idx,
-                                                                              {_current_start,
-                                                                               stats} ->
-      date = Enum.at(dates, idx)
-      {type, _period} = Map.get(day_map, date, {:workday, nil})
-
-      case type do
-        :weekend ->
-          {:cont, {date, %{stats | total: stats.total + 1, weekends: stats.weekends + 1}}}
-
-        :holiday ->
-          {:cont, {date, %{stats | total: stats.total + 1, holidays: stats.holidays + 1}}}
-
-        _ ->
-          {:halt, {Date.add(date, 1), stats}}
-      end
-    end)
-  end
-
-  defp expand_forward(start_date, vacation_budget, day_map, dates, avoid_school_vacations) do
-    start_idx = Enum.find_index(dates, fn d -> d == start_date end) || 0
-    max_idx = length(dates) - 1
-
+  defp expand_forward(start_date, calendar_end, vacation_budget, day_map, avoid_school_vacations) do
     initial_stats = %{
       vacation_used: 0,
       total_free: 0,
@@ -408,9 +403,9 @@ defmodule MehrSchulferien.VacationOptimization.Optimizer do
       related_holidays: MapSet.new()
     }
 
-    Enum.reduce_while(start_idx..max_idx, {start_date, initial_stats}, fn idx,
-                                                                          {_current_end, stats} ->
-      date = Enum.at(dates, idx)
+    start_date
+    |> Date.range(calendar_end)
+    |> Enum.reduce_while({start_date, initial_stats}, fn date, {_current_end, stats} ->
       {type, period} = Map.get(day_map, date, {:workday, nil})
 
       case type do
