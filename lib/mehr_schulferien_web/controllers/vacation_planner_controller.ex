@@ -75,19 +75,24 @@ defmodule MehrSchulferienWeb.VacationPlannerController do
 
       all_federal_states = Locations.list_federal_states(country)
 
-      # Fetch public periods for calendar display (extended range for cross-year)
-      year_start = Date.new!(year, 1, 1)
-      # Extended range to cover cross-year window (Dec previous to Feb next)
-      extended_start = Date.add(year_start, -15)
-      extended_end = Date.new!(year + 1, 2, 28)
+      # Filter to distinct results and compute vacation dates for each
+      distinct_results = Optimizer.filter_distinct_results(optimal_windows, max_results: 3)
+
+      # Fetch public periods for calendar display. The range reaches from the
+      # days before the year to the last month a shown window touches, so a
+      # long window that runs into spring still gets its holidays.
+      extended_start = Date.add(Date.new!(year, 1, 1), -15)
+
+      extended_end =
+        [Date.new!(year + 1, 2, 28) | Enum.map(distinct_results, & &1.end_date)]
+        |> Enum.max(Date)
+        |> Date.end_of_month()
+
       public_periods = Periods.list_public_periods(location_ids, extended_start, extended_end)
 
       # Fetch school vacation periods for calendar display (to show overlap in budget variant)
       school_vacation_periods =
         Periods.list_school_vacation_periods(location_ids, extended_start, extended_end)
-
-      # Filter to distinct results and compute vacation dates for each
-      distinct_results = Optimizer.filter_distinct_results(optimal_windows, max_results: 3)
 
       distinct_results_with_dates =
         Enum.map(distinct_results, fn result ->

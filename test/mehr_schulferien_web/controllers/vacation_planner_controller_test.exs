@@ -84,6 +84,38 @@ defmodule MehrSchulferienWeb.VacationPlannerControllerTest do
       refute response =~ "Normal-Variante"
     end
 
+    # A long window that starts at Christmas ends well after February. The
+    # holidays for the calendar used to be loaded only up to the end of
+    # February, so later ones were drawn and counted as vacation days.
+    test "counts no holiday as a vacation day in a window that runs into spring", %{
+      conn: conn,
+      country: country,
+      federal_state: federal_state,
+      public_holiday_type: public_holiday_type
+    } do
+      holiday_weeks = [~D[2027-12-27], ~D[2028-01-03], ~D[2028-03-20]]
+
+      for monday <- holiday_weeks do
+        insert(:period, %{
+          starts_on: monday,
+          ends_on: Date.add(monday, 4),
+          location_id: country.id,
+          holiday_or_vacation_type_id: public_holiday_type.id,
+          is_public_holiday: true,
+          is_valid_for_everybody: true
+        })
+      end
+
+      conn = get(conn, "/urlaubsplaner/#{federal_state.slug}/60-tage/2027?today=01.07.2027")
+      assert html_response(conn, 200)
+
+      [best | _] = conn.assigns.distinct_results
+
+      assert Date.compare(best.end_date, ~D[2028-03-24]) != :lt
+      assert length(best.vacation_dates) == 60
+      refute ~D[2028-03-22] in best.vacation_dates
+    end
+
     test "handles single digit days", %{conn: conn, federal_state: federal_state} do
       conn = get(conn, "/urlaubsplaner/#{federal_state.slug}/5-tage/2026")
 

@@ -202,6 +202,86 @@ defmodule MehrSchulferien.VacationOptimizationTest do
       assert efficiencies == Enum.sort(efficiencies, :desc)
     end
 
+    # Equally efficient windows used to come out in map iteration order, so
+    # the planner suggested different dates after a restart of the VM.
+    test "orders equally efficient windows by start date", context do
+      location_ids = [context.country.id, context.federal_state.id]
+
+      results = VacationOptimization.find_optimal_windows(location_ids, 2027, 5, top: 30)
+
+      assert length(results) == 30
+      assert results |> Enum.map(& &1.efficiency_ratio) |> Enum.uniq() |> length() < 30
+
+      assert results ==
+               Enum.sort_by(
+                 results,
+                 &{-&1.efficiency_ratio, Date.to_gregorian_days(&1.start_date)}
+               )
+    end
+
+    test "budget variant orders equally ranked windows by start date", context do
+      location_ids = [context.country.id, context.federal_state.id]
+
+      results =
+        VacationOptimization.find_optimal_windows(location_ids, 2027, 5,
+          top: 30,
+          avoid_school_vacations: true
+        )
+
+      assert length(results) > 1
+
+      assert results ==
+               Enum.sort_by(
+                 results,
+                 &{-&1.efficiency_ratio, &1.school_vacation_days,
+                  Date.to_gregorian_days(&1.start_date)}
+               )
+    end
+
+    # The calendar the optimizer walks used to end two weeks into the next
+    # year. A window starting at Christmas ran out of calendar, spent a third
+    # of the budget and led the list with an efficiency no full window reaches.
+    test "windows at the end of the year spend the whole budget", context do
+      christmas_and_new_year(context, 2027)
+      location_ids = [context.country.id, context.federal_state.id]
+
+      for days <- [30, 60] do
+        results = VacationOptimization.find_optimal_windows(location_ids, 2027, days, top: 400)
+
+        assert Enum.any?(results, &(&1.start_date.month == 12))
+        assert Enum.all?(results, &(&1.vacation_days_used == days))
+      end
+    end
+
+    test "budget variant: windows at the end of the year spend the whole budget", context do
+      christmas_and_new_year(context, 2027)
+      location_ids = [context.country.id, context.federal_state.id]
+
+      for days <- [30, 60] do
+        results =
+          VacationOptimization.find_optimal_windows(location_ids, 2027, days,
+            top: 400,
+            avoid_school_vacations: true
+          )
+
+        assert Enum.any?(results, &(&1.start_date.month == 12))
+        assert Enum.all?(results, &(&1.vacation_days_used == days))
+      end
+    end
+
+    test "flags the windows that run across New Year", context do
+      christmas_and_new_year(context, 2027)
+      location_ids = [context.country.id, context.federal_state.id]
+
+      results = VacationOptimization.find_optimal_windows(location_ids, 2027, 5, top: 400)
+
+      assert Enum.any?(results, & &1.spans_year_boundary)
+
+      for result <- results do
+        assert result.spans_year_boundary == (result.end_date.year == 2028)
+      end
+    end
+
     test "limits results to top N", context do
       insert(:period, %{
         starts_on: ~D[2026-05-01],
@@ -287,6 +367,24 @@ defmodule MehrSchulferien.VacationOptimizationTest do
                  may_14_result.vacation_days_used + may_14_result.weekend_days +
                    may_14_result.holiday_days
       end
+    end
+  end
+
+  defp christmas_and_new_year(context, year) do
+    for date <- [
+          Date.new!(year, 12, 25),
+          Date.new!(year, 12, 26),
+          Date.new!(year + 1, 1, 1),
+          Date.new!(year + 1, 1, 6)
+        ] do
+      insert(:period, %{
+        starts_on: date,
+        ends_on: date,
+        location_id: context.country.id,
+        holiday_or_vacation_type_id: context.public_holiday_type.id,
+        is_public_holiday: true,
+        is_valid_for_everybody: true
+      })
     end
   end
 
