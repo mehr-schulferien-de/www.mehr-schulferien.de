@@ -156,8 +156,8 @@ defmodule MehrSchulferienWeb.PageController do
         e -> {0, 0, {:error, Exception.message(e)}}
       end
 
-    # App version from mix.exs
-    app_version = Application.spec(:mehr_schulferien, :vsn) |> to_string()
+    # The release version, or the hot upgrade applied on top of it
+    app_version = MehrSchulferien.HotDeploy.deployed_version()
 
     # Deployment timestamp - check for priv/static/cache_manifest.json modification time
     # or use application start time as fallback

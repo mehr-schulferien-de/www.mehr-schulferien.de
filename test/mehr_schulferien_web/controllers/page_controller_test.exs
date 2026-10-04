@@ -111,6 +111,13 @@ defmodule MehrSchulferienWeb.PageControllerTest do
     refute response =~ "© #{current_year - 1}"
   end
 
+  test "GET /debug shows the version of a hot upgrade", %{conn: conn} do
+    :persistent_term.put({MehrSchulferien.HotDeploy, :version}, "9.9.9-abc1234")
+    on_exit(fn -> :persistent_term.erase({MehrSchulferien.HotDeploy, :version}) end)
+
+    assert conn |> get("/debug") |> html_response(200) =~ "9.9.9-abc1234"
+  end
+
   test "GET /debug returns 200 and shows system info", %{conn: conn} do
     conn = get(conn, "/debug")
     response = html_response(conn, 200)

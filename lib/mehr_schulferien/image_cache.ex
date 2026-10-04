@@ -80,8 +80,9 @@ defmodule MehrSchulferien.ImageCache do
   # Private functions
 
   defp build_cache_path(parts) do
-    # Include app version in the cache key to invalidate on deploy
-    version = Application.spec(:mehr_schulferien, :vsn) |> to_string()
+    # Include the running version in the cache key to invalidate on deploy.
+    # A hot upgrade keeps the release version, so ask what was deployed.
+    version = MehrSchulferien.HotDeploy.deployed_version()
 
     # Build a safe filename from the parts
     filename_parts = [version | parts]

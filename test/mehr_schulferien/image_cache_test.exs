@@ -53,6 +53,29 @@ defmodule MehrSchulferien.ImageCacheTest do
       refute_received {:generator_called, ^generator_called}
     end
 
+    # The release version stays the same across a hot upgrade, so the cache
+    # key has to follow the version the node actually runs.
+    test "generates again after a hot upgrade" do
+      opts = fn test_pid ->
+        [
+          cache_key_parts: ["test", "hot", "upgrade"],
+          generator_fn: fn ->
+            send(test_pid, :generator_called)
+            {:ok, @test_webp_content}
+          end
+        ]
+      end
+
+      assert {:ok, _} = ImageCache.get_or_generate_webp(opts.(self()))
+      assert_received :generator_called
+
+      :persistent_term.put({MehrSchulferien.HotDeploy, :version}, "9.9.9-abc1234")
+      on_exit(fn -> :persistent_term.erase({MehrSchulferien.HotDeploy, :version}) end)
+
+      assert {:ok, _} = ImageCache.get_or_generate_webp(opts.(self()))
+      assert_received :generator_called
+    end
+
     test "handles generator errors properly" do
       assert {:error, :generation_failed} =
                ImageCache.get_or_generate_webp(
