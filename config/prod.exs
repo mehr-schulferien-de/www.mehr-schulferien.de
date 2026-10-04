@@ -101,8 +101,7 @@ config :mehr_schulferien, MehrSchulferien.Mailer,
 # Enables near-zero downtime deployments (<1 second) for most code changes
 config :mehr_schulferien, MehrSchulferien.HotDeploy,
   enabled: true,
-  upgrades_dir: "/home/mehrschul2025/app/hot-upgrades",
-  check_interval: 10_000
+  upgrades_dir: "/home/mehrschul2025/app/hot-upgrades"
 
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.

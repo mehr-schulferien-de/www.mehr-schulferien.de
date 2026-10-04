@@ -3,17 +3,21 @@
 # This script is used to deploy this application to the production server.
 # Supports both hot code upgrades (<1s, zero downtime) and cold deploys.
 #
-# Hot deploy is used when:
-# - No database migrations are pending
+# A hot deploy loads the changed modules of this application into the running
+# node and ships nothing else. It is used when:
+# - Everything else the release is made of is unchanged since the last cold
+#   deploy: dependencies, config, priv (static assets and migrations
+#   included), runtime versions (release_fingerprint in scripts/deploy_lib.sh)
 # - No [cold-deploy] or [restart] tag in commit message
 # - Application is currently running
 #
-# Cold deploy is used when:
-# - Elixir or Erlang version changed (via .tool-versions)
-# - Database migrations are pending
+# Cold deploy (new release, restart) is used when:
+# - Any of the above is not given, or cannot be shown to be given
 # - Commit message contains [cold-deploy], [restart], or [supervision]
-# - Application is not running
-# - Hot deploy fails
+# - Hot deploy fails, or the node does not report the new version afterwards
+#
+# Changes to supervised processes or their state need one of the tags: no
+# check here can see them.
 #
 # To upgrade Elixir/Erlang:
 # 1. Update .tool-versions with new versions
@@ -41,6 +45,8 @@ BUILD_DIR="$HOME/app/build"
 RELEASE_DIR="$HOME/app/release"
 REPO_DIR="$BUILD_DIR/repo"
 HOT_UPGRADES_DIR="$HOME/app/hot-upgrades"
+# What the running release was built from, written by a cold deploy
+FINGERPRINT_FILE="$HOME/app/release.fingerprint"
 ENV_FILE="$HOME/conf/env"
 
 # Create directories if they don't exist
@@ -70,6 +76,9 @@ else
 fi
 
 cd "$REPO_DIR" || exit
+
+# shellcheck source=scripts/deploy_lib.sh
+source "$REPO_DIR/scripts/deploy_lib.sh"
 
 # Activate mise and install required Elixir/Erlang versions
 echo "Setting up mise environment..."
@@ -126,60 +135,63 @@ requires_cold_deploy() {
         return 0
     fi
 
-    # Check for pending migrations
-    cd "$REPO_DIR" || exit
+    return 1
+}
 
-    # Get list of migration files
-    local_migrations=$(ls -1 priv/repo/migrations/*.exs 2>/dev/null | wc -l)
+# Compiles the application and builds the assets, for both kinds of deploy.
+#
+# The hot deploy runs as the condition of an "if", where "set -e" is off, so
+# every step that must not fail says so itself. A failed build that went on
+# unnoticed would hot deploy the old modules and report success.
+build_app() {
+    cp /home/mehrschul2025/conf/prod.secret.exs "$REPO_DIR/config/prod.secret.exs" || return 1
+    cd "$REPO_DIR" || return 1
+    mix deps.get --only prod || return 1
+    MIX_ENV=prod mix compile || return 1
 
-    if [ "$local_migrations" -gt 0 ]; then
-        # Check if there are unapplied migrations by comparing with database
-        # This requires the release to be available to run eval
-        if [ -d "$RELEASE_DIR" ] && [ -f "$RELEASE_DIR/bin/mehr_schulferien" ]; then
-            pending=$("$RELEASE_DIR/bin/mehr_schulferien" eval "
-                migrations = Ecto.Migrator.migrations(MehrSchulferien.Repo)
-                pending = Enum.filter(migrations, fn {status, _, _} -> status == :down end)
-                IO.puts(length(pending))
-            " 2>/dev/null || echo "0")
+    echo "Building assets..."
+    rm -rf priv/static/assets
+    rm -f priv/static/cache_manifest.json
+    MIX_ENV=prod mix assets.setup || return 1
+    MIX_ENV=prod mix assets.deploy || return 1
 
-            if [ "$pending" != "0" ] && [ -n "$pending" ]; then
-                echo "Pending migrations detected - cold deploy required"
-                return 0
-            fi
+    # Create non-fingerprinted copies
+    if [ -f "priv/static/cache_manifest.json" ]; then
+        echo "Creating non-fingerprinted copies from fingerprinted assets..."
+        css_file=$(grep -o '"assets/app-[^"]*\.css"' priv/static/cache_manifest.json | head -1 | tr -d '"')
+        if [ -n "$css_file" ] && [ -f "priv/static/$css_file" ]; then
+            cp "priv/static/$css_file" "priv/static/assets/app.css" || return 1
+            echo "Copied $css_file to app.css"
+        fi
+        js_file=$(grep -o '"assets/app-[^"]*\.js"' priv/static/cache_manifest.json | head -1 | tr -d '"')
+        if [ -n "$js_file" ] && [ -f "priv/static/$js_file" ]; then
+            cp "priv/static/$js_file" "priv/static/assets/app.js" || return 1
+            echo "Copied $js_file to app.js"
         fi
     fi
-
-    return 1
 }
 
 # Function to perform hot deploy
 do_hot_deploy() {
     echo "==> Attempting hot code upgrade..."
 
-    # Build the application
-    cp /home/mehrschul2025/conf/prod.secret.exs "$REPO_DIR/config/prod.secret.exs"
-    cd "$REPO_DIR" || exit
-    mix deps.get --only prod
-    MIX_ENV=prod mix compile
+    build_app || return 1
 
-    # Build assets
-    echo "Building assets..."
-    rm -rf priv/static/assets
-    rm -f priv/static/cache_manifest.json
-    MIX_ENV=prod mix assets.setup
-    MIX_ENV=prod mix assets.deploy
+    # A hot upgrade ships nothing but this application's modules. Everything
+    # else has to be what the running release was built from.
+    if [ ! -f "$FINGERPRINT_FILE" ]; then
+        echo "No fingerprint of the running release - cold deploy required"
+        return 1
+    fi
 
-    # Create non-fingerprinted copies
-    if [ -f "priv/static/cache_manifest.json" ]; then
-        echo "Creating non-fingerprinted copies..."
-        css_file=$(grep -o '"assets/app-[^"]*\.css"' priv/static/cache_manifest.json | head -1 | tr -d '"')
-        if [ -n "$css_file" ] && [ -f "priv/static/$css_file" ]; then
-            cp "priv/static/$css_file" "priv/static/assets/app.css"
-        fi
-        js_file=$(grep -o '"assets/app-[^"]*\.js"' priv/static/cache_manifest.json | head -1 | tr -d '"')
-        if [ -n "$js_file" ] && [ -f "priv/static/$js_file" ]; then
-            cp "priv/static/$js_file" "priv/static/assets/app.js"
-        fi
+    if ! new_fingerprint=$(release_fingerprint "$REPO_DIR" "$ENV_FILE"); then
+        echo "Could not fingerprint the build - cold deploy required"
+        return 1
+    fi
+
+    if [ "$new_fingerprint" != "$(cat "$FINGERPRINT_FILE")" ]; then
+        echo "Dependencies, config, priv or assets changed - cold deploy required"
+        return 1
     fi
 
     # Prepare hot upgrade package
@@ -188,48 +200,54 @@ do_hot_deploy() {
     upgrade_dir="$HOT_UPGRADES_DIR/$upgrade_version"
     beams_dir="$upgrade_dir/beams"
 
-    mkdir -p "$beams_dir"
+    rm -rf "$upgrade_dir"
+    mkdir -p "$beams_dir" || return 1
 
-    # Copy all compiled beam files
-    find "_build/prod/lib/mehr_schulferien/ebin" -name "*.beam" -exec cp {} "$beams_dir/" \;
-    find "_build/prod/lib/mehr_schulferien_web/ebin" -name "*.beam" -exec cp {} "$beams_dir/" \; 2>/dev/null || true
+    # Copy all compiled beam files. The node loads the ones that differ from
+    # its own, now and again when it boots the old release after a restart.
+    # A package with a module missing would leave that module on its old code
+    # and still report the new version, so the copy has to be complete.
+    ebin_dir="_build/prod/lib/mehr_schulferien/ebin"
+    cp "$ebin_dir"/*.beam "$beams_dir/" || return 1
 
+    built_count=$(ls -1 "$ebin_dir"/*.beam 2>/dev/null | wc -l)
     beam_count=$(ls -1 "$beams_dir"/*.beam 2>/dev/null | wc -l)
-    echo "Prepared $beam_count beam files for hot upgrade"
+    echo "Prepared $beam_count of $built_count beam files for hot upgrade"
 
-    if [ "$beam_count" -eq 0 ]; then
-        echo "No beam files found - falling back to cold deploy"
+    if [ "$beam_count" -eq 0 ] || [ "$beam_count" -ne "$built_count" ]; then
+        echo "Hot upgrade package is incomplete - falling back to cold deploy"
         return 1
     fi
 
     # Write pending marker to trigger hot upgrade
     echo "$upgrade_version" > "$HOT_UPGRADES_DIR/pending"
 
-    # Trigger hot upgrade via the running application
+    # rpc runs the upgrade inside the running node. eval would start a second
+    # VM and upgrade that one.
     echo "Triggering hot code upgrade..."
-    result=$("$RELEASE_DIR/bin/mehr_schulferien" eval "
+    result=$("$RELEASE_DIR/bin/mehr_schulferien" rpc "
         case MehrSchulferien.HotDeploy.check_and_apply() do
-            {:ok, :upgraded, version} -> IO.puts(\"HOT_UPGRADE_SUCCESS:\#{version}\")
-            {:ok, :no_upgrade} -> IO.puts(\"HOT_UPGRADE_NO_PENDING\")
-            {:ok, :disabled} -> IO.puts(\"HOT_UPGRADE_DISABLED\")
-            {:error, reason} -> IO.puts(\"HOT_UPGRADE_FAILED:\#{inspect(reason)}\")
+            {:ok, :upgraded, version} -> IO.puts(\"HOT_UPGRADE_SUCCESS:#{version}\")
+            other -> IO.puts(\"HOT_UPGRADE_FAILED:#{inspect(other)}\")
         end
-    " 2>&1)
+    " 2>&1) || true
 
     echo "Hot upgrade result: $result"
 
-    if echo "$result" | grep -q "HOT_UPGRADE_SUCCESS"; then
+    # Judge by what the node answers when asked, not by the claim above. No
+    # answer means the upgrade did not happen.
+    running=$("$RELEASE_DIR/bin/mehr_schulferien" rpc "
+        IO.puts(\"DEPLOYED_VERSION:\" <> MehrSchulferien.HotDeploy.deployed_version())
+    " 2>&1) || true
+
+    echo "Node reports: $running"
+
+    if echo "$result" | grep -qxF "HOT_UPGRADE_SUCCESS:$upgrade_version" &&
+        echo "$running" | grep -qxF "DEPLOYED_VERSION:$upgrade_version"; then
         echo "✅ Hot code upgrade successful!"
 
-        # Update static assets in running release
-        echo "Updating static assets..."
-        release_static="$RELEASE_DIR/lib/mehr_schulferien-${new_version}/priv/static"
-        if [ -d "$release_static" ]; then
-            cp -r priv/static/* "$release_static/"
-        fi
-
         # Clean up old hot upgrade directories (keep last 5)
-        cd "$HOT_UPGRADES_DIR"
+        cd "$HOT_UPGRADES_DIR" || return 0
         ls -dt */ 2>/dev/null | tail -n +6 | xargs -r rm -rf
 
         logger "Hot deployed release ${new_version} (${commit_hash}) of mehr-schulferien2025."
@@ -245,37 +263,7 @@ do_hot_deploy() {
 do_cold_deploy() {
     echo "==> Performing cold deploy..."
 
-    # Build the application
-    cp /home/mehrschul2025/conf/prod.secret.exs "$REPO_DIR/config/prod.secret.exs"
-    cd "$REPO_DIR" || exit
-    mix deps.get --only prod
-    MIX_ENV=prod mix compile
-
-    # Build assets
-    echo "Building assets..."
-    rm -rf priv/static/assets
-    rm -f priv/static/cache_manifest.json
-
-    echo "Setting up assets..."
-    MIX_ENV=prod mix assets.setup
-
-    echo "Building and deploying assets..."
-    MIX_ENV=prod mix assets.deploy
-
-    # Create non-fingerprinted copies
-    if [ -f "priv/static/cache_manifest.json" ]; then
-        echo "Creating non-fingerprinted copies from fingerprinted assets..."
-        css_file=$(grep -o '"assets/app-[^"]*\.css"' priv/static/cache_manifest.json | head -1 | tr -d '"')
-        if [ -n "$css_file" ] && [ -f "priv/static/$css_file" ]; then
-            cp "priv/static/$css_file" "priv/static/assets/app.css"
-            echo "Copied $css_file to app.css"
-        fi
-        js_file=$(grep -o '"assets/app-[^"]*\.js"' priv/static/cache_manifest.json | head -1 | tr -d '"')
-        if [ -n "$js_file" ] && [ -f "priv/static/$js_file" ]; then
-            cp "priv/static/$js_file" "priv/static/assets/app.js"
-            echo "Copied $js_file to app.js"
-        fi
-    fi
+    build_app || exit 1
 
     # Verify assets were built
     if [ ! -f "priv/static/cache_manifest.json" ]; then
@@ -313,8 +301,17 @@ do_cold_deploy() {
 
     echo "Release created successfully with static assets"
 
+    # From here on the fingerprint describes a release that is being replaced.
+    # Without it the next deploy is cold, should this one stop halfway.
+    rm -f "$FINGERPRINT_FILE"
+
     # Stop the server before copying files
     sudo /bin/systemctl stop mehr-schulferien2025.service || true
+
+    # The new release contains everything a hot upgrade delivered before. A
+    # leftover marker would load those older modules over it on boot, also on
+    # a start by hand after this deploy stopped halfway.
+    rm -f "$HOT_UPGRADES_DIR/current" "$HOT_UPGRADES_DIR/pending"
 
     # Backup current release if it exists
     if [ -d "$RELEASE_DIR" ]; then
@@ -341,6 +338,15 @@ do_cold_deploy() {
 
     # Start the server
     sudo /bin/systemctl start mehr-schulferien2025.service
+
+    # Remember what this release was built from: the next deploy may only be
+    # hot when its build has the same fingerprint. No file means cold.
+    if release_fingerprint "$REPO_DIR" "$ENV_FILE" > "$FINGERPRINT_FILE.tmp"; then
+        mv "$FINGERPRINT_FILE.tmp" "$FINGERPRINT_FILE"
+    else
+        echo "WARNING: could not fingerprint the release - the next deploy will be cold"
+        rm -f "$FINGERPRINT_FILE.tmp"
+    fi
 
     # Clean up old backups (keep only the most recent 3)
     find "$HOME/app" -name "release.backup.*" -type d | sort | head -n -3 | xargs -r rm -rf

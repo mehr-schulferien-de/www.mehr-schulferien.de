@@ -7,30 +7,53 @@ defmodule MehrSchulferien.HotDeploy do
 
   ## How It Works
 
-  1. The deployment script places a `.beam` file tarball in the hot-upgrades directory
-  2. This module detects the new file and extracts the beam files
-  3. It suspends processes, loads the new code, and resumes processes
-  4. The upgrade completes in <1 second while preserving connections
+  1. The deployment script compiles the new code and copies the application's
+     `.beam` files to `<upgrades_dir>/<version>/beams`
+  2. It writes the version to `<upgrades_dir>/pending` and calls
+     `check_and_apply/0` on the running node (`bin/mehr_schulferien rpc`)
+  3. The modules whose code differs from the loaded one are loaded; all others
+     are left alone
+  4. The version moves to `<upgrades_dir>/current`, which a restart of the
+     release loads again on boot, because the release on disk is still the old one
+
+  A hot upgrade only replaces code of this application. Dependencies, config,
+  `priv`, static assets and migrations are the deployment script's business:
+  it restarts the release (cold deploy) when any of them changed.
+
+  An upgrade is refused, and the script falls back to a cold deploy, when it
+  changes a module that only takes effect on a restart or with a new release
+  (the application module, protocols and their implementations), or when a
+  process still runs code from before the previous upgrade.
 
   ## Configuration
 
       config :mehr_schulferien, MehrSchulferien.HotDeploy,
         enabled: true,
-        upgrades_dir: "/home/mehrschul2025/app/hot-upgrades",
-        check_interval: 10_000  # Check every 10 seconds
+        upgrades_dir: "/home/mehrschul2025/app/hot-upgrades"
 
-  ## Usage
-
-  Hot upgrades are triggered automatically when:
-  1. A file named `hot-upgrade-*.tar.gz` is placed in the upgrades directory
-  2. The application is running in production mode
-  3. Hot deploy is enabled in configuration
-
-  To force a cold deploy instead, add `[cold-deploy]` or `[restart]` to your
-  commit message.
+  To force a cold deploy, add `[cold-deploy]` or `[restart]` to the commit
+  message. Do that for changes to supervised processes and their state.
   """
 
   require Logger
+
+  # Their code runs once, when the application starts
+  @restart_modules [MehrSchulferien.Application]
+
+  # Protocols are consolidated when the release is built: a protocol or an
+  # implementation that arrives later is not part of the dispatch.
+  @protocol_functions [__protocol__: 1, __impl__: 1]
+
+  @doc """
+  The version the node is running: the release version, or the version of
+  the hot upgrade applied on top of it (`<version>-<commit>`).
+  """
+  def deployed_version do
+    :persistent_term.get(
+      {__MODULE__, :version},
+      to_string(Application.spec(:mehr_schulferien, :vsn))
+    )
+  end
 
   @doc """
   Called at application startup to reapply any pending hot upgrade.
@@ -51,7 +74,10 @@ defmodule MehrSchulferien.HotDeploy do
           {:ok, version} ->
             version = String.trim(version)
             Logger.info("[HotDeploy] Reapplying current version #{version} on startup")
-            apply_upgrade(upgrades_dir, version)
+
+            with {:error, reason} <- apply_upgrade(upgrades_dir, version) do
+              Logger.error("[HotDeploy] Could not reapply #{version}: #{inspect(reason)}")
+            end
 
           {:error, reason} ->
             Logger.warning("[HotDeploy] Could not read current marker: #{inspect(reason)}")
@@ -87,20 +113,6 @@ defmodule MehrSchulferien.HotDeploy do
 
       true ->
         check_for_upgrade(upgrades_dir)
-    end
-  end
-
-  @doc """
-  Manually trigger a hot upgrade from a specific tarball.
-  """
-  def apply_from_tarball(tarball_path) do
-    config = Application.get_env(:mehr_schulferien, __MODULE__, [])
-    upgrades_dir = Keyword.get(config, :upgrades_dir, "/tmp/hot-upgrades")
-
-    with {:ok, version} <- extract_version_from_path(tarball_path),
-         :ok <- extract_tarball(tarball_path, upgrades_dir, version),
-         :ok <- apply_upgrade(upgrades_dir, version) do
-      {:ok, :upgraded, version}
     end
   end
 
@@ -141,82 +153,105 @@ defmodule MehrSchulferien.HotDeploy do
 
     if File.dir?(beam_dir) do
       Logger.info("[HotDeploy] Applying upgrade from #{beam_dir}")
-      load_beam_files(beam_dir)
+
+      with :ok <- load_changed_modules(beam_dir) do
+        :persistent_term.put({__MODULE__, :version}, version)
+        :ok
+      end
     else
       {:error, {:beam_dir_not_found, beam_dir}}
     end
   end
 
-  defp load_beam_files(beam_dir) do
-    beam_files =
-      beam_dir
-      |> File.ls!()
-      |> Enum.filter(&String.ends_with?(&1, ".beam"))
+  @doc false
+  # The modules in `beam_dir` whose code differs from the loaded one, as
+  # `{module, md5, path, binary}`.
+  def changed_modules(beam_dir) do
+    beam_dir
+    |> File.ls!()
+    |> Enum.filter(&String.ends_with?(&1, ".beam"))
+    |> Enum.sort()
+    |> Enum.flat_map(fn beam_file ->
+      path = Path.join(beam_dir, beam_file)
+      binary = File.read!(path)
+      {:ok, {module, md5}} = :beam_lib.md5(binary)
 
-    if Enum.empty?(beam_files) do
-      {:error, :no_beam_files}
-    else
-      Logger.info("[HotDeploy] Loading #{length(beam_files)} beam files")
+      if loaded_md5(module) == md5, do: [], else: [{module, md5, path, binary}]
+    end)
+  end
 
-      # Suspend processes before loading new code
-      :sys.suspend(MehrSchulferienWeb.Endpoint)
+  defp needs_restart?({module, _md5, _path, binary}) do
+    {:ok, {^module, [exports: exports]}} = :beam_lib.chunks(binary, [:exports])
 
-      try do
-        results =
-          Enum.map(beam_files, fn beam_file ->
-            module_name =
-              beam_file
-              |> String.trim_trailing(".beam")
-              |> String.to_atom()
+    module in @restart_modules or Enum.any?(@protocol_functions, &(&1 in exports))
+  end
 
-            beam_path = Path.join(beam_dir, beam_file)
-            beam_binary = File.read!(beam_path)
+  @doc false
+  # The protocols and implementations among `app_modules` that `beam_dir` no
+  # longer ships. They stay loaded, and a consolidated protocol keeps
+  # dispatching to them.
+  def removed_protocol_modules(beam_dir, app_modules) do
+    shipped = beam_dir |> File.ls!() |> MapSet.new(&Path.rootname(&1, ".beam"))
 
-            case :code.load_binary(module_name, ~c"#{beam_path}", beam_binary) do
-              {:module, ^module_name} ->
-                Logger.debug("[HotDeploy] Loaded #{module_name}")
-                {:ok, module_name}
+    Enum.filter(app_modules, fn module ->
+      Atom.to_string(module) not in shipped and Code.ensure_loaded?(module) and
+        Enum.any?(@protocol_functions, fn {name, arity} ->
+          function_exported?(module, name, arity)
+        end)
+    end)
+  end
 
-              {:error, reason} ->
-                Logger.warning("[HotDeploy] Failed to load #{module_name}: #{inspect(reason)}")
-                {:error, module_name, reason}
-            end
-          end)
+  defp loaded_md5(module) do
+    if Code.ensure_loaded?(module), do: module.module_info(:md5)
+  end
 
-        successful = Enum.count(results, &match?({:ok, _}, &1))
-        failed = Enum.count(results, &match?({:error, _, _}, &1))
+  defp load_changed_modules(beam_dir) do
+    changed = changed_modules(beam_dir)
+    modules = Enum.map(changed, &elem(&1, 0))
+    app_modules = Application.spec(:mehr_schulferien, :modules) || []
 
-        Logger.info("[HotDeploy] Loaded #{successful} modules, #{failed} failed")
+    restart =
+      for(entry <- changed, needs_restart?(entry), do: elem(entry, 0)) ++
+        removed_protocol_modules(beam_dir, app_modules)
 
-        if failed == 0 do
-          :ok
-        else
-          {:error, {:partial_load, successful, failed}}
-        end
-      after
-        # Resume processes after loading
-        :sys.resume(MehrSchulferienWeb.Endpoint)
+    cond do
+      File.ls!(beam_dir) == [] ->
+        {:error, :no_beam_files}
+
+      restart != [] ->
+        {:error, {:restart_required, restart}}
+
+      # Loading a module a second time needs its old code gone. A soft purge
+      # refuses while a process still runs it, instead of killing the process.
+      (in_use = Enum.reject(modules, &:code.soft_purge/1)) != [] ->
+        {:error, {:old_code_in_use, in_use}}
+
+      true ->
+        load_modules(changed)
+    end
+  end
+
+  defp load_modules(changed) do
+    Logger.info("[HotDeploy] Loading #{length(changed)} changed modules")
+
+    # Not running yet when the upgrade is reapplied during application start
+    endpoint = Process.whereis(MehrSchulferienWeb.Endpoint)
+    if endpoint, do: :sys.suspend(endpoint)
+
+    try do
+      failed =
+        Enum.reject(changed, fn {module, md5, path, binary} ->
+          match?({:module, ^module}, :code.load_binary(module, to_charlist(path), binary)) and
+            loaded_md5(module) == md5
+        end)
+
+      if failed == [] do
+        :ok
+      else
+        {:error, {:partial_load, length(changed) - length(failed), length(failed)}}
       end
-    end
-  end
-
-  defp extract_tarball(tarball_path, upgrades_dir, version) do
-    target_dir = Path.join([upgrades_dir, version, "beams"])
-    File.mkdir_p!(target_dir)
-
-    case System.cmd("tar", ["-xzf", tarball_path, "-C", target_dir], stderr_to_stdout: true) do
-      {_, 0} -> :ok
-      {output, code} -> {:error, {:tar_failed, code, output}}
-    end
-  end
-
-  defp extract_version_from_path(path) do
-    # Expected format: hot-upgrade-VERSION.tar.gz
-    basename = Path.basename(path)
-
-    case Regex.run(~r/^hot-upgrade-(.+)\.tar\.gz$/, basename) do
-      [_, version] -> {:ok, version}
-      nil -> {:error, :invalid_tarball_name}
+    after
+      if endpoint, do: :sys.resume(endpoint)
     end
   end
 end
