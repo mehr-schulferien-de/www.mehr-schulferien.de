@@ -1,0 +1,68 @@
+% Jahreskalender mit Schulferien und Feiertagen für mehr-schulferien.de
+% Gezeichnet auf einem A4-Querformat-Bogen in mm, per \scalebox auf das
+% Papierformat gebracht. Positionen kommen aus MehrSchulferien.CalendarPdf.Latex.
+\RequirePackage{fix-cm}
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[paperwidth=<%= @paper_width %>mm,paperheight=<%= @paper_height %>mm,margin=0mm]{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{qrcode}
+
+\renewcommand{\familydefault}{\sfdefault}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\frenchspacing
+
+\definecolor{ferien}{HTML}{BFE3C0}
+\definecolor{feiertag}{HTML}{F4B6AE}
+\definecolor{wochenende}{HTML}{E4E4E4}
+\definecolor{beweglich}{HTML}{FFE08A}
+\definecolor{linie}{HTML}{8A8A8A}
+\definecolor{kopf}{HTML}{2B2B2B}
+
+\newcommand{\fs}[1]{\fontsize{#1}{#1}\selectfont}
+
+% Eine Tageszelle, (x,y) ist ihre linke obere Ecke in mm. \pgftext statt
+% \node und kein scope: bei 365 Zellen halbiert das die Laufzeit von pdflatex.
+% \Tag{x}{y}{Farbe}{Tag}{Wochentag}
+\newcommand{\Tag}[5]{%
+  \filldraw[fill=#3, draw=linie, line width=0.08mm] (#1,#2) rectangle ++(<%= @column_width %>,-<%= @row_height %>);
+  \pgftext[left,x=#1mm+0.8mm,y=#2mm-<%= @row_middle %>mm]{\fs{<%= @fonts.day %>}\bfseries #4}%
+  \pgftext[left,x=#1mm+4.2mm,y=#2mm-<%= @row_middle %>mm]{\fs{<%= @fonts.weekday %>}#5}%
+}
+% \Name{x}{y}{Ferien oder Feiertag}, \Woche{x}{y}{Kalenderwoche}
+\newcommand{\Name}[3]{\pgftext[left,x=#1mm+7.6mm,y=#2mm-<%= @row_middle %>mm]{\fs{4.2}#3}}
+\newcommand{\Woche}[3]{\pgftext[right,x=#1mm+<%= @column_width %>mm-0.6mm,y=#2mm-<%= @row_middle %>mm]{\color{black!55}\fs{3.8}#3}}
+
+\begin{document}
+\noindent\raisebox{-\paperheight}[0pt][0pt]{\makebox[0pt][l]{\scalebox{<%= @scale %>}{%
+\begin{tikzpicture}[x=1mm,y=1mm]
+  \useasboundingbox (0,0) rectangle (297,210);
+
+  % Kopf
+  \node[anchor=base west, inner sep=0pt] at (8,195.5) {\fs{17}\bfseries <%= @title %><%= if @subtitle != "" do %>\hspace{4mm}\fs{10}\mdseries <%= @subtitle %><% end %>};
+  \node[anchor=base east, inner sep=0pt, text=black!70] at (289,195.5) {\fs{7.5}<%= if @address != "" do %><%= @address %><% else %>www.mehr-schulferien.de<% end %>};
+
+  % Monate
+<%= for {x, name} <- @months do %>  \fill[kopf] (<%= x %>,187) rectangle ++(<%= @column_width %>,5);
+  \node[anchor=mid, inner sep=0pt, text=white] at (<%= x %>+<%= @column_width %>/2,189.5) {\fs{7.5}\bfseries <%= name %>};
+<% end %>
+  % Tage
+<%= for cell <- @cells do %>  \Tag{<%= cell.x %>}{<%= cell.y %>}{<%= cell.fill %>}{<%= cell.day %>}{<%= cell.weekday %>}<%= if cell.label do %>\Name{<%= cell.x %>}{<%= cell.y %>}{<%= cell.label %>}<% end %><%= if cell.week do %>\Woche{<%= cell.x %>}{<%= cell.y %>}{<%= cell.week %>}<% end %>
+<% end %>
+  % Legende
+<%= for {{color, label}, index} <- Enum.with_index(@legend) do %>  \filldraw[fill=<%= color %>, draw=linie, line width=0.08mm] (<%= 8 + index * 38 %>,<%= @legend_y %>) rectangle ++(3,-3);
+  \node[anchor=west, inner sep=0pt] at (<%= 12 + index * 38 %>,<%= @legend_y %>-1.5) {\fs{<%= @fonts.footer %>}<%= label %>};
+<% end %>  \node[anchor=east, inner sep=0pt, text=black!70] at (289,<%= @legend_y %>-1.5) {\fs{<%= @fonts.footer %>}<%= @url_text %>};
+
+  % Termine
+  \node[anchor=north west, inner sep=0pt, text width=262mm, align=left] at (8,<%= @footer_y %>) {\fs{<%= @fonts.footer %>}\setlength{\baselineskip}{1.25\baselineskip}%
+<%= for {heading, text} <- @footer do %>    \textbf{<%= heading %>:} <%= text %>\par
+<% end %>  };
+
+  % Adresse der Seite
+  \node[anchor=south east, inner sep=0pt] at (289,8) {\qrcode[height=13mm]{<%= @url %>}};
+\end{tikzpicture}}}}
+\end{document}

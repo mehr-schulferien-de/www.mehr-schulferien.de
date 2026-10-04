@@ -78,6 +78,12 @@
                   </div>
                 </div>
               </div>
+              <MehrSchulferienWeb.CalendarDownloadComponent.federal_state_calendar_box
+                country={@country}
+                federal_state={@federal_state}
+                years={[@year]}
+                today={@today}
+              />
             <% else %>
               <.no_data
                 conn={@conn}

@@ -52,6 +52,10 @@ defmodule MehrSchulferienWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :calendar_pdf do
+    plug MehrSchulferienWeb.Plugs.DateAssignsPlug
+  end
+
   # Add Swoosh mailbox preview in development
   if Mix.env() == :dev do
     scope "/dev" do
@@ -311,6 +315,12 @@ defmodule MehrSchulferienWeb.Router do
         :show_year,
         constraints: [year: ~r/20[2-3][0-9]/]
 
+    # Printable calendars of the federal state (the PDF files are routed below)
+    get "/ferien/:country_slug/bundesland/:federal_state_slug/:year/download",
+        CalendarDownloadController,
+        :show,
+        constraints: [year: ~r/20[2-3][0-9]/]
+
     # Federal state handwritten image routes
     get "/ferien/:country_slug/bundesland/:federal_state_slug/:year/handwritten.svg",
         FederalStateImageController,
@@ -457,5 +467,19 @@ defmodule MehrSchulferienWeb.Router do
     # Document PDF downloads - consolidated
     get "/briefe/:school_slug/:document_type/pdf", DocumentPdfController, :download,
       constraints: [document_type: ~r/entschuldigung|beurlaubung|sportbefreiung/]
+  end
+
+  # Printable calendar PDFs (:file is a3.pdf, a4.pdf, a5.pdf or karte.pdf).
+  # Stored files, so no session, tracking or ad plugs.
+  scope "/", MehrSchulferienWeb do
+    pipe_through :calendar_pdf
+
+    get "/ferien/:country_slug/bundesland/:federal_state_slug/:year/download/:file",
+        CalendarDownloadController,
+        :federal_state_pdf
+
+    get "/ferien/:country_slug/schule/:school_slug/:year/download/:file",
+        CalendarDownloadController,
+        :school_pdf
   end
 end

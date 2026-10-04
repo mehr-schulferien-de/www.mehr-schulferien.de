@@ -82,6 +82,21 @@ defmodule MehrSchulferien.PdfGenerator do
     end
   end
 
+  @doc """
+  Compiles a complete LaTeX document.
+
+  Returns {:ok, pdf_binary} on success or {:error, reason} on failure.
+  """
+  def compile(latex_content, base_filename) do
+    compile_latex_to_pdf(latex_content, base_filename)
+  end
+
+  @doc "Whether the configured pdflatex binary can be found."
+  def available? do
+    pdflatex_path = Application.get_env(:mehr_schulferien, :pdflatex_path, "pdflatex")
+    System.find_executable(pdflatex_path) != nil
+  end
+
   defp compile_latex_to_pdf(latex_content, base_filename) do
     # Create a unique filename to avoid conflicts
     timestamp = System.system_time(:microsecond)

@@ -1,0 +1,73 @@
+% Ferienkarte im Kreditkartenformat (85,6 x 53,98 mm) für mehr-schulferien.de
+% Vorder- und Rückseite liegen nebeneinander und werden in der Mitte gefaltet.
+% Vier Karten pro A4-Blatt, jede mit Schnittmarken.
+\RequirePackage{fix-cm}
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=0mm]{geometry}
+\usepackage{tikz}
+\usepackage{qrcode}
+
+\renewcommand{\familydefault}{\sfdefault}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\frenchspacing
+
+\definecolor{linie}{HTML}{8A8A8A}
+\definecolor{kopf}{HTML}{2B2B2B}
+
+\newcommand{\fs}[1]{\fontsize{#1}{#1}\selectfont}
+
+% Eine Karte, Ursprung in der linken oberen Ecke der Vorderseite.
+\newcommand{\Karte}{%
+  \draw[linie, line width=0.1mm] (0,0) rectangle (171.2,-53.98);
+  \draw[linie, line width=0.1mm, dashed] (85.6,0) -- (85.6,-53.98);
+  \foreach \x/\dx in {0/-1, 171.2/1} {
+    \foreach \y/\dy in {0/1, -53.98/-1} {
+      \draw[line width=0.15mm] (\x+2*\dx,\y) -- (\x+7*\dx,\y);
+      \draw[line width=0.15mm] (\x,\y+2*\dy) -- (\x,\y+4.5*\dy);
+    }
+  }
+  \draw[line width=0.15mm] (85.6,2) -- (85.6,4.5);
+  \draw[line width=0.15mm] (85.6,-55.98) -- (85.6,-58.48);
+
+  % Vorderseite: Ferien
+  \fill[kopf] (0,0) rectangle (85.6,-9);
+  \node[anchor=west, inner sep=0pt, text=white] at (4,-4.5) {\fs{9}\bfseries <%= @title %>};
+<%= if @subtitle != "" do %>  \node[anchor=west, inner sep=0pt] at (4,-12.2) {\fs{6}\bfseries <%= @subtitle %>};
+<% end %>  \node[anchor=north west, inner sep=0pt] at (4,<%= if @subtitle != "", do: "-15", else: "-12" %>) {%
+    \fontsize{<%= elem(@row_font, 0) %>}{<%= elem(@row_font, 1) %>}\selectfont
+    \begin{tabular*}{77.6mm}{@{}l@{\extracolsep{\fill}}r@{}}
+<%= for {name, range} <- @rows do %>      <%= name %> & <%= range %> \\
+<% end %>    \end{tabular*}};
+  \node[anchor=south west, inner sep=0pt, text=black!60] at (4,-51.5) {\fs{4.5}www.mehr-schulferien.de};
+
+  % Rückseite: Feiertage
+  \node[anchor=west, inner sep=0pt] at (89.6,-5) {\fs{7.5}\bfseries Feiertage <%= @year %>};
+<%= for {column, index} <- Enum.with_index(@holiday_columns) do %>  \node[anchor=north west, inner sep=0pt] at (<%= 89.6 + index * 39 %>,-9) {%
+    \fontsize{5}{6.4}\selectfont
+    \begin{tabular}{@{}l@{\hspace{1.5mm}}l@{}}
+<%= for {name, range} <- column do %>      <%= range %> & <%= name %> \\
+<% end %>    \end{tabular}};
+<% end %>  \node[anchor=south west, inner sep=0pt, text width=60mm, align=left] at (89.6,-50) {%
+    \fontsize{4.8}{6}\selectfont <%= if @address != "" do %><%= @address %>\par<% end %>
+    \textcolor{black!60}{<%= @url_text %>}};
+  \node[anchor=south east, inner sep=0pt] at (167.2,-50) {\qrcode[height=13mm]{<%= @url %>}};
+}
+
+\begin{document}
+\noindent\raisebox{-\paperheight}[0pt][0pt]{\makebox[0pt][l]{%
+\begin{tikzpicture}[x=1mm,y=1mm]
+  \useasboundingbox (0,0) rectangle (210,297);
+
+  \node[anchor=base west, inner sep=0pt] at (19.4,283) {\fs{12}\bfseries <%= @title %><%= if @subtitle != "" do %>\hspace{3mm}\fs{8}\mdseries <%= @subtitle %><% end %>};
+  \node[anchor=base west, inner sep=0pt, text=black!70] at (19.4,277.5) {\fs{8}An den Schnittmarken ausschneiden und an der gestrichelten Linie falten.};
+
+  \foreach \top in {270, 207, 144, 81} {
+    \begin{scope}[shift={(19.4,\top)}]
+      \Karte
+    \end{scope}
+  }
+\end{tikzpicture}}}
+\end{document}

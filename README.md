@@ -29,7 +29,8 @@ Before committing or deploying, run `mise exec -- mix precommit` (format, compil
 
 #### LaTeX for PDF Generation
 
-The application generates PDF documents (excuse letters) using LaTeX.
+The application generates PDF documents (excuse letters, printable calendars) using LaTeX.
+Besides KOMA-Script it needs the `pgf` (TikZ) and `qrcode` packages.
 
 **macOS:**
 ```bash
@@ -39,7 +40,7 @@ sudo tlmgr install pst-barcode
 
 **Ubuntu/Debian:**
 ```bash
-sudo apt-get install texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-pstricks
+sudo apt-get install texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-pictures texlive-pstricks
 sudo apt-get install imagemagick libfontconfig1-dev webp fonts-comic-neue
 ```
 
@@ -60,6 +61,8 @@ sudo apt-get install imagemagick libfontconfig1-dev webp fonts-comic-neue
 ## Key Features
 
 - **House ad**: the LinkedIn-alternative copy for vutuv uses campaign ID 7; previous campaign IDs remain available for historical reports and links.
+
+- **Printable calendars**: every federal state has a download page per year (`/ferien/d/bundesland/hessen/2027/download`) with the year calendar as PDF in A3, A4, A5 and as a credit-card sized card. School pages link their own PDFs, with the school's bewegliche Ferientage and address. State PDFs are generated ahead of time, school PDFs on first request; both are stored in `calendar_pdf_dir` and reused until the dates change.
 
 - **Free holiday widget** at `/ferien-widget`: selectable federal state, iframe preview and copyable embed code; embedded calendars contain no scripts, ads or cookies.
 - **Source-linked holiday pages** with upcoming dates, state-specific notes and school-return answers for cities.

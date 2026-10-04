@@ -5,6 +5,7 @@ defmodule MehrSchulferienWeb.SitemapController do
 
   import Ecto.Query
 
+  alias MehrSchulferien.CalendarPdf
   alias MehrSchulferien.Calendars.DateHelpers
   alias MehrSchulferien.Calendars.VacationSlug
   alias MehrSchulferien.Calendars.VacationTypes
@@ -279,9 +280,23 @@ defmodule MehrSchulferienWeb.SitemapController do
         ]
       end
 
+    # Download pages of the printable calendars. CalendarPdf decides which
+    # years exist, so the sitemap never lists one the controller answers 404.
+    calendar_scope = {:federal_state, %{country: country, federal_state: state}}
+
+    download_pages =
+      for year <- CalendarPdf.years(calendar_scope, today) do
+        %{
+          loc: "#{state_url}/#{year}/download",
+          lastmod: last_modified,
+          changefreq: "monthly",
+          priority: "0.6"
+        }
+      end
+
     [evergreen | date_query_pages] ++
       evergreen_season_pages ++
-      [evergreen_bridge_day_page | feiertage_pages] ++ List.flatten(year_pages)
+      [evergreen_bridge_day_page | feiertage_pages] ++ List.flatten(year_pages) ++ download_pages
   end
 
   defp city_country_slugs do

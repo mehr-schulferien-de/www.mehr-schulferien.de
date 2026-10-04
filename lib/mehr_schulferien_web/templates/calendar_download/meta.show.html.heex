@@ -1,0 +1,29 @@
+<% page_url =
+  url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}/download") %>
+<title>
+  Schulferien {@federal_state.name} {@year} als PDF: Kalender zum Ausdrucken
+</title>
+<meta
+  name="description"
+  content={"Ferienkalender #{@federal_state.name} #{@year} als PDF zum Ausdrucken: Jahresübersicht in DIN A3, A4 und A5 und als Karte im Kreditkartenformat. Kostenlos, ohne Anmeldung."}
+/>
+<%= if assigns[:noindex] do %>
+  <meta name="robots" content="noindex,nofollow" />
+<% end %>
+<link rel="canonical" href={page_url} />
+<meta property="og:type" content="website" />
+<meta property="og:url" content={page_url} />
+<meta
+  property="og:title"
+  content={"Schulferien #{@federal_state.name} #{@year} als PDF zum Ausdrucken"}
+/>
+<meta property="og:site_name" content="mehr-schulferien.de" />
+<meta property="og:locale" content="de_DE" />
+
+<script type="application/ld+json">
+  <%= MehrSchulferienWeb.ViewHelpers.jsonld_breadcrumb([
+    %{name: @country.name, item: url(~p"/ferien/#{@country.slug}")},
+    %{name: "Ferientermine #{@federal_state.name} #{@year}", item: url(~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}")},
+    %{name: "PDF zum Ausdrucken", item: page_url}
+  ]) %>
+</script>

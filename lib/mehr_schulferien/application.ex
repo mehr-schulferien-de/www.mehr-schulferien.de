@@ -25,6 +25,17 @@ defmodule MehrSchulferien.Application do
         []
       end
 
+    # Calendar PDFs: the generator always runs, the warmer that prepares the
+    # state calendars ahead of time is switched off in test.
+    calendar_pdf_warmer =
+      if Application.get_env(:mehr_schulferien, :start_calendar_pdf_warmer, true) do
+        [MehrSchulferien.CalendarPdf.Warmer]
+      else
+        []
+      end
+
+    calendar_pdf_children = [MehrSchulferien.CalendarPdf.Generator | calendar_pdf_warmer]
+
     # MCP Server children (conditional)
     mcp_children =
       if Application.get_env(:mehr_schulferien, :mcp_enabled, true) do
@@ -45,7 +56,9 @@ defmodule MehrSchulferien.Application do
       end
 
     # Endpoint always starts last
-    children = base_children ++ ad_children ++ mcp_children ++ [MehrSchulferienWeb.Endpoint]
+    children =
+      base_children ++
+        ad_children ++ calendar_pdf_children ++ mcp_children ++ [MehrSchulferienWeb.Endpoint]
 
     opts = [strategy: :one_for_one, name: MehrSchulferien.Supervisor]
     Supervisor.start_link(children, opts)

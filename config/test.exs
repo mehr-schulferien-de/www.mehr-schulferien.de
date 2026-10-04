@@ -47,3 +47,14 @@ config :swoosh, :serve_mailbox, false
 # The ad-stats Recorder is not auto-started in test: the SQL sandbox owns
 # the database, so tests that measure start their own supervised instance.
 config :mehr_schulferien, start_ad_recorder: false
+
+# Calendar PDFs: no pdflatex in the suite (tests tagged :pdflatex bring their
+# own compiler), a store outside the source tree, and no background warmer.
+config :mehr_schulferien,
+  calendar_pdf_compiler: MehrSchulferien.CalendarPdfStubCompiler,
+  calendar_pdf_dir:
+    Path.join(
+      System.tmp_dir!(),
+      "mehr_schulferien_test_calendar_pdfs#{System.get_env("MIX_TEST_PARTITION")}"
+    ),
+  start_calendar_pdf_warmer: false

@@ -34,6 +34,10 @@ defmodule MehrSchulferienWeb.RobotsController do
   Disallow: /ferien/*/schule/*/vcard
   Disallow: /schule/*/vcard
 
+  # Printable school calendars are generated on first request, one per school,
+  # year and format. The state calendars stay crawlable.
+  Disallow: /ferien/*/schule/*/download/
+
   Sitemap: https://www.mehr-schulferien.de/sitemap.xml
   """
 

@@ -1,0 +1,65 @@
+<div class="mt-6 sm:mt-8">
+  <.heading level={1}>
+    Schulferien {@federal_state.name} {@year} als PDF
+  </.heading>
+
+  <.text class="mt-3 max-w-3xl">
+    Der Ferienkalender für {@federal_state.name} zum Ausdrucken: alle Schulferien und
+    gesetzlichen Feiertage {@year} auf einem Blatt. Die Termine stammen aus denselben Daten wie
+    die <.link
+      href={~p"/ferien/#{@country.slug}/bundesland/#{@federal_state.slug}/#{@year}"}
+      class="text-blue-600 dark:text-blue-400 hover:underline"
+    >Ferienübersicht {@year}</.link>.
+  </.text>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+    <%= for {format, label, description} <- formats() do %>
+      <.card padding="p-4">
+        <:content>
+          <.heading level={2} class="text-lg text-gray-900 dark:text-gray-100 mb-1">
+            {label}
+          </.heading>
+          <.text variant="muted" class="mb-3">
+            {description}
+          </.text>
+          <.link
+            href={federal_state_pdf_path(@country, @federal_state, @year, format)}
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors"
+          >
+            PDF {label} öffnen
+          </.link>
+        </:content>
+      </.card>
+    <% end %>
+  </div>
+
+  <.heading level={2} class="text-lg text-gray-900 dark:text-gray-100 mt-8 mb-2">
+    Tipps zum Drucken
+  </.heading>
+  <ul class="list-disc ml-5 text-sm text-gray-700 dark:text-gray-300 space-y-1 max-w-3xl">
+    <li>
+      Im Druckdialog „Tatsächliche Größe“ oder 100 % wählen. Mit „An Seite anpassen“
+      stimmen die Maße der Karte nicht mehr.
+    </li>
+    <li>Die Jahresübersichten sind im Querformat angelegt.</li>
+    <li>Für die Karte lohnt sich festeres Papier ab 160 g/m².</li>
+  </ul>
+
+  <%= if length(@years) > 1 do %>
+    <.heading level={2} class="text-lg text-gray-900 dark:text-gray-100 mt-8 mb-2">
+      Andere Jahre
+    </.heading>
+    <ul class="list-disc ml-5 text-sm space-y-1">
+      <%= for year <- @years, year != @year do %>
+        <li>
+          <.link
+            href={download_path(@country, @federal_state, year)}
+            class="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Schulferien {@federal_state.name} {year} als PDF
+          </.link>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

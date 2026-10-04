@@ -6,6 +6,11 @@ config :mehr_schulferien, :env, :prod
 # Configure pdflatex path for production
 config :mehr_schulferien, pdflatex_path: "/usr/bin/pdflatex"
 
+# Generated calendar PDFs live next to the release, not inside it, so a cold
+# deploy does not throw them away.
+config :mehr_schulferien,
+  calendar_pdf_dir: Path.join([System.user_home!(), "app", "calendar_pdfs"])
+
 # Production database configuration
 config :mehr_schulferien, MehrSchulferien.Repo,
   # Increased pool size for production load
