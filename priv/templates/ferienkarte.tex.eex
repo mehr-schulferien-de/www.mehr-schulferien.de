@@ -51,7 +51,7 @@
 <%= for {name, range} <- column do %>      <%= range %> & <%= name %> \\
 <% end %>    \end{tabular}};
 <% end %>  \node[anchor=south west, inner sep=0pt, text width=60mm, align=left] at (89.6,-50) {%
-    \fontsize{4.8}{6}\selectfont <%= if @address != "" do %><%= @address %>\par<% end %>
+    \fontsize{4.8}{6}\selectfont <%= if @address != "" do %><%= @address %>\par <% end %><%= if @homepage != "" do %><%= @homepage %>\par <% end %>
     \textcolor{black!60}{<%= @url_text %>}};
   \node[anchor=south east, inner sep=0pt] at (167.2,-50) {\qrcode[height=13mm]{<%= @url %>}};
 }

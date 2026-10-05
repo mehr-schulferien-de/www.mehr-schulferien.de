@@ -158,6 +158,7 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
       title: tex(calendar.title),
       subtitle: calendar.subtitle |> short(90) |> tex(),
       address: calendar.address_lines |> Enum.join(", ") |> short(110) |> tex(),
+      homepage: homepage_text(calendar.homepage, 90),
       url: calendar.url,
       url_text: url_text(calendar.url),
       colors: Map.values(@palette),
@@ -237,6 +238,7 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
       title: tex(calendar.title),
       subtitle: calendar.subtitle |> short(52) |> tex(),
       address: calendar.address_lines |> Enum.join(", ") |> short(70) |> tex(),
+      homepage: homepage_text(calendar.homepage, 70),
       url: calendar.url,
       url_text: calendar.url |> url_text() |> String.replace("/", "/\\allowbreak "),
       year: calendar.year,
@@ -271,7 +273,26 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
   defp short_date(date), do: Calendar.strftime(date, "%d.%m.")
   defp dated(date), do: Calendar.strftime(date, "%d.%m.%y")
 
-  defp url_text(url), do: url |> String.replace_prefix("https://", "") |> tex()
+  defp url_text(url), do: url |> display_url() |> tex()
+
+  # A web address as one would type it: no scheme, no trailing slash.
+  defp display_url(url) do
+    url |> String.trim() |> String.replace(~r{^https?://}i, "") |> String.trim_trailing("/")
+  end
+
+  # The school's own website. One that does not fit is cut back to its host:
+  # a truncated path would print an address that leads nowhere.
+  defp homepage_text(nil, _length), do: ""
+
+  defp homepage_text(url, length) do
+    shown = display_url(url)
+
+    if String.length(shown) > length do
+      shown |> String.split("/") |> hd() |> tex()
+    else
+      tex(shown)
+    end
+  end
 
   defp month_name(month), do: DateHelpers.get_months_map()[month]
 

@@ -31,7 +31,8 @@ defmodule MehrSchulferien.CalendarPdfFixtures do
       school_location_id: school.id,
       street: "Ysenburgstraße 41",
       zip_code: "34117",
-      city: "Kassel"
+      city: "Kassel",
+      homepage_url: "https://www.goethe-gymnasium-kassel.de/"
     })
 
     sommer =

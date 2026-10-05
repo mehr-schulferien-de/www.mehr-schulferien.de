@@ -41,12 +41,25 @@ defmodule MehrSchulferien.CalendarPdfTest do
       assert calendar.title == "Schulferien 2027"
       assert calendar.subtitle == "Goethe-Gymnasium & Co_1"
       assert calendar.address_lines == ["Ysenburgstraße 41", "34117 Kassel"]
+      assert calendar.homepage == "https://www.goethe-gymnasium-kassel.de/"
 
       assert calendar.url ==
                "https://www.mehr-schulferien.de/ferien/d/schule/34117-goethe-gymnasium"
 
       assert calendar.days[~D[2027-05-07]].kind == :flexible
       assert [%{starts_on: ~D[2027-05-07]}] = calendar.flexible_days
+    end
+
+    test "a school without a homepage has none on its calendar", fixture do
+      fixture.school.address
+      |> Ecto.Changeset.change(homepage_url: nil)
+      |> Repo.update!()
+
+      school = MehrSchulferien.Locations.get_school_by_slug!(fixture.school.slug)
+
+      assert {:ok, calendar} = CalendarPdf.build({:school, %{fixture | school: school}}, 2027)
+      assert calendar.homepage == nil
+      refute MehrSchulferien.CalendarPdf.Latex.render(calendar, "a4") =~ "goethe-gymnasium-kassel"
     end
 
     test "has no calendar for a year without vacation data", %{state_scope: scope} do

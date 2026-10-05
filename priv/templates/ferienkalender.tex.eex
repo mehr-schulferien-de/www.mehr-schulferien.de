@@ -40,7 +40,11 @@
 
   % Kopf
   \node[anchor=base west, inner sep=0pt] at (8,195.5) {\fs{17}\bfseries <%= @title %><%= if @subtitle != "" do %>\hspace{4mm}\fs{10}\mdseries <%= @subtitle %><% end %>};
-  \node[anchor=base east, inner sep=0pt, text=black!70] at (289,195.5) {\fs{7.5}<%= if @address != "" do %><%= @address %><% else %>www.mehr-schulferien.de<% end %>};
+  \tikzset{kontakt/.style={anchor=base east, inner sep=0pt, text=black!70, font=\fs{7.5}}}
+<%= if @homepage != "" do %>  \node[kontakt] at (289,198.6) {<%= @address %>};
+  \node[kontakt] at (289,195.2) {<%= @homepage %>};
+<% else %>  \node[kontakt] at (289,195.5) {<%= if @address != "" do %><%= @address %><% else %>www.mehr-schulferien.de<% end %>};
+<% end %>
 
   % Monate
 <%= for {x, name} <- @months do %>  \fill[kopf] (<%= x %>,187) rectangle ++(<%= @column_width %>,5);

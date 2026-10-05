@@ -68,6 +68,7 @@ defmodule MehrSchulferien.CalendarPdf.LatexTest do
 
         assert latex =~ "Goethe-Gymnasium \\& Co\\_1"
         assert latex =~ "Ysenburgstraße 41, 34117 Kassel"
+        assert latex =~ "www.goethe-gymnasium-kassel.de"
 
         assert latex =~
                  "\\qrcode[height=13mm]{https://www.mehr-schulferien.de/ferien/d/schule/34117-goethe-gymnasium}"
@@ -78,6 +79,17 @@ defmodule MehrSchulferien.CalendarPdf.LatexTest do
 
       assert Latex.render(school, "a4") =~ "\\textbf{Bewegliche Ferientage:} 07.05."
       assert Latex.render(school, "karte") =~ "Bewegl. Ferientag & 07.05."
+    end
+
+    test "a homepage too long for its line is cut back to the host", %{school: school} do
+      long = %{school | homepage: "http://www.schule.example/" <> String.duplicate("seite/", 20)}
+
+      for format <- ["a4", "karte"] do
+        latex = Latex.render(long, format)
+
+        assert latex =~ "www.schule.example"
+        refute latex =~ "www.schule.example/seite"
+      end
     end
 
     test "the card lists vacations on the front and holidays on the back", %{state: state} do

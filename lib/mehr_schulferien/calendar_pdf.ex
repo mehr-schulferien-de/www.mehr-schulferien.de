@@ -35,6 +35,7 @@ defmodule MehrSchulferien.CalendarPdf do
     :title,
     :subtitle,
     :url,
+    :homepage,
     address_lines: [],
     vacations: [],
     holidays: [],
@@ -238,19 +239,23 @@ defmodule MehrSchulferien.CalendarPdf do
     %__MODULE__{
       title: "Schulferien #{year}",
       subtitle: school.name,
-      url: UrlBuilder.school_url(country.slug, school),
-      address_lines: address_lines(school)
+      url: UrlBuilder.school_url(country.slug, school)
+    }
+    |> Map.merge(contact(school))
+  end
+
+  # Street, town and the school's own website, minus what is blacklisted.
+  defp contact(%{address: %{} = address}) do
+    address = Blacklist.filter_address(address)
+
+    %{
+      address_lines:
+        present([address.street, Enum.join(present([address.zip_code, address.city]), " ")]),
+      homepage: address.homepage_url
     }
   end
 
-  defp address_lines(%{address: %{} = address}) do
-    address = Blacklist.filter_address(address)
-
-    [address.street, Enum.join(present([address.zip_code, address.city]), " ")]
-    |> present()
-  end
-
-  defp address_lines(_school), do: []
+  defp contact(_school), do: %{}
 
   defp present(values), do: Enum.reject(values, &(&1 in [nil, ""]))
 
