@@ -15,11 +15,8 @@
 \setlength{\topskip}{0pt}
 \frenchspacing
 
-\definecolor{ferien}{HTML}{BFE3C0}
-\definecolor{feiertag}{HTML}{F4B6AE}
-\definecolor{wochenende}{HTML}{E4E4E4}
-\definecolor{beweglich}{HTML}{FFE08A}
-\definecolor{linie}{HTML}{8A8A8A}
+<%= for {name, hex} <- @colors do %>\definecolor{<%= name %>}{HTML}{<%= hex %>}
+<% end %>\definecolor{linie}{HTML}{8A8A8A}
 \definecolor{kopf}{HTML}{2B2B2B}
 
 \newcommand{\fs}[1]{\fontsize{#1}{#1}\selectfont}

@@ -469,7 +469,8 @@ defmodule MehrSchulferienWeb.Router do
       constraints: [document_type: ~r/entschuldigung|beurlaubung|sportbefreiung/]
   end
 
-  # Printable calendar PDFs (:file is a3.pdf, a4.pdf, a5.pdf or karte.pdf).
+  # Printable calendars (:file is a3.pdf, a4.pdf, a5.pdf, karte.pdf, or the
+  # preview image vorschau.svg).
   # Stored files, so no session, tracking or ad plugs.
   scope "/", MehrSchulferienWeb do
     pipe_through :calendar_pdf

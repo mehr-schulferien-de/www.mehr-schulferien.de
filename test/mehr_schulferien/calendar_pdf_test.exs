@@ -66,6 +66,13 @@ defmodule MehrSchulferien.CalendarPdfTest do
       assert CalendarPdf.offered_year?(2029, @today)
       refute CalendarPdf.offered_year?(2030, @today)
     end
+
+    test "from October on next year's calendar is the suggested one" do
+      assert CalendarPdf.suggested_year([2027, 2028], ~D[2027-09-30]) == 2027
+      assert CalendarPdf.suggested_year([2027, 2028], ~D[2027-10-01]) == 2028
+      assert CalendarPdf.suggested_year([2027], ~D[2027-10-01]) == 2027
+      assert CalendarPdf.suggested_year([], ~D[2027-10-01]) == nil
+    end
   end
 
   describe "fetch/3" do

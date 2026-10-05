@@ -36,6 +36,7 @@ defmodule MehrSchulferienWeb.Plugs.Compression do
       String.contains?(content_type, "text/javascript"),
       String.contains?(content_type, "text/plain"),
       String.contains?(content_type, "application/xml"),
+      String.contains?(content_type, "image/svg+xml"),
       String.contains?(content_type, "text/xml")
     ])
   end

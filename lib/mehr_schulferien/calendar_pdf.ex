@@ -27,6 +27,9 @@ defmodule MehrSchulferien.CalendarPdf do
   # How far ahead calendars are offered, counted from the current year.
   @years_ahead 2
 
+  # From this month on people print next year's calendar.
+  @next_year_from_month 10
+
   defstruct [
     :year,
     :title,
@@ -57,6 +60,18 @@ defmodule MehrSchulferien.CalendarPdf do
   """
   def offered_years(vacation_years, %Date{} = today) do
     vacation_years |> Enum.filter(&offered_year?(&1, today)) |> Enum.uniq() |> Enum.sort()
+  end
+
+  @doc """
+  The year out of `offered` to show first. A calendar is printed for the year
+  ahead: from October on that is the next year, before it the running one.
+  """
+  def suggested_year(offered, %Date{year: current_year, month: month}) do
+    if month >= @next_year_from_month and (current_year + 1) in offered do
+      current_year + 1
+    else
+      List.first(offered)
+    end
   end
 
   @doc "The years a calendar is offered for, read from the database."

@@ -112,6 +112,21 @@ defmodule MehrSchulferienWeb.CalendarDownloadControllerTest do
       assert conn |> get("#{@school_path}/2027/download/a4.pdf?#{@today}") |> response(404)
     end
 
+    test "has a preview image drawn from the same dates", %{conn: conn} do
+      conn = get(conn, "#{@school_path}/2027/download/vorschau.svg?#{@today}")
+
+      svg = response(conn, 200)
+      assert get_resp_header(conn, "content-type") == ["image/svg+xml"]
+      assert get_resp_header(conn, "cache-control") == ["public, max-age=86400"]
+      assert svg =~ "<svg"
+      assert svg =~ "Goethe-Gymnasium &amp; Co_1"
+
+      # 7 May 2027, the school's beweglicher Ferientag, in its own colour
+      assert svg =~ ~r/<rect x="101\.67" y="53\.60"[^>]*fill="#FFE08A"/
+
+      assert conn |> get("#{@school_path}/2031/download/vorschau.svg?#{@today}") |> response(404)
+    end
+
     test "an unknown school is not found", %{conn: conn} do
       assert conn
              |> get("/ferien/d/schule/99999-gibt-es-nicht/2027/download/a4.pdf")
@@ -144,6 +159,22 @@ defmodule MehrSchulferienWeb.CalendarDownloadControllerTest do
       for file <- ~w(a3.pdf a4.pdf a5.pdf karte.pdf) do
         assert html =~ ~s(href="#{@school_path}/2027/download/#{file}")
       end
+    end
+
+    test "the school page previews the calendar of the suggested year", %{conn: conn} = fixture do
+      vacation(fixture.federal_state, fixture.vacation_type, ~D[2028-07-03], ~D[2028-08-11])
+
+      # Until September the running year is suggested, from October the next.
+      spring = conn |> get("#{@school_path}?today=01.03.2027") |> html_response(200)
+      autumn = conn |> get("#{@school_path}?today=01.10.2027") |> html_response(200)
+
+      assert spring =~ ~s(src="#{@school_path}/2027/download/vorschau.svg")
+      assert spring =~ ~r/<input[^>]*value="2027"[^>]*checked/
+      refute spring =~ ~r/<input[^>]*value="2028"[^>]*checked/
+
+      assert autumn =~ ~s(src="#{@school_path}/2028/download/vorschau.svg")
+      assert autumn =~ ~r/<input[^>]*value="2028"[^>]*checked/
+      refute autumn =~ ~r/<input[^>]*value="2027"[^>]*checked/
     end
 
     test "the sitemap lists the download pages", %{conn: conn} do

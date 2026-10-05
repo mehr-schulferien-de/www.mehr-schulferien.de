@@ -46,12 +46,15 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
   }
 
   @label_length 19
-  @fills %{
-    holiday: "feiertag",
-    flexible: "beweglich",
-    vacation: "ferien",
-    weekend: "wochenende",
-    school: "white"
+
+  # Colour of a day by its kind: the name it has in the templates and its hex
+  # value. The preview image draws from the same table.
+  @palette %{
+    holiday: {"feiertag", "F4B6AE"},
+    flexible: {"beweglich", "FFE08A"},
+    vacation: {"ferien", "BFE3C0"},
+    weekend: {"wochenende", "E4E4E4"},
+    school: {"schultag", "FFFFFF"}
   }
 
   @card_rows 14
@@ -95,6 +98,23 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
   @doc "Renders the calendar in the given format (`a3`, `a4`, `a5` or `karte`)."
   def render(calendar, "karte"), do: card(card_assigns(calendar))
   def render(calendar, format), do: planner(planner_assigns(calendar, format))
+
+  @doc "Hex colour (without `#`) of a day of the given kind."
+  def color(kind), do: @palette |> Map.fetch!(kind) |> elem(1)
+
+  @doc """
+  Top left corner of a day's cell on the A4 design sheet in mm, measured from
+  the bottom left of the sheet like everything in the planner template, and
+  the size of a cell.
+  """
+  def cell(%Date{month: month, day: day}, row_height \\ @planner_layouts["a4"].row_height) do
+    %{
+      x: @margin + (month - 1) * @column_width,
+      y: @grid_top - (day - 1) * row_height,
+      width: @column_width,
+      height: row_height
+    }
+  end
 
   @doc "Makes arbitrary text safe to place in a LaTeX document."
   def tex(nil), do: ""
@@ -140,7 +160,8 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
       address: calendar.address_lines |> Enum.join(", ") |> short(110) |> tex(),
       url: calendar.url,
       url_text: url_text(calendar.url),
-      months: for(month <- 1..12, do: {mm(column_x(month)), month_name(month)}),
+      colors: Map.values(@palette),
+      months: for(month <- 1..12, do: {mm(cell(Date.new!(2000, month, 1)).x), month_name(month)}),
       cells: cells(calendar, layout),
       legend: legend(calendar),
       legend_y: mm(grid_bottom - 3.5),
@@ -154,9 +175,9 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
       monday? = Date.day_of_week(date) == 1
 
       %{
-        x: mm(column_x(date.month)),
-        y: mm(@grid_top - (date.day - 1) * layout.row_height),
-        fill: @fills[day.kind],
+        x: mm(cell(date, layout.row_height).x),
+        y: mm(cell(date, layout.row_height).y),
+        fill: @palette |> Map.fetch!(day.kind) |> elem(0),
         day: date.day,
         weekday: DateHelpers.weekday(Date.day_of_week(date), :short),
         label: if(layout.labels, do: label(day.kind, day.label, monday?)),
@@ -164,8 +185,6 @@ defmodule MehrSchulferien.CalendarPdf.Latex do
       }
     end
   end
-
-  defp column_x(month), do: @margin + (month - 1) * @column_width
 
   defp label(_kind, nil, _monday?), do: nil
   defp label(:flexible, _label, _monday?), do: "bewegl. Ferientag"

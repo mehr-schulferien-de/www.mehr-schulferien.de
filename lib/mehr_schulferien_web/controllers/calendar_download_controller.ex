@@ -10,8 +10,10 @@ defmodule MehrSchulferienWeb.CalendarDownloadController do
 
   use MehrSchulferienWeb, :controller
 
-  alias MehrSchulferien.{CalendarPdf, Locations}
+  alias MehrSchulferien.{Cache, CalendarPdf, Locations}
   alias MehrSchulferien.Calendars.DateHelpers
+
+  @cache_control "public, max-age=86400"
 
   def show(conn, %{
         "country_slug" => country_slug,
@@ -55,8 +57,11 @@ defmodule MehrSchulferienWeb.CalendarDownloadController do
         "file" => file
       }) do
     case federal_state_scope(country_slug, federal_state_slug) do
-      {:ok, scope} -> send_pdf(conn, scope, year, file, "schulferien-#{federal_state_slug}")
-      _ -> send_resp(conn, :not_found, "Not found")
+      {:ok, scope} ->
+        send_calendar_file(conn, scope, year, file, "schulferien-#{federal_state_slug}")
+
+      _ ->
+        send_resp(conn, :not_found, "Not found")
     end
   end
 
@@ -68,31 +73,69 @@ defmodule MehrSchulferienWeb.CalendarDownloadController do
       }) do
     with {:ok, locations} <- Locations.show_school_to_country_map_safe(country_slug, school_slug),
          false <- Locations.school_quarantined?(locations.school) do
-      send_pdf(conn, {:school, locations}, year, file, "schulferien-#{school_slug}")
+      send_calendar_file(conn, {:school, locations}, year, file, "schulferien-#{school_slug}")
     else
       _ -> send_resp(conn, :not_found, "Not found")
     end
   end
 
-  defp send_pdf(conn, scope, year, file, name) do
+  defp send_calendar_file(conn, scope, year, file, name) do
     today = DateHelpers.get_today_or_custom_date(conn)
 
     with {:ok, year} <- parse_year(year),
          {:ok, format} <- parse_file(file),
-         true <- CalendarPdf.offered_year?(year, today),
-         {:ok, path} <- CalendarPdf.fetch(scope, year, format) do
-      conn
-      |> put_resp_content_type("application/pdf", nil)
-      |> put_resp_header(
-        "content-disposition",
-        ~s(inline; filename="#{name}-#{year}-#{format}.pdf")
-      )
-      |> put_resp_header("cache-control", "public, max-age=86400")
-      |> send_file(200, path)
+         true <- CalendarPdf.offered_year?(year, today) do
+      respond(conn, scope, year, format, name)
     else
-      {:error, :busy} -> unavailable(conn, 60)
-      {:error, reason} when reason not in [:no_data, :unknown_format] -> unavailable(conn, 300)
       _ -> send_resp(conn, :not_found, "Not found")
+    end
+  end
+
+  # The thumbnail shown next to the downloads. No pdflatex involved, but every
+  # view of a school page asks for one, so the drawing is kept in the query
+  # cache: for half an hour, or until the school's bewegliche Ferientage are
+  # edited in the wiki, which empties that cache.
+  defp respond(conn, scope, year, :preview, name) do
+    preview =
+      Cache.cached_query_operation("calendar_preview:#{name}:#{year}", fn ->
+        case CalendarPdf.build(scope, year) do
+          {:ok, calendar} -> CalendarPdf.Preview.svg(calendar)
+          {:error, :no_data} -> :no_data
+        end
+      end)
+
+    case preview do
+      :no_data ->
+        send_resp(conn, :not_found, "Not found")
+
+      svg ->
+        conn
+        |> put_resp_content_type("image/svg+xml", nil)
+        |> put_resp_header("cache-control", @cache_control)
+        |> send_resp(200, svg)
+    end
+  end
+
+  defp respond(conn, scope, year, format, name) do
+    case CalendarPdf.fetch(scope, year, format) do
+      {:ok, path} ->
+        conn
+        |> put_resp_content_type("application/pdf", nil)
+        |> put_resp_header(
+          "content-disposition",
+          ~s(inline; filename="#{name}-#{year}-#{format}.pdf")
+        )
+        |> put_resp_header("cache-control", @cache_control)
+        |> send_file(200, path)
+
+      {:error, :no_data} ->
+        send_resp(conn, :not_found, "Not found")
+
+      {:error, :busy} ->
+        unavailable(conn, 60)
+
+      {:error, _reason} ->
+        unavailable(conn, 300)
     end
   end
 
@@ -125,6 +168,8 @@ defmodule MehrSchulferienWeb.CalendarDownloadController do
       _ -> :error
     end
   end
+
+  defp parse_file("vorschau.svg"), do: {:ok, :preview}
 
   defp parse_file(file) do
     with [format, "pdf"] <- String.split(file, "."),

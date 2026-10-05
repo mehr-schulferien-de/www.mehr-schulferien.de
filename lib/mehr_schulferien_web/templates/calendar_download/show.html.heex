@@ -13,20 +13,20 @@
   </.text>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-    <%= for {format, label, description} <- formats() do %>
+    <%= for format <- formats() do %>
       <.card padding="p-4">
         <:content>
           <.heading level={2} class="text-lg text-gray-900 dark:text-gray-100 mb-1">
-            {label}
+            {format.name}
           </.heading>
           <.text variant="muted" class="mb-3">
-            {description}
+            {format.description}
           </.text>
           <.link
-            href={federal_state_pdf_path(@country, @federal_state, @year, format)}
+            href={federal_state_pdf_path(@country, @federal_state, @year, format.key)}
             class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors"
           >
-            PDF {label} öffnen
+            PDF {format.name} öffnen
           </.link>
         </:content>
       </.card>
