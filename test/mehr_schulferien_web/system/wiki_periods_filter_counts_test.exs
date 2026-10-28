@@ -37,21 +37,26 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
           default_is_school_vacation: true
         )
 
-      # Create periods for Hamburg with different vacation types in 2025 and 2026
+      # The page only lists vacation types with a period in the last 365 days,
+      # so the periods are dated relative to today rather than fixed years.
+      today = Date.utc_today()
+      this_year = today.year
+      last_year = this_year - 1
+
       # Create 2 Sommer periods that should show up when Sommer is unchecked
       insert(:period,
         location_id: hamburg.id,
         holiday_or_vacation_type_id: sommer.id,
-        starts_on: ~D[2025-07-01],
-        ends_on: ~D[2025-08-15],
+        starts_on: Date.new!(last_year, 7, 1),
+        ends_on: Date.new!(last_year, 8, 15),
         is_school_vacation: true
       )
 
       insert(:period,
         location_id: hamburg.id,
         holiday_or_vacation_type_id: sommer.id,
-        starts_on: ~D[2026-07-01],
-        ends_on: ~D[2026-08-15],
+        starts_on: Date.new!(this_year, 7, 1),
+        ends_on: Date.new!(this_year, 8, 15),
         is_school_vacation: true
       )
 
@@ -59,16 +64,16 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
       insert(:period,
         location_id: hamburg.id,
         holiday_or_vacation_type_id: herbst.id,
-        starts_on: ~D[2025-10-01],
-        ends_on: ~D[2025-10-15],
+        starts_on: Date.add(today, -30),
+        ends_on: Date.add(today, -16),
         is_school_vacation: true
       )
 
       insert(:period,
         location_id: hamburg.id,
         holiday_or_vacation_type_id: ostern.id,
-        starts_on: ~D[2026-04-01],
-        ends_on: ~D[2026-04-15],
+        starts_on: Date.new!(this_year, 4, 1),
+        ends_on: Date.new!(this_year, 4, 15),
         is_school_vacation: true
       )
 
@@ -76,14 +81,18 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
         hamburg: hamburg,
         sommer: sommer,
         herbst: herbst,
-        ostern: ostern
+        ostern: ostern,
+        this_year: this_year,
+        last_year: last_year
       }
     end
 
     test "shows additional count when deselecting Sommer vacation type", %{
       conn: conn,
       hamburg: hamburg,
-      sommer: sommer
+      sommer: sommer,
+      this_year: this_year,
+      last_year: last_year
     } do
       {:ok, view, _html} = live(conn, "/wiki/periods")
 
@@ -127,8 +136,8 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
         "federal_state_#{hamburg.id}" => "true",
         "vacation_type_#{herbst_checkbox}" => "true",
         "vacation_type_#{ostern_checkbox}" => "true",
-        "year_2025" => "true",
-        "year_2026" => "true"
+        "year_#{last_year}" => "true",
+        "year_#{this_year}" => "true"
       }
 
       # Submit the form
@@ -159,7 +168,9 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
     test "recalculates counts when clicking Alle and Keine buttons", %{
       conn: conn,
       hamburg: hamburg,
-      sommer: sommer
+      sommer: sommer,
+      this_year: this_year,
+      last_year: last_year
     } do
       {:ok, view, _html} = live(conn, "/wiki/periods")
 
@@ -197,8 +208,8 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
       refute has_element?(view, "td", "Hamburg")
 
       # All year checkboxes should show counts
-      assert has_element?(view, "label[for='year_2025'] span", ~r/\+\d+/)
-      assert has_element?(view, "label[for='year_2026'] span", ~r/\+\d+/)
+      assert has_element?(view, "label[for='year_#{last_year}'] span", ~r/\+\d+/)
+      assert has_element?(view, "label[for='year_#{this_year}'] span", ~r/\+\d+/)
 
       # Click "Alle" for years
       view
@@ -206,10 +217,10 @@ defmodule MehrSchulferienWeb.System.WikiPeriodsFilterCountsTest do
       |> render_click()
 
       # Years should be checked and not show counts
-      assert has_element?(view, "#year_2025[checked]")
-      assert has_element?(view, "#year_2026[checked]")
-      refute has_element?(view, "label[for='year_2025'] span", ~r/\+\d+/)
-      refute has_element?(view, "label[for='year_2026'] span", ~r/\+\d+/)
+      assert has_element?(view, "#year_#{last_year}[checked]")
+      assert has_element?(view, "#year_#{this_year}[checked]")
+      refute has_element?(view, "label[for='year_#{last_year}'] span", ~r/\+\d+/)
+      refute has_element?(view, "label[for='year_#{this_year}'] span", ~r/\+\d+/)
     end
   end
 end
