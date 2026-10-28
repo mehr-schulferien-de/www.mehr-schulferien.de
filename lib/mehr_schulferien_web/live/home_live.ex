@@ -1038,8 +1038,7 @@ defmodule MehrSchulferienWeb.HomeLive do
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "mehr-schulferien.de",
-          "url": "https://www.mehr-schulferien.de",
-          "logo": "https://www.mehr-schulferien.de/images/logo.png"
+          "url": "https://www.mehr-schulferien.de"
         }
       </script>
       <div class="mt-6 sm:mt-8" id="test-page-container" phx-hook="MaintainScroll">
